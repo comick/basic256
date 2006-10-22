@@ -1,0 +1,23 @@
+print "Bouncing Ball Animation"
+
+x = 10
+y = 10
+r = 10
+xinc = 5
+yinc = 4
+
+moveBall:
+  x = x + xinc
+  y = y + yinc
+  if y > 280 then yinc = -yinc
+  if x > 280 then xinc = -xinc
+  if x < 14 then xinc = -xinc
+  if y < 14 then yinc = -yinc
+  clg
+  gosub drawBall 
+  goto moveBall 
+
+drawBall:
+  color black
+  circle x, y, r
+  return
