@@ -1,3 +1,7 @@
+2006-10-25    <drblast@users.sourceforge.net>
+
+	* Main.cpp (main): Added actions to edit menu.  Removed close button on output windows.
+
 2006-10-20    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp: Added internationalization support.

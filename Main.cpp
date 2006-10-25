@@ -108,6 +108,9 @@ int main(int argc, char *argv[])
   grid->addWidget(pause, 2, 1);
   grid->addWidget(stop, 2, 2);
 
+  gdock->setFeatures(gdock->features() ^ QDockWidget::DockWidgetClosable);
+  tdock->setFeatures(tdock->features() ^ QDockWidget::DockWidgetClosable);
+
   gdock->setWidget(goutput);
   gdock->setWindowTitle(QObject::tr("Graphics Output"));
   tdock->setWidget(output);
