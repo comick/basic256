@@ -99,6 +99,7 @@ stackval::~stackval()
   if (type == T_STRING && value.string != NULL)
     {
       free(value.string);
+      value.string = NULL;
     }
 }
 
@@ -221,7 +222,11 @@ Interpreter::Interpreter(QImage *i, QImage *m)
   imask = m;
   fastgraphics = false;
   status = R_STOPPED;
-  clearvars();
+  for (int i = 0; i < NUMVARS; i++)
+    {
+      vars[i].type = T_UNUSED;
+      vars[i].value.floatval = 0;
+    }
 }
 
 
@@ -233,6 +238,7 @@ Interpreter::clearvars()
       if (vars[i].type == T_STRING && vars[i].value.string != NULL)
 	{
 	  free(vars[i].value.string);
+	  vars[i].value.string = NULL;
 	}
       else if (vars[i].type == T_ARRAY && vars[i].value.arr != NULL)
 	{
@@ -244,7 +250,10 @@ Interpreter::clearvars()
 	  for (int j = 0; j < vars[i].value.arr->size; j++)
 	    {
 	      if (vars[i].value.arr->data.sdata[j])
-		free(vars[i].value.arr->data.sdata[j]);
+		{
+		  free(vars[i].value.arr->data.sdata[j]);
+		  vars[i].value.arr->data.sdata[j] = NULL;
+		}
 	    }
 	  delete(vars[i].value.arr->data.sdata);
 	  delete(vars[i].value.arr);
