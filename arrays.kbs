@@ -1,3 +1,5 @@
+rem Array example
+
 dim myarray(10)
 myarray[0] = 42
 myarray[3] = 42

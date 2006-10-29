@@ -1,5 +1,6 @@
 print "Using Newton's laws to make the ball bounce realistically"
 
+rem set up initial ball position and speed
 x = 20
 y = 100
 r = 10
@@ -11,6 +12,7 @@ fastgraphics
  
 loop1:
   clg
+  rem change the downward velocity according to the acceleration
   yvel = yvel + yacc
   y = y + yvel
   x = x + xvel
