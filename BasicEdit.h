@@ -37,6 +37,8 @@ class BasicEdit : public QTextEdit
   void saveProgram();
   void saveAsProgram();
   void loadProgram();
+  void cursorMove();
+  void goToLine(int);
 
  protected:
   void keyPressEvent(QKeyEvent *);
@@ -44,6 +46,7 @@ class BasicEdit : public QTextEdit
  private:
   QMainWindow *mainwin;
   int currentMaxLine;
+  int currentLine;
   int startPos;
   int linePos;
   QString filename;

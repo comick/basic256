@@ -221,13 +221,15 @@
 
 %}
 
-%token PRINT INPUT KEY PLOT CIRCLE RECT FASTGRAPHICS REFRESH CLS CLG
+%token PRINT INPUT KEY 
+%token PLOT CIRCLE RECT LINE FASTGRAPHICS REFRESH CLS CLG
 %token IF THEN FOR TO STEP NEXT 
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
 %token DIM NOP LABEL
 %token TOINT TOSTRING CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
+%token PAUSE
 
 %union 
 {
@@ -293,6 +295,7 @@ statement: gotostmt
          | printstmt
          | plotstmt
          | circlestmt
+         | linestmt
          | numassign
          | stringassign
          | forstmt
@@ -304,12 +307,16 @@ statement: gotostmt
          | refreshstmt
          | fastgraphicsstmt
          | dimstmt
+         | pausestmt
          | arrayassign
          | strarrayassign
 ;
 
 dimstmt: DIM VARIABLE '(' INTEGER ')'  { addInt2Op(OP_DIM, $2, $4); }
        | DIM STRINGVAR '(' INTEGER ')' { addInt2Op(OP_DIMSTR, $2, $4); }
+;
+
+pausestmt: PAUSE floatexpr { addOp(OP_PAUSE); }
 ;
 
 clearstmt: CLS { addOp(OP_CLS); }
@@ -395,6 +402,10 @@ colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
 
 plotstmt: PLOT floatexpr ',' floatexpr { addOp(OP_PLOT); }
 ;
+
+linestmt: LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_LINE); }
+;
+
 
 circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
 ;

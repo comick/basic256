@@ -48,6 +48,8 @@ RunController::RunController(BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatu
   QObject::connect(i, SIGNAL(inputNeeded()), output, SLOT(getInput()));
   QObject::connect(output, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
   QObject::connect(output, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
+
+  QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 }
 
 

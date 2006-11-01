@@ -129,6 +129,7 @@ class Interpreter : public QThread
   void inputNeeded();
   void clearText();
   void getKey();
+  void goToLine(int);
 
  private:
   void printError(int, QString);

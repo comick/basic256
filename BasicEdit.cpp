@@ -21,6 +21,7 @@ using namespace std;
 #include <QTextCursor>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStatusBar>
 #include "BasicEdit.h"
 
 BasicEdit::BasicEdit(QMainWindow *mw)
@@ -32,9 +33,40 @@ BasicEdit::BasicEdit(QMainWindow *mw)
   f.setPointSize(10);
   setFont(f);
   currentMaxLine = 10;
+  currentLine = 1;
   startPos = textCursor().position();
   setAcceptRichText(false);
+  connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
 }
+
+void
+BasicEdit::cursorMove()
+{
+  QTextCursor t(textCursor());
+  t.movePosition(QTextCursor::StartOfBlock);
+  int line = 1;
+  while (t.movePosition(QTextCursor::PreviousBlock))
+    {
+      line++;
+    }
+  currentLine = line;
+  mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(currentLine));
+}
+
+void
+BasicEdit::goToLine(int newLine)
+{
+  QTextCursor t(textCursor());
+  t.setPosition(0);
+  int line = 1;
+  while (line < newLine && t.movePosition(QTextCursor::NextBlock))
+    {
+      line++;
+    }
+  setTextCursor(t);
+  setFocus();
+}
+
 
 void
 BasicEdit::keyPressEvent(QKeyEvent *e)

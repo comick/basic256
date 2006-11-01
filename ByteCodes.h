@@ -53,19 +53,22 @@
 #define OP_PLOT       0x1a
 #define OP_RECT       0x1b
 #define OP_CIRCLE     0x1c
+#define OP_LINE       0x1d
 
-#define OP_REFRESH      0x1d
-#define OP_FASTGRAPHICS 0x1e
-#define OP_CLS          0x1f
-#define OP_CLG          0x20
+#define OP_REFRESH      0x1e
+#define OP_FASTGRAPHICS 0x1f
+#define OP_CLS          0x20
+#define OP_CLG          0x21
 
-#define OP_SIN  0x21
-#define OP_COS  0x22
-#define OP_TAN  0x23
-#define OP_RAND 0x24
-#define OP_CEIL  0x25
-#define OP_FLOOR 0x26
-#define OP_ABS   0x27
+#define OP_SIN  0x28
+#define OP_COS  0x29
+#define OP_TAN  0x2a
+#define OP_RAND 0x2b
+#define OP_CEIL  0x2c
+#define OP_FLOOR 0x2d
+#define OP_ABS   0x2e
+
+#define OP_PAUSE 0x2f
 
 
 //Int argument ops

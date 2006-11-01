@@ -3,130 +3,134 @@
     <name>BasicEdit</name>
     <message>
         <source>New Program?</source>
-        <translation>New Program?</translation>
+        <translation type="unfinished">New Program?</translation>
     </message>
     <message>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
-        <translation>Are you sure you want to completely clear this program and start a new one?</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Save file as</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>KidBASIC File </source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Any File </source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Open a file</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>KidBASIC file </source>
-        <translation></translation>
+        <translation type="unfinished">Are you sure you want to completely clear this program and start a new one?</translation>
     </message>
     <message>
         <source>Untitled - KidBASIC</source>
-        <translation>Untitled - KidBASIC</translation>
+        <translation type="unfinished">Untitled - KidBASIC</translation>
+    </message>
+    <message>
+        <source>Line: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KidBASIC File </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any File </source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> - KidBASIC</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open a file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KidBASIC file </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Interpreter</name>
     <message>
         <source>ERROR on line </source>
-        <translation>ERROR on line</translation>
+        <translation type="unfinished">ERROR on line</translation>
     </message>
     <message>
         <source>Syntax error on line </source>
-        <translation>Syntax error on line</translation>
+        <translation type="unfinished">Syntax error on line</translation>
     </message>
     <message>
         <source>No such label</source>
-        <translation>No such label</translation>
+        <translation type="unfinished">No such label</translation>
     </message>
     <message>
         <source>Next without FOR</source>
-        <translation>Next without FOR</translation>
+        <translation type="unfinished">Next without FOR</translation>
     </message>
     <message>
         <source>Array dimension too large</source>
-        <translation>Array dimension too large</translation>
+        <translation type="unfinished">Array dimension too large</translation>
     </message>
     <message>
         <source>Array index out of bounds</source>
-        <translation>Array index out of bounds</translation>
+        <translation type="unfinished">Array index out of bounds</translation>
     </message>
     <message>
         <source>Cannot access non-array variable</source>
-        <translation>Cannot access non-array variable</translation>
-    </message>
-    <message>
-        <source>Unknown variable</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Illegal argument to int()</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Illegal argument to string()</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Illegal argument to sin()</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>String in numeric expression</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Cannot compare strings with &gt; or &lt;=</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Cannot compare strings with &lt; or &gt;=</source>
-        <translation></translation>
+        <translation type="unfinished">Cannot access non-array variable</translation>
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to int()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to string()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to sin()</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Illegal argument to cos()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Illegal argument to tan()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Illegal argument to ceil()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Illegal argument to floor()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Illegal argument to abs()</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>String in numeric expression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot compare strings with &gt; or &lt;=</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot compare strings with &lt; or &gt;=</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -215,28 +219,28 @@
 <context>
     <name>RunController</name>
     <message>
-        <source>Running</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Ready.</source>
-        <translation>Ready.</translation>
-    </message>
-    <message>
-        <source>Paused</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Save file as</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>KidBASIC Compiled File </source>
-        <translation></translation>
+        <translation type="unfinished">Ready.</translation>
     </message>
     <message>
         <source>Any File </source>
-        <translation>Any File</translation>
+        <translation type="unfinished">Any File</translation>
+    </message>
+    <message>
+        <source>Running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>KidBASIC Compiled File </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

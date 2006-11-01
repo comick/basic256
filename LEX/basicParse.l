@@ -77,6 +77,7 @@ step  [Ss][Tt][Ee][Pp]
 plot  [Pp][Ll][Oo][Tt]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 rect  [Rr][Ee][Cc][Tt]
+line  [Ll][Ii][Nn][Ee]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
 cls   [Cc][Ll][Ss]
@@ -108,6 +109,7 @@ and [Aa][Nn][Dd]
 or  [Oo][Rr]
 xor [Xx][Oo][Rr]
 not [Nn][Oo][Tt]
+pause [Pp][Aa][Uu][Ss][Ee]
 integer [0-9]+
 floatnum [0-9]*\.?[0-9]*
 string \"[^\"\n]*\"
@@ -163,6 +165,7 @@ blankline ^{whitespace}*[\n]
 {plot}		{ return PLOT; }
 {circle}	{ return CIRCLE; }
 {rect}	        { return RECT; }
+{line}	        { return LINE; }
 {fastgraphics}	{ return FASTGRAPHICS; }
 {refresh}	{ return REFRESH; }
 {color}		{ return SETCOLOR; }
@@ -196,6 +199,7 @@ blankline ^{whitespace}*[\n]
 {key}           { return KEY; }
 {gosub}         { return GOSUB; }
 {return}        { return RETURN; }
+{pause}         { return PAUSE; }
 {rem}           { return REM; }
 {end}           { return END; }
 ">="            { return GTE; }
