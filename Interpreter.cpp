@@ -292,6 +292,7 @@ Interpreter::compileProgram(const char *code)
     {
       emit(outputReady(tr("Syntax error on line ") + 
 		       QString::number(linenumber) + "\n"));
+      emit(goToLine(linenumber));
       return -1;
     }
 
@@ -876,6 +877,24 @@ Interpreter::execByteCode()
       }
       break;
 
+    case OP_PAUSE:
+      {
+	op++;
+	double val = 0;
+	stackval *temp = stack.pop();
+	if (temp->type == T_INT) 
+	  {
+	    val = (double) temp->value.intval; 
+	  }
+	else if (temp->type == T_FLOAT)
+	  {
+	    val = temp->value.floatval;
+	  }
+	int stime = (int) (val * 1000);
+	msleep(stime);
+      }
+      break;
+
     case OP_SIN:
     case OP_COS:
     case OP_TAN:
@@ -1251,6 +1270,58 @@ Interpreter::execByteCode()
       }
       break;
 
+
+    case OP_LINE:
+      {
+	op++;
+	stackval *y1 = stack.pop();
+	stackval *x1 = stack.pop();
+	stackval *y0 = stack.pop();
+	stackval *x0 = stack.pop();
+	int x0val, y0val, x1val, y1val;
+	
+	if (x0->type == T_INT) x0val = x0->value.intval; else x0val = (int) x0->value.floatval;
+	if (y0->type == T_INT) y0val = y0->value.intval; else y0val = (int) y0->value.floatval;
+	if (x1->type == T_INT) x1val = x1->value.intval; else x1val = (int) x1->value.floatval;
+	if (y1->type == T_INT) y1val = y1->value.intval; else y1val = (int) y1->value.floatval;
+	
+	QPainter ian(image);
+	QPainter ian2(imask);
+	ian.setPen(pencolor);
+	ian.setBrush(pencolor);
+	if (pencolor == Qt::color0)
+	  {
+	    ian2.setPen(Qt::color0);
+	    ian2.setBrush(Qt::color0);
+	  }
+	else 
+	  {
+	    ian2.setPen(Qt::color1);
+	    ian2.setBrush(Qt::color1);
+	  }
+	if (x1val > 0 && y1val > 0)
+	  {
+	    ian.drawLine(x0val, y0val, x1val - 1, y1val - 1);
+	    ian2.drawLine(x0val, y0val, x1val - 1, y1val - 1);
+	  }
+	ian.end();
+	ian2.end();
+	delete x0;
+	delete y0;
+	delete x1;
+	delete y1;
+
+	if (!fastgraphics)
+	  {
+	    mutex.lock();
+	    emit(goutputReady());
+	    waitCond.wait(&mutex);
+	    mutex.unlock();
+	  }
+      }
+      break;
+
+
     case OP_RECT:
       {
 	op++;
@@ -1300,6 +1371,7 @@ Interpreter::execByteCode()
 	  }
       }
       break;
+
 
     case OP_CIRCLE:
       {
