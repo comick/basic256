@@ -1531,7 +1531,14 @@ Interpreter::execByteCode()
 	else if (temp->type == T_FLOAT)
 	  {
 	    mutex.lock();
-	    emit(outputReady(QString::number(temp->value.floatval)));
+	    if (floor(temp->value.floatval) == temp->value.floatval)
+	      {
+		emit(outputReady(QString::number((int) temp->value.floatval)));
+	      }
+	    else
+	      {
+		emit(outputReady(QString::number(temp->value.floatval)));
+	      }
 	    waitCond.wait(&mutex);
 	    mutex.unlock();
 	  }

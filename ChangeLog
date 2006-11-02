@@ -1,3 +1,7 @@
+2006-11-02    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Printing of floating point instead of integers fixed.
+
 2006-11-01    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp (execByteCode): Added OP_LINE, which draws lines.
