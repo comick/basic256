@@ -6,8 +6,8 @@ TEMPLATE = app
 TARGET += 
 DEPENDPATH += .
 INCLUDEPATH += .
-TRANSLATIONS = Translations/kidbasic_en_US.ts\
-		Translations/kidbasic_de.ts
+TRANSLATIONS = Translations/basic256_en_US.ts\
+		Translations/basic256_de.ts
 
 # Input
 HEADERS += LEX/basicParse.tab.h BasicEdit.h Interpreter.h RunController.h BasicOutput.h BasicGraph.h GhostButton.h PauseButton.h
