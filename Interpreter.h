@@ -114,6 +114,7 @@ class Interpreter : public QThread
   void setInputReady();
   void cleanup();
   void run();
+  bool debugMode;
 
  public slots:
   int execByteCode();

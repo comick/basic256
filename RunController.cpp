@@ -26,7 +26,9 @@ using namespace std;
 #include "RunController.h"
 
 QMutex mutex;
+QMutex debugmutex;
 QWaitCondition waitCond;
+QWaitCondition waitDebugCond;
 QWaitCondition waitInput;
 
 RunController::RunController(BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatusBar *sb)
@@ -110,11 +112,12 @@ RunController::goutputFilter()
   mutex.unlock();
 }
 
-
-void 
-RunController::startDebug(QPushButton *b)
+void
+RunController::stepThrough()
 {
-
+  debugmutex.lock();
+  waitDebugCond.wakeAll();
+  debugmutex.unlock();
 }
 
 void 
@@ -162,7 +165,7 @@ RunController::saveByteCode()
 
   if (bytefilename == "")
     {
-      bytefilename = QFileDialog::getSaveFileName(NULL, tr("Save file as"), ".", tr("KidBASIC Compiled File ") + "(*.kbc);;" + tr("Any File ") + "(*.*)");
+      bytefilename = QFileDialog::getSaveFileName(NULL, tr("Save file as"), ".", tr("BASIC-256 Compiled File ") + "(*.kbc);;" + tr("Any File ") + "(*.*)");
     }
 
   if (bytefilename != "")

@@ -46,10 +46,10 @@ class RunController : public QObject
   void outputClear();
   void goutputFilter();
   void startRun();
-  void startDebug(QPushButton *);
   void stopRun();
   void pauseResume();
   void saveByteCode();
+  void stepThrough();
 
  private:
   Interpreter *i;

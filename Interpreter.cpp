@@ -30,8 +30,10 @@ using namespace std;
 
 extern QMutex mutex;
 extern QMutex keymutex;
+extern QMutex debugmutex;
 extern int currentKey;
 extern QWaitCondition waitCond;
+extern QWaitCondition waitDebugCond;
 extern QWaitCondition waitInput;
 
 #define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
@@ -418,7 +420,15 @@ Interpreter::stop()
 void
 Interpreter::run()
 {
-  while (status != R_STOPPED && execByteCode() >= 0); //continue;
+  while (status != R_STOPPED && execByteCode() >= 0)
+    {
+      if (debugMode) 
+	{
+	    debugmutex.lock();
+	    waitDebugCond.wait(&debugmutex);
+	    debugmutex.unlock();
+	}
+    }
   status = R_STOPPED;
   emit(runFinished());
 }

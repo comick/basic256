@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   qapp.installTranslator(&qtTranslator);
   
   QTranslator kbTranslator;
-  kbTranslator.load("kidbasic_" + QLocale::system().name(), "./Translations/");
+  kbTranslator.load("basic256_" + QLocale::system().name(), "./Translations/");
   qapp.installTranslator(&kbTranslator);
 
   QMainWindow *mainwin = new QMainWindow();
@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
   GhostButton *run = new GhostButton(QObject::tr("Run"));
   PauseButton *pause = new PauseButton(QObject::tr("Pause"));
   GhostButton *stop = new GhostButton(QObject::tr("Stop"));
+  QPushButton *step = new QPushButton("Step");
 
 
   QMenu *filemenu = mainwin->menuBar()->addMenu(QObject::tr("File"));
@@ -89,6 +90,8 @@ int main(int argc, char *argv[])
   QAction *saveByteCode = advancedmenu->addAction(QObject::tr("Save Compiled Byte Code"));
   QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
+  QObject::connect(step, SIGNAL(pressed()), rc, SLOT(stepThrough()));
+
   QObject::connect(run, SIGNAL(pressed()), rc, SLOT(startRun()));
   QObject::connect(rc, SIGNAL(runStarted()), run, SLOT(disableButton()));
   QObject::connect(rc, SIGNAL(runHalted()), run, SLOT(enableButton()));
@@ -103,10 +106,11 @@ int main(int argc, char *argv[])
   QObject::connect(rc, SIGNAL(runHalted()), pause, SLOT(disableButton()));
   pause->disableButton();
 
-  grid->addWidget(editor, 0, 0, 1, 3);
+  grid->addWidget(editor, 0, 0, 1, 4);
   grid->addWidget(run, 2, 0);
   grid->addWidget(pause, 2, 1);
   grid->addWidget(stop, 2, 2);
+  grid->addWidget(step, 2, 3);
 
   gdock->setFeatures(gdock->features() ^ QDockWidget::DockWidgetClosable);
   tdock->setFeatures(tdock->features() ^ QDockWidget::DockWidgetClosable);
@@ -128,7 +132,7 @@ int main(int argc, char *argv[])
   
   mainwin->resize(800,600);
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
-  mainwin->setWindowTitle(QObject::tr("Untitled - KidBASIC"));
+  mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->show();
   return qapp.exec();
 }

@@ -84,7 +84,7 @@ BasicEdit::newProgram()
   if (answer == 0)
     {
       clear();
-      mainwin->setWindowTitle(tr("Untitled - KidBASIC"));
+      mainwin->setWindowTitle(tr("Untitled - BASIC-256"));
     }
 }
 
@@ -94,7 +94,7 @@ BasicEdit::saveProgram()
 {
   if (filename == "")
     {
-      filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("KidBASIC File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
+      filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
     }
 
   if (filename != "")
@@ -110,14 +110,14 @@ BasicEdit::saveProgram()
       f.write(this->document()->toPlainText().toAscii());
       f.close();
       QFileInfo fi(f);
-      mainwin->setWindowTitle(fi.fileName() + tr(" - KidBASIC"));
+      mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
     }
 }
 
 void
 BasicEdit::saveAsProgram()
 {
-      QString tempfilename = QFileDialog::getSaveFileName(this, "Save file as", ".", "KidBASIC File (*.kbs);;Any File (*.*)");
+      QString tempfilename = QFileDialog::getSaveFileName(this, "Save file as", ".", "BASIC-256 File (*.kbs);;Any File (*.*)");
       
       if (tempfilename != "")
 	{
@@ -129,7 +129,7 @@ BasicEdit::saveAsProgram()
 void
 BasicEdit::loadProgram()
 {
-  QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("KidBASIC file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
+  QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
     
     if (s != NULL)
       {
@@ -140,86 +140,11 @@ BasicEdit::loadProgram()
 	f.close();
 	filename = s;
 	QFileInfo fi(f);
-	mainwin->setWindowTitle(fi.fileName() + tr(" - KidBASIC"));
+	mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
 	QDir::setCurrent(fi.absolutePath());
       }
 }
 
 
-
-
-/*
-void
-BasicEdit::renumber()
-{
-  QMap<unsigned int, char *> programMap;
-  QMap<unsigned int, unsigned int> gotoMap;
-  char *line;
-  char *program = strdup(document()->toPlainText().toAscii().data());
-  char *fixedcode = (char *) malloc(strlen(program) + 10000);
-  unsigned int maxlineno = 0;
-
-  fixedcode[0] = 0;
-
-  line = strtok(program, "\n");
-  while (line)
-    {
-      unsigned int linenum = atoi(line);
-      if (linenum > maxlineno) 
-	{
-	  maxlineno = linenum;
-	}
-      programMap[linenum] = line;
-      line = strtok(NULL, "\n");
-    }
-
-  unsigned int count = 0;
-  unsigned int prettycount = 10;
-  while (count <= maxlineno)
-    {
-      if (programMap.value(count))
-	{
-	  unsigned int oldline;
-	  char buffer[12];
-	  char *temp = programMap.value(count);
-	  while (*temp == ' ') temp++;
-	  oldline = atoi(temp);
-	  while (*temp >= '0' && *temp <= '9') temp++;
-
-	  gotoMap[oldline] = prettycount;
-	  sprintf(buffer, "%d", prettycount);
-	  prettycount += 10;
-
-	  strcat(fixedcode, buffer);
-	  strcat(fixedcode, temp);
-	  strcat(fixedcode, "\n");
-	}
-      count++;
-    }
-
-  setPlainText(fixedcode);
-  free(program);
-  free(fixedcode);
-
-  QMapIterator<unsigned int, unsigned int> i(gotoMap);
-  QString ian = document()->toPlainText();
-  QRegExp rx1("[Gg][Oo][Tt][Oo]\\s+(\\d+)(\\s+|\\n)");
-  ian.replace(rx1, "goto \\1X\\2");
-  QRegExp rx2("[Gg][Oo][Ss][Uu][Bb]\\s+(\\d+)(\\s+|\\n)");
-  ian.replace(rx2, "gosub \\1X\\2");
-  while (i.hasNext())
-    {
-      i.next();
-      QString oldl = QString::number(i.key());
-      QString newl = QString::number(i.value());
-
-      QRegExp rx1("[Gg][Oo][Tt][Oo]\\s+" + oldl + "X(\\s+|\\n)");
-      ian.replace(rx1, "goto " + newl + "\\1");
-      QRegExp rx2("[Gg][Oo][Ss][Uu][Bb]\\s+" + oldl + "X(\\s+|\\n)");
-      ian.replace(rx2, "gosub " + newl + "\\1");
-    }
-  setPlainText(ian);
-}
-*/
 
 
