@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   GhostButton *run = new GhostButton(QObject::tr("Run"));
   PauseButton *pause = new PauseButton(QObject::tr("Pause"));
   GhostButton *stop = new GhostButton(QObject::tr("Stop"));
-  QPushButton *step = new QPushButton("Step");
+  GhostButton *step = new GhostButton(QObject::tr("Step"));
 
 
   QMenu *filemenu = mainwin->menuBar()->addMenu(QObject::tr("File"));
@@ -87,16 +87,23 @@ int main(int argc, char *argv[])
   QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
 
   QMenu *advancedmenu = mainwin->menuBar()->addMenu(QObject::tr("Advanced"));
+  QAction *debug = advancedmenu->addAction(QObject::tr("Debug Run"));
   QAction *saveByteCode = advancedmenu->addAction(QObject::tr("Save Compiled Byte Code"));
+  QObject::connect(debug, SIGNAL(triggered()), rc, SLOT(startDebug()));
   QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
   QObject::connect(step, SIGNAL(pressed()), rc, SLOT(stepThrough()));
+  QObject::connect(rc, SIGNAL(debugStarted()), step, SLOT(enableButton()));
+  QObject::connect(rc, SIGNAL(runHalted()), step, SLOT(disableButton()));
+  step->disableButton();
 
   QObject::connect(run, SIGNAL(pressed()), rc, SLOT(startRun()));
   QObject::connect(rc, SIGNAL(runStarted()), run, SLOT(disableButton()));
+  QObject::connect(rc, SIGNAL(debugStarted()), run, SLOT(disableButton()));
   QObject::connect(rc, SIGNAL(runHalted()), run, SLOT(enableButton()));
 
   QObject::connect(stop, SIGNAL(pressed()), rc, SLOT(stopRun()));
+  QObject::connect(rc, SIGNAL(debugStarted()), stop, SLOT(enableButton()));
   QObject::connect(rc, SIGNAL(runStarted()), stop, SLOT(enableButton()));
   QObject::connect(rc, SIGNAL(runHalted()), stop, SLOT(disableButton()));
   stop->disableButton();

@@ -264,7 +264,6 @@ basicParse(char *code, int numlines){
 
   clearSymbolTable();
   clearLabelTable();
-  newLineOffsets(numlines);
 
   linenumber = 1;
   errorcode = 0;

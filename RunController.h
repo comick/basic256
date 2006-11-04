@@ -35,6 +35,7 @@ class RunController : public QObject
   RunController(BasicEdit *, BasicOutput *, BasicGraph *, QStatusBar * = NULL);
 
  signals:
+  void debugStarted();
   void runStarted();
   void runHalted();
   void runPaused();
@@ -45,6 +46,7 @@ class RunController : public QObject
   void outputFilter(QString text);
   void outputClear();
   void goutputFilter();
+  void startDebug();
   void startRun();
   void stopRun();
   void pauseResume();

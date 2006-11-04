@@ -54,9 +54,30 @@ RunController::RunController(BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatu
   QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
   QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
-  i->debugMode = true;
 }
 
+
+void
+RunController::startDebug()
+{
+  if (i->isStopped())
+    {
+      int result = i->compileProgram(te->toPlainText());
+      if (result < 0)
+	{
+	  i->debugMode = false;
+	  emit(runHalted());
+	  return;
+	}
+      i->initialize();
+      i->debugMode = true;
+      output->clear();
+      statusbar->showMessage(tr("Running"));
+      goutput->setFocus();
+      i->start();
+      emit(debugStarted());
+    }
+}
 
 void 
 RunController::startRun()
@@ -64,6 +85,7 @@ RunController::startRun()
   if (i->isStopped())
     {
       int result = i->compileProgram(te->toPlainText());
+      i->debugMode = false;
       if (result < 0)
 	{
 	  emit(runHalted());
@@ -134,6 +156,11 @@ RunController::stopRun()
   waitInput.wakeAll();
   waitCond.wakeAll();
   mutex.unlock();
+
+  debugmutex.lock();
+  i->debugMode = false;
+  waitDebugCond.wakeAll();
+  debugmutex.unlock();
 
   emit(runHalted());
 }

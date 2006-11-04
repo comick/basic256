@@ -456,7 +456,6 @@ Interpreter::execByteCode()
       op++;
       int *i = (int *) op;
       currentLine = *i;
-      cout << currentLine << endl;
       op += sizeof(int);
       if (debugMode && *op != OP_CURRLINE) 
 	{
