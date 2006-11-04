@@ -33,7 +33,6 @@
     int yyerror(const char *);
     int errorcode;
     extern int linenumber;
-    int *lineoffsets = NULL;
 
     char *byteCode = NULL;
     unsigned int byteOffset = 0;
@@ -65,20 +64,6 @@
 	{
 	  labeltable[j] = -1;
 	}
-    }
-
-    void 
-    newLineOffsets(int numlines)
-    {
-      if (lineoffsets)
-	{
-	  free(lineoffsets);
-	  lineoffsets = NULL;
-	}
-      lineoffsets = (int *) malloc(sizeof(int) * (2 + numlines));
-      lineoffsets[0] = 0;
-      lineoffsets[1] = 0;
-      lineoffsets[1 + numlines] = 0x7fffffff;
     }
 
     void
@@ -265,15 +250,15 @@
 
 %%
 
-program: validline '\n'               { addOp(OP_END); }
-	   | validline '\n' program   { addOp(OP_END); }
-	   | validline                { addOp(OP_END); }
+
+program: validline '\n'         { addOp(OP_END); }
+       | validline '\n' program { addOp(OP_END); }
 ;
 
-validline: ifstmt   
-         | compoundstmt
-         | REM   
-         | LABEL { labeltable[$1] = byteOffset; }
+validline: ifstmt       { addIntOp(OP_CURRLINE, linenumber); }
+         | compoundstmt { addIntOp(OP_CURRLINE, linenumber); }
+         | /*empty*/    { addIntOp(OP_CURRLINE, linenumber); }
+         | LABEL        { labeltable[$1] = byteOffset; addIntOp(OP_CURRLINE, linenumber + 1); }
 ;
 
 ifstmt: ifexpr THEN compoundstmt 

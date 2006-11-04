@@ -47,7 +47,6 @@
     extern int yyparse();
     extern int errorcode;
     extern int byteOffset;
-    extern int *lineoffsets;
     int linenumber;
 
 #ifdef __cplusplus
@@ -200,7 +199,7 @@ blankline ^{whitespace}*[\n]
 {gosub}         { return GOSUB; }
 {return}        { return RETURN; }
 {pause}         { return PAUSE; }
-{rem}           { return REM; }
+{rem}           { return '\n'; }
 {end}           { return END; }
 ">="            { return GTE; }
 "<="            { return LTE; }
@@ -220,8 +219,7 @@ blankline ^{whitespace}*[\n]
 ")"             { return ')'; }
 "["             { return '['; }
 "]"             { return ']'; }
-{blankline}     { linenumber++; lineoffsets[linenumber] = byteOffset; }  
-"\n"            { linenumber++; lineoffsets[linenumber] = byteOffset; return '\n'; }
+"\n"            { linenumber++; return '\n'; }
 {variable}      { 
                   int num = getSymbol(yytext);
                   if (num < 0)

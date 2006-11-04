@@ -52,6 +52,9 @@ RunController::RunController(BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatu
   QObject::connect(output, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
 
   QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
+
+  QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
+  i->debugMode = true;
 }
 
 
@@ -60,7 +63,7 @@ RunController::startRun()
 {
   if (i->isStopped())
     {
-      int result = i->compileProgram(te->toPlainText().toAscii().data());
+      int result = i->compileProgram(te->toPlainText());
       if (result < 0)
 	{
 	  emit(runHalted());
@@ -74,6 +77,7 @@ RunController::startRun()
       emit(runStarted());
     }
 }
+
 
 void
 RunController::inputFilter(QString text)

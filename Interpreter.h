@@ -105,7 +105,7 @@ class Interpreter : public QThread
   Q_OBJECT;
  public:
   Interpreter(QImage *, QImage *);
-  int compileProgram(const char *);
+  int compileProgram(QString);
   void initialize();
   byteCodeData *getByteCode(const char *);
   bool isRunning();
@@ -131,9 +131,10 @@ class Interpreter : public QThread
   void clearText();
   void getKey();
   void goToLine(int);
+  void highlightLine(int);
 
  private:
-  void printError(int, QString);
+  void printError(QString);
   QImage *image;
   QImage *imask;
   variable vars[NUMVARS];
@@ -148,6 +149,7 @@ class Interpreter : public QThread
   QString inputString;
   void clearvars();
   bool once;
+  int currentLine;
 };
 
 

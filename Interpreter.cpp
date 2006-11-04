@@ -42,8 +42,6 @@ extern "C" {
   extern int basicParse(char *, int);
   extern int labeltable[];
   extern int linenumber;
-  extern int *lineoffsets;
-  extern void newLineOffsets(int);
   extern int newByteCode(int size);
   extern unsigned char *byteCode;
   extern unsigned int byteOffset;
@@ -168,16 +166,10 @@ Stack::pop()
 }
 
 void
-Interpreter::printError(int offset, QString message)
+Interpreter::printError(QString message)
 {
-  int line = 1;
-  while (offset >= lineoffsets[line])
-    {
-      line++;
-    }
-  emit(outputReady(tr("ERROR on line ") +
-		   QString::number(line - 1) + 
-		   ": " + message + "\n"));
+  emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + message + "\n"));
+  emit(goToLine(currentLine));
 }
 
 void
@@ -268,14 +260,11 @@ Interpreter::clearvars()
 
 
 int
-Interpreter::compileProgram(const char *code)
+Interpreter::compileProgram(QString qcode)
 {
-  QString testcode(code);
-  QRegExp rx("[^ \t\n]");
-  if (rx.indexIn(testcode) == -1)
-    {
-      return -1;
-    }
+  qcode = qcode + "\n";
+
+  char *code = strdup(qcode.toAscii().data());
 
   clearvars();
   newByteCode(strlen(code));
@@ -287,22 +276,29 @@ Interpreter::compileProgram(const char *code)
       if (*c++ == '\n')
 	numlines++;
     }
-  newLineOffsets(numlines);
 
   int result = basicParse((char *) code, numlines);
   if (result < 0)
     {
-      emit(outputReady(tr("Syntax error on line ") + 
-		       QString::number(linenumber) + "\n"));
+      emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + "\n"));
       emit(goToLine(linenumber));
       return -1;
     }
+  free(code);
 
   op = byteCode;
-  int errorOffset = 0;
+  currentLine = 1;
   while (op < byteCode + byteOffset)
     {
-      errorOffset = op - byteCode;
+
+      while (*op == OP_CURRLINE)
+	{
+	  op++;
+	  int *i = (int *) op;
+	  currentLine = *i;
+	  op += sizeof(int);
+	}
+      
       if (*op == OP_GOTO || *op == OP_GOSUB)
 	{
 	  op += sizeof(unsigned char);
@@ -315,7 +311,7 @@ Interpreter::compileProgram(const char *code)
 	    }
 	  else
 	    {
-	      printError(errorOffset, tr("No such label"));
+	      printError(tr("No such label"));
 	      return -1;
 	    }
 	}
@@ -343,6 +339,7 @@ Interpreter::compileProgram(const char *code)
 	}
     }
 
+  currentLine = 1;
   return 0;
 }
 
@@ -371,6 +368,7 @@ Interpreter::initialize()
   fastgraphics = false;
   status = R_RUNNING;
   once = true;
+  currentLine = 1;
 }
 
 
@@ -420,15 +418,7 @@ Interpreter::stop()
 void
 Interpreter::run()
 {
-  while (status != R_STOPPED && execByteCode() >= 0)
-    {
-      if (debugMode) 
-	{
-	    debugmutex.lock();
-	    waitDebugCond.wait(&debugmutex);
-	    debugmutex.unlock();
-	}
-    }
+  while (status != R_STOPPED && execByteCode() >= 0); //continue
   status = R_STOPPED;
   emit(runFinished());
 }
@@ -445,7 +435,6 @@ Interpreter::receiveInput(QString text)
 int
 Interpreter::execByteCode()
 {
-  int errorOffset = op - byteCode;
   if (status == R_INPUTREADY)
     {
       stack.push(strdup(inputString.toAscii().data()));
@@ -462,9 +451,24 @@ Interpreter::execByteCode()
       return 0;
     }
 
+  while (*op == OP_CURRLINE)
+    {
+      op++;
+      int *i = (int *) op;
+      currentLine = *i;
+      cout << currentLine << endl;
+      op += sizeof(int);
+      if (debugMode && *op != OP_CURRLINE) 
+	{
+	  emit(highlightLine(currentLine));
+	  debugmutex.lock();
+	  waitDebugCond.wait(&debugmutex);
+	  debugmutex.unlock();
+	}
+    }
+
   switch(*op)
     {
-
     case OP_NOP:
       op++;
       break;
@@ -596,7 +600,7 @@ Interpreter::execByteCode()
 	  }
 	if (!temp)
 	  {
-	    printError(errorOffset, tr("Next without FOR"));
+	    printError(tr("Next without FOR"));
 	    return -1;
 	  }
 	    
@@ -642,7 +646,7 @@ Interpreter::execByteCode()
 	
 	if (size > 100000)
 	  {
-	    printError(errorOffset, tr("Array dimension too large"));
+	    printError(tr("Array dimension too large"));
 	    return -1;
 	  }
 	
@@ -685,12 +689,12 @@ Interpreter::execByteCode()
 	if (two->type == T_INT) index = two->value.intval; else index = (int) two->value.floatval;
 	if (one->type != T_STRING) 
 	  {
-	    printError(errorOffset, tr("Cannot assign non-string to string array"));
+	    printError(tr("Cannot assign non-string to string array"));
 	    return -1;
 	  }
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
-	    printError(errorOffset, tr("Array index out of bounds"));
+	    printError(tr("Array index out of bounds"));
 	    return -1;
 	  }
 
@@ -716,7 +720,7 @@ Interpreter::execByteCode()
 
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
-	    printError(errorOffset, tr("Array index out of bounds"));
+	    printError(tr("Array index out of bounds"));
 	    return -1;
 	  }
 	array = vars[*i].value.arr->data.fdata;
@@ -737,13 +741,13 @@ Interpreter::execByteCode()
 	
 	if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
 	  {
-	    printError(errorOffset, tr("Cannot access non-array variable"));
+	    printError(tr("Cannot access non-array variable"));
 	    return -1;
 	  }
 
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
-	    printError(errorOffset, tr("Array index out of bounds"));
+	    printError(tr("Array index out of bounds"));
 	    return -1;
 	  }
 	if (vars[*i].type == T_ARRAY)
@@ -767,7 +771,7 @@ Interpreter::execByteCode()
 	
 	if (vars[*i].type == T_UNUSED)
 	  {
-	    printError(errorOffset, tr("Unknown variable"));
+	    printError(tr("Unknown variable"));
 	    return -1;
 	  }
 
@@ -839,7 +843,7 @@ Interpreter::execByteCode()
 	  }
 	else 
 	  {
-	    printError(errorOffset, tr("Illegal argument to int()"));
+	    printError(tr("Illegal argument to int()"));
 	    return -1;
 	  }
 	delete temp;
@@ -867,7 +871,7 @@ Interpreter::execByteCode()
 	  }
 	else 
 	  {
-	    printError(errorOffset, tr("Illegal argument to string()"));
+	    printError(tr("Illegal argument to string()"));
 	    return -1;
 	  }
 	delete temp;
@@ -929,22 +933,22 @@ Interpreter::execByteCode()
 	    switch (whichop)
 	      {
 	      case OP_SIN:
-		printError(errorOffset, tr("Illegal argument to sin()"));
+		printError(tr("Illegal argument to sin()"));
 		break;
 	      case OP_COS:
-		printError(errorOffset, tr("Illegal argument to cos()"));
+		printError(tr("Illegal argument to cos()"));
 		break;
 	      case OP_TAN:
-		printError(errorOffset, tr("Illegal argument to tan()"));
+		printError(tr("Illegal argument to tan()"));
 		break;
 	      case OP_CEIL:
-		printError(errorOffset, tr("Illegal argument to ceil()"));
+		printError(tr("Illegal argument to ceil()"));
 		break;
 	      case OP_FLOOR:
-		printError(errorOffset, tr("Illegal argument to floor()"));
+		printError(tr("Illegal argument to floor()"));
 		break;
 	      case OP_ABS:
-		printError(errorOffset, tr("Illegal argument to abs()"));
+		printError(tr("Illegal argument to abs()"));
 		break;
 	      }
 	    return -1;
@@ -988,7 +992,7 @@ Interpreter::execByteCode()
 	double oneval, twoval;
 	if (one->type == T_STRING || two->type == T_STRING)
 	  {
-	    printError(errorOffset, tr("String in numeric expression"));
+	    printError(tr("String in numeric expression"));
 	    return -1;
 	  }
 	if (one->type == two->type && one->type == T_INT)
@@ -1166,7 +1170,7 @@ Interpreter::execByteCode()
 
 	if (one->type == T_STRING || two->type == T_STRING)
 	  {
-	    printError(errorOffset, tr("Cannot compare strings with > or <="));
+	    printError(tr("Cannot compare strings with > or <="));
 	    return -1;
 	  }
 	if (compareNum(two, one) == 1)
@@ -1192,7 +1196,7 @@ Interpreter::execByteCode()
 
 	if (one->type == T_STRING || two->type == T_STRING)
 	  {
-	    printError(errorOffset, tr("Cannot compare strings with < or >="));
+	    printError(tr("Cannot compare strings with < or >="));
 	    return -1;
 	  }
 	if (compareNum(two, one) == -1)
@@ -1596,7 +1600,7 @@ Interpreter::execByteCode()
 
 	if (temp->type == T_STRING)
 	  {
-	    printError(errorOffset, tr("String in numeric expression"));
+	    printError(tr("String in numeric expression"));
 	    return -1;
 	  }
 	else if (temp->type == T_INT)
@@ -1627,7 +1631,7 @@ Interpreter::execByteCode()
 	  }
 	else
 	  {
-	    printError(errorOffset, tr("String in numeric expression"));
+	    printError(tr("String in numeric expression"));
 	    return -1;
 	  }
 	delete temp;

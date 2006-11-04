@@ -32,13 +32,13 @@ class BasicEdit : public QTextEdit
   bool codeChanged;
 
  public slots:
-  //  void renumber();
   void newProgram();
   void saveProgram();
   void saveAsProgram();
   void loadProgram();
   void cursorMove();
   void goToLine(int);
+  void highlightLine(int);
 
  protected:
   void keyPressEvent(QKeyEvent *);

@@ -85,6 +85,7 @@
 #define OP_DEREF          0x4b
 #define OP_FOR            0x4c
 #define OP_NEXT           0x4d
+#define OP_CURRLINE       0x4e
 
 //2 Int argument ops
 #define OP_DIM      0x60

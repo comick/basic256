@@ -54,6 +54,21 @@ BasicEdit::cursorMove()
 }
 
 void
+BasicEdit::highlightLine(int hline)
+{
+  QTextCursor t(textCursor());
+  t.setPosition(0);
+  int line = 1;
+  while (line < hline)
+    { 
+      t.movePosition(QTextCursor::NextBlock);
+      line++;
+    }
+  t.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor, 1);
+  setTextCursor(t);
+}
+
+void
 BasicEdit::goToLine(int newLine)
 {
   QTextCursor t(textCursor());
