@@ -1,3 +1,7 @@
+2006-11-03    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (compileProgram): Changed the way the interpreter keeps track of line numbers.  Now there's a CURRLINE bytecode which is executed every time the line changes. Also added step-by-step debugging.
+
 2006-11-02    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp (execByteCode): Printing of floating point instead of integers fixed.
