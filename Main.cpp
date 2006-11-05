@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
 
   QMenu *advancedmenu = mainwin->menuBar()->addMenu(QObject::tr("Advanced"));
-  QAction *debug = advancedmenu->addAction(QObject::tr("Debug Run"));
+  QAction *debug = advancedmenu->addAction(QObject::tr("Debug"));
   QAction *saveByteCode = advancedmenu->addAction(QObject::tr("Save Compiled Byte Code"));
   QObject::connect(debug, SIGNAL(triggered()), rc, SLOT(startDebug()));
   QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
