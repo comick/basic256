@@ -297,8 +297,8 @@ statement: gotostmt
          | strarrayassign
 ;
 
-dimstmt: DIM VARIABLE '(' INTEGER ')'  { addInt2Op(OP_DIM, $2, $4); }
-       | DIM STRINGVAR '(' INTEGER ')' { addInt2Op(OP_DIMSTR, $2, $4); }
+dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
+       | DIM STRINGVAR '(' floatexpr ')' { addIntOp(OP_DIMSTR, $2); }
 ;
 
 pausestmt: PAUSE floatexpr { addOp(OP_PAUSE); }

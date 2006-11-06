@@ -633,15 +633,19 @@ Interpreter::execByteCode()
       }
       break;
 
+
     case OP_DIM:
     case OP_DIMSTR:
       {
 	char whichdim = *op;
 	op++;
 	int *i = (int *) op;
-	op += 2 * sizeof(int);
+	op += sizeof(int);
 	int var = i[0];
-	int size = i[1];
+	int size = 0;
+	stackval *one = stack.pop();
+
+	if (one->type == T_INT) size = one->value.intval; else size = (int) one->value.floatval;
 	
 	if (size > 100000)
 	  {
@@ -674,6 +678,7 @@ Interpreter::execByteCode()
 	    temp->size = size;
 	    vars[var].value.arr = temp;
 	  }
+	delete one;
       }
       break;
 
