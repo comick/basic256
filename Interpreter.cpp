@@ -710,6 +710,34 @@ Interpreter::execByteCode()
       break;
 	  
 
+    case OP_STRARRAYINPUT:
+      {
+	op++;
+	int *i = (int *) op;
+	op += sizeof(int);
+	POP2; //one = index, two = expr
+	int index;
+	char **strarray;
+	if (one->type == T_INT) index = one->value.intval; else index = (int) one->value.floatval;
+	if (two->type != T_STRING) 
+	  {
+	    printError(tr("Cannot assign non-string to string array"));
+	    return -1;
+	  }
+	if (index >= vars[*i].value.arr->size || index < 0)
+	  {
+	    printError(tr("Array index out of bounds"));
+	    return -1;
+	  }
+
+	strarray = vars[*i].value.arr->data.sdata;
+	strarray[index] = strdup(two->value.string);
+	delete one;
+	delete two;
+      }
+      break;
+	  
+
     case OP_ARRAYASSIGN:
       {
 	op++;

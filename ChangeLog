@@ -1,3 +1,7 @@
+2006-11-07    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Fixed bug 1589686
+
 2006-11-03    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp (compileProgram): Changed the way the interpreter keeps track of line numbers.  Now there's a CURRLINE bytecode which is executed every time the line changes. Also added step-by-step debugging.

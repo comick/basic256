@@ -398,7 +398,11 @@ circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
 circlestmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
 ;
 
-inputstmt: INPUT stringexpr ',' STRINGVAR  { addOp(OP_PRINT); addOp(OP_INPUT); addIntOp(OP_STRINGASSIGN, $4); }
+inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
+         | inputexpr ',' STRINGVAR '[' floatexpr ']'  { addIntOp(OP_STRARRAYINPUT, $3); }
+;
+
+inputexpr: INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }
 ;
 
 printstmt: PRINT stringexpr { addOp(OP_PRINTN); }

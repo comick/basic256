@@ -88,6 +88,7 @@
 #define OP_CURRLINE       0x4e
 #define OP_DIM            0x4f
 #define OP_DIMSTR         0x50
+#define OP_STRARRAYINPUT  0x51
 
 //2 Int argument ops
 #define OP_DUMMY        0x60
