@@ -28,6 +28,8 @@ using namespace std;
 #include <QDockWidget>
 #include <QPushButton>
 #include <QStatusBar>
+#include <QDialog>
+#include <QLabel>
 #include "BasicOutput.h"
 #include "BasicEdit.h"
 #include "BasicGraph.h"
@@ -61,7 +63,15 @@ int main(int argc, char *argv[])
   PauseButton *pause = new PauseButton(QObject::tr("Pause"));
   GhostButton *stop = new GhostButton(QObject::tr("Stop"));
   GhostButton *step = new GhostButton(QObject::tr("Step"));
-
+  QDialog *aboutdialog = new QDialog();
+  QLabel *aboutlabel = new QLabel("<h2>BASIC-256 -- Version 0.8</h2> \
+                                   <p>Copyright &copy; Ian Larsen</p> \
+                                   <p><strong>Thanks to our translators:</strong> Immo-Gert Birn", aboutdialog);
+  QGridLayout *aboutgrid = new QGridLayout();
+  
+  aboutgrid->addWidget(aboutlabel, 0, 0);
+  aboutdialog->setLayout(aboutgrid);
+  
 
   QMenu *filemenu = mainwin->menuBar()->addMenu(QObject::tr("File"));
   QAction *newact = filemenu->addAction(QObject::tr("New"));
@@ -92,6 +102,10 @@ int main(int argc, char *argv[])
   QObject::connect(debug, SIGNAL(triggered()), rc, SLOT(startDebug()));
   QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
+  QMenu *aboutmenu = mainwin->menuBar()->addMenu(QObject::tr("About"));
+  QAction *aboutb256 = aboutmenu->addAction(QObject::tr("About BASIC-256"));
+  QObject::connect(aboutb256, SIGNAL(triggered()), aboutdialog, SLOT(show()));
+
   QObject::connect(step, SIGNAL(pressed()), rc, SLOT(stepThrough()));
   QObject::connect(rc, SIGNAL(debugStarted()), step, SLOT(enableButton()));
   QObject::connect(rc, SIGNAL(runHalted()), step, SLOT(disableButton()));
@@ -112,6 +126,7 @@ int main(int argc, char *argv[])
   QObject::connect(rc, SIGNAL(runStarted()), pause, SLOT(enableButton()));
   QObject::connect(rc, SIGNAL(runHalted()), pause, SLOT(disableButton()));
   pause->disableButton();
+
 
   grid->addWidget(editor, 0, 0, 1, 4);
   grid->addWidget(run, 2, 0);
