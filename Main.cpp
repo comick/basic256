@@ -64,9 +64,12 @@ int main(int argc, char *argv[])
   GhostButton *stop = new GhostButton(QObject::tr("Stop"));
   GhostButton *step = new GhostButton(QObject::tr("Step"));
   QDialog *aboutdialog = new QDialog();
-  QLabel *aboutlabel = new QLabel("<h2>BASIC-256 -- Version 0.8</h2> \
-                                   <p>Copyright &copy; Ian Larsen</p> \
-                                   <p><strong>Thanks to our translators:</strong> Immo-Gert Birn", aboutdialog);
+  QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.8</h2> \
+                                  <p>Copyright &copy; 2006, Ian Larsen</p>	\
+                                  <p><strong>Thanks to our translators:</strong> Immo-Gert Birn \
+                                  <p><i>You should have received a copy of the GNU General Public License along<br> \
+                                  with this program; if not, write to the Free Software Foundation, Inc.,<br> \
+                                  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
   QGridLayout *aboutgrid = new QGridLayout();
   
   aboutgrid->addWidget(aboutlabel, 0, 0);
