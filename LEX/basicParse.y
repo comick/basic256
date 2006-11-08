@@ -51,7 +51,7 @@
     int labeltable[SYMTABLESIZE];
     int numsyms = 0;
     int numlabels = 0;
-    int maxbyteoffset = 0;
+    unsigned int maxbyteoffset = 0;
 
     int
     basicParse(char *);
@@ -116,7 +116,7 @@
 	{
 	  free(byteCode);
 	}
-      maxbyteoffset = 10;
+      maxbyteoffset = 32;
       byteCode = malloc(maxbyteoffset);
 
       if (byteCode)
@@ -130,7 +130,7 @@
     }
     
     void 
-    checkByteMem(int addedbytes)
+    checkByteMem(unsigned int addedbytes)
     {
       if (byteOffset + addedbytes + 1 >= maxbyteoffset)
 	{
