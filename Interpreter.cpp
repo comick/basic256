@@ -39,7 +39,7 @@ extern QWaitCondition waitInput;
 #define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
 
 extern "C" {
-  extern int basicParse(char *, int);
+  extern int basicParse(char *);
   extern int labeltable[];
   extern int linenumber;
   extern int newByteCode(int size);
@@ -260,38 +260,24 @@ Interpreter::clearvars()
 
 
 int
-Interpreter::compileProgram(QString qcode)
+Interpreter::compileProgram(char *code)
 {
-  qcode = qcode + "\n";
-
-  char *code = strdup(qcode.toAscii().data());
-
   clearvars();
   newByteCode(strlen(code));
-  int numlines = 1;
   
-  char *c = (char *) code;
-  while (*c)
-    {
-      if (*c++ == '\n')
-	numlines++;
-    }
-
-  int result = basicParse((char *) code, numlines);
+  int result = basicParse(code); 
   if (result < 0)
     {
       emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + "\n"));
       emit(goToLine(linenumber));
       return -1;
     }
-  free(code);
 
   op = byteCode;
   currentLine = 1;
-  while (op < byteCode + byteOffset)
+  while (op <= byteCode + byteOffset + 84)
     {
-
-      while (*op == OP_CURRLINE)
+      if (*op == OP_CURRLINE)
 	{
 	  op++;
 	  int *i = (int *) op;
@@ -345,7 +331,7 @@ Interpreter::compileProgram(QString qcode)
 
 
 byteCodeData *
-Interpreter::getByteCode(const char *code)
+Interpreter::getByteCode(char *code)
 {
   if (compileProgram(code) < 0)
     {
@@ -465,7 +451,7 @@ Interpreter::execByteCode()
 	  debugmutex.unlock();
 	}
     }
-
+  
   switch(*op)
     {
     case OP_NOP:

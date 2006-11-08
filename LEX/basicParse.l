@@ -257,7 +257,7 @@ yywrap(void) {
 
 
 int 
-basicParse(char *code, int numlines){
+basicParse(char *code){
 
   yy_delete_buffer(YY_CURRENT_BUFFER);
   yy_scan_string(code);

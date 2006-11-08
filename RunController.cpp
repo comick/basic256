@@ -62,7 +62,7 @@ RunController::startDebug()
 {
   if (i->isStopped())
     {
-      int result = i->compileProgram(te->toPlainText());
+      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
       if (result < 0)
 	{
 	  i->debugMode = false;
@@ -84,7 +84,7 @@ RunController::startRun()
 {
   if (i->isStopped())
     {
-      int result = i->compileProgram(te->toPlainText());
+      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
       i->debugMode = false;
       if (result < 0)
 	{
@@ -188,7 +188,7 @@ RunController::pauseResume()
 void
 RunController::saveByteCode()
 {
-  byteCodeData *bc = i->getByteCode(te->toPlainText().toAscii().data());
+  byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toAscii().data());
   if (bc == NULL)
     {
       return;

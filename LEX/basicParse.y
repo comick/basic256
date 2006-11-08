@@ -44,7 +44,7 @@
       int offset;
     };
 
-    unsigned int  *branchAddr = NULL;
+    unsigned int branchAddr = 0;
 
     char *EMPTYSTR = "";
     char *symtable[SYMTABLESIZE];
@@ -116,13 +116,12 @@
 	{
 	  free(byteCode);
 	}
-      maxbyteoffset = size + 64;
+      maxbyteoffset = 10;
       byteCode = malloc(maxbyteoffset);
-      memset(byteCode, 0, maxbyteoffset);
-      
 
       if (byteCode)
 	{
+	  memset(byteCode, 0, maxbyteoffset);
 	  byteOffset = 0;
 	  return 0;
 	}
@@ -135,9 +134,9 @@
     {
       if (byteOffset + addedbytes + 1 >= maxbyteoffset)
 	{
-	  maxbyteoffset += maxbyteoffset;
+	  maxbyteoffset += maxbyteoffset + addedbytes + 32;
 	  byteCode = realloc(byteCode, maxbyteoffset);
-	  memset(byteCode + byteOffset, 0, maxbyteoffset);
+	  //memset(byteCode + byteOffset, 0, maxbyteoffset - byteOffset);
 	}
     }
 
@@ -154,7 +153,8 @@
     {
       checkByteMem(sizeof(char) + sizeof(int));
       int *temp;
-      addOp(op);
+      byteCode[byteOffset] = op;
+      byteOffset++;
       
       temp = (void *) byteCode + byteOffset;
       *temp = data;
@@ -166,7 +166,8 @@
     {
       checkByteMem(sizeof(char) + 2 * sizeof(int));
       int *temp;
-      addOp(op);
+      byteCode[byteOffset] = op;
+      byteOffset++;
       
       temp = (void *) byteCode + byteOffset;
       temp[0] = data1;
@@ -179,7 +180,8 @@
     {
       checkByteMem(sizeof(char) + sizeof(double));
       double *temp;
-      addOp(op);
+      byteCode[byteOffset] = op;
+      byteOffset++;
       
       temp = (void *) byteCode + byteOffset;
       *temp = data;
@@ -192,7 +194,8 @@
       int len = strlen(data) + 1;
       checkByteMem(sizeof(char) + len);
       double *temp;
-      addOp(op);
+      byteCode[byteOffset] = op;
+      byteOffset++;
       
       temp = (void *) byteCode + byteOffset;
       strncpy((char *) byteCode + byteOffset, data, len);
@@ -250,9 +253,8 @@
 
 %%
 
-
-program: validline '\n'         { addOp(OP_END); }
-       | validline '\n' program { addOp(OP_END); }
+program: validline '\n'         
+       | validline '\n' program 
 ;
 
 validline: ifstmt       { addIntOp(OP_CURRLINE, linenumber); }
@@ -265,8 +267,9 @@ ifstmt: ifexpr THEN compoundstmt
         { 
 	  if (branchAddr) 
 	    { 
-	      *branchAddr = byteOffset; 
-	      branchAddr = NULL; 
+	      unsigned int *temp = (void *) byteCode + branchAddr;
+	      *temp = byteOffset; 
+	      branchAddr = 0; 
 	    } 
 	}
 ;
@@ -322,7 +325,7 @@ ifexpr: IF compoundboolexpr
 	   //if true, don't branch. If false, go to next line.
 	   addOp(OP_BRANCH);
 	   checkByteMem(sizeof(int));
-	   branchAddr = (void *) byteCode + byteOffset;
+	   branchAddr = byteOffset;
 	   byteOffset += sizeof(int);
          }
 ;

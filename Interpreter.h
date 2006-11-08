@@ -105,9 +105,9 @@ class Interpreter : public QThread
   Q_OBJECT;
  public:
   Interpreter(QImage *, QImage *);
-  int compileProgram(QString);
+  int compileProgram(char *);
   void initialize();
-  byteCodeData *getByteCode(const char *);
+  byteCodeData *getByteCode(char *);
   bool isRunning();
   bool isStopped();
   bool isAwaitingInput();
