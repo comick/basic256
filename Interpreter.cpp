@@ -779,6 +779,7 @@ Interpreter::execByteCode()
 	    char **array = vars[*i].value.arr->data.sdata;
 	    stack.push(array[index]);
 	  }
+	delete temp;
       }
       break;
 
