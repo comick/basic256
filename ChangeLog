@@ -1,0 +1,96 @@
+2006-11-07    <drblast@users.sourceforge.net>
+
+	* LEX\basicParse.y: Fixed rather important memory allocation bug that affected large programs that used lots of if statements.
+
+	* Interpreter.cpp (execByteCode): Fixed bug 1589686
+
+2006-11-03    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (compileProgram): Changed the way the interpreter keeps track of line numbers.  Now there's a CURRLINE bytecode which is executed every time the line changes. Also added step-by-step debugging.
+
+2006-11-02    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Printing of floating point instead of integers fixed.
+
+2006-11-01    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Added OP_LINE, which draws lines.
+
+2006-10-31    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Added pause command
+
+	* BasicEdit.cpp (cursorMove): Added slot to calculate line number when the cursor moves, and display it on the status bar.
+
+2006-10-25    <drblast@users.sourceforge.net>
+
+	* Main.cpp (main): Added actions to edit menu.  Removed close button on output windows.
+
+2006-10-20    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp: Added internationalization support.
+
+	* BasicEdit.cpp: Added internationalization support.
+
+	* Main.cpp (main): Added internationalization support.
+
+2006-10-18    <drblast@users.sourceforge.net>
+
+	* BasicEdit.cpp (BasicEdit): Editor now won't accept rich text, fixing weird font bugs.
+
+	* RunController.cpp (saveByteCode): Added saveByteCode function which saves the compiled byte code to a .kbc file.
+
+	* Main.cpp (main): Added save byte code function and Advanced menu.
+
+	* LEX\basicParse.y: Changed to more dynamic allocation of byteCode to reduce memory footprint for small programs and to prevent memory errors from occurring on 64-bit architectures.
+
+	* Interpreter.cpp (execByteCode): Added mathematical functions FLOOR, CEIL, RAND, SIN, COS, TAN, and ABS
+	Separated initialize from compileProgram to support saving byte code as a file.
+	
+2006-10-16    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Added and, not, xor, and or operations
+
+	* LEX\basicParse.y: Added AND, NOT, XOR, OR
+
+	* LEX\basicParse.l: Added floor, ceil, int, str, and rand tokens
+
+	* LEX\basicParse.y: Added arrays and string arrays.
+
+	* Interpreter.h (struct variable): Added arrays and string arrays.
+
+	* Interpreter.cpp (execByteCode): Added arrays and string arrays.
+
+2006-10-11    <drblast@users.sourceforge.net>
+
+	* BasicGraph.cpp (keyPressEvent): Added keyPressEvent to set currentKey global variable whenever a key is pressed during run time.
+
+	* LEX\basicParse.y: Added KEY keyword as floatexpr
+
+	* Interpreter.cpp (execByteCode): Added OP_KEY operation, which gets the last key pressed.
+
+2006-10-09    <drblast@users.sourceforge.net>
+
+	* LEX\basicParse.y: Added colon as multiple statement separator
+
+2006-10-07    <drblast@users.sourceforge.net>
+
+	* RunController.cpp (stopRun): Changed to threaded model.
+
+	* Interpreter.cpp (execByteCode): Changed to a threaded model.
+
+	* BasicOutput.cpp (getInput): Added slot to support threading.
+
+	* Interpreter.cpp (execByteCode): Changed from using QPixmaps for graphical output to QImage, which is thread-safe.
+
+2006-10-06    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (pause): Removed unnecessary pause and unpause functions
+
+	* RunController.cpp (pauseResume): Enabled Pause/Resume feature
+
+	* PauseButton.h: Created Pause button which changes text based on operation 
+
+	* Main.cpp (main): Removed Renumber Lines menu option
+	(main): Pause/Resume button enabled
+
