@@ -136,7 +136,6 @@
 	{
 	  maxbyteoffset += maxbyteoffset + addedbytes + 32;
 	  byteCode = realloc(byteCode, maxbyteoffset);
-	  //memset(byteCode + byteOffset, 0, maxbyteoffset - byteOffset);
 	}
     }
 

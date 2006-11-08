@@ -1,5 +1,7 @@
 2006-11-07    <drblast@users.sourceforge.net>
 
+	* LEX\basicParse.y: Fixed rather important memory allocation bug that affected large programs that used lots of if statements.
+
 	* Interpreter.cpp (execByteCode): Fixed bug 1589686
 
 2006-11-03    <drblast@users.sourceforge.net>
