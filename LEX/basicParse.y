@@ -116,7 +116,7 @@
 	{
 	  free(byteCode);
 	}
-      maxbyteoffset = 32;
+      maxbyteoffset = 1024;
       byteCode = malloc(maxbyteoffset);
 
       if (byteCode)

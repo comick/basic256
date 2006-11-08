@@ -264,7 +264,11 @@ int
 Interpreter::compileProgram(char *code)
 {
   clearvars();
-  newByteCode(strlen(code));
+  if (newByteCode(strlen(code)) < 0)
+    {
+      return -1;
+    }
+    
   
   int result = basicParse(code); 
   if (result < 0)
@@ -276,7 +280,7 @@ Interpreter::compileProgram(char *code)
 
   op = byteCode;
   currentLine = 1;
-  while (op <= byteCode + byteOffset + 84)
+  while (op <= byteCode + byteOffset)
     {
       if (*op == OP_CURRLINE)
 	{
