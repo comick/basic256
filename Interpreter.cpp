@@ -998,6 +998,7 @@ Interpreter::execByteCode()
 	    stack.push(val);
 	    break;
 	  }
+	delete temp;
       }
       break;
 
