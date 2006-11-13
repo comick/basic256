@@ -15,15 +15,16 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-
-using namespace std;
 #include <iostream>
 #include <QPainter>
 #include <QTextCursor>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QPrintDialog>
+#include <QPrinter>
 
 #include "BasicOutput.h"
-
 
 BasicOutput::BasicOutput( ) : QTextEdit () 
 {
@@ -80,3 +81,38 @@ BasicOutput::keyPressEvent(QKeyEvent *e)
     }
 }
 
+
+bool BasicOutput::initToolBar(ToolBar * vToolBar)
+{
+	// To switch on the toolbar comment the following line.
+	return ViewWidgetIFace::initToolBar(vToolBar);
+	
+	// Add some buttons to the toolbar.
+	if (NULL != vToolBar)
+	{
+		QAction *copyAct = vToolBar->addAction(QObject::tr("Copy"));
+		QAction *pasteAct = vToolBar->addAction(QObject::tr("Paste"));
+		QAction *printAct = vToolBar->addAction(QObject::tr("Print"));
+		
+		QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+		QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+		QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+		
+		return true;
+	}
+	
+	return false;	
+}
+
+void BasicOutput::slotPrint()
+{
+	QTextDocument *document = this->document();
+	QPrinter printer;
+	QPrintDialog *dialog = new QPrintDialog(&printer, this);
+	dialog->setWindowTitle(QObject::tr("Print Text Output"));
+	
+	if (dialog->exec() != QDialog::Accepted)
+	{
+		document->print(&printer);
+	}
+}

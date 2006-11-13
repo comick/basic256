@@ -16,7 +16,6 @@
  **/
 
 
-
 #ifndef __BASICOUTPUT_H
 #define __BASICOUTPUT_H
 
@@ -24,24 +23,29 @@
 #include <QKeyEvent>
 #include <QPaintEvent>
 
+#include "ViewWidgetIFace.h"
 
-class BasicOutput : public QTextEdit
+class BasicOutput : public QTextEdit, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  BasicOutput();
-  char *inputString;
-  void inputStart();
+  	BasicOutput();
+ 	
+  	char *inputString;
+ 	void inputStart();
+	// Toolbar 
+ 	virtual bool initToolBar(ToolBar *);
 
  public slots:
-  void getInput();
-  
+  	void getInput();
+	void slotPrint(); 
+ 
  signals:
   void inputEntered(QString);
 
  protected:
   void keyPressEvent(QKeyEvent *);
-
+ 
  private:
   int startPos;
   bool gettingInput;

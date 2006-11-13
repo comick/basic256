@@ -16,44 +16,15 @@
  **/
 
 
-#ifndef __BASICEDIT_H
-#define __BASICEDIT_H
+#include "ToolBar.h"
 
-
-#include <QTextEdit>
-#include <QMainWindow>
-#include <QKeyEvent>
-
-#include "ViewWidgetIFace.h"
-
-class BasicEdit : public QTextEdit, public ViewWidgetIFace
+ToolBar::ToolBar(QString & title, QWidget * parent)
+:	QToolBar(title, parent)
 {
-  Q_OBJECT;
- public:
-  BasicEdit(QMainWindow *);
-  bool codeChanged;
+	
+}
 
- public slots:
-  void newProgram();
-  void saveProgram();
-  void saveAsProgram();
-  void loadProgram();
-  void cursorMove();
-  void goToLine(int);
-  void highlightLine(int);
-	void slotPrint();
- 
- protected:
-  void keyPressEvent(QKeyEvent *);
-
- private:
-  QMainWindow *mainwin;
-  int currentMaxLine;
-  int currentLine;
-  int startPos;
-  int linePos;
-  QString filename;
-};
-
-
-#endif
+ToolBar::ToolBar(QWidget * parent)
+:	QToolBar(parent)
+{
+}

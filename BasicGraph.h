@@ -16,17 +16,17 @@
  **/
 
 
-
 #ifndef __BASICGRAPH_H
 #define __BASICGRAPH_H
 
 #include <QWidget>
 #include <QPainter>
 #include <QKeyEvent>
+
+#include "ViewWidgetIFace.h"
 #include "BasicOutput.h"
 
-
-class BasicGraph : public QWidget
+class BasicGraph : public QWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
@@ -34,6 +34,12 @@ class BasicGraph : public QWidget
   QImage *image;
   QImage *imask;
 
+ 	bool initToolBar(ToolBar *);
+ 
+ public slots:
+	void slotCopy();
+	void slotPrint();
+ 
  protected:
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);

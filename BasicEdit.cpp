@@ -22,6 +22,9 @@ using namespace std;
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QPrinter>
+#include <QPrintDialog>
+
 #include "BasicEdit.h"
 
 BasicEdit::BasicEdit(QMainWindow *mw)
@@ -160,6 +163,15 @@ BasicEdit::loadProgram()
       }
 }
 
-
-
-
+void BasicEdit::slotPrint()
+{
+	QTextDocument *document = this->document();
+    QPrinter printer;
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(QObject::tr("Print Code"));
+	
+	if (dialog->exec() == QDialog::Accepted)
+	{
+        document->print(&printer);
+	}
+}

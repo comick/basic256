@@ -16,44 +16,17 @@
  **/
 
 
-#ifndef __BASICEDIT_H
-#define __BASICEDIT_H
-
-
-#include <QTextEdit>
-#include <QMainWindow>
-#include <QKeyEvent>
-
 #include "ViewWidgetIFace.h"
 
-class BasicEdit : public QTextEdit, public ViewWidgetIFace
+ViewWidgetIFace::ViewWidgetIFace()
 {
-  Q_OBJECT;
- public:
-  BasicEdit(QMainWindow *);
-  bool codeChanged;
+}
 
- public slots:
-  void newProgram();
-  void saveProgram();
-  void saveAsProgram();
-  void loadProgram();
-  void cursorMove();
-  void goToLine(int);
-  void highlightLine(int);
-	void slotPrint();
- 
- protected:
-  void keyPressEvent(QKeyEvent *);
+ViewWidgetIFace::~ViewWidgetIFace()
+{	
+}
 
- private:
-  QMainWindow *mainwin;
-  int currentMaxLine;
-  int currentLine;
-  int startPos;
-  int linePos;
-  QString filename;
-};
-
-
-#endif
+bool ViewWidgetIFace::initToolBar(ToolBar * /*vToolBar*/)
+{
+	return false;
+}

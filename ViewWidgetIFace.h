@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/**	Copyright (C) 2006, Ian Paul Larsen.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -16,44 +16,18 @@
  **/
 
 
-#ifndef __BASICEDIT_H
-#define __BASICEDIT_H
+#ifndef __VIEWWIDGETIFACE_H
+#define __VIEWWIDGETIFACE_H
 
+#include "ToolBar.h"
 
-#include <QTextEdit>
-#include <QMainWindow>
-#include <QKeyEvent>
-
-#include "ViewWidgetIFace.h"
-
-class BasicEdit : public QTextEdit, public ViewWidgetIFace
+class ViewWidgetIFace
 {
-  Q_OBJECT;
- public:
-  BasicEdit(QMainWindow *);
-  bool codeChanged;
+public:
+  	ViewWidgetIFace();
+	virtual ~ViewWidgetIFace();
 
- public slots:
-  void newProgram();
-  void saveProgram();
-  void saveAsProgram();
-  void loadProgram();
-  void cursorMove();
-  void goToLine(int);
-  void highlightLine(int);
-	void slotPrint();
- 
- protected:
-  void keyPressEvent(QKeyEvent *);
-
- private:
-  QMainWindow *mainwin;
-  int currentMaxLine;
-  int currentLine;
-  int startPos;
-  int linePos;
-  QString filename;
+	virtual bool initToolBar(ToolBar *);
 };
-
 
 #endif
