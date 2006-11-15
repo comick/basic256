@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	
 	// File menu
   	QMenu *filemenu = menuBar()->addMenu(QObject::tr("File"));
-  	QAction *newact = filemenu->addAction(QObject::tr("New"));
+  	QAction *newact = filemenu->addAction(QIcon(":images/run.png"), QObject::tr("New"));
   	QAction *openact = filemenu->addAction(QObject::tr("Open"));
   	QAction *saveact = filemenu->addAction(QObject::tr("Save"));
   	QAction *saveasact = filemenu->addAction(QObject::tr("Save As"));
@@ -140,10 +140,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), goutputwgt, SLOT(slotShowToolBar(const bool)));
 	}
 	
-	// Advanced menu
-  	QMenu *advancedmenu = menuBar()->addMenu(QObject::tr("Advanced"));
-  	QAction *debug = advancedmenu->addAction(QObject::tr("Debug"));
-  	QAction *saveByteCode = advancedmenu->addAction(QObject::tr("Save Compiled Byte Code"));
+	// Run menu
+  	QMenu *runmenu = menuBar()->addMenu(QObject::tr("Run"));
+  	QAction *runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("Run"));
+  	QAction *debug = runmenu->addAction(QObject::tr("Debug"));
+  	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled Byte Code"));
   	QObject::connect(debug, SIGNAL(triggered()), rc, SLOT(startDebug()));
   	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
@@ -154,6 +155,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// Add actions to main window toolbar
   	maintbar->addAction(newact);
+  	maintbar->addAction(runact);
   	maintbar->addAction(openact);
   	maintbar->addAction(saveact);
 	maintbar->addSeparator();
