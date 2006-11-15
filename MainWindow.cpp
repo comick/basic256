@@ -143,10 +143,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	// Run menu
   	QMenu *runmenu = menuBar()->addMenu(QObject::tr("Run"));
   	QAction *runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("Run"));
+  	QAction *debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("Debug"));
   	QAction *stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("Step"));
-  	QAction *debug = runmenu->addAction(QObject::tr("Debug"));
+  	QAction *stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("Stop"));
   	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled Byte Code"));
-  	QObject::connect(debug, SIGNAL(triggered()), rc, SLOT(startDebug()));
+  	QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
   	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
 	// About menu
@@ -160,7 +161,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	maintbar->addAction(saveact);
 	maintbar->addSeparator();
   	maintbar->addAction(runact);
+  	maintbar->addAction(debugact);
   	maintbar->addAction(stepact);
+  	maintbar->addAction(stopact);
 	maintbar->addSeparator();
   	maintbar->addAction(cutact);
   	maintbar->addAction(copyact);

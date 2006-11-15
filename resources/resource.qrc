@@ -3,5 +3,7 @@
 	<qresource>
  		<file>images/run.png</file>
  		<file>images/step.png</file>
+ 		<file>images/stop.png</file>
+ 		<file>images/debug.png</file>
 	</qresource>
 </RCC>
