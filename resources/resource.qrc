@@ -2,5 +2,6 @@
 <RCC version="1.0">
 	<qresource>
  		<file>images/run.png</file>
+ 		<file>images/step.png</file>
 	</qresource>
 </RCC>
