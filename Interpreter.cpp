@@ -25,7 +25,7 @@ using namespace std;
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
-#include "basicParse.tab.h"
+#include "LEX/basicParse.tab.h"
 #include "ByteCodes.h"
 #include "Interpreter.h"
 

@@ -5,11 +5,11 @@
 TEMPLATE 		= 	app
 TARGET 			=	BASIC256
 DEPENDPATH 		+= 	.
-INCLUDEPATH 	+= 	.
-OBJECTS_DIR 	= 	tmp/obj
+INCLUDEPATH 		+= 	.
+OBJECTS_DIR 		= 	tmp/obj
 MOC_DIR 		= 	tmp/moc
-TRANSLATIONS 	= 	Translations/basic256_en_US.ts \
-					Translations/basic256_de.ts
+TRANSLATIONS 		= 	Translations/basic256_en_US.ts \
+				Translations/basic256_de.ts
 
 # Input
 HEADERS 		+= 	LEX/basicParse.tab.h 
