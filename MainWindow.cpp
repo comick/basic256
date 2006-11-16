@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 {
   	QWidget *centerWidget = new QWidget();
 	centerWidget->setObjectName( "centerWidget" );
-  	QGridLayout *grid = new QGridLayout();
 	
   	BasicEdit *editor = new BasicEdit(this);
 	editor->setObjectName( "editor" );
@@ -63,7 +62,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	BasicWidget * goutputwgt = new BasicWidget();
 	goutputwgt->setViewWidget(goutput);
 	
-	RunController *rc = new RunController(editor, output, goutput, statusBar());
+	RunController *rc = new RunController(this, editor, output, goutput, statusBar());
   	GhostButton *run = new GhostButton(QObject::tr("Run"));
   	run->setObjectName( "run" );
   	PauseButton *pause = new PauseButton(QObject::tr("Pause"));
@@ -75,11 +74,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	QDialog *aboutdialog = new QDialog();
   	QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.8</h2> \
-											  <p>Copyright &copy; 2006, Ian Larsen</p>	\
-											  <p><strong>Thanks to our translators:</strong> Immo-Gert Birn \
-											  <p><i>You should have received a copy of the GNU General Public License along<br> \
-											  with this program; if not, write to the Free Software Foundation, Inc.,<br> \
-											  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
+					<p>Copyright &copy; 2006, Ian Larsen</p>	\
+					<p><strong>Thanks to our translators:</strong> Immo-Gert Birn \
+					<p><i>You should have received a copy of the GNU General Public License along<br> \
+					with this program; if not, write to the Free Software Foundation, Inc.,<br> \
+					51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
   	QGridLayout *aboutgrid = new QGridLayout();
   
   	aboutgrid->addWidget(aboutlabel, 0, 0);
@@ -142,12 +141,17 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	
 	// Run menu
   	QMenu *runmenu = menuBar()->addMenu(QObject::tr("Run"));
-  	QAction *runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("Run"));
-  	QAction *debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("Debug"));
-  	QAction *stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("Step"));
-  	QAction *stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("Stop"));
+  	runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("Run"));
+  	debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("Debug"));
+  	stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("Step"));
+	stepact->setEnabled(false);
+  	stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("Stop"));
+	stopact->setEnabled(false);
   	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled Byte Code"));
+  	QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
   	QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
+  	QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
+  	QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
   	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
 	// About menu
@@ -169,37 +173,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	maintbar->addAction(copyact);
   	maintbar->addAction(pasteact);
 	
-	// Step button
-  	QObject::connect(step, SIGNAL(pressed()), rc, SLOT(stepThrough()));
-  	QObject::connect(rc, SIGNAL(debugStarted()), step, SLOT(enableButton()));
-  	QObject::connect(rc, SIGNAL(runHalted()), step, SLOT(disableButton()));
-  	step->disableButton();
-
-	// Run button
-  	QObject::connect(run, SIGNAL(clicked()), rc, SLOT(startRun()));
-  	QObject::connect(rc, SIGNAL(runStarted()), run, SLOT(disableButton()));
-  	QObject::connect(rc, SIGNAL(debugStarted()), run, SLOT(disableButton()));
-  	QObject::connect(rc, SIGNAL(runHalted()), run, SLOT(enableButton()));
-
-	// Stop button
-  	QObject::connect(stop, SIGNAL(pressed()), rc, SLOT(stopRun()));
-  	QObject::connect(rc, SIGNAL(debugStarted()), stop, SLOT(enableButton()));
-  	QObject::connect(rc, SIGNAL(runStarted()), stop, SLOT(enableButton()));
-  	QObject::connect(rc, SIGNAL(runHalted()), stop, SLOT(disableButton()));
-  	stop->disableButton();
-
-	// Pause button
-  	QObject::connect(pause, SIGNAL(pressed()), rc, SLOT(pauseResume()));
-  	QObject::connect(rc, SIGNAL(runStarted()), pause, SLOT(enableButton()));
-  	QObject::connect(rc, SIGNAL(runHalted()), pause, SLOT(disableButton()));
-  	pause->disableButton();
-
-	grid->addWidget(editorwgt, 0, 0, 1, 4);
-  	grid->addWidget(run, 2, 0);
-  	grid->addWidget(pause, 2, 1);
-  	grid->addWidget(stop, 2, 2);
-  	grid->addWidget(step, 2, 3);
-
   	gdock->setFeatures(gdock->features() ^ QDockWidget::DockWidgetClosable);
   	tdock->setFeatures(tdock->features() ^ QDockWidget::DockWidgetClosable);
 
@@ -209,8 +182,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	tdock->setWidget(outputwgt);
   	tdock->setWindowTitle(QObject::tr("Text Output"));
 
-  	centerWidget->setLayout(grid);
-	setCentralWidget(centerWidget);
+	setCentralWidget(editorwgt);
   	addDockWidget(Qt::RightDockWidgetArea, tdock);
   	addDockWidget(Qt::RightDockWidgetArea, gdock);  
 }

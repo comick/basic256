@@ -20,6 +20,7 @@
 #define __MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QAction>
 
 class MainWindow : public QMainWindow
 {
@@ -27,6 +28,11 @@ class MainWindow : public QMainWindow
 public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();
+	QAction * runact;
+	QAction * debugact;
+	QAction * stepact;
+	QAction * stopact;
+
 };
 
 #endif

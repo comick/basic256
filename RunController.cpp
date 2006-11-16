@@ -31,13 +31,15 @@ QWaitCondition waitCond;
 QWaitCondition waitDebugCond;
 QWaitCondition waitInput;
 
-RunController::RunController(BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatusBar *sb)
+RunController::RunController(MainWindow *mw, BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatusBar *sb)
 {
   i = new Interpreter(g->image, g->imask);
   te = t;
   goutput = g;
   output = o;
   statusbar = sb;
+
+  mainwin = mw;
   QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
   QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
   QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
@@ -75,6 +77,10 @@ RunController::startDebug()
       statusbar->showMessage(tr("Running"));
       goutput->setFocus();
       i->start();
+      mainwin->runact->setEnabled(false);
+      mainwin->debugact->setEnabled(false);
+      mainwin->stepact->setEnabled(true);
+      mainwin->stopact->setEnabled(true);
       emit(debugStarted());
     }
 }
@@ -96,6 +102,10 @@ RunController::startRun()
       statusbar->showMessage(tr("Running"));
       goutput->setFocus();
       i->start();
+      mainwin->runact->setEnabled(false);
+      mainwin->debugact->setEnabled(false);
+      mainwin->stepact->setEnabled(false);
+      mainwin->stopact->setEnabled(true);
       emit(runStarted());
     }
 }
@@ -150,6 +160,11 @@ void
 RunController::stopRun()
 {
   statusbar->showMessage(tr("Ready."));
+
+  mainwin->runact->setEnabled(true);
+  mainwin->debugact->setEnabled(true);
+  mainwin->stepact->setEnabled(false);
+  mainwin->stopact->setEnabled(false);
 
   //need to fix waiting for input here.
   mutex.lock();
