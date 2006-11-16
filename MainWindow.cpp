@@ -147,6 +147,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	stepact->setEnabled(false);
   	stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("Stop"));
 	stopact->setEnabled(false);
+  	runmenu->addSeparator();
   	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled Byte Code"));
   	QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
   	QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
@@ -160,6 +161,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	QObject::connect(aboutb256, SIGNAL(triggered()), aboutdialog, SLOT(show()));
 
 	// Add actions to main window toolbar
+	maintbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
   	maintbar->addAction(newact);
   	maintbar->addAction(openact);
   	maintbar->addAction(saveact);
