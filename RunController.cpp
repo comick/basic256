@@ -31,15 +31,15 @@ QWaitCondition waitCond;
 QWaitCondition waitDebugCond;
 QWaitCondition waitInput;
 
-RunController::RunController(MainWindow *mw, BasicEdit *t, BasicOutput *o, BasicGraph *g, QStatusBar *sb)
+RunController::RunController(MainWindow *mw)
 {
-  i = new Interpreter(g->image, g->imask);
-  te = t;
-  goutput = g;
-  output = o;
-  statusbar = sb;
-
   mainwin = mw;
+  i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
+  te = mainwin->editor;
+  output = mainwin->output;
+  goutput = mainwin->goutput;
+  statusbar = mainwin->statusBar();
+
   QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
   QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
   QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));

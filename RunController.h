@@ -33,7 +33,7 @@ class RunController : public QObject
 {
   Q_OBJECT;
  public:
-  RunController(MainWindow *, BasicEdit *, BasicOutput *, BasicGraph *, QStatusBar * = NULL);
+  RunController(MainWindow *);
 
  signals:
   void debugStarted();

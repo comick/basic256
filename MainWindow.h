@@ -22,6 +22,11 @@
 #include <QMainWindow>
 #include <QAction>
 
+#include "BasicWidget.h"
+#include "BasicOutput.h"
+#include "BasicEdit.h"
+#include "BasicGraph.h"
+
 class MainWindow : public QMainWindow
 {
   	Q_OBJECT;
@@ -32,6 +37,9 @@ public:
 	QAction * debugact;
 	QAction * stepact;
 	QAction * stopact;
+  	BasicEdit * editor;
+  	BasicOutput * output;
+	BasicGraph * goutput;
 
 };
 
