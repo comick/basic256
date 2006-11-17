@@ -933,6 +933,24 @@ Interpreter::execByteCode()
       }
       break;
 
+    case OP_LENGTH:
+      {
+	op++;
+	stackval *temp = stack.pop();
+	if (temp->type == T_STRING)
+	  {
+	    stack.push((int) strlen((char *) temp->value.string));
+	  }
+	else
+	  {
+	    printError(tr("Illegal argument to length()"));
+	    return -1;
+	  }
+	delete temp;
+      }
+      break;
+
+
     case OP_SIN:
     case OP_COS:
     case OP_TAN:
@@ -1408,6 +1426,66 @@ Interpreter::execByteCode()
 	    waitCond.wait(&mutex);
 	    mutex.unlock();
 	  }
+      }
+      break;
+
+
+    case OP_POLY:
+      {
+	op++;
+	int *i = (int *) op;
+	op += sizeof(int);
+	stackval *c = stack.pop();
+
+	if (c->type != T_INT)
+	{
+	    printError(tr("Illegal argument to poly()"));
+	    return -1;
+	}
+
+	int pairs = c->value.intval;
+
+	if (vars[*i].type != T_ARRAY)
+	  {
+	    printError(tr("Illegal argument to poly()"));
+	    return -1;
+	  }
+
+	if (vars[*i].value.arr->size < (pairs * 2))
+	  {
+	    printError(tr("Not enough points in array for poly()"));
+	    return -1;
+	  }
+
+	double *array = vars[*i].value.arr->data.fdata;
+
+	QPointF points[pairs];
+
+	for (int j = 0; j < pairs; j++)
+	  {
+	    points[j].setX(array[j*2]);
+	    points[j].setY(array[(j*2)+1]);
+	  }
+
+	QPainter poly(image);
+	QPainter poly2(imask);
+        poly.setPen(pencolor);
+        poly.setBrush(pencolor);
+
+	poly.drawPolygon(points, pairs);
+	poly2.drawPolygon(points, pairs);
+
+	poly.end();
+	poly2.end();
+
+	if (!fastgraphics)
+	  {
+	    mutex.lock();
+	    emit(goutputReady());
+	    waitCond.wait(&mutex);
+	    mutex.unlock();
+	  }
+	delete c;
       }
       break;
 

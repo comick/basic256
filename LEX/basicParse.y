@@ -210,12 +210,12 @@
 %}
 
 %token PRINT INPUT KEY 
-%token PLOT CIRCLE RECT LINE FASTGRAPHICS REFRESH CLS CLG
+%token PLOT CIRCLE RECT POLY LINE FASTGRAPHICS REFRESH CLS CLG
 %token IF THEN FOR TO STEP NEXT 
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
 %token DIM NOP LABEL
-%token TOINT TOSTRING CEIL FLOOR RAND SIN COS TAN ABS PI
+%token TOINT TOSTRING LENGTH CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
 %token PAUSE
 
@@ -283,6 +283,8 @@ statement: gotostmt
          | printstmt
          | plotstmt
          | circlestmt
+         | rectstmt
+         | polystmt
          | linestmt
          | numassign
          | stringassign
@@ -398,7 +400,10 @@ linestmt: LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_LI
 circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
 ;
 
-circlestmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
+rectstmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
+;
+
+polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
 ;
 
 inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
@@ -451,6 +456,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	   }
          | TOINT '(' floatexpr ')' { addOp(OP_INT); }
          | TOINT '(' stringexpr ')' { addOp(OP_INT); }
+         | LENGTH '(' stringexpr ')' { addOp(OP_LENGTH); }
          | CEIL '(' floatexpr ')' { addOp(OP_CEIL); }
          | FLOOR '(' floatexpr ')' { addOp(OP_FLOOR); }
          | SIN '(' floatexpr ')' { addOp(OP_SIN); }
