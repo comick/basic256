@@ -73,6 +73,10 @@ for   [Ff][Oo][Rr]
 to    [Tt][Oo]
 next  [Nn][Ee][Xx][Tt]
 step  [Ss][Tt][Ee][Pp]
+open  [Oo][Pp][Ee][Nn]
+read  [Rr][Ee][Aa][Dd]
+write [Ww][Rr][Ii][Tt][Ee]
+close [Cc][Ll][Oo][Ss][Ee]
 plot  [Pp][Ll][Oo][Tt]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 rect  [Rr][Ee][Cc][Tt]
@@ -200,6 +204,10 @@ blankline ^{whitespace}*[\n]
 {to}		{ return TO; }
 {step}		{ return STEP; }
 {next}		{ return NEXT; }
+{open}		{ return OPEN; }
+{read}		{ return READ; }
+{write}		{ return WRITE; }
+{close}		{ return CLOSE; }
 {input}         { return INPUT; }
 {key}           { return KEY; }
 {gosub}         { return GOSUB; }

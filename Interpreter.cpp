@@ -19,6 +19,7 @@
 using namespace std;
 #include <iostream>
 #include <stdlib.h>
+#include <stdio.h>
 #include <cmath>
 #include <string>
 #include <QPainter>
@@ -360,6 +361,7 @@ Interpreter::initialize()
   status = R_RUNNING;
   once = true;
   currentLine = 1;
+  stream = NULL;
 }
 
 
@@ -625,6 +627,137 @@ Interpreter::execByteCode()
       break;
 
 
+    case OP_OPEN:
+      {
+	op++;
+	stackval *name = stack.pop();
+
+	if (name->type == T_STRING)
+	  {
+	    if (stream != NULL)
+	      {
+		stream->close();
+		stream = NULL;
+	      }
+
+	    stream = new QFile(name->value.string);
+
+
+	    if (stream == NULL || !stream->open(QIODevice::ReadWrite | QIODevice::Text))
+	      {
+		printError(tr("Unable to open file"));
+		return -1;
+	      }
+	  }
+	else
+	  {
+	    printError(tr("Illegal argument to open()"));
+	    return -1;
+	  }
+	delete name;
+      }
+      break;
+
+
+    case OP_READ:
+      {
+	op++;
+	char c = ' ';
+
+	if (stream == NULL)
+	  {
+	    printError(tr("Can't read -- no open file."));
+	    return -1;
+	  }
+
+	//Remove leading whitespace
+	while (c == ' ' || c == '\t' || c == '\n')
+	  {
+	    if (!stream->getChar(&c))
+	      {
+		stack.push(strdup(""));
+		return 0;
+	      }
+	  }
+	
+	//put back non-whitespace character
+	stream->ungetChar(c);
+
+	//read token
+	int maxsize = 256;
+	int offset = 0; 
+	char * strarray = (char *) malloc(maxsize);
+	memset(strarray, 0, maxsize);
+
+	while (stream->getChar(strarray + offset) && 
+	       *(strarray + offset) != ' ' && 
+	       *(strarray + offset) != '\t' && 
+	       *(strarray + offset) != '\n' && 
+	       *(strarray + offset) != 0)
+	  {
+	    offset++;
+	    if (offset >= maxsize)
+	      {
+		maxsize *= 2;
+		strarray = (char *) realloc(strarray, maxsize);
+		memset(strarray + offset, 0, maxsize - offset);
+	      }
+	  }
+	strarray[offset] = 0;
+
+	stack.push(strdup(strarray));
+	free(strarray);
+      }
+      break;
+
+
+    case OP_WRITE:
+      {
+	op++;
+	stackval *temp = stack.pop();
+
+	if (temp->type == T_STRING)
+	  {
+	     int error = 0;
+
+	     if (stream != NULL)
+	       {
+		 quint64 oldPos = stream->pos();
+		 stream->flush();
+		 stream->seek(stream->size());
+		 error = stream->write(temp->value.string, strlen(temp->value.string));
+		 stream->seek(oldPos);
+		 stream->flush();
+	       }
+
+	     if (error == -1)
+	       {
+		 printError(tr("Unable to write to file"));
+	       }
+	  }
+	else
+	  {
+	    printError(tr("Illegal argument to write()"));
+	    return -1;
+	  }
+	delete temp;
+      }
+      break;
+
+
+    case OP_CLOSE:
+      {
+        op++;
+
+	if (stream != NULL)
+	  {
+	    stream->close();
+	    stream = NULL;
+	  }
+      }
+      break;
+
+
     case OP_DIM:
     case OP_DIMSTR:
       {
@@ -672,6 +805,7 @@ Interpreter::execByteCode()
 	delete one;
       }
       break;
+
 
     case OP_STRARRAYASSIGN:
       {
@@ -949,7 +1083,6 @@ Interpreter::execByteCode()
 	delete temp;
       }
       break;
-
 
     case OP_SIN:
     case OP_COS:

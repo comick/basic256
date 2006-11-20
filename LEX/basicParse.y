@@ -212,6 +212,7 @@
 %token PRINT INPUT KEY 
 %token PLOT CIRCLE RECT POLY LINE FASTGRAPHICS REFRESH CLS CLG
 %token IF THEN FOR TO STEP NEXT 
+%token OPEN READ WRITE CLOSE
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
 %token DIM NOP LABEL
@@ -283,8 +284,6 @@ statement: gotostmt
          | printstmt
          | plotstmt
          | circlestmt
-         | rectstmt
-         | polystmt
          | linestmt
          | numassign
          | stringassign
@@ -300,6 +299,9 @@ statement: gotostmt
          | pausestmt
          | arrayassign
          | strarrayassign
+         | openstmt
+         | writestmt
+         | closestmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -400,10 +402,22 @@ linestmt: LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_LI
 circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
 ;
 
-rectstmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
+circlestmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
 ;
 
-polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
+circlestmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
+;
+
+openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 
+        | OPEN stringexpr         { addOp(OP_OPEN); }
+;
+
+writestmt: WRITE '(' stringexpr ')' { addOp(OP_WRITE); }
+         | WRITE stringexpr         { addOp(OP_WRITE); }
+;
+
+closestmt: CLOSE         { addOp(OP_CLOSE); }
+         | CLOSE '(' ')' { addOp(OP_CLOSE); }
 ;
 
 inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
@@ -482,6 +496,7 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
 		}
 	    }
           | TOSTRING '(' floatexpr ')' { addOp(OP_STRING); }
+          | READ { addOp(OP_READ); }
 ;
 
 
