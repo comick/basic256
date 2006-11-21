@@ -1,3 +1,8 @@
+2006-11-20    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Merged file ops and changed them to work more simply.
+	  Changed array printing to print pointer address instead of int, which should fix the 64 bit compile problem.
+
 2006-11-19    <fhendrikx@users.sourceforge.net>
 
 	* Added file operations "open", "read", "write", "close". The read and write functions work on a token basis. EOF is returned by returning an empty token.
