@@ -940,13 +940,13 @@ Interpreter::execByteCode()
 	else if (vars[*i].type == T_ARRAY)
 	  {
 	    char buffer[32];
-	    sprintf(buffer, "array(0x%08x)", (int) vars[*i].value.arr);
+	    sprintf(buffer, "array(0x%p)", vars[*i].value.arr);
 	    stack.push(buffer);
 	  }
 	else if (vars[*i].type == T_STRARRAY)
 	  {
 	    char buffer[32];
-	    sprintf(buffer, "string array(0x%08x)", (int) vars[*i].value.arr);
+	    sprintf(buffer, "string array(0x%p)", vars[*i].value.arr);
 	    stack.push(buffer);
 	  }
 	else 
