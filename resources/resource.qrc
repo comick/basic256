@@ -1,6 +1,9 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
 	<qresource>
+ 		<file>images/new.png</file>
+ 		<file>images/open.png</file>
+ 		<file>images/save.png</file>
  		<file>images/run.png</file>
  		<file>images/step.png</file>
  		<file>images/stop.png</file>

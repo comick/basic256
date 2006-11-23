@@ -132,6 +132,38 @@
         <source>Cannot compare strings with &lt; or &gt;=</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Unable to open file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to open()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t read -- no open file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to write to file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to write()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to length()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in array for poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -140,19 +172,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pause</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.8&lt;/h2&gt;                                   &lt;p&gt;Copyright &amp;copy; 2006, Ian Larsen&lt;/p&gt;<byte value="x9"/>                                  &lt;p&gt;&lt;strong&gt;Thanks to our translators:&lt;/strong&gt; Immo-Gert Birn                                   &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt;                                   with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt;                                   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -200,10 +224,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Advanced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
@@ -233,6 +253,38 @@
     </message>
     <message>
         <source>Untitled - BASIC-256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Text Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Graphics Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.8&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Ian Larsen&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;strong&gt;Thanks to our translators:&lt;/strong&gt; Immo-Gert Birn <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -79,9 +79,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	
 	// File menu
   	QMenu *filemenu = menuBar()->addMenu(QObject::tr("File"));
-  	QAction *newact = filemenu->addAction(QObject::tr("New"));
-  	QAction *openact = filemenu->addAction(QObject::tr("Open"));
-  	QAction *saveact = filemenu->addAction(QObject::tr("Save"));
+  	QAction *newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("New"));
+  	QAction *openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("Open"));
+  	QAction *saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("Save"));
   	QAction *saveasact = filemenu->addAction(QObject::tr("Save As"));
 	filemenu->addSeparator();
 	QAction *printact = filemenu->addAction(QObject::tr("Print"));
