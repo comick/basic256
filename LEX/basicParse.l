@@ -77,6 +77,7 @@ open  [Oo][Pp][Ee][Nn]
 read  [Rr][Ee][Aa][Dd]
 write [Ww][Rr][Ii][Tt][Ee]
 close [Cc][Ll][Oo][Ss][Ee]
+reset [Rr][Ee][Ss][Ee][Tt]
 plot  [Pp][Ll][Oo][Tt]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 rect  [Rr][Ee][Cc][Tt]
@@ -103,6 +104,8 @@ dark  [Dd][Aa][Rr][Kk]
 toint   [Ii][Nn][Tt]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 length  [Ll][Ee][Nn][Gg][Tt][Hh]
+mid     [Mm][Ii][Dd]
+instr   [Ii][Nn][Ss][Tt][Rr]
 ceil    [Cc][Ee][Ii][Ll]
 floor   [Ff][Ll][Oo][Oo][Rr]
 abs     [Aa][Bb][Ss]
@@ -153,6 +156,8 @@ blankline ^{whitespace}*[\n]
 {toint}         { return TOINT; }
 {tostring}      { return TOSTRING; }
 {length}        { return LENGTH; }
+{mid}           { return MID; }
+{instr}         { return INSTR; }
 {ceil}          { return CEIL; }
 {floor}         { return FLOOR; }
 {abs}           { return ABS; }
@@ -208,6 +213,7 @@ blankline ^{whitespace}*[\n]
 {read}		{ return READ; }
 {write}		{ return WRITE; }
 {close}		{ return CLOSE; }
+{reset}		{ return RESET; }
 {input}         { return INPUT; }
 {key}           { return KEY; }
 {gosub}         { return GOSUB; }

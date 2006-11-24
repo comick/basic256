@@ -758,6 +758,29 @@ Interpreter::execByteCode()
       break;
 
 
+    case OP_RESET:
+      {
+	op++;
+
+	if (stream == NULL)
+	  {
+	    printError(tr("reset() called when no file is open"));
+	    return -1;
+	  }
+	else
+	  {
+	    stream->close();
+
+	    if (!stream->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+	      {
+		printError(tr("Unable to reset file"));
+		return -1;
+	      }
+	  }
+      }
+      break;
+
+
     case OP_DIM:
     case OP_DIMSTR:
       {
@@ -1081,6 +1104,78 @@ Interpreter::execByteCode()
 	    return -1;
 	  }
 	delete temp;
+      }
+      break;
+
+    case OP_MID:
+      {
+	op++;
+	stackval *len = stack.pop();
+	stackval *pos = stack.pop();
+	stackval *str = stack.pop();
+
+	if ((pos->type != T_INT) || (len->type != T_INT) || (str->type != T_STRING))
+	  {
+	    printError(tr("Illegal argument to mid()"));
+	    return -1;
+	  }
+
+	if ((pos->value.intval < 0) || (len->value.intval < 0))
+	  {
+	    printError(tr("Illegal argument to mid()"));
+	    return -1;
+	  }
+
+	char *temp = (char *) str->value.string;
+
+	if (pos->value.intval > (int) strlen(temp))
+	  {
+	    printError(tr("String not long enough for given starting character"));
+	    return -1;
+	  }
+
+	temp += (pos->value.intval - 1);
+
+	if (len->value.intval < (int) strlen(temp))
+	  {
+	    temp[len->value.intval] = '\0';
+	  }
+
+	stack.push(strdup(temp));
+
+	delete str;
+	delete pos;
+	delete len;
+      }
+      break;
+
+    case OP_INSTR:
+      {
+	op++;
+	stackval *needle = stack.pop();
+	stackval *haystk = stack.pop();
+
+	if ((needle->type != T_STRING) || (haystk->type != T_STRING))
+	  {
+	    printError(tr("Illegal argument to instr()"));
+	    return -1;
+	  }
+
+	int pos = 0;
+
+	char *hay = (char *) haystk->value.string;
+	char *str = (char *) needle->value.string;
+	char *ptr = strstr(hay, str);
+
+	if (ptr != NULL)
+	  {
+	    pos = (ptr - hay) + 1;
+	  }
+
+	stack.push((int) pos);
+
+	delete haystk;
+	delete needle;
       }
       break;
 

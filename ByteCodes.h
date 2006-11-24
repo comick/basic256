@@ -69,13 +69,16 @@
 #define OP_ABS			0x2e
 
 #define OP_PAUSE		0x2f
-#define OP_LENGTH		0x30
-#define OP_POLY			0x31
+#define OP_POLY			0x30
+#define OP_LENGTH		0x31
+#define OP_MID			0x32
+#define OP_INSTR		0x33
 
 #define OP_OPEN			0x35
 #define OP_READ			0x36
 #define OP_WRITE		0x37
 #define OP_CLOSE		0x38
+#define OP_RESET		0x39
 
 
 //Int argument ops
