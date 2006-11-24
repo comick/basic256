@@ -34,7 +34,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   QImage *image;
   QImage *imask;
 
- 	bool initToolBar(ToolBar *);
+ 	bool initActions(QMenu *, ToolBar *);
  
  public slots:
 	void slotCopy();

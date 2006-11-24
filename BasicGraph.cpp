@@ -25,6 +25,7 @@ using namespace std;
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QClipboard>
+#include <QMessageBox>
 
 #include "BasicGraph.h"
 
@@ -59,24 +60,26 @@ BasicGraph::keyPressEvent(QKeyEvent *e)
   keymutex.unlock();
 }
 
-bool BasicGraph::initToolBar(ToolBar * vToolBar)
+bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)
 {
-	// To switch on the toolbar comment the following line.
-	return ViewWidgetIFace::initToolBar(vToolBar);
-	
-	// Add some buttons to the toolbar.
-	if (NULL != vToolBar)
+	if ((NULL == vMenu) || (NULL == vToolBar))
 	{
-		QAction *copyAct = vToolBar->addAction(QObject::tr("Copy"));
-		QAction *printAct = vToolBar->addAction(QObject::tr("Print"));
-		
-		QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
-		QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
-		
-		return true;
+		return false;
 	}
+
+	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+
+	vToolBar->addAction(copyAct);
+	vToolBar->addAction(printAct);
 	
-	return false;	
+	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
+	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+		
+	m_usesToolBar = true;
+	m_usesMenu = true;
+	
+	return true;	
 }
 
 void BasicGraph::slotCopy()
@@ -93,12 +96,19 @@ void BasicGraph::slotPrint()
 	
 	if (dialog->exec() == QDialog::Accepted) 
 	{
-		QPainter painter(&printer);
-		QRect rect = painter.viewport();
-		QSize size = image->size();
-		size.scale(rect.size(), Qt::KeepAspectRatio);
-		painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-		painter.setWindow(image->rect());
-		painter.drawImage(0, 0, *image);
+		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
+		{
+			QPainter painter(&printer);
+			QRect rect = painter.viewport();
+			QSize size = image->size();
+			size.scale(rect.size(), Qt::KeepAspectRatio);
+			painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+			painter.setWindow(image->rect());
+			painter.drawImage(0, 0, *image);
+		}
+		else
+		{
+			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+		}		
 	}	
 }

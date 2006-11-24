@@ -40,7 +40,6 @@ public:
   	BasicEdit * editor;
   	BasicOutput * output;
 	BasicGraph * goutput;
-
 };
 
 #endif

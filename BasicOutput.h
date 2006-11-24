@@ -33,8 +33,8 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
  	
   	char *inputString;
  	void inputStart();
-	// Toolbar 
- 	virtual bool initToolBar(ToolBar *);
+
+ 	virtual bool initActions(QMenu *, ToolBar *);
 
  public slots:
   	void getInput();

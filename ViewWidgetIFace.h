@@ -19,6 +19,7 @@
 #ifndef __VIEWWIDGETIFACE_H
 #define __VIEWWIDGETIFACE_H
 
+#include <QMenu>
 #include "ToolBar.h"
 
 class ViewWidgetIFace
@@ -27,7 +28,13 @@ public:
   	ViewWidgetIFace();
 	virtual ~ViewWidgetIFace();
 
-	virtual bool initToolBar(ToolBar *);
+	virtual bool initActions(QMenu *, ToolBar *);
+	bool usesToolBar() { return m_usesToolBar; }
+	bool usesMenu() { return m_usesMenu; }
+	
+protected:
+	bool m_usesToolBar;
+	bool m_usesMenu;
 };
 
 #endif

@@ -24,6 +24,7 @@ using namespace std;
 #include <QStatusBar>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QMessageBox>
 
 #include "BasicEdit.h"
 
@@ -172,6 +173,13 @@ void BasicEdit::slotPrint()
 	
 	if (dialog->exec() == QDialog::Accepted)
 	{
-        document->print(&printer);
+		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
+		{
+        	document->print(&printer);
+		}
+		else
+		{
+			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+		}
 	}
 }

@@ -23,6 +23,7 @@
 #include <QClipboard>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QMessageBox>
 
 #include "BasicOutput.h"
 
@@ -81,27 +82,29 @@ BasicOutput::keyPressEvent(QKeyEvent *e)
     }
 }
 
-
-bool BasicOutput::initToolBar(ToolBar * vToolBar)
+bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar)
 {
-	// To switch on the toolbar comment the following line.
-	return ViewWidgetIFace::initToolBar(vToolBar);
-	
-	// Add some buttons to the toolbar.
-	if (NULL != vToolBar)
+	if ((NULL == vMenu) || (NULL == vToolBar))
 	{
-		QAction *copyAct = vToolBar->addAction(QObject::tr("Copy"));
-		QAction *pasteAct = vToolBar->addAction(QObject::tr("Paste"));
-		QAction *printAct = vToolBar->addAction(QObject::tr("Print"));
-		
-		QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
-		QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
-		QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
-		
-		return true;
+		return false;
 	}
+
+	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+	QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
+	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+
+	vToolBar->addAction(copyAct);
+	vToolBar->addAction(pasteAct);
+	vToolBar->addAction(printAct);
 	
-	return false;	
+	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+	QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+
+	m_usesToolBar = true;
+	m_usesMenu = true;
+	
+	return true;
 }
 
 void BasicOutput::slotPrint()
@@ -111,8 +114,15 @@ void BasicOutput::slotPrint()
 	QPrintDialog *dialog = new QPrintDialog(&printer, this);
 	dialog->setWindowTitle(QObject::tr("Print Text Output"));
 	
-	if (dialog->exec() != QDialog::Accepted)
+	if (dialog->exec() == QDialog::Accepted)
 	{
-		document->print(&printer);
+		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
+		{
+			document->print(&printer);
+		}
+		else
+		{
+			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+		}		
 	}
 }

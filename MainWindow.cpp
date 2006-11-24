@@ -54,9 +54,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	
 	BasicWidget * editorwgt = new BasicWidget();
 	editorwgt->setViewWidget(editor);
-	BasicWidget * outputwgt = new BasicWidget();
+	BasicWidget * outputwgt = new BasicWidget(QObject::tr("Text Output"));
 	outputwgt->setViewWidget(output);
-	BasicWidget * goutputwgt = new BasicWidget();
+	BasicWidget * goutputwgt = new BasicWidget(QObject::tr("Graphics Output"));
 	goutputwgt->setViewWidget(goutput);
 	
 	RunController *rc = new RunController(this);
@@ -105,7 +105,23 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
   	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
   	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
-
+	
+	bool extraSepAdded = false;
+	if (outputwgt->usesMenu())
+	{
+		editmenu->addSeparator();
+		extraSepAdded = true;
+		editmenu->addMenu(outputwgt->getMenu());		
+	}
+	if (goutputwgt->usesMenu())
+	{
+		if (!extraSepAdded)
+		{
+			editmenu->addSeparator();	
+		}
+		editmenu->addMenu(goutputwgt->getMenu());	
+	}
+	
 	// View menuBar
 	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("View"));
 	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("Toolbars"));	
@@ -117,14 +133,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	{
 		QAction *texttbaract = viewtbars->addAction(QObject::tr("Text Output"));
 		texttbaract->setCheckable(true);
-		texttbaract->setChecked(true);
+		texttbaract->setChecked(false);
+		outputwgt->slotShowToolBar(false);
 		QObject::connect(texttbaract, SIGNAL(toggled(bool)), outputwgt, SLOT(slotShowToolBar(const bool)));
 	}
 	if (goutputwgt->usesToolBar())
 	{
 		QAction *graphtbaract = viewtbars->addAction(QObject::tr("Graphics Output"));
 		graphtbaract->setCheckable(true);
-		graphtbaract->setChecked(true);
+		graphtbaract->setChecked(false);
+		goutputwgt->slotShowToolBar(false);
 		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), goutputwgt, SLOT(slotShowToolBar(const bool)));
 	}
 	

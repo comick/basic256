@@ -15,17 +15,20 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+#include <QMenu>
+
 #include "ToolBar.h"
 #include "ViewWidgetIFace.h"
 #include "BasicWidget.h"
 
-BasicWidget::BasicWidget(QWidget * parent, Qt::WindowFlags f)
+BasicWidget::BasicWidget(const QString & title, QWidget * parent, Qt::WindowFlags f)
 :	QWidget(parent, f)
 ,	m_viewWidget(NULL)
 ,	m_toolBar(NULL)
-,	m_usesToolBar(false)
+,	m_menu(NULL)
 {
 	m_toolBar = new ToolBar();
+	m_menu = new QMenu(title);
 	m_layout = new QVBoxLayout();
 
 	setLayout(m_layout);
@@ -47,18 +50,30 @@ bool BasicWidget::setViewWidget(QWidget * view)
 		return false;
 	}
 	
-	m_viewWidget = view;
-	m_layout->addWidget(m_viewWidget);
-	
-	ViewWidgetIFace * viewIFace = dynamic_cast< ViewWidgetIFace * >(view);
-	if (NULL != viewIFace)	// Initialise view with tool bar.
+	m_viewWidget = dynamic_cast< ViewWidgetIFace * >(view);
+
+	if (NULL != m_viewWidget)
 	{
-		if (viewIFace->initToolBar(m_toolBar))
+		if (m_viewWidget->initActions(m_menu, m_toolBar))
 		{
-			m_layout->addWidget(m_toolBar);
-			m_usesToolBar = true;
+			if (!m_viewWidget->usesToolBar())
+			{
+				delete m_toolBar;
+				m_toolBar = NULL;
+			}
+			else
+			{
+				m_layout->addWidget(m_toolBar);
+			}
+			if (!m_viewWidget->usesMenu())
+			{
+				delete m_menu;
+				m_menu = NULL;
+			}
 		}
-		m_layout->addWidget(m_viewWidget, 1);
+
+		m_layout->addWidget(view, 1);
+		
 		return true;
 	}
 	
@@ -67,8 +82,28 @@ bool BasicWidget::setViewWidget(QWidget * view)
 
 void BasicWidget::slotShowToolBar(const bool vShow)
 {
-	if (!m_usesToolBar)
+	if (NULL == m_toolBar)
 		return;
 	
 	m_toolBar->setShown(vShow);
+}
+
+bool BasicWidget::usesToolBar()
+{
+	if (NULL != m_viewWidget)
+	{
+		return m_viewWidget->usesToolBar();
+	}
+	
+	return false;
+}
+
+bool BasicWidget::usesMenu()
+{
+	if (NULL != m_viewWidget)
+	{
+		return m_viewWidget->usesMenu();
+	}
+	
+	return false;
 }

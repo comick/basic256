@@ -19,6 +19,8 @@
 #include "ViewWidgetIFace.h"
 
 ViewWidgetIFace::ViewWidgetIFace()
+:	m_usesToolBar(false)
+,	m_usesMenu(false)
 {
 }
 
@@ -26,7 +28,7 @@ ViewWidgetIFace::~ViewWidgetIFace()
 {	
 }
 
-bool ViewWidgetIFace::initToolBar(ToolBar * /*vToolBar*/)
+bool ViewWidgetIFace::initActions(QMenu *, ToolBar *)
 {
-	return false;
+	return true;	// Success.	
 }

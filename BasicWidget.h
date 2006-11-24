@@ -22,26 +22,29 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+class QMenu;
 class ToolBar;
-
+class ViewWidgetIFace;
+	
 class BasicWidget : public QWidget
 {
   	Q_OBJECT;
 public:
-  	BasicWidget(QWidget * parent = 0, Qt::WindowFlags f = 0);
+  	BasicWidget(const QString & title = QString::null, QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~BasicWidget();
 	
 	bool setViewWidget(QWidget * view);
-	bool usesToolBar() { return m_usesToolBar; }
+	bool usesToolBar();
+	bool usesMenu();
+	QMenu * getMenu() { return m_menu; }
 
 public slots:
 	void slotShowToolBar(const bool);
 
 private:
-	bool m_usesToolBar;
-
-	QWidget *	m_viewWidget;
+	ViewWidgetIFace *	m_viewWidget;
 	ToolBar *	m_toolBar;
+	QMenu *		m_menu;
 	QVBoxLayout *	m_layout;
 };
 
