@@ -1107,6 +1107,7 @@ Interpreter::execByteCode()
       }
       break;
 
+
     case OP_MID:
       {
 	op++;
@@ -1148,6 +1149,7 @@ Interpreter::execByteCode()
 	delete len;
       }
       break;
+
 
     case OP_INSTR:
       {
