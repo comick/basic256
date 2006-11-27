@@ -124,6 +124,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	
 	// View menuBar
 	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("View"));
+	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("Text Window"));
+	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window"));
+	textWinVisibleAct->setCheckable(true);
+	graphWinVisibleAct->setCheckable(true);
+	textWinVisibleAct->setChecked(true);
+	graphWinVisibleAct->setChecked(true);
+	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), tdock, SLOT(setVisible(bool)));
+	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
+
 	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("Toolbars"));	
 	QAction *maintbaract = viewtbars->addAction(QObject::tr("Main"));
 	maintbaract->setCheckable(true);

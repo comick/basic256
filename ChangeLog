@@ -1,3 +1,7 @@
+2006-11-26    <drblast@users.sourceforge.net>
+
+	* MainWindow.cpp (QMainWindow): Added two items to view menu to enable/disable text and graphics output windows.
+
 2006-11-20    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp (execByteCode): Merged file ops and changed them to work more simply.
