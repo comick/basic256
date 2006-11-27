@@ -1,28 +1,10 @@
 
-To compile on Win32:
-
-NOTE: You'll need the open source version of QT4, GNU flex and bison, and the mingw c++ compiler to compile kidbasic.
+To compile, you'll need the open source version of QT4, GNU flex and bison, and the mingw c++ compiler for Win32 or GCC on Unix. 
 
 open a command window (cmd)
-cd to the kidbasic/LEX directory
-type "make"
-cd to this directory
-type "qmake" then "make" for a debug version or "make release" for a release version
+type "qmake" and hit enter
+type "make" and hit enter 
 
-The .exe will be built in the appropriate directory (debug or release)
-
-
-To compile on Linux/Unix:
-
-You'll need QT4 to compile, along with Flex and Bison.
-
-open a command window
-cd to the kidbasic/LEX directory
-type "make unix"
-cd to this directory
-type "qmake" then make
-
-The executable will be compiled in this directory and will be called KidBASIC.
-
+You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
 
 
