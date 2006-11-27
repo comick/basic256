@@ -62,9 +62,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	RunController *rc = new RunController(this);
 
 	QDialog *aboutdialog = new QDialog();
-  	QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.8</h2> \
-					<p>Copyright &copy; 2006, Ian Larsen</p>	\
-					<p><strong>Thanks to our translators:</strong> Immo-Gert Birn \
+  	QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.9</h2> \
+					<p>Copyright &copy; 2006, The BASIC-256 Team</p>	\
+					<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
 					<p><i>You should have received a copy of the GNU General Public License along<br> \
 					with this program; if not, write to the Free Software Foundation, Inc.,<br> \
 					51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
