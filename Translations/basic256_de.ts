@@ -134,7 +134,7 @@
     </message>
     <message>
         <source>Unable to open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Datei nicht öffnen</translation>
     </message>
     <message>
         <source>Illegal argument to open()</source>
@@ -142,11 +142,11 @@
     </message>
     <message>
         <source>Can&apos;t read -- no open file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lesen nicht möglich - im Moment ist keine Datei geöffnet.</translation>
     </message>
     <message>
         <source>Unable to write to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann nicht in Datei schreiben</translation>
     </message>
     <message>
         <source>Illegal argument to write()</source>
@@ -162,7 +162,27 @@
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht genug Punkte im Feld für den poly()-Befehl </translation>
+    </message>
+    <message>
+        <source>reset() called when no file is open</source>
+        <translation>reset() aufgerufen ohne dass eine Datei geöffnet ist</translation>
+    </message>
+    <message>
+        <source>Unable to reset file</source>
+        <translation>Kann Datei nicht zurücksetzen (reset() nicht möglich)</translation>
+    </message>
+    <message>
+        <source>Illegal argument to mid()</source>
+        <translation>Illegales Argument für Befehl mid()</translation>
+    </message>
+    <message>
+        <source>String not long enough for given starting character</source>
+        <translation>Zeichenkette nicht lang genug für das gegebenen Anfangs-Zeichen</translation>
+    </message>
+    <message>
+        <source>Illegal argument to instr()</source>
+        <translation>Illegales Argument für instr()</translation>
     </message>
 </context>
 <context>
@@ -269,34 +289,60 @@
     </message>
     <message>
         <source>Print Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Quelltext drucken</translation>
     </message>
     <message>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Drucken</translation>
     </message>
     <message>
         <source>Print Text Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Textfenster-Inhalt drucken</translation>
     </message>
     <message>
         <source>Print Graphics Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.8&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Ian Larsen&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;strong&gt;Thanks to our translators:&lt;/strong&gt; Immo-Gert Birn <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Grafikfenster-Inhalt drucken</translation>
     </message>
     <message>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Ansicht</translation>
     </message>
     <message>
         <source>Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkzeugleisten</translation>
     </message>
     <message>
         <source>Main</source>
+        <translation>Hauptfenster</translation>
+    </message>
+    <message>
+        <source>Print Error</source>
+        <translation>Fehler beim Drucken</translation>
+    </message>
+    <message>
+        <source>Unable to carry out printing.
+Please check your printer settings.</source>
+        <translation>Kann nicht drucken.
+Bitte die Drucker-Einstellungen überprüfen.</translation>
+    </message>
+    <message>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="obsolete">&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Das BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Bitte beachten Sie die CONTRIBUTORS-Datei für eine Liste der Entwickler&lt;br&gt;und Übersetzer dieses Projektes.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem&lt;br&gt; <byte value="x9"/> Programm erhalten haben. Falls nicht, schreiben Sie an die Free Software&lt;br&gt; <byte value="x9"/>Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA.&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Text Window</source>
+        <translation>Textfenster</translation>
+    </message>
+    <message>
+        <source>Graphics Window</source>
+        <translation>Grafikfenster</translation>
+    </message>
+    <message>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;o<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variable Watch Window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

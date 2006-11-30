@@ -164,6 +164,26 @@
         <source>Not enough points in array for poly()</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>reset() called when no file is open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to reset file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to mid()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>String not long enough for given starting character</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal argument to instr()</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -272,10 +292,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.8&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Ian Larsen&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;strong&gt;Thanks to our translators:&lt;/strong&gt; Immo-Gert Birn <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>View</source>
         <translation type="unfinished"></translation>
     </message>
@@ -285,6 +301,31 @@
     </message>
     <message>
         <source>Main</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to carry out printing.
+Please check your printer settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;o<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphics Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variable Watch Window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

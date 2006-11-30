@@ -34,6 +34,7 @@ HEADERS			+=	BasicWidget.h
 HEADERS			+=	ToolBar.h
 HEADERS			+=	ViewWidgetIFace.h
 HEADERS			+=	MainWindow.h
+HEADERS			+=	VariableWin.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
@@ -50,3 +51,4 @@ SOURCES			+=	BasicWidget.cpp
 SOURCES			+=	ToolBar.cpp
 SOURCES			+=	ViewWidgetIFace.cpp
 SOURCES			+=	MainWindow.cpp
+SOURCES			+=	VariableWin.cpp

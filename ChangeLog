@@ -1,3 +1,9 @@
+2006-11-28    <drblast@users.sourceforge.net>
+
+	* Interpreter.cpp (execByteCode): Changed variable window updates to only occur in debug mode.  Otherwise this is a severe performance hit for programs updating many variables in tight loops.
+
+	* VariableWin.cpp (clearTable): Added Variable Watch window.
+
 2006-11-26    <drblast@users.sourceforge.net>
 
 	* MainWindow.cpp (QMainWindow): Added two items to view menu to enable/disable text and graphics output windows.

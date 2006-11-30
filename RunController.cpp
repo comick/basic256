@@ -56,6 +56,7 @@ RunController::RunController(MainWindow *mw)
   QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
   QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
+  QObject::connect(i, SIGNAL(varAssignment(QString, QString)), mainwin->vardock, SLOT(addVar(QString, QString)));
 }
 
 
@@ -77,6 +78,7 @@ RunController::startDebug()
       statusbar->showMessage(tr("Running"));
       goutput->setFocus();
       i->start();
+      mainwin->vardock->clearTable();
       mainwin->runact->setEnabled(false);
       mainwin->debugact->setEnabled(false);
       mainwin->stepact->setEnabled(true);
@@ -102,6 +104,7 @@ RunController::startRun()
       statusbar->showMessage(tr("Running"));
       goutput->setFocus();
       i->start();
+      mainwin->vardock->clearTable();
       mainwin->runact->setEnabled(false);
       mainwin->debugact->setEnabled(false);
       mainwin->stepact->setEnabled(false);

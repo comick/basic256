@@ -51,6 +51,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	gdock->setObjectName( "gdock" );
 	DockWidget * tdock = new DockWidget(this);
 	tdock->setObjectName( "tdock" );
+
+	vardock = new VariableWin(this);
 	
 	BasicWidget * editorwgt = new BasicWidget();
 	editorwgt->setViewWidget(editor);
@@ -65,7 +67,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.9</h2> \
 					<p>Copyright &copy; 2006, The BASIC-256 Team</p>	\
 					<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
-					<p><i>You should have received a copy of the GNU General Public License along<br> \
+				        <p><i>You should have received a copy of the GNU General Public License along<br> \
 					with this program; if not, write to the Free Software Foundation, Inc.,<br> \
 					51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
   	QGridLayout *aboutgrid = new QGridLayout();
@@ -126,12 +128,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("View"));
 	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("Text Window"));
 	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window"));
+	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("Variable Watch Window"));
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
+	variableWinVisibleAct->setCheckable(true);
 	textWinVisibleAct->setChecked(true);
 	graphWinVisibleAct->setChecked(true);
+	variableWinVisibleAct->setChecked(false);
 	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), tdock, SLOT(setVisible(bool)));
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
+	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
 	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("Toolbars"));	
 	QAction *maintbaract = viewtbars->addAction(QObject::tr("Main"));
@@ -191,8 +197,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	maintbar->addAction(copyact);
   	maintbar->addAction(pasteact);
 	
-  	gdock->setFeatures(gdock->features() ^ QDockWidget::DockWidgetClosable);
-  	tdock->setFeatures(tdock->features() ^ QDockWidget::DockWidgetClosable);
+  	gdock->setFeatures(QDockWidget::DockWidgetMovable);
+  	tdock->setFeatures(QDockWidget::DockWidgetMovable);
+  	vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
 	gdock->setWidget(goutputwgt);
   	gdock->setWindowTitle(QObject::tr("Graphics Output"));
@@ -200,12 +207,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	tdock->setWidget(outputwgt);
   	tdock->setWindowTitle(QObject::tr("Text Output"));
 
+	vardock->setVisible(false);
+	vardock->setFloating(true);
+	
 	setCentralWidget(editorwgt);
   	addDockWidget(Qt::RightDockWidgetArea, tdock);
   	addDockWidget(Qt::RightDockWidgetArea, gdock);  
+  	addDockWidget(Qt::LeftDockWidgetArea, vardock);  
 }
 
 MainWindow::~MainWindow()
 {
-	
 }

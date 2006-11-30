@@ -7,4 +7,3 @@ type "make" and hit enter
 
 You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
 
-

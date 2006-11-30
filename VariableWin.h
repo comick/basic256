@@ -16,32 +16,21 @@
  **/
 
 
-#ifndef __MAINWINDOW_H
-#define __MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QAction>
+#include <QDockWidget>
+#include <QTableWidget>
 
-#include "BasicWidget.h"
-#include "BasicOutput.h"
-#include "BasicEdit.h"
-#include "BasicGraph.h"
-#include "VariableWin.h"
-
-class MainWindow : public QMainWindow
+class VariableWin : public QDockWidget
 {
-  	Q_OBJECT;
-public:
-  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
-	~MainWindow();
-	QAction * runact;
-	QAction * debugact;
-	QAction * stepact;
-	QAction * stopact;
-  	BasicEdit * editor;
-  	BasicOutput * output;
-	BasicGraph * goutput;
-	VariableWin * vardock;
+  Q_OBJECT;
+ public:
+  VariableWin(QWidget * parent);
+  
+ public slots:
+  void addVar(QString name, QString value);
+  void clearTable();
+  
+ private:
+  QTableWidget *table;
+  unsigned int rows;
 };
-
-#endif
