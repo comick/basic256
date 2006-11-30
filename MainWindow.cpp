@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
   	QObject::connect(saveasact, SIGNAL(triggered()), editor, SLOT(saveAsProgram()));
 	QObject::connect(printact, SIGNAL(triggered()), editor, SLOT(slotPrint()));
-  	QObject::connect(exitact, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
+  	QObject::connect(exitact, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 	// Edit menu
   	QMenu *editmenu = menuBar()->addMenu(QObject::tr("Edit"));
