@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="de">
+<!DOCTYPE TS><TS version="1.1" language="nl">
 <context>
     <name>BasicEdit</name>
     <message>
         <source>Line: </source>
-        <translation>Zeile: </translation>
+        <translation>Lijn: </translation>
     </message>
     <message>
         <source>New Program?</source>
-        <translation>Neues Programm?</translation>
+        <translation>Nieuw Programma?</translation>
     </message>
     <message>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
-        <translation>Willst Du wirklich den aktuellen Programmtext löschen und ein neues Programm beginnen?</translation>
+        <translation>Wilt u echt dit programma wijzigen en een nieuwe beginnen?</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -20,23 +20,23 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Annuleren</translation>
     </message>
     <message>
         <source>Untitled - BASIC-256</source>
-        <translation>Unbennant - BASIC-256</translation>
+        <translation>Naamloos - BASIC-256</translation>
     </message>
     <message>
         <source>Save file as</source>
-        <translation>Datei speichern unter</translation>
+        <translation>Bestand opslaan als</translation>
     </message>
     <message>
         <source>BASIC-256 File </source>
-        <translation>BASIC-256 Datei </translation>
+        <translation>BASIC-256 Bestand </translation>
     </message>
     <message>
         <source>Any File </source>
-        <translation>Alle Dateien </translation>
+        <translation>Alle Bestanden </translation>
     </message>
     <message>
         <source> - BASIC-256</source>
@@ -44,193 +44,197 @@
     </message>
     <message>
         <source>Open a file</source>
-        <translation>Datei öffnen</translation>
+        <translation>Bestand openen</translation>
     </message>
     <message>
         <source>BASIC-256 file </source>
-        <translation>BASIC-256 Datei </translation>
+        <translation>BASIC-256 Bestand </translation>
     </message>
 </context>
 <context>
     <name>Interpreter</name>
     <message>
         <source>ERROR on line </source>
-        <translation>FEHLER in Zeile </translation>
+        <translation>FOUT op lijn </translation>
     </message>
     <message>
         <source>Syntax error on line </source>
-        <translation>Syntax-Fehler in Zeile </translation>
+        <translation>Syntax fout op lijn </translation>
     </message>
     <message>
         <source>No such label</source>
-        <translation>Marke nicht gefunden</translation>
+        <translation>No such label</translation>
     </message>
     <message>
         <source>Next without FOR</source>
-        <translation>NEXT ohne FOR</translation>
+        <translation>NEXT zonder FOR</translation>
     </message>
     <message>
         <source>Array dimension too large</source>
-        <translation>Feld zu groß</translation>
+        <translation>Veld te groot</translation>
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
-        <translation>Kann ein Nicht-Zeichenkettenfeld nicht einem Zeichenkettenfeld zuweisen</translation>
+        <translation>Cannot assign non-string to string array</translation>
     </message>
     <message>
         <source>Array index out of bounds</source>
-        <translation>Feldindex außerhalb des gültigen Bereiches</translation>
+        <translation>Veld index buiten</translation>
     </message>
     <message>
         <source>Cannot access non-array variable</source>
-        <translation>Zugriff auf die Nicht-Feldvariable unmöglich</translation>
+        <translation>Cannot access non-array variable</translation>
     </message>
     <message>
         <source>Unknown variable</source>
-        <translation>Unbekannte Variable</translation>
+        <translation>Onbekent variable</translation>
     </message>
     <message>
         <source>Illegal argument to int()</source>
-        <translation>Illegales Argument für Befehl int()</translation>
+        <translation>Illegaal argument voor int()</translation>
     </message>
     <message>
         <source>Illegal argument to string()</source>
-        <translation>Illegales Argument für Befehl string()</translation>
+        <translation>Illegaal argument voor string()</translation>
     </message>
     <message>
         <source>Illegal argument to sin()</source>
-        <translation>Illegales Argument für Befehl sin()</translation>
+        <translation>Illegaal argument voor sin()</translation>
     </message>
     <message>
         <source>Illegal argument to cos()</source>
-        <translation>Illegales Argument für Befehl cos()</translation>
+        <translation>Illegaal argument voor cos()</translation>
     </message>
     <message>
         <source>Illegal argument to tan()</source>
-        <translation>Illegales Argument für Befehl tan()</translation>
+        <translation>Illegaal argument voor tan()</translation>
     </message>
     <message>
         <source>Illegal argument to ceil()</source>
-        <translation>Illegales Argument für Befehl ceil()</translation>
+        <translation>Illegaal argument voor ceil()</translation>
     </message>
     <message>
         <source>Illegal argument to floor()</source>
-        <translation>Illegales Argument für Befehl floor()</translation>
+        <translation>Illegaal argument voor floor()</translation>
     </message>
     <message>
         <source>Illegal argument to abs()</source>
-        <translation>Illegales Argument für Befehl abs()</translation>
+        <translation>Illegaal argument voor abs()</translation>
     </message>
     <message>
         <source>String in numeric expression</source>
-        <translation>Verwendung einer Zeichenkette in einem numerischen Ausdruck</translation>
+        <translation>String in numeric expression</translation>
     </message>
     <message>
         <source>Cannot compare strings with &gt; or &lt;=</source>
-        <translation>Kann Zeichenketten nicht mittels &gt; oder &lt;= vergleichen</translation>
+        <translation></translation>
     </message>
     <message>
         <source>Cannot compare strings with &lt; or &gt;=</source>
-        <translation>Kann Zeichenketten nicht mittels &lt; oder &gt;= vergleichen</translation>
+        <translation></translation>
     </message>
     <message>
         <source>Unable to open file</source>
-        <translation>Kann Datei nicht öffnen</translation>
+        <translation>Kan bestand niet openen</translation>
     </message>
     <message>
         <source>Illegal argument to open()</source>
-        <translation>Illegales Argument für Befehl open()</translation>
+        <translation>Illegaal argument voor open()</translation>
     </message>
     <message>
         <source>Can&apos;t read -- no open file.</source>
-        <translation>Lesen nicht möglich - im Moment ist keine Datei geöffnet.</translation>
+        <translation>Lezen nicht mogelijk - geen open bestand.</translation>
     </message>
     <message>
         <source>Unable to write to file</source>
-        <translation>Kann nicht in Datei schreiben</translation>
+        <translation>Kan niet in bestand schrijven</translation>
     </message>
     <message>
         <source>Illegal argument to write()</source>
-        <translation>Illegales Argument für Befehl write()</translation>
+        <translation>Illegaal argument voor write()</translation>
     </message>
     <message>
         <source>Illegal argument to length()</source>
-        <translation>Illegales Argument für Befehl length()</translation>
+        <translation>Illegaal argument voor length()</translation>
     </message>
     <message>
         <source>Illegal argument to poly()</source>
-        <translation>Illegales Argument für Befehl poly()</translation>
+        <translation>Illegaal argument voor poly()</translation>
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
-        <translation>Nicht genug Punkte im Feld für den poly()-Befehl </translation>
+        <translation>Niet genoeg punten in veld voor poly()</translation>
     </message>
     <message>
         <source>reset() called when no file is open</source>
-        <translation>reset() aufgerufen ohne dass eine Datei geöffnet ist</translation>
+        <translation>reset() gebruikt - maar er is geen bestand open</translation>
     </message>
     <message>
         <source>Unable to reset file</source>
-        <translation>Kann Datei nicht zurücksetzen (reset() nicht möglich)</translation>
+        <translation>reset() niet mogelijk</translation>
     </message>
     <message>
         <source>Illegal argument to mid()</source>
-        <translation>Illegales Argument für Befehl mid()</translation>
+        <translation>Illegaal argument voor mid()</translation>
     </message>
     <message>
         <source>String not long enough for given starting character</source>
-        <translation>Zeichenkette nicht lang genug für das gegebenen Anfangs-Zeichen</translation>
+        <translation>String niet lang genoeg voor het gegeven karakter</translation>
     </message>
     <message>
         <source>Illegal argument to instr()</source>
-        <translation>Illegales Argument für instr()</translation>
+        <translation>Illegaal argument voor instr()</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Run</source>
-        <translation>Ausführen</translation>
+        <translation>Uitvoeren</translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translation type="obsolete">Pause</translation>
     </message>
     <message>
         <source>Stop</source>
-        <translation>Stopp</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <source>Step</source>
-        <translation>Schritt</translation>
+        <translation>Stap</translation>
     </message>
     <message>
         <source>File</source>
-        <translation>Datei</translation>
+        <translation>Bestand</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Neu</translation>
+        <translation>Nieuw</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation>Öffnen</translation>
+        <translation>Openen</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Speichern</translation>
+        <translation>Opslaan</translation>
     </message>
     <message>
         <source>Save As</source>
-        <translation>Speichern unter</translation>
+        <translation>Opslaan als</translation>
     </message>
     <message>
         <source>Exit</source>
-        <translation>Beenden</translation>
+        <translation>Afsluiten</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Bearbeiten</translation>
+        <translation>Bewerken</translation>
     </message>
     <message>
         <source>Cut</source>
-        <translation>Ausschneiden</translation>
+        <translation>Knippen</translation>
     </message>
     <message>
         <source>Copy</source>
@@ -238,11 +242,15 @@
     </message>
     <message>
         <source>Paste</source>
-        <translation>Einfügen</translation>
+        <translation>Plakken</translation>
     </message>
     <message>
         <source>Select All</source>
-        <translation>Alles auswählen</translation>
+        <translation>Alles selecteren</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation type="obsolete">Extras</translation>
     </message>
     <message>
         <source>Debug</source>
@@ -250,96 +258,96 @@
     </message>
     <message>
         <source>Save Compiled Byte Code</source>
-        <translation>Übersetzten Bytecode speichern</translation>
+        <translation>Bytecode opslaan</translation>
     </message>
     <message>
         <source>About</source>
-        <translation>Über</translation>
+        <translation>Over</translation>
     </message>
     <message>
         <source>About BASIC-256</source>
-        <translation>Über BASIC-256</translation>
+        <translation>Over BASIC-256</translation>
     </message>
     <message>
         <source>Graphics Output</source>
-        <translation>Grafikfenster</translation>
+        <translation>Grafikkenvenster</translation>
     </message>
     <message>
         <source>Text Output</source>
-        <translation>Textfenster</translation>
+        <translation>Textvenster</translation>
     </message>
     <message>
         <source>Ready.</source>
-        <translation>Fertig.</translation>
+        <translation>Klaar.</translation>
     </message>
     <message>
         <source>Untitled - BASIC-256</source>
-        <translation>Unbennant - BASIC-256</translation>
+        <translation>Naamloos - BASIC-256</translation>
     </message>
     <message>
         <source>Print Code</source>
-        <translation>Quelltext drucken</translation>
+        <translation>Code afdrukken</translation>
     </message>
     <message>
         <source>Print</source>
-        <translation>Drucken</translation>
+        <translation>Afdrukken</translation>
     </message>
     <message>
         <source>Print Text Output</source>
-        <translation>Textfenster-Inhalt drucken</translation>
+        <translation>Tekstvenster afdrukken</translation>
     </message>
     <message>
         <source>Print Graphics Output</source>
-        <translation>Grafikfenster-Inhalt drucken</translation>
+        <translation>Grafikkenvenster afdrukken</translation>
     </message>
     <message>
         <source>View</source>
-        <translation>Ansicht</translation>
+        <translation>View</translation>
     </message>
     <message>
         <source>Toolbars</source>
-        <translation>Werkzeugleisten</translation>
+        <translation>Gereedschap</translation>
     </message>
     <message>
         <source>Main</source>
-        <translation>Hauptfenster</translation>
+        <translation>Hoofdvenster</translation>
     </message>
     <message>
         <source>Print Error</source>
-        <translation>Fehler beim Drucken</translation>
+        <translation>Fout bij afdrukken</translation>
     </message>
     <message>
         <source>Unable to carry out printing.
 Please check your printer settings.</source>
-        <translation>Kann nicht drucken.
-Bitte die Drucker-Einstellungen überprüfen.</translation>
+        <translation>Kan niet afdrukken.
+Check uw printer instelling.</translation>
     </message>
     <message>
         <source>Text Window</source>
-        <translation>Textfenster</translation>
+        <translation>Tekstvesnter</translation>
     </message>
     <message>
         <source>Graphics Window</source>
-        <translation>Grafikfenster</translation>
+        <translation>Grafikkenvenster</translation>
     </message>
     <message>
         <source>Variable Watch Window</source>
-        <translation>Variablenfenster</translation>
+        <translation>Variablenvenster</translation>
     </message>
     <message>
         <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Das BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Bitte beachten Sie die CONTRIBUTORS-Datei für eine Liste der Entwickler&lt;br&gt;und Übersetzer dieses Projektes.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem&lt;br&gt; <byte value="x9"/> Programm erhalten haben. Falls nicht, schreiben Sie an die Free Software&lt;br&gt; <byte value="x9"/>Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA.&lt;/i&gt;&lt;/p&gt;</translation>
+        <translation>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Het BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Lees alstublieft het CONTRIBUTORS bestand voor een lijst van de ontwikkelaars en vertalers van dit project.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
     <name>RunController</name>
     <message>
         <source>Running</source>
-        <translation>Wird ausgeführt</translation>
+        <translation>Uitgevoert</translation>
     </message>
     <message>
         <source>Ready.</source>
-        <translation>Fertig.</translation>
+        <translation>Klaar.</translation>
     </message>
     <message>
         <source>Paused</source>
@@ -347,34 +355,34 @@ Bitte die Drucker-Einstellungen überprüfen.</translation>
     </message>
     <message>
         <source>Save file as</source>
-        <translation>Datei speichern unter</translation>
+        <translation>Bestand opslaan als</translation>
     </message>
     <message>
         <source>BASIC-256 Compiled File </source>
-        <translation>BASIC-256 kompilierte Datei </translation>
+        <translation>BASIC-256 gecompileerd bestand </translation>
     </message>
     <message>
         <source>Any File </source>
-        <translation>Alle Dateien </translation>
+        <translation>Alle bestanden </translation>
     </message>
 </context>
 <context>
     <name>VariableWin</name>
     <message>
         <source>Variable Watch</source>
-        <translation>Variablen-Beobachtung</translation>
+        <translation>Variablenvenster</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Name</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation>Wert</translation>
+        <translation>Waarde</translation>
     </message>
     <message>
         <source>&lt;array </source>
-        <translation>&lt;Feld </translation>
+        <translation>&lt;veld </translation>
     </message>
 </context>
 </TS>

@@ -392,22 +392,28 @@ returnstmt: RETURN          { addOp(OP_RETURN); }
 ;
 
 colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
+         | SETCOLOR '(' COLOR ')' { addIntOp(OP_SETCOLOR, $3); }
 ;
 
 plotstmt: PLOT floatexpr ',' floatexpr { addOp(OP_PLOT); }
+        | PLOT '(' floatexpr ',' floatexpr ')' { addOp(OP_PLOT); }
 ;
 
 linestmt: LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_LINE); }
+        | LINE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_LINE); }
 ;
 
 
 circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
+          | CIRCLE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_CIRCLE); }
 ;
 
 circlestmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
+          | RECT '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RECT); }
 ;
 
 circlestmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
+          | POLY '(' VARIABLE ',' floatexpr ')' { addIntOp(OP_POLY, $3); }
 ;
 
 openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 
@@ -431,11 +437,14 @@ inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
 ;
 
 inputexpr: INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }
+         | INPUT '(' stringexpr ')' { addOp(OP_PRINT);  addOp(OP_INPUT); }
 ;
 
 printstmt: PRINT stringexpr { addOp(OP_PRINTN); }
+         | PRINT '(' stringexpr ')' { addOp(OP_PRINTN); }
          | PRINT floatexpr  { addOp(OP_PRINTN); }
          | PRINT stringexpr ';' { addOp(OP_PRINT); }
+         | PRINT '(' stringexpr ')' ';' { addOp(OP_PRINT); }
          | PRINT floatexpr  ';' { addOp(OP_PRINT); }
 ;
 
@@ -504,6 +513,7 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
 	    }
           | TOSTRING '(' floatexpr ')' { addOp(OP_STRING); }
           | MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
+          | READ '(' ')' { addOp(OP_READ); }
           | READ { addOp(OP_READ); }
 ;
 

@@ -362,5 +362,17 @@ Please check your printer settings.</source>
         <source>Variable Watch</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;array </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

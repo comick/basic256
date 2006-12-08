@@ -15,6 +15,9 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+using namespace std;
+#include <iostream>
+
 #include "VariableWin.h"
 #include <QHeaderView>
 
@@ -22,38 +25,57 @@ VariableWin::VariableWin (QWidget * parent)
   :QDockWidget(QString(tr("Variable Watch")), parent)
 {
   rows = 0;
-  table = new QTableWidget(rows, 2, this);
+  table = new QTreeWidget(this);
   table->setColumnCount(2);
-  table->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
-  table->horizontalHeader()->setVisible(false);
-  table->verticalHeader()->setVisible(false);
+  table->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
   setWidget(table);
 }
 
 
+
 void
-VariableWin::addVar(QString name, QString value)
+VariableWin::addVar(QString name, QString value, int arraylen)
 {
-  QTableWidgetItem *nameItem = new QTableWidgetItem(name);
-  QTableWidgetItem *valueItem = new QTableWidgetItem(value);
-  for (unsigned int i = 0; i < rows; i++)
+  QTreeWidgetItem *rowItem = new QTreeWidgetItem();
+
+  if (value != NULL && arraylen > -1)
     {
-      if (table->item(i, 0)->text() == name)
+      name = name + "[" + QString::number(arraylen) + "]";
+    }
+  else if (value == NULL)
+    {
+      value = tr("<array ") + QString::number(arraylen) + ">";
+    }
+  rowItem->setText(0, name);
+  rowItem->setText(1, value);
+
+  QList<QTreeWidgetItem *> list = table->findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
+
+  if (list.size() > 0)
+    {
+      list[0]->setText(1, value);
+      return;
+    }
+  
+ 
+  table->insertTopLevelItem(rows, rowItem);
+  if (arraylen > 0)
+    {
+      for (int i = 0; i < arraylen; i++)
 	{
-	  table->setItem(i, 1, valueItem);
-	  return;
+	  QTreeWidgetItem *temp = new QTreeWidgetItem(rowItem);
+	  temp->setText(0, name + "[" + QString::number(i) + "]");
+	  temp->setText(1, "");
 	}
     }
- 
-  table->setRowCount(++rows);
-  table->setItem(rows - 1, 0, nameItem);
-  table->setItem(rows - 1, 1, valueItem);
+  rows++;
 }
+
+
 
 void
 VariableWin::clearTable()
 {
   table->clear();
-  table->setRowCount(0);
   rows = 0;
 }

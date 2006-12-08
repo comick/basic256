@@ -27,6 +27,7 @@
 #include "BasicEdit.h"
 #include "BasicGraph.h"
 #include "VariableWin.h"
+#include "EditSyntaxHighlighter.h"
 
 class MainWindow : public QMainWindow
 {
@@ -42,6 +43,7 @@ public:
   	BasicOutput * output;
 	BasicGraph * goutput;
 	VariableWin * vardock;
+	EditSyntaxHighlighter * editsyntax;
 };
 
 #endif

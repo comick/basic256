@@ -18,7 +18,7 @@
 
 
 #include <QDockWidget>
-#include <QTableWidget>
+#include <QTreeWidget>
 
 class VariableWin : public QDockWidget
 {
@@ -27,10 +27,10 @@ class VariableWin : public QDockWidget
   VariableWin(QWidget * parent);
   
  public slots:
-  void addVar(QString name, QString value);
+  void addVar(QString name, QString value, int arraylen);
   void clearTable();
   
  private:
-  QTableWidget *table;
+  QTreeWidget *table;
   unsigned int rows;
 };

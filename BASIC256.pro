@@ -10,7 +10,8 @@ OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
 RESOURCES		+=	resources/resource.qrc
 TRANSLATIONS	=	Translations/basic256_en_US.ts \
-					Translations/basic256_de.ts
+		        Translations/basic256_de.ts \
+		        Translations/basic256_nl.ts
 
 exists( ./LEX/Makefile ) {
 	message( Running make for ./LEX/Makefile )
@@ -35,6 +36,7 @@ HEADERS			+=	ToolBar.h
 HEADERS			+=	ViewWidgetIFace.h
 HEADERS			+=	MainWindow.h
 HEADERS			+=	VariableWin.h
+HEADERS			+=	EditSyntaxHighlighter.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
@@ -52,3 +54,4 @@ SOURCES			+=	ToolBar.cpp
 SOURCES			+=	ViewWidgetIFace.cpp
 SOURCES			+=	MainWindow.cpp
 SOURCES			+=	VariableWin.cpp
+SOURCES			+=	EditSyntaxHighlighter.cpp

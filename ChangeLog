@@ -1,3 +1,7 @@
+2006-12-04    <drblast@users.sourceforge.net>
+
+	* VariableWin.cpp (addVar): Changed variable window to use TreeWidget instead of a list, to allow for showing arrays.
+
 2006-11-28    <drblast@users.sourceforge.net>
 
 	* Interpreter.cpp (execByteCode): Changed variable window updates to only occur in debug mode.  Otherwise this is a severe performance hit for programs updating many variables in tight loops.

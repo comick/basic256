@@ -134,7 +134,7 @@ class Interpreter : public QThread
   void getKey();
   void goToLine(int);
   void highlightLine(int);
-  void varAssignment(QString, QString);
+  void varAssignment(QString name, QString value, int arraylen);
 
  private:
   void printError(QString);

@@ -516,6 +516,7 @@ Interpreter::execByteCode()
 	delete temp;
       }
       break;
+
       
     case OP_GOTO:
       {
@@ -525,6 +526,7 @@ Interpreter::execByteCode()
 	op = byteCode + *i;
       }
       break;
+
 
     case OP_FOR:
       {
@@ -548,6 +550,11 @@ Interpreter::execByteCode()
 	else 
 	  {
 	    vars[*i].value.floatval = startnum->value.floatval;
+	  }
+
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
 	  }
 	
 	if (endnum->type == T_INT)
@@ -580,6 +587,7 @@ Interpreter::execByteCode()
       }
       break;
 
+
     case OP_NEXT:
       {
 	op++;
@@ -600,6 +608,12 @@ Interpreter::execByteCode()
 	double val = vars[*i].value.floatval;
 	val += temp->step;
 	vars[*i].value.floatval = val;
+
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
+	  }
+
 	if (temp->step > 0 && val <= temp->endNum)
 	  {
 	    op = temp->returnAddr;
@@ -827,6 +841,11 @@ Interpreter::execByteCode()
 	    vars[var].value.arr = temp;
 	  }
 	delete one;
+
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[var]), NULL, size));
+	  }
       }
       break;
 
@@ -855,6 +874,10 @@ Interpreter::execByteCode()
 	strarray[index] = strdup(one->value.string);
 	delete one;
 	delete two;
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+	  }
       }
       break;
 	  
@@ -908,6 +931,10 @@ Interpreter::execByteCode()
 	array[index] = val;
 	delete one;
 	delete two;
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+	  }
       }
       break;
     
@@ -1951,7 +1978,7 @@ Interpreter::execByteCode()
 	delete temp;
 	if(debugMode)
 	  {
-	    emit(varAssignment(QString(symtable[*num]), QString::number(vars[*num].value.floatval)));
+	    emit(varAssignment(QString(symtable[*num]), QString::number(vars[*num].value.floatval), -1));
 	  }
       }
       break;
@@ -1976,7 +2003,7 @@ Interpreter::execByteCode()
 	delete temp;
 	if(debugMode)
 	  {
-	    emit(varAssignment(QString(symtable[*num]), QString(vars[*num].value.string)));
+	    emit(varAssignment(QString(symtable[*num]), QString(vars[*num].value.string), -1));
 	  }
       }
       break;

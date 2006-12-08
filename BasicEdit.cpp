@@ -149,37 +149,37 @@ void
 BasicEdit::loadProgram()
 {
   QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
-    
-    if (s != NULL)
-      {
-	QFile f(s);
-	f.open(QIODevice::ReadOnly);
-	QByteArray ba = f.readAll();
-	this->setPlainText(ba.data());
-	f.close();
-	filename = s;
-	QFileInfo fi(f);
-	mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
-	QDir::setCurrent(fi.absolutePath());
-      }
+  
+  if (s != NULL)
+    {
+      QFile f(s);
+      f.open(QIODevice::ReadOnly);
+      QByteArray ba = f.readAll();
+      this->setPlainText(ba.data());
+      f.close();
+      filename = s;
+      QFileInfo fi(f);
+      mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
+      QDir::setCurrent(fi.absolutePath());
+    }
 }
 
 void BasicEdit::slotPrint()
 {
-	QTextDocument *document = this->document();
-    QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
-    dialog->setWindowTitle(QObject::tr("Print Code"));
-	
-	if (dialog->exec() == QDialog::Accepted)
+  QTextDocument *document = this->document();
+  QPrinter printer;
+  QPrintDialog *dialog = new QPrintDialog(&printer, this);
+  dialog->setWindowTitle(QObject::tr("Print Code"));
+  
+  if (dialog->exec() == QDialog::Accepted)
+    {
+      if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
 	{
-		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
-		{
-        	document->print(&printer);
-		}
-		else
-		{
-			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-		}
+	  document->print(&printer);
 	}
+      else
+	{
+	  QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+	}
+    }
 }
