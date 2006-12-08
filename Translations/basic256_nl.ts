@@ -71,23 +71,23 @@
     </message>
     <message>
         <source>Array dimension too large</source>
-        <translation>Veld te groot</translation>
+        <translation>Array te groot</translation>
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
-        <translation>Cannot assign non-string to string array</translation>
+        <translation>Kan niet niet-string aan string array toewijzen</translation>
     </message>
     <message>
         <source>Array index out of bounds</source>
-        <translation>Veld index buiten</translation>
+        <translation>Array index buiten grens</translation>
     </message>
     <message>
         <source>Cannot access non-array variable</source>
-        <translation>Cannot access non-array variable</translation>
+        <translation>Geen toegang tot niet-array variabele</translation>
     </message>
     <message>
         <source>Unknown variable</source>
-        <translation>Onbekent variable</translation>
+        <translation>Onbekende variabele</translation>
     </message>
     <message>
         <source>Illegal argument to int()</source>
@@ -127,11 +127,11 @@
     </message>
     <message>
         <source>Cannot compare strings with &gt; or &lt;=</source>
-        <translation></translation>
+        <translation>Kan strings niet met &gt; of &lt; verglijken</translation>
     </message>
     <message>
         <source>Cannot compare strings with &lt; or &gt;=</source>
-        <translation></translation>
+        <translation>Kan strings niet met &lt; of &gt; verglijken</translation>
     </message>
     <message>
         <source>Unable to open file</source>
@@ -163,7 +163,7 @@
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
-        <translation>Niet genoeg punten in veld voor poly()</translation>
+        <translation>Niet genoeg punten in array voor poly()</translation>
     </message>
     <message>
         <source>reset() called when no file is open</source>
@@ -332,11 +332,11 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>Variable Watch Window</source>
-        <translation>Variablenvenster</translation>
+        <translation>Variabelenvenster</translation>
     </message>
     <message>
         <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Het BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Lees alstublieft het CONTRIBUTORS bestand voor een lijst van de ontwikkelaars en vertalers van dit project.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
+        <translation>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.1&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Het BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Lees alstublieft het CONTRIBUTORS bestand voor een lijst van ontwikkelaars en vertalers voor dit project.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;U zou een exemplaar van de GNU General Public License samen&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>met dit programma moeten ontvangen hebben; als niet, schrijf aan the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -370,7 +370,7 @@ Check uw printer instelling.</translation>
     <name>VariableWin</name>
     <message>
         <source>Variable Watch</source>
-        <translation>Variablenvenster</translation>
+        <translation>Variabelenvenster</translation>
     </message>
     <message>
         <source>Name</source>
@@ -382,7 +382,7 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>&lt;array </source>
-        <translation>&lt;veld </translation>
+        <translation>&lt;array </translation>
     </message>
 </context>
 </TS>
