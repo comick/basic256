@@ -1,3 +1,19 @@
+2006-12-12    <drblast@users.sourceforge.net>
+
+	* LEX\basicParse.y: Added sound command.
+
+	* LEX\basicParse.l: Added sound command.
+
+	* RunController.cpp (playSound): Added sound support.
+
+	* Interpreter.cpp (execByteCode): Added sound support.
+
+2006-12-10    <drblast@users.sourceforge.net>
+
+	* BasicEdit.cpp (newProgram): fixed file overwrite bug when new program saves as last file's name.
+
+	* LEX\basicParse.l: Added semicolon as alternate remark command
+
 2006-12-04    <drblast@users.sourceforge.net>
 
 	* VariableWin.cpp (addVar): Changed variable window to use TreeWidget instead of a list, to allow for showing arrays.

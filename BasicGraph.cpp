@@ -34,6 +34,7 @@ int currentKey;
 
 BasicGraph::BasicGraph(BasicOutput *o)
 {
+	
   image = new QImage(imagedata, 300, 300, QImage::Format_ARGB32);
   imask = new QImage(maskdata, 300, 300, QImage::Format_Mono);
   output = o;
@@ -78,7 +79,7 @@ bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)
 		
 	m_usesToolBar = true;
 	m_usesMenu = true;
-	
+
 	return true;	
 }
 

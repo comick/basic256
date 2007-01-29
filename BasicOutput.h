@@ -29,20 +29,20 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  	BasicOutput();
- 	
-  	char *inputString;
- 	void inputStart();
-
- 	virtual bool initActions(QMenu *, ToolBar *);
-
+  BasicOutput();
+  
+  char *inputString;
+  void inputStart();
+  
+  virtual bool initActions(QMenu *, ToolBar *);
+  
  public slots:
-  	void getInput();
-	void slotPrint(); 
+  void getInput();
+  void slotPrint(); 
  
  signals:
   void inputEntered(QString);
-
+  
  protected:
   void keyPressEvent(QKeyEvent *);
  

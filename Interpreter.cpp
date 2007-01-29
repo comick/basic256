@@ -359,6 +359,7 @@ Interpreter::initialize()
   callstack = NULL;
   forstack = NULL;
   fastgraphics = false;
+  pencolor = Qt::black;
   status = R_RUNNING;
   once = true;
   currentLine = 1;
@@ -1513,6 +1514,31 @@ Interpreter::execByteCode()
       }
       break;
 
+    case OP_SOUND:
+      {
+	op++;
+	POP2;
+	int oneval;
+	int twoval;
+	
+	if (one->type == T_STRING || two->type == T_STRING)
+	  {
+	    printError(tr("Sound must have a frequency and duration."));
+	    return -1;
+	  }
+
+	if (one->type == T_INT) oneval = one->value.intval; else oneval = (int) one->value.floatval;
+	if (two->type == T_INT) twoval = two->value.intval; else twoval = (int) two->value.floatval;
+	
+	emit(soundReady(oneval, twoval));
+	delete one;
+	delete two;
+      }
+      break;
+	
+	
+
+
     case OP_SETCOLOR:
       {
 	op++;
@@ -1614,10 +1640,10 @@ Interpreter::execByteCode()
 	    ian2.setPen(Qt::color1);
 	    ian2.setBrush(Qt::color1);
 	  }
-	if (x1val > 0 && y1val > 0)
+	if (x1val >= 0 && y1val >= 0)
 	  {
-	    ian.drawLine(x0val, y0val, x1val - 1, y1val - 1);
-	    ian2.drawLine(x0val, y0val, x1val - 1, y1val - 1);
+	    ian.drawLine(x0val, y0val, x1val, y1val);
+	    ian2.drawLine(x0val, y0val, x1val, y1val);
 	  }
 	ian.end();
 	ian2.end();
@@ -1693,15 +1719,6 @@ Interpreter::execByteCode()
 	op++;
 	int *i = (int *) op;
 	op += sizeof(int);
-	stackval *c = stack.pop();
-
-	if (c->type != T_INT)
-	{
-	    printError(tr("Illegal argument to poly()"));
-	    return -1;
-	}
-
-	int pairs = c->value.intval;
 
 	if (vars[*i].type != T_ARRAY)
 	  {
@@ -1709,7 +1726,9 @@ Interpreter::execByteCode()
 	    return -1;
 	  }
 
-	if (vars[*i].value.arr->size < (pairs * 2))
+	int pairs = vars[*i].value.arr->size / 2;
+
+	if (pairs < 3)
 	  {
 	    printError(tr("Not enough points in array for poly()"));
 	    return -1;
@@ -1743,7 +1762,6 @@ Interpreter::execByteCode()
 	    waitCond.wait(&mutex);
 	    mutex.unlock();
 	  }
-	delete c;
       }
       break;
 

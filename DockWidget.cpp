@@ -21,14 +21,12 @@ DockWidget::DockWidget( const QString & title, QWidget * parent, Qt::WindowFlags
 :	QDockWidget( title, parent, flags )
 ,	m_pWidget( NULL )
 {
-	
 }
 
 DockWidget::DockWidget( QWidget * parent, Qt::WindowFlags flags )
 :	QDockWidget( parent, flags )
 ,	m_pWidget( NULL )
 {
-	
 }
 
 void DockWidget::setWidget( QWidget * vpWidget )

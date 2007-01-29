@@ -84,45 +84,45 @@ BasicOutput::keyPressEvent(QKeyEvent *e)
 
 bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar)
 {
-	if ((NULL == vMenu) || (NULL == vToolBar))
-	{
-		return false;
-	}
+  if ((NULL == vMenu) || (NULL == vToolBar))
+    {
+      return false;
+    }
+  
+  QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+  QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
+  QAction *printAct = vMenu->addAction(QObject::tr("Print"));
 
-	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-	QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
-	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
-
-	vToolBar->addAction(copyAct);
-	vToolBar->addAction(pasteAct);
-	vToolBar->addAction(printAct);
+  vToolBar->addAction(copyAct);
+  vToolBar->addAction(pasteAct);
+  vToolBar->addAction(printAct);
 	
-	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
-	QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
-	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+  QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+  QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+  QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
 
-	m_usesToolBar = true;
-	m_usesMenu = true;
+  m_usesToolBar = true;
+  m_usesMenu = true;
 	
-	return true;
+  return true;
 }
 
 void BasicOutput::slotPrint()
 {
-	QTextDocument *document = this->document();
-	QPrinter printer;
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	dialog->setWindowTitle(QObject::tr("Print Text Output"));
+  QTextDocument *document = this->document();
+  QPrinter printer;
+  QPrintDialog *dialog = new QPrintDialog(&printer, this);
+  dialog->setWindowTitle(QObject::tr("Print Text Output"));
 	
-	if (dialog->exec() == QDialog::Accepted)
+  if (dialog->exec() == QDialog::Accepted)
+    {
+      if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
 	{
-		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
-		{
-			document->print(&printer);
-		}
-		else
-		{
-			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-		}		
+	  document->print(&printer);
 	}
+      else
+	{
+	  QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+	}		
+    }
 }

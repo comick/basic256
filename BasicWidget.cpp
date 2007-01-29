@@ -22,88 +22,88 @@
 #include "BasicWidget.h"
 
 BasicWidget::BasicWidget(const QString & title, QWidget * parent, Qt::WindowFlags f)
-:	QWidget(parent, f)
-,	m_viewWidget(NULL)
-,	m_toolBar(NULL)
-,	m_menu(NULL)
+  :	QWidget(parent, f)
+  ,	m_viewWidget(NULL)
+  ,	m_toolBar(NULL)
+  ,	m_menu(NULL)
 {
-	m_toolBar = new ToolBar();
-	m_menu = new QMenu(title);
-	m_layout = new QVBoxLayout();
+  m_toolBar = new ToolBar();
+  m_menu = new QMenu(title);
+  m_layout = new QVBoxLayout();
 
-	setLayout(m_layout);
+  setLayout(m_layout);
 }
 
 BasicWidget::~BasicWidget()
 {
-	if (NULL != m_toolBar)
-	{
-		delete m_toolBar;
-		m_toolBar = NULL;
-	}		
+  if (NULL != m_toolBar)
+    {
+      delete m_toolBar;
+      m_toolBar = NULL;
+    }		
 }
 
 bool BasicWidget::setViewWidget(QWidget * view)
 {
-	if (NULL == view)
-	{
-		return false;
-	}
+  if (NULL == view)
+    {
+      return false;
+    }
 	
-	m_viewWidget = dynamic_cast< ViewWidgetIFace * >(view);
+  m_viewWidget = dynamic_cast< ViewWidgetIFace * >(view);
 
-	if (NULL != m_viewWidget)
+  if (NULL != m_viewWidget)
+    {
+      if (m_viewWidget->initActions(m_menu, m_toolBar))
 	{
-		if (m_viewWidget->initActions(m_menu, m_toolBar))
-		{
-			if (!m_viewWidget->usesToolBar())
-			{
-				delete m_toolBar;
-				m_toolBar = NULL;
-			}
-			else
-			{
-				m_layout->addWidget(m_toolBar);
-			}
-			if (!m_viewWidget->usesMenu())
-			{
-				delete m_menu;
-				m_menu = NULL;
-			}
-		}
+	  if (!m_viewWidget->usesToolBar())
+	    {
+	      delete m_toolBar;
+	      m_toolBar = NULL;
+	    }
+	  else
+	    {
+	      m_layout->addWidget(m_toolBar);
+	    }
+	  if (!m_viewWidget->usesMenu())
+	    {
+	      delete m_menu;
+	      m_menu = NULL;
+	    }
+	}
 
-		m_layout->addWidget(view, 1);
+      m_layout->addWidget(view, 1);
 		
-		return true;
-	}
+      return true;
+    }
 	
-	return false;
+  return false;
 }
 
 void BasicWidget::slotShowToolBar(const bool vShow)
 {
-	if (NULL == m_toolBar)
-		return;
+  if (NULL == m_toolBar)
+    return;
 	
-	m_toolBar->setShown(vShow);
+  m_toolBar->setShown(vShow);
 }
 
 bool BasicWidget::usesToolBar()
 {
-	if (NULL != m_viewWidget)
-	{
-		return m_viewWidget->usesToolBar();
-	}
+  if (NULL != m_viewWidget)
+    {
+      return m_viewWidget->usesToolBar();
+    }
 	
-	return false;
+  return false;
 }
 
 bool BasicWidget::usesMenu()
 {
-	if (NULL != m_viewWidget)
-	{
-		return m_viewWidget->usesMenu();
-	}
+  if (NULL != m_viewWidget)
+    {
+      return m_viewWidget->usesMenu();
+    }
 	
-	return false;
+  return false;
 }

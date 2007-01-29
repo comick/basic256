@@ -23,6 +23,7 @@ using namespace std;
 #include <QTranslator>
 #include <QLocale>
 #include <QStatusBar>
+#include <QFile>
 
 #include "MainWindow.h"
 
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
   qapp.installTranslator(&qtTranslator);
   
   QTranslator kbTranslator;
-  kbTranslator.load("basic256_" + QLocale::system().name(), "./Translations/");
+  kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
   qapp.installTranslator(&kbTranslator);
 
   MainWindow *mainwin = new MainWindow();
@@ -43,9 +44,20 @@ int main(int argc, char *argv[])
 	mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
   
   mainwin->resize(800,600);
-  mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
+  mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();
-  
+ 
+  // load initial file
+  if (argc == 2) {
+    QString s = QString::fromAscii(argv[1]);
+    if (s.endsWith(".kbs")) {
+        QFile f(s);
+        if (f.exists()) {
+            mainwin->editor->loadFile(s);
+        }
+    }
+  }
+
   return qapp.exec();
 }

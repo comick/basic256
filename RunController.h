@@ -43,6 +43,7 @@ class RunController : public QObject
   void runResumed();
 
  public slots:
+  void playSound(int, int);
   void inputFilter(QString text);
   void outputFilter(QString text);
   void outputClear();

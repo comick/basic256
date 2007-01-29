@@ -183,7 +183,7 @@ void EditSyntaxHighlighter::initComments()
 	
   m_commentFmt.setForeground(Qt::darkGreen);
   m_commentFmt.setFontItalic(true);
-  rule.pattern = QRegExp("rem[^\n]*");
+  rule.pattern = QRegExp("(([Rr][Ee][Mm][ ])|#)[^\n]*");
   rule.format = m_commentFmt;
   m_standardRules.append(rule);	
 }

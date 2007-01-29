@@ -104,6 +104,7 @@ BasicEdit::newProgram()
     {
       clear();
       mainwin->setWindowTitle(tr("Untitled - BASIC-256"));
+      filename = "";
     }
 }
 
@@ -148,8 +149,14 @@ BasicEdit::saveAsProgram()
 void
 BasicEdit::loadProgram()
 {
-  QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
-  
+    QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
+
+    loadFile(s);
+}
+
+void
+BasicEdit::loadFile(QString s)
+{
   if (s != NULL)
     {
       QFile f(s);
@@ -162,7 +169,9 @@ BasicEdit::loadProgram()
       mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
       QDir::setCurrent(fi.absolutePath());
     }
+
 }
+
 
 void BasicEdit::slotPrint()
 {

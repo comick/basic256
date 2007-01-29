@@ -80,6 +80,8 @@
 #define OP_CLOSE		0x38
 #define OP_RESET		0x39
 
+#define OP_SOUND		0x40
+
 
 //Int argument ops
 #define OP_GOTO          	0x41
