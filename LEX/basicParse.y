@@ -37,6 +37,7 @@
     char *byteCode = NULL;
     unsigned int byteOffset = 0;
     unsigned int oldByteOffset = 0;
+    unsigned int listlen = 0;
 
     struct label 
     {
@@ -219,7 +220,7 @@
 %token TOINT TOSTRING LENGTH MID INSTR
 %token CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
-%token PAUSE
+%token PAUSE SOUND
 
 %union 
 {
@@ -285,6 +286,8 @@ statement: gotostmt
          | printstmt
          | plotstmt
          | circlestmt
+         | rectstmt
+         | polystmt
          | linestmt
          | numassign
          | stringassign
@@ -304,6 +307,7 @@ statement: gotostmt
          | writestmt
          | closestmt
          | resetstmt
+         | soundstmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -336,7 +340,6 @@ ifexpr: IF compoundboolexpr
          }
 ;
 
-
 compoundboolexpr: boolexpr
                 | compoundboolexpr AND compoundboolexpr {addOp(OP_AND); }
                 | compoundboolexpr OR compoundboolexpr { addOp(OP_OR); }
@@ -359,6 +362,7 @@ strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRA
 ;
 
 arrayassign: VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASSIGN, $1); }
+           | VARIABLE '=' immediatelist { addInt2Op(OP_ARRAYLISTASSIGN, $1, listlen); listlen = 0; }
 ;
 
 numassign: VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
@@ -395,6 +399,10 @@ colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
          | SETCOLOR '(' COLOR ')' { addIntOp(OP_SETCOLOR, $3); }
 ;
 
+soundstmt: SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
+         | SOUND floatexpr ',' floatexpr         { addOp(OP_SOUND); }
+;
+
 plotstmt: PLOT floatexpr ',' floatexpr { addOp(OP_PLOT); }
         | PLOT '(' floatexpr ',' floatexpr ')' { addOp(OP_PLOT); }
 ;
@@ -408,12 +416,15 @@ circlestmt: CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
           | CIRCLE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_CIRCLE); }
 ;
 
-circlestmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
+rectstmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
           | RECT '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RECT); }
 ;
 
-circlestmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
+polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
           | POLY '(' VARIABLE ',' floatexpr ')' { addIntOp(OP_POLY, $3); }
+          | POLY VARIABLE { addIntOp(OP_POLY, $2); }
+          | POLY '(' VARIABLE ')' { addIntOp(OP_POLY, $3); }
+          | POLY immediatelist { addIntOp(OP_POLY, listlen); listlen=0; }
 ;
 
 openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 
@@ -446,6 +457,13 @@ printstmt: PRINT stringexpr { addOp(OP_PRINTN); }
          | PRINT stringexpr ';' { addOp(OP_PRINT); }
          | PRINT '(' stringexpr ')' ';' { addOp(OP_PRINT); }
          | PRINT floatexpr  ';' { addOp(OP_PRINT); }
+;
+
+immediatelist: '{' floatlist '}'
+;
+
+floatlist: floatexpr { listlen = 1; }
+         | floatexpr ',' floatlist { listlen++; }
 ;
 
 floatexpr: '(' floatexpr ')' { $$ = $2; }

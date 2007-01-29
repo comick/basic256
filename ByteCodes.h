@@ -103,7 +103,8 @@
 #define OP_STRARRAYINPUT 	0x51
 
 //2 Int argument ops
-#define OP_DUMMY		0x60
+#define OP_ARRAYLISTASSIGN	0x60
+#define OP_STRARRAYLISTASSIGN	0x61
 
 
 //Float argument ops

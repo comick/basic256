@@ -938,7 +938,39 @@ Interpreter::execByteCode()
 	  }
       }
       break;
+
+    case OP_ARRAYLISTASSIGN:
+      {
+	op++;
+	int *i = (int *) op;
+	int items = i[1];
+	op += 2 * sizeof(int);
+	int index;
+	double val;
+	double *array;
+	
+	if (items >= vars[*i].value.arr->size || items < 0)
+	  {
+	    printError(tr("Array dimension too small"));
+	    return -1;
+	  }
+	
+	array = vars[*i].value.arr->data.fdata;
+	for (index = items - 1; index >= 0; index--)
+	  {
+	    stackval *one = stack.pop();
+	    if (one->type == T_INT) val = (double) one->value.intval; else val = one->value.floatval;
+	    array[index] = val;
+	    delete one;
+	    if(debugMode)
+	      {
+		emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+	      }
+	  }
+      }
+      break;
     
+
     case OP_DEREF:
       {
 	op++;
@@ -1718,39 +1750,58 @@ Interpreter::execByteCode()
       {
 	op++;
 	int *i = (int *) op;
+	int items = *i;
 	op += sizeof(int);
-
-	if (vars[*i].type != T_ARRAY)
-	  {
-	    printError(tr("Illegal argument to poly()"));
-	    return -1;
-	  }
-
-	int pairs = vars[*i].value.arr->size / 2;
-
-	if (pairs < 3)
-	  {
-	    printError(tr("Not enough points in array for poly()"));
-	    return -1;
-	  }
-
-	double *array = vars[*i].value.arr->data.fdata;
-
-	QPointF points[pairs];
-
-	for (int j = 0; j < pairs; j++)
-	  {
-	    points[j].setX(array[j*2]);
-	    points[j].setY(array[(j*2)+1]);
-	  }
+	int pairs = 0;
 
 	QPainter poly(image);
 	QPainter poly2(imask);
         poly.setPen(pencolor);
         poly.setBrush(pencolor);
 
-	poly.drawPolygon(points, pairs);
-	poly2.drawPolygon(points, pairs);
+	if (vars[*i].type == T_ARRAY)
+	  {
+	    pairs = vars[*i].value.arr->size / 2;
+	    if (pairs < 3)
+	      {
+		printError(tr("Not enough points in array for poly()"));
+		return -1;
+	      }
+	    
+	    double *array = vars[*i].value.arr->data.fdata;
+	    QPointF points[pairs];
+	    
+	    for (int j = 0; j < pairs; j++)
+	      {
+		points[j].setX(array[j*2]);
+		points[j].setY(array[(j*2)+1]);
+	      }
+	    poly.drawPolygon(points, pairs);
+	    poly2.drawPolygon(points, pairs);
+	  }
+	else //used immediate list
+	  {
+	    pairs = items / 2;
+	    if (pairs < 3)
+	      {
+		printError(tr("Not enough points in array for poly()"));
+		return -1;
+	      }
+	    QPointF points[pairs];
+	    for (int j = 0; j < pairs; j++)
+	      {
+		int xval, yval;
+		POP2;
+		if (one->type == T_INT) xval = one->value.intval; else xval = (int) one->value.floatval;
+		if (two->type == T_INT) yval = two->value.intval; else yval = (int) two->value.floatval;
+		points[j].setX(xval);
+		points[j].setY(yval);
+		delete one;
+		delete two;
+	      }
+	    poly.drawPolygon(points, pairs);
+	    poly2.drawPolygon(points, pairs);
+	  }
 
 	poly.end();
 	poly2.end();
@@ -1764,7 +1815,6 @@ Interpreter::execByteCode()
 	  }
       }
       break;
-
 
     case OP_CIRCLE:
       {
