@@ -11,10 +11,10 @@ moveBall:
   x = x + xinc
   y = y + yinc
   rem This is where we check for collisions with the wall
-  if y > 280 then yinc = -yinc
-  if x > 280 then xinc = -xinc
-  if x < 14 then xinc = -xinc
-  if y < 14 then yinc = -yinc
+  if y > 280 then yinc = -yinc : sound(440, 50)
+  if x > 280 then xinc = -xinc : sound(440, 50)
+  if x < 14 then xinc = -xinc : sound(440, 50)
+  if y < 14 then yinc = -yinc : sound(440, 50)
   rem clear the screen, then draw the ball
   clg
   gosub drawBall 

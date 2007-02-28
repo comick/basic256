@@ -9,7 +9,6 @@ bally = 0
 ballxinc = 5 
 ballyinc = 5 
 xinc = 5 
-score = 0
 
 loop1: 
 a = key 
@@ -37,7 +36,7 @@ moveball:
 ballx = ballx + ballxinc 
 bally = bally + ballyinc 
 if bally > 270 then gosub checkball 
-if bally < 5 then ballyinc = -ballyinc : score = score + 10 : gosub writescore
+if bally < 5 then ballyinc = -ballyinc 
 if ballx > 295 then ballxinc = -ballxinc 
 if ballx < 5 then ballxinc = -ballxinc 
 return 
@@ -50,8 +49,7 @@ ballxinc = ((ballx - x) - 50) / 10
 return 
 
 missed: 
-print "You Missed!!"
-score = score - 50 
+print "You Missed!!" 
 bally = 10 
 return 
 
@@ -61,8 +59,3 @@ circle ballx, bally, 5
 color white
 circle ballx, bally, 4
 return 
-
-writescore:
-cls
-print "Score: " + string(score)
-return

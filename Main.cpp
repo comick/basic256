@@ -24,19 +24,49 @@ using namespace std;
 #include <QLocale>
 #include <QStatusBar>
 #include <QFile>
+#include <unistd.h>
 
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
+  int opt = getopt(argc, argv, "l:");
+  char *lang = NULL;
+
+  while (opt != -1)
+    {
+      switch ((char) opt)
+	{
+	case 'l':
+	  lang = optarg;
+	  break;
+	default:
+	  break;
+	}
+      opt = getopt(argc, argv, "l:");
+    }
 
   QTranslator qtTranslator;
-  qtTranslator.load("qt_" + QLocale::system().name());
+  if (lang)
+    {
+      qtTranslator.load("qt_" + QString(lang));
+    }
+  else
+    {
+      qtTranslator.load("qt_" + QLocale::system().name());
+    }
   qapp.installTranslator(&qtTranslator);
   
   QTranslator kbTranslator;
-  kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
+  if (lang)
+    {
+      kbTranslator.load("basic256_" + QString(lang), qApp->applicationDirPath() + "/Translations/");
+    }
+  else
+    {
+      kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
+    }
   qapp.installTranslator(&kbTranslator);
 
   MainWindow *mainwin = new MainWindow();
@@ -47,10 +77,10 @@ int main(int argc, char *argv[])
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();
- 
+
   // load initial file
-  if (argc == 2) {
-    QString s = QString::fromAscii(argv[1]);
+  if (argv[optind]) {
+    QString s = QString::fromAscii(argv[optind]);
     if (s.endsWith(".kbs")) {
         QFile f(s);
         if (f.exists()) {

@@ -8,5 +8,6 @@
  		<file>images/step.png</file>
  		<file>images/stop.png</file>
  		<file>images/debug.png</file>
+ 		<file>images/basic256.ico</file>
 	</qresource>
 </RCC>

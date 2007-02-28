@@ -359,6 +359,7 @@ boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); }
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
+           | STRINGVAR '=' immediatestrlist { addInt2Op(OP_STRARRAYLISTASSIGN, $1, listlen); listlen = 0; }
 ;
 
 arrayassign: VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASSIGN, $1); }
@@ -459,6 +460,9 @@ printstmt: PRINT stringexpr { addOp(OP_PRINTN); }
          | PRINT floatexpr  ';' { addOp(OP_PRINT); }
 ;
 
+immediatestrlist: '{' stringlist '}'
+;
+
 immediatelist: '{' floatlist '}'
 ;
 
@@ -513,6 +517,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
+;
+
+stringlist: stringexpr { listlen = 1; }
+          | stringexpr ',' stringlist { listlen++; }
 ;
 
 stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }

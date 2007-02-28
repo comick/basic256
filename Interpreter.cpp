@@ -834,7 +834,7 @@ Interpreter::execByteCode()
 	    char **c = new char*[size];
 	    for (int j = 0; j < size; j++)
 	      {
-		c[j] = NULL;
+		c[j] = strdup("");
 	      }
 	    vars[var].type = T_STRARRAY;
 	    temp->data.sdata = c;
@@ -872,6 +872,10 @@ Interpreter::execByteCode()
 	  }
 
 	strarray = vars[*i].value.arr->data.sdata;
+	if (strarray[index])
+	  {
+	    delete(strarray[index]);
+	  }
 	strarray[index] = strdup(one->value.string);
 	delete one;
 	delete two;
@@ -882,6 +886,49 @@ Interpreter::execByteCode()
       }
       break;
 	  
+    case OP_STRARRAYLISTASSIGN:
+      {
+	op++;
+	int *i = (int *) op;
+	int items = i[1];
+	op += 2 * sizeof(int);
+	int index;
+	char *str;
+	char **strarray;
+	
+	if (items > vars[*i].value.arr->size || items < 0)
+	  {
+	    printError(tr("Array dimension too small"));
+	    return -1;
+	  }
+	
+	strarray = vars[*i].value.arr->data.sdata;
+	for (index = items - 1; index >= 0; index--)
+	  {
+	    stackval *one = stack.pop();
+	    if (one->type == T_STRING)
+	      {
+		str = strdup(one->value.string); 
+	      }
+	    else 
+	      {
+		printError(tr("Array dimension too small"));
+		return -1;
+	      }
+	    if (strarray[index])
+	      {
+		delete(strarray[index]);
+	      }
+	    strarray[index] = str;
+	    delete one;
+	    if(debugMode)
+	      {
+		emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+	      }
+	  }
+      }
+      break;
+    
 
     case OP_STRARRAYINPUT:
       {
@@ -939,6 +986,7 @@ Interpreter::execByteCode()
       }
       break;
 
+
     case OP_ARRAYLISTASSIGN:
       {
 	op++;
@@ -949,7 +997,7 @@ Interpreter::execByteCode()
 	double val;
 	double *array;
 	
-	if (items >= vars[*i].value.arr->size || items < 0)
+	if (items > vars[*i].value.arr->size || items < 0)
 	  {
 	    printError(tr("Array dimension too small"));
 	    return -1;
