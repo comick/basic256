@@ -1,0 +1,15 @@
+clg
+color gray
+
+dim a(6)
+a[0] = 10
+a[1] = 30
+a[2] = 25
+a[3] = 40
+
+circle (5,5,15)
+color blue
+poly a
+for x = 45 to 55 step 5
+ poly {1/x, 2 * x, x-40, x + 30, 7, 8}
+next x
