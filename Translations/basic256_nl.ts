@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="nl">
+<!DOCTYPE TS><TS>
 <context>
     <name>BasicEdit</name>
     <message>
@@ -159,7 +158,7 @@
     </message>
     <message>
         <source>Illegal argument to poly()</source>
-        <translation>Illegaal argument voor poly()</translation>
+        <translation type="obsolete">Illegaal argument voor poly()</translation>
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
@@ -187,7 +186,23 @@
     </message>
     <message>
         <source>Sound file must be a string.</source>
-        <translation>Geluid bestand moet een string zijn.</translation>
+        <translation type="obsolete">Geluid bestand moet een string zijn.</translation>
+    </message>
+    <message>
+        <source>Illegal FOR -- start number &gt; end number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illegal FOR -- start number &lt; end number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Array dimension too small</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sound must have a frequency and duration.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -340,7 +355,11 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;<byte value="x9"/>                                        &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Het BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Lees alstublieft het CONTRIBUTORS bestand voor een lijst van ontwikkelaars en vertalers voor dit project.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;U zou een exemplaar van de GNU General Public License samen&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>met dit programma moeten ontvangen hebben; als niet, schrijf aan the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Het BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Lees alstublieft het CONTRIBUTORS bestand voor een lijst van ontwikkelaars en vertalers voor dit project.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;U zou een exemplaar van de GNU General Public License samen&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>met dit programma moeten ontvangen hebben; als niet, schrijf aan the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;                                         &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
