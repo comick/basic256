@@ -432,7 +432,7 @@ Interpreter::execByteCode()
 {
   if (status == R_INPUTREADY)
     {
-      stack.push(strdup(inputString.toAscii().data()));
+      stack.push(inputString.toUtf8().data());
       status = R_RUNNING;
       return 0;
     }
@@ -667,7 +667,7 @@ Interpreter::execByteCode()
 		stream = NULL;
 	      }
 
-	    stream = new QFile(name->value.string);
+	    stream = new QFile(QString::fromUtf8(name->value.string));
 
 
 	    if (stream == NULL || !stream->open(QIODevice::ReadWrite | QIODevice::Text))
@@ -702,7 +702,7 @@ Interpreter::execByteCode()
 	  {
 	    if (!stream->getChar(&c))
 	      {
-		stack.push(strdup(""));
+		stack.push("");
 		return 0;
 	      }
 	  }
@@ -732,7 +732,7 @@ Interpreter::execByteCode()
 	  }
 	strarray[offset] = 0;
 
-	stack.push(strdup(strarray));
+	stack.push(strarray);
 	free(strarray);
       }
       break;
@@ -892,7 +892,7 @@ Interpreter::execByteCode()
 	delete two;
 	if(debugMode)
 	  {
-	    emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+	    emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
 	  }
       }
       break;
@@ -934,7 +934,7 @@ Interpreter::execByteCode()
 	    delete one;
 	    if(debugMode)
 	      {
-		emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+		emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
 	      }
 	  }
       }
@@ -1216,7 +1216,7 @@ Interpreter::execByteCode()
 	stackval *temp = stack.pop();
 	if (temp->type == T_STRING)
 	  {
-	    stack.push((int) strlen((char *) temp->value.string));
+	    stack.push((int) QString::fromUtf8(temp->value.string).length());
 	  }
 	else
 	  {
@@ -1241,28 +1241,21 @@ Interpreter::execByteCode()
 	    return -1;
 	  }
 
-	if ((pos->value.intval < 0) || (len->value.intval < 0))
+	if ((pos->value.intval <= 0) || (len->value.intval < 0))
 	  {
 	    printError(tr("Illegal argument to mid()"));
 	    return -1;
 	  }
+	QString temp = QString::fromUtf8(str->value.string);
 
-	char *temp = (char *) str->value.string;
-
-	if (pos->value.intval > (int) strlen(temp))
+	if (pos->value.intval > (int) temp.length())
 	  {
 	    printError(tr("String not long enough for given starting character"));
 	    return -1;
 	  }
+	QString res = temp.mid(pos->value.intval - 1, len->value.intval);
 
-	temp += (pos->value.intval - 1);
-
-	if (len->value.intval < (int) strlen(temp))
-	  {
-	    temp[len->value.intval] = '\0';
-	  }
-
-	stack.push(strdup(temp));
+	stack.push(res.toUtf8().data());
 
 	delete str;
 	delete pos;
@@ -1285,14 +1278,10 @@ Interpreter::execByteCode()
 
 	int pos = 0;
 
-	char *hay = (char *) haystk->value.string;
-	char *str = (char *) needle->value.string;
-	char *ptr = strstr(hay, str);
-
-	if (ptr != NULL)
-	  {
-	    pos = (ptr - hay) + 1;
-	  }
+	QString hay = QString::fromUtf8(haystk->value.string);
+	QString str = QString::fromUtf8(needle->value.string);
+	pos = hay.indexOf(str);
+	pos++;
 
 	stack.push((int) pos);
 
@@ -2019,7 +2008,7 @@ Interpreter::execByteCode()
 	if (temp->type == T_STRING)
 	  {
 	    mutex.lock();
-	    emit(outputReady(QString(temp->value.string)));
+	    emit(outputReady(QString::fromUtf8(temp->value.string)));
 	    waitCond.wait(&mutex);
 	    mutex.unlock();
 	  }
@@ -2060,14 +2049,8 @@ Interpreter::execByteCode()
       {
 	op++;
 	POP2;
-	int len = strlen(one->value.string) + strlen(two->value.string) + 1;
-	char *buffer = (char *) malloc(len);
-	if (buffer)
-	  {
-	    strcpy(buffer, two->value.string);
-	    strcat(buffer, one->value.string);
-	  }
-	stack.push(buffer);
+	QString result = QString::fromUtf8(one->value.string) + QString::fromUtf8(two->value.string);
+	stack.push(result.toUtf8().data());
 	delete one;
 	delete two;
       }
@@ -2130,7 +2113,7 @@ Interpreter::execByteCode()
 	delete temp;
 	if(debugMode)
 	  {
-	    emit(varAssignment(QString(symtable[*num]), QString(vars[*num].value.string), -1));
+	    emit(varAssignment(QString(symtable[*num]), QString::fromUtf8(vars[*num].value.string), -1));
 	  }
       }
       break;

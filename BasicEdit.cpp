@@ -127,7 +127,7 @@ BasicEdit::saveProgram()
 	}
       QFile f(filename);
       f.open(QIODevice::WriteOnly | QIODevice::Truncate);
-      f.write(this->document()->toPlainText().toAscii());
+      f.write(this->document()->toPlainText().toLocal8Bit());
       f.close();
       QFileInfo fi(f);
       mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
@@ -162,7 +162,7 @@ BasicEdit::loadFile(QString s)
       QFile f(s);
       f.open(QIODevice::ReadOnly);
       QByteArray ba = f.readAll();
-      this->setPlainText(ba.data());
+      this->setPlainText(QString::fromLocal8Bit(ba.data()));
       f.close();
       filename = s;
       QFileInfo fi(f);
