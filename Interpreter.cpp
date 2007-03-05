@@ -582,15 +582,21 @@ Interpreter::execByteCode()
 	    forstack->prev = temp;
 	  }
 	forstack = temp;
-	if (temp->step > 0 && vars[*i].value.floatval > temp->endNum)
+	if (temp->step > 0 && vars[*i].value.floatval >= temp->endNum)
 	  {
-	    printError(tr("Illegal FOR -- start number > end number"));
-	    return -1;
+	    while(*op != OP_NEXT)
+	      {
+		op++;
+	      }
+	    op += 1 + sizeof(int);
 	  }
-	else if (temp->step < 0 && vars[*i].value.floatval < temp->endNum)
+	else if (temp->step < 0 && vars[*i].value.floatval <= temp->endNum)
 	  {
-	    printError(tr("Illegal FOR -- start number < end number"));
-	    return -1;
+	    while(*op != OP_NEXT)
+	      {
+		op++;
+	      }
+	    op += 1 + sizeof(int);
 	  }
 	  
 	delete step;
