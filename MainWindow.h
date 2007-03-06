@@ -29,11 +29,14 @@
 #include "VariableWin.h"
 #include "EditSyntaxHighlighter.h"
 
+const unsigned int GSIZE_MAX = 800;
+const unsigned int GSIZE_MIN = 300;
+
 class MainWindow : public QMainWindow
 {
   	Q_OBJECT;
 public:
-  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
+  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0, unsigned int gsize = GSIZE_MIN);
 	~MainWindow();
 	QAction * runact;
 	QAction * debugact;
@@ -44,6 +47,9 @@ public:
 	BasicGraph * goutput;
 	VariableWin * vardock;
 	EditSyntaxHighlighter * editsyntax;
+
+private:
+    unsigned int gsize;   
 };
 
 #endif

@@ -28,15 +28,18 @@ using namespace std;
 #include <QMessageBox>
 
 #include "BasicGraph.h"
+#include "MainWindow.h"
 
 QMutex keymutex;
 int currentKey;
 
-BasicGraph::BasicGraph(BasicOutput *o)
+BasicGraph::BasicGraph(BasicOutput *o, unsigned int gs)
 {
-	
-  image = new QImage(imagedata, 300, 300, QImage::Format_ARGB32);
-  imask = new QImage(maskdata, 300, 300, QImage::Format_Mono);
+  gsize = gs;   
+  imagedata = new uchar[sizeof(int) * gsize * gsize];
+  maskdata  = new uchar[gsize * gsize];	
+  image = new QImage(imagedata, gsize, gsize, QImage::Format_ARGB32);
+  imask = new QImage(maskdata, gsize, gsize, QImage::Format_Mono);
   output = o;
 }
 
@@ -45,8 +48,8 @@ BasicGraph::paintEvent(QPaintEvent *)
 {
   QPainter p2(this);
   image->setAlphaChannel(*imask);
-  p2.drawImage((width() - 300) / 2,
-	       (height() - 300) / 2,
+  p2.drawImage((width() - gsize) / 2,
+	       (height() - gsize) / 2,
 	       *image);
 }
 

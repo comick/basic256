@@ -23,7 +23,7 @@ using namespace std;
 #include <QTranslator>
 #include <QLocale>
 #include <QStatusBar>
-#include <QFile>
+#include <QFileInfo>
 #include <unistd.h>
 
 #include "MainWindow.h"
@@ -31,8 +31,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
-  int opt = getopt(argc, argv, "l:");
+  int opt = getopt(argc, argv, "l:g:");
   char *lang = NULL;
+  unsigned int gsize = GSIZE_MIN;
 
   while (opt != -1)
     {
@@ -41,6 +42,14 @@ int main(int argc, char *argv[])
 	case 'l':
 	  lang = optarg;
 	  break;
+  case 'g':  
+    unsigned int gs;
+    gs = atoi(optarg);
+    if (gs > GSIZE_MIN && gs <= GSIZE_MAX)
+    {
+      gsize = gs;
+    }
+    break;
 	default:
 	  break;
 	}
@@ -69,11 +78,17 @@ int main(int argc, char *argv[])
     }
   qapp.installTranslator(&kbTranslator);
 
-  MainWindow *mainwin = new MainWindow();
-	mainwin->setObjectName( "mainwin" );
-	mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
-  
-  mainwin->resize(800,600);
+  MainWindow *mainwin = new MainWindow(0, 0, gsize);
+  mainwin->setObjectName( "mainwin" );
+  mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
+  if (gsize >= 500)
+  {
+    mainwin->resize(1024,786);
+  }
+  else
+  { 
+    mainwin->resize(800,600);
+  }   
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();
@@ -82,9 +97,9 @@ int main(int argc, char *argv[])
   if (argv[optind]) {
     QString s = QString::fromAscii(argv[optind]);
     if (s.endsWith(".kbs")) {
-        QFile f(s);
-        if (f.exists()) {
-            mainwin->editor->loadFile(s);
+        QFileInfo fi(s);
+        if (fi.exists()) {
+            mainwin->editor->loadFile(fi.absoluteFilePath());
         }
     }
   }
