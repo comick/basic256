@@ -33,13 +33,14 @@ using namespace std;
 QMutex keymutex;
 int currentKey;
 
-BasicGraph::BasicGraph(BasicOutput *o, unsigned int gs)
+BasicGraph::BasicGraph(BasicOutput *o, unsigned int width, unsigned int height)
 {
-  gsize = gs;   
-  imagedata = new uchar[sizeof(int) * gsize * gsize];
-  maskdata  = new uchar[gsize * gsize];	
-  image = new QImage(imagedata, gsize, gsize, QImage::Format_ARGB32);
-  imask = new QImage(maskdata, gsize, gsize, QImage::Format_Mono);
+  gwidth  = width;
+  gheight = height;   
+  imagedata = new uchar[sizeof(int) * width * height];
+  maskdata  = new uchar[width * height];	
+  image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+  imask = new QImage(maskdata, width, height, QImage::Format_Mono);
   output = o;
 }
 
@@ -48,8 +49,8 @@ BasicGraph::paintEvent(QPaintEvent *)
 {
   QPainter p2(this);
   image->setAlphaChannel(*imask);
-  p2.drawImage((width() - gsize) / 2,
-	       (height() - gsize) / 2,
+  p2.drawImage((width() - gwidth) / 2,
+	       (height() - gheight) / 2,
 	       *image);
 }
 

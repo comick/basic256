@@ -30,7 +30,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  BasicGraph(BasicOutput *, unsigned int gsize);
+  BasicGraph(BasicOutput *, unsigned int width, unsigned int height);
   QImage *image;
   QImage *imask;
 
@@ -48,7 +48,8 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   uchar *imagedata;
   uchar *maskdata;
   BasicOutput *output;
-  unsigned int gsize;
+  unsigned int gwidth;
+  unsigned int gheight;
 };
 
 

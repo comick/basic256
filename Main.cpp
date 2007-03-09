@@ -31,29 +31,37 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
-  int opt = getopt(argc, argv, "l:g:");
+  int opt = getopt(argc, argv, "l:w:h:");
   char *lang = NULL;
-  unsigned int gsize = GSIZE_MIN;
+  unsigned int gwidth  = GSIZE_MIN;
+  unsigned int gheight = GSIZE_MIN;
+  unsigned int gs;
 
   while (opt != -1)
     {
       switch ((char) opt)
-	{
-	case 'l':
-	  lang = optarg;
-	  break;
-  case 'g':  
-    unsigned int gs;
-    gs = atoi(optarg);
-    if (gs > GSIZE_MIN && gs <= GSIZE_MAX)
-    {
-      gsize = gs;
-    }
-    break;
-	default:
-	  break;
-	}
-      opt = getopt(argc, argv, "l:");
+      {
+	    case 'l':
+        lang = optarg;
+        break;
+      case 'w':  
+        gs = atoi(optarg);
+        if (gs > GSIZE_MIN && gs <= GWIDTH_MAX)
+        {
+          gwidth = gs;
+        }
+        break;
+      case 'h':  
+        gs = atoi(optarg);
+        if (gs > GSIZE_MIN && gs <= GHEIGHT_MAX)
+        {
+          gheight = gs;
+        }
+        break;
+      default:
+        break;
+      }
+      opt = getopt(argc, argv, "l:w:h:");
     }
 
   QTranslator qtTranslator;
@@ -78,12 +86,12 @@ int main(int argc, char *argv[])
     }
   qapp.installTranslator(&kbTranslator);
 
-  MainWindow *mainwin = new MainWindow(0, 0, gsize);
+  MainWindow *mainwin = new MainWindow(0, 0, gwidth, gheight);
   mainwin->setObjectName( "mainwin" );
   mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
-  if (gsize >= 500)
+  if (gwidth >= 500 || gheight >= 500)
   {
-    mainwin->resize(1024,786);
+    mainwin->resize(1024,768);
   }
   else
   { 
