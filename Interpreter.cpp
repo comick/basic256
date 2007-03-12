@@ -2055,7 +2055,7 @@ Interpreter::execByteCode()
       {
 	op++;
 	POP2;
-	QString result = QString::fromUtf8(one->value.string) + QString::fromUtf8(two->value.string);
+	QString result = QString::fromUtf8(two->value.string) + QString::fromUtf8(one->value.string);
 	stack.push(result.toUtf8().data());
 	delete one;
 	delete two;
