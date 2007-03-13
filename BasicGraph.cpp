@@ -35,6 +35,8 @@ int currentKey;
 
 BasicGraph::BasicGraph(BasicOutput *o, unsigned int width, unsigned int height)
 {
+  if (width > GWIDTH_MAX) { width = GWIDTH_MAX; }
+  if (height > GHEIGHT_MAX) { height = GHEIGHT_MAX; }
   gwidth  = width;
   gheight = height;   
   imagedata = new uchar[sizeof(int) * width * height];
@@ -43,6 +45,26 @@ BasicGraph::BasicGraph(BasicOutput *o, unsigned int width, unsigned int height)
   imask = new QImage(maskdata, width, height, QImage::Format_Mono);
   output = o;
 }
+
+
+void BasicGraph::resize(int width, int height)
+{
+  if (width == image->width() && height == image->height())
+    {
+      return;
+    }
+  if (width > GWIDTH_MAX) { width = GWIDTH_MAX; }
+  if (height > GHEIGHT_MAX) { height = GHEIGHT_MAX; }
+  gwidth  = width;
+  gheight = height;   
+  delete image;
+  delete imask;
+  imagedata = new uchar[sizeof(int) * width * height];
+  maskdata  = new uchar[width * height];	
+  image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+  imask = new QImage(maskdata, width, height, QImage::Format_Mono);
+}
+
 
 void
 BasicGraph::paintEvent(QPaintEvent *)

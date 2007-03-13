@@ -26,19 +26,22 @@
 #include "ViewWidgetIFace.h"
 #include "BasicOutput.h"
 
+#define GWIDTH_MAX  800
+#define GHEIGHT_MAX 600
+
 class BasicGraph : public QWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  BasicGraph(BasicOutput *, unsigned int width, unsigned int height);
+  BasicGraph(BasicOutput *, unsigned int width = 300, unsigned int height = 300);
   QImage *image;
   QImage *imask;
-
- 	bool initActions(QMenu *, ToolBar *);
+  bool initActions(QMenu *, ToolBar *);
  
  public slots:
-	void slotCopy();
-	void slotPrint();
+  void resize(int, int);
+  void slotCopy();
+  void slotPrint();
  
  protected:
   void paintEvent(QPaintEvent *);

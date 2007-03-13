@@ -29,16 +29,13 @@
 #include "VariableWin.h"
 #include "EditSyntaxHighlighter.h"
 
-const unsigned int GWIDTH_MAX  = 800;
-const unsigned int GHEIGHT_MAX = 600;
-const unsigned int GSIZE_MIN   = 300;
 
 class MainWindow : public QMainWindow
 {
   	Q_OBJECT;
 public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0, 
-      unsigned int gwidth = GSIZE_MIN, unsigned int gheight = GSIZE_MIN);
+		   unsigned int gwidth = 300, unsigned int gheight = 300);
 	~MainWindow();
 	QAction * runact;
 	QAction * debugact;

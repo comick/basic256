@@ -48,6 +48,7 @@ class RunController : public QObject
   void outputFilter(QString text);
   void outputClear();
   void goutputFilter();
+  void goutputResize(int, int);
   void startDebug();
   void startRun();
   void stopRun();

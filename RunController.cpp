@@ -40,7 +40,7 @@ QWaitCondition waitInput;
 RunController::RunController(MainWindow *mw)
 {
   mainwin = mw;
-  i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
+  i = new Interpreter(mainwin->goutput);
   te = mainwin->editor;
   output = mainwin->output;
   goutput = mainwin->goutput;
@@ -48,6 +48,7 @@ RunController::RunController(MainWindow *mw)
 
   QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
   QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
+  QObject::connect(i, SIGNAL(resizeGraph(int, int)), this, SLOT(goutputResize(int, int)));
   QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
   QObject::connect(i, SIGNAL(clearText()), this, SLOT(outputClear()));
 
@@ -155,6 +156,15 @@ RunController::outputFilter(QString text)
   mutex.lock();
   output->insertPlainText(text);
   output->ensureCursorVisible();
+  waitCond.wakeAll();
+  mutex.unlock();
+}
+
+void
+RunController::goutputResize(int width, int height)
+{
+  mutex.lock();
+  goutput->resize(width, height);
   waitCond.wakeAll();
   mutex.unlock();
 }

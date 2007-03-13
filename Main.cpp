@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
   QApplication qapp(argc, argv);
   int opt = getopt(argc, argv, "l:w:h:");
   char *lang = NULL;
-  unsigned int gwidth  = GSIZE_MIN;
-  unsigned int gheight = GSIZE_MIN;
+  unsigned int gwidth  = 300;
+  unsigned int gheight = 300;
   unsigned int gs;
 
   while (opt != -1)
@@ -46,17 +46,11 @@ int main(int argc, char *argv[])
         break;
       case 'w':  
         gs = atoi(optarg);
-        if (gs > GSIZE_MIN && gs <= GWIDTH_MAX)
-        {
-          gwidth = gs;
-        }
+	gwidth = gs;
         break;
       case 'h':  
         gs = atoi(optarg);
-        if (gs > GSIZE_MIN && gs <= GHEIGHT_MAX)
-        {
-          gheight = gs;
-        }
+	gheight = gs;
         break;
       default:
         break;

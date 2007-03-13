@@ -211,7 +211,7 @@
 %}
 
 %token PRINT INPUT KEY 
-%token PLOT CIRCLE RECT POLY LINE FASTGRAPHICS REFRESH CLS CLG
+%token PLOT CIRCLE RECT POLY LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
 %token IF THEN FOR TO STEP NEXT 
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
@@ -299,6 +299,7 @@ statement: gotostmt
          | clearstmt
          | refreshstmt
          | fastgraphicsstmt
+         | graphsizestmt
          | dimstmt
          | pausestmt
          | arrayassign
@@ -322,6 +323,10 @@ clearstmt: CLS { addOp(OP_CLS); }
 ;
 
 fastgraphicsstmt: FASTGRAPHICS { addOp(OP_FASTGRAPHICS); }
+;
+
+graphsizestmt: GRAPHSIZE floatexpr ',' floatexpr { addOp(OP_GRAPHSIZE); }
+             | GRAPHSIZE '(' floatexpr ',' floatexpr ')' { addOp(OP_GRAPHSIZE); }
 ;
 
 refreshstmt: REFRESH { addOp(OP_REFRESH); }

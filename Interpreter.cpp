@@ -213,10 +213,11 @@ Interpreter::isStopped()
 }
 
 
-Interpreter::Interpreter(QImage *i, QImage *m)
+Interpreter::Interpreter(BasicGraph *bg)
 {
-  image = i;
-  imask = m;
+  image = bg->image;
+  imask = bg->imask;
+  graph = bg;
   fastgraphics = false;
   status = R_STOPPED;
   for (int i = 0; i < NUMVARS; i++)
@@ -1973,6 +1974,26 @@ Interpreter::execByteCode()
 	op++;
 	fastgraphics = true;
 	emit(fastGraphics());
+      }
+
+    case OP_GRAPHSIZE:
+      {
+	int width = 300, height = 300;
+	op++;
+	POP2;
+	if (one->type == T_INT) height = one->value.intval; else height = (int) one->value.floatval;
+	if (two->type == T_INT) width = two->value.intval; else width = (int) two->value.floatval;
+	if (width > 0 && height > 0)
+	  {
+	    mutex.lock();
+	    emit(resizeGraph(width, height));
+	    waitCond.wait(&mutex);
+	    mutex.unlock();
+	  }
+	image = graph->image;
+	imask = graph->imask;
+	delete one;
+	delete two;
       }
       break;
 

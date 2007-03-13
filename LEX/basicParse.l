@@ -85,6 +85,7 @@ rect  [Rr][Ee][Cc][Tt]
 poly  [Pp][Oo][Ll][Yy]
 line  [Ll][Ii][Nn][Ee]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
+graphsize [Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
 cls   [Cc][Ll][Ss]
 clg   [Cc][Ll][Gg]
@@ -183,6 +184,7 @@ blankline ^{whitespace}*[\n]
 {line}	        { return LINE; }
 {sound}         { return SOUND; }
 {fastgraphics}	{ return FASTGRAPHICS; }
+{graphsize}	{ return GRAPHSIZE; }
 {refresh}	{ return REFRESH; }
 {color}		{ return SETCOLOR; }
 {colour}	{ return SETCOLOR; }

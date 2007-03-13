@@ -59,6 +59,7 @@
 #define OP_FASTGRAPHICS		0x1f
 #define OP_CLS			0x20
 #define OP_CLG			0x21
+#define OP_GRAPHSIZE            0x22
 
 #define OP_SIN			0x28
 #define OP_COS			0x29
