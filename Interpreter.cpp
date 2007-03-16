@@ -365,6 +365,9 @@ Interpreter::initialize()
   once = true;
   currentLine = 1;
   stream = NULL;
+  emit(resizeGraph(300, 300));
+  image = graph->image;
+  imask = graph->imask;
 }
 
 
