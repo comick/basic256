@@ -1,4 +1,5 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="1.1">
 <context>
     <name>BasicEdit</name>
     <message>
@@ -187,14 +188,6 @@
     <message>
         <source>Array dimension too small</source>
         <translation>Zu kleine Feld-Dimension</translation>
-    </message>
-    <message>
-        <source>Illegal FOR -- start number &gt; end number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal FOR -- start number &lt; end number</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

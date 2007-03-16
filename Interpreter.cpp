@@ -1975,6 +1975,7 @@ Interpreter::execByteCode()
 	fastgraphics = true;
 	emit(fastGraphics());
       }
+      break;
 
     case OP_GRAPHSIZE:
       {
