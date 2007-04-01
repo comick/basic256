@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS><TS>
 <context>
     <name>BasicEdit</name>
     <message>
@@ -188,6 +187,22 @@
     <message>
         <source>Array dimension too small</source>
         <translation>Zu kleine Feld-Dimension</translation>
+    </message>
+    <message>
+        <source>Array not defined</source>
+        <translation>Feld nicht definiert</translation>
+    </message>
+    <message>
+        <source>Array not properly declared</source>
+        <translation>Feld nicht richtig definiert</translation>
+    </message>
+    <message>
+        <source>Can not assign numeric value to array variable</source>
+        <translation>Kann einem Feld keinen numerischen Wert zuweisen</translation>
+    </message>
+    <message>
+        <source>Can not assign string value to array variable</source>
+        <translation>Kann einem Feld keinen Zeichenkettenwert zuweisen</translation>
     </message>
 </context>
 <context>

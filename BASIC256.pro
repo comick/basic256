@@ -6,6 +6,7 @@ TEMPLATE		=	app
 TARGET			=	BASIC256
 DEPENDPATH		+=	.
 INCLUDEPATH		+=	.
+CONFIG          +=  debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
 RESOURCES		+=	resources/resource.qrc

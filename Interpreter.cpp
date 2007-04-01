@@ -886,6 +886,13 @@ Interpreter::execByteCode()
 	    printError(tr("Cannot assign non-string to string array"));
 	    return -1;
 	  }
+
+        if (vars[*i].value.arr == NULL || vars[*i].value.arr->size < 0) 
+          {
+            printError(tr("Array not defined"));
+            return -1;
+          }
+          
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
 	    printError(tr("Array index out of bounds"));
@@ -916,7 +923,13 @@ Interpreter::execByteCode()
 	int index;
 	char *str;
 	char **strarray;
-	
+        
+        if (vars[*i].value.arr == NULL) 
+          {
+            printError(tr("Array not defined"));
+            return -1;
+          }
+        
 	if (items > vars[*i].value.arr->size || items < 0)
 	  {
 	    printError(tr("Array dimension too small"));
@@ -990,6 +1003,12 @@ Interpreter::execByteCode()
 	double *array;
 	if (two->type == T_INT) index = two->value.intval; else index = (int) two->value.floatval;
 	if (one->type == T_INT) val = (double) one->value.intval; else val = one->value.floatval;
+
+        if (vars[*i].value.arr == NULL) 
+        {
+           printError(tr("Array not properly declared"));
+           return -1;
+        }     
 
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
@@ -2097,8 +2116,10 @@ Interpreter::execByteCode()
 
 	if (vars[*num].type == T_ARRAY)
 	  {
-	    delete(vars[*num].value.arr->data.fdata);
-	    delete(vars[*num].value.arr);
+            printError(tr("Can not assign numeric value to array variable"));
+            return -1;
+	    //delete(vars[*num].value.arr->data.fdata);
+	    //delete(vars[*num].value.arr);
 	  }
 
 	if (temp->type == T_STRING)
@@ -2133,6 +2154,11 @@ Interpreter::execByteCode()
 	stackval *temp = stack.pop();
 	if (temp->type == T_STRING)
 	  {
+            if (vars[*num].type == T_STRARRAY) 
+              {
+                printError(tr("Can not assign string value to array variable"));
+                return -1;
+              }      
 	    vars[*num].type = T_STRING;
 	    vars[*num].value.string = strdup(temp->value.string);
 	  }
