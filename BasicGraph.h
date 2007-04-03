@@ -28,12 +28,13 @@
 
 #define GWIDTH_MAX  800
 #define GHEIGHT_MAX 600
+#define GSIZE_MIN   300
 
 class BasicGraph : public QWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  BasicGraph(BasicOutput *, unsigned int width = 300, unsigned int height = 300);
+  BasicGraph(BasicOutput *);
   QImage *image;
   QImage *imask;
   bool initActions(QMenu *, ToolBar *);

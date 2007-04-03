@@ -7,6 +7,11 @@ print "The return key ends the program."
 clg
 fastgraphics
 
+# graphics window size
+gwidth  = 300
+gheight = 300
+graphsize gwidth,gheight
+
 # feel free to change the radius of the balls and their masses
 # radius
 r1 = 30
@@ -17,11 +22,10 @@ m1 = r1*r1*r1
 m2 = r2*r2*r2
 
 # initial positions and velocities
-x1 = rand * (300 - 2*r1) + r1 : y1 = r1
+x1 = rand * (gwidth - 2*r1) + r1 : y1 = r1
 vx1 = 10*rand - 5 : vy1 = 3*rand
-x2 = rand * (300 - 2*r2) + r2 : y2 = 300 - r2
+x2 = rand * (gwidth - 2*r2) + r2 : y2 = gheight - r2
 vx2 = 10*rand - 5 : vy2 = -3*rand
-
 
 ###################################
 kollision = 0    # do we have a collision (1 yes, 0 no)
@@ -62,13 +66,13 @@ iskollision:
 return
 
 wandball1:
-  if ( x1 > 300 - r1 and vx1 > 0 ) or ( x1 < r1 and vx1 < 0 ) then vx1 = -vx1
-  if ( y1 > 300 - r1 and vy1 > 0 ) or ( y1 < r1 and vy1 < 0 ) then vy1 = -vy1
+  if ( x1 > gwidth - r1 and vx1 > 0 ) or ( x1 < r1 and vx1 < 0 ) then vx1 = -vx1
+  if ( y1 > gheight - r1 and vy1 > 0 ) or ( y1 < r1 and vy1 < 0 ) then vy1 = -vy1
 return
 
 wandball2:
-  if ( x2 > 300 - r2 and vx2 > 0 ) or ( x2 < r2 and vx2 < 0 ) then vx2 = -vx2
-  if ( y2 > 300 - r2 and vy2 > 0 ) or ( y2 < r2 and vy2 < 0 ) then vy2 = -vy2
+  if ( x2 > gwidth - r2 and vx2 > 0 ) or ( x2 < r2 and vx2 < 0 ) then vx2 = -vx2
+  if ( y2 > gheight - r2 and vy2 > 0 ) or ( y2 < r2 and vy2 < 0 ) then vy2 = -vy2
 return
 
 getkollision:
@@ -121,9 +125,9 @@ return
 
 zeichne:
   color black
-  rect 0,0,300,300
+  rect 0,0,gwidth,gheight
   color clear
-  rect 1,1,298,298
+  rect 1,1,gwidth-2,gheight-2
   color red
   circle x1,y1,r1
   color blue

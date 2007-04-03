@@ -32,8 +32,7 @@ using namespace std;
 #include "DockWidget.h"
 #include "MainWindow.h"
 
-MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, 
-  unsigned int gwidth, unsigned int gheight)
+MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   :	QMainWindow(parent, f)
 {
   
@@ -47,9 +46,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f,
   output->setObjectName( "output" );
   output->setReadOnly(true);
 
-  goutput = new BasicGraph(output, gwidth, gheight);
+  goutput = new BasicGraph(output);
   goutput->setObjectName( "goutput" );
-  goutput->setMinimumSize(gwidth, gheight);
 
   DockWidget * gdock = new DockWidget(this);
   gdock->setObjectName( "gdock" );

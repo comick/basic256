@@ -165,6 +165,7 @@ RunController::goutputResize(int width, int height)
 {
   mutex.lock();
   goutput->resize(width, height);
+  goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
   waitCond.wakeAll();
   mutex.unlock();
 }

@@ -31,11 +31,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
-  int opt = getopt(argc, argv, "l:w:h:");
+  int opt = getopt(argc, argv, "l:");
   char *lang = NULL;
-  unsigned int gwidth  = 300;
-  unsigned int gheight = 300;
-  unsigned int gs;
 
   while (opt != -1)
     {
@@ -44,18 +41,10 @@ int main(int argc, char *argv[])
 	    case 'l':
         lang = optarg;
         break;
-      case 'w':  
-        gs = atoi(optarg);
-	gwidth = gs;
-        break;
-      case 'h':  
-        gs = atoi(optarg);
-	gheight = gs;
-        break;
       default:
         break;
       }
-      opt = getopt(argc, argv, "l:w:h:");
+      opt = getopt(argc, argv, "l:");
     }
 
   QTranslator qtTranslator;
@@ -80,17 +69,10 @@ int main(int argc, char *argv[])
     }
   qapp.installTranslator(&kbTranslator);
 
-  MainWindow *mainwin = new MainWindow(0, 0, gwidth, gheight);
+  MainWindow *mainwin = new MainWindow();
   mainwin->setObjectName( "mainwin" );
   mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
-  if (gwidth >= 500 || gheight >= 500)
-  {
-    mainwin->resize(1024,768);
-  }
-  else
-  { 
-    mainwin->resize(800,600);
-  }   
+  mainwin->resize(800,600);
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();

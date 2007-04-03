@@ -34,8 +34,7 @@ class MainWindow : public QMainWindow
 {
   	Q_OBJECT;
 public:
-  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0, 
-		   unsigned int gwidth = 300, unsigned int gheight = 300);
+  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();
 	QAction * runact;
 	QAction * debugact;
