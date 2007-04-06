@@ -38,7 +38,7 @@ extern QWaitCondition waitCond;
 extern QWaitCondition waitDebugCond;
 extern QWaitCondition waitInput;
 
-#define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
+#define POP2  stackval *one = stack.pop(); stackval *two = stack.pop();
 
 extern "C" {
   extern int basicParse(char *);
@@ -52,7 +52,7 @@ extern "C" {
 }
 
 
-static int 
+static int
 compareNum(stackval *one, stackval *two)
 {
   double oneval = 0;
@@ -69,7 +69,7 @@ compareNum(stackval *one, stackval *two)
     {
       oneval = (double) one->value.intval;
     }
-  else 
+  else
     {
       oneval = one->value.floatval;
     }
@@ -78,11 +78,11 @@ compareNum(stackval *one, stackval *two)
     {
       twoval = (double) two->value.intval;
     }
-  else 
+  else
     {
       twoval = two->value.floatval;
     }
-  
+
   if (oneval == twoval) return 0;
   else if (oneval < twoval) return -1;
   else if (oneval > twoval) return 1;
@@ -116,7 +116,7 @@ void
 Stack::push(char *c)
 {
   stackval *temp = new stackval;
-  
+
   temp->next = NULL;
   temp->type = T_STRING;
   temp->value.string = strdup(c);
@@ -131,7 +131,7 @@ void
 Stack::push(int i)
 {
   stackval *temp = new stackval;
-  
+
   temp->next = NULL;
   temp->type = T_INT;
   temp->value.intval = i;
@@ -146,7 +146,7 @@ void
 Stack::push(double d)
 {
   stackval *temp = new stackval;
-  
+
   temp->next = NULL;
   temp->type = T_FLOAT;
   temp->value.floatval = d;
@@ -224,6 +224,8 @@ Interpreter::Interpreter(BasicGraph *bg)
     {
       vars[i].type = T_UNUSED;
       vars[i].value.floatval = 0;
+      vars[i].value.string = NULL;
+      vars[i].value.arr = NULL;
     }
 }
 
@@ -259,6 +261,7 @@ Interpreter::clearvars()
       vars[i].type = T_UNUSED;
       vars[i].value.floatval = 0;
       vars[i].value.string = NULL;
+      vars[i].value.arr = NULL;
     }
 }
 
@@ -271,9 +274,9 @@ Interpreter::compileProgram(char *code)
     {
       return -1;
     }
-    
-  
-  int result = basicParse(code); 
+
+
+  int result = basicParse(code);
   if (result < 0)
     {
       emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + "\n"));
@@ -292,7 +295,7 @@ Interpreter::compileProgram(char *code)
 	  currentLine = *i;
 	  op += sizeof(int);
 	}
-      
+
       if (*op == OP_GOTO || *op == OP_GOSUB)
 	{
 	  op += sizeof(unsigned char);
@@ -377,7 +380,7 @@ Interpreter::cleanup()
   status = R_STOPPED;
   stackval *temp = stack.pop();
   //Clean up stack
-  while (temp != NULL) 
+  while (temp != NULL)
     {
       delete temp;
       temp = stack.pop();
@@ -400,7 +403,7 @@ Interpreter::pauseResume()
     {
       status = oldstatus;
     }
-  else 
+  else
     {
       oldstatus = status;
       status = R_PAUSED;
@@ -456,7 +459,7 @@ Interpreter::execByteCode()
       int *i = (int *) op;
       currentLine = *i;
       op += sizeof(int);
-      if (debugMode && *op != OP_CURRLINE) 
+      if (debugMode && *op != OP_CURRLINE)
 	{
 	  emit(highlightLine(currentLine));
 	  debugmutex.lock();
@@ -464,7 +467,7 @@ Interpreter::execByteCode()
 	  debugmutex.unlock();
 	}
     }
-  
+
   switch(*op)
     {
     case OP_NOP:
@@ -483,7 +486,7 @@ Interpreter::execByteCode()
 	int *i = (int *) op;
 	op += sizeof(int);
 	stackval *temp = stack.pop();
-	
+
 	if (temp->value.intval == 0) // go to next line on false, otherwise execute rest of line.
 	  {
 	    op = byteCode + *i;
@@ -522,7 +525,7 @@ Interpreter::execByteCode()
       }
       break;
 
-      
+
     case OP_GOTO:
       {
 	op++;
@@ -552,7 +555,7 @@ Interpreter::execByteCode()
 	  {
 	    vars[*i].value.floatval = (double) startnum->value.intval;
 	  }
-	else 
+	else
 	  {
 	    vars[*i].value.floatval = startnum->value.floatval;
 	  }
@@ -561,12 +564,12 @@ Interpreter::execByteCode()
 	  {
 	    emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
 	  }
-	
+
 	if (endnum->type == T_INT)
 	  {
 	    temp->endNum = (double) endnum->value.intval;
 	  }
-	else 
+	else
 	  {
 	    temp->endNum = endnum->value.floatval;
 	  }
@@ -575,11 +578,11 @@ Interpreter::execByteCode()
 	  {
 	    temp->step = (double) step->value.intval;
 	  }
-	else 
+	else
 	  {
 	    temp->step = step->value.floatval;
 	  }
-	
+
 	temp->returnAddr = op;
 	if (forstack)
 	  {
@@ -602,7 +605,7 @@ Interpreter::execByteCode()
 	      }
 	    op += 1 + sizeof(int);
 	  }
-	  
+
 	delete step;
 	delete endnum;
 	delete startnum;
@@ -616,7 +619,7 @@ Interpreter::execByteCode()
 	int *i = (int *) op;
 	op += sizeof(int);
 	forframe *temp = forstack;
-	    
+
 	while (temp && temp->variable != (unsigned int ) *i)
 	  {
 	    temp = temp->next;
@@ -626,7 +629,7 @@ Interpreter::execByteCode()
 	    printError(tr("Next without FOR"));
 	    return -1;
 	  }
-	    
+
 	double val = vars[*i].value.floatval;
 	val += temp->step;
 	vars[*i].value.floatval = val;
@@ -716,20 +719,20 @@ Interpreter::execByteCode()
 		return 0;
 	      }
 	  }
-	
+
 	//put back non-whitespace character
 	stream->ungetChar(c);
 
 	//read token
 	int maxsize = 256;
-	int offset = 0; 
+	int offset = 0;
 	char * strarray = (char *) malloc(maxsize);
 	memset(strarray, 0, maxsize);
 
-	while (stream->getChar(strarray + offset) && 
-	       *(strarray + offset) != ' ' && 
-	       *(strarray + offset) != '\t' && 
-	       *(strarray + offset) != '\n' && 
+	while (stream->getChar(strarray + offset) &&
+	       *(strarray + offset) != ' ' &&
+	       *(strarray + offset) != '\t' &&
+	       *(strarray + offset) != '\n' &&
 	       *(strarray + offset) != 0)
 	  {
 	    offset++;
@@ -830,13 +833,13 @@ Interpreter::execByteCode()
 	stackval *one = stack.pop();
 
 	if (one->type == T_INT) size = one->value.intval; else size = (int) one->value.floatval;
-	
+
 	if (size > 100000)
 	  {
 	    printError(tr("Array dimension too large"));
 	    return -1;
 	  }
-	
+
 	array *temp = new array;
 	if (whichdim == OP_DIM)
 	  {
@@ -850,7 +853,7 @@ Interpreter::execByteCode()
 	    temp->size = size;
 	    vars[var].value.arr = temp;
 	  }
-	else 
+	else
 	  {
 	    char **c = new char*[size];
 	    for (int j = 0; j < size; j++)
@@ -881,18 +884,18 @@ Interpreter::execByteCode()
 	int index;
 	char **strarray;
 	if (two->type == T_INT) index = two->value.intval; else index = (int) two->value.floatval;
-	if (one->type != T_STRING) 
+	if (one->type != T_STRING)
 	  {
 	    printError(tr("Cannot assign non-string to string array"));
 	    return -1;
 	  }
 
-        if (vars[*i].value.arr == NULL || vars[*i].value.arr->size < 0) 
+        if (vars[*i].value.arr == NULL || vars[*i].value.arr->size < 0 || vars[*i].value.arr->size > 100000)
           {
             printError(tr("Array not defined"));
             return -1;
           }
-          
+
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
 	    printError(tr("Array index out of bounds"));
@@ -913,7 +916,7 @@ Interpreter::execByteCode()
 	  }
       }
       break;
-	  
+
     case OP_STRARRAYLISTASSIGN:
       {
 	op++;
@@ -923,28 +926,28 @@ Interpreter::execByteCode()
 	int index;
 	char *str;
 	char **strarray;
-        
-        if (vars[*i].value.arr == NULL) 
+
+        if (vars[*i].value.arr == NULL)
           {
             printError(tr("Array not defined"));
             return -1;
           }
-        
+
 	if (items > vars[*i].value.arr->size || items < 0)
 	  {
 	    printError(tr("Array dimension too small"));
 	    return -1;
 	  }
-	
+
 	strarray = vars[*i].value.arr->data.sdata;
 	for (index = items - 1; index >= 0; index--)
 	  {
 	    stackval *one = stack.pop();
 	    if (one->type == T_STRING)
 	      {
-		str = strdup(one->value.string); 
+		str = strdup(one->value.string);
 	      }
-	    else 
+	    else
 	      {
 		printError(tr("Array dimension too small"));
 		return -1;
@@ -962,7 +965,7 @@ Interpreter::execByteCode()
 	  }
       }
       break;
-    
+
 
     case OP_STRARRAYINPUT:
       {
@@ -973,7 +976,7 @@ Interpreter::execByteCode()
 	int index;
 	char **strarray;
 	if (one->type == T_INT) index = one->value.intval; else index = (int) one->value.floatval;
-	if (two->type != T_STRING) 
+	if (two->type != T_STRING)
 	  {
 	    printError(tr("Cannot assign non-string to string array"));
 	    return -1;
@@ -990,7 +993,7 @@ Interpreter::execByteCode()
 	delete two;
       }
       break;
-	  
+
 
     case OP_ARRAYASSIGN:
       {
@@ -1004,11 +1007,11 @@ Interpreter::execByteCode()
 	if (two->type == T_INT) index = two->value.intval; else index = (int) two->value.floatval;
 	if (one->type == T_INT) val = (double) one->value.intval; else val = one->value.floatval;
 
-        if (vars[*i].value.arr == NULL) 
+        if (vars[*i].value.arr == NULL || vars[*i].value.arr->size < 0 || vars[*i].value.arr->size > 100000)
         {
-           printError(tr("Array not properly declared"));
+           printError(tr("Array not defined"));
            return -1;
-        }     
+        }
 
 	if (index >= vars[*i].value.arr->size || index < 0)
 	  {
@@ -1036,13 +1039,13 @@ Interpreter::execByteCode()
 	int index;
 	double val;
 	double *array;
-	
+
 	if (items > vars[*i].value.arr->size || items < 0)
 	  {
 	    printError(tr("Array dimension too small"));
 	    return -1;
 	  }
-	
+
 	array = vars[*i].value.arr->data.fdata;
 	for (index = items - 1; index >= 0; index--)
 	  {
@@ -1057,7 +1060,7 @@ Interpreter::execByteCode()
 	  }
       }
       break;
-    
+
 
     case OP_DEREF:
       {
@@ -1067,7 +1070,7 @@ Interpreter::execByteCode()
 	stackval *temp = stack.pop();
 	int index;
 	if (temp->type == T_INT) index = temp->value.intval; else index = (int) temp->value.floatval;
-	
+
 	if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
 	  {
 	    printError(tr("Cannot access non-array variable"));
@@ -1098,7 +1101,7 @@ Interpreter::execByteCode()
 	op++;
 	int *i = (int *) op;
 	op += sizeof(int);
-	
+
 	if (vars[*i].type == T_UNUSED)
 	  {
 	    printError(tr("Unknown variable"));
@@ -1121,7 +1124,7 @@ Interpreter::execByteCode()
 	    sprintf(buffer, "string array(0x%p)", vars[*i].value.arr);
 	    stack.push(buffer);
 	  }
-	else 
+	else
 	  {
 	    stack.push(vars[*i].value.floatval);
 	  }
@@ -1171,7 +1174,7 @@ Interpreter::execByteCode()
 	  {
 	    stack.push((int) atoi(temp->value.string));
 	  }
-	else 
+	else
 	  {
 	    printError(tr("Illegal argument to int()"));
 	    return -1;
@@ -1199,7 +1202,7 @@ Interpreter::execByteCode()
 	  {
 	    stack.push(temp->value.string);
 	  }
-	else 
+	else
 	  {
 	    printError(tr("Illegal argument to string()"));
 	    return -1;
@@ -1226,9 +1229,9 @@ Interpreter::execByteCode()
 	op++;
 	double val = 0;
 	stackval *temp = stack.pop();
-	if (temp->type == T_INT) 
+	if (temp->type == T_INT)
 	  {
-	    val = (double) temp->value.intval; 
+	    val = (double) temp->value.intval;
 	  }
 	else if (temp->type == T_FLOAT)
 	  {
@@ -1330,15 +1333,15 @@ Interpreter::execByteCode()
 	op += sizeof(unsigned char);
 	stackval *temp = stack.pop();
 	double val;
-	if (temp->type == T_INT) 
+	if (temp->type == T_INT)
 	  {
-	    val = (double) temp->value.intval; 
+	    val = (double) temp->value.intval;
 	  }
 	else if (temp->type == T_FLOAT)
 	  {
 	    val = temp->value.floatval;
 	  }
-	else 
+	else
 	  {
 	    switch (whichop)
 	      {
@@ -1381,7 +1384,7 @@ Interpreter::execByteCode()
 	    stack.push((int) floor(val));
 	    break;
 	  case OP_ABS:
-	    if (val < 0) 
+	    if (val < 0)
 	      {
 		val = -val;
 	      }
@@ -1428,15 +1431,15 @@ Interpreter::execByteCode()
 	      }
 	  }
 
-	else 
+	else
 	  {
-	    if (one->type == T_INT) 
-	      oneval = (double) one->value.intval; 
-	    else 
+	    if (one->type == T_INT)
+	      oneval = (double) one->value.intval;
+	    else
 	      oneval = one->value.floatval;
-	    if (two->type == T_INT) 
-	      twoval = (double) two->value.intval; 
-	    else 
+	    if (two->type == T_INT)
+	      twoval = (double) two->value.intval;
+	    else
 	      twoval = two->value.floatval;
 
 	    switch(*op)
@@ -1502,7 +1505,7 @@ Interpreter::execByteCode()
       {
 	op++;
 	POP2;
-	if (!(one->value.intval && two->value.intval) && (one->value.intval || two->value.intval)) 
+	if (!(one->value.intval && two->value.intval) && (one->value.intval || two->value.intval))
 	  {
 	    stack.push(1);
 	  }
@@ -1563,7 +1566,7 @@ Interpreter::execByteCode()
 	  {
 	    stack.push(val);
 	  }
-	else 
+	else
 	  {
 	    stack.push(val ^ 1);
 	  }
@@ -1588,7 +1591,7 @@ Interpreter::execByteCode()
 	  {
 	    stack.push(val);
 	  }
-	else 
+	else
 	  {
 	    stack.push(val ^ 1);
 	  }
@@ -1614,7 +1617,7 @@ Interpreter::execByteCode()
 	  {
 	    stack.push(val);
 	  }
-	else 
+	else
 	  {
 	    stack.push(val ^ 1);
 	  }
@@ -1629,7 +1632,7 @@ Interpreter::execByteCode()
 	POP2;
 	int oneval;
 	int twoval;
-	
+
 	if (one->type == T_STRING || two->type == T_STRING)
 	  {
 	    printError(tr("Sound must have a frequency and duration."));
@@ -1638,14 +1641,14 @@ Interpreter::execByteCode()
 
 	if (one->type == T_INT) oneval = one->value.intval; else oneval = (int) one->value.floatval;
 	if (two->type == T_INT) twoval = two->value.intval; else twoval = (int) two->value.floatval;
-	
+
 	emit(soundReady(oneval, twoval));
 	delete one;
 	delete two;
       }
       break;
-	
-	
+
+
 
 
     case OP_SETCOLOR:
@@ -1729,12 +1732,12 @@ Interpreter::execByteCode()
 	stackval *y0 = stack.pop();
 	stackval *x0 = stack.pop();
 	int x0val, y0val, x1val, y1val;
-	
+
 	if (x0->type == T_INT) x0val = x0->value.intval; else x0val = (int) x0->value.floatval;
 	if (y0->type == T_INT) y0val = y0->value.intval; else y0val = (int) y0->value.floatval;
 	if (x1->type == T_INT) x1val = x1->value.intval; else x1val = (int) x1->value.floatval;
 	if (y1->type == T_INT) y1val = y1->value.intval; else y1val = (int) y1->value.floatval;
-	
+
 	QPainter ian(image);
 	QPainter ian2(imask);
 	ian.setPen(pencolor);
@@ -1744,7 +1747,7 @@ Interpreter::execByteCode()
 	    ian2.setPen(Qt::color0);
 	    ian2.setBrush(Qt::color0);
 	  }
-	else 
+	else
 	  {
 	    ian2.setPen(Qt::color1);
 	    ian2.setBrush(Qt::color1);
@@ -1780,12 +1783,12 @@ Interpreter::execByteCode()
 	stackval *y0 = stack.pop();
 	stackval *x0 = stack.pop();
 	int x0val, y0val, x1val, y1val;
-	
+
 	if (x0->type == T_INT) x0val = x0->value.intval; else x0val = (int) x0->value.floatval;
 	if (y0->type == T_INT) y0val = y0->value.intval; else y0val = (int) y0->value.floatval;
 	if (x1->type == T_INT) x1val = x1->value.intval; else x1val = (int) x1->value.floatval;
 	if (y1->type == T_INT) y1val = y1->value.intval; else y1val = (int) y1->value.floatval;
-	
+
 	QPainter ian(image);
 	QPainter ian2(imask);
 	ian.setPen(pencolor);
@@ -1795,7 +1798,7 @@ Interpreter::execByteCode()
 	    ian2.setPen(Qt::color0);
 	    ian2.setBrush(Qt::color0);
 	  }
-	else 
+	else
 	  {
 	    ian2.setPen(Qt::color1);
 	    ian2.setBrush(Qt::color1);
@@ -1844,10 +1847,10 @@ Interpreter::execByteCode()
 		printError(tr("Not enough points in array for poly()"));
 		return -1;
 	      }
-	    
+
 	    double *array = vars[*i].value.arr->data.fdata;
 	    QPointF points[pairs];
-	    
+
 	    for (int j = 0; j < pairs; j++)
 	      {
 		points[j].setX(array[j*2]);
@@ -1900,11 +1903,11 @@ Interpreter::execByteCode()
 	stackval *y = stack.pop();
 	stackval *x = stack.pop();
 	int xval, yval, rval;
-	
+
 	if (r->type == T_INT) rval = r->value.intval; else rval = (int) r->value.floatval;
 	if (y->type == T_INT) yval = y->value.intval; else yval = (int) y->value.floatval;
 	if (x->type == T_INT) xval = x->value.intval; else xval = (int) x->value.floatval;
-	
+
 	QPainter ian(image);
 	QPainter ian2(imask);
 	ian.setPen(pencolor);
@@ -1914,7 +1917,7 @@ Interpreter::execByteCode()
 	    ian2.setPen(Qt::color0);
 	    ian2.setBrush(Qt::color0);
 	  }
-	else 
+	else
 	  {
 	    ian2.setPen(Qt::color1);
 	    ian2.setBrush(Qt::color1);
@@ -1960,7 +1963,7 @@ Interpreter::execByteCode()
 	  }
       }
       break;
-      
+
     case OP_PLOT:
       {
 	op++;
@@ -2131,12 +2134,12 @@ Interpreter::execByteCode()
 	  {
 	    vars[*num].type = T_FLOAT;
 	    vars[*num].value.floatval = (double) temp->value.intval;
-	  } 
+	  }
 	else if (temp->type == T_FLOAT)
 	  {
 	    vars[*num].type = T_FLOAT;
 	    vars[*num].value.floatval = temp->value.floatval;
-	  } 
+	  }
 	delete temp;
 	if(debugMode)
 	  {
@@ -2154,11 +2157,11 @@ Interpreter::execByteCode()
 	stackval *temp = stack.pop();
 	if (temp->type == T_STRING)
 	  {
-            if (vars[*num].type == T_STRARRAY) 
+            if (vars[*num].type == T_STRARRAY)
               {
                 printError(tr("Can not assign string value to array variable"));
                 return -1;
-              }      
+              }
 	    vars[*num].type = T_STRING;
 	    vars[*num].value.string = strdup(temp->value.string);
 	  }
@@ -2176,7 +2179,7 @@ Interpreter::execByteCode()
       break;
 
     default:
-      status = R_STOPPED; 
+      status = R_STOPPED;
       return -1;
       break;
     }
