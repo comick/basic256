@@ -14,7 +14,7 @@ graphsize gwidth,gheight
 
 # feel free to change the radius of the balls and their masses
 # radius
-r1 = 30
+r1 = 15
 r2 = 15
 
 # masses 
@@ -26,6 +26,22 @@ x1 = rand * (gwidth - 2*r1) + r1 : y1 = r1
 vx1 = 10*rand - 5 : vy1 = 3*rand
 x2 = rand * (gwidth - 2*r2) + r2 : y2 = gheight - r2
 vx2 = 10*rand - 5 : vy2 = -3*rand
+
+#uncomment the following for direct central collision
+#gwidth  = 500
+#gheight = 200
+#graphsize gwidth,gheight
+#r1=15
+#r2 = r1
+#m2 = m1
+#x1 = 15
+#y1 = floor(gheight/2)
+#x2 = gwidth - 15
+#y2 = y1
+#vx1 = 5
+#vx2 = -vx1
+#vy1 = 0
+#vy2 = 0
 
 ###################################
 kollision = 0    # do we have a collision (1 yes, 0 no)
