@@ -21,6 +21,7 @@ using namespace std;
 #include <QMutex>
 #include <QWaitCondition>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QFile>
 #include <QSound>
 #include <QApplication>
@@ -40,6 +41,7 @@ QWaitCondition waitInput;
 RunController::RunController(MainWindow *mw)
 {
   mainwin = mw;
+  //i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
   i = new Interpreter(mainwin->goutput);
   te = mainwin->editor;
   output = mainwin->output;
@@ -63,6 +65,7 @@ RunController::RunController(MainWindow *mw)
   QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
   QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
+  QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 
   QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
   QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
@@ -79,11 +82,27 @@ RunController::playSound(int frequency, int duration)
 }
 
 void
+RunController::speakWords(QString text)
+{
+// bad implementation - should use espeak library and call directly j.m.reneau (2009/10/26)
+// espeak command_line folder needs to be added to system path
+#ifdef WIN32
+  QString command = QString("espeak \"") + text + QString("\"");
+  system(command.toLatin1());
+#else
+  //*nix variants should call espeak directly
+  QString command = QString("espeak \"") + text + QString("\"");
+  system(command.toLatin1());
+#endif
+}
+
+
+void
 RunController::startDebug()
 {
   if (i->isStopped())
     {
-      int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
+      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
       if (result < 0)
 	{
 	  i->debugMode = false;
@@ -110,7 +129,7 @@ RunController::startRun()
 {
   if (i->isStopped())
     {
-      int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
+      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
       i->debugMode = false;
       if (result < 0)
 	{
@@ -234,7 +253,7 @@ RunController::pauseResume()
 void
 RunController::saveByteCode()
 {
-  byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toUtf8().data());
+  byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toAscii().data());
   if (bc == NULL)
     {
       return;

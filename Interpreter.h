@@ -97,6 +97,9 @@ class Stack
   void push(int);
   void push(double);
   stackval *pop();
+  stackval *popint();
+  stackval *popfloat();
+  stackval *popstring();
   
  private:
   stackval *top;
@@ -134,15 +137,16 @@ class Interpreter : public QThread
   void clearText();
   void getKey();
   void soundReady(int, int);
+  void speakWords(QString);
   void goToLine(int);
   void highlightLine(int);
   void varAssignment(QString name, QString value, int arraylen);
   void resizeGraph(int, int);
 
  private:
+  void waitForGraphics();
   void printError(QString);
   QImage *image;
-  QImage *imask;
   BasicGraph *graph;
   variable vars[NUMVARS];
   Stack stack;
@@ -158,6 +162,9 @@ class Interpreter : public QThread
   void clearvars();
   bool once;
   int currentLine;
+  QString fontfamily;
+  int fontpoint;
+  int fontweight;
 };
 
 

@@ -83,7 +83,6 @@
 
 #define OP_SOUND		0x40
 
-
 //Int argument ops
 #define OP_GOTO          	0x41
 #define OP_GOSUB         	0x42
@@ -115,6 +114,26 @@
 //String argument ops
 #define OP_PUSHSTRING		0x80
 
+// jmr
+#define OP_ASC			0x90
+#define OP_CHR			0x91
+#define OP_FLOAT		0x92
+#define OP_READLINE		0x93
+#define OP_WRITELINE		0x94
+#define OP_EOF			0x95
+#define OP_MOD			0x96
+#define OP_YEAR			0x97
+#define OP_MONTH		0x98
+#define OP_DAY			0x99
+#define OP_HOUR			0x9a
+#define OP_MINUTE		0x9b
+#define OP_SECOND		0x9c
+#define OP_SETCOLORRGB		0x9d
+#define OP_TEXT			0x9e
+#define OP_FONT			0x9f
+#define OP_SAY			0xa0
+#define OP_GRAPHWIDTH	0xa1
+#define OP_GRAPHHEIGHT	0xa2
 
 
 

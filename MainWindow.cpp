@@ -25,17 +25,18 @@ using namespace std;
 #include <QStatusBar>
 #include <QDialog>
 #include <QLabel>
+#include <QString>
 #include <stdio.h>
 
 #include "RunController.h"
 #include "PauseButton.h"
 #include "DockWidget.h"
 #include "MainWindow.h"
+#include "Version.h"
 
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   :	QMainWindow(parent, f)
 {
-  
   QWidget * centerWidget = new QWidget();
   centerWidget->setObjectName( "centerWidget" );
 
@@ -67,14 +68,18 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
   editsyntax = new EditSyntaxHighlighter(editor->document());
 	
   QDialog *aboutdialog = new QDialog();
-  QLabel *aboutlabel = new QLabel(QObject::tr("<h2 align='center'>BASIC-256 -- Version 0.9.2</h2> \
-					<p>Copyright &copy; 2006, The BASIC-256 Team</p> \
-                                        <p>Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.</p> \
-					<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
-				        <p><i>You should have received a copy of the GNU General Public License along<br> \
-					with this program; if not, write to the Free Software Foundation, Inc.,<br> \
-					51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"), aboutdialog);
+  char* abouttext = (char *) malloc(2048);
+  sprintf(abouttext,"<h2 align='center'>BASIC-256 -- Version %s</h2> \
+	<p>Copyright &copy; 2006, The BASIC-256 Team</p> \
+        <p>Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.</p> \
+	<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
+	<p><i>You should have received a copy of the GNU General Public License along<br> \
+	with this program; if not, write to the Free Software Foundation, Inc.,<br> \
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>",VERSION);
+  
+  QLabel *aboutlabel = new QLabel(QObject::tr(abouttext), aboutdialog);
   QGridLayout *aboutgrid = new QGridLayout();
+  free(abouttext);
   
   aboutgrid->addWidget(aboutlabel, 0, 0);
   aboutdialog->setLayout(aboutgrid);

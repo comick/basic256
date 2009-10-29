@@ -1,0 +1,105 @@
+
+html {
+  background-color: #f0f0f0;
+}
+
+#page { 
+  width: 650px;
+  background-color: #ffffff;
+  margin: 0px auto 0px auto;
+}
+
+#header { 
+  background-color: #aaaaee;
+  margin: 0px 0px 0px 0px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+#header h1 { 
+  color: #eeeeff;
+  text-indent: 40px;
+}
+
+h2 { 
+  font-size: large;
+  text-align: center;
+  text-decoration: underline;
+  margin: 20px 0px 0px 0px;
+}
+
+h3 { 
+  font-size: medium;
+  text-align: center;
+  margin: 20px 0px 0px 0px;
+}
+
+p { 
+  text-indent: 10px;
+  margin: 20px 40px 20px 40px;
+}
+
+.indented { 
+  margin: 10px 40px 10px 40px;
+}
+
+.figure { 
+  width: 400px;
+  text-align: center;
+  padding-top: 5px;
+  margin: 5px auto 5px auto;
+  border: 1px dashed gray;
+}
+
+.navbar { 
+  margin: 5px 10px 5px 10px;
+}
+
+a { 
+  text-decoration: none;
+}
+
+a:hover { 
+  text-decoration: underline;
+}
+
+#sf { 
+  border: 0px solid black;
+}
+
+
+.cmdtable { 
+  margin: 20px auto 20px auto;
+}
+
+.cmdname { 
+  font-size: large;
+  font-weight: bold;
+  width: 100%;
+}
+
+.label { 
+  color: #888888;
+}
+
+.cmdnav { 
+  font-size: small;
+  padding: 0px 2px 0px 2px;
+  margin: 0px 0px 0px 0px;
+  display: block;
+  width: 100%;
+}
+
+.cmdnav:hover { 
+  background-color: #dddddd;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.code { 
+  margin: 5px auto 5px auto;
+  border: 1px dashed gray;
+}
+
+

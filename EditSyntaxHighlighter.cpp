@@ -109,18 +109,30 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Mm][Ii][Dd]\\b"					// mid
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"			// instr
 		  << "\\b[Cc][Ee][Ii][Ll]\\b"				// ceil
-		  << "\\b[Ff][Ll][Oo][Oo][Rr]\\b"			// floor
+		  << "\\b[Ff][Ll][Oo][Oo][Rr]\\b"				// floor
 		  << "\\b[Aa][Bb][Ss]\\b"					// abs
 		  << "\\b[Ss][Ii][Nn]\\b"					// sin
 		  << "\\b[Cc][Oo][Ss]\\b"					// cos
 		  << "\\b[Tt][Aa][Nn]\\b"					// tan
-		  << "\\b[Rr][Aa][Nn][Dd]\\b"				// rand
+		  << "\\b[Rr][Aa][Nn][Dd]\\b"					// rand
 		  << "\\b[Pp][Ii]\\b"						// pi
 		  << "\\b[Aa][Nn][Dd]\\b"					// and
 		  << "\\b[Oo][Rr]\\b"						// or
 		  << "\\b[Xx][Oo][Rr]\\b"					// xor
 		  << "\\b[Nn][Oo][Tt]\\b"					// not
-		  << "\\b[Pp][Aa][Uu][Ss][Ee]\\b";		// pause
+		  << "\\b[Aa][Ss][Cc]\\b"					// asc
+		  << "\\b[Cc][Hh][Rr]\\b"					// chr
+		  << "\\b[Ff][Ll][Oo][Aa][Tt]\\b"				// tofloat
+		  << "\\b[Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]\\b"			// readline
+		  << "\\b[Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]\\b"			// writeline
+		  << "\\b[Ee][Oo][Ff]\\b"					// eof
+		  << "\\b[Yy][Ee][Aa][Rr]\\b"					// year
+		  << "\\b[Mm][Oo][Nn][Tt][Hh]\\b"					// month
+		  << "\\b[Dd][Aa][Yy]\\b"					// day
+		  << "\\b[Hh][Oo][Uu][Rr]\\b"					// hour
+		  << "\\b[Mm][Ii][Nn][Uu][Tt][Ee]\\b"					// minute
+		  << "\\b{Ss][Ee][Cc][Oo][Nn][Dd]\\b"					// second
+		  << "\\b[Pp][Aa][Uu][Ss][Ee]\\b";				// pause
 	
   for (QStringList::iterator it = keywordPatterns.begin(); it != keywordPatterns.end(); ++it)
     {

@@ -45,13 +45,17 @@
     extern int getSymbol(char *);
     extern int newSymbol(char *);
     extern int yyparse();
+    //extern YYLTYPE yylloc;
     extern int errorcode;
     extern int byteOffset;
     int linenumber;
+    int column;
 
 #ifdef __cplusplus
   }
 #endif
+
+void count();
 
 %}
 
@@ -86,6 +90,8 @@ poly  [Pp][Oo][Ll][Yy]
 line  [Ll][Ii][Nn][Ee]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
 graphsize [Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]
+graphwidth [Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]
+graphheight [Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
 cls   [Cc][Ll][Ss]
 clg   [Cc][Ll][Gg]
@@ -129,12 +135,28 @@ variable [a-zA-Z][a-zA-Z0-9]*
 stringvar [a-zA-Z][a-zA-Z0-9]*\$
 label     {variable}:
 blankline ^{whitespace}*[\n]
+asc [Aa][Ss][Cc]
+chr [Cc][Hh][Rr]
+tofloat [Ff][Ll][Oo][Aa][Tt]
+readline [Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]
+writeline [Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]
+booleof [Ee][Oo][Ff]
+year [Yy][Ee][Aa][Rr]
+month [Mm][Oo][Nn][Tt][Hh]
+day [Dd][Aa][Yy]
+hour [Hh][Oo][Uu][Rr]
+minute [Mm][Ii][Nn][Uu][Tt][Ee]
+second [Ss][Ee][Cc][Oo][Nn][Dd]
+text [Tt][Ee][Xx][Tt]
+font [Ff][Oo][Nn][Tt]
+say [Ss][Aa][Yy]
 
 %%
 
 
 {label} { 
-          char *temp, *c;
+          count();
+	  char *temp, *c;
           temp = c = strdup(yytext);
           while (*c != ':') c++;
           *c = 0;
@@ -150,105 +172,122 @@ blankline ^{whitespace}*[\n]
             }
           return LABEL; 
         }
-{integer}       { yylval.number = atoi(yytext); return INTEGER; }
-{floatnum}      { yylval.floatnum = atof(yytext); return FLOAT; }
-{string}        { int len = strlen(yytext); 
+{integer}       { count(); yylval.number = atoi(yytext); return INTEGER; }
+{floatnum}      { count(); yylval.floatnum = atof(yytext); return FLOAT; }
+{string}        { count(); int len = strlen(yytext); 
                   yylval.string = strdup(yytext + 1); 
                   yylval.string[len - 2] = 0; 
                   return STRING; }
-{toint}         { return TOINT; }
-{tostring}      { return TOSTRING; }
-{length}        { return LENGTH; }
-{mid}           { return MID; }
-{instr}         { return INSTR; }
-{ceil}          { return CEIL; }
-{floor}         { return FLOOR; }
-{abs}           { return ABS; }
-{sin}           { return SIN; }
-{cos}           { return COS; }
-{tan}           { return TAN; }
-{rand}          { return RAND; }
-{pi}            { return PI; }
-{and}           { return AND; }
-{or}            { return OR; }
-{xor}           { return XOR; }
-{not}           { return NOT; }
-{print}		{ return PRINT; }
-{dim}		{ return DIM; }
-{cls}		{ return CLS; }
-{clg}		{ return CLG; }
-{plot}		{ return PLOT; }
-{circle}	{ return CIRCLE; }
-{rect}	        { return RECT; }
-{poly}		{ return POLY; }
-{line}	        { return LINE; }
-{sound}         { return SOUND; }
-{fastgraphics}	{ return FASTGRAPHICS; }
-{graphsize}	{ return GRAPHSIZE; }
-{refresh}	{ return REFRESH; }
-{color}		{ return SETCOLOR; }
-{colour}	{ return SETCOLOR; }
-{clear}		{ yylval.number = 0; return COLOR; }
-{white}		{ yylval.number = 1; return COLOR; }
-{black}		{ yylval.number = 2; return COLOR; }
-{red}		{ yylval.number = 3; return COLOR; }
-{dark}{red}	{ yylval.number = 4; return COLOR; }
-{green}		{ yylval.number = 5; return COLOR; }
-{dark}{green}	{ yylval.number = 6; return COLOR; }
-{blue}		{ yylval.number = 7; return COLOR; }
-{dark}{blue}	{ yylval.number = 8; return COLOR; }
-{cyan}		{ yylval.number = 9; return COLOR; }
-{dark}{cyan}	{ yylval.number = 10; return COLOR; }
-{purple}	{ yylval.number = 11; return COLOR; }
-{dark}{purple}	{ yylval.number = 12; return COLOR; }
-{yellow}	{ yylval.number = 13; return COLOR; }
-{dark}{yellow}	{ yylval.number = 14; return COLOR; }
-{orange}	{ yylval.number = 15; return COLOR; }
-{dark}{orange}	{ yylval.number = 16; return COLOR; }
-{gray}	        { yylval.number = 17; return COLOR; }
-{dark}{gray}	{ yylval.number = 18; return COLOR; }
-{goto}		{ return GOTO; }
-{if}		{ return IF; }
-{then}		{ return THEN; }
-{for}		{ return FOR; }
-{to}		{ return TO; }
-{step}		{ return STEP; }
-{next}		{ return NEXT; }
-{open}		{ return OPEN; }
-{read}		{ return READ; }
-{write}		{ return WRITE; }
-{close}		{ return CLOSE; }
-{reset}		{ return RESET; }
-{input}         { return INPUT; }
-{key}           { return KEY; }
-{gosub}         { return GOSUB; }
-{return}        { return RETURN; }
-{pause}         { return PAUSE; }
-{rem}           { return '\n'; }
-{remalt}        { return '\n'; }
-{end}           { return END; }
-">="            { return GTE; }
-"<="            { return LTE; }
-"<>"            { return NE; }
-"+"             { return '+'; }
-"-"             { return '-'; }
-"*"             { return '*'; }
-"/"             { return '/'; }
-"^"             { return '^'; }
-"="             { return '='; }
-"<"             { return '<'; }
-">"             { return '>'; }
-","             { return ','; }
-";"             { return ';'; }
-":"             { return ':'; }
-"("             { return '('; }
-")"             { return ')'; }
-"{"             { return '{'; }
-"}"             { return '}'; }
-"["             { return '['; }
-"]"             { return ']'; }
-"\n"            { linenumber++; return '\n'; }
+{toint}         { count(); return TOINT; }
+{tostring}      { count(); return TOSTRING; }
+{length}        { count(); return LENGTH; }
+{mid}           { count(); return MID; }
+{instr}         { count(); return INSTR; }
+{ceil}          { count(); return CEIL; }
+{floor}         { count(); return FLOOR; }
+{abs}           { count(); return ABS; }
+{sin}           { count(); return SIN; }
+{cos}           { count(); return COS; }
+{tan}           { count(); return TAN; }
+{rand}          { count(); return RAND; }
+{pi}            { count(); return PI; }
+{and}           { count(); return AND; }
+{or}            { count(); return OR; }
+{xor}           { count(); return XOR; }
+{not}           { count(); return NOT; }
+{print}		{ count(); return PRINT; }
+{dim}		{ count(); return DIM; }
+{cls}		{ count(); return CLS; }
+{clg}		{ count(); return CLG; }
+{plot}		{ count(); return PLOT; }
+{circle}	{ count(); return CIRCLE; }
+{rect}	        { count(); return RECT; }
+{poly}		{ count(); return POLY; }
+{line}	        { count(); return LINE; }
+{sound}         { count(); return SOUND; }
+{fastgraphics}	{ count(); return FASTGRAPHICS; }
+{graphsize}	{ count(); return GRAPHSIZE; }
+{graphwidth}	{ count(); return GRAPHWIDTH; }
+{graphheight}	{ count(); return GRAPHHEIGHT; }
+{refresh}	{ count(); return REFRESH; }
+{color}		{ count(); return SETCOLOR; }
+{colour}	{ count(); return SETCOLOR; }
+{clear}		{ count(); yylval.number = 0; return COLOR; }
+{white}		{ count(); yylval.number = 1; return COLOR; }
+{black}		{ count(); yylval.number = 2; return COLOR; }
+{red}		{ count(); yylval.number = 3; return COLOR; }
+{dark}{red}	{ count(); yylval.number = 4; return COLOR; }
+{green}		{ count(); yylval.number = 5; return COLOR; }
+{dark}{green}	{ count(); yylval.number = 6; return COLOR; }
+{blue}		{ count(); yylval.number = 7; return COLOR; }
+{dark}{blue}	{ count(); yylval.number = 8; return COLOR; }
+{cyan}		{ count(); yylval.number = 9; return COLOR; }
+{dark}{cyan}	{ count(); yylval.number = 10; return COLOR; }
+{purple}	{ count(); yylval.number = 11; return COLOR; }
+{dark}{purple}	{ count(); yylval.number = 12; return COLOR; }
+{yellow}	{ count(); yylval.number = 13; return COLOR; }
+{dark}{yellow}	{ count(); yylval.number = 14; return COLOR; }
+{orange}	{ count(); yylval.number = 15; return COLOR; }
+{dark}{orange}	{ count(); yylval.number = 16; return COLOR; }
+{gray}	        { count(); yylval.number = 17; return COLOR; }
+{dark}{gray}	{ count(); yylval.number = 18; return COLOR; }
+{goto}		{ count(); return GOTO; }
+{if}		{ count(); return IF; }
+{then}		{ count(); return THEN; }
+{for}		{ count(); return FOR; }
+{to}		{ count(); return TO; }
+{step}		{ count(); return STEP; }
+{next}		{ count(); return NEXT; }
+{open}		{ count(); return OPEN; }
+{write}		{ count(); return WRITE; }
+{close}		{ count(); return CLOSE; }
+{reset}		{ count(); return RESET; }
+{input}         { count(); return INPUT; }
+{key}           { count(); return KEY; }
+{gosub}         { count(); return GOSUB; }
+{return}        { count(); return RETURN; }
+{pause}         { count(); return PAUSE; }
+{asc}           { count(); return ASC; }
+{chr}           { count(); return CHR; }
+{tofloat}       { count(); return TOFLOAT; }
+{readline}      { count(); return READLINE; }
+{writeline}     { count(); return WRITELINE; }
+{booleof}       { count(); return BOOLEOF; }
+{year}          { count(); return YEAR; }
+{month}         { count(); return MONTH; }
+{day}           { count(); return DAY; }
+{hour}          { count(); return HOUR; }
+{minute}        { count(); return MINUTE; }
+{second}        { count(); return SECOND; }
+{text}          { count(); return TEXT; }
+{font}          { count(); return FONT; }
+{say}           { count(); return SAY; }
+{rem}           { count(); return '\n'; }
+{remalt}        { count(); return '\n'; }
+{end}           { count(); return END; }
+">="            { count(); return GTE; }
+"<="            { count(); return LTE; }
+"<>"            { count(); return NE; }
+"+"             { count(); return '+'; }
+"-"             { count(); return '-'; }
+"*"             { count(); return '*'; }
+"\%"            { count(); return MOD; }
+"/"             { count(); return '/'; }
+"^"             { count(); return '^'; }
+"="             { count(); return '='; }
+"<"             { count(); return '<'; }
+">"             { count(); return '>'; }
+","             { count(); return ','; }
+";"             { count(); return ';'; }
+":"             { count(); return ':'; }
+"("             { count(); return '('; }
+")"             { count(); return ')'; }
+"{"             { count(); return '{'; }
+"}"             { count(); return '}'; }
+"["             { count(); return '['; }
+"]"             { count(); return ']'; }
 {variable}      { 
+		  count(); 
                   int num = getSymbol(yytext);
                   if (num < 0)
                    {
@@ -261,6 +300,7 @@ blankline ^{whitespace}*[\n]
                   return VARIABLE;
                 }
 {stringvar}     { 
+                  count(); 
                   int num = getSymbol(yytext);
                   if (num < 0)
                    {
@@ -272,8 +312,11 @@ blankline ^{whitespace}*[\n]
                    }
                   return STRINGVAR;
                 }
+
+"\n"            {count(); linenumber++; return '\n'; }
+
 {whitespace} 	/* ignore whitespace */
-. 		{ printf("char: %s\n", yytext); return yytext[0]; }
+. 		{ count(); printf("char: %s\n", yytext); return yytext[0]; }
 
 
 %%
@@ -281,6 +324,19 @@ blankline ^{whitespace}*[\n]
 int 
 yywrap(void) {
   return 1;
+}
+
+void count()
+{
+        int i;
+
+        for (i = 0; yytext[i] != '\0'; i++)
+                if (yytext[i] == '\n')
+                        column = 0;
+                else if (yytext[i] == '\t')
+                        column += 8 - (column % 8);
+                else
+                        column++;
 }
 
 
@@ -294,6 +350,7 @@ basicParse(char *code){
   clearLabelTable();
 
   linenumber = 1;
+  column = 0;
   errorcode = 0;
 
   yyparse();

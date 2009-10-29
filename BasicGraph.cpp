@@ -56,9 +56,7 @@ BasicGraph::resize(int width, int height)
   delete image;
   delete imask;
   imagedata = new uchar[sizeof(int) * width * height];
-  maskdata  = new uchar[width * height];
   image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
-  imask = new QImage(maskdata, width, height, QImage::Format_Mono);
 }
 
 
@@ -66,18 +64,18 @@ void
 BasicGraph::paintEvent(QPaintEvent *)
 {
   QPainter p2(this);
-  image->setAlphaChannel(*imask);
+  //image->setAlphaChannel(*imask);
   p2.drawImage((width() - gwidth) / 2,
 	       (height() - gheight) / 2,
 	       *image);
 }
 
 
-void
+void 
 BasicGraph::keyPressEvent(QKeyEvent *e)
 {
   e->accept();
-
+  
   keymutex.lock();
   currentKey = e->key();
   keymutex.unlock();
@@ -95,14 +93,14 @@ bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)
 
 	vToolBar->addAction(copyAct);
 	vToolBar->addAction(printAct);
-
+	
 	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
 	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
-
+		
 	m_usesToolBar = true;
 	m_usesMenu = true;
 
-	return true;
+	return true;	
 }
 
 void BasicGraph::slotCopy()
@@ -116,8 +114,8 @@ void BasicGraph::slotPrint()
 	QPrinter printer(QPrinter::HighResolution);
 	QPrintDialog *dialog = new QPrintDialog(&printer, this);
 	dialog->setWindowTitle(QObject::tr("Print Graphics Output"));
-
-	if (dialog->exec() == QDialog::Accepted)
+	
+	if (dialog->exec() == QDialog::Accepted) 
 	{
 		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
 		{
@@ -132,6 +130,6 @@ void BasicGraph::slotPrint()
 		else
 		{
 			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-		}
-	}
+		}		
+	}	
 }

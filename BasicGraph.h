@@ -50,7 +50,6 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   
  private:
   uchar *imagedata;
-  uchar *maskdata;
   BasicOutput *output;
   unsigned int gwidth;
   unsigned int gheight;

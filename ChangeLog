@@ -1,3 +1,78 @@
+2009-10-29 j.m.reneau <renejm@users.sourceforge.net> 0.9.3j
+
+	* added GRAPHHEIGHT and GRAPHIDTH to return the size of the graphics window
+	* worked on the HTML documentation, added GRAPHSIZE, GRAPHWIDTH, and GRAPHHEIGHT
+	
+2009-10-28 j.m.reneau <renejm@users.sourceforge.net> 0.9.3.i
+	* worked my prior changes into the trunk
+
+2009-10-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.3h
+
+	* changed say statement to allow for same arguments (float and string) as print
+	* changes say to use espeak without a direct path to the exe file.   requires espeak in path on windows
+	
+
+2008-09-23 <renejm@users.sourceforge.net> 0.9.3g
+
+	* added SAY ststement to call locally installed espeak to tts string - need to re-write for linux and would like to see it use the espeak lib
+
+2008-09-08 <renejm@users.sourceforge.net> 0.9.3f
+
+	* added font "fontname", point, weight and text x, y, "txt" commands to paint text onto the graphics window (TestPrograms/testtextfont.kbs"
+
+2008-09-07 <renejm@users.sourceforge.net>
+
+	* added logic to yyerror in LEX\basicParse.y to fix syntax error line number problem.  If an error was the last token on the line it would report the error on the next line.  check yytoken if \n and if it is then report previous line
+
+	* added column number to syntax error printing - added count logic to basicParse.l
+	
+	* fixed rand - it would return values between 0 and 1 with 1 inclusive changed to return almost one but not quite (see TestPrograms/random_one.kbs)
+	
+2008-09-05 <renejm@users.sourceforge.net>
+
+	* changed yacc scriopt for order of operations
+	
+	* removed imask logic from BasicGraph and Interperter.  Was causing refresh and draw errors on fast (dual core win32 xp&vista) boxes
+	
+	* split version # out of MainWindow into Version.h
+
+2008-09-01 <renejm@users.sourceforge.net>
+	
+	* Added array testing to array input like logic added 2008-08-29
+	
+	* Added COLOR #,#,# to set colors by rgb
+	
+	* changed poly to draw filled not just outline
+	
+	* created NSIS install script for Win32
+	
+	
+2008-08-29 <renejm@users.sourceforge.net>
+	
+	* Added Functions asc, chr, float
+	
+	* Added command readline and writeline to i/o an entire line as a string
+	
+	* Added boolean flag eof to test if file was at eof
+	
+	* added % operator for modulo
+	
+	* added logic to allow for concatenation if float + string or string + float
+	
+	* combined redudant graphics wait mutex logic in Interperter
+	
+	* in Interperter added popint, popfloat, popstring to the stack and changed most ops to use these new pops so that type checking could be removed in the op code
+	
+	* found error in array element assign (string and number) if assigning as an array a non array variable or a non defined variable
+	
+	* found error in arraylist assign (string and number) if assigning as an array a non array variable or a non defined variable
+		see uaarray.kbs
+		
+	* added print statement with no string to go to next line
+	
+	* added YEAR MONTH DAY HOUD MINUTE SECOND as constants like RAND and PI
+	
+
 2006-12-12    <drblast@users.sourceforge.net>
 
 	* LEX\basicParse.y: Added sound command.
@@ -142,4 +217,3 @@
 
 	* Main.cpp (main): Removed Renumber Lines menu option
 	(main): Pause/Resume button enabled
-

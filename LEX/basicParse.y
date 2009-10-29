@@ -18,6 +18,7 @@
 
 %{
 
+
 #ifdef __cplusplus
   extern "C" {
 #endif
@@ -30,8 +31,10 @@
     #define SYMTABLESIZE 2000
 
     extern int yylex();
+    extern char *yytext;
     int yyerror(const char *);
     int errorcode;
+    extern int column;
     extern int linenumber;
 
     char *byteCode = NULL;
@@ -221,6 +224,11 @@
 %token CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
 %token PAUSE SOUND
+%token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD
+%token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
+%token SAY
+%token GRAPHWIDTH GRAPHHEIGHT
+
 
 %union 
 {
@@ -245,6 +253,7 @@
 %left '-'
 %left '+'
 %left '*'
+%left MOD
 %left '/'
 %left '^'
 %left AND 
@@ -306,9 +315,13 @@ statement: gotostmt
          | strarrayassign
          | openstmt
          | writestmt
+         | writelinestmt
          | closestmt
          | resetstmt
          | soundstmt
+         | textstmt
+	 | fontstmt
+	 | saystmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -361,6 +374,7 @@ boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); }
         | floatexpr '>' floatexpr    { addOp(OP_GT); }
         | floatexpr GTE floatexpr    { addOp(OP_GTE); }
         | floatexpr LTE floatexpr    { addOp(OP_LTE); }
+        | BOOLEOF                    { addOp(OP_EOF); }
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
@@ -403,6 +417,8 @@ returnstmt: RETURN          { addOp(OP_RETURN); }
 
 colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
          | SETCOLOR '(' COLOR ')' { addIntOp(OP_SETCOLOR, $3); }
+         | SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
+         | SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SETCOLORRGB); }
 ;
 
 soundstmt: SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
@@ -426,6 +442,21 @@ rectstmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RE
           | RECT '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RECT); }
 ;
 
+textstmt: TEXT floatexpr ',' floatexpr ',' stringexpr { addOp(OP_TEXT); }
+          | TEXT '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_TEXT); }
+;
+
+fontstmt: FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
+          | FONT '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_FONT); }
+;
+saystmt: SAY stringexpr { addOp(OP_SAY); }
+         | SAY '(' stringexpr ')' { addOp(OP_SAY); }
+         | SAY floatexpr  { addOp(OP_SAY); }
+         | SAY stringexpr ';' { addOp(OP_SAY); }
+         | SAY '(' stringexpr ')' ';' { addOp(OP_SAY); }
+         | SAY floatexpr  ';' { addOp(OP_SAY); }
+;
+
 polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
           | POLY '(' VARIABLE ',' floatexpr ')' { addIntOp(OP_POLY, $3); }
           | POLY VARIABLE { addIntOp(OP_POLY, $2); }
@@ -439,6 +470,10 @@ openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); }
 
 writestmt: WRITE '(' stringexpr ')' { addOp(OP_WRITE); }
          | WRITE stringexpr         { addOp(OP_WRITE); }
+;
+
+writelinestmt: WRITELINE '(' stringexpr ')' { addOp(OP_WRITELINE); }
+         | WRITELINE stringexpr         { addOp(OP_WRITELINE); }
 ;
 
 closestmt: CLOSE         { addOp(OP_CLOSE); }
@@ -457,7 +492,8 @@ inputexpr: INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }
          | INPUT '(' stringexpr ')' { addOp(OP_PRINT);  addOp(OP_INPUT); }
 ;
 
-printstmt: PRINT stringexpr { addOp(OP_PRINTN); }
+printstmt: PRINT { addStringOp(OP_PUSHSTRING, ""); addOp(OP_PRINTN); }
+	 | PRINT stringexpr { addOp(OP_PRINTN); }
          | PRINT '(' stringexpr ')' { addOp(OP_PRINTN); }
          | PRINT floatexpr  { addOp(OP_PRINTN); }
          | PRINT stringexpr ';' { addOp(OP_PRINT); }
@@ -479,6 +515,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | floatexpr '+' floatexpr { addOp(OP_ADD); }
          | floatexpr '-' floatexpr { addOp(OP_SUB); }
          | floatexpr '*' floatexpr { addOp(OP_MUL); }
+         | floatexpr MOD floatexpr { addOp(OP_MOD); }
          | floatexpr '/' floatexpr { addOp(OP_DIV); }
          | floatexpr '^' floatexpr { addOp(OP_EXP); }
          | '-' FLOAT %prec UMINUS  { addFloatOp(OP_PUSHFLOAT, -$2); }
@@ -512,7 +549,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	   }
          | TOINT '(' floatexpr ')' { addOp(OP_INT); }
          | TOINT '(' stringexpr ')' { addOp(OP_INT); }
+         | TOFLOAT '(' floatexpr ')' { addOp(OP_FLOAT); }
+         | TOFLOAT '(' stringexpr ')' { addOp(OP_FLOAT); }
          | LENGTH '(' stringexpr ')' { addOp(OP_LENGTH); }
+         | ASC '(' stringexpr ')' { addOp(OP_ASC); }
          | INSTR '(' stringexpr ',' stringexpr ')' { addOp(OP_INSTR); }
          | CEIL '(' floatexpr ')' { addOp(OP_CEIL); }
          | FLOOR '(' floatexpr ')' { addOp(OP_FLOOR); }
@@ -522,6 +562,14 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
+         | YEAR { addOp(OP_YEAR); }
+         | MONTH { addOp(OP_MONTH); }
+         | DAY { addOp(OP_DAY); }
+         | HOUR { addOp(OP_HOUR); }
+         | MINUTE { addOp(OP_MINUTE); }
+         | SECOND { addOp(OP_SECOND); }
+         | GRAPHWIDTH { addOp(OP_GRAPHWIDTH); }
+         | GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
 ;
 
 stringlist: stringexpr { listlen = 1; }
@@ -529,6 +577,8 @@ stringlist: stringexpr { listlen = 1; }
 ;
 
 stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
+          | floatexpr '+' stringexpr     { addOp(OP_CONCAT); }
+          | stringexpr '+' floatexpr     { addOp(OP_CONCAT); }
           | STRING    { addStringOp(OP_PUSHSTRING, $1); }
           | STRINGVAR '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
           | STRINGVAR 
@@ -542,18 +592,21 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
 		  addIntOp(OP_PUSHVAR, $1);
 		}
 	    }
+          | CHR '(' floatexpr ')' { addOp(OP_CHR); }
           | TOSTRING '(' floatexpr ')' { addOp(OP_STRING); }
           | MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
           | READ '(' ')' { addOp(OP_READ); }
           | READ { addOp(OP_READ); }
+          | READLINE '(' ')' { addOp(OP_READLINE); }
+          | READLINE { addOp(OP_READLINE); }
 ;
-
 
 %%
 
 int
 yyerror(const char *msg) {
   errorcode = -1;
+  if (yytext[0] == '\n') { linenumber--; }	// error happened on previous line
   return -1;
 }
 

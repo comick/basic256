@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="style.css">
+<title>BASIC-256 Command Reference</title>
+</head>
+<body>
+<table class="cmdtable" cellpadding="5" border="0">
+<tr><td class="label">Command</td>
+<td class="cmdname">Poly</td></tr>
+<tr><td valign="top" class="label">Format</td>
+<td>poly <i>array</i>, <i>segments</i><br/>
+poly {x1, y1, x2, y2, x3, y3 ...}</td></tr>
+<tr><td valign="top" class="label">Description</td>
+<td class="desc">Draws a polygon.  The sides of the polygon are defined by the
+values stored in the array, which should be stored as x,y pairs, sequentially.
+The number of sides must be given as the second argument.<br/>
+A polygon can also be specified using a list of x,y pairs enclosed in
+curly braces {}.  If it is defined this way the length parameter and the array variable are not needed.
+</td></tr>
+<tr><td valign="top" class="label">Example</td>
+<td class="desc">
+Both of the code blocks below will draw a green triangle on the graphics window.<br/>
+<div class="code">
+<pre>
+clg
+color green
+dim tri{6)
+tri = {100, 100, 200, 200, 100, 200}
+poly tri, 3
+</pre>
+</div>
+<div class="code">
+<pre>
+clg
+color green
+poly {100, 100, 200, 200, 100, 200}
+</pre>
+</div>
+</td></tr>
+</table>
+
