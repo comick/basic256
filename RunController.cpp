@@ -38,6 +38,8 @@ QWaitCondition waitCond;
 QWaitCondition waitDebugCond;
 QWaitCondition waitInput;
 
+QSound wavsound(QString(""));
+
 RunController::RunController(MainWindow *mw)
 {
   mainwin = mw;
@@ -66,6 +68,8 @@ RunController::RunController(MainWindow *mw)
 
   QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
   QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
+  QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
+  QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 
   QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
   QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
@@ -96,6 +100,19 @@ RunController::speakWords(QString text)
 #endif
 }
 
+void RunController::playWAV(QString file)
+{
+	if(QSound::isAvailable()) {
+		wavsound.play(file);
+	}
+}
+
+void RunController::stopWAV()
+{
+	if(QSound::isAvailable()) {
+		wavsound.stop();
+	}
+}
 
 void
 RunController::startDebug()
@@ -215,6 +232,8 @@ RunController::stopRun()
   mainwin->debugact->setEnabled(true);
   mainwin->stepact->setEnabled(false);
   mainwin->stopact->setEnabled(false);
+  
+  stopWAV();
 
   //need to fix waiting for input here.
   mutex.lock();

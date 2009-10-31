@@ -1734,6 +1734,22 @@ Interpreter::execByteCode()
       }
       break;
 
+    case OP_WAVPLAY:
+      {
+        op++;
+        stackval *file = stack.popstring();
+        emit(playWAV(QString(file->value.string)));
+         delete file;
+      }
+      break;
+
+    case OP_WAVSTOP:
+      {
+        op++;
+        emit(stopWAV());
+      }
+      break;
+
     case OP_SETCOLOR:
       {
 	op++;
@@ -1839,23 +1855,11 @@ Interpreter::execByteCode()
 	QPainter ian(image);
 	ian.setPen(pencolor);
 	ian.setBrush(pencolor);
-	//if (pencolor == Qt::color0)
-	//  {
-	//    ian2.setPen(Qt::color0);
-	//  ian2.setBrush(Qt::color0);
-	//  }
-	//else 
-	//  {
-	//    ian2.setPen(Qt::color1);
-	//    ian2.setBrush(Qt::color1);
-	//  }
 	if (x1val >= 0 && y1val >= 0)
 	  {
 	    ian.drawLine(x0val, y0val, x1val, y1val);
-	//    ian2.drawLine(x0val, y0val, x1val, y1val);
 	  }
 	ian.end();
-	//ian2.end();
 	delete x0;
 	delete y0;
 	delete x1;
@@ -1881,23 +1885,11 @@ Interpreter::execByteCode()
 	QPainter ian(image);
 	ian.setPen(pencolor);
 	ian.setBrush(pencolor);
-	//if (pencolor == Qt::color0)
-	//  {
-	//    ian2.setPen(Qt::color0);
-	//    ian2.setBrush(Qt::color0);
-	//  }
-	//else 
-	//  {
-	//    ian2.setPen(Qt::color1);
-	//    ian2.setBrush(Qt::color1);
-	//  }
 	if (x1val > 0 && y1val > 0)
 	  {
 	    ian.drawRect(x0val, y0val, x1val - 1, y1val - 1);
-	//    ian2.drawRect(x0val, y0val, x1val - 1, y1val - 1);
 	  }
 	ian.end();
-	//ian2.end();
 	delete x0;
 	delete y0;
 	delete x1;
@@ -1919,16 +1911,6 @@ Interpreter::execByteCode()
 	QPainter poly(image);
     poly.setPen(pencolor);
     poly.setBrush(pencolor);
-	//if (pencolor == Qt::color0)
-	//  {
-	//    poly2.setPen(Qt::color0);
-	//    poly2.setBrush(Qt::color0);
-	//  }
-	//else 
-	//  {
-	//    poly2.setPen(Qt::color1);
-	//    poly2.setBrush(Qt::color1);
-	//  }
 	if (vars[*i].type == T_ARRAY)
 	  {
 	    pairs = vars[*i].value.arr->size / 2;
@@ -1947,7 +1929,6 @@ Interpreter::execByteCode()
 		points[j].setY(array[(j*2)+1]);
 	      }
 	    poly.drawPolygon(points, pairs);
-	 //   poly2.drawPolygon(points, pairs);
 	  }
 	else //used immediate list
 	  {
@@ -1968,11 +1949,9 @@ Interpreter::execByteCode()
 		delete ypoint;
 	      }
 	    poly.drawPolygon(points, pairs);
-	  //  poly2.drawPolygon(points, pairs);
 	  }
 
 	poly.end();
-	//poly2.end();
 
 	if (!fastgraphics) waitForGraphics();
       }
@@ -1991,20 +1970,8 @@ Interpreter::execByteCode()
 	QPainter ian(image);
 	ian.setPen(pencolor);
 	ian.setBrush(pencolor);
-	//if (pencolor == Qt::color0) //transparent color
-	//  {
-	//    ian2.setPen(Qt::color0);
-	//    ian2.setBrush(Qt::color0);
-	//  }
-	//else 
-	//  {
-	//    ian2.setPen(Qt::color1);
-	//    ian2.setBrush(Qt::color1);
-	//  }
 	ian.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
-	//ian2.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
 	ian.end();
-	//ian2.end();
 	delete x;
 	delete y;
 	delete r;
@@ -2082,13 +2049,9 @@ Interpreter::execByteCode()
 
 	QPainter ian(image);
 	ian.setPen(pencolor);
-	//if (pencolor == Qt::color0)
-	//  ian2.setPen(pencolor);
 
 	ian.drawPoint(twoval, oneval);
-	//ian2.drawPoint(twoval, oneval);
 	ian.end();
-	//ian2.end();
 	delete one;
 	delete two;
 

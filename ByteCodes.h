@@ -60,6 +60,8 @@
 #define OP_CLS			0x20
 #define OP_CLG			0x21
 #define OP_GRAPHSIZE            0x22
+#define OP_GRAPHWIDTH	0x23
+#define OP_GRAPHHEIGHT	0x24
 
 #define OP_SIN			0x28
 #define OP_COS			0x29
@@ -132,8 +134,8 @@
 #define OP_TEXT			0x9e
 #define OP_FONT			0x9f
 #define OP_SAY			0xa0
-#define OP_GRAPHWIDTH	0xa1
-#define OP_GRAPHHEIGHT	0xa2
+#define OP_WAVPLAY			0xa1
+#define OP_WAVSTOP			0xa2
 
 
 

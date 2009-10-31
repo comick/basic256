@@ -1,3 +1,7 @@
+2009-10-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.3k
+
+	* added WAVPLAY and WAVSTOP commands to asynchronously play a wav audio file and to stop it
+
 2009-10-29 j.m.reneau <renejm@users.sourceforge.net> 0.9.3j
 
 	* added GRAPHHEIGHT and GRAPHIDTH to return the size of the graphics window

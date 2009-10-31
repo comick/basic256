@@ -228,6 +228,7 @@
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
 %token SAY
 %token GRAPHWIDTH GRAPHHEIGHT
+%token WAVPLAY WAVSTOP
 
 
 %union 
@@ -322,6 +323,8 @@ statement: gotostmt
          | textstmt
 	 | fontstmt
 	 | saystmt
+	 | wavplaystmt
+	 | wavstopstmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -452,9 +455,7 @@ fontstmt: FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
 saystmt: SAY stringexpr { addOp(OP_SAY); }
          | SAY '(' stringexpr ')' { addOp(OP_SAY); }
          | SAY floatexpr  { addOp(OP_SAY); }
-         | SAY stringexpr ';' { addOp(OP_SAY); }
-         | SAY '(' stringexpr ')' ';' { addOp(OP_SAY); }
-         | SAY floatexpr  ';' { addOp(OP_SAY); }
+         | SAY '(' floatexpr ')' { addOp(OP_SAY); }
 ;
 
 polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
@@ -499,6 +500,14 @@ printstmt: PRINT { addStringOp(OP_PUSHSTRING, ""); addOp(OP_PRINTN); }
          | PRINT stringexpr ';' { addOp(OP_PRINT); }
          | PRINT '(' stringexpr ')' ';' { addOp(OP_PRINT); }
          | PRINT floatexpr  ';' { addOp(OP_PRINT); }
+;
+
+wavplaystmt: WAVPLAY stringexpr  {addOp(OP_WAVPLAY);  }
+         | WAVPLAY '(' stringexpr ')' { addOp(OP_WAVPLAY); }
+;
+
+wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
+         | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
 
 immediatestrlist: '{' stringlist '}'

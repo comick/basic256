@@ -138,6 +138,8 @@ class Interpreter : public QThread
   void getKey();
   void soundReady(int, int);
   void speakWords(QString);
+  void playWAV(QString);
+  void stopWAV();
   void goToLine(int);
   void highlightLine(int);
   void varAssignment(QString name, QString value, int arraylen);

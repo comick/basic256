@@ -150,6 +150,8 @@ second [Ss][Ee][Cc][Oo][Nn][Dd]
 text [Tt][Ee][Xx][Tt]
 font [Ff][Oo][Nn][Tt]
 say [Ss][Aa][Yy]
+wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
+wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
 
 %%
 
@@ -262,6 +264,8 @@ say [Ss][Aa][Yy]
 {text}          { count(); return TEXT; }
 {font}          { count(); return FONT; }
 {say}           { count(); return SAY; }
+{wavplay}       { count(); return WAVPLAY; }
+{wavstop}       { count(); return WAVSTOP; }
 {rem}           { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }
