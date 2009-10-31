@@ -2,8 +2,6 @@
 ; Modification History
 ; date...... programmer... description...
 ; 2008-09-01 j.m.reneau    original coding
-; 2009-10-26 j.m.reneau    updated to 0.9.3h
-; 2009-10-28 j.m.reneau    updated to 0.9.3i
 
 !include nsDialogs.nsh
 
@@ -15,7 +13,7 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.3i (2009-10-28)"
+  StrCpy $VERSION "0.9.3j (2009-10-29)"
 FunctionEnd
 
 Function customPage
@@ -44,7 +42,7 @@ FunctionEnd
 Name "BASIC256 $VERSION"
 
 ; The file to write
-OutFile "BASIC25_Win32_Install.exe"
+OutFile "BASIC256_Win32_Install.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\BASIC256
