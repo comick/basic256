@@ -103,6 +103,7 @@
 #define OP_DIM           	0x4f
 #define OP_DIMSTR        	0x50
 #define OP_STRARRAYINPUT 	0x51
+#define OP_ARRAYINPUT 		0x52
 
 //2 Int argument ops
 #define OP_ARRAYLISTASSIGN	0x60

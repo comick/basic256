@@ -1,0 +1,16 @@
+# test numeric input
+# 2009-11-01 j.m.reneau
+loop:
+input "input a number (>100 stops) ", a
+print "You entered " + a
+if a < 100 then goto loop
+#
+dim b[10]
+loop2:
+input "input an index 1--10 ", i
+if i < 1 or i > 10 then goto loop2
+input "input a number (>100 stops) ", b[i]
+print "You entered " + b[i]
+if b[i] < 100 then goto loop2
+#
+print "done"

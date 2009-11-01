@@ -54,43 +54,39 @@ extern "C" {
   extern char *symtable[];
 }
 
-
-static int 
-compareNum(stackval *one, stackval *two)
+static int compareTwoStackVal(stackval *two, stackval *one)
 {
-  double oneval = 0;
-  double twoval = 0;
-  if (one->type == T_INT && two->type == T_INT)
+	// complex compare logic - compare two stack types with each other
+	// return 1 if one>two  0 if one==two or -1 if one<two
+	// DOES NOT COMPARE ONE STRING WITH ONE NUMBER...
+	//
+	// both integers - compare
+	if (one->type == T_INT && two->type == T_INT)
     {
-      if (one->value.intval == two->value.intval) return 0;
-      else if (one->value.intval < two->value.intval) return -1;
-      else if (one->value.intval > two->value.intval) return 1;
-      return 42;
+		if (one->value.intval == two->value.intval) return 0;
+		else if (one->value.intval < two->value.intval) return -1;
+		else return 1;
     }
-
-  if (one->type == T_INT)
+	// both floats - compare
+	if (one->type == T_FLOAT && two->type == T_FLOAT)
     {
-      oneval = (double) one->value.intval;
+		if (one->value.floatval == two->value.floatval) return 0;
+		else if (one->value.floatval < two->value.floatval) return -1;
+		else return 1;
     }
-  else 
+	// both strings - strcmp
+	if (one->type == T_STRING && two->type == T_STRING)
     {
-      oneval = one->value.floatval;
-    }
-
-  if (two->type == T_INT)
-    {
-      twoval = (double) two->value.intval;
-    }
-  else 
-    {
-      twoval = two->value.floatval;
-    }
-  
-  if (oneval == twoval) return 0;
-  else if (oneval < twoval) return -1;
-  else if (oneval > twoval) return 1;
-  return 42;
+		return(strcmp(one->value.string, two->value.string));
+	}
+	// mix of floats and integers - float both and compare	
+	if (one->type == T_INT) one->value.floatval = (double) one->value.intval;
+	if (two->type == T_INT) two->value.floatval = (double) two->value.intval;
+	if (one->value.floatval == two->value.floatval) return 0;
+	else if (one->value.floatval < two->value.floatval) return -1;
+	else return 1;
 }
+
 
 stackval::stackval()
 {
@@ -232,7 +228,7 @@ Stack::popstring()
   else if (temp->type == T_FLOAT)
     {
 	char buffer[64];
-        sprintf(buffer, "%g", temp->value.floatval);
+        sprintf(buffer, "%lf", temp->value.floatval);
         temp->value.string = strdup(buffer);
 	temp->type = T_STRING;
     }
@@ -1064,12 +1060,14 @@ Interpreter::execByteCode()
 
     case OP_STRARRAYINPUT:
       {
+		  // this is almost exactly the same  as OP_STRARRAYASSIGN except that the two stack items
+		  // come in reversed order.  The OP_INPUT has already put the value to assign on the stack
 	op++;
 	int *i = (int *) op;
 	op += sizeof(int);
 	//one = index, two = expr
-	stackval *one = stack.popstring();
-	stackval *two = stack.popint();
+	stackval *one = stack.popint();
+	stackval *two = stack.popstring();
 	int index = one->value.intval;;
 	char **strarray;
 
@@ -1176,6 +1174,54 @@ Interpreter::execByteCode()
       }
       break;
     
+    case OP_ARRAYINPUT:
+      {
+		  // this is almost exactly the same  as OP_ARRAYASSIGN except that the two stack items
+		  // come in reversed order.  The OP_INPUT has already put the value to assign on the stack
+	op++;
+	int *i = (int *) op;
+	op += sizeof(int);
+	 //one = expr, two = index
+	stackval *two = stack.popfloat();	// value
+	stackval *one = stack.popint();	// index
+	int index = one->value.intval;
+	double val = two->value.floatval;
+	double *array;
+
+	if (vars[*i].type == T_UNUSED)
+	  {
+	    printError(tr("Unknown variable"));
+	    return -1;
+	  }
+	else if (vars[*i].type != T_ARRAY)
+	  {
+	    printError(tr("Not an array variable"));
+	    return -1;
+	  }
+	else if (index >= vars[*i].value.arr->size || index < 0)
+	  {
+		  //char b1[64];
+		  //sprintf(b1, "%d", vars[*i].value.arr->size);
+		  //char b2[64];
+		  //sprintf(b2, "%d", index);
+		  //char b3[64];
+		  //sprintf(b3, "%g", val);
+		  printError(tr("Array index out of bounds"));
+		  //printError(b1);
+		  //printError(b2);
+		  //printError(b3);
+		  return -1;
+	  }
+	array = vars[*i].value.arr->data.fdata;
+	array[index] = val;
+	delete one;
+	delete two;
+	if(debugMode)
+	  {
+	    emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+	  }
+      }
+      break;
 
     case OP_DEREF:
       {
@@ -1634,81 +1680,83 @@ Interpreter::execByteCode()
       break;
 
     case OP_EQUAL:
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)==0)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_NEQUAL:
-      {
-	int val;
-	if (*op == OP_EQUAL) val = 0; else val = 1;
-	op++;
-	POP2;
-
-	if (one->type == T_STRING && two->type == T_STRING && strcmp(one->value.string, two->value.string) != 0)
-	  {
-	    stack.push(val);
-	  }
-	else if (one->type != T_STRING && two->type != T_STRING && compareNum(one, two) != 0)
-	  {
-	    stack.push(val);
-	  }
-	else 
-	  {
-	    stack.push(val ^ 1);
-	  }
-	delete one;
-	delete two;
-      }
-      break;
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)!=0)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_GT:
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)==1)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_LTE:
-      {
-	int val = 1;
-	if (*op == OP_LTE) val = 0;
-	op++;
-	POP2;
-
-	if (one->type == T_STRING || two->type == T_STRING)
-	  {
-	    printError(tr("Cannot compare strings with > or <="));
-	    return -1;
-	  }
-	if (compareNum(two, one) == 1)
-	  {
-	    stack.push(val);
-	  }
-	else 
-	  {
-	    stack.push(val ^ 1);
-	  }
-	delete one;
-	delete two;
-      }
-      break;
-
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)!=1)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_LT:
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)==-1)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_GTE:
-      {
-	int val = 1;
-	if (*op == OP_GTE) val = 0;
-	op++;
-	POP2;
-
-	if (one->type == T_STRING || two->type == T_STRING)
-	  {
-	    printError(tr("Cannot compare strings with < or >="));
-	    return -1;
-	  }
-	if (compareNum(two, one) == -1)
-	  {
-	    stack.push(val);
-	  }
-	else 
-	  {
-	    stack.push(val ^ 1);
-	  }
-	delete one;
-	delete two;
-      }
-      break;
-
+		{
+			op++;
+			POP2
+			if(compareTwoStackVal(one,two)!=-1)
+				stack.push(1);
+			else
+				stack.push(0);
+			delete one;
+			delete two;
+		}
+		break;
+		
     case OP_SOUND:
       {
 	op++;

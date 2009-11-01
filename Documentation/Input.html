@@ -10,8 +10,15 @@
 <tr><td class="label">Command</td>
 <td class="cmdname">Input</td></tr>
 <tr><td valign="top" class="label">Format</td>
-<td>input <i>string</i>, <i>stringvar</i></td></tr>
+<td>input <i>string</i>, <i>stringvar</i><br/>
+input <i>string</i>, <i>variable</i><br/>
+input <i>stringvar</i><br/>
+input <i>variable</i></td></tr>
 <tr><td valign="top" class="label">Description</td>
-<td class="desc">Waits for the user to type a line of text into the text output window.  When the user hits the enter or return key, the line is read in to <i>stringvar</i>.</td></tr>
+<td class="desc">Waits for the user to type a line of text into the text output window.  When the user hits the enter or return key,
+the line is read in to <i>stringvar</i> or <i>variable</i>.  If a numeric variable is specified and non-numeric data is entered a zero
+will be assigned to the numeric variable.</b>
+Refrences to array elements may also be specified.
+</td></tr>
 </table>
 

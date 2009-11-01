@@ -219,7 +219,7 @@
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
-%token DIM NOP LABEL
+%token DIM NOP
 %token TOINT TOSTRING LENGTH MID INSTR
 %token CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
@@ -371,6 +371,10 @@ compoundboolexpr: boolexpr
 
 boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); } 
         | stringexpr NE stringexpr   { addOp(OP_NEQUAL); }
+        | stringexpr '<' stringexpr    { addOp(OP_LT); }
+        | stringexpr '>' stringexpr    { addOp(OP_GT); }
+        | stringexpr GTE stringexpr    { addOp(OP_GTE); }
+        | stringexpr LTE stringexpr    { addOp(OP_LTE); }
         | floatexpr '=' floatexpr    { addOp(OP_EQUAL); }
         | floatexpr NE floatexpr     { addOp(OP_NEQUAL); }
         | floatexpr '<' floatexpr    { addOp(OP_LT); }
@@ -487,6 +491,12 @@ resetstmt: RESET         { addOp(OP_RESET); }
 
 inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
          | inputexpr ',' STRINGVAR '[' floatexpr ']'  { addIntOp(OP_STRARRAYINPUT, $3); }
+         | inputexpr ',' VARIABLE  { addIntOp(OP_NUMASSIGN, $3); }
+         | inputexpr ',' VARIABLE '[' floatexpr ']'  { addIntOp(OP_ARRAYINPUT, $3); }
+		 | INPUT STRINGVAR  { addOp(OP_INPUT); addIntOp(OP_STRINGASSIGN, $2); }
+		 | INPUT STRINGVAR '[' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN, $2); }
+		 | INPUT VARIABLE  { addOp(OP_INPUT); addIntOp(OP_NUMASSIGN, $2); }
+		 | INPUT VARIABLE '[' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_ARRAYASSIGN, $2); }
 ;
 
 inputexpr: INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }

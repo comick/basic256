@@ -95,7 +95,9 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Rr][Ee][Cc][Tt]\\b"			// rect
 		  << "\\b[Pp][Oo][Ll][Yy]\\b"			// poly
 		  << "\\b[Ll][Ii][Nn][Ee]\\b"			// line
-                  << "\\b[Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]\\b"   // graphsize
+          << "\\b[Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]\\b"   // graphsize
+          << "\\b[Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]\\b"   // graphwidth
+          << "\\b[Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]\\b"   // graphheignt
 		  << "\\b[Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]\\b"	// fastgraphics
 		  << "\\b[Rr][Ee][Ff][Rr][Ee][Ss][Hh]\\b"	// refresh
 		  << "\\b[Cc][Ll][Ss]\\b"					// cls
@@ -132,6 +134,8 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Hh][Oo][Uu][Rr]\\b"					// hour
 		  << "\\b[Mm][Ii][Nn][Uu][Tt][Ee]\\b"					// minute
 		  << "\\b{Ss][Ee][Cc][Oo][Nn][Dd]\\b"					// second
+		  << "\\b{Ww][Aa][Vv][Pp][Ll][Aa][Yy]\\b"					// wavplay
+		  << "\\b{Ww][Aa][Vv][Ss][Tt][Oo][Pp]\\b"					// wavstop
 		  << "\\b[Pp][Aa][Uu][Ss][Ee]\\b";				// pause
 	
   for (QStringList::iterator it = keywordPatterns.begin(); it != keywordPatterns.end(); ++it)
