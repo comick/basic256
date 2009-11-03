@@ -490,9 +490,9 @@ resetstmt: RESET         { addOp(OP_RESET); }
 ;
 
 inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
-         | inputexpr ',' STRINGVAR '[' floatexpr ']'  { addIntOp(OP_STRARRAYINPUT, $3); }
+         | inputexpr ',' STRINGVAR '[' floatexpr ']'  { addOp(OP_STACKSWAP); addIntOp(OP_STRARRAYASSIGN, $3); }
          | inputexpr ',' VARIABLE  { addIntOp(OP_NUMASSIGN, $3); }
-         | inputexpr ',' VARIABLE '[' floatexpr ']'  { addIntOp(OP_ARRAYINPUT, $3); }
+         | inputexpr ',' VARIABLE '[' floatexpr ']'  { addOp(OP_STACKSWAP); addIntOp(OP_ARRAYASSIGN, $3); }
 		 | INPUT STRINGVAR  { addOp(OP_INPUT); addIntOp(OP_STRINGASSIGN, $2); }
 		 | INPUT STRINGVAR '[' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN, $2); }
 		 | INPUT VARIABLE  { addOp(OP_INPUT); addIntOp(OP_NUMASSIGN, $2); }

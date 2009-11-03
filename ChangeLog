@@ -1,3 +1,9 @@
+2009-11-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.3l
+
+	* added alternate syntax of input statement to allow a numeric variable or array.  If non numeric
+	  data is entered a zero will be stored in the variable
+	* added logic to allow for < > <= >= comparisons of strings
+
 2009-10-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.3k
 
 	* added WAVPLAY and WAVSTOP commands to asynchronously play a wav audio file and to stop it

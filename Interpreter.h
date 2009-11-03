@@ -96,10 +96,11 @@ class Stack
   void push(char *);
   void push(int);
   void push(double);
+  void swap();
   stackval *pop();
-  stackval *popint();
-  stackval *popfloat();
-  stackval *popstring();
+  int popint();
+  double popfloat();
+  char *popstring();
   
  private:
   stackval *top;

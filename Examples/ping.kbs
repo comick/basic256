@@ -9,6 +9,7 @@ bally = 0
 ballxinc = 5 
 ballyinc = 5 
 xinc = 5 
+speed = .04	## make speed smaller to play faster
 
 loop1: 
 a = key 
@@ -39,6 +40,7 @@ if bally > 270 then gosub checkball
 if bally < 5 then ballyinc = -ballyinc 
 if ballx > 295 then ballxinc = -ballxinc 
 if ballx < 5 then ballxinc = -ballxinc 
+pause speed
 return 
 
 checkball: 

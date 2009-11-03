@@ -102,17 +102,13 @@
 #define OP_CURRLINE      	0x4e
 #define OP_DIM           	0x4f
 #define OP_DIMSTR        	0x50
-#define OP_STRARRAYINPUT 	0x51
-#define OP_ARRAYINPUT 		0x52
 
 //2 Int argument ops
 #define OP_ARRAYLISTASSIGN	0x60
 #define OP_STRARRAYLISTASSIGN	0x61
 
-
 //Float argument ops
 #define OP_PUSHFLOAT		0x70
-
 
 //String argument ops
 #define OP_PUSHSTRING		0x80
@@ -138,5 +134,6 @@
 #define OP_WAVPLAY			0xa1
 #define OP_WAVSTOP			0xa2
 
-
+// stack manipulation
+#define OP_STACKSWAP	0xf0
 

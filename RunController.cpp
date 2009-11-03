@@ -42,61 +42,61 @@ QSound wavsound(QString(""));
 
 RunController::RunController(MainWindow *mw)
 {
-  mainwin = mw;
-  //i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
-  i = new Interpreter(mainwin->goutput);
-  te = mainwin->editor;
-  output = mainwin->output;
-  goutput = mainwin->goutput;
-  statusbar = mainwin->statusBar();
+	mainwin = mw;
+	//i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
+	i = new Interpreter(mainwin->goutput);
+	te = mainwin->editor;
+	output = mainwin->output;
+	goutput = mainwin->goutput;
+	statusbar = mainwin->statusBar();
 
-  QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
-  QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
-  QObject::connect(i, SIGNAL(resizeGraph(int, int)), this, SLOT(goutputResize(int, int)));
-  QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
-  QObject::connect(i, SIGNAL(clearText()), this, SLOT(outputClear()));
+	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
+	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
+	QObject::connect(i, SIGNAL(resizeGraph(int, int)), this, SLOT(goutputResize(int, int)));
+	QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
+	QObject::connect(i, SIGNAL(clearText()), this, SLOT(outputClear()));
 
-  QObject::connect(this, SIGNAL(runPaused()), i, SLOT(pauseResume()));
-  QObject::connect(this, SIGNAL(runResumed()), i, SLOT(pauseResume()));
-  QObject::connect(this, SIGNAL(runHalted()), i, SLOT(stop()));
+	QObject::connect(this, SIGNAL(runPaused()), i, SLOT(pauseResume()));
+	QObject::connect(this, SIGNAL(runResumed()), i, SLOT(pauseResume()));
+	QObject::connect(this, SIGNAL(runHalted()), i, SLOT(stop()));
 
-  QObject::connect(i, SIGNAL(inputNeeded()), output, SLOT(getInput()));
-  QObject::connect(output, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
-  QObject::connect(output, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
+	QObject::connect(i, SIGNAL(inputNeeded()), output, SLOT(getInput()));
+	QObject::connect(output, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
+	QObject::connect(output, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
 
-  QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
+	QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
-  QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
-  QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
-  QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
-  QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
+	QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
+	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
+	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
+	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 
-  QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
-  QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
+	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
+	QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
 }
 
 void
 RunController::playSound(int frequency, int duration)
 {
 #ifdef WIN32
-  Beep(duration, frequency);
+	Beep(duration, frequency);
 #else
-  //*nix variants should calculate a sine wave and write it to /dev/dsp
+	//*nix variants should calculate a sine wave and write it to /dev/dsp
 #endif
 }
 
 void
 RunController::speakWords(QString text)
 {
-// bad implementation - should use espeak library and call directly j.m.reneau (2009/10/26)
-// espeak command_line folder needs to be added to system path
+	// bad implementation - should use espeak library and call directly j.m.reneau (2009/10/26)
+	// espeak command_line folder needs to be added to system path
 #ifdef WIN32
-  QString command = QString("espeak \"") + text + QString("\"");
-  system(command.toLatin1());
+	QString command = QString("espeak \"") + text + QString("\"");
+	system(command.toLatin1());
 #else
-  //*nix variants should call espeak directly
-  QString command = QString("espeak \"") + text + QString("\"");
-  system(command.toLatin1());
+	//*nix variants should call espeak directly
+	QString command = QString("espeak \"") + text + QString("\"");
+	system(command.toLatin1());
 #endif
 }
 
@@ -117,154 +117,154 @@ void RunController::stopWAV()
 void
 RunController::startDebug()
 {
-  if (i->isStopped())
-    {
-      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
-      if (result < 0)
+	if (i->isStopped())
 	{
-	  i->debugMode = false;
-	  emit(runHalted());
-	  return;
+		int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
+		if (result < 0)
+		{
+			i->debugMode = false;
+			emit(runHalted());
+			return;
+		}
+		i->initialize();
+		i->debugMode = true;
+		output->clear();
+		statusbar->showMessage(tr("Running"));
+		goutput->setFocus();
+		i->start();
+		mainwin->vardock->clearTable();
+		mainwin->runact->setEnabled(false);
+		mainwin->debugact->setEnabled(false);
+		mainwin->stepact->setEnabled(true);
+		mainwin->stopact->setEnabled(true);
+		emit(debugStarted());
 	}
-      i->initialize();
-      i->debugMode = true;
-      output->clear();
-      statusbar->showMessage(tr("Running"));
-      goutput->setFocus();
-      i->start();
-      mainwin->vardock->clearTable();
-      mainwin->runact->setEnabled(false);
-      mainwin->debugact->setEnabled(false);
-      mainwin->stepact->setEnabled(true);
-      mainwin->stopact->setEnabled(true);
-      emit(debugStarted());
-    }
 }
 
-void 
+void
 RunController::startRun()
 {
-  if (i->isStopped())
-    {
-      int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
-      i->debugMode = false;
-      if (result < 0)
+	if (i->isStopped())
 	{
-	  emit(runHalted());
-	  return;
+		int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
+		i->debugMode = false;
+		if (result < 0)
+		{
+			emit(runHalted());
+			return;
+		}
+		i->initialize();
+		output->clear();
+		statusbar->showMessage(tr("Running"));
+		goutput->setFocus();
+		i->start();
+		mainwin->vardock->clearTable();
+		mainwin->runact->setEnabled(false);
+		mainwin->debugact->setEnabled(false);
+		mainwin->stepact->setEnabled(false);
+		mainwin->stopact->setEnabled(true);
+		emit(runStarted());
 	}
-      i->initialize();
-      output->clear();
-      statusbar->showMessage(tr("Running"));
-      goutput->setFocus();
-      i->start();
-      mainwin->vardock->clearTable();
-      mainwin->runact->setEnabled(false);
-      mainwin->debugact->setEnabled(false);
-      mainwin->stepact->setEnabled(false);
-      mainwin->stopact->setEnabled(true);
-      emit(runStarted());
-    }
 }
 
 
 void
 RunController::inputFilter(QString text)
 {
-  goutput->setFocus();
-  mutex.lock();
-  waitInput.wakeAll();
-  mutex.unlock();
+	goutput->setFocus();
+	mutex.lock();
+	waitInput.wakeAll();
+	mutex.unlock();
 }
 
 void
 RunController::outputClear()
 {
-  mutex.lock();
-  output->clear();
-  waitCond.wakeAll();
-  mutex.unlock();
+	mutex.lock();
+	output->clear();
+	waitCond.wakeAll();
+	mutex.unlock();
 }
 
 void
 RunController::outputFilter(QString text)
 {
-  mutex.lock();
-  output->insertPlainText(text);
-  output->ensureCursorVisible();
-  waitCond.wakeAll();
-  mutex.unlock();
+	mutex.lock();
+	output->insertPlainText(text);
+	output->ensureCursorVisible();
+	waitCond.wakeAll();
+	mutex.unlock();
 }
 
 void
 RunController::goutputResize(int width, int height)
 {
-  mutex.lock();
-  goutput->resize(width, height);
-  goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
-  waitCond.wakeAll();
-  mutex.unlock();
+	mutex.lock();
+	goutput->resize(width, height);
+	goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
+	waitCond.wakeAll();
+	mutex.unlock();
 }
 
 void
 RunController::goutputFilter()
 {
-  mutex.lock();
-  goutput->repaint();
-  waitCond.wakeAll();
-  mutex.unlock();
+	mutex.lock();
+	goutput->repaint();
+	waitCond.wakeAll();
+	mutex.unlock();
 }
 
 void
 RunController::stepThrough()
 {
-  debugmutex.lock();
-  waitDebugCond.wakeAll();
-  debugmutex.unlock();
+	debugmutex.lock();
+	waitDebugCond.wakeAll();
+	debugmutex.unlock();
 }
 
-void 
+void
 RunController::stopRun()
 {
-  statusbar->showMessage(tr("Ready."));
+	statusbar->showMessage(tr("Ready."));
 
-  mainwin->runact->setEnabled(true);
-  mainwin->debugact->setEnabled(true);
-  mainwin->stepact->setEnabled(false);
-  mainwin->stopact->setEnabled(false);
-  
-  stopWAV();
+	mainwin->runact->setEnabled(true);
+	mainwin->debugact->setEnabled(true);
+	mainwin->stepact->setEnabled(false);
+	mainwin->stopact->setEnabled(false);
 
-  //need to fix waiting for input here.
-  mutex.lock();
-  waitInput.wakeAll();
-  waitCond.wakeAll();
-  mutex.unlock();
+	stopWAV();
 
-  debugmutex.lock();
-  i->debugMode = false;
-  waitDebugCond.wakeAll();
-  debugmutex.unlock();
+	//need to fix waiting for input here.
+	mutex.lock();
+	waitInput.wakeAll();
+	waitCond.wakeAll();
+	mutex.unlock();
 
-  emit(runHalted());
+	debugmutex.lock();
+	i->debugMode = false;
+	waitDebugCond.wakeAll();
+	debugmutex.unlock();
+
+	emit(runHalted());
 }
 
 
 void
 RunController::pauseResume()
 {
-  if (paused)
-    {
-      statusbar->showMessage(tr("Running"));
-      paused = false;
-      emit(runResumed());
-    }
-  else 
-    {
-      statusbar->showMessage(tr("Paused"));
-      paused = true;
-      emit(runPaused());
-    }
+	if (paused)
+	{
+		statusbar->showMessage(tr("Running"));
+		paused = false;
+		emit(runResumed());
+	}
+	else
+	{
+		statusbar->showMessage(tr("Paused"));
+		paused = true;
+		emit(runPaused());
+	}
 }
 
 
@@ -272,31 +272,31 @@ RunController::pauseResume()
 void
 RunController::saveByteCode()
 {
-  byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toAscii().data());
-  if (bc == NULL)
-    {
-      return;
-    }
-
-  if (bytefilename == "")
-    {
-      bytefilename = QFileDialog::getSaveFileName(NULL, tr("Save file as"), ".", tr("BASIC-256 Compiled File ") + "(*.kbc);;" + tr("Any File ") + "(*.*)");
-    }
-
-  if (bytefilename != "")
-    {
-      QRegExp rx("\\.[^\\/]*$");
-      if (rx.indexIn(bytefilename) == -1)
+	byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toAscii().data());
+	if (bc == NULL)
 	{
-	  bytefilename += ".kbc";
-	  //FIXME need to test for existence here
+		return;
 	}
-      QFile f(bytefilename);
-      f.open(QIODevice::WriteOnly | QIODevice::Truncate);
-      f.write((const char *) bc->data, bc->size);
-      f.close();
-    }
-  delete bc;
+
+	if (bytefilename == "")
+	{
+		bytefilename = QFileDialog::getSaveFileName(NULL, tr("Save file as"), ".", tr("BASIC-256 Compiled File ") + "(*.kbc);;" + tr("Any File ") + "(*.*)");
+	}
+
+	if (bytefilename != "")
+	{
+		QRegExp rx("\\.[^\\/]*$");
+		if (rx.indexIn(bytefilename) == -1)
+		{
+			bytefilename += ".kbc";
+			//FIXME need to test for existence here
+		}
+		QFile f(bytefilename);
+		f.open(QIODevice::WriteOnly | QIODevice::Truncate);
+		f.write((const char *) bc->data, bc->size);
+		f.close();
+	}
+	delete bc;
 }
 
 
