@@ -229,6 +229,7 @@
 %token SAY
 %token GRAPHWIDTH GRAPHHEIGHT
 %token WAVPLAY WAVSTOP
+%token SIZE SEEK EXISTS
 
 
 %union 
@@ -325,6 +326,7 @@ statement: gotostmt
 	 | saystmt
 	 | wavplaystmt
 	 | wavstopstmt
+	 	| seekstmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -382,6 +384,7 @@ boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); }
         | floatexpr GTE floatexpr    { addOp(OP_GTE); }
         | floatexpr LTE floatexpr    { addOp(OP_LTE); }
         | BOOLEOF                    { addOp(OP_EOF); }
+         | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
@@ -520,6 +523,10 @@ wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
          | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
 
+seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  }
+         | SEEK '(' floatexpr ')' { addOp(OP_SEEK); }
+;
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -589,6 +596,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | SECOND { addOp(OP_SECOND); }
          | GRAPHWIDTH { addOp(OP_GRAPHWIDTH); }
          | GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
+         | SIZE { addOp(OP_SIZE); }
 ;
 
 stringlist: stringexpr { listlen = 1; }

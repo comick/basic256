@@ -921,6 +921,54 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_SIZE:
+		{
+			// push the current open file size on the stack
+			op++;
+			int size = 0;
+			if (stream == NULL)
+			{
+				printError(tr("Can't size -- no open file."));
+			} else {
+				size = stream->size();
+			}
+			stack.push(size);
+		}
+		break;
+
+	case OP_EXISTS:
+		{
+			// push a 1 if file exists else zero
+			op++;
+			char *filename = stack.popstring();
+			if (QFile::exists(QString(filename)))
+			{
+				stack.push((int) 1);
+			} else {
+				stack.push((int) 0);
+			}
+			free(filename);
+		}
+		break;
+
+	case OP_SEEK:
+		{
+			// move file pointer to a specific loaction in file
+			op++;
+			long pos = stack.popint();
+
+			if (stream == NULL)
+			{
+				printError(tr("seek() called when no file is open"));
+				return -1;
+			}
+			else
+			{
+				stream->seek(pos);
+			}
+		}
+		break;
+
 
 	case OP_DIM:
 	case OP_DIMSTR:

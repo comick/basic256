@@ -133,6 +133,9 @@
 #define OP_SAY			0xa0
 #define OP_WAVPLAY			0xa1
 #define OP_WAVSTOP			0xa2
+#define OP_SEEK			0xa3
+#define OP_SIZE			0xa4
+#define OP_EXISTS			0xa5
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0

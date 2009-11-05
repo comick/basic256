@@ -152,6 +152,9 @@ font [Ff][Oo][Nn][Tt]
 say [Ss][Aa][Yy]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
 wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
+seek [Ss][Ee][Ee][Kk]
+size [Ss][Ii][Zz][Ee]
+exists [Ee][Xx][Ii][Ss][Tt][Ss]
 
 %%
 
@@ -266,6 +269,9 @@ wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
 {say}           { count(); return SAY; }
 {wavplay}       { count(); return WAVPLAY; }
 {wavstop}       { count(); return WAVSTOP; }
+{seek}       { count(); return SEEK; }
+{size}       { count(); return SIZE; }
+{exists}       { count(); return EXISTS; }
 {rem}           { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }
