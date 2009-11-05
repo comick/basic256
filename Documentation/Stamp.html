@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="style.css">
+<title>BASIC-256 Command Reference</title>
+</head>
+<body>
+<table class="cmdtable" cellpadding="5" border="0">
+<tr><td class="label">Command</td>
+<td class="cmdname">Stamp</td></tr>
+<tr><td valign="top" class="label">Format</td>
+<td>stamp <i>x</i>, <i>x</i>, <i>scale</i>, <i>array</i><br/>
+stamp <i>x</i>, <i>x</i>, <i>scale</i>, {x1, y1, x2, y2, x3, y3 ...}</td></tr>
+<tr><td valign="top" class="label">Description</td>
+<td class="desc">Draws a polygon with top left corner at x, y.  Additionally scales size of ploygon by the defined scale.  The sides of the polygon are defined by the
+values stored in the array, which should be stored as x,y pairs, sequentially.
+The length of the array/2 will define the number of points.<br/>
+A stamped polygon can also be specified using a list of x,y pairs enclosed in
+curly braces {}.</td></tr>
+<tr><td valign="top" class="label">Example</td>
+<td class="desc">
+Both of the code blocks below will draw a pair of green triangles on the graphics window.<br/>
+<div class="code">
+<pre>
+clg
+color green
+dim tri(6)
+tri = {0, 0, 100, 100, 0, 100}
+# stamp the triangle at 0,0 (full size)
+stamp 0, 0, 1, tri
+# stamp the triangle at 200,100 (half size)
+stamp 200, 100, .5, tri
+
+</pre>
+</div>
+<div class="code">
+<pre>
+clg
+color green
+# stamp the triangle at 0,0 (full size)
+stamp 0, 0, 1, {0, 0, 100, 100, 0, 100}
+# stamp the triangle at 200,100 (half size)
+stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}
+</pre>
+</div>
+</td></tr>
+</table>
+

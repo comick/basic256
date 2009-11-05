@@ -87,6 +87,7 @@ plot  [Pp][Ll][Oo][Tt]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 rect  [Rr][Ee][Cc][Tt]
 poly  [Pp][Oo][Ll][Yy]
+stamp  [Ss][Tt][Aa][Mm][Pp]
 line  [Ll][Ii][Nn][Ee]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
 graphsize [Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]
@@ -155,6 +156,8 @@ wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
 seek [Ss][Ee][Ee][Kk]
 size [Ss][Ii][Zz][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
+booltrue [Tt][Rr][Uu][Ee]
+boolfalse [Ff][Aa][Ll][Ss][Ee]
 
 %%
 
@@ -208,6 +211,7 @@ exists [Ee][Xx][Ii][Ss][Tt][Ss]
 {circle}	{ count(); return CIRCLE; }
 {rect}	        { count(); return RECT; }
 {poly}		{ count(); return POLY; }
+{stamp}		{ count(); return STAMP; }
 {line}	        { count(); return LINE; }
 {sound}         { count(); return SOUND; }
 {fastgraphics}	{ count(); return FASTGRAPHICS; }
@@ -258,6 +262,8 @@ exists [Ee][Xx][Ii][Ss][Tt][Ss]
 {readline}      { count(); return READLINE; }
 {writeline}     { count(); return WRITELINE; }
 {booleof}       { count(); return BOOLEOF; }
+{booltrue}       { count(); return BOOLTRUE; }
+{boolfalse}       { count(); return BOOLFALSE; }
 {year}          { count(); return YEAR; }
 {month}         { count(); return MONTH; }
 {day}           { count(); return DAY; }

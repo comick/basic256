@@ -214,7 +214,7 @@
 %}
 
 %token PRINT INPUT KEY 
-%token PLOT CIRCLE RECT POLY LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
+%token PLOT CIRCLE RECT POLY STAMP LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
 %token IF THEN FOR TO STEP NEXT 
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
@@ -230,6 +230,7 @@
 %token GRAPHWIDTH GRAPHHEIGHT
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
+%token BOOLTRUE BOOLFALSE
 
 
 %union 
@@ -299,6 +300,7 @@ statement: gotostmt
          | circlestmt
          | rectstmt
          | polystmt
+         | stampstmt
          | linestmt
          | numassign
          | stringassign
@@ -383,8 +385,10 @@ boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); }
         | floatexpr '>' floatexpr    { addOp(OP_GT); }
         | floatexpr GTE floatexpr    { addOp(OP_GTE); }
         | floatexpr LTE floatexpr    { addOp(OP_LTE); }
+        | BOOLFALSE { addFloatOp(OP_PUSHINT, 0); }
+        | BOOLTRUE { addFloatOp(OP_PUSHINT, 1); }
         | BOOLEOF                    { addOp(OP_EOF); }
-         | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
+        | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
@@ -465,11 +469,14 @@ saystmt: SAY stringexpr { addOp(OP_SAY); }
          | SAY '(' floatexpr ')' { addOp(OP_SAY); }
 ;
 
-polystmt: POLY VARIABLE ',' floatexpr { addIntOp(OP_POLY, $2); }
-          | POLY '(' VARIABLE ',' floatexpr ')' { addIntOp(OP_POLY, $3); }
-          | POLY VARIABLE { addIntOp(OP_POLY, $2); }
+polystmt: POLY VARIABLE { addIntOp(OP_POLY, $2); }
           | POLY '(' VARIABLE ')' { addIntOp(OP_POLY, $3); }
-          | POLY immediatelist { addIntOp(OP_POLY, listlen); listlen=0; }
+          | POLY immediatelist { addIntOp(OP_POLYLIST, listlen); listlen=0; }
+;
+
+stampstmt: STAMP floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE { addIntOp(OP_STAMP, $8); }
+          | STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE ')' { addIntOp(OP_STAMP, $9); }
+          | STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMPLIST, listlen); listlen=0; }
 ;
 
 openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 

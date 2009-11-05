@@ -1856,18 +1856,19 @@ Interpreter::execByteCode()
 
 	case OP_POLY:
 		{
+			// doing a polygon from an array
+			// i is a pointer to the variable number (array)
 			op++;
 			int *i = (int *) op;
-			int items = *i;
 			op += sizeof(int);
-			int pairs = 0;
-
+			
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
+
 			if (vars[*i].type == T_ARRAY)
 			{
-				pairs = vars[*i].value.arr->size / 2;
+				int pairs = vars[*i].value.arr->size / 2;
 				if (pairs < 3)
 				{
 					printError(tr("Not enough points in array for poly()"));
@@ -1883,24 +1884,11 @@ Interpreter::execByteCode()
 					points[j].setY(array[(j*2)+1]);
 				}
 				poly.drawPolygon(points, pairs);
-			}
-			else //used immediate list
+			} 
+			else
 			{
-				pairs = items / 2;
-				if (pairs < 3)
-				{
-					printError(tr("Not enough points in array for poly()"));
-					return -1;
-				}
-				QPointF points[pairs];
-				for (int j = 0; j < pairs; j++)
-				{
-					int xpoint = stack.popint();
-					int ypoint = stack.popint();
-					points[j].setX(xpoint);
-					points[j].setY(ypoint);
-				}
-				poly.drawPolygon(points, pairs);
+				printError(tr("Argument not an array for poly()"));
+				return -1;
 			}
 
 			poly.end();
@@ -1908,6 +1896,137 @@ Interpreter::execByteCode()
 			if (!fastgraphics) waitForGraphics();
 		}
 		break;
+
+	case OP_POLYLIST:
+		{
+			// doing a polygon from an immediate list
+			// i is a pointer to the length of the list
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			QPainter poly(image);
+			poly.setPen(pencolor);
+			poly.setBrush(pencolor);
+
+			int pairs = *i / 2;
+			if (pairs < 3)
+			{
+				printError(tr("Not enough points in immediate list for poly()"));
+				return -1;
+			}
+			QPointF points[pairs];
+			for (int j = 0; j < pairs; j++)
+			{
+				int ypoint = stack.popint();
+				int xpoint = stack.popint();
+				points[j].setX(xpoint);
+				points[j].setY(ypoint);
+			}
+			poly.drawPolygon(points, pairs);
+				
+			poly.end();
+
+			if (!fastgraphics) waitForGraphics();
+		}
+		break;
+
+	case OP_STAMP:
+		{
+			// special type of poly where x,y,scale, are given first and
+			// the ploy is sized and loacted - so we can move them easy
+			// doing a stamp from an array
+			// i is a pointer to the variable number (array)
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			double scale = stack.popfloat();
+			int y = stack.popint();
+			int x = stack.popint();
+
+			QPainter poly(image);
+			poly.setPen(pencolor);
+			poly.setBrush(pencolor);
+
+			if (vars[*i].type == T_ARRAY)
+			{
+				int pairs = vars[*i].value.arr->size / 2;
+				if (pairs < 3)
+				{
+					printError(tr("Not enough points in array for stamp()"));
+					return -1;
+				}
+
+				double *array = vars[*i].value.arr->data.fdata;
+				QPointF points[pairs];
+
+				for (int j = 0; j < pairs; j++)
+				{
+					points[j].setX(scale * array[j*2] + x);
+					points[j].setY(scale * array[(j*2)+1] + y);
+				}
+				poly.drawPolygon(points, pairs);
+			} 
+			else
+			{
+				printError(tr("Argument not an array for stamp()"));
+				return -1;
+			}
+
+			poly.end();
+
+			if (!fastgraphics) waitForGraphics();
+		}
+		break;
+
+
+	case OP_STAMPLIST:
+		{
+			// special type of poly where x,y,scale, are given first and
+			// the ploy is sized and loacted - so we can move them easy
+			// doing a polygon from an immediate list
+			// i is a pointer to the length of the list
+			// pulling from stack so points are reversed 0=y, 1=x...
+			
+			op++;
+			int *i = (int *) op;
+			int llist = *i;
+			op += sizeof(int);
+			
+			// pop the immediate list to uncover the location and scale
+			int *list = (int *) calloc(llist, sizeof(int));
+			for(int j = 0; j < llist; j++)
+				list[j] = stack.popint();
+			
+			double scale = stack.popfloat();
+			int y = stack.popint();
+			int x = stack.popint();
+
+			QPainter poly(image);
+			poly.setPen(pencolor);
+			poly.setBrush(pencolor);
+
+			int pairs = llist / 2;
+			if (pairs < 3)
+			{
+				printError(tr("Not enough points in immediate list for stamp()"));
+				return -1;
+			}
+			QPointF points[pairs];
+			for (int j = 0; j < pairs; j++)
+			{
+				points[j].setY(scale * list[j*2] + y);
+				points[j].setX(scale * list[j*2+1] + x);
+			}
+			poly.drawPolygon(points, pairs);
+			
+			poly.end();
+			
+			if (!fastgraphics) waitForGraphics();
+		}
+		break;
+
 
 	case OP_CIRCLE:
 		{

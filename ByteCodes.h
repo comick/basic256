@@ -136,6 +136,9 @@
 #define OP_SEEK			0xa3
 #define OP_SIZE			0xa4
 #define OP_EXISTS			0xa5
+#define OP_STAMP			0xa6
+#define OP_STAMPLIST			0xa7
+#define OP_POLYLIST			0xa8
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0
