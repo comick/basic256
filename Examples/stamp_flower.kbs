@@ -1,0 +1,20 @@
+clg
+dim a(6)
+a[0] = 0
+a[1] = 0
+a[2] = 20
+a[3] = 20
+a[4] = 15
+a[5] = 10
+color yellow
+for r = 0 to (2 * pi) step (pi/32)
+        stamp graphwidth/2, graphheight/2, 5, r, a
+next r
+color blue
+for r = 0 to (2 * pi) step (pi/16)
+        stamp graphwidth/2, graphheight/2, 3, r, a
+next r
+color red
+for r = 0 to (2 * pi) step (pi/8)
+        stamp graphwidth/2, graphheight/2, 1, r, a
+next r
