@@ -475,14 +475,14 @@ polystmt: POLY VARIABLE { addIntOp(OP_POLY, $2); }
 ;
 
 stampstmt: STAMP floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE { addFloatOp(OP_PUSHFLOAT, 0); addIntOp(OP_STAMP, $8); }
-          | STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE ')' { addFloatOp(OP_PUSHFLOAT, 0); addIntOp(OP_STAMP, $9); }
-          | STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_S_LIST, listlen); listlen=0; }
-		  | STAMP floatexpr ',' floatexpr ',' VARIABLE { addFloatOp(OP_PUSHFLOAT, 0); addFloatOp(OP_PUSHFLOAT, 1); addIntOp(OP_STAMP, $6); }
-          | STAMP '(' floatexpr ',' floatexpr ',' VARIABLE ')' { addFloatOp(OP_PUSHFLOAT, 0); addFloatOp(OP_PUSHFLOAT, 1); addIntOp(OP_STAMP, $7); }
-          | STAMP floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_LIST, listlen); listlen=0; }
-		  | STAMP floatexpr ',' floatexpr ','  floatexpr ',' floatexpr ',' VARIABLE { addIntOp(OP_STAMP, $10); }
-          | STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE ')' { addIntOp(OP_STAMP, $11); }
-          | STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_SR_LIST, listlen); listlen=0; }
+        | STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE ')' { addFloatOp(OP_PUSHFLOAT, 0); addIntOp(OP_STAMP, $9); }
+        | STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_S_LIST, listlen); listlen=0; }
+	| STAMP floatexpr ',' floatexpr ',' VARIABLE { addFloatOp(OP_PUSHFLOAT, 1); addFloatOp(OP_PUSHFLOAT, 0); addIntOp(OP_STAMP, $6); }
+        | STAMP '(' floatexpr ',' floatexpr ',' VARIABLE ')' { addFloatOp(OP_PUSHFLOAT, 1); addFloatOp(OP_PUSHFLOAT, 0); addIntOp(OP_STAMP, $7); }
+        | STAMP floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_LIST, listlen); listlen=0; }
+	| STAMP floatexpr ',' floatexpr ','  floatexpr ',' floatexpr ',' VARIABLE { addIntOp(OP_STAMP, $10); }
+        | STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE ')' { addIntOp(OP_STAMP, $11); }
+        | STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_SR_LIST, listlen); listlen=0; }
 ;
 
 openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 

@@ -2007,8 +2007,12 @@ Interpreter::execByteCode()
 			
 			// pop the immediate list to uncover the location and scale
 			int *list = (int *) calloc(llist, sizeof(int));
-			for(int j = 0; j < llist; j++)
-				list[j] = stack.popint();
+			for(int j = 0; j < llist; j+=2) {
+				int ypoint = stack.popint();
+				int xpoint = stack.popint();
+				list[j] = xpoint;
+				list[j+1] = ypoint;
+			}
 			
 			if (opcode==OP_STAMP_SR_LIST) rotate = stack.popfloat();
 			if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack.popfloat();
