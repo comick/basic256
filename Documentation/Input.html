@@ -3,22 +3,17 @@
 <html>
 <head>
 <link type="text/css" rel="stylesheet" href="style.css">
-<title>BASIC-256 Command Reference</title>
+<title>BASIC-256 Reference 0.9.4</title>
 </head>
 <body>
 <table class="cmdtable" cellpadding="5" border="0">
 <tr><td class="label">Command</td>
 <td class="cmdname">Input</td></tr>
 <tr><td valign="top" class="label">Format</td>
-<td>input <i>string</i>, <i>stringvar</i><br/>
-input <i>string</i>, <i>variable</i><br/>
-input <i>stringvar</i><br/>
-input <i>variable</i></td></tr>
+<td>input <i>expression</i>, <i>stringvariable</i><br />input <i>expression</i>, <i>numericvariable</i><br />input <i>stringvariable</i><br />input <i>numericvarvariable</i></td></tr>
 <tr><td valign="top" class="label">Description</td>
-<td class="desc">Waits for the user to type a line of text into the text output window.  When the user hits the enter or return key,
-the line is read in to <i>stringvar</i> or <i>variable</i>.  If a numeric variable is specified and non-numeric data is entered a zero
-will be assigned to the numeric variable.</b>
-Refrences to array elements may also be specified.
-</td></tr>
+<td class="desc">Waits for the user to type a line of text into the text output window.  When the user hits the enter or return key, the line is read in to <i>stringvar</i> or <i>numericvariable</i>.<br/>User may optionally be prompted for the input by <i>expression</i>.<br />If a numeric variable is specified and non-numeric data is entered a zero will be assigned to the numeric variable.<br />Refrences to array elements may also be specified.</td></tr>
 </table>
 
+</body>
+</html>

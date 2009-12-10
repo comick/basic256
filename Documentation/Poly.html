@@ -3,40 +3,29 @@
 <html>
 <head>
 <link type="text/css" rel="stylesheet" href="style.css">
-<title>BASIC-256 Command Reference</title>
+<title>BASIC-256 Reference 0.9.4</title>
 </head>
 <body>
 <table class="cmdtable" cellpadding="5" border="0">
 <tr><td class="label">Command</td>
 <td class="cmdname">Poly</td></tr>
 <tr><td valign="top" class="label">Format</td>
-<td>poly <i>array</i><br/>
-poly {x1, y1, x2, y2, x3, y3 ...}</td></tr>
+<td>poly <i>array</i><br />poly {x1, y1, x2, y2, x3, y3 ...}</td></tr>
 <tr><td valign="top" class="label">Description</td>
-<td class="desc">Draws a polygon.  The sides of the polygon are defined by the
-values stored in the array, which should be stored as x,y pairs, sequentially.
-The length of the array/2 will define the number of points.<br/>
-A polygon can also be specified using a list of x,y pairs enclosed in
-curly braces {}.</td></tr>
+<td class="desc">Draws a polygon.  The sides of the polygon are defined by the values stored in the array, which should be stored as x,y pairs, sequentially. The length of the array/2 will define the number of points.<br />A polygon may also be specified using a list of x,y pairs enclosed in curly braces {}.</td></tr>
+<tr><td valign="top" class="label">Note</td>
+<td class="note">The number of points in the array argument was removed from the poly statement in version 0.9.4.</td></tr>
+<tr><td valign="top" class="label">See Also</td>
+<td class="seealso"><a href='Stamp.html'>Stamp</a></td></tr>
 <tr><td valign="top" class="label">Example</td>
-<td class="desc">
-Both of the code blocks below will draw a green triangle on the graphics window.<br/>
-<div class="code">
-<pre>
-clg
+<td class="example">Both of the code blocks below will draw a green triangle on the graphics window.<pre>clg
 color green
 dim tri(6)
 tri = {100, 100, 200, 200, 100, 200}
-poly tri
-</pre>
-</div>
-<div class="code">
-<pre>
-clg
+poly tri</pre><pre>clg
 color green
-poly {100, 100, 200, 200, 100, 200}
-</pre>
-</div>
-</td></tr>
+poly {100, 100, 200, 200, 100, 200}</pre></td></tr>
 </table>
 
+</body>
+</html>
