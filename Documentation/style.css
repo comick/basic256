@@ -51,6 +51,18 @@ p {
   border: 1px dashed gray;
 }
 
+pre { 
+  margin: 10px 10px 10px 10px;
+  padding: 10px 5px 10px 5px;
+  border: 1px dashed #808080;
+  background: #eeeeee;
+  color: #000000;
+}
+
+caption {
+	font-size: 150%;
+}
+
 .navbar { 
   margin: 5px 10px 5px 10px;
 }
