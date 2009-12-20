@@ -9,6 +9,18 @@ type "make" and hit enter
 
 You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
 
-Also: there is a file called BASIC256.nsi  This is used by the nullsoft scriptable install syatem (2.39 or better) to build a nice Win32 install exe.
+Release Build:
+To build a nice WIN32 installer use the nullsoft scriptable install system file
+2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
+
+You must also copy the QtCore4.dll, QtGui4.dll and mingwm10.dll to the release
+folder before testing the build or running the installer script.  Under QT 4.5.3
+be sure to use the dlls from C:\Qt\2009.04\qt\bin and not the ones from C:\Qt\2009.04\bin.
+
+make clean
+qmake -config release
+make release
+
+then run the NSIS script
 
 

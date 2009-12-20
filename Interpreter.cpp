@@ -1994,7 +1994,7 @@ Interpreter::execByteCode()
 			// the ploy is sized and loacted - so we can move them easy
 			// doing a polygon from an immediate list
 			// i is a pointer to the length of the list
-			// pulling from stack so points are reversed 0=y, 1=x...
+			// pulling from stack so points are reversed 0=y, 1=x...  in list
 
 			double rotate=0;		// defaule rotation to 0 radians
 			double scale=1;			// default scale to full size (1x)
@@ -2007,11 +2007,8 @@ Interpreter::execByteCode()
 			
 			// pop the immediate list to uncover the location and scale
 			int *list = (int *) calloc(llist, sizeof(int));
-			for(int j = 0; j < llist; j+=2) {
-				int ypoint = stack.popint();
-				int xpoint = stack.popint();
-				list[j] = xpoint;
-				list[j+1] = ypoint;
+			for(int j = llist; j>0 ; j--) {
+				list[j-1] = stack.popint();
 			}
 			
 			if (opcode==OP_STAMP_SR_LIST) rotate = stack.popfloat();
@@ -2036,7 +2033,7 @@ Interpreter::execByteCode()
 			QPointF points[pairs];
 			for (int j = 0; j < pairs; j++)
 			{
-				double scalex = scale * list[j*2];
+				double scalex = scale * list[(j*2)];
 				double scaley = scale * list[(j*2)+1];
 				double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
 				double roty = cos(rotate) * scaley + sin(rotate) * scalex;

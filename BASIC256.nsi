@@ -13,7 +13,7 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.4b (2009-12-04)"
+  StrCpy $VERSION "0.9.4c (2009-12-19)"
 FunctionEnd
 
 Function customPage
@@ -79,10 +79,10 @@ Section "BASIC256"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File .\debug\BASIC256.exe
-  File .\debug\mingwm10.dll
-  File .\debug\QtCored4.dll
-  File .\debug\QtGuid4.dll
+  File .\release\BASIC256.exe
+  File .\release\mingwm10.dll
+  File .\release\QtCore4.dll
+  File .\release\QtGui4.dll
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
