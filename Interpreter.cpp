@@ -202,7 +202,7 @@ int Stack::popint()
 double Stack::popfloat()
 {
 	stackval *temp = top;
-	double f;
+	double f=0;
 	if (top)
 	{
 		top = top->next;
@@ -225,7 +225,7 @@ double Stack::popfloat()
 char* Stack::popstring()
 {
 	// don't forget to free() the string returned by this function when you are dome with it
-	char *s;
+	char *s=NULL;
 	stackval *temp = top;
 	if (top)
 	{
@@ -1145,7 +1145,6 @@ Interpreter::execByteCode()
 			int items = i[1];
 			op += 2 * sizeof(int);
 			int index;
-			double val;
 			double *array;
 
 			if (vars[*i].type == T_UNUSED)
@@ -1171,7 +1170,7 @@ Interpreter::execByteCode()
 				array[index] = one;
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+					emit(varAssignment(QString(symtable[*i]), QString::number(items), index));
 				}
 			}
 		}
@@ -2322,15 +2321,6 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_MOUSECLEAR:
-		{
-			op++;
-			graph->mouseX = -1;
-			graph->mouseY = -1;
-			graph->mouseButtons = -1;
-		}
-		break;
-
 	case OP_MOUSEX:
 		{
 			op++;
@@ -2345,10 +2335,40 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_MOUSEBUTTONS:
+	case OP_MOUSEB:
 		{
 			op++;
-			stack.push((int) graph->mouseButtons);
+			stack.push((int) graph->mouseB);
+		}
+		break;
+
+	case OP_CLICKCLEAR:
+		{
+			op++;
+			graph->clickX = -1;
+			graph->clickY = -1;
+			graph->clickB = -1;
+		}
+		break;
+
+	case OP_CLICKX:
+		{
+			op++;
+			stack.push((int) graph->clickX);
+		}
+		break;
+
+	case OP_CLICKY:
+		{
+			op++;
+			stack.push((int) graph->clickY);
+		}
+		break;
+
+	case OP_CLICKB:
+		{
+			op++;
+			stack.push((int) graph->clickB);
 		}
 		break;
 

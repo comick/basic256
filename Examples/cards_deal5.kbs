@@ -1,4 +1,4 @@
-# 2009-12-20 j.m.reneau
+# 2009-12-21 j.m.reneau
 # create a deck of cards, shuffle them, and display
 # 5 of them graphically on the screen
 #
@@ -31,6 +31,8 @@ rect 0,0,300,300
 color darkgreen
 rect 10,10,280,280
 
+print "click on cards to turn over"
+
 # show 5 cards face down
 for t = 1 to 5
   x = 25 + t*40
@@ -38,14 +40,24 @@ for t = 1 to 5
   gosub drawcardback
 next t
 
-# flip the 5 cards to show first 5 in deck
-for t = 1 to 5
-  pause .5
-  card$ = deck$[t]
-  x = 25 + t*40
+clickloop:
+  pause .1
+  # if we have not clicked - go back and wait
+  if clickb = -1 then goto clickloop
+  card1 = -1
+  # see if the click was on a card
+  for t = 1 to 5
+    if clickx >= 25 + t*40 and clickx <= 55 + t*40 and clicky >= 100 and clicky <= 150 then card1 = t
+  next t
+  # clear the click
+  clickclear
+  if card1 = -1 then goto clickloop
+  # we clicked on a card - show it
+  card$ = deck$[card1]
+  x = 25 + card1*40
   y = 100
   gosub drawcard
-next t
+  goto clickloop
 
 end
 

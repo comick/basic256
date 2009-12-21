@@ -231,7 +231,8 @@
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
-%token MOUSECLEAR MOUSEX MOUSEY MOUSEBUTTONS
+%token MOUSEX MOUSEY MOUSEB
+%token CLICKCLEAR CLICKX CLICKY CLICKB
 
 
 %union 
@@ -330,7 +331,7 @@ statement: gotostmt
 	 | wavplaystmt
 	 | wavstopstmt
 	 	| seekstmt
-	 	| mouseclearstmt
+	 	| clickclearstmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -542,8 +543,8 @@ seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  }
          | SEEK '(' floatexpr ')' { addOp(OP_SEEK); }
 ;
 
-mouseclearstmt: MOUSECLEAR  {addOp(OP_MOUSECLEAR);  }
-         | MOUSECLEAR '(' ')' { addOp(OP_MOUSECLEAR); }
+clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
+         | CLICKCLEAR '(' ')' { addOp(OP_CLICKCLEAR); }
 ;
 
 immediatestrlist: '{' stringlist '}'
@@ -618,7 +619,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | SIZE { addOp(OP_SIZE); }
          | MOUSEX { addOp(OP_MOUSEX); }
          | MOUSEY { addOp(OP_MOUSEY); }
-         | MOUSEBUTTONS { addOp(OP_MOUSEBUTTONS); }
+         | MOUSEB { addOp(OP_MOUSEB); }
+         | CLICKX { addOp(OP_CLICKX); }
+         | CLICKY { addOp(OP_CLICKY); }
+         | CLICKB { addOp(OP_CLICKB); }
 ;
 
 stringlist: stringexpr { listlen = 1; }

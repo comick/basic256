@@ -13,7 +13,7 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.4d (2009-12-20)"
+  StrCpy $VERSION "0.9.4d (2009-12-21)"
 FunctionEnd
 
 Function customPage
@@ -87,8 +87,8 @@ Section "BASIC256"
   File CONTRIBUTORS
   File license.txt
   File doc.html
-  File /r Examples
-  File /r Documentation
+  File /r /x ".svn" Examples 
+  File /r /x ".svn" Documentation 
   
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\BASIC256 "Install_Dir" "$INSTDIR"

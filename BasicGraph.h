@@ -38,11 +38,16 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   QImage *image;
   QImage *imask;
   bool initActions(QMenu *, ToolBar *);
-  // used to store location of last mouse click
-  // default value of -1 when no click recorded
+  // used to store current location of mouse
+  // default value of -1 when no mouse recorded over graphic output
   int mouseX;
   int mouseY;
-  int mouseButtons;
+  int mouseB;
+  // used to store location of last mouse click
+  // default value of -1 when no click recorded
+  int clickX;
+  int clickY;
+  int clickB;
 
  
  public slots:
@@ -54,6 +59,8 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);
   void mousePressEvent(QMouseEvent *);
+  void mouseReleaseEvent(QMouseEvent *);
+  void mouseMoveEvent(QMouseEvent *);
   
  private:
   uchar *imagedata;

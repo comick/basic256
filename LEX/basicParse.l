@@ -158,10 +158,13 @@ size [Ss][Ii][Zz][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 booltrue [Tt][Rr][Uu][Ee]
 boolfalse [Ff][Aa][Ll][Ss][Ee]
-mouseclear [Mm][Oo][Uu][Ss][Ee][Cc][Ll][Ee][Aa][Rr]
 mousex [Mm][Oo][Uu][Ss][Ee][Xx]
 mousey [Mm][Oo][Uu][Ss][Ee][Yy]
-mousebuttons [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][Ss]
+mouseb [Mm][Oo][Uu][Ss][Ee][Bb]
+clickclear [Cc][Ll][Ii][Cc][Kk][Cc][Ll][Ee][Aa][Rr]
+clickx [Cc][Ll][Ii][Cc][Kk][Xx]
+clicky [Cc][Ll][Ii][Cc][Kk][Yy]
+clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 %%
 
 
@@ -281,10 +284,13 @@ mousebuttons [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][Ss]
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }
-{mouseclear}       { count(); return MOUSECLEAR; }
 {mousex}       { count(); return MOUSEX; }
 {mousey}       { count(); return MOUSEY; }
-{mousebuttons}       { count(); return MOUSEBUTTONS; }
+{mouseb}       { count(); return MOUSEB; }
+{clickclear}       { count(); return CLICKCLEAR; }
+{clickx}       { count(); return CLICKX; }
+{clicky}       { count(); return CLICKY; }
+{clickb}       { count(); return CLICKB; }
 {rem}           { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }
