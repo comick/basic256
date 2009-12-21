@@ -86,9 +86,9 @@ Section "BASIC256"
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
-  File doc.html
+  File ..\doc\en\Documentation_EN.html
   File /r /x ".svn" Examples 
-  File /r /x ".svn" Documentation 
+  File /r /x ".svn" ..\doc\en\Documentation 
   
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\BASIC256 "Install_Dir" "$INSTDIR"
@@ -107,7 +107,7 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\BASIC256"
   CreateShortCut "$SMPROGRAMS\BASIC256\BASIC256.lnk" "$INSTDIR\BASIC256.exe" "" "$INSTDIR\BASIC256.exe" 0
-  CreateShortCut "$SMPROGRAMS\BASIC256\doc.lnk" "$INSTDIR\doc.html" "" "$INSTDIR\doc.html" 0
+  CreateShortCut "$SMPROGRAMS\BASIC256\Documentation_EN.lnk" "$INSTDIR\Documentation_EN.html" "" "$INSTDIR\Documentation_EN.html" 0
   CreateShortCut "$SMPROGRAMS\BASIC256\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   
 SectionEnd
