@@ -57,13 +57,13 @@ BasicGraph::resize(int width, int height)
   delete imask;
   imagedata = new uchar[sizeof(int) * width * height];
   image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+  mouseX = 0;
+  mouseY = 0;
+  mouseB = 0;
+  clickX = 0;
+  clickY = 0;
+  clickB = 0;
   setMouseTracking(true);
-  mouseX = -1;
-  mouseY = -1;
-  mouseB = -1;
-  clickX = -1;
-  clickY = -1;
-  clickB = -1;
 }
 
 

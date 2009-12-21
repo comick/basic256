@@ -2345,9 +2345,9 @@ Interpreter::execByteCode()
 	case OP_CLICKCLEAR:
 		{
 			op++;
-			graph->clickX = -1;
-			graph->clickY = -1;
-			graph->clickB = -1;
+			graph->clickX = 0;
+			graph->clickY = 0;
+			graph->clickB = 0;
 		}
 		break;
 
