@@ -59,6 +59,11 @@ pre {
   color: #000000;
 }
 
+.exampleimage { 
+  margin: 10px 10px 10px 10px;
+  border: 1px dashed #808080;
+}
+
 caption {
 	font-size: 150%;
 }

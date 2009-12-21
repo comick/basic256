@@ -1,0 +1,12 @@
+# mousetest.kbs - 2009-12-20 j.m.reneau
+# click on the graphics output and draw a circle
+clg
+color black
+loop:
+if mousex = -1 then goto skip
+print mousex + " " + mousey + " " + mousebuttons
+circle mousex, mousey, 10
+mouseclear
+skip:
+pause .10
+goto loop

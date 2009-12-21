@@ -158,7 +158,10 @@ size [Ss][Ii][Zz][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 booltrue [Tt][Rr][Uu][Ee]
 boolfalse [Ff][Aa][Ll][Ss][Ee]
-
+mouseclear [Mm][Oo][Uu][Ss][Ee][Cc][Ll][Ee][Aa][Rr]
+mousex [Mm][Oo][Uu][Ss][Ee][Xx]
+mousey [Mm][Oo][Uu][Ss][Ee][Yy]
+mousebuttons [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][Ss]
 %%
 
 
@@ -278,6 +281,10 @@ boolfalse [Ff][Aa][Ll][Ss][Ee]
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }
+{mouseclear}       { count(); return MOUSECLEAR; }
+{mousex}       { count(); return MOUSEX; }
+{mousey}       { count(); return MOUSEY; }
+{mousebuttons}       { count(); return MOUSEBUTTONS; }
 {rem}           { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }

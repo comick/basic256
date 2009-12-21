@@ -57,6 +57,9 @@ BasicGraph::resize(int width, int height)
   delete imask;
   imagedata = new uchar[sizeof(int) * width * height];
   image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+  mouseX = -1;
+  mouseY = -1;
+  mouseButtons = -1;
 }
 
 
@@ -79,6 +82,12 @@ BasicGraph::keyPressEvent(QKeyEvent *e)
   keymutex.lock();
   currentKey = e->key();
   keymutex.unlock();
+}
+
+void BasicGraph::mousePressEvent(QMouseEvent *e) {
+	mouseX = e->x();
+	mouseY = e->y();
+	mouseButtons = e->buttons();
 }
 
 bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)

@@ -231,6 +231,7 @@
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
+%token MOUSECLEAR MOUSEX MOUSEY MOUSEBUTTONS
 
 
 %union 
@@ -329,6 +330,7 @@ statement: gotostmt
 	 | wavplaystmt
 	 | wavstopstmt
 	 	| seekstmt
+	 	| mouseclearstmt
 ;
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
@@ -540,6 +542,10 @@ seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  }
          | SEEK '(' floatexpr ')' { addOp(OP_SEEK); }
 ;
 
+mouseclearstmt: MOUSECLEAR  {addOp(OP_MOUSECLEAR);  }
+         | MOUSECLEAR '(' ')' { addOp(OP_MOUSECLEAR); }
+;
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -610,6 +616,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | GRAPHWIDTH { addOp(OP_GRAPHWIDTH); }
          | GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
          | SIZE { addOp(OP_SIZE); }
+         | MOUSEX { addOp(OP_MOUSEX); }
+         | MOUSEY { addOp(OP_MOUSEY); }
+         | MOUSEBUTTONS { addOp(OP_MOUSEBUTTONS); }
 ;
 
 stringlist: stringexpr { listlen = 1; }

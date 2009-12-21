@@ -141,6 +141,10 @@
 #define OP_STAMP_S_LIST		0xa8		// stamp with x, y, scale and an immediate list
 #define OP_STAMP_SR_LIST	0xa9		// stamp with x, y, scale, and rotation and an immediate list
 #define OP_POLY_LIST		0xaa
+#define OP_MOUSECLEAR		0xab
+#define OP_MOUSEX		0xac
+#define OP_MOUSEY		0xad
+#define OP_MOUSEBUTTONS		0xae
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0

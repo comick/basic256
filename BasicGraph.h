@@ -38,6 +38,12 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   QImage *image;
   QImage *imask;
   bool initActions(QMenu *, ToolBar *);
+  // used to store location of last mouse click
+  // default value of -1 when no click recorded
+  int mouseX;
+  int mouseY;
+  int mouseButtons;
+
  
  public slots:
   void resize(int, int);
@@ -47,6 +53,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
  protected:
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);
+  void mousePressEvent(QMouseEvent *);
   
  private:
   uchar *imagedata;

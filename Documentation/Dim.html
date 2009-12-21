@@ -3,7 +3,7 @@
 <html>
 <head>
 <link type="text/css" rel="stylesheet" href="style.css">
-<title>BASIC-256 Reference 0.9.4</title>
+<title>BASIC-256 Reference 0.9.4d</title>
 </head>
 <body>
 <table class="cmdtable" cellpadding="5" border="0">
@@ -13,6 +13,13 @@
 <td>dim <i>numericvariable</i>( <i>integer</i> )<br/>dim <i>stringvariable$</i>( <i>integer</i> )</td></tr>
 <tr><td valign="top" class="label">Description</td>
 <td class="desc">Returns a newly created array of length <i>integer</i>. Depending on the variable assignment, a string or numerical array is created.</td></tr>
+<tr><td valign="top" class="label">Example</td>
+<td class="example"><table><tr><td><pre>dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + " " + z[4]</pre></td><td>will print</td><td><pre>1 5</pre></td><tr></table><table><tr><td><pre>dim c$(4)
+c$ = {"cow", "brow", "how", "now"}
+print c$[2] + " " + c$[3] + " ";
+print c$[1] + " " + c$[0] + "?"</pre></td><td>will print</td><td><pre>how now brown cow?</pre></td><tr></table></td></tr>
 </table>
 
 </body>

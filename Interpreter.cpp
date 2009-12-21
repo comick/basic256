@@ -2322,6 +2322,37 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_MOUSECLEAR:
+		{
+			op++;
+			graph->mouseX = -1;
+			graph->mouseY = -1;
+			graph->mouseButtons = -1;
+		}
+		break;
+
+	case OP_MOUSEX:
+		{
+			op++;
+			stack.push((int) graph->mouseX);
+		}
+		break;
+
+	case OP_MOUSEY:
+		{
+			op++;
+			stack.push((int) graph->mouseY);
+		}
+		break;
+
+	case OP_MOUSEBUTTONS:
+		{
+			op++;
+			stack.push((int) graph->mouseButtons);
+		}
+		break;
+
+
 	case OP_STACKSWAP:
 		{
 			op++;
