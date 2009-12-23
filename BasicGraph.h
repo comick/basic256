@@ -67,6 +67,9 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   BasicOutput *output;
   unsigned int gwidth;
   unsigned int gheight;
+  unsigned int gtop;	// position of image in basicgraph widget
+  unsigned int gleft;
+
 };
 
 

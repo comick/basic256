@@ -71,10 +71,10 @@ void
 BasicGraph::paintEvent(QPaintEvent *)
 {
   QPainter p2(this);
+  gtop = (height() - gheight) / 2;
+  gleft = (width() - gwidth) / 2;
   //image->setAlphaChannel(*imask);
-  p2.drawImage((width() - gwidth) / 2,
-	       (height() - gheight) / 2,
-	       *image);
+  p2.drawImage(gleft, gtop, *image);
 }
 
 
@@ -89,9 +89,11 @@ BasicGraph::keyPressEvent(QKeyEvent *e)
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
-	mouseX = e->x();
-	mouseY = e->y();
-	mouseB = e->buttons();
+    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) { 
+		mouseX = e->x() - gleft;
+		mouseY = e->y() - gtop;
+		mouseB = e->buttons();
+	}
 }
 
 void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
@@ -100,10 +102,11 @@ void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mousePressEvent(QMouseEvent *e) {
-	clickX = e->x();
-	clickY = e->y();
-	clickB = e->buttons();
-	mouseMoveEvent(e);
+    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) { 
+		clickX = mouseX = e->x() - gleft;
+		clickY = mouseY = e->y() - gtop;
+		clickB = mouseB = e->buttons();
+	}
 }
 
 bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)
