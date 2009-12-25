@@ -40,6 +40,7 @@
     extern struct symbol symtable[];
     extern void clearSymbolTable();
     extern void clearLabelTable();
+    extern void clearIfTable();
     extern void newLineOffsets(int);
 
     extern int getSymbol(char *);
@@ -70,6 +71,10 @@ key   [Kk][Ee][Yy]
 return [Rr][Ee][Tt][Uu][Rr][Nn]
 if    [Ii][Ff]
 then  [Tt][Hh][Ee][Nn]
+else  [Ee][Ll][Ss][Ee]
+endif  [Ee][Nn][Dd][Ii][Ff]
+while [Ww][Hh][Ii][Ll][Ee]
+endwhile [Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]
 rem   [Rr][Ee][Mm].*$
 remalt #.*$
 dim   [Dd][Ii][Mm]
@@ -249,6 +254,10 @@ clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 {goto}		{ count(); return GOTO; }
 {if}		{ count(); return IF; }
 {then}		{ count(); return THEN; }
+{else}		{ count(); return ELSE; }
+{endif}		{ count(); return ENDIF; }
+{while}		{ count(); return WHILE; }
+{endwhile}		{ count(); return ENDWHILE; }
 {for}		{ count(); return FOR; }
 {to}		{ count(); return TO; }
 {step}		{ count(); return STEP; }
@@ -377,6 +386,7 @@ basicParse(char *code){
 
   clearSymbolTable();
   clearLabelTable();
+  clearIfTable();
 
   linenumber = 1;
   column = 0;

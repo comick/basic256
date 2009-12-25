@@ -29,6 +29,7 @@
     #include "../ByteCodes.h"
 
     #define SYMTABLESIZE 2000
+    #define IFTABLESIZE 1000
 
     extern int yylex();
     extern char *yytext;
@@ -39,6 +40,7 @@
 
     char *byteCode = NULL;
     unsigned int byteOffset = 0;
+	unsigned int lastLineOffset = 0;	// store the byte offset for the end of the last line - use in loops
     unsigned int oldByteOffset = 0;
     unsigned int listlen = 0;
 
@@ -48,17 +50,30 @@
       int offset;
     };
 
-    unsigned int branchAddr = 0;
-
     char *EMPTYSTR = "";
     char *symtable[SYMTABLESIZE];
     int labeltable[SYMTABLESIZE];
     int numsyms = 0;
     int numlabels = 0;
     unsigned int maxbyteoffset = 0;
+	
+	// array to hold stack of if statement branch locations
+	// that need to have final jump location added to them
+	unsigned int iftable[IFTABLESIZE];
+	unsigned int numifs = 0;
 
     int
     basicParse(char *);
+
+	void clearIfTable()
+	{
+		int j;
+		for (j = 0; j < IFTABLESIZE; j++)
+		{
+			iftable[j] = -1;
+		}
+		numifs = 0;
+    }
 
     void 
     clearLabelTable()
@@ -68,6 +83,7 @@
 	{
 	  labeltable[j] = -1;
 	}
+	numlabels = 0;
     }
 
     void
@@ -152,6 +168,18 @@
       byteOffset++;
     }
 
+	unsigned int addInt(int data) {
+	  // add an integer to the bytecode at the current location
+	  // return starting location of the integer - so we can write to it later
+      unsigned int holdOffset = byteOffset;
+	  int *temp;
+	  checkByteMem(sizeof(int));
+      temp = (void *) byteCode + byteOffset;
+      *temp = data;
+      byteOffset += sizeof(int);
+	  return holdOffset;
+	}
+	
     void 
     addIntOp(char op, int data)
     {
@@ -215,7 +243,7 @@
 
 %token PRINT INPUT KEY 
 %token PLOT CIRCLE RECT POLY STAMP LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
-%token IF THEN FOR TO STEP NEXT 
+%token IF THEN ELSE ENDIF WHILE ENDWHILE FOR TO STEP NEXT 
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
@@ -274,22 +302,107 @@ program: validline '\n'
        | validline '\n' program 
 ;
 
-validline: ifstmt       { addIntOp(OP_CURRLINE, linenumber); }
-         | compoundstmt { addIntOp(OP_CURRLINE, linenumber); }
-         | /*empty*/    { addIntOp(OP_CURRLINE, linenumber); }
-         | LABEL        { labeltable[$1] = byteOffset; addIntOp(OP_CURRLINE, linenumber + 1); }
+validline: compoundifstmt       { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | ifstmt  { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | elsestmt   { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | endifstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | whilestmt   { 
+			// push to iftable the byte location of the end of the last stmt (top of loop)
+			iftable[numifs] = lastLineOffset;
+			numifs++;
+			lastLineOffset = byteOffset; 
+			addIntOp(OP_CURRLINE, linenumber);
+			}
+         | endwhilestmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | LABEL        { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber + 1); }
 ;
 
-ifstmt: ifexpr THEN compoundstmt 
+compoundifstmt: ifexpr THEN compoundstmt 
         { 
-	  if (branchAddr) 
+	  // if there is an if branch or jump on the iftable stack get where it is
+	  // in the bytecode array and then put the current bytecode address there
+	  // - so we can jump over code
+	  if (numifs>0) 
 	    { 
-	      unsigned int *temp = (void *) byteCode + branchAddr;
+		  numifs--;
+	      unsigned int *temp = (void *) byteCode + iftable[numifs];
 	      *temp = byteOffset; 
-	      branchAddr = 0; 
 	    } 
 	}
 ;
+
+ifstmt: ifexpr THEN 
+	{
+		// there is nothing to do with a multi line if (ifexp handles it)
+	}
+;
+
+elsestmt: ELSE 
+	{ 
+		// on else create a jump point to the endif
+		addIntOp(OP_PUSHINT, 0);	// false - always jump before else to endif
+		addOp(OP_BRANCH);
+		unsigned int elsegototemp = addInt(0);
+		// resolve the false jump on the if to the current location
+		if (numifs>0) 
+			{ 
+				numifs--;
+				unsigned int *temp = (void *) byteCode + iftable[numifs];
+				*temp = byteOffset; 
+			} 
+		// now add the elsegoto jump to the iftable
+		iftable[numifs] = elsegototemp;
+		numifs++;
+	}
+;
+
+endifstmt: ENDIF 
+	{ 
+		// if there is an if branch or jump on the iftable stack get where it is
+		// in the bytecode array and then put the current bytecode address there
+		// - so we can jump over code
+		if (numifs>0) 
+			{ 
+				numifs--;
+				unsigned int *temp = (void *) byteCode + iftable[numifs];
+				*temp = byteOffset; 
+			} 
+	}
+;
+
+whilestmt: WHILE compoundboolexpr 
+         { 
+		 // create temp 
+	   //if true, don't branch. If false, go to next line do the loop.
+	   addOp(OP_BRANCH);
+	   // after branch add a placeholder for the final end of the loop
+	   // it will be resolved in the endwhile statement, push the
+	   // location of this location on the iftable
+	   iftable[numifs] = addInt(0);
+	   numifs++;
+         }
+;
+
+
+endwhilestmt: ENDWHILE 
+	{ 
+		// there should be two bytecode locations.  the TOP is the
+		// location to jump to at the top of the loopthe , TOP-1 is the location
+		// the exit jump needs to be written back to jump point on WHILE
+		if (numifs>1) 
+			{ 
+				addIntOp(OP_PUSHINT, 0);	// false - always jump back to the beginning
+				addIntOp(OP_BRANCH, iftable[numifs-1]);
+				// resolve the false jump on the while to the current location
+				unsigned int *temp = (void *) byteCode + iftable[numifs-2];
+				*temp = byteOffset; 
+				numifs-=2;
+			} 
+	}
+;
+
 
 compoundstmt: statement | compoundstmt ':' statement
 ;
@@ -362,8 +475,12 @@ ifexpr: IF compoundboolexpr
          { 
 	   //if true, don't branch. If false, go to next line.
 	   addOp(OP_BRANCH);
+	   // after branch add a placeholder for the final end of the if
+	   // it will be resolved in the if/else/endif statement, push the
+	   // location of this location on the iftable
 	   checkByteMem(sizeof(int));
-	   branchAddr = byteOffset;
+	   iftable[numifs] = byteOffset;
+	   numifs++;
 	   byteOffset += sizeof(int);
          }
 ;
