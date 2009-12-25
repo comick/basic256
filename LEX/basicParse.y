@@ -243,7 +243,7 @@
 
 %token PRINT INPUT KEY 
 %token PLOT CIRCLE RECT POLY STAMP LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
-%token IF THEN ELSE ENDIF WHILE ENDWHILE FOR TO STEP NEXT 
+%token IF THEN ELSE ENDIF WHILE ENDWHILE DO UNTIL FOR TO STEP NEXT 
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
@@ -314,6 +314,14 @@ validline: compoundifstmt       { lastLineOffset = byteOffset; addIntOp(OP_CURRL
 			addIntOp(OP_CURRLINE, linenumber);
 			}
          | endwhilestmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+         | dostmt   { 
+			// push to iftable the byte location of the end of the last stmt (top of loop)
+			iftable[numifs] = lastLineOffset;
+			numifs++;
+			lastLineOffset = byteOffset; 
+			addIntOp(OP_CURRLINE, linenumber);
+			}
+         | untilstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | LABEL        { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber + 1); }
@@ -358,7 +366,10 @@ elsestmt: ELSE
 	}
 ;
 
-endifstmt: ENDIF 
+endifexpr:	ENDIF|
+	END IF;
+	
+endifstmt: endifexpr 
 	{ 
 		// if there is an if branch or jump on the iftable stack get where it is
 		// in the bytecode array and then put the current bytecode address there
@@ -385,8 +396,10 @@ whilestmt: WHILE compoundboolexpr
          }
 ;
 
-
-endwhilestmt: ENDWHILE 
+endwhileexpr:	ENDWHILE|
+	END WHILE;
+	
+endwhilestmt: endwhileexpr 
 	{ 
 		// there should be two bytecode locations.  the TOP is the
 		// location to jump to at the top of the loopthe , TOP-1 is the location
@@ -403,6 +416,23 @@ endwhilestmt: ENDWHILE
 	}
 ;
 
+dostmt: DO 
+         { 
+		 // need nothing done at top of a do
+         }
+;
+
+
+untilstmt: UNTIL compoundboolexpr 
+         { 
+		 // create temp 
+	   //if If false, go to to the corresponding do.
+		if (numifs>0) 
+			{ 
+				addIntOp(OP_BRANCH, iftable[numifs-1]);
+				numifs--;
+			} 
+         }
 
 compoundstmt: statement | compoundstmt ':' statement
 ;

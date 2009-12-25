@@ -49,6 +49,7 @@
     //extern YYLTYPE yylloc;
     extern int errorcode;
     extern int byteOffset;
+    extern int lastLineOffset;
     int linenumber;
     int column;
 
@@ -75,6 +76,8 @@ else  [Ee][Ll][Ss][Ee]
 endif  [Ee][Nn][Dd][Ii][Ff]
 while [Ww][Hh][Ii][Ll][Ee]
 endwhile [Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]
+do [Dd][Oo]
+until [Uu][Nn][Tt][Ii][Ll]
 rem   [Rr][Ee][Mm].*$
 remalt #.*$
 dim   [Dd][Ii][Mm]
@@ -258,6 +261,8 @@ clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 {endif}		{ count(); return ENDIF; }
 {while}		{ count(); return WHILE; }
 {endwhile}		{ count(); return ENDWHILE; }
+{do}		{ count(); return DO; }
+{until}		{ count(); return UNTIL; }
 {for}		{ count(); return FOR; }
 {to}		{ count(); return TO; }
 {step}		{ count(); return STEP; }
@@ -389,6 +394,7 @@ basicParse(char *code){
   clearIfTable();
 
   linenumber = 1;
+  lastLineOffset = 0;
   column = 0;
   errorcode = 0;
 

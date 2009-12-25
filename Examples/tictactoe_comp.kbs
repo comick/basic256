@@ -1,5 +1,5 @@
 # tictactoe_comp
-# with a computer player - 2009-12-23 - j.m.reneau
+# with a computer player - 2009-12-25 - j.m.reneau
 # requires BACIC256 0.9.4g or better
 
 # -1=empty 0=x, 1=0
@@ -12,16 +12,15 @@ gosub drawboard
 print "tictactoe"
 dim playertype$(2)
 for t = 0 to 1
-  playertype$[t] = ""
-  while playertype$[t] <> "c" and playertype$[t] <> "h"
+  do
     print "who is player " + (t+1) + " (c-computer, h-human)";
     input playertype$[t]
-  endwhile
+  until playertype$[t] = "c" or playertype$[t] = "h"
 next t
 
 player = 1
 otherplayer = 0
-playerloop:
+do
   # swap player and otherplayer
   t = player
   player = otherplayer
@@ -31,22 +30,24 @@ playerloop:
   if playertype$[player] = "c" then gosub computerplayer
   #  
   gosub drawboard
-  # see if there is a winner and if not go to next player and wait
+  # see if there is a winner and if not loop for next player
   gosub iswinner
-  if winner = -1 then goto playerloop
+until winner <> -1
 
-  # we must have a winner
-  print "The winner was ";
-  if winner = 0 then print "X"
-  if winner = 1 then print "O"
-  if winner = 2 then print "cat"
-
-  end
+# we must have a winner
+print "The winner was ";
+if winner = 0 then print "X"
+if winner = 1 then print "O"
+if winner = 2 then print "cat"
+end
 
 humanplayer:
   print "player ";
-  if player = 0 then print "X";
-  if player = 1 then print "O";
+  if player = 0 then
+    print "X";
+  else
+    print "O";
+  end if
   print " please click on cell."
 
   clickclear
@@ -88,11 +89,10 @@ computerplayer:
       endif
   next i
   # last resort make a random move
-  i = int(rand * 9)
-  while board[i] <> -1
-    # try another
+  # - loop until we randomly select an empty cell
+  do
     i = int(rand * 9)
-  endwhile
+  until board[i] = -1
   board[i] = player
   return
 
