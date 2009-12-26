@@ -608,6 +608,8 @@ rectstmt: RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RE
 
 textstmt: TEXT floatexpr ',' floatexpr ',' stringexpr { addOp(OP_TEXT); }
           | TEXT '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_TEXT); }
+		  | TEXT floatexpr ',' floatexpr ',' floatexpr { addOp(OP_TEXT); }
+          | TEXT '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_TEXT); }
 ;
 
 fontstmt: FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
