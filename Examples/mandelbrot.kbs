@@ -16,7 +16,7 @@ jy=ymin+y*dy
 k=0:wx=0.0:wy=0.0
 
 MainCalculation:
-tx=wx*wx-wy*wy+jx
+tx=wx*wx-(wy*wy+jx)
 ty=2.0*wx*wy+jy
 wx=tx
 wy=ty

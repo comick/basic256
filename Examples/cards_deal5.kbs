@@ -1,6 +1,7 @@
-# 2009-12-21 j.m.reneau
+# 2009-12-25 j.m.reneau
 # create a deck of cards, shuffle them, and display
 # 5 of them graphically on the screen
+# requires 0.9.4g
 #
 # shapes of the card suits
 dim diamond(8)

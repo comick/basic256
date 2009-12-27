@@ -283,17 +283,17 @@
 %type <floatnum> floatexpr
 %type <string> stringexpr
 
-%left '-'
-%left '+'
-%left '*'
-%left MOD
-%left '/'
-%left '^'
-%left AND 
-%left OR 
 %left XOR 
-%right '='
+%left OR 
+%left AND 
+%nonassoc NOT
+%left '<' LTE '>' GTE '=' NE
+%left '-' '+'
+%left MOD
+%left '*' '/'
 %nonassoc UMINUS
+%left '^'
+
 
 
 %%
@@ -383,7 +383,7 @@ endifstmt: endifexpr
 	}
 ;
 
-whilestmt: WHILE compoundboolexpr 
+whilestmt: WHILE floatexpr 
          { 
 		 // create temp 
 	   //if true, don't branch. If false, go to next line do the loop.
@@ -423,7 +423,7 @@ dostmt: DO
 ;
 
 
-untilstmt: UNTIL compoundboolexpr 
+untilstmt: UNTIL floatexpr 
          { 
 		 // create temp 
 	   //if If false, go to to the corresponding do.
@@ -501,7 +501,7 @@ refreshstmt: REFRESH { addOp(OP_REFRESH); }
 endstmt: END { addOp(OP_END); }
 ;
 
-ifexpr: IF compoundboolexpr 
+ifexpr: IF floatexpr 
          { 
 	   //if true, don't branch. If false, go to next line.
 	   addOp(OP_BRANCH);
@@ -513,32 +513,6 @@ ifexpr: IF compoundboolexpr
 	   numifs++;
 	   byteOffset += sizeof(int);
          }
-;
-
-compoundboolexpr: boolexpr
-                | compoundboolexpr AND compoundboolexpr {addOp(OP_AND); }
-                | compoundboolexpr OR compoundboolexpr { addOp(OP_OR); }
-                | compoundboolexpr XOR compoundboolexpr { addOp(OP_XOR); }
-                | NOT compoundboolexpr %prec UMINUS { addOp(OP_NOT); }
-                | '(' compoundboolexpr ')'
-;
-
-boolexpr: stringexpr '=' stringexpr  { addOp(OP_EQUAL); } 
-        | stringexpr NE stringexpr   { addOp(OP_NEQUAL); }
-        | stringexpr '<' stringexpr    { addOp(OP_LT); }
-        | stringexpr '>' stringexpr    { addOp(OP_GT); }
-        | stringexpr GTE stringexpr    { addOp(OP_GTE); }
-        | stringexpr LTE stringexpr    { addOp(OP_LTE); }
-        | floatexpr '=' floatexpr    { addOp(OP_EQUAL); }
-        | floatexpr NE floatexpr     { addOp(OP_NEQUAL); }
-        | floatexpr '<' floatexpr    { addOp(OP_LT); }
-        | floatexpr '>' floatexpr    { addOp(OP_GT); }
-        | floatexpr GTE floatexpr    { addOp(OP_GTE); }
-        | floatexpr LTE floatexpr    { addOp(OP_LTE); }
-        | BOOLFALSE { addFloatOp(OP_PUSHINT, 0); }
-        | BOOLTRUE { addFloatOp(OP_PUSHINT, 1); }
-        | BOOLEOF                    { addOp(OP_EOF); }
-        | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
@@ -727,6 +701,22 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 addOp(OP_NEGATE);
 	       }
 	   }
+       | floatexpr AND floatexpr {addOp(OP_AND); }
+       | floatexpr OR floatexpr { addOp(OP_OR); }
+       | floatexpr XOR floatexpr { addOp(OP_XOR); }
+       | NOT floatexpr %prec UMINUS { addOp(OP_NOT); }
+        | stringexpr '=' stringexpr  { addOp(OP_EQUAL); } 
+        | stringexpr NE stringexpr   { addOp(OP_NEQUAL); }
+        | stringexpr '<' stringexpr    { addOp(OP_LT); }
+        | stringexpr '>' stringexpr    { addOp(OP_GT); }
+        | stringexpr GTE stringexpr    { addOp(OP_GTE); }
+        | stringexpr LTE stringexpr    { addOp(OP_LTE); }
+		| floatexpr '=' floatexpr    { addOp(OP_EQUAL); }
+        | floatexpr NE floatexpr     { addOp(OP_NEQUAL); }
+        | floatexpr '<' floatexpr    { addOp(OP_LT); }
+        | floatexpr '>' floatexpr    { addOp(OP_GT); }
+        | floatexpr GTE floatexpr    { addOp(OP_GTE); }
+        | floatexpr LTE floatexpr    { addOp(OP_LTE); }
          | FLOAT   { addFloatOp(OP_PUSHFLOAT, $1); }
          | INTEGER { addIntOp(OP_PUSHINT, $1); }
          | KEY     { addOp(OP_KEY); }
@@ -757,6 +747,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
+         | BOOLTRUE { addIntOp(OP_PUSHINT, 1); }
+         | BOOLFALSE { addIntOp(OP_PUSHINT, 0); }
+         | BOOLEOF                    { addOp(OP_EOF); }
+         | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
          | YEAR { addOp(OP_YEAR); }
          | MONTH { addOp(OP_MONTH); }
          | DAY { addOp(OP_DAY); }
