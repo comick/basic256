@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="ru_RU">
 <context>
     <name>BasicEdit</name>
     <message>
@@ -74,7 +76,7 @@
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
-        <translation>Нельзя присвоить массиву строк значение, не являющееся строкой</translation>
+        <translation type="obsolete">Нельзя присвоить массиву строк значение, не являющееся строкой</translation>
     </message>
     <message>
         <source>Array index out of bounds</source>
@@ -90,35 +92,35 @@
     </message>
     <message>
         <source>Illegal argument to int()</source>
-        <translation>Неправильный аргумент функции int()</translation>
+        <translation type="obsolete">Неправильный аргумент функции int()</translation>
     </message>
     <message>
         <source>Illegal argument to string()</source>
-        <translation>Неправильный аргумент функции string()</translation>
+        <translation type="obsolete">Неправильный аргумент функции string()</translation>
     </message>
     <message>
         <source>Illegal argument to sin()</source>
-        <translation>Неправильный аргумент функции sin()</translation>
+        <translation type="obsolete">Неправильный аргумент функции sin()</translation>
     </message>
     <message>
         <source>Illegal argument to cos()</source>
-        <translation>Неправильный аргумент функции cos()</translation>
+        <translation type="obsolete">Неправильный аргумент функции cos()</translation>
     </message>
     <message>
         <source>Illegal argument to tan()</source>
-        <translation>Неправильный аргумент функции tan()</translation>
+        <translation type="obsolete">Неправильный аргумент функции tan()</translation>
     </message>
     <message>
         <source>Illegal argument to ceil()</source>
-        <translation>Неправильный аргумент функции ceil()</translation>
+        <translation type="obsolete">Неправильный аргумент функции ceil()</translation>
     </message>
     <message>
         <source>Illegal argument to floor()</source>
-        <translation>Неправильный аргумент функции floor()</translation>
+        <translation type="obsolete">Неправильный аргумент функции floor()</translation>
     </message>
     <message>
         <source>Illegal argument to abs()</source>
-        <translation>Неправильный аргумент функции abs()</translation>
+        <translation type="obsolete">Неправильный аргумент функции abs()</translation>
     </message>
     <message>
         <source>String in numeric expression</source>
@@ -126,11 +128,11 @@
     </message>
     <message>
         <source>Cannot compare strings with &gt; or &lt;=</source>
-        <translation>Нельзя сравнивать строки с помощью &gt; или &lt;=</translation>
+        <translation type="obsolete">Нельзя сравнивать строки с помощью &gt; или &lt;=</translation>
     </message>
     <message>
         <source>Cannot compare strings with &lt; or &gt;=</source>
-        <translation>Нельзя сравнивать строки с помощью &lt; или &gt;=</translation>
+        <translation type="obsolete">Нельзя сравнивать строки с помощью &lt; или &gt;=</translation>
     </message>
     <message>
         <source>Unable to open file</source>
@@ -138,7 +140,7 @@
     </message>
     <message>
         <source>Illegal argument to open()</source>
-        <translation>Неправильный аргумент функции open()</translation>
+        <translation type="obsolete">Неправильный аргумент функции open()</translation>
     </message>
     <message>
         <source>Can&apos;t read -- no open file.</source>
@@ -150,11 +152,11 @@
     </message>
     <message>
         <source>Illegal argument to write()</source>
-        <translation>Неправильный аргумент функции write()</translation>
+        <translation type="obsolete">Неправильный аргумент функции write()</translation>
     </message>
     <message>
         <source>Illegal argument to length()</source>
-        <translation>Неправильный аргумент функции length()</translation>
+        <translation type="obsolete">Неправильный аргумент функции length()</translation>
     </message>
     <message>
         <source>Illegal argument to poly()</source>
@@ -182,7 +184,7 @@
     </message>
     <message>
         <source>Illegal argument to instr()</source>
-        <translation>Неправильный аргумент функции instr()</translation>
+        <translation type="obsolete">Неправильный аргумент функции instr()</translation>
     </message>
     <message>
         <source>Illegal FOR -- start number &gt; end number</source>
@@ -197,7 +199,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sound must have a frequency and duration.</source>
+        <source> around end of line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> around column </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t size -- no open file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seek() called when no file is open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not a string array variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not an array variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Argument not an array for poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in immediate list for poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in array for stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Argument not an array for stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in immediate list for stamp()</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -340,10 +382,6 @@ Please check your printer settings.</source>
     <message>
         <source>Variable Watch Window</source>
         <translation>Окно просмотра переменных</translation>
-    </message>
-    <message>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;                                         &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

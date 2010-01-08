@@ -13,7 +13,7 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.5 (2009-12-26)"
+  StrCpy $VERSION "0.9.5 (2010-01-07)"
 FunctionEnd
 
 Function customPage
@@ -90,7 +90,10 @@ Section "BASIC256"
   File /r /x ".svn" Examples 
   File /r /x ".svn" ..\doc\en\Documentation 
   
-  ; Write the installation path into the registry
+  SetOutPath $INSTDIR\Translations 
+  File .\Translations\*.qm
+
+ ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\BASIC256 "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows

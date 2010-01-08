@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="en_US">
 <context>
     <name>BasicEdit</name>
     <message>
@@ -73,10 +75,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot assign non-string to string array</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Array index out of bounds</source>
         <translation type="unfinished"></translation>
     </message>
@@ -89,55 +87,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Illegal argument to int()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to string()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to sin()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to cos()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to tan()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to ceil()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to floor()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to abs()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>String in numeric expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot compare strings with &gt; or &lt;=</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot compare strings with &lt; or &gt;=</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unable to open file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to open()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -146,14 +100,6 @@
     </message>
     <message>
         <source>Unable to write to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to write()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Illegal argument to length()</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -177,10 +123,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Illegal argument to instr()</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Illegal FOR -- start number &gt; end number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -193,7 +135,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sound must have a frequency and duration.</source>
+        <source> around end of line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> around column </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t size -- no open file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seek() called when no file is open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not a string array variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not an array variable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Argument not an array for poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in immediate list for poly()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in array for stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Argument not an array for stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not enough points in immediate list for stamp()</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -334,10 +316,6 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Variable Watch Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;                                         &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
