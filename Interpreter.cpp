@@ -1342,29 +1342,32 @@ Interpreter::execByteCode()
 			int len = stack.popint();
 			int pos = stack.popint();
 			char *temp = stack.popstring();
+			char *substring;
 
-			if ((pos < 0) || (len < 0))
+			if ((pos < 1) || (len < 0))
 			{
 				printError(tr("Illegal argument to mid()"));
+				free(temp);
 				return -1;
 			}
 
 			if (pos > (int) strlen(temp))
 			{
 				printError(tr("String not long enough for given starting character"));
+				free(temp);
 				return -1;
 			}
 
-			temp += (pos - 1);
-
-			if (len < (int) strlen(temp))
-			{
-				temp[len] = '\0';
+			substring = (char *) malloc(len+1);
+			memset(substring,0,len+1);
+                        for(int p=0;((pos+p)<= ((int) strlen(temp)))&&(p<len);p++) {
+				substring[p] = temp[pos+p-1];
 			}
 
-			stack.push(strdup(temp));
+			stack.push(substring);
 
 			free(temp);
+			free(substring);
 		}
 		break;
 
