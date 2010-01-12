@@ -122,6 +122,8 @@ toint   [Ii][Nn][Tt]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 length  [Ll][Ee][Nn][Gg][Tt][Hh]
 mid     [Mm][Ii][Dd]
+left    [Ll][Ee][Ff][Tt]
+right   [Rr][Ii][Gg][Hh][Tt]
 instr   [Ii][Nn][Ss][Tt][Rr]
 ceil    [Cc][Ee][Ii][Ll]
 floor   [Ff][Ll][Oo][Oo][Rr]
@@ -204,6 +206,8 @@ clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 {tostring}      { count(); return TOSTRING; }
 {length}        { count(); return LENGTH; }
 {mid}           { count(); return MID; }
+{left}          { count(); return LEFT; }
+{right}         { count(); return RIGHT; }
 {instr}         { count(); return INSTR; }
 {ceil}          { count(); return CEIL; }
 {floor}         { count(); return FLOOR; }

@@ -148,6 +148,9 @@
 #define OP_CLICKX		0xaf
 #define OP_CLICKY		0xb0
 #define OP_CLICKB		0xb1
+#define OP_LEFT			0xb2
+#define OP_RIGHT		0xb3
+
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0

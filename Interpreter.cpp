@@ -1372,6 +1372,65 @@ Interpreter::execByteCode()
 		break;
 
 
+	case OP_LEFT:
+		{
+			op++;
+			int len = stack.popint();
+			char *temp = stack.popstring();
+			char *substring;
+
+			if (len < 0)
+			{
+				printError(tr("Illegal argument to mid()"));
+				free(temp);
+				return -1;
+			}
+
+			substring = (char *) malloc(len+1);
+			memset(substring,0,len+1);
+                        for(int p=0;(p<= (int) strlen(temp))&&(p<len);p++) {
+				substring[p] = temp[p];
+			}
+
+			stack.push(substring);
+
+			free(temp);
+			free(substring);
+		}
+		break;
+
+
+	case OP_RIGHT:
+		{
+			op++;
+			int len = stack.popint();
+			char *temp = stack.popstring();
+			char *substring;
+
+			if (len < 0)
+			{
+				printError(tr("Illegal argument to mid()"));
+				free(temp);
+				return -1;
+			}
+
+			int pos = strlen(temp) - len;
+			if (pos<0) pos=0;
+
+			substring = (char *) malloc(len+1);
+			memset(substring,0,len+1);
+                        for(int p=0;((pos+p)<= ((int) strlen(temp)))&&(p<len);p++) {
+				substring[p] = temp[pos+p-1];
+			}
+
+			stack.push(substring);
+
+			free(temp);
+			free(substring);
+		}
+		break;
+
+
 	case OP_ASC:
 		{
 			op++;
