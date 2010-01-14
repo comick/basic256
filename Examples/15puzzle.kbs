@@ -1,0 +1,142 @@
+# 15puzzle.kbs - slide the tiles to get them back in order
+# 2010-01-14 j.m.reneau
+fastgraphics
+
+nx = 4 # number of boxes in a row
+ny = 4 # number of boxes in a column
+bw = 5 # border width
+xw = (graphwidth - ((nx+1)*bw)) / nx # calculate size of a box
+yw = (graphheight - ((ny+1)*bw)) / ny
+zx = nx # position of the empty tile
+zy = ny
+moves = 0
+
+dim board(nx*ny)
+
+font "Tahoma", 30, 100
+
+print "slide puzzle"
+print "click on tile to slide.  try to get all tiles in order."
+
+print "shufflle..."
+gosub initialboard
+gosub shuffle
+gosub drawboard
+
+clickclear
+moves = 0
+
+print "click tile to move"
+do
+  gosub getclick 
+  gosub makemove
+  gosub drawboard
+  gosub isdone
+until done
+
+print "Game Over - You solved it in "+ moves +"."
+
+end
+
+shuffle: #
+for t = 1 to 100
+  cx = zx
+  cy = zy
+  r = int(rand*4)
+  if r = 0 and cx > 1 then cx = cx - 1
+  if r = 1 and cx < nx then cx = cx + 1
+  if r = 2 and cy > 1 then cy = cy - 1
+  if r = 3 and cy < ny then cy = cy + 1
+  gosub makemove
+  gosub drawboard
+  pause .05
+next t
+return
+
+makemove: #
+# shift cells
+if (zx = cx) or (zy = cy) then
+    moves = moves + 1
+    if zx<>cx then
+        # row shift
+        if cx>zx then
+            dx = 1
+            dy = 0
+        else
+            dx = -1
+            dy = 0
+        end if
+    else
+        # column shift
+        if cy>zy then
+            dx = 0
+            dy = 1
+        else
+            dx = 0
+            dy = -1
+        end if
+    end if
+    # do shift
+    while zx <> cx or zy <> cy
+        board[(zy-1)*nx +zx-1] = board[(zy+dy-1)*nx +zx+dx-1]
+        board[(zy+dy-1)*nx +zx+dx-1] = 0
+        zx = zx + dx
+        zy = zy + dy
+    end while
+endif
+return
+
+getclick: #
+# return cx and cy for where the user clicked the board
+while clickb = 0
+  pause .01
+end while
+cx = int(clickx/(xw+bw))+1
+if cx > nx then cx = nx
+cy = int(clicky/(yw+bw))+1
+if cy > ny then cy = ny
+clickclear
+return
+
+initialboard: #
+# setup the initial board array
+for b = 0 to (ny*nx)-2
+  board[b] = (b+1) 
+next b
+board[ny*nx-1] = 0
+zx = nx
+zy = ny
+return
+
+isdone: #
+# return the variable done if we have solved the puzzle
+done = true
+for b = 0 to (ny*nx)-2
+  if board[b] <> (b+1) then
+    done = false
+  end if
+next b
+return
+
+drawboard: #
+clg
+color black
+rect 0, 0, graphwidth, graphheight
+for y = 1 to ny
+  for x = 1 to nx
+    b =  board[(y-1)*nx +x-1]
+    color white
+    rect x*bw+(x-1)*xw, y*bw+(y-1)*yw ,xw, yw
+
+    if b <> 0 then
+      if zx = x or zy = y then
+        color blue
+      else
+        color darkblue
+      endif 
+      text x*bw+(x-1)*xw, y*bw+(y-1)*yw, b
+    end if 
+  next x
+next y
+refresh
+return
