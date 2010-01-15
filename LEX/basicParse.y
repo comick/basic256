@@ -479,6 +479,8 @@ statement: gotostmt
 
 dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
        | DIM STRINGVAR '(' floatexpr ')' { addIntOp(OP_DIMSTR, $2); }
+       | DIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM2D, $2); }
+       | DIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR2D, $2); }
 ;
 
 pausestmt: PAUSE floatexpr { addOp(OP_PAUSE); }
@@ -516,12 +518,15 @@ ifexpr: IF floatexpr
 ;
 
 strarrayassign: STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
-           | STRINGVAR '=' immediatestrlist { addInt2Op(OP_STRARRAYLISTASSIGN, $1, listlen); listlen = 0; }
+	| STRINGVAR '[' floatexpr ',' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN2D, $1); }
+        | STRINGVAR '=' immediatestrlist { addInt2Op(OP_STRARRAYLISTASSIGN, $1, listlen); listlen = 0; }
 ;
 
 arrayassign: VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASSIGN, $1); }
-           | VARIABLE '=' immediatelist { addInt2Op(OP_ARRAYLISTASSIGN, $1, listlen); listlen = 0; }
+	| VARIABLE '[' floatexpr ',' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASSIGN2D, $1); }
+        | VARIABLE '=' immediatelist { addInt2Op(OP_ARRAYLISTASSIGN, $1, listlen); listlen = 0; }
 ;
+
 
 numassign: VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
 ;
@@ -637,8 +642,10 @@ inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
          | inputexpr ',' VARIABLE '[' floatexpr ']'  { addOp(OP_STACKSWAP); addIntOp(OP_ARRAYASSIGN, $3); }
 		 | INPUT STRINGVAR  { addOp(OP_INPUT); addIntOp(OP_STRINGASSIGN, $2); }
 		 | INPUT STRINGVAR '[' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN, $2); }
+		 | INPUT STRINGVAR '[' floatexpr ',' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN2D, $2); }
 		 | INPUT VARIABLE  { addOp(OP_INPUT); addIntOp(OP_NUMASSIGN, $2); }
 		 | INPUT VARIABLE '[' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_ARRAYASSIGN, $2); }
+		 | INPUT VARIABLE '[' floatexpr ',' floatexpr ']'  { addOp(OP_INPUT); addIntOp(OP_ARRAYASSIGN2D, $2); }
 ;
 
 inputexpr: INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }
@@ -721,6 +728,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | INTEGER { addIntOp(OP_PUSHINT, $1); }
          | KEY     { addOp(OP_KEY); }
          | VARIABLE '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
+         | VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
          | VARIABLE 
            { 
 	     if ($1 < 0)
@@ -777,6 +785,7 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | stringexpr '+' floatexpr     { addOp(OP_CONCAT); }
           | STRING    { addStringOp(OP_PUSHSTRING, $1); }
           | STRINGVAR '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
+          | STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
           | STRINGVAR 
             { 
 	      if ($1 < 0)

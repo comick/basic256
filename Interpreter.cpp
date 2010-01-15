@@ -973,7 +973,7 @@ Interpreter::execByteCode()
 	case OP_DIM:
 	case OP_DIMSTR:
 		{
-			char whichdim = *op;
+			unsigned char whichdim = *op;
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
@@ -983,6 +983,10 @@ Interpreter::execByteCode()
 			if (size > 100000)
 			{
 				printError(tr("Array dimension too large"));
+				return -1;
+			} else if (size < 1)
+			{
+				printError(tr("Array dimension too small"));
 				return -1;
 			}
 
@@ -997,6 +1001,8 @@ Interpreter::execByteCode()
 				vars[var].type = T_ARRAY;
 				temp->data.fdata = d;
 				temp->size = size;
+				temp->xdim = size;
+				temp->ydim = 1;
 				vars[var].value.arr = temp;
 			}
 			else
@@ -1008,7 +1014,68 @@ Interpreter::execByteCode()
 				}
 				vars[var].type = T_STRARRAY;
 				temp->data.sdata = c;
+				temp->xdim = size;
+				temp->ydim = 1;
 				temp->size = size;
+				vars[var].value.arr = temp;
+			}
+
+			if(debugMode)
+			{
+				emit(varAssignment(QString(symtable[var]), NULL, size));
+			}
+		}
+		break;
+
+	case OP_DIM2D:
+	case OP_DIMSTR2D:
+		{
+			unsigned char whichdim = *op;
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			int var = i[0];
+			int ydim = stack.popint();
+			int xdim = stack.popint();
+
+			int size = xdim * ydim;
+
+			if (xdim>1000 || ydim>1000 || size>1000000)
+			{
+				printError(tr("Array dimension too large"));
+				return -1;
+			} else if (xdim<1 || ydim<1)
+			{
+				printError(tr("Array dimension too small"));
+				return -1;
+			}
+
+			array *temp = new array;
+			if (whichdim == OP_DIM2D)
+			{
+				double *d = new double[size];
+				for (int j = 0; j < size; j++)
+				{
+					d[j] = 0;
+				}
+				vars[var].type = T_ARRAY;
+				temp->data.fdata = d;
+				temp->size = size;
+				temp->xdim = xdim;
+				temp->ydim = ydim;
+				vars[var].value.arr = temp;
+			}
+			else
+			{
+				char **c = new char*[size];
+				for (int j = 0; j < size; j++)
+				{
+					c[j] = strdup("");
+				}
+				vars[var].type = T_STRARRAY;
+				temp->data.sdata = c;
+				temp->xdim = xdim;
+				temp->ydim = ydim;
 				vars[var].value.arr = temp;
 			}
 
@@ -1048,6 +1115,53 @@ Interpreter::execByteCode()
 			}
 
 			strarray = vars[*i].value.arr->data.sdata;
+			if (strarray[index])
+			{
+				delete(strarray[index]);
+			}
+			strarray[index] = val;
+
+			if(debugMode)
+			{
+				emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+			}
+		}
+		break;
+
+	case OP_STRARRAYASSIGN2D:
+		{
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+
+			char *val = stack.popstring(); // dont free - assigning to a string variable
+			int yindex = stack.popint();
+			int xindex = stack.popint();
+			int index;
+
+			char **strarray;
+
+			if (vars[*i].type == T_UNUSED)
+			{
+				printError(tr("Unknown variable"));
+				return -1;
+			}
+			else if (vars[*i].type != T_STRARRAY)
+			{
+				printError(tr("Not a string array variable"));
+				return -1;
+			}
+			else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
+				yindex >= vars[*i].value.arr->ydim || yindex < 0)
+			{
+				printError(tr("Array index out of bounds"));
+				return -1;
+			}
+
+			strarray = vars[*i].value.arr->data.sdata;
+
+			index = xindex * vars[*i].value.arr->ydim + yindex;
+
 			if (strarray[index])
 			{
 				delete(strarray[index]);
@@ -1137,6 +1251,46 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_ARRAYASSIGN2D:
+		{
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+
+			double val = stack.popfloat();
+			int yindex = stack.popint();
+			int xindex = stack.popint();
+			int index;
+			
+			double *array;
+
+			if (vars[*i].type == T_UNUSED)
+			{
+				printError(tr("Unknown variable"));
+				return -1;
+			}
+			else if (vars[*i].type != T_ARRAY)
+			{
+				printError(tr("Not an array variable"));
+				return -1;
+			}
+			else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
+				yindex >= vars[*i].value.arr->ydim || yindex < 0)
+			{
+				printError(tr("Array index out of bounds"));
+				return -1;
+			}
+
+			array = vars[*i].value.arr->data.fdata;
+			index = xindex * vars[*i].value.arr->ydim + yindex;
+			array[index] = val;
+			if(debugMode)
+			{
+				emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+			}
+		}
+		break;
+
 
 	case OP_ARRAYLISTASSIGN:
 		{
@@ -1188,13 +1342,47 @@ Interpreter::execByteCode()
 			{
 				printError(tr("Cannot access non-array variable"));
 				return -1;
-			}
-
-			if (index >= vars[*i].value.arr->size || index < 0)
+			} else if (index >= vars[*i].value.arr->size || index < 0)
 			{
 				printError(tr("Array index out of bounds"));
 				return -1;
 			}
+
+			if (vars[*i].type == T_ARRAY)
+			{
+				double *array = vars[*i].value.arr->data.fdata;
+				stack.push(array[index]);
+			}
+			else
+			{
+				char **array = vars[*i].value.arr->data.sdata;
+				stack.push(array[index]);
+			}
+		}
+		break;
+
+	case OP_DEREF2D:
+		{
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			int yindex = stack.popint();
+			int xindex = stack.popint();
+			int index;
+
+			if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
+			{
+				printError(tr("Cannot access non-array variable"));
+				return -1;
+			} else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
+				yindex >= vars[*i].value.arr->ydim || yindex < 0)
+			{
+				printError(tr("Array index out of bounds"));
+				return -1;
+			}
+
+			index = xindex * vars[*i].value.arr->ydim + yindex;
+
 			if (vars[*i].type == T_ARRAY)
 			{
 				double *array = vars[*i].value.arr->data.fdata;
