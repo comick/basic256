@@ -1534,7 +1534,7 @@ Interpreter::execByteCode()
 
 			if ((pos < 1) || (len < 0))
 			{
-				printError(tr("Illegal argument to mid()"));
+				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
@@ -1569,7 +1569,7 @@ Interpreter::execByteCode()
 
 			if (len < 0)
 			{
-				printError(tr("Illegal argument to mid()"));
+				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
@@ -1597,7 +1597,7 @@ Interpreter::execByteCode()
 
 			if (len < 0)
 			{
-				printError(tr("Illegal argument to mid()"));
+				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
@@ -1618,6 +1618,36 @@ Interpreter::execByteCode()
 		}
 		break;
 
+
+	case OP_UPPER:
+		{
+			op++;
+			char *temp = stack.popstring();
+
+                        for(unsigned int p=0;p<strlen(temp);p++) {
+				if(isalpha(temp[p])) temp[p] = toupper(temp[p]);
+			}
+
+			stack.push(temp);
+
+			free(temp);
+		}
+		break;
+
+	case OP_LOWER:
+		{
+			op++;
+			char *temp = stack.popstring();
+
+                        for(unsigned int p=0;p<strlen(temp);p++) {
+				if(isalpha(temp[p])) temp[p] = tolower(temp[p]);
+			}
+
+			stack.push(temp);
+
+			free(temp);
+		}
+		break;
 
 	case OP_ASC:
 		{

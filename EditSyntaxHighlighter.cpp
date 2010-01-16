@@ -79,6 +79,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Rr][Ee][Tt][Uu][Rr][Nn]\\b"	        			// return
 		  << "\\b[Ii][Ff]\\b"							// if
 		  << "\\b[Tt][Hh][Ee][Nn]\\b"						// then
+		  << "\\b[Ee][Ll][Ss][Ee]\\b"						// then
 		  << "\\b[Ee][Nn][Dd][Ii][Ff]\\b"					// endif
 		  << "\\b[Dd][Oo]\\b"							// do
 		  << "\\b[Uu][Nn][Tt][Ii][Ll]\\b"					// until
@@ -114,6 +115,10 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ss][Tt][Rr][Ii][Nn][Gg]\\b"					// tostring
 		  << "\\b[Ll][Ee][Nn][Gg][Tt][Hh]\\b"					// length
 		  << "\\b[Mm][Ii][Dd]\\b"						// mid
+		  << "\\b[Ll][Ee][Ff][Tt]\\b"						// left
+		  << "\\b[Rr][Ii][Gg][Hh][Tt]\\b"					// right
+		  << "\\b[Uu][Pp][Pp][Ee][Rr]\\b"					// upper
+		  << "\\b[Ll][Oo][Ww][Ee][Rr]\\b"					// lower
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"					// instr
 		  << "\\b[Cc][Ee][Ii][Ll]\\b"						// ceil
 		  << "\\b[Ff][Ll][Oo][Oo][Rr]\\b"					// floor
@@ -140,8 +145,6 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Mm][Ii][Nn][Uu][Tt][Ee]\\b"					// minute
 		  << "\\b[Ss][Ee][Cc][Oo][Nn][Dd]\\b"					// second
 		  << "\\b[Ww][Aa][Vv][Pp][Ll][Aa][Yy]\\b"				// wavplay
-		  << "\\b[Ll][Ee][Ff][Tt]\\b"						// left
-		  << "\\b[Rr][Ii][Gg][Hh][Tt]\\b"					// right
 		  << "\\b[Ss][Ee][Ee][Kk]\\b"						// seek
 		  << "\\b[Ss][Ii][Zz][Ee]\\b"						// size
 		  << "\\b[Ee][Xx][Ii][Ss][Tt][Ss]\\b"					// exists

@@ -248,7 +248,7 @@
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
 %token DIM NOP
-%token TOINT TOSTRING LENGTH MID LEFT RIGHT INSTR
+%token TOINT TOSTRING LENGTH MID LEFT RIGHT UPPER LOWER INSTR
 %token CEIL FLOOR RAND SIN COS TAN ABS PI
 %token AND OR XOR NOT
 %token PAUSE SOUND
@@ -799,6 +799,8 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
 	    }
           | CHR '(' floatexpr ')' { addOp(OP_CHR); }
           | TOSTRING '(' floatexpr ')' { addOp(OP_STRING); }
+          | UPPER '(' stringexpr ')' { addOp(OP_UPPER); }
+          | LOWER '(' stringexpr ')' { addOp(OP_LOWER); }
           | MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
           | LEFT '(' stringexpr ',' floatexpr ')' { addOp(OP_LEFT); }
           | RIGHT '(' stringexpr ',' floatexpr ')' { addOp(OP_RIGHT); }

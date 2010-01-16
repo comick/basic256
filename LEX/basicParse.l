@@ -124,6 +124,8 @@ length  [Ll][Ee][Nn][Gg][Tt][Hh]
 mid     [Mm][Ii][Dd]
 left    [Ll][Ee][Ff][Tt]
 right   [Rr][Ii][Gg][Hh][Tt]
+upper	[Uu][Pp][Pp][Ee][Rr]
+lower	[Ll][Oo][Ww][Ee][Rr]
 instr   [Ii][Nn][Ss][Tt][Rr]
 ceil    [Cc][Ee][Ii][Ll]
 floor   [Ff][Ll][Oo][Oo][Rr]
@@ -208,6 +210,8 @@ clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 {mid}           { count(); return MID; }
 {left}          { count(); return LEFT; }
 {right}         { count(); return RIGHT; }
+{upper}         { count(); return UPPER; }
+{lower}         { count(); return LOWER; }
 {instr}         { count(); return INSTR; }
 {ceil}          { count(); return CEIL; }
 {floor}         { count(); return FLOOR; }

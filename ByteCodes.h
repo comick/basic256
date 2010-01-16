@@ -150,12 +150,14 @@
 #define OP_CLICKB		0xb1
 #define OP_LEFT			0xb2
 #define OP_RIGHT		0xb3
+#define OP_UPPER		0xb4
+#define OP_LOWER		0xb5
 
-#define OP_DIM2D          	0xb4
-#define OP_DIMSTR2D        	0xb5
-#define OP_ARRAYASSIGN2D   	0xb6
-#define OP_STRARRAYASSIGN2D	0xb7
-#define OP_DEREF2D		0xb8
+#define OP_DIM2D          	0xb6
+#define OP_DIMSTR2D        	0xb7
+#define OP_ARRAYASSIGN2D   	0xb8
+#define OP_STRARRAYASSIGN2D	0xb9
+#define OP_DEREF2D		0xba
 
 
 // stack manipulation
