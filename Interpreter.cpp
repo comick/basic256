@@ -1971,9 +1971,9 @@ Interpreter::execByteCode()
 	case OP_SOUND:
 		{
 			op++;
-			int oneval = stack.popint();
-			int twoval = stack.popint();
-			emit(soundReady(oneval, twoval));
+			int duration = stack.popint();
+			int frequency = stack.popint();
+			emit(soundReady(frequency, duration));
 		}
 		break;
 

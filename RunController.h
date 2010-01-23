@@ -22,6 +22,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QStatusBar>
+
 #include "BasicEdit.h"
 #include "BasicOutput.h"
 #include "BasicGraph.h"
@@ -69,6 +70,7 @@ class RunController : public QObject
   run_status oldStatus;
   QString bytefilename;
   MainWindow *mainwin;
+
 };
 
 

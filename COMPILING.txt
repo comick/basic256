@@ -1,5 +1,5 @@
 
-To compile, you'll need the open source version of QT4, GNU flex and bison, and the mingw c++ compiler for Win32 or GCC on Unix. 
+To compile, you'll need the open source version of QT4, GNU flex and bison, espeak development libraries (for *nix), and the mingw c++ compiler for Win32 or GCC on Unix. 
 
 open a command window (cmd)
 

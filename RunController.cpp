@@ -26,10 +26,20 @@ using namespace std;
 #include <QSound>
 #include <QApplication>
 
+
+
 #include "RunController.h"
 
 #ifdef WIN32
-#include <windows.h>  
+	#include <windows.h> 
+#else
+	#include <speak_lib.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <fcntl.h>
+	#include <sys/ioctl.h>
+	#include <math.h>
+	#include <linux/soundcard.h>
 #endif
 
 QMutex mutex;
@@ -79,24 +89,68 @@ void
 RunController::playSound(int frequency, int duration)
 {
 #ifdef WIN32
-	Beep(duration, frequency);
+	Beep(frequency, duration);
 #else
-	//*nix variants should calculate a sine wave and write it to /dev/dsp
+	// Code based on idea from TONEGEN - Plays a sine wave via the dsp or standard out.
+	// Copyright (C) 2000 Timothy Pozar pozar@lns.com
+ 
+	int stereo = 0;		// mono (stereo - false)
+	int rate = 44100;
+	int devfh;
+	int i, test;
+	unsigned short int *p;
+
+	// lets build one cycle from zero back to zero in buffer p
+	// nwords = length of p
+	int nwords = rate / frequency;
+ 	p = (unsigned short int *) malloc(nwords * sizeof(unsigned short int));
+	for(i = 0; i < nwords; i++) {
+		p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x7fff;
+	}
+
+	int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
+
+	if ((devfh = open("/dev/dsp", O_RDWR)) != -1) {
+		// Set mono
+		test = stereo;
+		if(ioctl(devfh, SNDCTL_DSP_STEREO, &stereo) != -1) {
+			// set the sample rate
+			test = rate;
+			if(ioctl( devfh, SNDCTL_DSP_SPEED, &test) != -1) {
+				for (i=0; i<cyclesout; i++) {
+        				int outwords = write(devfh, p, nwords);
+				}
+			}
+		}
+		close(devfh);
+	}
 #endif
 }
+
 
 void
 RunController::speakWords(QString text)
 {
+#ifdef WIN32
 	// bad implementation - should use espeak library and call directly j.m.reneau (2009/10/26)
 	// espeak command_line folder needs to be added to system path
-#ifdef WIN32
+	int foo = text.remove(QChar('"'), Qt::CaseInsensitive);
 	QString command = QString("espeak \"") + text + QString("\"");
 	system(command.toLatin1());
 #else
-	//*nix variants should call espeak directly
-	QString command = QString("espeak \"") + text + QString("\"");
-	system(command.toLatin1());
+	//*nix variants call espeak library directly
+
+	char *data_path = NULL;   // use default path for espeak-data
+	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+
+	int samplerate = espeak_Initialize(AUDIO_OUTPUT_PLAYBACK,0,data_path,0);
+        if (samplerate!=-1) {
+		espeak_SetVoiceByName("default");
+		int size=text.length()+1;	// buffer length
+		espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+		espeak_Synchronize();		// wait to finish
+		espeak_Terminate();		// clean up
+	}
 #endif
 }
 

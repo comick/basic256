@@ -5,20 +5,22 @@
 TEMPLATE		=	app
 TARGET			=	BASIC256
 DEPENDPATH		+=	.
-INCLUDEPATH		+=	.
-CONFIG          +=  debug_and_release
+INCLUDEPATH		+=	/usr/include/espeak \
+				.
+LIBS			+=	-lespeak
+CONFIG          	+=  debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
 RESOURCES		+=	resources/resource.qrc
-RC_FILE         =   resources/basic256.rc
-TRANSLATIONS	=	Translations/basic256_en_US.ts \
-		        Translations/basic256_de.ts \
-		        Translations/basic256_ru_RU.ts \
-		        Translations/basic256_sp.ts \
-		        Translations/basic256_nl.ts
+RC_FILE         	=   resources/basic256.rc
+TRANSLATIONS		=	Translations/basic256_en_US.ts \
+		        	Translations/basic256_de.ts \
+		        	Translations/basic256_ru_RU.ts \
+		        	Translations/basic256_sp.ts \
+		        	Translations/basic256_nl.ts
 
 win32 {
-DEFINES += WIN32
+	DEFINES += WIN32
 }
 
 exists( ./LEX/Makefile ) {
