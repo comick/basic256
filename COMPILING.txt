@@ -1,26 +1,36 @@
 
-To compile, you'll need the open source version of QT4, GNU flex and bison, espeak development libraries (for *nix), and the mingw c++ compiler for Win32 or GCC on Unix. 
+To compile, you'll need the open source version of QT4, GNU flex and bison.
+Specifcally for LINUX you will need:
+* espeak development libraries
+* g++ compiler and base development libraries
 
-open a command window (cmd)
+Specifically for Windows you will need:
+* mingw c++ compiler for Win32
+* gtk win32 bundle headers and libraries from http://www.gtk.org/download-windows.html
+* the gretl development headers need to be added to mingw they are in a file called mingw-extra.zip
+  and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
 
-type "make clean" and hit enter
-type "qmake" and hit enter
-type "make" and hit enter 
+Build:
 
-You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
+  open a command window (cmd)
+  type "make clean" and hit enter
+  type "qmake" and hit enter
+  type "make" and hit enter 
+  
+  You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
 
-Release Build:
-To build a nice WIN32 installer use the nullsoft scriptable install system file
-2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
-
-You must also copy the QtCore4.dll, QtGui4.dll and mingwm10.dll to the release
-folder before testing the build or running the installer script.  Under QT 4.5.3
-be sure to use the dlls from C:\Qt\2009.04\qt\bin and not the ones from C:\Qt\2009.04\bin.
-
-make clean
-qmake -config release
-make release
-
-then run the NSIS script
+Release Build (Windows):
+  To build a nice WIN32 installer use the nullsoft scriptable install system file
+  2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
+  
+  You must also copy the QtCore4.dll, QtGui4.dll and mingwm10.dll to the release
+  folder before testing the build or running the installer script.  Under QT 4.5.3
+  be sure to use the dlls from C:\Qt\2009.04\qt\bin and not the ones from C:\Qt\2009.04\bin. 
+  
+  make clean
+  qmake -config release
+  make release 
+  
+  then run the NSIS script
 
 

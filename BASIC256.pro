@@ -5,22 +5,29 @@
 TEMPLATE		=	app
 TARGET			=	BASIC256
 DEPENDPATH		+=	.
-INCLUDEPATH		+=	/usr/include/espeak \
-				.
-LIBS			+=	-lespeak
+INCLUDEPATH		+=	.
 CONFIG          	+=  debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
 RESOURCES		+=	resources/resource.qrc
-RC_FILE         	=   resources/basic256.rc
-TRANSLATIONS		=	Translations/basic256_en_US.ts \
+RC_FILE         =   resources/basic256.rc
+TRANSLATIONS	=	Translations/basic256_en_US.ts \
 		        	Translations/basic256_de.ts \
 		        	Translations/basic256_ru_RU.ts \
 		        	Translations/basic256_sp.ts \
 		        	Translations/basic256_nl.ts
 
 win32 {
-	DEFINES += WIN32
+	# use SAPI for speech
+	DEFINES 		+= WIN32
+	LIBS			+= -lole32 \
+					-lsapi \
+					-lwinmm \
+					-lm
+} else {
+	## for linux compilation include the espeak library
+	INCLUDEPATH		+=	/usr/include/espeak
+	LIBS			+=	-lespeak
 }
 
 exists( ./LEX/Makefile ) {
@@ -46,6 +53,7 @@ HEADERS			+=	ToolBar.h
 HEADERS			+=	ViewWidgetIFace.h
 HEADERS			+=	MainWindow.h
 HEADERS			+=	VariableWin.h
+HEADERS			+=	Version.h
 HEADERS			+=	EditSyntaxHighlighter.h
 
 SOURCES 		+= 	LEX/lex.yy.c 

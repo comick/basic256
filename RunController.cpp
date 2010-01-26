@@ -32,6 +32,13 @@ using namespace std;
 
 #ifdef WIN32
 	#include <windows.h> 
+	#include <servprov.h>
+	#include <sapi.h>
+	#include <string>
+	#include <iostream>
+	#include <cstdlib>
+	#include <mmsystem.h>
+	#include <math.h>
 #else
 	#include <speak_lib.h>
 	#include <stdio.h>
@@ -89,13 +96,66 @@ void
 RunController::playSound(int frequency, int duration)
 {
 #ifdef WIN32
-	Beep(frequency, duration);
+	
+	// code uses Microsoft's waveOut process to create a wave on the default sound card
+	// if soundcard is unopenable then use the system speaker
+	unsigned long errorcode;
+	HWAVEOUT      outHandle;
+	WAVEFORMATEX  waveFormat;
+	
+	// Initialize the WAVEFORMATEX for 8-bit, 8KHz, mono
+	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+	waveFormat.nChannels = 1;
+	waveFormat.nSamplesPerSec = 8000;
+	waveFormat.wBitsPerSample = 8;
+	waveFormat.nBlockAlign = waveFormat.nChannels * (waveFormat.wBitsPerSample/8);
+	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+	waveFormat.cbSize = 0;
+
+	// Open the preferred Digital Audio Out device
+	errorcode = waveOutOpen(&outHandle, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL);
+	if (!errorcode) {
+	
+		// lets build one cycle from zero back to zero in buffer p
+		// nwords = length of p
+		int nwords = waveFormat.nSamplesPerSec / frequency;
+		char * p = (char *) malloc(nwords * sizeof(char));
+		for(int i = 0; i < nwords; i++) {
+			p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x5f;
+		}
+
+		int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
+
+		// create block header with sound data, length and repeat instructions
+		WAVEHDR header;
+		ZeroMemory(&header, sizeof(WAVEHDR));
+		header.dwBufferLength = nwords;
+		header.lpData = p;
+		header.dwLoops = cyclesout;
+		header.dwFlags = WHDR_BEGINLOOP | WHDR_ENDLOOP;
+		// get block ready for playback
+		errorcode = waveOutPrepareHeader(outHandle, &header, sizeof(WAVEHDR));
+		if (!errorcode) {
+			// write block now that it is ready
+			errorcode = waveOutWrite(outHandle, &header, sizeof(WAVEHDR));
+			if (!errorcode) {
+				// wait til block reperts done
+				while(!(header.dwFlags&WHDR_DONE)) {	
+					Sleep(10);
+				}
+			}
+		}
+	} else {
+		// system speaker
+		Beep(frequency, duration);
+	}
+	
 #else
-	// Code based on idea from TONEGEN - Plays a sine wave via the dsp or standard out.
-	// Copyright (C) 2000 Timothy Pozar pozar@lns.com
+	// Code loosely based on idea from TONEGEN by Timothy Pozar
+	// - Plays a sine wave via the dsp or standard out.
  
 	int stereo = 0;		// mono (stereo - false)
-	int rate = 44100;
+	int rate = 8000;
 	int devfh;
 	int i, test;
 	unsigned short int *p;
@@ -105,7 +165,7 @@ RunController::playSound(int frequency, int duration)
 	int nwords = rate / frequency;
  	p = (unsigned short int *) malloc(nwords * sizeof(unsigned short int));
 	for(i = 0; i < nwords; i++) {
-		p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x7fff;
+		p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x5fff;
 	}
 
 	int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
@@ -132,11 +192,28 @@ void
 RunController::speakWords(QString text)
 {
 #ifdef WIN32
-	// bad implementation - should use espeak library and call directly j.m.reneau (2009/10/26)
-	// espeak command_line folder needs to be added to system path
-	int foo = text.remove(QChar('"'), Qt::CaseInsensitive);
-	QString command = QString("espeak \"") + text + QString("\"");
-	system(command.toLatin1());
+
+	// use microsoft sapi with the default voice
+	ISpVoice * pVoice = NULL;
+
+    if (FAILED(::CoInitialize(NULL))) return;
+
+    HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
+    if( SUCCEEDED( hr ) )
+    {
+		// convert qchar* wo wchar*
+		WCHAR *wutext = new WCHAR[text.length() + 1];
+		for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
+		wutext[text.length()] = 0;
+		
+        hr = pVoice->Speak(wutext, 0, NULL);
+        pVoice->Release();
+        pVoice = NULL;
+		
+		delete wutext;	// send to gc - just in case
+    }
+
+    ::CoUninitialize();
 #else
 	//*nix variants call espeak library directly
 
