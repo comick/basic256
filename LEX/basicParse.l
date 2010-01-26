@@ -177,6 +177,7 @@ clickclear [Cc][Ll][Ii][Cc][Kk][Cc][Ll][Ee][Aa][Rr]
 clickx [Cc][Ll][Ii][Cc][Kk][Xx]
 clicky [Cc][Ll][Ii][Cc][Kk][Yy]
 clickb [Cc][Ll][Ii][Cc][Kk][Bb]
+system [Ss][Yy][Ss][Tt][Ee][Mm]
 %%
 
 
@@ -313,6 +314,7 @@ clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 {clickx}       { count(); return CLICKX; }
 {clicky}       { count(); return CLICKY; }
 {clickb}       { count(); return CLICKB; }
+{system}       { count(); return SYSTEM; }
 {rem}           { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }

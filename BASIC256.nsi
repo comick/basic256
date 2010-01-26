@@ -6,6 +6,7 @@
 !include nsDialogs.nsh
 
 Var VERSION
+Var VERSIONDATE
 var customDialog
 var customLabel0
 var customLabel1
@@ -13,7 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.5 (2010-01-07)"
+  StrCpy $VERSION "0.9.5h"
+  StrCpy $VERSIONDATE "2010-01-26"
 FunctionEnd
 
 Function customPage
@@ -29,7 +31,7 @@ Function customPage
 	Pop $customImage
 	${NSD_SetImage} $customImage resources\images\basic256.bmp $customImageHandle
 
-	${NSD_CreateLabel} 50 0 80% 10% "BASIC256 $VERSION"
+	${NSD_CreateLabel} 50 0 80% 10% "BASIC256 $VERSION ($VERSIONDATE)"
 	Pop $customLabel0
 	${NSD_CreateLabel} 0 50 100% 80% "This installer will load BASIC256.  Pervious versions will be overwritten and any saved files will be preserved."
 	Pop $customLabel1
@@ -39,10 +41,10 @@ FunctionEnd
 
 
 ; The name of the installer
-Name "BASIC256 $VERSION"
+Name "BASIC256 $VERSION ($VERSIONDATE)"
 
 ; The file to write
-OutFile "BASIC256_Win32_Install.exe"
+OutFile "BASIC256-_Win32_Install.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\BASIC256

@@ -254,7 +254,7 @@
 %token PAUSE SOUND
 %token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
-%token SAY
+%token SAY SYSTEM
 %token GRAPHWIDTH GRAPHHEIGHT
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
@@ -471,6 +471,7 @@ statement: gotostmt
          | textstmt
 	 | fontstmt
 	 | saystmt
+	 | systemstmt
 	 | wavplaystmt
 	 | wavstopstmt
 	 	| seekstmt
@@ -594,10 +595,15 @@ textstmt: TEXT floatexpr ',' floatexpr ',' stringexpr { addOp(OP_TEXT); }
 fontstmt: FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
           | FONT '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_FONT); }
 ;
+
 saystmt: SAY stringexpr { addOp(OP_SAY); }
          | SAY '(' stringexpr ')' { addOp(OP_SAY); }
          | SAY floatexpr  { addOp(OP_SAY); }
          | SAY '(' floatexpr ')' { addOp(OP_SAY); }
+;
+
+systemstmt: SYSTEM stringexpr { addOp(OP_SYSTEM); }
+         | SYSTEM '(' stringexpr ')' { addOp(OP_SYSTEM); }
 ;
 
 polystmt: POLY VARIABLE { addIntOp(OP_POLY, $2); }

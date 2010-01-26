@@ -1989,6 +1989,18 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_SYSTEM:
+		{
+			op++;
+			char *temp = stack.popstring();
+			//mutex.lock();
+			emit(system(temp));
+			//waitCond.wait(&mutex);
+			//mutex.unlock();
+			free(temp);
+		}
+		break;
+
 	case OP_WAVPLAY:
 		{
 			op++;

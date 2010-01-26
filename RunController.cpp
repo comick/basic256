@@ -231,12 +231,21 @@ RunController::speakWords(QString text)
 #endif
 }
 
+
+void
+RunController::system(char* text)
+{
+  system(text);
+}
+
+
 void RunController::playWAV(QString file)
 {
 	if(QSound::isAvailable()) {
 		wavsound.play(file);
 	}
 }
+
 
 void RunController::stopWAV()
 {

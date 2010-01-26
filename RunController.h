@@ -46,6 +46,7 @@ class RunController : public QObject
  public slots:
   void playSound(int, int);
   void speakWords(QString text);
+  void system(char* text);
   void playWAV(QString text);
   void stopWAV();
   void inputFilter(QString text);
