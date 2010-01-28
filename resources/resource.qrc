@@ -8,6 +8,9 @@
  		<file>images/step.png</file>
  		<file>images/stop.png</file>
  		<file>images/debug.png</file>
+ 		<file>images/cut.png</file>
+ 		<file>images/copy.png</file>
+ 		<file>images/paste.png</file>
  		<file>images/basic256.ico</file>
 	</qresource>
 </RCC>
