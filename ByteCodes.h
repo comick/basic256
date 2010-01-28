@@ -158,6 +158,7 @@
 #define OP_STRARRAYASSIGN2D	0xb9
 #define OP_DEREF2D		0xba
 #define OP_SYSTEM		0xbb
+#define OP_VOLUME		0xbc
 
 
 // stack manipulation

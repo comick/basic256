@@ -40,7 +40,16 @@ using namespace std;
 	#include <mmsystem.h>
 	#include <math.h>
 #else
-	#include <speak_lib.h>
+	#if LINUX_ESPEAK
+		#include <speak_lib.h>
+	#endif
+	#if LINUX_FLITE
+		#include <flite.h>
+		extern "C"
+		{
+			cst_voice* register_cmu_us_kal();
+		}
+	#endif
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <fcntl.h>
@@ -67,6 +76,8 @@ RunController::RunController(MainWindow *mw)
 	goutput = mainwin->goutput;
 	statusbar = mainwin->statusBar();
 
+	soundVolume = 5;	// set default sound volume to 1/2
+
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
 	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
 	QObject::connect(i, SIGNAL(resizeGraph(int, int)), this, SLOT(goutputResize(int, int)));
@@ -83,6 +94,8 @@ RunController::RunController(MainWindow *mw)
 
 	QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
+	QObject::connect(i, SIGNAL(setVolume(int)), this, SLOT(setVolume(int)));
+	QObject::connect(i, SIGNAL(system(char*)), this, SLOT(system(char*)));
 	QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
@@ -121,7 +134,7 @@ RunController::playSound(int frequency, int duration)
 		int nwords = waveFormat.nSamplesPerSec / frequency;
 		char * p = (char *) malloc(nwords * sizeof(char));
 		for(int i = 0; i < nwords; i++) {
-			p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x5f;
+			p[i] = (sin(2 * M_PI * i / nwords) + 1) * soundVolume * 0x7f / 10;
 		}
 
 		int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
@@ -158,19 +171,19 @@ RunController::playSound(int frequency, int duration)
 	int rate = 8000;
 	int devfh;
 	int i, test;
-	unsigned short int *p;
+	unsigned char *p;
 
 	// lets build one cycle from zero back to zero in buffer p
 	// nwords = length of p
 	int nwords = rate / frequency;
- 	p = (unsigned short int *) malloc(nwords * sizeof(unsigned short int));
+ 	p = (unsigned char *) malloc(nwords * sizeof(unsigned char));
 	for(i = 0; i < nwords; i++) {
-		p[i] = (sin(2 * M_PI * i / nwords) + 1) * 0x5fff;
+		p[i] = (sin(2 * M_PI * i / nwords) + 1) * soundVolume * 0x7f / 10;
 	}
 
 	int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
 
-	if ((devfh = open("/dev/dsp", O_RDWR)) != -1) {
+	if ((devfh = open("/dev/dsp", O_WRONLY|O_SYNC)) != -1) {
 		// Set mono
 		test = stereo;
 		if(ioctl(devfh, SNDCTL_DSP_STEREO, &stereo) != -1) {
@@ -215,29 +228,42 @@ RunController::speakWords(QString text)
 
     ::CoUninitialize();
 #else
-	//*nix variants call espeak library directly
+	#ifdef LINUX_ESPEAK
+		// espeak tts library
+		char *data_path = NULL;   // use default path for espeak-data
+		int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
-	char *data_path = NULL;   // use default path for espeak-data
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
-
-	int samplerate = espeak_Initialize(AUDIO_OUTPUT_PLAYBACK,0,data_path,0);
-        if (samplerate!=-1) {
-		espeak_SetVoiceByName("default");
-		int size=text.length()+1;	// buffer length
-		espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-		espeak_Synchronize();		// wait to finish
-		espeak_Terminate();		// clean up
-	}
+		int samplerate = espeak_Initialize(AUDIO_OUTPUT_PLAYBACK,0,data_path,0);
+        	if (samplerate!=-1) {
+			espeak_SetVoiceByName("default");
+			int size=text.length()+1;	// buffer length
+			espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+			espeak_Synchronize();		// wait to finish
+			espeak_Terminate();		// clean up
+		}
+	#endif
+	#if LINUX_FLITE
+		// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
+		cst_voice *v;
+		flite_init();
+		v = register_cmu_us_kal();
+		flite_text_to_speech(text.toLatin1(),v,"play");
+	#endif
 #endif
 }
 
+void
+RunController::setVolume(int volume)
+{
+  // volume MUST be betwen 0(mute) and 10(all the way)
+  soundVolume = volume;
+}
 
 void
 RunController::system(char* text)
 {
   system(text);
 }
-
 
 void RunController::playWAV(QString file)
 {

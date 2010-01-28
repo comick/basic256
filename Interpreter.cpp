@@ -512,7 +512,7 @@ Interpreter::stop()
 void
 Interpreter::run()
 {
-	while (status != R_STOPPED && execByteCode() >= 0); //continue
+	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
 	emit(runFinished());
 }
@@ -1974,6 +1974,17 @@ Interpreter::execByteCode()
 			int duration = stack.popint();
 			int frequency = stack.popint();
 			emit(soundReady(frequency, duration));
+		}
+		break;
+
+	case OP_VOLUME:
+		{
+			// set the wave output height (volume 0-10)
+			op++;
+			int volume = stack.popint();
+			if (volume<0) volume = 0;
+			if (volume>10) volume = 10;
+			emit(setVolume(volume));
 		}
 		break;
 

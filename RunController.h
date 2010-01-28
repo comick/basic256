@@ -45,9 +45,10 @@ class RunController : public QObject
 
  public slots:
   void playSound(int, int);
-  void speakWords(QString text);
-  void system(char* text);
-  void playWAV(QString text);
+  void speakWords(QString);
+  void setVolume(int);
+  void system(char*);
+  void playWAV(QString);
   void stopWAV();
   void inputFilter(QString text);
   void outputFilter(QString text);
@@ -71,6 +72,8 @@ class RunController : public QObject
   run_status oldStatus;
   QString bytefilename;
   MainWindow *mainwin;
+  int soundVolume;
+
 
 };
 

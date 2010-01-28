@@ -255,6 +255,7 @@
 %token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
 %token SAY SYSTEM
+%token VOLUME
 %token GRAPHWIDTH GRAPHHEIGHT
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
@@ -472,14 +473,15 @@ statement: gotostmt
 	 | fontstmt
 	 | saystmt
 	 | systemstmt
+	 | volumestmt
 	 | wavplaystmt
 	 | wavstopstmt
 	 	| seekstmt
 	 	| clickclearstmt
 ;
 
-dimstmt: DIM VARIABLE '(' floatexpr ')'  { addIntOp(OP_DIM, $2); }
-       | DIM STRINGVAR '(' floatexpr ')' { addIntOp(OP_DIMSTR, $2); }
+dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_DIM, $2); }		// parens added by single floatexpr
+       | DIM STRINGVAR floatexpr { addIntOp(OP_DIMSTR, $2); }		// parens added by single floatexpr
        | DIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM2D, $2); }
        | DIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR2D, $2); }
 ;
@@ -598,12 +600,14 @@ fontstmt: FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
 
 saystmt: SAY stringexpr { addOp(OP_SAY); }
          | SAY '(' stringexpr ')' { addOp(OP_SAY); }
-         | SAY floatexpr  { addOp(OP_SAY); }
-         | SAY '(' floatexpr ')' { addOp(OP_SAY); }
+         | SAY floatexpr  { addOp(OP_SAY); } 		// parens added by single floatexpr
 ;
 
 systemstmt: SYSTEM stringexpr { addOp(OP_SYSTEM); }
          | SYSTEM '(' stringexpr ')' { addOp(OP_SYSTEM); }
+;
+
+volumestmt: VOLUME floatexpr { addOp(OP_VOLUME); } 		// parens added by single floatexpr
 ;
 
 polystmt: POLY VARIABLE { addIntOp(OP_POLY, $2); }
@@ -675,8 +679,7 @@ wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
          | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
 
-seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  }
-         | SEEK '(' floatexpr ')' { addOp(OP_SEEK); }
+seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  } 		// parens added by single floatexpr
 ;
 
 clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
