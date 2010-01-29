@@ -1973,9 +1973,60 @@ Interpreter::execByteCode()
 			op++;
 			int duration = stack.popint();
 			int frequency = stack.popint();
-			emit(soundReady(frequency, duration));
+			int* freqdur;
+			freqdur = (int*) malloc(1 * sizeof(int));
+			freqdur[0] = frequency;
+			freqdur[1] = duration;
+			emit(playSounds(1 , freqdur));
 		}
 		break;
+		
+	case OP_SOUND_ARRAY:
+		{
+			// play an array of sounds
+
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			if (vars[*i].type == T_ARRAY)
+			{
+				int length = vars[*i].value.arr->size;
+				double *array = vars[*i].value.arr->data.fdata;
+				
+				int* freqdur;
+				freqdur = (int*) malloc(length * sizeof(int));
+				
+				for (int j = 0; j < length; j++)
+				{
+					freqdur[j] = array[j];
+				}
+				
+				emit(playSounds(length / 2 , freqdur));
+
+			} 
+		}
+		break;
+
+	case OP_SOUND_LIST:
+		{
+			// play an immediate list of sounds
+			op++;
+			int *i = (int *) op;
+			int length = *i;
+			op += sizeof(int);
+			
+			int* freqdur;
+			freqdur = (int*) malloc(length * sizeof(int));
+			
+			for (int j = length-1; j >=0; j--)
+			{
+				freqdur[j] = stack.popint();
+			}
+			emit(playSounds(length / 2 , freqdur));
+		}
+		break;
+		
 
 	case OP_VOLUME:
 		{

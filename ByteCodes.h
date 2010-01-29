@@ -159,6 +159,8 @@
 #define OP_DEREF2D		0xba
 #define OP_SYSTEM		0xbb
 #define OP_VOLUME		0xbc
+#define OP_SOUND_ARRAY		0xbd
+#define OP_SOUND_LIST		0xbe
 
 
 // stack manipulation

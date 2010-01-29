@@ -567,7 +567,10 @@ colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
          | SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SETCOLORRGB); }
 ;
 
-soundstmt: SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
+soundstmt: SOUND VARIABLE { addIntOp(OP_SOUND_ARRAY, $2); }
+         | SOUND '(' VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
+         | SOUND immediatelist { addIntOp(OP_SOUND_LIST, listlen); listlen=0; }
+		 | SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
          | SOUND floatexpr ',' floatexpr         { addOp(OP_SOUND); }
 ;
 

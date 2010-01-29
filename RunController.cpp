@@ -96,7 +96,7 @@ RunController::RunController(MainWindow *mw)
 
 	QObject::connect(i, SIGNAL(setVolume(int)), this, SLOT(setVolume(int)));
 	QObject::connect(i, SIGNAL(system(char*)), this, SLOT(system(char*)));
-	QObject::connect(i, SIGNAL(soundReady(int, int)), this, SLOT(playSound(int, int)));
+	QObject::connect(i, SIGNAL(playSounds(int, int*)), this, SLOT(playSounds(int, int*)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
 	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
@@ -105,8 +105,10 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
 }
 
+// play a list of counds 0,2,4... = frequency & 1,3,5... = duration in ms
+// notes is arraylength/2 (number of notes)
 void
-RunController::playSound(int frequency, int duration)
+RunController::playSounds(int notes, int* freqdur)
 {
 #ifdef WIN32
 	
@@ -129,39 +131,44 @@ RunController::playSound(int frequency, int duration)
 	errorcode = waveOutOpen(&outHandle, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL);
 	if (!errorcode) {
 	
-		// lets build one cycle from zero back to zero in buffer p
-		// nwords = length of p
-		int nwords = waveFormat.nSamplesPerSec / frequency;
-		char * p = (char *) malloc(nwords * sizeof(char));
-		for(int i = 0; i < nwords; i++) {
-			p[i] = (sin(2 * M_PI * i / nwords) + 1) * soundVolume * 0x7f / 10;
+		double wave = 0;
+		int totaltime = 0;
+		for(int tnotes=0;tnotes<notes;tnotes++) {
+			totaltime += freqdur[tnotes*2+1];
 		}
-
-		int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
+		int totallength = waveFormat.nSamplesPerSec * totaltime / 1000;
+		char * p = (char *) malloc(totallength * sizeof(char));
+		
+		int pos = 0; // current position
+		
+		for(int tnotes=0;tnotes<notes;tnotes++) {
+			// lets build a sine wave
+			int length = waveFormat.nSamplesPerSec * freqdur[tnotes*2+1] / 1000;
+			double wavebit = 2 * M_PI / ((double) waveFormat.nSamplesPerSec / (double) freqdur[tnotes*2]);
+		
+			for(int i = 0; i < length; i++) {
+				p[pos++] = (sin(wave) + 1) * soundVolume * 0x7f / 10;
+				wave+=wavebit;
+			}
+		}
 
 		// create block header with sound data, length and repeat instructions
 		WAVEHDR header;
 		ZeroMemory(&header, sizeof(WAVEHDR));
-		header.dwBufferLength = nwords;
+		header.dwBufferLength = totallength;
 		header.lpData = p;
-		header.dwLoops = cyclesout;
-		header.dwFlags = WHDR_BEGINLOOP | WHDR_ENDLOOP;
+
 		// get block ready for playback
 		errorcode = waveOutPrepareHeader(outHandle, &header, sizeof(WAVEHDR));
 		if (!errorcode) {
 			// write block now that it is ready
 			errorcode = waveOutWrite(outHandle, &header, sizeof(WAVEHDR));
-			if (!errorcode) {
-				// wait til block reperts done
-				while(!(header.dwFlags&WHDR_DONE)) {	
-					Sleep(10);
-				}
-			}
 		}
-	} else {
-		// system speaker
-		Beep(frequency, duration);
-	}
+		//
+		while(waveOutClose(outHandle)==WAVERR_STILLPLAYING) {	
+			Sleep(10);
+		}
+	} 
 	
 #else
 	// Code loosely based on idea from TONEGEN by Timothy Pozar
@@ -173,15 +180,27 @@ RunController::playSound(int frequency, int duration)
 	int i, test;
 	unsigned char *p;
 
-	// lets build one cycle from zero back to zero in buffer p
-	// nwords = length of p
-	int nwords = rate / frequency;
- 	p = (unsigned char *) malloc(nwords * sizeof(unsigned char));
-	for(i = 0; i < nwords; i++) {
-		p[i] = (sin(2 * M_PI * i / nwords) + 1) * soundVolume * 0x7f / 10;
+	// lets build the output
+	double wave = 0;
+	int totaltime = 0;
+	for(int tnotes=0;tnotes<notes;tnotes++) {
+		totaltime += freqdur[tnotes*2+1];
 	}
-
-	int cyclesout = frequency * duration / 1000;	// number of complete cycles to output
+	int totallength = rate * totaltime / 1000;
+	char * p = (char *) malloc(totallength * sizeof(char));
+	
+	int pos = 0; // current position
+	
+	for(int tnotes=0;tnotes<notes;tnotes++) {
+		// lets build a sine wave
+		int length = waveFormat.nSamplesPerSec * freqdur[tnotes*2+1] / 1000;
+		double wavebit = 2 * M_PI / ((double) eate / (double) freqdur[tnotes*2]);
+	
+		for(int i = 0; i < length; i++) {
+			p[pos++] = (sin(wave) + 1) * soundVolume * 0x7f / 10;
+			wave+=wavebit;
+		}
+	}
 
 	if ((devfh = open("/dev/dsp", O_WRONLY|O_SYNC)) != -1) {
 		// Set mono
@@ -190,10 +209,7 @@ RunController::playSound(int frequency, int duration)
 			// set the sample rate
 			test = rate;
 			if(ioctl( devfh, SNDCTL_DSP_SPEED, &test) != -1) {
-				for (i=0; i<cyclesout; i++) {
-        				int outwords = write(devfh, p, nwords);
-				}
-			}
+   				int outwords = write(devfh, p, totallength);
 		}
 		close(devfh);
 	}

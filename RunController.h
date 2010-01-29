@@ -44,7 +44,7 @@ class RunController : public QObject
   void runResumed();
 
  public slots:
-  void playSound(int, int);
+ void playSounds(int, int*);
   void speakWords(QString);
   void setVolume(int);
   void system(char*);

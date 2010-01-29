@@ -139,7 +139,7 @@ class Interpreter : public QThread
   void inputNeeded();
   void clearText();
   void getKey();
-  void soundReady(int, int);
+  void playSounds(int, int*);
   void setVolume(int);
   void system(char*);
   void speakWords(QString);
