@@ -187,14 +187,14 @@ RunController::playSounds(int notes, int* freqdur)
 		totaltime += freqdur[tnotes*2+1];
 	}
 	int totallength = rate * totaltime / 1000;
-	char * p = (char *) malloc(totallength * sizeof(char));
+	p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
 	
 	int pos = 0; // current position
 	
 	for(int tnotes=0;tnotes<notes;tnotes++) {
 		// lets build a sine wave
-		int length = waveFormat.nSamplesPerSec * freqdur[tnotes*2+1] / 1000;
-		double wavebit = 2 * M_PI / ((double) eate / (double) freqdur[tnotes*2]);
+		int length = rate * freqdur[tnotes*2+1] / 1000;
+		double wavebit = 2 * M_PI / ((double) rate / (double) freqdur[tnotes*2]);
 	
 		for(int i = 0; i < length; i++) {
 			p[pos++] = (sin(wave) + 1) * soundVolume * 0x7f / 10;
@@ -210,6 +210,7 @@ RunController::playSounds(int notes, int* freqdur)
 			test = rate;
 			if(ioctl( devfh, SNDCTL_DSP_SPEED, &test) != -1) {
    				int outwords = write(devfh, p, totallength);
+			}
 		}
 		close(devfh);
 	}
