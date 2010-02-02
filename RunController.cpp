@@ -137,7 +137,7 @@ RunController::playSounds(int notes, int* freqdur)
 			totaltime += freqdur[tnotes*2+1];
 		}
 		int totallength = waveFormat.nSamplesPerSec * totaltime / 1000;
-		char * p = (char *) malloc(totallength * sizeof(char));
+		unsigned char * p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
 		
 		int pos = 0; // current position
 		
@@ -156,7 +156,7 @@ RunController::playSounds(int notes, int* freqdur)
 		WAVEHDR header;
 		ZeroMemory(&header, sizeof(WAVEHDR));
 		header.dwBufferLength = totallength;
-		header.lpData = p;
+		header.lpData = (CHAR*) p;
 
 		// get block ready for playback
 		errorcode = waveOutPrepareHeader(outHandle, &header, sizeof(WAVEHDR));
