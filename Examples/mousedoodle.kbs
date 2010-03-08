@@ -8,6 +8,10 @@ print "right and left button to erase"
 
 
 clg
+
+color white
+rect 0,0,graphwidth, graphheight
+
 loop:
 if mouseb = 1 then gosub blackline
 if mouseb = 2 then gosub randomline

@@ -242,7 +242,7 @@
 %}
 
 %token PRINT INPUT KEY 
-%token PLOT CIRCLE RECT POLY STAMP LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
+%token PIXEL RGB PLOT CIRCLE RECT POLY STAMP LINE FASTGRAPHICS GRAPHSIZE REFRESH CLS CLG
 %token IF THEN ELSE ENDIF WHILE ENDWHILE DO UNTIL FOR TO STEP NEXT 
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
@@ -262,7 +262,10 @@
 %token BOOLTRUE BOOLFALSE
 %token MOUSEX MOUSEY MOUSEB
 %token CLICKCLEAR CLICKX CLICKY CLICKB
-
+%token GETCOLOR
+%token CLEAR BLACK WHITE RED DARKRED GREEN DARKGREEN BLUE DARKBLUE
+%token CYAN DARKCYAN PURPLE DARKPURPLE YELLOW DARKYELLOW
+%token ORANGE DARKORANGE GREY DARKGREY
 
 %union 
 {
@@ -561,10 +564,10 @@ gosubstmt: GOSUB VARIABLE   { addIntOp(OP_GOSUB, $2); }
 returnstmt: RETURN          { addOp(OP_RETURN); }
 ;
 
-colorstmt: SETCOLOR COLOR   { addIntOp(OP_SETCOLOR, $2); }
-         | SETCOLOR '(' COLOR ')' { addIntOp(OP_SETCOLOR, $3); }
-         | SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
+colorstmt: SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
          | SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SETCOLORRGB); }
+         | SETCOLOR floatexpr { addOp(OP_SETCOLORINT); }
+         | SETCOLOR '(' floatexpr  ')' { addOp(OP_SETCOLORINT); }
 ;
 
 soundstmt: SOUND VARIABLE { addIntOp(OP_SOUND_ARRAY, $2); }
@@ -786,7 +789,30 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | CLICKX { addOp(OP_CLICKX); }
          | CLICKY { addOp(OP_CLICKY); }
          | CLICKB { addOp(OP_CLICKB); }
-;
+         | CLEAR { addIntOp(OP_PUSHINT, 0xffffff); }
+         | BLACK { addIntOp(OP_PUSHINT, 0x000000); }
+         | WHITE { addIntOp(OP_PUSHINT, 0xf8f8f8); }
+         | RED { addIntOp(OP_PUSHINT, 0xff0000); }
+         | DARKRED { addIntOp(OP_PUSHINT, 0x800000); }
+         | GREEN { addIntOp(OP_PUSHINT, 0x00ff00); }
+         | DARKGREEN { addIntOp(OP_PUSHINT, 0x008000); }
+         | BLUE { addIntOp(OP_PUSHINT, 0x0000ff); }
+         | DARKBLUE { addIntOp(OP_PUSHINT, 0x000080); }
+         | CYAN { addIntOp(OP_PUSHINT, 0x00ffff); }
+         | DARKCYAN { addIntOp(OP_PUSHINT, 0x008080); }
+         | PURPLE { addIntOp(OP_PUSHINT, 0xff00ff); }
+         | DARKPURPLE { addIntOp(OP_PUSHINT, 0x800080); }
+         | YELLOW { addIntOp(OP_PUSHINT, 0xffff00); }
+         | DARKYELLOW { addIntOp(OP_PUSHINT, 0x808000); }
+         | ORANGE { addIntOp(OP_PUSHINT, 0xff6600); }
+         | DARKORANGE { addIntOp(OP_PUSHINT, 0xaa3300); }
+         | GREY { addIntOp(OP_PUSHINT, 0xa4a4a4); }
+         | DARKGREY { addIntOp(OP_PUSHINT, 0x808080); }
+		 | PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }
+		 | RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
+		 | GETCOLOR { addOp(OP_GETCOLOR); }
+		 
+  ;
 
 stringlist: stringexpr { listlen = 1; }
           | stringexpr ',' stringlist { listlen++; }

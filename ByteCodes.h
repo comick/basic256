@@ -89,7 +89,6 @@
 #define OP_GOTO          	0x41
 #define OP_GOSUB         	0x42
 #define OP_BRANCH        	0x43
-#define OP_SETCOLOR      	0x44
 #define OP_NUMASSIGN     	0x45
 #define OP_STRINGASSIGN  	0x46
 #define OP_ARRAYASSIGN   	0x47
@@ -161,6 +160,11 @@
 #define OP_VOLUME		0xbc
 #define OP_SOUND_ARRAY		0xbd
 #define OP_SOUND_LIST		0xbe
+#define OP_SETCOLORINT	0xbf
+#define OP_RGB	0xc0
+#define OP_PIXEL	0xc1
+#define OP_GETCOLOR	0xc2
+
 
 
 // stack manipulation

@@ -107,9 +107,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// Edit menu
 	QMenu *editmenu = menuBar()->addMenu(QObject::tr("Edit"));
-	QAction *cutact = editmenu->addAction(QObject::tr("Cut"));
-	QAction *copyact = editmenu->addAction(QObject::tr("Copy"));
-	QAction *pasteact = editmenu->addAction(QObject::tr("Paste"));
+	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cut"));
+	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("Copy"));
+	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("Paste"));
 	editmenu->addSeparator();
 	QAction *selectallact = editmenu->addAction(QObject::tr("Select All"));
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));

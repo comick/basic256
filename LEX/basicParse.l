@@ -179,6 +179,9 @@ clicky [Cc][Ll][Ii][Cc][Kk][Yy]
 clickb [Cc][Ll][Ii][Cc][Kk][Bb]
 system [Ss][Yy][Ss][Tt][Ee][Mm]
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
+rgb [Rr][Gg][Bb]
+pixel [Pp][Ii][Xx][Ee][Ll]
+getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 %%
 
 
@@ -243,27 +246,30 @@ volume [Vv][Oo][Ll][Uu][Mm][Ee]
 {graphwidth}	{ count(); return GRAPHWIDTH; }
 {graphheight}	{ count(); return GRAPHHEIGHT; }
 {refresh}	{ count(); return REFRESH; }
+{pixel}		{ count(); return PIXEL; }
+{rgb}		{ count(); return RGB; }
 {color}		{ count(); return SETCOLOR; }
+{getcolor}		{ count(); return GETCOLOR; }
 {colour}	{ count(); return SETCOLOR; }
-{clear}		{ count(); yylval.number = 0; return COLOR; }
-{white}		{ count(); yylval.number = 1; return COLOR; }
-{black}		{ count(); yylval.number = 2; return COLOR; }
-{red}		{ count(); yylval.number = 3; return COLOR; }
-{dark}{red}	{ count(); yylval.number = 4; return COLOR; }
-{green}		{ count(); yylval.number = 5; return COLOR; }
-{dark}{green}	{ count(); yylval.number = 6; return COLOR; }
-{blue}		{ count(); yylval.number = 7; return COLOR; }
-{dark}{blue}	{ count(); yylval.number = 8; return COLOR; }
-{cyan}		{ count(); yylval.number = 9; return COLOR; }
-{dark}{cyan}	{ count(); yylval.number = 10; return COLOR; }
-{purple}	{ count(); yylval.number = 11; return COLOR; }
-{dark}{purple}	{ count(); yylval.number = 12; return COLOR; }
-{yellow}	{ count(); yylval.number = 13; return COLOR; }
-{dark}{yellow}	{ count(); yylval.number = 14; return COLOR; }
-{orange}	{ count(); yylval.number = 15; return COLOR; }
-{dark}{orange}	{ count(); yylval.number = 16; return COLOR; }
-{gray}	        { count(); yylval.number = 17; return COLOR; }
-{dark}{gray}	{ count(); yylval.number = 18; return COLOR; }
+{clear}		{ count(); return CLEAR; }
+{white}		{ count(); return WHITE; }
+{black}		{ count(); return BLACK; }
+{red}		{ count(); return RED; }
+{dark}{red}	{ count(); return DARKRED; }
+{green}		{ count(); return GREEN; }
+{dark}{green}	{ count(); return DARKGREEN; }
+{blue}		{ count(); return BLUE; }
+{dark}{blue}	{ count(); return DARKBLUE; }
+{cyan}		{ count(); return CYAN; }
+{dark}{cyan}	{ count(); return DARKCYAN; }
+{purple}	{ count(); return PURPLE; }
+{dark}{purple}	{ count(); return DARKPURPLE; }
+{yellow}	{ count(); return YELLOW; }
+{dark}{yellow}	{ count(); return DARKYELLOW; }
+{orange}	{ count(); return ORANGE; }
+{dark}{orange}	{ count(); return DARKORANGE; }
+{gray}	        { count(); return GREY; }
+{dark}{gray}	{ count(); return DARKGREY; }
 {goto}		{ count(); return GOTO; }
 {if}		{ count(); return IF; }
 {then}		{ count(); return THEN; }

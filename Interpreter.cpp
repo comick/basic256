@@ -25,6 +25,7 @@ using namespace std;
 #include <string>
 #include <QString>
 #include <QPainter>
+#include <QColor>
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
@@ -2079,90 +2080,72 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_SETCOLOR:
-		{
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			switch(*i)
-			{
-			case 0:
-				pencolor = Qt::color0;
-				break;
-			case 1:
-				pencolor = QColor("#f8f8f8");
-				break;
-			case 2:
-				pencolor = Qt::black;
-				break;
-			case 3:
-				pencolor = Qt::red;
-				break;
-			case 4:
-				pencolor = Qt::darkRed;
-				break;
-			case 5:
-				pencolor = Qt::green;
-				break;
-			case 6:
-				pencolor = Qt::darkGreen;
-				break;
-			case 7:
-				pencolor = Qt::blue;
-				break;
-			case 8:
-				pencolor = Qt::darkBlue;
-				break;
-			case 9:
-				pencolor = Qt::cyan;
-				break;
-			case 10:
-				pencolor = Qt::darkCyan;
-				break;
-			case 11:
-				pencolor = Qt::magenta;
-				break;
-			case 12:
-				pencolor = Qt::darkMagenta;
-				break;
-			case 13:
-				pencolor = Qt::yellow;
-				break;
-			case 14:
-				pencolor = Qt::darkYellow;
-				break;
-			case 15: //orange
-				pencolor = QColor("#ff6600");
-				break;
-			case 16: //dark orange
-				pencolor = QColor("#aa3300");
-				break;
-			case 17: //dark orange
-				pencolor = Qt::gray;
-				break;
-			case 18: //dark orange
-				pencolor = Qt::darkGray;
-				break;
-
-			default:
-				pencolor = Qt::black;
-				break;
-			}
-		}
-		break;
-
-
 	case OP_SETCOLORRGB:
 		{
 			op++;
 			int bval = stack.popint();
 			int gval = stack.popint();
 			int rval = stack.popint();
+			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
+				{
+					printError(tr("RGB Color values must be in the range of 0 to 255."));
+					return -1;
+				}
 			pencolor = QColor(rval, gval, bval);
 		}
 		break;
 
+	case OP_SETCOLORINT:
+		{
+			op++;
+			QRgb rgbval = stack.popint();
+			pencolor = QColor(rgbval);
+		}
+		break;
 
+	case OP_RGB:
+		{
+			op++;
+			int bval = stack.popint();
+			int gval = stack.popint();
+			int rval = stack.popint();
+			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
+				{
+					printError(tr("RGB Color values must be in the range of 0 to 255."));
+					return -1;
+				}
+			stack.push((int) qRgb(rval, gval, bval));
+		}
+		break;
+		
+	case OP_PIXEL:
+		{
+			op++;
+			int y = stack.popint();
+			int x = stack.popint();
+			QRgb rgb = (*image).pixel(x,y);
+			int b = rgb % 0x100;
+			rgb = rgb / 0x100;
+			int g = rgb % 0x100;
+			rgb = rgb / 0x100;
+			int r = rgb % 0x100;
+			stack.push(((r * 0x100) + g) * 0x100 + b);
+		}
+		break;
+		
+	case OP_GETCOLOR:
+		{
+			op++;
+			QRgb rgb = pencolor.rgb();
+			int b = rgb % 0x100;
+			rgb = rgb / 0x100;
+			int g = rgb % 0x100;
+			rgb = rgb / 0x100;
+			int r = rgb % 0x100;
+			stack.push(((r * 0x100) + g) * 0x100 + b);
+		}
+		break;
+		
 	case OP_LINE:
 		{
 			op++;

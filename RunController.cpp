@@ -110,6 +110,7 @@ RunController::RunController(MainWindow *mw)
 void
 RunController::playSounds(int notes, int* freqdur)
 {
+
 #ifdef WIN32
 	
 	// code uses Microsoft's waveOut process to create a wave on the default sound card
@@ -118,10 +119,12 @@ RunController::playSounds(int notes, int* freqdur)
 	HWAVEOUT      outHandle;
 	WAVEFORMATEX  waveFormat;
 	
-	// Initialize the WAVEFORMATEX for 8-bit, 8KHz, mono
+	double amplititude = tan((double) soundVolume / (double) 10) * (double) 0x7f;  // (half wave height)
+	
+	// Initialize the WAVEFORMATEX for 8-bit, 11.025KHz, mono
 	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
 	waveFormat.nChannels = 1;
-	waveFormat.nSamplesPerSec = 8000;
+	waveFormat.nSamplesPerSec = 11025;
 	waveFormat.wBitsPerSample = 8;
 	waveFormat.nBlockAlign = waveFormat.nChannels * (waveFormat.wBitsPerSample/8);
 	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
@@ -147,7 +150,7 @@ RunController::playSounds(int notes, int* freqdur)
 			double wavebit = 2 * M_PI / ((double) waveFormat.nSamplesPerSec / (double) freqdur[tnotes*2]);
 		
 			for(int i = 0; i < length; i++) {
-				p[pos++] = (sin(wave) + 1) * soundVolume * 0x7f / 10;
+				p[pos++] =  (unsigned char) (amplititude * (sin(wave)+1));
 				wave+=wavebit;
 			}
 		}
@@ -175,11 +178,12 @@ RunController::playSounds(int notes, int* freqdur)
 	// - Plays a sine wave via the dsp or standard out.
  
 	int stereo = 0;		// mono (stereo - false)
-	int rate = 8000;
+	int rate = 11025;
 	int devfh;
 	int i, test;
 	unsigned char *p;
-
+	double amplititude = tan((double) soundVolume / 10) * 0x7f;  // (half wave height)
+	
 	// lets build the output
 	double wave = 0;
 	int totaltime = 0;
@@ -197,7 +201,7 @@ RunController::playSounds(int notes, int* freqdur)
 		double wavebit = 2 * M_PI / ((double) rate / (double) freqdur[tnotes*2]);
 	
 		for(int i = 0; i < length; i++) {
-			p[pos++] = (sin(wave) + 1) * soundVolume * 0x7f / 10;
+			p[pos++] = (unsigned char) ((sin(wave) + 1) * amplititude);
 			wave+=wavebit;
 		}
 	}
