@@ -78,7 +78,8 @@ while [Ww][Hh][Ii][Ll][Ee]
 endwhile [Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]
 do [Dd][Oo]
 until [Uu][Nn][Tt][Ii][Ll]
-rem   [Rr][Ee][Mm].*$
+rem   [Rr][Ee][Mm][ ].+$
+remeol   [Rr][Ee][Mm]$
 remalt #.*$
 dim   [Dd][Ii][Mm]
 end   [Ee][Nn][Dd]
@@ -324,6 +325,7 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 {system}       { count(); return SYSTEM; }
 {volume}       { count(); return VOLUME; }
 {rem}           { count(); return '\n'; }
+{remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
 {end}           { count(); return END; }
 ">="            { count(); return GTE; }

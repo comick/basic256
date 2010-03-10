@@ -15,7 +15,7 @@ var customImageHandle
 
 Function .onInit
   StrCpy $VERSION "0.9.5m"
-  StrCpy $VERSIONDATE "2010-03-08"
+  StrCpy $VERSIONDATE "2010-03-09"
 FunctionEnd
 
 Function customPage
@@ -110,6 +110,7 @@ SectionEnd
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
 
+  SetOutPath $INSTDIR 
   CreateDirectory "$SMPROGRAMS\BASIC256"
   CreateShortCut "$SMPROGRAMS\BASIC256\BASIC256.lnk" "$INSTDIR\BASIC256.exe" "" "$INSTDIR\BASIC256.exe" 0
   CreateShortCut "$SMPROGRAMS\BASIC256\Documentation_EN.lnk" "$INSTDIR\Documentation_EN.html" "" "$INSTDIR\Documentation_EN.html" 0
@@ -130,12 +131,12 @@ Section "Uninstall"
   ; Remove files and uninstaller
   Delete $INSTDIR\BASIC256.exe
   Delete $INSTDIR\mingwm10.dll
-  Delete $INSTDIR\QtCored4.dll
-  Delete $INSTDIR\QtGuid4.dll
+  Delete $INSTDIR\QtCore4.dll
+  Delete $INSTDIR\QtGui4.dll
   Delete $INSTDIR\ChangeLog
   Delete $INSTDIR\CONTRIBUTORS
   Delete $INSTDIR\license.txt
-  Delete $INSTDIR\doc.html
+  Delete $INSTDIR\Documentation_EN.html
   RMDir /r $INSTDIR\Examples
   RMDir /r $INSTDIR\Documentation
   Delete $INSTDIR\uninstall.exe

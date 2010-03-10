@@ -23,9 +23,9 @@ EditSyntaxHighlighter::EditSyntaxHighlighter(QTextDocument *parent)
 {
   initKeywords();
   initColors();
-  initQuotes();
   initFunctions();	
   initComments();
+  initQuotes();
 }
 
 void EditSyntaxHighlighter::highlightBlock(const QString &text)
@@ -228,7 +228,7 @@ void EditSyntaxHighlighter::initComments()
 	
   m_commentFmt.setForeground(Qt::darkGreen);
   m_commentFmt.setFontItalic(true);
-  rule.pattern = QRegExp("(([Rr][Ee][Mm][ ])|#)[^\n]*");
+  rule.pattern = QRegExp("(([Rr][Ee][Mm][ ].+)|([Rr][Ee][Mm])|#.*)$");
   rule.format = m_commentFmt;
   m_standardRules.append(rule);	
 }
