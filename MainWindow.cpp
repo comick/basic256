@@ -89,15 +89,21 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	addToolBar(maintbar);
 
 	// File menu
-	QMenu *filemenu = menuBar()->addMenu(QObject::tr("File"));
-	QAction *newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("New"));
-	QAction *openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("Open"));
-	QAction *saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("Save"));
-	QAction *saveasact = filemenu->addAction(QObject::tr("Save As"));
+	QMenu *filemenu = menuBar()->addMenu(QObject::tr("&File"));
+	QAction *newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
+	newact->setShortcut(Qt::Key_N + Qt::CTRL);
+	QAction *openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open"));
+	openact->setShortcut(Qt::Key_O + Qt::CTRL);
+	QAction *saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
+	saveact->setShortcut(Qt::Key_S + Qt::CTRL);
+	QAction *saveasact = filemenu->addAction(QObject::tr("Save &As"));
+	saveasact->setShortcut(Qt::Key_S + Qt::CTRL + Qt::SHIFT);
 	filemenu->addSeparator();
-	QAction *printact = filemenu->addAction(QObject::tr("Print"));
+	QAction *printact = filemenu->addAction(QObject::tr("&Print"));
+	printact->setShortcut(Qt::Key_P + Qt::CTRL);
 	filemenu->addSeparator();
-	QAction *exitact = filemenu->addAction(QObject::tr("Exit"));
+	QAction *exitact = filemenu->addAction(QObject::tr("&Exit"));
+	exitact->setShortcut(Qt::Key_Q + Qt::CTRL);
 	//
 	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
 	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
@@ -107,14 +113,18 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(exitact, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 	// Edit menu
-	QMenu *editmenu = menuBar()->addMenu(QObject::tr("Edit"));
-	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cut"));
-	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("Copy"));
-	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("Paste"));
+	QMenu *editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
+	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
+	cutact->setShortcut(Qt::Key_X + Qt::CTRL);
+	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
+	copyact->setShortcut(Qt::Key_C + Qt::CTRL);
+	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
+	pasteact->setShortcut(Qt::Key_P + Qt::CTRL);
 	editmenu->addSeparator();
-	QAction *selectallact = editmenu->addAction(QObject::tr("Select All"));
+	QAction *selectallact = editmenu->addAction(QObject::tr("Select &All"));
+	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
-	QAction *beautifyact = editmenu->addAction(QObject::tr("Beautify"));
+	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
 	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
@@ -139,10 +149,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	}
 
 	// View menuBar
-	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("View"));
-	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("Text Window"));
-	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window"));
-	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("Variable Watch Window"));
+	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("&View"));
+	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
+	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
+	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
 	variableWinVisibleAct->setCheckable(true);
@@ -153,14 +163,14 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
 	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
-	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("Toolbars"));
-	QAction *maintbaract = viewtbars->addAction(QObject::tr("Main"));
+	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("&Toolbars"));
+	QAction *maintbaract = viewtbars->addAction(QObject::tr("&Main"));
 	maintbaract->setCheckable(true);
 	maintbaract->setChecked(true);
 	QObject::connect(maintbaract, SIGNAL(toggled(bool)), maintbar, SLOT(setVisible(bool)));
 	if (outputwgt->usesToolBar())
 	{
-		QAction *texttbaract = viewtbars->addAction(QObject::tr("Text Output"));
+		QAction *texttbaract = viewtbars->addAction(QObject::tr("&Text Output"));
 		texttbaract->setCheckable(true);
 		texttbaract->setChecked(false);
 		outputwgt->slotShowToolBar(false);
@@ -168,7 +178,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	}
 	if (goutputwgt->usesToolBar())
 	{
-		QAction *graphtbaract = viewtbars->addAction(QObject::tr("Graphics Output"));
+		QAction *graphtbaract = viewtbars->addAction(QObject::tr("&Graphics Output"));
 		graphtbaract->setCheckable(true);
 		graphtbaract->setChecked(false);
 		goutputwgt->slotShowToolBar(false);
@@ -176,15 +186,19 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	}
 
 	// Run menu
-	QMenu *runmenu = menuBar()->addMenu(QObject::tr("Run"));
-	runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("Run"));
-	debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("Debug"));
-	stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("Step"));
+	QMenu *runmenu = menuBar()->addMenu(QObject::tr("&Run"));
+	runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("&Run"));
+	runact->setShortcut(Qt::Key_F5);
+	debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("&Debug"));
+	debugact->setShortcut(Qt::Key_F5 + Qt::CTRL);
+	stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("S&tep"));
+	stepact->setShortcut(Qt::Key_F11);
 	stepact->setEnabled(false);
-	stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("Stop"));
+	stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
+	stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
 	stopact->setEnabled(false);
 	runmenu->addSeparator();
-	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled Byte Code"));
+	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled &Byte Code"));
 	QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
 	QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
 	QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
@@ -192,9 +206,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
 	// About menu
-	QMenu *aboutmenu = menuBar()->addMenu(QObject::tr("About"));
-	QAction *aboutb256 = aboutmenu->addAction(QObject::tr("About BASIC-256"));
-	QObject::connect(aboutb256, SIGNAL(triggered()), aboutdialog, SLOT(show()));
+	QMenu *aboutmenu = menuBar()->addMenu(QObject::tr("&About"));
+	QAction *aboutact = aboutmenu->addAction(QObject::tr("&About BASIC-256"));
+	aboutact->setShortcut(Qt::Key_F1);
+	QObject::connect(aboutact, SIGNAL(triggered()), aboutdialog, SLOT(show()));
 
 	// Add actions to main window toolbar
 	maintbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
