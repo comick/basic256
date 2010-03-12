@@ -27,10 +27,10 @@ moves = 0
 
 print "click tile to move"
 do
-  gosub getclick 
-  gosub makemove
-  gosub drawboard
-  gosub isdone
+   gosub getclick
+   gosub makemove
+   gosub drawboard
+   gosub isdone
 until done
 
 print "Game Over - You solved it in "+ moves +"."
@@ -39,61 +39,61 @@ end
 
 shuffle: #
 for t = 1 to nx * ny * 10
-  cx = zx
-  cy = zy
-  r = int(rand*4)
-  if r = 0 and cx > 0 then cx = cx - 1
-  if r = 1 and cx < nx-1 then cx = cx + 1
-  if r = 2 and cy > 0 then cy = cy - 1
-  if r = 3 and cy < nx-1 then cy = cy + 1
-  if cx<>zx or cy<> zy then
-    board[zx, zy] = board[cx, cy]
-    board[cx, cy] = 0
-    zx = cx
-    zy = cy
-  end if
-  gosub drawboard
-  pause .01
+   cx = zx
+   cy = zy
+   r = int(rand*4)
+   if r = 0 and cx > 0 then cx = cx - 1
+   if r = 1 and cx < nx-1 then cx = cx + 1
+   if r = 2 and cy > 0 then cy = cy - 1
+   if r = 3 and cy < nx-1 then cy = cy + 1
+   if cx<>zx or cy<> zy then
+      board[zx, zy] = board[cx, cy]
+      board[cx, cy] = 0
+      zx = cx
+      zy = cy
+   end if
+   gosub drawboard
+   pause .01
 next t
 return
 
 makemove: #
 # shift cells
 if (zx = cx) or (zy = cy) then
-    moves = moves + 1
-    if zx<>cx then
-        # row shift
-        if cx>zx then
-            dx = 1
-            dy = 0
-        else
-            dx = -1
-            dy = 0
-        end if
-    else
-        # column shift
-        if cy>zy then
-            dx = 0
-            dy = 1
-        else
-            dx = 0
-            dy = -1
-        end if
-    end if
-    # do shift
-    while zx <> cx or zy <> cy
-        board[zx, zy] = board[zx+dx, zy+dy]
-        board[zx+dx, zy+dy] = 0
-        zx = zx + dx
-        zy = zy + dy
-    end while
+   moves = moves + 1
+   if zx<>cx then
+      # row shift
+      if cx>zx then
+         dx = 1
+         dy = 0
+      else
+         dx = -1
+         dy = 0
+      end if
+   else
+      # column shift
+      if cy>zy then
+         dx = 0
+         dy = 1
+      else
+         dx = 0
+         dy = -1
+      end if
+   end if
+   # do shift
+   while zx <> cx or zy <> cy
+      board[zx, zy] = board[zx+dx, zy+dy]
+      board[zx+dx, zy+dy] = 0
+      zx = zx + dx
+      zy = zy + dy
+   end while
 endif
 return
 
 getclick: #
 # return cx and cy for where the user clicked the board
 while clickb = 0
-  pause .01
+   pause .01
 end while
 cx = int(clickx/(xw+bw))
 if cx >= nx then cx = nx-1
@@ -105,9 +105,9 @@ return
 initialboard: #
 # setup the initial board array
 for x= 0 to nx-1
-  for y = 0 to ny-1
-    board[x, y] = (y*nx+x+1) 
-  next y
+   for y = 0 to ny-1
+      board[x, y] = (y*nx+x+1)
+   next y
 next x
 zx = nx-1
 zy = ny-1
@@ -118,12 +118,12 @@ isdone: #
 # return the variable done if we have solved the puzzle
 done = true
 for x= 0 to nx-1
-  for y = 0 to ny-1
-    if board[x, y] <>  (y*nx+x+1)  and (x <> zx or y <> zy) then
-      done = false
-      return
-    end if
-  next y
+   for y = 0 to ny-1
+      if board[x, y] <>  (y*nx+x+1)  and (x <> zx or y <> zy) then
+         done = false
+         return
+      end if
+   next y
 next x
 return
 
@@ -132,20 +132,20 @@ clg
 color black
 rect 0, 0, graphwidth, graphheight
 for y = 0 to ny-1
-  for x = 0 to nx-1
-    b =  board[x, y]
-    color white
-    rect (x+1)*bw+x*xw, (y+1)*bw+y*yw ,xw, yw
-
-    if b <> 0 then
-      if zx = x or zy = y then
-        color blue
-      else
-        color darkblue
-      endif 
-      text (x+1)*bw+x*xw, (y+1)*bw+y*yw, b
-    end if 
-  next x
+   for x = 0 to nx-1
+      b =  board[x, y]
+      color white
+      rect (x+1)*bw+x*xw, (y+1)*bw+y*yw ,xw, yw
+      
+      if b <> 0 then
+         if zx = x or zy = y then
+            color blue
+         else
+            color darkblue
+         endif
+         text (x+1)*bw+x*xw, (y+1)*bw+y*yw, b
+      end if
+   next x
 next y
 refresh
 return

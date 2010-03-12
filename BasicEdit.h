@@ -42,7 +42,8 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   void cursorMove();
   void goToLine(int);
   void highlightLine(int);
-	void slotPrint();
+  void slotPrint();
+  void beautifyProgram();
  
  protected:
   void keyPressEvent(QKeyEvent *);

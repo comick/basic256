@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *printact = filemenu->addAction(QObject::tr("Print"));
 	filemenu->addSeparator();
 	QAction *exitact = filemenu->addAction(QObject::tr("Exit"));
+	//
 	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
 	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
 	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
@@ -112,10 +113,14 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("Paste"));
 	editmenu->addSeparator();
 	QAction *selectallact = editmenu->addAction(QObject::tr("Select All"));
+	editmenu->addSeparator();
+	QAction *beautifyact = editmenu->addAction(QObject::tr("Beautify"));
+	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
 	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
 	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
+	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
 
 	bool extraSepAdded = false;
 	if (outputwgt->usesMenu())

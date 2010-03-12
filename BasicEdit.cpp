@@ -192,3 +192,72 @@ void BasicEdit::slotPrint()
 	}
     }
 }
+
+
+
+void BasicEdit::beautifyProgram()
+{
+	QString program;
+	QStringList lines;
+	const int TAB = 3;
+	int indent = 0;
+	bool indentThisLine = true;
+	bool increaseIndent = false;
+	bool decreaseIndent = false;
+	program = this->document()->toPlainText();
+	lines = program.split(QRegExp("\\n"));
+	for (int i = 0; i < lines.size(); i++) {
+		QString line = lines.at(i);
+		line = line.trimmed();
+		if (line.contains(QRegExp("^\\S+[:]"))) {
+				// label - one line no indent
+				indentThisLine = false;
+		} else if (line.contains(QRegExp("^[Ff][Oo][Rr]\\s"))) {
+				// for - indent next (block of code)
+				increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Nn][Ee][Xx][Tt]\\s"))) {
+				// next - come out of block - reduce indent
+				decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ii][Ff]\\s.+\\s[Tt][Hh][Ee][Nn]$"))) {
+				// if/then (NOTHING FOLLOWING) - indent next (block of code)
+				increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Ll][Ss][Ee]$"))) {
+				// else - come out of block and start new block
+				decreaseIndent = true;
+				increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ii][Ff]$"))) {
+				// end if - come out of block - reduce indent
+				decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ww][Hh][Ii][Ll][Ee]\\s"))) {
+				// while - indent next (block of code)
+				increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ww][Hh][Ii][Ll][Ee]$"))) {
+				// endwhile - come out of block
+				decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Dd][Oo]$"))) {
+				// do - indent next (block of code)
+				increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Uu][Nn][Tt][Ii][Ll]\\s"))) {
+				// until - come out of block
+				decreaseIndent = true;
+		}
+		//
+		if (decreaseIndent) {
+				indent -= TAB;
+				if (indent<0) indent=0;
+				decreaseIndent = false;
+		}
+		if (indentThisLine) {
+			line = QString(indent, QChar(' ')) + line;
+		} else {
+			indentThisLine = true;
+		}
+		if (increaseIndent) {
+			indent += TAB;
+			increaseIndent = false;
+		}
+		//
+		lines.replace(i, line);
+	}
+    this->setPlainText(lines.join("\n"));
+}

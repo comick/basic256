@@ -9,10 +9,10 @@ myarray[3] = 42
 myarray[5] = 42
 
 for i = 0 to 9
-print "Myarray at index ";
-print i;
-print " = ";
-print myarray[i]
+   print "Myarray at index ";
+   print i;
+   print " = ";
+   print myarray[i]
 next i
 
 dim i$(10)
