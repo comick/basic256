@@ -1697,6 +1697,9 @@ Interpreter::execByteCode()
 	case OP_SIN:
 	case OP_COS:
 	case OP_TAN:
+	case OP_ASIN:
+	case OP_ACOS:
+	case OP_ATAN:
 	case OP_CEIL:
 	case OP_FLOOR:
 	case OP_ABS:
@@ -1714,6 +1717,15 @@ Interpreter::execByteCode()
 				break;
 			case OP_TAN:
 				stack.push(tan(val));
+				break;
+			case OP_ASIN:
+				stack.push(asin(val));
+				break;
+			case OP_ACOS:
+				stack.push(acos(val));
+				break;
+			case OP_ATAN:
+				stack.push(atan(val));
 				break;
 			case OP_CEIL:
 				stack.push((int) ceil(val));

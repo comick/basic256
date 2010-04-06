@@ -164,7 +164,9 @@
 #define OP_RGB	0xc0
 #define OP_PIXEL	0xc1
 #define OP_GETCOLOR	0xc2
-
+#define OP_ASIN			0xc3
+#define OP_ACOS			0xc4
+#define OP_ATAN			0xc5
 
 
 // stack manipulation

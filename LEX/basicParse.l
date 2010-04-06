@@ -134,6 +134,9 @@ abs     [Aa][Bb][Ss]
 sin     [Ss][Ii][Nn]
 cos     [Cc][Oo][Ss]
 tan     [Tt][Aa][Nn]
+asin     [Aa][Ss][Ii][Nn]
+acos     [Aa][Cc][Oo][Ss]
+atan     [Aa][Tt][Aa][Nn]
 rand    [Rr][Aa][Nn][Dd]
 pi      [Pp][Ii]
 and [Aa][Nn][Dd]
@@ -225,6 +228,9 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 {sin}           { count(); return SIN; }
 {cos}           { count(); return COS; }
 {tan}           { count(); return TAN; }
+{asin}           { count(); return ASIN; }
+{acos}           { count(); return ACOS; }
+{atan}           { count(); return ATAN; }
 {rand}          { count(); return RAND; }
 {pi}            { count(); return PI; }
 {and}           { count(); return AND; }
