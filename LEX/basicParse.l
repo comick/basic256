@@ -137,6 +137,8 @@ tan     [Tt][Aa][Nn]
 asin     [Aa][Ss][Ii][Nn]
 acos     [Aa][Cc][Oo][Ss]
 atan     [Aa][Tt][Aa][Nn]
+degrees     [Dd][Ee][Gg][Rr][Ee][Ee][Ss]
+radians     [Rr][Aa][Dd][Ii][Aa][Nn][Ss]
 rand    [Rr][Aa][Nn][Dd]
 pi      [Pp][Ii]
 and [Aa][Nn][Dd]
@@ -231,6 +233,8 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 {asin}           { count(); return ASIN; }
 {acos}           { count(); return ACOS; }
 {atan}           { count(); return ATAN; }
+{degrees}           { count(); return DEGREES; }
+{radians}           { count(); return RADIANS; }
 {rand}          { count(); return RAND; }
 {pi}            { count(); return PI; }
 {and}           { count(); return AND; }

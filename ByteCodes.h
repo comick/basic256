@@ -167,6 +167,8 @@
 #define OP_ASIN			0xc3
 #define OP_ACOS			0xc4
 #define OP_ATAN			0xc5
+#define OP_DEGREES			0xc6
+#define OP_RADIANS			0xc7
 
 
 // stack manipulation

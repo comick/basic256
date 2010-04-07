@@ -249,7 +249,7 @@
 %token GTE LTE NE
 %token DIM NOP
 %token TOINT TOSTRING LENGTH MID LEFT RIGHT UPPER LOWER INSTR
-%token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI
+%token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI DEGREES RADIANS
 %token AND OR XOR NOT
 %token PAUSE SOUND
 %token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD
@@ -770,6 +770,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | ASIN '(' floatexpr ')' { addOp(OP_ASIN); }
          | ACOS '(' floatexpr ')' { addOp(OP_ACOS); }
          | ATAN '(' floatexpr ')' { addOp(OP_ATAN); }
+         | DEGREES '(' floatexpr ')' { addOp(OP_DEGREES); }
+         | RADIANS '(' floatexpr ')' { addOp(OP_RADIANS); }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }

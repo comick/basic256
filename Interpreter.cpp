@@ -1703,6 +1703,8 @@ Interpreter::execByteCode()
 	case OP_CEIL:
 	case OP_FLOOR:
 	case OP_ABS:
+	case OP_DEGREES:
+	case OP_RADIANS:
 		{
 			unsigned char whichop = *op;
 			op += sizeof(unsigned char);
@@ -1739,6 +1741,12 @@ Interpreter::execByteCode()
 					val = -val;
 				}
 				stack.push(val);
+				break;
+			case OP_DEGREES:
+				stack.push(val * 180 / M_PI);
+				break;
+			case OP_RADIANS:
+				stack.push(val * M_PI / 180);
 				break;
 			}
 		}
