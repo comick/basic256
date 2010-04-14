@@ -973,6 +973,8 @@ Interpreter::execByteCode()
 
 	case OP_DIM:
 	case OP_DIMSTR:
+	case OP_REDIM:
+	case OP_REDIMSTR:
 		{
 			unsigned char whichdim = *op;
 			op++;
@@ -991,13 +993,28 @@ Interpreter::execByteCode()
 				return -1;
 			}
 
+			array *originalarray;
+			if (whichdim == OP_REDIM || whichdim == OP_REDIMSTR) {
+				if (vars[var].type == T_UNUSED)
+				{
+					printError(tr("Unknown variable"));
+					return -1;
+				}	
+				originalarray = vars[var].value.arr;
+			}
+			
 			array *temp = new array;
-			if (whichdim == OP_DIM)
+			
+			if (whichdim == OP_DIM || whichdim == OP_REDIM)
 			{
 				double *d = new double[size];
 				for (int j = 0; j < size; j++)
 				{
-					d[j] = 0;
+					if(whichdim == OP_REDIM && j < originalarray->size) {
+						d[j] = originalarray->data.fdata[j];						
+					} else {
+						d[j] = 0;
+					}
 				}
 				vars[var].type = T_ARRAY;
 				temp->data.fdata = d;
@@ -1011,13 +1028,17 @@ Interpreter::execByteCode()
 				char **c = new char*[size];
 				for (int j = 0; j < size; j++)
 				{
-					c[j] = strdup("");
+					if(whichdim == OP_REDIMSTR && j < originalarray->size) {
+						c[j] = originalarray->data.sdata[j];						
+					} else {
+						c[j] = strdup("");
+					}
 				}
 				vars[var].type = T_STRARRAY;
 				temp->data.sdata = c;
+				temp->size = size;
 				temp->xdim = size;
 				temp->ydim = 1;
-				temp->size = size;
 				vars[var].value.arr = temp;
 			}
 
@@ -1030,7 +1051,11 @@ Interpreter::execByteCode()
 
 	case OP_DIM2D:
 	case OP_DIMSTR2D:
+	case OP_REDIM2D:
+	case OP_REDIMSTR2D:
 		{
+			// redim 2d not implemented yet ...
+			
 			unsigned char whichdim = *op;
 			op++;
 			int *i = (int *) op;
@@ -1075,6 +1100,7 @@ Interpreter::execByteCode()
 				}
 				vars[var].type = T_STRARRAY;
 				temp->data.sdata = c;
+				temp->size = size;
 				temp->xdim = xdim;
 				temp->ydim = ydim;
 				vars[var].value.arr = temp;
@@ -1087,6 +1113,59 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_ALEN:
+		{
+			// return array length (total one dimensional length)
+
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
+			{
+				stack.push(vars[*i].value.arr->size);
+			} else {
+				printError(tr("Not an array variable"));
+				return -1;
+			}
+		}
+		break;
+
+	case OP_ALENX:
+		{
+			// return x dimension lengh in 2d array model
+
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
+			{
+				stack.push(vars[*i].value.arr->xdim);
+			} else {
+				printError(tr("Not an array variable"));
+				return -1;
+			}
+		}
+		break;
+
+	case OP_ALENY:
+		{
+			// return y dimension length in 2d array model
+
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
+			{
+				stack.push(vars[*i].value.arr->ydim);
+			} else {
+				printError(tr("Not an array variable"));
+				return -1;
+			}
+		}
+		break;
 
 	case OP_STRARRAYASSIGN:
 		{

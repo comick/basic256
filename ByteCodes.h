@@ -160,15 +160,23 @@
 #define OP_VOLUME		0xbc
 #define OP_SOUND_ARRAY		0xbd
 #define OP_SOUND_LIST		0xbe
-#define OP_SETCOLORINT	0xbf
-#define OP_RGB	0xc0
-#define OP_PIXEL	0xc1
-#define OP_GETCOLOR	0xc2
+#define OP_SETCOLORINT		0xbf
+#define OP_RGB			0xc0
+#define OP_PIXEL		0xc1
+#define OP_GETCOLOR		0xc2
 #define OP_ASIN			0xc3
 #define OP_ACOS			0xc4
 #define OP_ATAN			0xc5
-#define OP_DEGREES			0xc6
-#define OP_RADIANS			0xc7
+#define OP_DEGREES		0xc6
+#define OP_RADIANS		0xc7
+#define OP_REDIM          	0xc8
+#define OP_REDIMSTR        	0xc9
+#define OP_REDIM2D          	0xca
+#define OP_REDIMSTR2D        	0xcb
+#define OP_ALEN 	       	0xcd
+#define OP_ALENX 	       	0xce
+#define OP_ALENY 	       	0xcf
+
 
 
 // stack manipulation

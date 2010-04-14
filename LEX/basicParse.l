@@ -82,6 +82,10 @@ rem   [Rr][Ee][Mm][ ].+$
 remeol   [Rr][Ee][Mm]$
 remalt #.*$
 dim   [Dd][Ii][Mm]
+redim   [Rr][Ee][Dd][Ii][Mm]
+alen	[Aa][Ll][Ee][Nn]
+alenx	[Aa][Ll][Ee][Nn][Xx]
+aleny	[Aa][Ll][Ee][Nn][Yy]
 end   [Ee][Nn][Dd]
 for   [Ff][Oo][Rr]
 to    [Tt][Oo]
@@ -243,6 +247,10 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 {not}           { count(); return NOT; }
 {print}		{ count(); return PRINT; }
 {dim}		{ count(); return DIM; }
+{redim}		{ count(); return REDIM; }
+{alen}		{ count(); return ALEN; }
+{alenx}		{ count(); return ALENX; }
+{aleny}		{ count(); return ALENY; }
 {cls}		{ count(); return CLS; }
 {clg}		{ count(); return CLG; }
 {plot}		{ count(); return PLOT; }

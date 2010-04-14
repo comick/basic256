@@ -247,7 +247,7 @@
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
-%token DIM NOP
+%token DIM REDIM ALEN ALENX ALENY NOP
 %token TOINT TOSTRING LENGTH MID LEFT RIGHT UPPER LOWER INSTR
 %token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI DEGREES RADIANS
 %token AND OR XOR NOT
@@ -463,6 +463,7 @@ statement: gotostmt
          | fastgraphicsstmt
          | graphsizestmt
          | dimstmt
+         | redimstmt
          | pausestmt
          | arrayassign
          | strarrayassign
@@ -487,6 +488,12 @@ dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_DIM, $2); }		// parens added by si
        | DIM STRINGVAR floatexpr { addIntOp(OP_DIMSTR, $2); }		// parens added by single floatexpr
        | DIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM2D, $2); }
        | DIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR2D, $2); }
+;
+
+redimstmt: REDIM VARIABLE floatexpr { addIntOp(OP_REDIM, $2); }		// parens added by single floatexpr
+       | REDIM STRINGVAR floatexpr { addIntOp(OP_REDIMSTR, $2); }		// parens added by single floatexpr
+       | REDIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIM2D, $2); }
+       | REDIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIMSTR2D, $2); }
 ;
 
 pausestmt: PAUSE floatexpr { addOp(OP_PAUSE); }
@@ -742,7 +749,13 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | FLOAT   { addFloatOp(OP_PUSHFLOAT, $1); }
          | INTEGER { addIntOp(OP_PUSHINT, $1); }
          | KEY     { addOp(OP_KEY); }
-         | VARIABLE '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
+         | VARIABLE '[' '?' ']'	{ addIntOp(OP_ALEN, $1); }
+         | STRINGVAR '[' '?' ']'	{ addIntOp(OP_ALEN, $1); }
+         | VARIABLE '[' '?' ',' ']'	{ addIntOp(OP_ALENX, $1); }
+         | STRINGVAR '[' '?' ',' ']'	{ addIntOp(OP_ALENX, $1); }
+         | VARIABLE '[' ',' '?' ']'	{ addIntOp(OP_ALENY, $1); }
+         | STRINGVAR '[' ',' '?' ']'	{ addIntOp(OP_ALENY, $1); }
+         | VARIABLE '[' floatexpr ']'	{ addIntOp(OP_DEREF, $1); }
          | VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
          | VARIABLE 
            { 
