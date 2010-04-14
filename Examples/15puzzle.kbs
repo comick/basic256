@@ -45,7 +45,7 @@ for t = 1 to nx * ny * 10
    if r = 0 and cx > 0 then cx = cx - 1
    if r = 1 and cx < nx-1 then cx = cx + 1
    if r = 2 and cy > 0 then cy = cy - 1
-   if r = 3 and cy < nx-1 then cy = cy + 1
+   if r = 3 and cy < ny-1 then cy = cy + 1
    if cx<>zx or cy<> zy then
       board[zx, zy] = board[cx, cy]
       board[cx, cy] = 0

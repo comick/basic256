@@ -397,7 +397,7 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 "\n"            {count(); linenumber++; return '\n'; }
 
 {whitespace} 	/* ignore whitespace */
-. 		{ count(); printf("char: %s\n", yytext); return yytext[0]; }
+. 		{ count(); return yytext[0]; }
 
 
 %%

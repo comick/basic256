@@ -484,16 +484,16 @@ statement: gotostmt
 	 	| clickclearstmt
 ;
 
-dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_DIM, $2); }		// parens added by single floatexpr
-       | DIM STRINGVAR floatexpr { addIntOp(OP_DIMSTR, $2); }		// parens added by single floatexpr
-       | DIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM2D, $2); }
-       | DIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR2D, $2); }
+dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
+       | DIM STRINGVAR floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIMSTR, $2); }
+       | DIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM, $2); }
+       | DIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR, $2); }
 ;
 
-redimstmt: REDIM VARIABLE floatexpr { addIntOp(OP_REDIM, $2); }		// parens added by single floatexpr
-       | REDIM STRINGVAR floatexpr { addIntOp(OP_REDIMSTR, $2); }		// parens added by single floatexpr
-       | REDIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIM2D, $2); }
-       | REDIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIMSTR2D, $2); }
+redimstmt: REDIM VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_REDIM, $2); }
+       | REDIM STRINGVAR floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_REDIMSTR, $2); }
+       | REDIM VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIM, $2); }
+       | REDIM STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIMSTR, $2); }
 ;
 
 pausestmt: PAUSE floatexpr { addOp(OP_PAUSE); }

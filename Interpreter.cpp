@@ -981,7 +981,10 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			int var = i[0];
-			int size = stack.popint();
+			int ydim = stack.popint();
+			int xdim = stack.popint();
+
+			int size = xdim * ydim;
 
 			if (size > 100000)
 			{
@@ -993,14 +996,12 @@ Interpreter::execByteCode()
 				return -1;
 			}
 
-			array *originalarray;
 			if (whichdim == OP_REDIM || whichdim == OP_REDIMSTR) {
 				if (vars[var].type == T_UNUSED)
 				{
 					printError(tr("Unknown variable"));
 					return -1;
 				}	
-				originalarray = vars[var].value.arr;
 			}
 			
 			array *temp = new array;
@@ -1010,8 +1011,8 @@ Interpreter::execByteCode()
 				double *d = new double[size];
 				for (int j = 0; j < size; j++)
 				{
-					if(whichdim == OP_REDIM && j < originalarray->size) {
-						d[j] = originalarray->data.fdata[j];						
+					if(whichdim == OP_REDIM && j < vars[var].value.arr->size) {
+						d[j] = vars[var].value.arr->data.fdata[j];						
 					} else {
 						d[j] = 0;
 					}
@@ -1019,8 +1020,8 @@ Interpreter::execByteCode()
 				vars[var].type = T_ARRAY;
 				temp->data.fdata = d;
 				temp->size = size;
-				temp->xdim = size;
-				temp->ydim = 1;
+				temp->xdim = xdim;
+				temp->ydim = ydim;
 				vars[var].value.arr = temp;
 			}
 			else
@@ -1028,8 +1029,8 @@ Interpreter::execByteCode()
 				char **c = new char*[size];
 				for (int j = 0; j < size; j++)
 				{
-					if(whichdim == OP_REDIMSTR && j < originalarray->size) {
-						c[j] = originalarray->data.sdata[j];						
+					if(whichdim == OP_REDIMSTR && j < vars[var].value.arr->size) {
+						c[j] = vars[var].value.arr->data.sdata[j];						
 					} else {
 						c[j] = strdup("");
 					}
@@ -1037,70 +1038,6 @@ Interpreter::execByteCode()
 				vars[var].type = T_STRARRAY;
 				temp->data.sdata = c;
 				temp->size = size;
-				temp->xdim = size;
-				temp->ydim = 1;
-				vars[var].value.arr = temp;
-			}
-
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[var]), NULL, size));
-			}
-		}
-		break;
-
-	case OP_DIM2D:
-	case OP_DIMSTR2D:
-	case OP_REDIM2D:
-	case OP_REDIMSTR2D:
-		{
-			// redim 2d not implemented yet ...
-			
-			unsigned char whichdim = *op;
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			int var = i[0];
-			int ydim = stack.popint();
-			int xdim = stack.popint();
-
-			int size = xdim * ydim;
-
-			if (xdim>1000 || ydim>1000 || size>1000000)
-			{
-				printError(tr("Array dimension too large"));
-				return -1;
-			} else if (xdim<1 || ydim<1)
-			{
-				printError(tr("Array dimension too small"));
-				return -1;
-			}
-
-			array *temp = new array;
-			if (whichdim == OP_DIM2D)
-			{
-				double *d = new double[size];
-				for (int j = 0; j < size; j++)
-				{
-					d[j] = 0;
-				}
-				vars[var].type = T_ARRAY;
-				temp->data.fdata = d;
-				temp->size = size;
-				temp->xdim = xdim;
-				temp->ydim = ydim;
-				vars[var].value.arr = temp;
-			}
-			else
-			{
-				char **c = new char*[size];
-				for (int j = 0; j < size; j++)
-				{
-					c[j] = strdup("");
-				}
-				vars[var].type = T_STRARRAY;
-				temp->data.sdata = c;
-				temp->size = size;
 				temp->xdim = xdim;
 				temp->ydim = ydim;
 				vars[var].value.arr = temp;
@@ -1112,6 +1049,7 @@ Interpreter::execByteCode()
 			}
 		}
 		break;
+
 
 	case OP_ALEN:
 		{
@@ -1590,7 +1528,7 @@ Interpreter::execByteCode()
 			op++;
 			double val = stack.popfloat();
 			int stime = (int) (val * 1000);
-			msleep(stime);
+			if (stime > 0) msleep(stime);
 		}
 		break;
 
