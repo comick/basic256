@@ -716,20 +716,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | floatexpr MOD floatexpr { addOp(OP_MOD); }
          | floatexpr '/' floatexpr { addOp(OP_DIV); }
          | floatexpr '^' floatexpr { addOp(OP_EXP); }
-         | '-' FLOAT %prec UMINUS  { addFloatOp(OP_PUSHFLOAT, -$2); }
-         | '-' INTEGER %prec UMINUS { addIntOp(OP_PUSHINT, -$2); }
-         | '-' VARIABLE %prec UMINUS 
-           { 
-	     if ($2 < 0)
-	       {
-		 return -1;
-	       }
-	     else
-	       {
-		 addIntOp(OP_PUSHVAR, $2);
-		 addOp(OP_NEGATE);
-	       }
-	   }
+       | '-' floatexpr %prec UMINUS { addOp(OP_NEGATE); }
        | floatexpr AND floatexpr {addOp(OP_AND); }
        | floatexpr OR floatexpr { addOp(OP_OR); }
        | floatexpr XOR floatexpr { addOp(OP_XOR); }

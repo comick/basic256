@@ -156,8 +156,8 @@ floatnum [0-9]*\.?[0-9]*
 string \"[^\"\n]*\"
 variable [a-zA-Z][a-zA-Z0-9]*
 stringvar [a-zA-Z][a-zA-Z0-9]*\$
-label     {variable}:
-blankline ^{whitespace}*[\n]
+label     ^[ \t]*{variable}:
+blankline ^[ \t]*[\n]
 asc [Aa][Ss][Cc]
 chr [Cc][Hh][Rr]
 tofloat [Ff][Ll][Oo][Aa][Tt]
