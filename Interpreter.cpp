@@ -1722,6 +1722,8 @@ Interpreter::execByteCode()
 	case OP_ABS:
 	case OP_DEGREES:
 	case OP_RADIANS:
+	case OP_LOG:
+	case OP_LOGTEN:
 		{
 			unsigned char whichop = *op;
 			op += sizeof(unsigned char);
@@ -1765,6 +1767,12 @@ Interpreter::execByteCode()
 			case OP_RADIANS:
 				stack.push(val * M_PI / 180);
 				break;
+			case OP_LOG:
+				stack.push(log(val));
+				break;
+			case OP_LOGTEN:
+				stack.push(log10(val));
+				break;
 			}
 		}
 		break;
@@ -1775,6 +1783,7 @@ Interpreter::execByteCode()
 	case OP_MUL:
 	case OP_MOD:
 	case OP_DIV:
+	case OP_INTDIV:
 	case OP_EXP:
 		{
 			stackval *one = stack.pop();
@@ -1803,6 +1812,9 @@ Interpreter::execByteCode()
 					break;
 				case OP_DIV:
 					stack.push((double) two->value.intval / (double) one->value.intval);
+					break;
+				case OP_INTDIV:
+					stack.push(two->value.intval / one->value.intval);
 					break;
 				case OP_EXP:
 					stack.push(pow((double) two->value.intval, (double) one->value.intval));
@@ -1837,6 +1849,9 @@ Interpreter::execByteCode()
 					break;
 				case OP_DIV:
 					stack.push(twoval / oneval);
+					break;
+				case OP_INTDIV:
+					stack.push((int) twoval / (int) oneval);
 					break;
 				case OP_EXP:
 					stack.push(pow((double) twoval, (double) oneval));

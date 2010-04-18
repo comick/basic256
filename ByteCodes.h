@@ -174,6 +174,9 @@
 #define OP_ALEN 	       	0xcd
 #define OP_ALENX 	       	0xce
 #define OP_ALENY 	       	0xcf
+#define OP_INTDIV 	       	0xd0
+#define OP_LOG 	       	0xd1
+#define OP_LOGTEN 	       	0xd2
 
 
 

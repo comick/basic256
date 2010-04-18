@@ -192,6 +192,8 @@ volume [Vv][Oo][Ll][Uu][Mm][Ee]
 rgb [Rr][Gg][Bb]
 pixel [Pp][Ii][Xx][Ee][Ll]
 getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
+log [Ll][Oo][Gg]
+logten [Ll][Oo][Gg][1][0]
 %%
 
 
@@ -239,6 +241,8 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 {atan}           { count(); return ATAN; }
 {degrees}           { count(); return DEGREES; }
 {radians}           { count(); return RADIANS; }
+{log}           { count(); return LOG; }
+{logten}           { count(); return LOGTEN; }
 {rand}          { count(); return RAND; }
 {pi}            { count(); return PI; }
 {and}           { count(); return AND; }
@@ -352,6 +356,7 @@ getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 "+"             { count(); return '+'; }
 "-"             { count(); return '-'; }
 "*"             { count(); return '*'; }
+"\\"            { count(); return INTDIV; }
 "\%"            { count(); return MOD; }
 "/"             { count(); return '/'; }
 "^"             { count(); return '^'; }

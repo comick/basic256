@@ -249,10 +249,10 @@
 %token GTE LTE NE
 %token DIM REDIM ALEN ALENX ALENY NOP
 %token TOINT TOSTRING LENGTH MID LEFT RIGHT UPPER LOWER INSTR
-%token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI DEGREES RADIANS
+%token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI DEGREES RADIANS LOG LOGTEN
 %token AND OR XOR NOT
 %token PAUSE SOUND
-%token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD
+%token ASC CHR TOFLOAT READLINE WRITELINE BOOLEOF MOD INTDIV
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
 %token SAY SYSTEM
 %token VOLUME
@@ -294,7 +294,7 @@
 %left '<' LTE '>' GTE '=' NE
 %left '-' '+'
 %left MOD
-%left '*' '/'
+%left '*' '/' INTDIV
 %nonassoc UMINUS
 %left '^'
 
@@ -714,6 +714,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | floatexpr '-' floatexpr { addOp(OP_SUB); }
          | floatexpr '*' floatexpr { addOp(OP_MUL); }
          | floatexpr MOD floatexpr { addOp(OP_MOD); }
+         | floatexpr INTDIV floatexpr { addOp(OP_INTDIV); }
          | floatexpr '/' floatexpr { addOp(OP_DIV); }
          | floatexpr '^' floatexpr { addOp(OP_EXP); }
        | '-' floatexpr %prec UMINUS { addOp(OP_NEGATE); }
@@ -772,6 +773,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | ATAN '(' floatexpr ')' { addOp(OP_ATAN); }
          | DEGREES '(' floatexpr ')' { addOp(OP_DEGREES); }
          | RADIANS '(' floatexpr ')' { addOp(OP_RADIANS); }
+         | LOG '(' floatexpr ')' { addOp(OP_LOG); }
+         | LOGTEN '(' floatexpr ')' { addOp(OP_LOGTEN); }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
