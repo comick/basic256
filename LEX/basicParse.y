@@ -736,7 +736,6 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
         | floatexpr LTE floatexpr    { addOp(OP_LTE); }
          | FLOAT   { addFloatOp(OP_PUSHFLOAT, $1); }
          | INTEGER { addIntOp(OP_PUSHINT, $1); }
-         | KEY     { addOp(OP_KEY); }
          | VARIABLE '[' '?' ']'	{ addIntOp(OP_ALEN, $1); }
          | STRINGVAR '[' '?' ']'	{ addIntOp(OP_ALEN, $1); }
          | VARIABLE '[' '?' ',' ']'	{ addIntOp(OP_ALENX, $1); }
@@ -777,49 +776,90 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | LOGTEN '(' floatexpr ')' { addOp(OP_LOGTEN); }
          | ABS '(' floatexpr ')' { addOp(OP_ABS); }
          | RAND { addOp(OP_RAND); }
+         | RAND '(' ')' { addOp(OP_RAND); }
          | PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
+         | PI '(' ')' { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
          | BOOLTRUE { addIntOp(OP_PUSHINT, 1); }
+         | BOOLTRUE '(' ')' { addIntOp(OP_PUSHINT, 1); }
          | BOOLFALSE { addIntOp(OP_PUSHINT, 0); }
+         | BOOLFALSE '(' ')' { addIntOp(OP_PUSHINT, 0); }
          | BOOLEOF                    { addOp(OP_EOF); }
+         | BOOLEOF '(' ')'                    { addOp(OP_EOF); }
          | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
          | YEAR { addOp(OP_YEAR); }
+         | YEAR '(' ')' { addOp(OP_YEAR); }
          | MONTH { addOp(OP_MONTH); }
+         | MONTH '(' ')' { addOp(OP_MONTH); }
          | DAY { addOp(OP_DAY); }
+         | DAY '(' ')' { addOp(OP_DAY); }
          | HOUR { addOp(OP_HOUR); }
+         | HOUR '(' ')' { addOp(OP_HOUR); }
          | MINUTE { addOp(OP_MINUTE); }
+         | MINUTE '(' ')' { addOp(OP_MINUTE); }
          | SECOND { addOp(OP_SECOND); }
+         | SECOND '(' ')' { addOp(OP_SECOND); }
          | GRAPHWIDTH { addOp(OP_GRAPHWIDTH); }
+         | GRAPHWIDTH '(' ')' { addOp(OP_GRAPHWIDTH); }
          | GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
+         | GRAPHHEIGHT '(' ')' { addOp(OP_GRAPHHEIGHT); }
          | SIZE { addOp(OP_SIZE); }
+         | SIZE '(' ')' { addOp(OP_SIZE); }
+         | KEY     { addOp(OP_KEY); }
+         | KEY '(' ')'     { addOp(OP_KEY); }
          | MOUSEX { addOp(OP_MOUSEX); }
+         | MOUSEX '(' ')' { addOp(OP_MOUSEX); }
          | MOUSEY { addOp(OP_MOUSEY); }
+         | MOUSEY '(' ')' { addOp(OP_MOUSEY); }
          | MOUSEB { addOp(OP_MOUSEB); }
+         | MOUSEB '(' ')' { addOp(OP_MOUSEB); }
          | CLICKX { addOp(OP_CLICKX); }
+         | CLICKX '(' ')' { addOp(OP_CLICKX); }
          | CLICKY { addOp(OP_CLICKY); }
+         | CLICKY '(' ')' { addOp(OP_CLICKY); }
          | CLICKB { addOp(OP_CLICKB); }
+         | CLICKB '(' ')' { addOp(OP_CLICKB); }
          | CLEAR { addIntOp(OP_PUSHINT, 0xffffff); }
+         | CLEAR '(' ')' { addIntOp(OP_PUSHINT, 0xffffff); }
          | BLACK { addIntOp(OP_PUSHINT, 0x000000); }
+         | BLACK '(' ')' { addIntOp(OP_PUSHINT, 0x000000); }
          | WHITE { addIntOp(OP_PUSHINT, 0xf8f8f8); }
+         | WHITE '(' ')' { addIntOp(OP_PUSHINT, 0xf8f8f8); }
          | RED { addIntOp(OP_PUSHINT, 0xff0000); }
+         | RED '(' ')' { addIntOp(OP_PUSHINT, 0xff0000); }
          | DARKRED { addIntOp(OP_PUSHINT, 0x800000); }
+         | DARKRED '(' ')' { addIntOp(OP_PUSHINT, 0x800000); }
          | GREEN { addIntOp(OP_PUSHINT, 0x00ff00); }
+         | GREEN '(' ')' { addIntOp(OP_PUSHINT, 0x00ff00); }
          | DARKGREEN { addIntOp(OP_PUSHINT, 0x008000); }
+         | DARKGREEN '(' ')' { addIntOp(OP_PUSHINT, 0x008000); }
          | BLUE { addIntOp(OP_PUSHINT, 0x0000ff); }
+         | BLUE '(' ')' { addIntOp(OP_PUSHINT, 0x0000ff); }
          | DARKBLUE { addIntOp(OP_PUSHINT, 0x000080); }
+         | DARKBLUE '(' ')' { addIntOp(OP_PUSHINT, 0x000080); }
          | CYAN { addIntOp(OP_PUSHINT, 0x00ffff); }
+         | CYAN '(' ')' { addIntOp(OP_PUSHINT, 0x00ffff); }
          | DARKCYAN { addIntOp(OP_PUSHINT, 0x008080); }
+         | DARKCYAN '(' ')' { addIntOp(OP_PUSHINT, 0x008080); }
          | PURPLE { addIntOp(OP_PUSHINT, 0xff00ff); }
+         | PURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xff00ff); }
          | DARKPURPLE { addIntOp(OP_PUSHINT, 0x800080); }
+         | DARKPURPLE '(' ')' { addIntOp(OP_PUSHINT, 0x800080); }
          | YELLOW { addIntOp(OP_PUSHINT, 0xffff00); }
+         | YELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xffff00); }
          | DARKYELLOW { addIntOp(OP_PUSHINT, 0x808000); }
+         | DARKYELLOW '(' ')' { addIntOp(OP_PUSHINT, 0x808000); }
          | ORANGE { addIntOp(OP_PUSHINT, 0xff6600); }
+         | ORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xff6600); }
          | DARKORANGE { addIntOp(OP_PUSHINT, 0xaa3300); }
+         | DARKORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xaa3300); }
          | GREY { addIntOp(OP_PUSHINT, 0xa4a4a4); }
+         | GREY '(' ') '{ addIntOp(OP_PUSHINT, 0xa4a4a4); }
          | DARKGREY { addIntOp(OP_PUSHINT, 0x808080); }
+         | DARKGREY '(' ')' { addIntOp(OP_PUSHINT, 0x808080); }
 		 | PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }
 		 | RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 		 | GETCOLOR { addOp(OP_GETCOLOR); }
-		 
+		 | GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
   ;
 
 stringlist: stringexpr { listlen = 1; }
@@ -850,10 +890,10 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
           | LEFT '(' stringexpr ',' floatexpr ')' { addOp(OP_LEFT); }
           | RIGHT '(' stringexpr ',' floatexpr ')' { addOp(OP_RIGHT); }
-          | READ '(' ')' { addOp(OP_READ); }
           | READ { addOp(OP_READ); }
-          | READLINE '(' ')' { addOp(OP_READLINE); }
+          | READ '(' ')' { addOp(OP_READ); }
           | READLINE { addOp(OP_READLINE); }
+          | READLINE '(' ')' { addOp(OP_READLINE); }
 ;
 
 %%
