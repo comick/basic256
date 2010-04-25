@@ -22,8 +22,9 @@ win32 {
 	DEFINES 		+= WIN32
 	LIBS			+= -lole32 \
 					-lsapi \
-					-lwinmm \
-					-lm
+					-lwinmm 
+					#Ian: removing this for visual studio build.  Mingw might need this back.
+					#-lm
 } else {
 	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
 	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)
@@ -66,6 +67,7 @@ HEADERS			+=	MainWindow.h
 HEADERS			+=	VariableWin.h
 HEADERS			+=	Version.h
 HEADERS			+=	EditSyntaxHighlighter.h
+HEADERS         +=  Stack.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
@@ -84,3 +86,4 @@ SOURCES			+=	ViewWidgetIFace.cpp
 SOURCES			+=	MainWindow.cpp
 SOURCES			+=	VariableWin.cpp
 SOURCES			+=	EditSyntaxHighlighter.cpp
+SOURCES			+=  Stack.cpp

@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 #include <QTextCursor>
 #include <QFileDialog>
@@ -25,6 +25,7 @@ using namespace std;
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QMessageBox>
+using namespace std;
 
 #include "BasicEdit.h"
 

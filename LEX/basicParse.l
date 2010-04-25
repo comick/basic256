@@ -25,6 +25,7 @@
 #endif
 
     #include <string.h>
+    #include <stdlib.h>
 
     struct symbol 
     {
@@ -198,12 +199,15 @@ logten [Ll][Oo][Gg][1][0]
 
 
 {label} { 
+	  char *temp;
+	  char *c;
+	  int num;
+          
           count();
-	  char *temp, *c;
           temp = c = strdup(yytext);
           while (*c != ':') c++;
           *c = 0;
-          int num = getSymbol(temp);
+          num = getSymbol(temp);
           if (num < 0)
             {
               yylval.number = newSymbol(temp); //Doesn't conflict, because label only resolved after branch
@@ -217,7 +221,7 @@ logten [Ll][Oo][Gg][1][0]
         }
 {integer}       { count(); yylval.number = atoi(yytext); return INTEGER; }
 {floatnum}      { count(); yylval.floatnum = atof(yytext); return FLOAT; }
-{string}        { count(); int len = strlen(yytext); 
+{string}        { int len; count(); len = strlen(yytext); 
                   yylval.string = strdup(yytext + 1); 
                   yylval.string[len - 2] = 0; 
                   return STRING; }
@@ -373,8 +377,9 @@ logten [Ll][Oo][Gg][1][0]
 "["             { count(); return '['; }
 "]"             { count(); return ']'; }
 {variable}      { 
+		  int num;
 		  count(); 
-                  int num = getSymbol(yytext);
+                  num = getSymbol(yytext);
                   if (num < 0)
                    {
                      yylval.number = newSymbol(strdup(yytext));
@@ -386,8 +391,9 @@ logten [Ll][Oo][Gg][1][0]
                   return VARIABLE;
                 }
 {stringvar}     { 
+                  int num;
                   count(); 
-                  int num = getSymbol(yytext);
+                  num = getSymbol(yytext);
                   if (num < 0)
                    {
                      yylval.number = newSymbol(strdup(yytext));

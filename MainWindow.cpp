@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 
 #include <QApplication>
@@ -27,6 +27,7 @@ using namespace std;
 #include <QLabel>
 #include <QString>
 #include <stdio.h>
+using namespace std;
 
 #include "RunController.h"
 #include "PauseButton.h"

@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 #include <QMutex>
 #include <QWaitCondition>
@@ -25,8 +25,7 @@ using namespace std;
 #include <QFile>
 #include <QSound>
 #include <QApplication>
-
-
+using namespace std;
 
 #include "RunController.h"
 
@@ -283,7 +282,7 @@ RunController::setVolume(int volume)
 void
 RunController::system(char* text)
 {
-  system(text);
+	system(text);
 }
 
 void RunController::playWAV(QString file)

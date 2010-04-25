@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 #include <QApplication>
 #include <QMutex>
@@ -26,6 +26,7 @@ using namespace std;
 #include <QPrintDialog>
 #include <QClipboard>
 #include <QMessageBox>
+using namespace std;
 
 #include "BasicGraph.h"
 #include "MainWindow.h"

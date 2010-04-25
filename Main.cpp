@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 
 #include <QApplication>
@@ -24,16 +24,21 @@ using namespace std;
 #include <QLocale>
 #include <QStatusBar>
 #include <QFileInfo>
+#ifndef WIN32
 #include <unistd.h>
+#endif 
+
+using namespace std;
 
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
-  int opt = getopt(argc, argv, "l:");
   char *lang = NULL;
 
+#ifdef __VISUALCPP__
+  int opt = getopt(argc, argv, "l:");
   while (opt != -1)
     {
       switch ((char) opt)
@@ -46,6 +51,7 @@ int main(int argc, char *argv[])
       }
       opt = getopt(argc, argv, "l:");
     }
+#endif
 
   QTranslator qtTranslator;
   if (lang)
@@ -77,6 +83,7 @@ int main(int argc, char *argv[])
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();
 
+#ifdef __VISUALCPP__
   // load initial file
   if (argv[optind]) {
     QString s = QString::fromAscii(argv[optind]);
@@ -87,6 +94,7 @@ int main(int argc, char *argv[])
         }
     }
   }
+#endif
 
   return qapp.exec();
 }

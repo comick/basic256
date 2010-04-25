@@ -15,11 +15,13 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-using namespace std;
 #include <iostream>
 
-#include "VariableWin.h"
+using namespace std;
+
 #include <QHeaderView>
+
+#include "VariableWin.h"
 
 VariableWin::VariableWin (QWidget * parent) 
   :QDockWidget(QString(tr("Variable Watch")), parent)

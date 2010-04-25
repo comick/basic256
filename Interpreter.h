@@ -23,10 +23,15 @@
 #include <QThread>
 #include <QFile>
 #include <stdio.h>
+#include <cmath>
 #include "BasicGraph.h"
+#include "Stack.h"
+
+#ifndef M_PI
+#define M_PI 3.14159265
+#endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
-enum b_type {T_INT, T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED};
 
 #define NUMVARS 2000
 
@@ -60,20 +65,6 @@ struct byteCodeData
   void *data;
 };
 
-class stackval
-{
- public:
-  stackval *next;
-  b_type type;
-  union {
-    char *string;
-    int intval;
-    double floatval; 
-  } value;
-  stackval();
-  ~stackval();
-};
-
 
 struct frame {
   frame *next;
@@ -90,23 +81,6 @@ struct forframe {
   double step;
 };
 
-
-class Stack
-{
- public:
-  Stack();
-  void push(char *);
-  void push(int);
-  void push(double);
-  void swap();
-  stackval *pop();
-  int popint();
-  double popfloat();
-  char *popstring();
-  
- private:
-  stackval *top;
-};
 
 
 class Interpreter : public QThread

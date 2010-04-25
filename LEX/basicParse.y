@@ -171,11 +171,10 @@
 	unsigned int addInt(int data) {
 	  // add an integer to the bytecode at the current location
 	  // return starting location of the integer - so we can write to it later
-      unsigned int holdOffset = byteOffset;
 	  int *temp;
+      unsigned int holdOffset = byteOffset;
 	  checkByteMem(sizeof(int));
-      temp = (void *) byteCode + byteOffset;
-      *temp = data;
+      temp = (int *) (byteCode + byteOffset);
       byteOffset += sizeof(int);
 	  return holdOffset;
 	}
@@ -183,12 +182,12 @@
     void 
     addIntOp(char op, int data)
     {
+      int *temp = NULL;
       checkByteMem(sizeof(char) + sizeof(int));
-      int *temp;
       byteCode[byteOffset] = op;
       byteOffset++;
       
-      temp = (void *) byteCode + byteOffset;
+      temp = (int *) (byteCode + byteOffset);
       *temp = data;
       byteOffset += sizeof(int);
     }
@@ -196,12 +195,12 @@
     void 
     addInt2Op(char op, int data1, int data2)
     {
+      int *temp = NULL;
       checkByteMem(sizeof(char) + 2 * sizeof(int));
-      int *temp;
       byteCode[byteOffset] = op;
       byteOffset++;
       
-      temp = (void *) byteCode + byteOffset;
+      temp = (int *) (byteCode + byteOffset);
       temp[0] = data1;
       temp[1] = data2;
       byteOffset += 2 * sizeof(int);
@@ -210,12 +209,12 @@
     void 
     addFloatOp(char op, double data)
     {
+      double *temp = NULL;
       checkByteMem(sizeof(char) + sizeof(double));
-      double *temp;
       byteCode[byteOffset] = op;
       byteOffset++;
       
-      temp = (void *) byteCode + byteOffset;
+      temp = (double *) (byteCode + byteOffset);
       *temp = data;
       byteOffset += sizeof(double);
     }
@@ -223,13 +222,13 @@
     void 
     addStringOp(char op, char *data)
     {
+      double *temp = NULL;
       int len = strlen(data) + 1;
       checkByteMem(sizeof(char) + len);
-      double *temp;
       byteCode[byteOffset] = op;
       byteOffset++;
       
-      temp = (void *) byteCode + byteOffset;
+      temp = (double *) (byteCode + byteOffset);
       strncpy((char *) byteCode + byteOffset, data, len);
       byteOffset += len;
     }
@@ -338,8 +337,9 @@ compoundifstmt: ifexpr THEN compoundstmt
 	  // - so we can jump over code
 	  if (numifs>0) 
 	    { 
+	      unsigned int *temp = NULL;
 		  numifs--;
-	      unsigned int *temp = (void *) byteCode + iftable[numifs];
+	      temp = (unsigned int *) (byteCode + iftable[numifs]);
 	      *temp = byteOffset; 
 	    } 
 	}
@@ -353,15 +353,17 @@ ifstmt: ifexpr THEN
 
 elsestmt: ELSE 
 	{ 
+	    unsigned int elsegototemp = 0;
 		// on else create a jump point to the endif
 		addIntOp(OP_PUSHINT, 0);	// false - always jump before else to endif
 		addOp(OP_BRANCH);
-		unsigned int elsegototemp = addInt(0);
+		elsegototemp = addInt(0);
 		// resolve the false jump on the if to the current location
 		if (numifs>0) 
 			{ 
+			    unsigned int *temp = NULL;
 				numifs--;
-				unsigned int *temp = (void *) byteCode + iftable[numifs];
+				temp = (unsigned int *) (byteCode + iftable[numifs]);
 				*temp = byteOffset; 
 			} 
 		// now add the elsegoto jump to the iftable
@@ -380,8 +382,9 @@ endifstmt: endifexpr
 		// - so we can jump over code
 		if (numifs>0) 
 			{ 
+			    unsigned int *temp = NULL;
 				numifs--;
-				unsigned int *temp = (void *) byteCode + iftable[numifs];
+				temp = (unsigned int *) (byteCode + iftable[numifs]);
 				*temp = byteOffset; 
 			} 
 	}
@@ -410,10 +413,11 @@ endwhilestmt: endwhileexpr
 		// the exit jump needs to be written back to jump point on WHILE
 		if (numifs>1) 
 			{ 
+			    unsigned int *temp = NULL;
 				addIntOp(OP_PUSHINT, 0);	// false - always jump back to the beginning
 				addIntOp(OP_BRANCH, iftable[numifs-1]);
 				// resolve the false jump on the while to the current location
-				unsigned int *temp = (void *) byteCode + iftable[numifs-2];
+				temp = (unsigned int *) (byteCode + iftable[numifs-2]);
 				*temp = byteOffset; 
 				numifs-=2;
 			} 
@@ -853,7 +857,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | DARKORANGE { addIntOp(OP_PUSHINT, 0xaa3300); }
          | DARKORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xaa3300); }
          | GREY { addIntOp(OP_PUSHINT, 0xa4a4a4); }
-         | GREY '(' ') '{ addIntOp(OP_PUSHINT, 0xa4a4a4); }
+         | GREY '(' ')' { addIntOp(OP_PUSHINT, 0xa4a4a4); }
          | DARKGREY { addIntOp(OP_PUSHINT, 0x808080); }
          | DARKGREY '(' ')' { addIntOp(OP_PUSHINT, 0x808080); }
 		 | PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }

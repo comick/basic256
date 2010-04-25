@@ -16,7 +16,7 @@
  **/
 
 
-using namespace std;
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +29,8 @@ using namespace std;
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
+using namespace std;
+
 #include "LEX/basicParse.tab.h"
 #include "ByteCodes.h"
 #include "Interpreter.h"
@@ -89,172 +91,10 @@ static int compareTwoStackVal(stackval *two, stackval *one)
 }
 
 
-stackval::stackval()
-{
-	next = NULL;
-	type = T_UNUSED;
-	value.floatval = 0;
-}
-
-stackval::~stackval()
-{
-	if (type == T_STRING && value.string != NULL)
-	{
-		free(value.string);
-		value.string = NULL;
-	}
-}
 
 
-Stack::Stack()
-{
-	top = NULL;
-}
 
-void
-Stack::push(char *c)
-{
-	stackval *temp = new stackval;
 
-	temp->next = NULL;
-	temp->type = T_STRING;
-	temp->value.string = strdup(c);
-	if (top)
-	{
-		temp->next = top;
-	}
-	top = temp;
-}
-
-void
-Stack::push(int i)
-{
-	stackval *temp = new stackval;
-
-	temp->next = NULL;
-	temp->type = T_INT;
-	temp->value.intval = i;
-	if (top)
-	{
-		temp->next = top;
-	}
-	top = temp;
-}
-
-void
-Stack::push(double d)
-{
-	stackval *temp = new stackval;
-
-	temp->next = NULL;
-	temp->type = T_FLOAT;
-	temp->value.floatval = d;
-	if (top)
-	{
-		temp->next = top;
-	}
-	top = temp;
-}
-
-stackval *
-Stack::pop()
-{
-	stackval *temp = top;
-	if (top)
-	{
-		top = top->next;
-	}
-	return temp;
-}
-
-void Stack::swap()
-{
-	// swap top two elements
-	stackval *one = top;
-	top = top->next;
-	stackval *two = top;
-	top = top->next;
-	one->next = top;
-	two->next = one;
-	top = two;
-}
-
-int Stack::popint()
-{
-	stackval *temp = top;
-	int i=0;
-	if (top) {
-		top = top->next;
-	}
-	if (temp->type == T_INT) {
-		i = temp->value.intval;
-	}
-	else if (temp->type == T_FLOAT) {
-		i = (int) temp->value.floatval;
-	}
-	else if (temp->type == T_STRING)
-	{
-		i = (int) atoi(temp->value.string);
-	}
-	delete temp;
-	return i;
-}
-
-double Stack::popfloat()
-{
-	stackval *temp = top;
-	double f=0;
-	if (top)
-	{
-		top = top->next;
-	}
-	if (temp->type == T_FLOAT) {
-		f = temp->value.floatval;
-	}
-	else if (temp->type == T_INT)
-	{
-		f = (double) temp->value.intval;
-	}
-	else if (temp->type == T_STRING)
-	{
-		f = (double) atof(temp->value.string);
-	}
-	delete temp;
-	return f;
-}
-
-char* Stack::popstring()
-{
-	// don't forget to free() the string returned by this function when you are dome with it
-	char *s=NULL;
-	stackval *temp = top;
-	if (top)
-	{
-		top = top->next;
-	}
-	if (temp->type == T_STRING) {
-		s = temp->value.string;
-		temp->value.string = NULL;		// set to null so we don't destroy string when stack value is destructed
-	}
-	else if (temp->type == T_INT)
-	{
-		char buffer[64];
-		sprintf(buffer, "%d", temp->value.intval);
-		s = strdup(buffer);
-	}
-	else if (temp->type == T_FLOAT)
-	{
-		char buffer[64];
-		sprintf(buffer, "%#lf", temp->value.floatval);
-		// strip trailing zeros and decimal point
-		while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
-		if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
-		// return
-		s = strdup(buffer);
-	}
-	delete temp;
-	return s;
-}
 
 void Interpreter::printError(QString message)
 {
@@ -463,7 +303,6 @@ Interpreter::initialize()
 	fontfamily = QString::QString();
 	fontpoint = 0;
 	fontweight = 0;
-
 }
 
 
@@ -471,13 +310,8 @@ void
 Interpreter::cleanup()
 {
 	status = R_STOPPED;
-	stackval *temp = stack.pop();
 	//Clean up stack
-	while (temp != NULL)
-	{
-		delete temp;
-		temp = stack.pop();
-	}
+	stack.clear();
 	//Clean up variables
 	clearvars();
 	//Clean up, for frames, etc.
@@ -1791,6 +1625,10 @@ Interpreter::execByteCode()
 			double oneval, twoval;
 			if (one->type == T_STRING || two->type == T_STRING)
 			{
+				if (one->type == T_STRING)
+					free(one->value.string);
+				if (two->type == T_STRING)
+					free(two->value.string);
 				printError(tr("String in numeric expression"));
 				return -1;
 			}
@@ -1859,8 +1697,8 @@ Interpreter::execByteCode()
 				}
 			}
 			op++;
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -1939,7 +1777,6 @@ Interpreter::execByteCode()
 			{
 				stack.push(-temp->value.floatval);
 			}
-			delete temp;
 		}
 		break;
 
@@ -1951,8 +1788,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -1964,8 +1801,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -1977,8 +1814,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -1990,8 +1827,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -2003,8 +1840,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -2016,8 +1853,8 @@ Interpreter::execByteCode()
 				stack.push(1);
 			else
 				stack.push(0);
-			delete one;
-			delete two;
+			stack.clean(one);
+			stack.clean(two);
 		}
 		break;
 
@@ -2264,7 +2101,7 @@ Interpreter::execByteCode()
 				}
 
 				double *array = vars[*i].value.arr->data.fdata;
-				QPointF points[pairs];
+				QPointF *points = new QPointF[pairs];
 
 				for (int j = 0; j < pairs; j++)
 				{
@@ -2272,14 +2109,15 @@ Interpreter::execByteCode()
 					points[j].setY(array[(j*2)+1]);
 				}
 				poly.drawPolygon(points, pairs);
+				poly.end();
+				delete points;
 			} 
 			else
 			{
 				printError(tr("Argument not an array for poly()"));
+				poly.end();
 				return -1;
 			}
-
-			poly.end();
 
 			if (!fastgraphics) waitForGraphics();
 		}
@@ -2303,7 +2141,7 @@ Interpreter::execByteCode()
 				printError(tr("Not enough points in immediate list for poly()"));
 				return -1;
 			}
-			QPointF points[pairs];
+			QPointF *points = new QPointF[pairs];
 			for (int j = 0; j < pairs; j++)
 			{
 				int ypoint = stack.popint();
@@ -2312,10 +2150,10 @@ Interpreter::execByteCode()
 				points[j].setY(ypoint);
 			}
 			poly.drawPolygon(points, pairs);
-				
 			poly.end();
 
 			if (!fastgraphics) waitForGraphics();
+			delete points;
 		}
 		break;
 
@@ -2348,7 +2186,7 @@ Interpreter::execByteCode()
 				}
 
 				double *array = vars[*i].value.arr->data.fdata;
-				QPointF points[pairs];
+				QPointF *points = new QPointF[pairs];
 
 				for (int j = 0; j < pairs; j++)
 				{
@@ -2360,14 +2198,15 @@ Interpreter::execByteCode()
 					points[j].setY(roty + y);
 				}
 				poly.drawPolygon(points, pairs);
+				poly.end();
+				delete points;
 			} 
 			else
 			{
 				printError(tr("Argument not an array for stamp()"));
+				poly.end();
 				return -1;
 			}
-
-			poly.end();
 
 			if (!fastgraphics) waitForGraphics();
 		}
@@ -2418,7 +2257,7 @@ Interpreter::execByteCode()
 				printError(tr("Not enough points in immediate list for stamp()"));
 				return -1;
 			}
-			QPointF points[pairs];
+			QPointF *points = new QPointF[pairs];
 			for (int j = 0; j < pairs; j++)
 			{
 				double scalex = scale * list[(j*2)];
@@ -2429,10 +2268,11 @@ Interpreter::execByteCode()
 				points[j].setY(roty + y);
 			}
 			poly.drawPolygon(points, pairs);
-			
+
 			poly.end();
 			
 			if (!fastgraphics) waitForGraphics();
+			delete points;
 		}
 		break;
 
@@ -2597,18 +2437,16 @@ Interpreter::execByteCode()
 	case OP_PRINTN:
 		{
 			char *temp = stack.popstring();
-			mutex.lock();
-			emit(outputReady(QString(temp)));
-			waitCond.wait(&mutex);
-			mutex.unlock();
+			QString p = QString(temp);
+			free(temp);
 			if (*op == OP_PRINTN)
 			{
-				mutex.lock();
-				emit(outputReady(QString("\n")));
-				waitCond.wait(&mutex);
-				mutex.unlock();
+				p += "\n";
 			}
-			free(temp);
+			mutex.lock();
+			emit(outputReady(p));
+			waitCond.wait(&mutex);
+			mutex.unlock();
 			op++;
 		}
 		break;
