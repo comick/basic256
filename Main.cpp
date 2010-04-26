@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   QApplication qapp(argc, argv);
   char *lang = NULL;
 
-#ifdef __VISUALCPP__
+#ifndef WIN32
   int opt = getopt(argc, argv, "l:");
   while (opt != -1)
     {
@@ -83,10 +83,21 @@ int main(int argc, char *argv[])
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->show();
 
-#ifdef __VISUALCPP__
+#ifndef WIN32
   // load initial file
   if (argv[optind]) {
     QString s = QString::fromAscii(argv[optind]);
+    if (s.endsWith(".kbs")) {
+        QFileInfo fi(s);
+        if (fi.exists()) {
+            mainwin->editor->loadFile(fi.absoluteFilePath());
+        }
+    }
+  }
+#else
+  if (argc >= 1 && argv[1] != NULL)
+  {
+	QString s = QString::fromAscii(argv[1]);
     if (s.endsWith(".kbs")) {
         QFileInfo fi(s);
         if (fi.exists()) {
