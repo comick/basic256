@@ -305,7 +305,7 @@ RunController::startDebug()
 {
 	if (i->isStopped())
 	{
-		int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
+		int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
 		if (result < 0)
 		{
 			i->debugMode = false;
@@ -332,7 +332,7 @@ RunController::startRun()
 {
 	if (i->isStopped())
 	{
-		int result = i->compileProgram((te->toPlainText() + "\n").toAscii().data());
+		int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
 		i->debugMode = false;
 		if (result < 0)
 		{

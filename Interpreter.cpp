@@ -377,7 +377,7 @@ Interpreter::execByteCode()
 {
 	if (status == R_INPUTREADY)
 	{
-		stack.push(strdup(inputString.toAscii().data()));
+		stack.push(strdup(inputString.toUtf8().data()));
 		status = R_RUNNING;
 		return 0;
 	}
@@ -975,7 +975,7 @@ Interpreter::execByteCode()
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+			  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
 			}
 		}
 		break;
@@ -1022,7 +1022,7 @@ Interpreter::execByteCode()
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+			  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
 			}
 		}
 		break;
@@ -1063,7 +1063,7 @@ Interpreter::execByteCode()
 				strarray[index] = str;
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString(strarray[index]), index));
+				  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
 				}
 			}
 		}
@@ -1934,7 +1934,7 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 			//mutex.lock();
-			emit(speakWords(QString(temp)));
+			emit(speakWords(QString::fromUtf8(temp)));
 			//waitCond.wait(&mutex);
 			//mutex.unlock();
 			free(temp);
@@ -1957,7 +1957,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *file = stack.popstring();
-			emit(playWAV(QString(file)));
+			emit(playWAV(QString::fromUtf8(file)));
 			free(file);
 		}
 		break;
@@ -2307,7 +2307,7 @@ Interpreter::execByteCode()
 			if(!fontfamily.isEmpty()) {
 				ian.setFont(QFont(fontfamily, fontpoint, fontweight));
 			}
-			ian.drawText(x0val, y0val+(QFontMetrics(ian.font()).ascent()), QString::fromAscii(txt));
+			ian.drawText(x0val, y0val+(QFontMetrics(ian.font()).ascent()), QString::fromUtf8(txt));
 			ian.end();
 			free(txt);
 
@@ -2322,7 +2322,7 @@ Interpreter::execByteCode()
 			fontweight = stack.popint();
 			fontpoint = stack.popint();
 			char *family = stack.popstring();
-			fontfamily = QString::fromAscii(family);
+			fontfamily = QString::fromUtf8(family);
 			free(family);
 		}
 		break;
@@ -2437,7 +2437,7 @@ Interpreter::execByteCode()
 	case OP_PRINTN:
 		{
 			char *temp = stack.popstring();
-			QString p = QString(temp);
+			QString p = QString::fromUtf8(temp);
 			free(temp);
 			if (*op == OP_PRINTN)
 			{
@@ -2505,7 +2505,7 @@ Interpreter::execByteCode()
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*num]), QString(vars[*num].value.string), -1));
+			  emit(varAssignment(QString(symtable[*num]), QString::fromUtf8(vars[*num].value.string), -1));
 			}
 		}
 		break;
