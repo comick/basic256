@@ -1368,9 +1368,11 @@ Interpreter::execByteCode()
 
 	case OP_LENGTH:
 		{
+			// unicode length - convert utf8 to unicode and return length
 			op++;
 			char *temp = stack.popstring();
-			stack.push((int) strlen(temp));
+			QString qs = QString::fromUtf8(temp);
+			stack.push(qs.length());
 			free(temp);
 		}
 		break;
@@ -1378,95 +1380,81 @@ Interpreter::execByteCode()
 
 	case OP_MID:
 		{
+			// unicode safe mid string
 			op++;
 			int len = stack.popint();
 			int pos = stack.popint();
 			char *temp = stack.popstring();
-			char *substring;
 
+			QString qtemp = QString::fromUtf8(temp);
+			
 			if ((pos < 1) || (len < 0))
 			{
+				char foo[100];
+				sprintf(foo,"%i %i", pos, len);
+				printError(foo);
+				
 				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
 
-			if (pos > (int) strlen(temp))
+			if (pos > (int) qtemp.length())
 			{
 				printError(tr("String not long enough for given starting character"));
 				free(temp);
 				return -1;
 			}
-
-			substring = (char *) malloc(len+1);
-			memset(substring,0,len+1);
-                        for(int p=0;((pos+p)<= ((int) strlen(temp)))&&(p<len);p++) {
-				substring[p] = temp[pos+p-1];
-			}
-
-			stack.push(substring);
-
+			
+			stack.push(strdup(qtemp.mid(pos-1,len).toUtf8().data()));
+			
 			free(temp);
-			free(substring);
 		}
 		break;
 
 
 	case OP_LEFT:
 		{
+			// unicode save left string
 			op++;
 			int len = stack.popint();
 			char *temp = stack.popstring();
-			char *substring;
-
+			
+			QString qtemp = QString::fromUtf8(temp);
+			
 			if (len < 0)
 			{
 				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
-
-			substring = (char *) malloc(len+1);
-			memset(substring,0,len+1);
-                        for(int p=0;(p<= (int) strlen(temp))&&(p<len);p++) {
-				substring[p] = temp[p];
-			}
-
-			stack.push(substring);
-
+			
+			stack.push(strdup(qtemp.left(len).toUtf8().data()));
+			
 			free(temp);
-			free(substring);
 		}
 		break;
 
 
 	case OP_RIGHT:
 		{
+			// unicode save right string
 			op++;
 			int len = stack.popint();
 			char *temp = stack.popstring();
-			char *substring;
-
+			
+			QString qtemp = QString::fromUtf8(temp);
+			
 			if (len < 0)
 			{
 				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
 			}
-
-			int pos = strlen(temp) - len;
-			if (pos<0) pos=0;
-
-			substring = (char *) malloc(len+1);
-			memset(substring,0,len+1);
-                        for(int p=0;((pos+p)<= ((int) strlen(temp)))&&(p<len);p++) {
-				substring[p] = temp[pos+p-1];
-			}
-
-			stack.push(substring);
-
+			
+			stack.push(strdup(qtemp.right(len).toUtf8().data()));
+			
 			free(temp);
-			free(substring);
 		}
 		break;
 
@@ -1501,11 +1489,14 @@ Interpreter::execByteCode()
 		}
 		break;
 
+
 	case OP_ASC:
 		{
+			// unicode character sequence - return 16 bit number representing character
 			op++;
 			char *str = stack.popstring();
-			stack.push((int) str[0]);
+			QString qs = QString::fromUtf8(str);
+			stack.push((int) qs[0].unicode());
 			free(str);
 		}
 		break;
@@ -1513,32 +1504,29 @@ Interpreter::execByteCode()
 
 	case OP_CHR:
 		{
+			// convert a single unicode character sequence to string in utf8
 			op++;
 			int code = stack.popint();
-			char temp[2];
-			memset(temp, 0, 2);
-			temp[0] = (char) code;
-			stack.push(temp);
+			QChar temp[2];
+			temp[0] = (QChar) code;
+			temp[1] = (QChar) 0;
+			QString qs = QString::QString(temp,1);
+			stack.push(strdup(qs.toUtf8().data()));
 		}
 		break;
 
 
 	case OP_INSTR:
 		{
+			// unicode safe instr function
 			op++;
 			char *str = stack.popstring();
 			char *hay = stack.popstring();
 
-			int pos = 0;
-
-			char *ptr = strstr(hay, str);
-
-			if (ptr != NULL)
-			{
-				pos = (ptr - hay) + 1;
-			}
-
-			stack.push((int) pos);
+			QString qstr = QString::fromUtf8(str);
+			QString qhay = QString::fromUtf8(hay);
+			
+			stack.push((int) (qhay.indexOf(qstr)+1));
 
 			free(str);
 			free(hay);
