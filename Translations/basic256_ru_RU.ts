@@ -508,7 +508,7 @@ Please check your printer settings.</source>
     <name>RunController</name>
     <message>
         <source>Running</source>
-        <translation>Выполняеся</translation>
+        <translation>Выполняется...</translation>
     </message>
     <message>
         <source>Ready.</source>
