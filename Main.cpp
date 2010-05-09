@@ -67,11 +67,19 @@ int main(int argc, char *argv[])
   QTranslator kbTranslator;
   if (lang)
     {
+#ifndef WIN32
       kbTranslator.load("basic256_" + QString(lang), qApp->applicationDirPath() + "/Translations/");
+#else
+      kbTranslator.load("basic256_" + QString(lang), "/usr/share/basic256/");
+#endif
     }
   else
     {
+#ifndef WIN32
       kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
+#else
+      kbTranslator.load("basic256_" + QLocale::system().name(), "/usr/share/basic256/");
+#endif
     }
   qapp.installTranslator(&kbTranslator);
 
