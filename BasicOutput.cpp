@@ -33,6 +33,39 @@ BasicOutput::BasicOutput( ) : QTextEdit ()
   gettingInput = false;
 }
 
+
+void
+BasicOutput::fontSmall()
+{
+  changeFontSize(8);
+}
+void
+BasicOutput::fontMedium()
+{
+  changeFontSize(10);
+}
+void
+BasicOutput::fontLarge()
+{
+  changeFontSize(12);
+}
+void
+BasicOutput::fontHuge()
+{
+  changeFontSize(15);
+}
+
+void
+BasicOutput::changeFontSize(unsigned int pointSize)
+{
+  QFont f;
+  f.setFamily("Sans");
+  f.setFixedPitch(true);
+  f.setPointSize(pointSize);
+  setFont(f);
+}
+
+
 void
 BasicOutput::getInput()
 {

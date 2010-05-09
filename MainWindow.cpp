@@ -194,6 +194,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(fontMediumAct, SIGNAL(triggered()), editor, SLOT(fontMedium()));
 	QObject::connect(fontLargeAct, SIGNAL(triggered()), editor, SLOT(fontLarge()));
 	QObject::connect(fontHugeAct, SIGNAL(triggered()), editor, SLOT(fontHuge()));
+	QObject::connect(fontSmallAct, SIGNAL(triggered()), output, SLOT(fontSmall()));
+	QObject::connect(fontMediumAct, SIGNAL(triggered()), output, SLOT(fontMedium()));
+	QObject::connect(fontLargeAct, SIGNAL(triggered()), output, SLOT(fontLarge()));
+	QObject::connect(fontHugeAct, SIGNAL(triggered()), output, SLOT(fontHuge()));
 
 	// Run menu
 	QMenu *runmenu = menuBar()->addMenu(QObject::tr("&Run"));

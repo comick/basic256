@@ -39,6 +39,10 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
  public slots:
   void getInput();
   void slotPrint(); 
+  void fontSmall(); 
+  void fontMedium(); 
+  void fontLarge(); 
+  void fontHuge(); 
  
  signals:
   void inputEntered(QString);
@@ -49,6 +53,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
  private:
   int startPos;
   bool gettingInput;
+  void changeFontSize(unsigned int);
 };
 
 
