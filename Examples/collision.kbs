@@ -45,7 +45,7 @@ vx2 = 10*rand - 5 : vy2 = -3*rand
 
 ###################################
 kollision = 0    # do we have a collision (1 yes, 0 no)
-loop:
+loopz:
   c = key
   if c = 16777220 then goto ende
 
@@ -65,7 +65,7 @@ loop:
   m2:
   gosub getnewpos
 
-goto loop
+goto loopz
 
 getnewpos:
   x1 = x1 + vx1
