@@ -45,6 +45,37 @@ BasicEdit::BasicEdit(QMainWindow *mw)
 }
 
 void
+BasicEdit::fontSmall()
+{
+  changeFontSize(8);
+}
+void
+BasicEdit::fontMedium()
+{
+  changeFontSize(10);
+}
+void
+BasicEdit::fontLarge()
+{
+  changeFontSize(12);
+}
+void
+BasicEdit::fontHuge()
+{
+  changeFontSize(15);
+}
+
+void
+BasicEdit::changeFontSize(unsigned int pointSize)
+{
+  QFont f;
+  f.setFamily("Sans");
+  f.setFixedPitch(true);
+  f.setPointSize(pointSize);
+  setFont(f);
+}
+
+void
 BasicEdit::cursorMove()
 {
   QTextCursor t(textCursor());

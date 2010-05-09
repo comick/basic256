@@ -185,6 +185,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		goutputwgt->slotShowToolBar(false);
 		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), goutputwgt, SLOT(slotShowToolBar(const bool)));
 	}
+	QMenu *fontsize = viewmenu->addMenu(QObject::tr("&Font Size"));
+	QAction *fontSmallAct = fontsize->addAction(QObject::tr("&Small"));
+	QAction *fontMediumAct = fontsize->addAction(QObject::tr("&Medium"));
+	QAction *fontLargeAct = fontsize->addAction(QObject::tr("&Large"));
+	QAction *fontHugeAct = fontsize->addAction(QObject::tr("&Huge"));
+	QObject::connect(fontSmallAct, SIGNAL(triggered()), editor, SLOT(fontSmall()));
+	QObject::connect(fontMediumAct, SIGNAL(triggered()), editor, SLOT(fontMedium()));
+	QObject::connect(fontLargeAct, SIGNAL(triggered()), editor, SLOT(fontLarge()));
+	QObject::connect(fontHugeAct, SIGNAL(triggered()), editor, SLOT(fontHuge()));
 
 	// Run menu
 	QMenu *runmenu = menuBar()->addMenu(QObject::tr("&Run"));

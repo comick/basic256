@@ -44,6 +44,10 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   void highlightLine(int);
   void slotPrint();
   void beautifyProgram();
+  void fontSmall();
+  void fontMedium();
+  void fontLarge();
+  void fontHuge();
  
  protected:
   void keyPressEvent(QKeyEvent *);
@@ -55,6 +59,7 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   int startPos;
   int linePos;
   QString filename;
+  void changeFontSize(unsigned int);
 };
 
 

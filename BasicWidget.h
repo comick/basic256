@@ -36,16 +36,16 @@ public:
 	bool setViewWidget(QWidget * view);
 	bool usesToolBar();
 	bool usesMenu();
-	QMenu * getMenu() { return m_menu; }
+	QMenu *getMenu() { return m_menu; }
 
 public slots:
 	void slotShowToolBar(const bool);
 
 private:
-	ViewWidgetIFace *	m_viewWidget;
-	ToolBar *	m_toolBar;
-	QMenu *		m_menu;
-	QVBoxLayout *	m_layout;
+	ViewWidgetIFace *m_viewWidget;
+	ToolBar *m_toolBar;
+	QMenu *m_menu;
+	QVBoxLayout *m_layout;
 };
 
 #endif
