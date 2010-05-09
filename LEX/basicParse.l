@@ -195,6 +195,8 @@ pixel [Pp][Ii][Xx][Ee][Ll]
 getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
+getslice [Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]
+putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 %%
 
 
@@ -338,6 +340,8 @@ logten [Ll][Oo][Gg][1][0]
 {say}           { count(); return SAY; }
 {wavplay}       { count(); return WAVPLAY; }
 {wavstop}       { count(); return WAVSTOP; }
+{getslice}       { count(); return GETSLICE; }
+{putslice}       { count(); return PUTSLICE; }
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }

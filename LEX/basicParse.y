@@ -255,7 +255,7 @@
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
 %token SAY SYSTEM
 %token VOLUME
-%token GRAPHWIDTH GRAPHHEIGHT
+%token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
@@ -484,6 +484,7 @@ statement: gotostmt
 	 | volumestmt
 	 | wavplaystmt
 	 | wavstopstmt
+	 | putslicestmt
 	 	| seekstmt
 	 	| clickclearstmt
 ;
@@ -692,6 +693,12 @@ wavplaystmt: WAVPLAY stringexpr  {addOp(OP_WAVPLAY);  }
          | WAVPLAY '(' stringexpr ')' { addOp(OP_WAVPLAY); }
 ;
 
+putslicestmt: PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
+         | PUTSLICE '(' stringexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
+		 | PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
+         | PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr  ',' floatexpr')' { addOp(OP_PUTSLICEMASK); }
+;
+
 wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
          | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
@@ -894,6 +901,7 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
           | LEFT '(' stringexpr ',' floatexpr ')' { addOp(OP_LEFT); }
           | RIGHT '(' stringexpr ',' floatexpr ')' { addOp(OP_RIGHT); }
+          | GETSLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_GETSLICE); }
           | READ { addOp(OP_READ); }
           | READ '(' ')' { addOp(OP_READ); }
           | READLINE { addOp(OP_READLINE); }

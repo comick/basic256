@@ -2001,12 +2001,7 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			int b = rgb % 0x100;
-			rgb = rgb / 0x100;
-			int g = rgb % 0x100;
-			rgb = rgb / 0x100;
-			int r = rgb % 0x100;
-			stack.push(((r * 0x100) + g) * 0x100 + b);
+			stack.push((int) rgb % 0x1000000);
 		}
 		break;
 		
@@ -2014,12 +2009,78 @@ Interpreter::execByteCode()
 		{
 			op++;
 			QRgb rgb = pencolor.rgb();
-			int b = rgb % 0x100;
-			rgb = rgb / 0x100;
-			int g = rgb % 0x100;
-			rgb = rgb / 0x100;
-			int r = rgb % 0x100;
-			stack.push(((r * 0x100) + g) * 0x100 + b);
+			stack.push((int) rgb % 0x1000000);
+		}
+		break;
+		
+	case OP_GETSLICE:
+		{
+			// slice format is 4 digit HEX width, 4 digit HEX height,
+			// and (w*h)*6 digit HEX RGB for each pixel of slice
+			op++;
+			int h = stack.popint();
+			int w = stack.popint();
+			int y = stack.popint();
+			int x = stack.popint();
+			QString qs;
+			QRgb rgb;
+			int tw, th;
+			qs.append(QString::number(w,16).rightJustified(4,'0'));
+			qs.append(QString::number(h,16).rightJustified(4,'0'));
+			for(th=0; th<h; th++) {
+				for(tw=0; tw<w; tw++) {
+					rgb = (*image).pixel(x+tw,y+th);
+					qs.append(QString::number(rgb%0x1000000,16).rightJustified(6,'0'));
+				}
+			}
+			stack.push(strdup(qs.toUtf8().data()));
+		}
+		break;
+		
+	case OP_PUTSLICE:
+	case OP_PUTSLICEMASK:
+		{
+			int mask = 0x1000000;	// mask nothing will equal
+			if (*op == OP_PUTSLICEMASK) mask = stack.popint();
+			char *txt = stack.popstring();
+			QString imagedata = QString::fromUtf8(txt);
+			int y = stack.popint();
+			int x = stack.popint();
+			bool ok;
+			int rgb, lastrgb = 0x1000000;
+			int th, tw;
+			int offset = 0; // location in qstring to get next hex number
+
+			int w = imagedata.mid(offset,4).toInt(&ok, 16);
+			offset+=4;
+			if (ok) {
+				int h = imagedata.mid(offset,4).toInt(&ok, 16);
+				offset+=4;
+				if (ok) {
+
+					QPainter ian(image);
+					for(th=0; th<h && ok; th++) {
+						for(tw=0; tw<w && ok; tw++) {
+							rgb = imagedata.mid(offset, 6).toInt(&ok, 16);
+							offset+=6;
+							if (ok && rgb != mask) {
+								if (rgb!=lastrgb) {
+									ian.setPen(rgb);
+									lastrgb = rgb;
+								}
+								ian.drawPoint(x + tw, y + th);
+							}
+						}
+					}
+					ian.end();
+					if (!fastgraphics) waitForGraphics();
+				}
+			}
+			if (!ok) {
+					printError(tr("String input to putbit incorrect."));
+					return -1;
+			}
+			op++;
 		}
 		break;
 		

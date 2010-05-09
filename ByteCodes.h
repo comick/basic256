@@ -177,6 +177,9 @@
 #define OP_INTDIV 	       	0xd0
 #define OP_LOG 	       	0xd1
 #define OP_LOGTEN 	       	0xd2
+#define OP_GETSLICE 	       	0xd3
+#define OP_PUTSLICE 	       	0xd4
+#define OP_PUTSLICEMASK 	       	0xd5
 
 
 
