@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6a"
-  StrCpy $VERSIONDATE "2010-05-02"
+  StrCpy $VERSION "0.9.6c"
+  StrCpy $VERSIONDATE "2010-05-09"
 FunctionEnd
 
 Function customPage
@@ -33,7 +33,7 @@ Function customPage
 
 	${NSD_CreateLabel} 50 0 80% 10% "BASIC256 $VERSION ($VERSIONDATE)"
 	Pop $customLabel0
-	${NSD_CreateLabel} 0 50 100% 80% "This installer will load BASIC256.  Pervious versions will be overwritten and any saved files will be preserved."
+	${NSD_CreateLabel} 0 50 100% 80% "This installer will load BASIC256.  Previous versions will be overwritten and any saved files will be preserved."
 	Pop $customLabel1
 
 	nsDialogs::Show
