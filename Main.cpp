@@ -24,7 +24,7 @@
 #include <QLocale>
 #include <QStatusBar>
 #include <QFileInfo>
-#ifndef WIN32
+#if !defined(WIN32) || defined(__MINGW32__)
 #include <unistd.h>
 #endif 
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   QApplication qapp(argc, argv);
   char *lang = NULL;
 
-#ifndef WIN32
+#if !defined(WIN32) || defined(__MINGW32__)
   int opt = getopt(argc, argv, "l:");
   while (opt != -1)
     {
@@ -56,34 +56,37 @@ int main(int argc, char *argv[])
   QTranslator qtTranslator;
   if (lang)
     {
-      qtTranslator.load("qt_" + QString(lang));
+      bool ok = qtTranslator.load("qt_" + QString(lang));
+	  //QMessageBox m; m.setText(QString("generic lang - load ") + "qt_" + QString(lang) + (ok ? " good": " bad")); m.exec();
     }
   else
     {
-      qtTranslator.load("qt_" + QLocale::system().name());
+      bool ok = qtTranslator.load("qt_" + QLocale::system().name());
     }
   qapp.installTranslator(&qtTranslator);
   
   QTranslator kbTranslator;
   if (lang)
     {
-#ifndef WIN32
-      kbTranslator.load("basic256_" + QString(lang), qApp->applicationDirPath() + "/Translations/");
+#ifdef WIN32
+      bool ok = kbTranslator.load("basic256_" + QString(lang), qApp->applicationDirPath() + "/Translations/");
 #else
-      kbTranslator.load("basic256_" + QString(lang), "/usr/share/basic256/");
+      bool ok = kbTranslator.load("basic256_" + QString(lang), "/usr/share/basic256/");
 #endif
     }
   else
     {
-#ifndef WIN32
-      kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
+#ifdef WIN32
+      bool ok = kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
 #else
-      kbTranslator.load("basic256_" + QLocale::system().name(), "/usr/share/basic256/");
+      bool ok = kbTranslator.load("basic256_" + QLocale::system().name(), "/usr/share/basic256/");
 #endif
     }
   qapp.installTranslator(&kbTranslator);
 
+  
   MainWindow *mainwin = new MainWindow();
+  
   mainwin->setObjectName( "mainwin" );
   mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
   mainwin->resize(800,600);
