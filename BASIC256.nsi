@@ -14,7 +14,7 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6d"
+  StrCpy $VERSION "0.9.6e"
   StrCpy $VERSIONDATE "2010-05-10"
 FunctionEnd
 
@@ -88,9 +88,8 @@ Section "BASIC256"
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
-  File ..\doc\en\Documentation_EN.html
   File /r /x ".svn" Examples 
-  File /r /x ".svn" ..\doc\en\Documentation 
+  File /r /x ".svn" ..\doc\help 
   
   SetOutPath $INSTDIR\Translations 
   File .\Translations\*.qm
@@ -113,7 +112,6 @@ Section "Start Menu Shortcuts"
   SetOutPath $INSTDIR 
   CreateDirectory "$SMPROGRAMS\BASIC256"
   CreateShortCut "$SMPROGRAMS\BASIC256\BASIC256.lnk" "$INSTDIR\BASIC256.exe" "" "$INSTDIR\BASIC256.exe" 0
-  CreateShortCut "$SMPROGRAMS\BASIC256\Documentation_EN.lnk" "$INSTDIR\Documentation_EN.html" "" "$INSTDIR\Documentation_EN.html" 0
   CreateShortCut "$SMPROGRAMS\BASIC256\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   
 SectionEnd
@@ -136,9 +134,9 @@ Section "Uninstall"
   Delete $INSTDIR\ChangeLog
   Delete $INSTDIR\CONTRIBUTORS
   Delete $INSTDIR\license.txt
-  Delete $INSTDIR\Documentation_EN.html
   RMDir /r $INSTDIR\Examples
-  RMDir /r $INSTDIR\Documentation
+  RMDir /r $INSTDIR\Translations
+  RMDir /r $INSTDIR\help
   Delete $INSTDIR\uninstall.exe
 
   ; Remove shortcuts, if any

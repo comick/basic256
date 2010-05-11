@@ -35,7 +35,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   QApplication qapp(argc, argv);
-  char *lang = NULL;
+  char *lang = NULL;		// locale code passed with argument -l on command line
+  bool ok;
+  QString localecode;		// either lang or the system localle - stored on mainwin for help display
 
 #if !defined(WIN32) || defined(__MINGW32__)
   int opt = getopt(argc, argv, "l:");
@@ -53,35 +55,22 @@ int main(int argc, char *argv[])
     }
 #endif
 
+if (lang) {
+localecode = QString(lang);
+} else {
+localecode = QLocale::system().name();
+}
+
   QTranslator qtTranslator;
-  if (lang)
-    {
-      bool ok = qtTranslator.load("qt_" + QString(lang));
-	  //QMessageBox m; m.setText(QString("generic lang - load ") + "qt_" + QString(lang) + (ok ? " good": " bad")); m.exec();
-    }
-  else
-    {
-      bool ok = qtTranslator.load("qt_" + QLocale::system().name());
-    }
+  ok = qtTranslator.load("qt_" + localecode);
   qapp.installTranslator(&qtTranslator);
   
   QTranslator kbTranslator;
-  if (lang)
-    {
 #ifdef WIN32
-      bool ok = kbTranslator.load("basic256_" + QString(lang), qApp->applicationDirPath() + "/Translations/");
+      ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
 #else
-      bool ok = kbTranslator.load("basic256_" + QString(lang), "/usr/share/basic256/");
+      ok = kbTranslator.load("basic256_" + localecode, "/usr/share/basic256/");
 #endif
-    }
-  else
-    {
-#ifdef WIN32
-      bool ok = kbTranslator.load("basic256_" + QLocale::system().name(), qApp->applicationDirPath() + "/Translations/");
-#else
-      bool ok = kbTranslator.load("basic256_" + QLocale::system().name(), "/usr/share/basic256/");
-#endif
-    }
   qapp.installTranslator(&kbTranslator);
 
   
@@ -92,6 +81,7 @@ int main(int argc, char *argv[])
   mainwin->resize(800,600);
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
+  mainwin->localecode = localecode;
   mainwin->show();
 
 #ifndef WIN32

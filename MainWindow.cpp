@@ -220,9 +220,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
 	// About menu
-	QMenu *aboutmenu = menuBar()->addMenu(QObject::tr("&About"));
-	QAction *aboutact = aboutmenu->addAction(QObject::tr("&About BASIC-256"));
-	aboutact->setShortcut(Qt::Key_F1);
+	QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
+	QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
+	docact->setShortcut(Qt::Key_F1);
+	QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
+	QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256"));
 	QObject::connect(aboutact, SIGNAL(triggered()), aboutdialog, SLOT(show()));
 
 	// Add actions to main window toolbar

@@ -61,6 +61,7 @@ class RunController : public QObject
   void pauseResume();
   void saveByteCode();
   void stepThrough();
+  void showDocumentation();
 
  private:
   Interpreter *i;

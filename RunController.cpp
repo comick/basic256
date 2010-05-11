@@ -485,4 +485,12 @@ RunController::saveByteCode()
 	delete bc;
 }
 
+void
+RunController::showDocumentation()
+{
+     DocumentationWin *docwin = new DocumentationWin(mainwin);
+     docwin->show();
+     docwin->raise();
+     docwin->activateWindow();
+}
 

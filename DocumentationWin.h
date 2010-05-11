@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/** Copyright (C) 2010, J.M.Reneau.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -16,39 +16,28 @@
  **/
 
 
-#ifndef __MAINWINDOW_H
-#define __MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QAction>
-
-#include "BasicWidget.h"
-#include "BasicOutput.h"
-#include "BasicEdit.h"
-#include "BasicGraph.h"
-#include "VariableWin.h"
-#include "DocumentationWin.h"
-#include "EditSyntaxHighlighter.h"
+#include <QWidget>
+#include <QDialog>
+#include <QTextBrowser>
 
 
-class MainWindow : public QMainWindow
+#ifndef DOCUMENTATIONWINH
+
+#define DOCUMENTATIONWINH
+
+class DocumentationWin : public QDialog
 {
-  	Q_OBJECT;
-public:
-  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
-	~MainWindow();
-	QAction * runact;
-	QAction * debugact;
-	QAction * stepact;
-	QAction * stopact;
-  	BasicEdit * editor;
-  	BasicOutput * output;
-	BasicGraph * goutput;
-	VariableWin * vardock;
-	DocumentationWin * docdock;
-	EditSyntaxHighlighter * editsyntax;
-	
-	QString localecode;
+  Q_OBJECT;
+ public:
+  DocumentationWin(QWidget * parent);
+ void  resizeEvent(QResizeEvent *e);
+
+  
+ public slots:
+  
+ private:
+  QTextBrowser* docs;
 };
 
 #endif
