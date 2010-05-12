@@ -40,6 +40,28 @@ win32 {
 	LIBS			+=	-lflite_usenglish
 	LIBS			+=	-lm
 
+	## rules for make install
+	examplesDiceFiles.files = ./Examples/dice/*
+	examplesDiceFiles.path = /usr/share/basic256/Examples/dice
+	INSTALLS += examplesDiceFiles
+	examplesTestingFiles.files = ./Examples/testing/*
+	examplesTestingFiles.path = /usr/share/basic256/Examples/testing
+	INSTALLS += examplesTestingFiles
+	examplesFiles.files = ./Examples/*
+	examplesFiles.path = /usr/share/basic256/Examples
+	INSTALLS += examplesFiles
+	helpImgFiles.files = ../doc/help/images/*
+	helpImgFiles.path = /usr/share/basic256/help/images
+	INSTALLS += helpImgFiles
+	helpFiles.files = ../doc/help/*
+	helpFiles.path = /usr/share/basic256/help
+	INSTALLS += helpFiles
+	transFiles.files = ./Translations/*.qm
+	transFiles.path = /usr/share/basic256
+	INSTALLS += transFiles
+	target.path = /usr/local/bin
+	INSTALLS += target
+
 }
 
 exists( ./LEX/Makefile ) {
@@ -49,6 +71,7 @@ exists( ./LEX/Makefile ) {
 else { 
 	error( Couldn't make LEX project - aborting... )
 }
+
 
 # Input
 HEADERS 		+= 	LEX/basicParse.tab.h 

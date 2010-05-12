@@ -1,3 +1,7 @@
+2010-05-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6e
+
+	* Added statements to BASIC256.pro file so qmake would make the "make install" for linux to ease build
+
 2009-11-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.3o
 
 	* added STAMP to draw a scaled poly at a position on the graphics display - sort of a simple sprite

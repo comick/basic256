@@ -1,7 +1,7 @@
 
 To compile, you'll need the open source version of QT4, GNU flex and bison.
 Specifcally for LINUX you will need:
-* FLite or Espeak development libraries  (espeak has problems when sound and say are used in same program 0.9.5i, use flite) 
+* FLite or Espeak development libraries  (espeak has problems when sound and say are used in same program 0.9.5i, use flite 1.4 or better) 
 * g++ compiler and base development libraries
 
 Specifically for Windows you will need:
@@ -10,7 +10,7 @@ Specifically for Windows you will need:
 * the gretl development headers need to be added to mingw they are in a file called mingw-extra.zip
   and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
 
-Build:
+Build Windows MINGW and LINUX:
 
   open a command window (cmd)
   type "make clean" and hit enter
@@ -18,6 +18,9 @@ Build:
   type "make" and hit enter 
   
   You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
+
+  linux:  "make install" will install translations, help and binary  You can then create a launcher to "BASIC256" or "BASIC256 -l locale".
+ 
 
 Release Build (Windows):
   To build a nice WIN32 installer use the nullsoft scriptable install system file
