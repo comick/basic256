@@ -54,6 +54,7 @@ using namespace std;
 	#include <fcntl.h>
 	#include <sys/ioctl.h>
 	#include <math.h>
+	#include <time.h>
 	#include <linux/soundcard.h>
 #endif
 
@@ -216,6 +217,8 @@ RunController::playSounds(int notes, int* freqdur)
 			}
 		}
 		close(devfh);
+	} else {
+		fprintf(stderr,"Unable to open /dev/dsp\n");
 	}
 #endif
 }
@@ -247,28 +250,39 @@ RunController::speakWords(QString text)
     }
 
     ::CoUninitialize();
-#else
-	#ifdef LINUX_ESPEAK
-		// espeak tts library
-		char *data_path = NULL;   // use default path for espeak-data
-		int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+#endif
+#ifdef LINUX_ESPEAK
+	//QMessageBox::information( 0, "BASIC-256", QString("ESpeak"));
+    
+	// espeak tts library
+	char *data_path = NULL;   // use default path for espeak-data
+	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
 
-		int samplerate = espeak_Initialize(AUDIO_OUTPUT_PLAYBACK,0,data_path,0);
-        	if (samplerate!=-1) {
-			espeak_SetVoiceByName("default");
-			int size=text.length()+1;	// buffer length
-			espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-			espeak_Synchronize();		// wait to finish
-			espeak_Terminate();		// clean up
+	int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,data_path,0);
+       	if (samplerate!=-1) {
+		espeak_SetVoiceByName("default");
+		int size=text.length()+1;	// buffer length
+		espeak_ERROR err = espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+		if (err!=EE_OK) {
+			fprintf(stderr,"espeak synth error %i\n", err);
 		}
-	#endif
-	#if LINUX_FLITE
-		// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
-		cst_voice *v;
-		flite_init();
-		v = register_cmu_us_kal();
-		flite_text_to_speech(text.toLatin1(),v,"play");
-	#endif
+		espeak_Synchronize();		// wait to finish
+		espeak_Terminate();		// clean up
+
+	} else {
+		fprintf(stderr,"Unable to initialize espeak\n");
+	}
+#endif
+#ifdef LINUX_FLITE
+	// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
+	cst_voice *v;
+	flite_init();
+	v = register_cmu_us_kal();
+	int length = flite_text_to_speech(text.toLatin1(),v,"play");
+	// wait for finish
+	clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
+  	while (clock() < endwait) {}
+
 #endif
 }
 

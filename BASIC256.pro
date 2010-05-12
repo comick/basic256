@@ -28,16 +28,17 @@ win32 {
 } else {
 	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
 	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)
-	#DEFINES		+= LINUX_ESPEAK
-	#INCLUDEPATH		+=	/usr/include/espeak
-	#LIBS			+=	-lespeak
+	## DEFINES		+= 	LINUX_ESPEAK
+	## INCLUDEPATH		+=	/usr/include/espeak
+	## LIBS			+=	-lespeak
 	## flite library
-	DEFINES			+= LINUX_FLITE
+	DEFINES			+= 	LINUX_FLITE
 	INCLUDEPATH		+=	/usr/include/flite
 	LIBS			+=	-lflite_cmu_us_kal16
 	LIBS			+=	-lflite
 	LIBS			+=	-lflite_cmulex
 	LIBS			+=	-lflite_usenglish
+	
 	LIBS			+=	-lm
 
 	## rules for make install

@@ -1,3 +1,8 @@
+2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f
+
+	* added error statements to linus sound and speech functions.  They are still rough
+	and troublesome.
+
 2010-05-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6e
 
 	* Added statements to BASIC256.pro file so qmake would make the "make install" for linux to ease build

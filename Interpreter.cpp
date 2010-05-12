@@ -29,6 +29,7 @@
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QMessageBox>
 using namespace std;
 
 #include "LEX/basicParse.tab.h"
