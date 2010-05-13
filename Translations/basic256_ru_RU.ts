@@ -100,35 +100,35 @@
     </message>
     <message>
         <source>Illegal argument to int()</source>
-        <translation>Незаконный аргумент для int()</translation>
+        <translation type="obsolete">Незаконный аргумент для int()</translation>
     </message>
     <message>
         <source>Illegal argument to string()</source>
-        <translation>Незаконный аргумент для string()</translation>
+        <translation type="obsolete">Незаконный аргумент для string()</translation>
     </message>
     <message>
         <source>Illegal argument to sin()</source>
-        <translation>Незаконный аргумент для sin()</translation>
+        <translation type="obsolete">Незаконный аргумент для sin()</translation>
     </message>
     <message>
         <source>Illegal argument to cos()</source>
-        <translation>Незаконный аргумент для cos()</translation>
+        <translation type="obsolete">Незаконный аргумент для cos()</translation>
     </message>
     <message>
         <source>Illegal argument to tan()</source>
-        <translation>Незаконный аргумент для tan()</translation>
+        <translation type="obsolete">Незаконный аргумент для tan()</translation>
     </message>
     <message>
         <source>Illegal argument to ceil()</source>
-        <translation>Незаконный аргумент для ceil()</translation>
+        <translation type="obsolete">Незаконный аргумент для ceil()</translation>
     </message>
     <message>
         <source>Illegal argument to floor()</source>
-        <translation>Незаконный аргумент для floor()</translation>
+        <translation type="obsolete">Незаконный аргумент для floor()</translation>
     </message>
     <message>
         <source>Illegal argument to abs()</source>
-        <translation>Незаконный аргумент для abs()</translation>
+        <translation type="obsolete">Незаконный аргумент для abs()</translation>
     </message>
     <message>
         <source>String in numeric expression</source>
@@ -160,15 +160,15 @@
     </message>
     <message>
         <source>Illegal argument to write()</source>
-        <translation>Незаконный аргумент для write()</translation>
+        <translation type="obsolete">Незаконный аргумент для write()</translation>
     </message>
     <message>
         <source>Illegal argument to length()</source>
-        <translation>Незаконный аргумент для length()</translation>
+        <translation type="obsolete">Незаконный аргумент для length()</translation>
     </message>
     <message>
         <source>Illegal argument to poly()</source>
-        <translation>Незаконный аргумент для poly()</translation>
+        <translation type="obsolete">Незаконный аргумент для poly()</translation>
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
@@ -184,7 +184,7 @@
     </message>
     <message>
         <source>Illegal argument to mid()</source>
-        <translation>Незаконный аргумент для mid()</translation>
+        <translation type="obsolete">Незаконный аргумент для mid()</translation>
     </message>
     <message>
         <source>String not long enough for given starting character</source>
@@ -192,7 +192,7 @@
     </message>
     <message>
         <source>Illegal argument to instr()</source>
-        <translation>Незаконный аргумент для instr()</translation>
+        <translation type="obsolete">Незаконный аргумент для instr()</translation>
     </message>
     <message>
         <source>Illegal FOR -- start number &gt; end number</source>
@@ -250,6 +250,10 @@
         <source>RGB Color values must be in the range of 0 to 255.</source>
         <translation>Значения RGB цветов должны быть в диапазоне от 0 до 255.</translation>
     </message>
+    <message>
+        <source>String input to putbit incorrect.</source>
+        <translation>Строка ввода в putbit некорректна.</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -299,11 +303,11 @@
     </message>
     <message>
         <source>Copy</source>
-        <translation type="obsolete">Копировать</translation>
+        <translation>Копировать</translation>
     </message>
     <message>
         <source>Paste</source>
-        <translation type="obsolete">Вставить</translation>
+        <translation>Вставить</translation>
     </message>
     <message>
         <source>Select All</source>
@@ -441,7 +445,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Beautify</source>
-        <translation>Украшать</translation>
+        <translation>Крас&amp;ивый код</translation>
     </message>
     <message>
         <source>&amp;View</source>
@@ -465,7 +469,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Main</source>
-        <translation>Главный</translation>
+        <translation>&amp;Главная</translation>
     </message>
     <message>
         <source>&amp;Text Output</source>
@@ -497,18 +501,42 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;About</source>
-        <translation>О программе</translation>
+        <translation type="obsolete">О программе</translation>
     </message>
     <message>
         <source>&amp;About BASIC-256</source>
-        <translation type="unfinished">О BASIC-256</translation>
+        <translation>О BASIC-256</translation>
+    </message>
+    <message>
+        <source>&amp;Font Size</source>
+        <translation>Размер &amp;шрифта</translation>
+    </message>
+    <message>
+        <source>&amp;Small</source>
+        <translation>&amp;Мелкий</translation>
+    </message>
+    <message>
+        <source>&amp;Medium</source>
+        <translation>&amp;Средний</translation>
+    </message>
+    <message>
+        <source>&amp;Large</source>
+        <translation>&amp;Большой</translation>
+    </message>
+    <message>
+        <source>&amp;Huge</source>
+        <translation>&amp;Огромный</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Справка</translation>
     </message>
 </context>
 <context>
     <name>RunController</name>
     <message>
         <source>Running</source>
-        <translation>Выполняется...</translation>
+        <translation>Работает</translation>
     </message>
     <message>
         <source>Ready.</source>
@@ -516,7 +544,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Paused</source>
-        <translation>Приостановлено.</translation>
+        <translation>Приостановлено</translation>
     </message>
     <message>
         <source>Save file as</source>
