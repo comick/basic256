@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6e"
-  StrCpy $VERSIONDATE "2010-05-10"
+  StrCpy $VERSION "0.9.6g"
+  StrCpy $VERSIONDATE "2010-05-17"
 FunctionEnd
 
 Function customPage
@@ -85,6 +85,8 @@ Section "BASIC256"
   File .\release\mingwm10.dll
   File .\release\QtCore4.dll
   File .\release\QtGui4.dll
+  File .\release\QtNetwork4.dll
+  File .\release\QtWebKit4.dll
   File ChangeLog
   File CONTRIBUTORS
   File license.txt

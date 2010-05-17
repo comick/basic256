@@ -9,6 +9,7 @@ INCLUDEPATH		+=	.
 CONFIG          	+=  debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
+QT				+=	webkit
 RESOURCES		+=	resources/resource.qrc
 RC_FILE         =   resources/basic256.rc
 TRANSLATIONS	=	Translations/basic256_en_US.ts \
@@ -23,8 +24,6 @@ win32 {
 	LIBS			+= -lole32 \
 					-lsapi \
 					-lwinmm 
-					#Ian: removing this for visual studio build.  Mingw might need this back.
-					#-lm
 } else {
 	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
 	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)

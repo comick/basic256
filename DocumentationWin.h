@@ -19,8 +19,10 @@
 
 #include <QWidget>
 #include <QDialog>
-#include <QTextBrowser>
-
+#include <QFile>
+#include <QWebView>
+#include <QVBoxLayout>
+#include <QToolBar>
 
 #ifndef DOCUMENTATIONWINH
 
@@ -31,13 +33,13 @@ class DocumentationWin : public QDialog
   Q_OBJECT;
  public:
   DocumentationWin(QWidget * parent);
- void  resizeEvent(QResizeEvent *e);
 
-  
  public slots:
   
  private:
-  QTextBrowser* docs;
+  QVBoxLayout* layout;
+  QToolBar* toolbar;
+  QWebView* docs;
 };
 
 #endif

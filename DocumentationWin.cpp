@@ -27,32 +27,60 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 {
 	QString localecode = ((MainWindow *) parent)->localecode;
 	QString helpfile;
-
+	bool lookharder = true;
+	
+	QStringList searchpaths;
+	searchpaths << "./help/" << "/usr/share/basic256/help/";
+	
 	resize(700,500);
+	
+	docs = new QWebView();
 
-	docs = new QTextBrowser( this );
+	toolbar = new QToolBar(tr("Help Navigation"));
+    toolbar->addAction(docs->pageAction(QWebPage::Back));
+    toolbar->addAction(docs->pageAction(QWebPage::Forward));
+	
+	layout = new QVBoxLayout;
+     layout->addWidget(toolbar);
+     layout->addWidget(docs);
 
-	docs->setSearchPaths(QStringList() << "./help" << "/usr/share/basic256/help");
-
-	helpfile = "help_" + localecode + ".html";
-	docs->setSource(QUrl(QString(helpfile)));
-	if (docs->toPlainText().isEmpty()) {
-		// fall back to just the first two letters
-		helpfile = "help_" + localecode.left(2) + ".html";
-		docs->setSource(QUrl(QString(helpfile)));
-		if (docs->toPlainText().isEmpty()) {
-			// fall back to english
-			helpfile = "help_en.html";
-			docs->setSource(QUrl(QString(helpfile)));
-			if (docs->toPlainText().isEmpty()) {
-				docs->setHtml(QString("<html><body><h1>help folder and help items missing.</h1></body></html>"));
+     this->setLayout(layout);
+     this->show();
+	
+	// set lookharder to false once we find a good candidate html file
+	for ( QStringList::Iterator path = searchpaths.begin(); path != searchpaths.end() && lookharder; ++path ) {
+		helpfile = *path + "help_" + localecode + ".html";
+		if (QFile::exists(helpfile)) {
+			lookharder = false;
+		}
+		else
+		{
+			// fall back to just the first two letters
+			helpfile = *path + "help_" + localecode.left(2) + ".html";
+			if (QFile::exists(helpfile)) {
+				lookharder = false;
+			}
+			else
+			{
+				// fall back to english
+				helpfile = *path + "help_en.html";
+				if (QFile::exists(helpfile)) {
+						lookharder = false;
+				}
 			}
 		}
-	}
-}
+    }
 
-void DocumentationWin::resizeEvent(QResizeEvent *e) {
-	docs->resize(size());
+	if (lookharder) {
+		// unable to find help
+		docs->setHtml(QString("<html><body><h1>help folder and help items missing.</h1></body></html>"));
+	}
+	else
+	{
+		docs->load(helpfile);
+	}
+	docs->show();
+	
 }
 
 

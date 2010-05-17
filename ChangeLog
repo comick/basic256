@@ -1,3 +1,7 @@
+2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6g
+
+	* changed Documentation Window to use WebView to fix the #tags for navigation
+	
 2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f
 
 	* added error statements to linus sound and speech functions.  They are still rough and troublesome.
