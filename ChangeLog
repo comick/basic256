@@ -6,9 +6,51 @@
 
 	* added statements to BASIC256.pro file so qmake would make the "make install" for linux to ease build
 
-2009-12-27 j.m.reneau <renejm@users.sourceforge.net> 0.9.5
+0.9.6b
 
-	* 
+	* GetSlice returns a hex string representing a slice (rectangular area) of the screen
+	* PutSlice will draw the slice.  you may defina a transparent color in slice.
+
+0.9.5t
+
+	* Redim an array to change it's size while maintaining it's contents
+
+0.9.5w
+
+	* Log, Log10 functions
+
+0.9.5m
+
+	* Changed color staretemt to accept a single number RGB value r*255^2+g*255+b.
+	* changed colors to constants that return a color integer
+	* added rgb function to take color triplet and return color integer
+	* added getcolor to return the value of the current drawing color
+	* added pixel to get the color value of a pixel on the graphics output
+	Color, Rgb, GetColor, Pixel
+
+0.9.5i
+
+	* Rewrite sound with LINUX implementation - Sound, Volume
+
+0.9.5h
+
+	* System
+
+0.9.5e
+
+	* Lower, Upper
+
+0.9.5b
+
+	* Left, Right
+
+0.9.4g
+
+	* Do / Until, While / End While, If / Then
+
+0.9.4f
+
+	* Asc, Chr, Float, Font, Text
 
 2009-12-21 j.m.reneau <renejm@users.sourceforge.net> 0.9.4e
 
