@@ -41,7 +41,7 @@ DocumentationWin::DocumentationWin (QWidget * parent)
     toolbar->addAction(docs->pageAction(QWebPage::Forward));
 	//
 	toolbar->addSeparator();
-	QLabel *label = new QLabel("Search:");
+	QLabel *label = new QLabel(tr("Search:"));
 	toolbar->addWidget(label);
 	findthis = new QLineEdit();
 	QSizePolicy policy = findthis->sizePolicy();
