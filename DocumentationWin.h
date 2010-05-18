@@ -23,6 +23,11 @@
 #include <QWebView>
 #include <QVBoxLayout>
 #include <QToolBar>
+#include <QLabel>
+#include <QLineEdit>
+#include <QAction>
+#include <QObject>
+#include <QIcon>
 
 #ifndef DOCUMENTATIONWINH
 
@@ -34,12 +39,15 @@ class DocumentationWin : public QDialog
  public:
   DocumentationWin(QWidget * parent);
 
- public slots:
+private slots:
+	void searchForward();
+	void searchBackward();
   
  private:
   QVBoxLayout* layout;
   QToolBar* toolbar;
   QWebView* docs;
+  QLineEdit* findthis;
 };
 
 #endif

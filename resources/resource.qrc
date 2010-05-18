@@ -12,6 +12,8 @@
  		<file>images/cut.png</file>
  		<file>images/copy.png</file>
  		<file>images/paste.png</file>
+		<file>images/next.png</file>
+		<file>images/previous.png</file>	
  		<file>images/basic256.ico</file>
 	</qresource>
 </RCC>

@@ -39,6 +39,18 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	toolbar = new QToolBar(tr("Help Navigation"));
     toolbar->addAction(docs->pageAction(QWebPage::Back));
     toolbar->addAction(docs->pageAction(QWebPage::Forward));
+	//
+	toolbar->addSeparator();
+	QLabel *label = new QLabel("Search:");
+	toolbar->addWidget(label);
+	findthis = new QLineEdit();
+	QSizePolicy policy = findthis->sizePolicy();
+	findthis->setSizePolicy(QSizePolicy::Preferred, policy.verticalPolicy());
+	toolbar->addWidget(findthis);
+	QAction *sfact = toolbar->addAction(QIcon(":/images/next.png"), tr("Search Forward"));
+	connect(sfact, SIGNAL(triggered()), this, SLOT(searchForward()));
+	QAction *sbact = toolbar->addAction(QIcon(":/images/previous.png"), tr("Search Backward"));
+	connect(sbact, SIGNAL(triggered()), this, SLOT(searchBackward()));
 	
 	layout = new QVBoxLayout;
      layout->addWidget(toolbar);
@@ -81,6 +93,14 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	}
 	docs->show();
 	
+}
+
+void DocumentationWin::searchForward() {
+	docs->findText(findthis->text(), QWebPage::FindWrapsAroundDocument);
+}
+
+void DocumentationWin::searchBackward() {
+	docs->findText(findthis->text(), QWebPage::FindBackward | QWebPage::FindWrapsAroundDocument);
 }
 
 
