@@ -53,6 +53,25 @@
     </message>
 </context>
 <context>
+    <name>DocumentationWin</name>
+    <message>
+        <source>Help Navigation</source>
+        <translation>Навигация по справке</translation>
+    </message>
+    <message>
+        <source>Search:</source>
+        <translation>Поиск:</translation>
+    </message>
+    <message>
+        <source>Search Forward</source>
+        <translation>Поиск вперед</translation>
+    </message>
+    <message>
+        <source>Search Backward</source>
+        <translation>Поиск назад</translation>
+    </message>
+</context>
+<context>
     <name>Interpreter</name>
     <message>
         <source>ERROR on line </source>
@@ -497,7 +516,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Save Compiled &amp;Byte Code</source>
-        <translation>Сохранить байт-код</translation>
+        <translation>Сохранить &amp;байт-код</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -505,7 +524,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;About BASIC-256</source>
-        <translation>О BASIC-256</translation>
+        <translation>&amp;О BASIC-256</translation>
     </message>
     <message>
         <source>&amp;Font Size</source>
