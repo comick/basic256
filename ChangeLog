@@ -1,3 +1,12 @@
+2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6i
+
+	* added dialog to verify overwriting file
+	* added dialog to verify loading program and loosing changes
+	* changed new dialog to only appear if unsaved changes are in buffer
+	* added dialog on close to verify loosing changes (both exit and window close)
+	* added undo and redo to menu and toolbar for editor
+	* changed genhelp.list to make all ids and see also links lowercase - for LINUX
+	
 2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6h
 
 	* added search to Documentation Window

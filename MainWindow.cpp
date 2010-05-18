@@ -111,10 +111,17 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
 	QObject::connect(saveasact, SIGNAL(triggered()), editor, SLOT(saveAsProgram()));
 	QObject::connect(printact, SIGNAL(triggered()), editor, SLOT(slotPrint()));
-	QObject::connect(exitact, SIGNAL(triggered()), qApp, SLOT(quit()));
+	QObject::connect(exitact, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit menu
 	QMenu *editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
+	QAction *undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
+	QObject::connect(undoact, SIGNAL(triggered()), editor, SLOT(undo()));
+	undoact->setShortcut(Qt::Key_U + Qt::CTRL);
+	QAction *redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
+	QObject::connect(redoact, SIGNAL(triggered()), editor, SLOT(redo()));
+	redoact->setShortcut(Qt::Key_R + Qt::CTRL);
+	editmenu->addSeparator();
 	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
 	cutact->setShortcut(Qt::Key_X + Qt::CTRL);
 	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
@@ -238,6 +245,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	maintbar->addAction(stepact);
 	maintbar->addAction(stopact);
 	maintbar->addSeparator();
+	maintbar->addAction(undoact);
+	maintbar->addAction(redoact);
 	maintbar->addAction(cutact);
 	maintbar->addAction(copyact);
 	maintbar->addAction(pasteact);
@@ -264,4 +273,22 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::closeEvent(QCloseEvent *e) {
+	// quit the application but ask if there are unsaved changes in buffer
+	bool doquit = true;
+	if (editor->codeChanged) {
+		QMessageBox msgBox;
+		msgBox.setText(tr("Program modifications have not been saved."));
+		msgBox.setInformativeText(tr("Do you want wish to discard your changes?"));
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setDefaultButton(QMessageBox::Yes);
+		doquit = (msgBox.exec() == QMessageBox::Yes);
+	}
+	if (doquit) {
+         e->accept();
+     } else {
+         e->ignore();
+     }
 }

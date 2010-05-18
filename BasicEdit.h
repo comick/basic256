@@ -20,6 +20,7 @@
 #define __BASICEDIT_H
 
 
+#include <QApplication>
 #include <QTextEdit>
 #include <QMainWindow>
 #include <QKeyEvent>

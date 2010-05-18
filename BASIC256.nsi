@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6g"
-  StrCpy $VERSIONDATE "2010-05-17"
+  StrCpy $VERSION "0.9.6i"
+  StrCpy $VERSIONDATE "2010-05-18"
 FunctionEnd
 
 Function customPage
@@ -44,7 +44,7 @@ FunctionEnd
 Name "BASIC256 $VERSION ($VERSIONDATE)"
 
 ; The file to write
-OutFile "BASIC256-_Win32_Install.exe"
+OutFile "BASIC256-$VERSION_Win32_Install.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\BASIC256

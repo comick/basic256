@@ -21,6 +21,7 @@
 
 #include <QMainWindow>
 #include <QAction>
+#include <QMessageBox>
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"
@@ -37,6 +38,7 @@ class MainWindow : public QMainWindow
 public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();
+	void closeEvent(QCloseEvent *);
 	QAction * runact;
 	QAction * debugact;
 	QAction * stepact;
