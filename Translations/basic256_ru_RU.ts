@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>Yes</source>
-        <translation>Да</translation>
+        <translation type="obsolete">Да</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Нет</translation>
+        <translation type="obsolete">Нет</translation>
     </message>
     <message>
         <source>Untitled - BASIC-256</source>
@@ -50,6 +50,26 @@
     <message>
         <source>BASIC-256 file </source>
         <translation>Файлы BASIC-256 </translation>
+    </message>
+    <message>
+        <source>The file </source>
+        <translation>Файл </translation>
+    </message>
+    <message>
+        <source> exists on file.</source>
+        <translation> уже существует.</translation>
+    </message>
+    <message>
+        <source>Do you want wish to overwrite?</source>
+        <translation>Вы хотите его перезаписать?</translation>
+    </message>
+    <message>
+        <source>Program modifications have not been saved.</source>
+        <translation>Изменения в программе не сохранены.</translation>
+    </message>
+    <message>
+        <source>Do you want wish to discard your changes?</source>
+        <translation>Вы действительно готовы потерять изменения?</translation>
     </message>
 </context>
 <context>
@@ -272,6 +292,17 @@
     <message>
         <source>String input to putbit incorrect.</source>
         <translation>Строка ввода в putbit некорректна.</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindow</name>
+    <message>
+        <source>Program modifications have not been saved.</source>
+        <translation>Изменения в программе не сохранены.</translation>
+    </message>
+    <message>
+        <source>Do you want wish to discard your changes?</source>
+        <translation>Вы действительно готовы потерять изменения?</translation>
     </message>
 </context>
 <context>
@@ -549,6 +580,14 @@ Please check your printer settings.</source>
     <message>
         <source>&amp;Help</source>
         <translation>&amp;Справка</translation>
+    </message>
+    <message>
+        <source>&amp;Undo</source>
+        <translation>&amp;Отмена</translation>
+    </message>
+    <message>
+        <source>&amp;Redo</source>
+        <translation>&amp;Повтор</translation>
     </message>
 </context>
 <context>
