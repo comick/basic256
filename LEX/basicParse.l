@@ -153,6 +153,9 @@ not [Nn][Oo][Tt]
 pause [Pp][Aa][Uu][Ss][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
 integer [0-9]+
+hexinteger 0[xX][0-9a-fA-F]+
+octalinteger 0[oO][0-7]+
+binaryinteger 0[bB][01]+
 floatnum [0-9]*\.?[0-9]*
 string \"[^\"\n]*\"
 variable [a-zA-Z][a-zA-Z0-9]*
@@ -222,6 +225,9 @@ putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
           return LABEL; 
         }
 {integer}       { count(); yylval.number = atoi(yytext); return INTEGER; }
+{hexinteger}       { count(); yylval.number = strtol(yytext+2, NULL, 16); return INTEGER; }
+{octalinteger}       { count(); yylval.number = strtol(yytext+2, NULL, 8); return INTEGER; }
+{binaryinteger}       { count(); yylval.number = strtol(yytext+2, NULL, 2); return INTEGER; }
 {floatnum}      { count(); yylval.floatnum = atof(yytext); return FLOAT; }
 {string}        { int len; count(); len = strlen(yytext); 
                   yylval.string = strdup(yytext + 1); 
