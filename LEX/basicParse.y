@@ -255,7 +255,7 @@
 %token YEAR MONTH DAY HOUR MINUTE SECOND TEXT FONT
 %token SAY SYSTEM
 %token VOLUME
-%token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE
+%token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE IMGLOAD
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
@@ -485,6 +485,7 @@ statement: gotostmt
 	 | wavplaystmt
 	 | wavstopstmt
 	 | putslicestmt
+	 | imgloadstmt
 	 	| seekstmt
 	 	| clickclearstmt
 ;
@@ -694,9 +695,12 @@ wavplaystmt: WAVPLAY stringexpr  {addOp(OP_WAVPLAY);  }
 ;
 
 putslicestmt: PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
-         | PUTSLICE '(' stringexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
+         | PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
 		 | PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
          | PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr  ',' floatexpr')' { addOp(OP_PUTSLICEMASK); }
+
+imgloadstmt: IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);  }
+         | IMGLOAD '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD); }
 ;
 
 wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }

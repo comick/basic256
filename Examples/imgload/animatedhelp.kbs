@@ -1,0 +1,19 @@
+# animatedhelp.kbs - show another use of imgload
+clg
+fastgraphics
+imgload 0,0,"test.bmp"
+x = 50
+y = 50
+while true
+   x = x + rand * 20 - 10
+   y = y + rand * 20 - 10
+   if x < 0 then x = graphwidth
+   if x > graphwidth then x = 0
+   if y < 0 then y = graphheight
+   if y > graphheight then y = 0
+   save$ = getslice(x,y,30,30)
+   imgload x, y, "help.png"
+   refresh
+   pause .1
+   putslice x,y,save$
+end while

@@ -25,6 +25,7 @@
 #include <string>
 #include <QString>
 #include <QPainter>
+#include <QPixmap>
 #include <QColor>
 #include <QTime>
 #include <QMutex>
@@ -2341,6 +2342,26 @@ Interpreter::execByteCode()
 			ian.end();
 
 			if (!fastgraphics) waitForGraphics();
+		}
+		break;
+
+	case OP_IMGLOAD:
+		{
+			op++;
+			char *file = stack.popstring();
+			int y = stack.popint();
+			int x = stack.popint();
+			
+			QImage i(QString::fromUtf8(file));
+			if(i.isNull()) {
+				printError(tr("Unable to load image file."));
+				return -1;
+			} else {
+				QPainter ian(image);
+				ian.drawImage(x, y, i);
+				ian.end();
+				if (!fastgraphics) waitForGraphics();
+			}
 		}
 		break;
 

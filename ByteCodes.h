@@ -180,6 +180,7 @@
 #define OP_GETSLICE 	       	0xd3
 #define OP_PUTSLICE 	       	0xd4
 #define OP_PUTSLICEMASK 	       	0xd5
+#define OP_IMGLOAD 	       	0xd6
 
 
 

@@ -200,6 +200,7 @@ log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 getslice [Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
+imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 %%
 
 
@@ -348,6 +349,7 @@ putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 {wavstop}       { count(); return WAVSTOP; }
 {getslice}       { count(); return GETSLICE; }
 {putslice}       { count(); return PUTSLICE; }
+{imgload}       { count(); return IMGLOAD; }
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }

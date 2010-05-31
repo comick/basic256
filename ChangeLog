@@ -1,3 +1,7 @@
+2010-05-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.6k
+	* added imgload statement to load a bmp, gif, jpg, or pgn from a file and siaplsy it on the graphics output window
+	* compiled new ru translation from Sergey
+	
 2010-05-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6j
 	* added ability to enter integers in cose with 0[bB][01] for binary
 	0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
