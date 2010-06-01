@@ -102,6 +102,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ff][Ll][Oo][Oo][Rr]\\b"					// floor
 		  << "\\b[Ff][Oo][Rr]\\b"						// for
 		  << "\\b[Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]\\b"					// getcolor
+		  << "\\b[Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]\\b"					// getslice
 		  << "\\b[Gg][Oo][Ss][Uu][Bb]\\b"					// gosub
 		  << "\\b[Gg][Oo][Tt][Oo]\\b"						// goto
 		  << "\\b[Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]\\b"   		// graphheignt
@@ -109,6 +110,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]\\b"   		// graphwidth
 		  << "\\b[Hh][Oo][Uu][Rr]\\b"						// hour
 		  << "\\b[Ii][Ff]\\b"							// if
+		  << "\\b[Ii][Mm][Gg][Ll][Oo][Aa][Dd]\\b"					// imgload
 		  << "\\b[Ii][Nn][Pp][Uu][Tt]\\b"					// input
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"					// instr
 		  << "\\b[Kk][Ee][Yy]\\b"						// key
@@ -132,6 +134,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Pp][Ll][Oo][Tt]\\b"						// plot
 		  << "\\b[Pp][Oo][Ll][Yy]\\b"						// poly
 		  << "\\b[Pp][Rr][Ii][Nn][Tt]\\b"					// print
+		  << "\\b[Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]\\b"					// putslice
 		  << "\\b[Rr][Aa][Nn][Dd]\\b"						// rand
 		  << "\\b[Rr][Ee][Aa][Dd]\\b"						// read
 		  << "\\b[Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]\\b"				// readline

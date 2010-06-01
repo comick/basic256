@@ -1879,7 +1879,7 @@ Interpreter::execByteCode()
 				
 				for (int j = 0; j < length; j++)
 				{
-					freqdur[j] = array[j];
+					freqdur[j] = (int) array[j];
 				}
 				
 				emit(playSounds(length / 2 , freqdur));
@@ -2236,21 +2236,23 @@ Interpreter::execByteCode()
 					return -1;
 				}
 
-				double *array = vars[*i].value.arr->data.fdata;
-				QPointF *points = new QPointF[pairs];
+				if (scale>0) {
+					double *array = vars[*i].value.arr->data.fdata;
+					QPointF *points = new QPointF[pairs];
 
-				for (int j = 0; j < pairs; j++)
-				{
-					double scalex = scale * array[j*2];
-					double scaley = scale * array[(j*2)+1];
-					double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-					double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-					points[j].setX(rotx + x);
-					points[j].setY(roty + y);
+					for (int j = 0; j < pairs; j++)
+					{
+						double scalex = scale * array[j*2];
+						double scaley = scale * array[(j*2)+1];
+						double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
+						double roty = cos(rotate) * scaley + sin(rotate) * scalex;
+						points[j].setX(rotx + x);
+						points[j].setY(roty + y);
+					}
+					poly.drawPolygon(points, pairs);
+					poly.end();
+					delete points;
 				}
-				poly.drawPolygon(points, pairs);
-				poly.end();
-				delete points;
 			} 
 			else
 			{
@@ -2308,22 +2310,24 @@ Interpreter::execByteCode()
 				printError(tr("Not enough points in immediate list for stamp()"));
 				return -1;
 			}
-			QPointF *points = new QPointF[pairs];
-			for (int j = 0; j < pairs; j++)
-			{
-				double scalex = scale * list[(j*2)];
-				double scaley = scale * list[(j*2)+1];
-				double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-				double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-				points[j].setX(rotx + x);
-				points[j].setY(roty + y);
-			}
-			poly.drawPolygon(points, pairs);
+			if (scale>0) {
+				QPointF *points = new QPointF[pairs];
+				for (int j = 0; j < pairs; j++)
+				{
+					double scalex = scale * list[(j*2)];
+					double scaley = scale * list[(j*2)+1];
+					double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
+					double roty = cos(rotate) * scaley + sin(rotate) * scalex;
+					points[j].setX(rotx + x);
+					points[j].setY(roty + y);
+				}
+				poly.drawPolygon(points, pairs);
 
-			poly.end();
-			
-			if (!fastgraphics) waitForGraphics();
-			delete points;
+				poly.end();
+				
+				if (!fastgraphics) waitForGraphics();
+				delete points;
+			}
 		}
 		break;
 
@@ -2346,21 +2350,40 @@ Interpreter::execByteCode()
 		break;
 
 	case OP_IMGLOAD:
+	case OP_IMGLOAD_S:
+	case OP_IMGLOAD_SR:
 		{
-			op++;
-			char *file = stack.popstring();
-			int y = stack.popint();
-			int x = stack.popint();
+			// Image Load - with optional scale and rotate
+
+			double rotate=0;		// defaule rotation to 0 radians
+			double scale=1;			// default scale to full size (1x)
 			
-			QImage i(QString::fromUtf8(file));
-			if(i.isNull()) {
-				printError(tr("Unable to load image file."));
-				return -1;
-			} else {
-				QPainter ian(image);
-				ian.drawImage(x, y, i);
-				ian.end();
-				if (!fastgraphics) waitForGraphics();
+			unsigned char opcode = *op;
+			op++;
+			
+			// pop the filename to uncover the location and scale
+			char *file = stack.popstring();
+			
+			if (opcode==OP_IMGLOAD_SR) rotate = stack.popfloat();
+			if (opcode==OP_IMGLOAD_SR || opcode==OP_IMGLOAD_S) scale = stack.popfloat();
+			double y = stack.popint();
+			double x = stack.popint();
+			
+			if (scale>0) {
+				QImage i(QString::fromUtf8(file));
+				if(i.isNull()) {
+					printError(tr("Unable to load image file."));
+					return -1;
+				} else {
+					QPainter ian(image);
+					if (rotate != 0 || scale != 1) {
+						QMatrix mat = QMatrix().translate(0,0).rotate(rotate * 360 / (2 * M_PI)).scale(scale, scale);
+						i = i.transformed(mat);
+					}
+					ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+					ian.end();
+					if (!fastgraphics) waitForGraphics();
+				}
 			}
 		}
 		break;

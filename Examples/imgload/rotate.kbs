@@ -1,0 +1,13 @@
+# rotate.kbs - show imgload statement with rotate and scale
+clg
+imgload 150,150,"test.bmp"
+for t = 1 to 50
+   imgload graphwidth*rand, graphheight*rand, 1 + t/10, "help.png"
+next t
+a = 0
+for t = 0 to 10 * pi step .15
+   imgload 150,150, t/ pi , t, "help.png"
+   pause .01
+next t
+
+

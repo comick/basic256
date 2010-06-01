@@ -30,7 +30,7 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	bool lookharder = true;
 	
 	QStringList searchpaths;
-	searchpaths << "./help/" << "/usr/share/basic256/help/";
+	searchpaths << QApplication::applicationDirPath() + "/help/" << "/usr/share/basic256/help/";
 	
 	resize(700,500);
 	

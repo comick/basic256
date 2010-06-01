@@ -181,6 +181,8 @@
 #define OP_PUTSLICE 	       	0xd4
 #define OP_PUTSLICEMASK 	       	0xd5
 #define OP_IMGLOAD 	       	0xd6
+#define OP_IMGLOAD_S 	       	0xd7
+#define OP_IMGLOAD_SR 	       	0xd8
 
 
 
