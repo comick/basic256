@@ -293,6 +293,10 @@
         <source>String input to putbit incorrect.</source>
         <translation>Строка ввода в putbit некорректна.</translation>
     </message>
+    <message>
+        <source>Unable to load image file.</source>
+        <translation>Невозможно загрузить графический файл.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
