@@ -1,20 +1,20 @@
-2010-06-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6l
+2010-06-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6l (381)
 
 	* fixed help display path when windows installed.
 	* added getslice, putslice, and imgload into syntax highlighter
 	* changed imgload from 0.9.6k to place the center of the image at the specified coordinates
 	* added rotate and scale parameters to imgload like stamp
 
-2010-05-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.6k
+2010-05-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.6k (377)
 
 	* added imgload statement to load a bmp, gif, jpg, or pgn from a file and siaplsy it on the graphics output window
 	* compiled new ru translation from Sergey
 
-2010-05-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6j
+2010-05-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6j (376)
 
-	* added ability to enter integers in cose with 0[bB][01] for binary 0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
+	* added ability to enter integers in code with 0[bB][01] for binary 0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
 
-2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6i
+2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6i (374)
 
 	* added dialog to verify overwriting file
 	* added dialog to verify loading program and loosing changes
@@ -23,67 +23,99 @@
 	* added undo and redo to menu and toolbar for editor
 	* changed genhelp.list to make all ids and see also links lowercase - for LINUX
 
-2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6h
+2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6h (370)
 
 	* added search to Documentation Window
 
-2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6g
+2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6g (369)
 
 	* changed Documentation Window to use WebView to fix the #tags for navigation
 
-2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f
+2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f (362)
 
 	* added error statements to linus sound and speech functions.  They are still rough and troublesome.
 
-2010-05-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6e
+2010-05-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6e (361)
 
 	* added statements to BASIC256.pro file so qmake would make the "make install" for linux to ease build
 
-0.9.6b
+2010-05-10 j.m.reneau <renejm@users.sourceforge.net> 0.9.6c (359)
+
+	* changes for fontsize
+	* update Russian translation
+
+2010-05-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6b (353)
 
 	* GetSlice returns a hex string representing a slice (rectangular area) of the screen
 	* PutSlice will draw the slice.  you may defina a transparent color in slice.
 
-2010-05-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6a
+2010-05-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6a (350)
 
-	* support unicode string
+	* handle Utf8 strings (drblast)
+	* rewrite string functions to use unicode characters
+	* now program save and load in utf8
+	* compiled RU translation
 
-0.9.5t
+2010-04-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.5v (329)
+
+	* added \ operator for integer division
+	* added log() and log10() functions
+
+2010-04-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.5t (326)
 
 	* Redim an array to change it's size while maintaining it's contents
 
-0.9.5w
+2010-03-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.5m (318)
 
-	* Log, Log10 functions
-
-0.9.5m
-
-	* Changed color staretemt to accept a single number RGB value r*255^2+g*255+b.
+	* changed color staretemt to accept a single number RGB value r*255^2+g*255+b.
 	* changed colors to constants that return a color integer
 	* added rgb function to take color triplet and return color integer
 	* added getcolor to return the value of the current drawing color
 	* added pixel to get the color value of a pixel on the graphics output
-	Color, Rgb, GetColor, Pixel
 
-0.9.5i
+2010-02-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.5l (316)
 
-	* Rewrite sound with LINUX implementation - Sound, Volume
+	* finished linux implementastion of new sound command
 
-0.9.5h
+2010-01-29 j.m.reneau <renejm@users.sourceforge.net> 0.9.5j (315)
 
-	* System
+	* added cut, copy and paste icons to tool bar
+	* added option for sound to accept an array or list of frequency and durations.  This allows for fast smooth transition when playing multiple tones in a stream. linux logic not tested with this commit.
 
-0.9.5e
+2010-01-28 j.m.reneau <renejm@users.sourceforge.net> 0.9.5i (312)
 
-	* Lower, Upper
+	* added volume command to control the amplitude of the sound wave out
+	* changed LINUX TTS to flite engine from espeak. espeak was having problems releasing the /dev/dsp device
+	* cleaned up syntax high-liter
 
-0.9.5b
+2010-01-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.5h (311)
 
-	* Left, Right
+	* added system command and cleaned up documentation
 
-0.9.4g
+2010-01-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.5g (310)
 
-	* Do / Until, While / End While, If / Then
+	* re-wrote say to use libespeak under linux - need to get same change made to windows
+	* added logic to do the sound command in LINUX by writing a sine wave to /dev/dsp
+	* update doc.lisp and compiling.txt with info
+	* changed say command to use Microsoft SAPI instead of running a command line version of espeak. Also changed the Windows version of sound to generate a wave out to the soundcard and only use the system speaker if sound is not available (sound on a laptop)
+
+2010-01-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.5e (308)
+
+	* added UPPER and LOWER character functions, cleaned up syntax highlighter
+
+2010-01-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.5c (306)
+
+	* added two dimensional arrays to language (dim, reference, assignment, and input without prompt.  Still need to add to input with a prompt.
+	* updated documentation and 15puzzle.kbs example
+
+2010-01-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.5c (303)
+
+	* added left and right string functions, documented them
+	* cleaned up syntax highliter with newer reserved words and fixed string highlight
+
+2009-12-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.4g (296)
+
+	* added multi line if/endif and if/else/endif.  a;so added while/endwhile loop
 
 0.9.4f
 
