@@ -1,16 +1,18 @@
 2010-06-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6l
+
 	* fixed help display path when windows installed.
 	* added getslice, putslice, and imgload into syntax highlighter
 	* changed imgload from 0.9.6k to place the center of the image at the specified coordinates
 	* added rotate and scale parameters to imgload like stamp
 
 2010-05-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.6k
+
 	* added imgload statement to load a bmp, gif, jpg, or pgn from a file and siaplsy it on the graphics output window
 	* compiled new ru translation from Sergey
-	
+
 2010-05-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6j
-	* added ability to enter integers in cose with 0[bB][01] for binary
-	0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
+
+	* added ability to enter integers in cose with 0[bB][01] for binary 0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
 
 2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6i
 
@@ -20,15 +22,15 @@
 	* added dialog on close to verify loosing changes (both exit and window close)
 	* added undo and redo to menu and toolbar for editor
 	* changed genhelp.list to make all ids and see also links lowercase - for LINUX
-	
+
 2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6h
 
 	* added search to Documentation Window
-	
+
 2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6g
 
 	* changed Documentation Window to use WebView to fix the #tags for navigation
-	
+
 2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f
 
 	* added error statements to linus sound and speech functions.  They are still rough and troublesome.
@@ -41,6 +43,10 @@
 
 	* GetSlice returns a hex string representing a slice (rectangular area) of the screen
 	* PutSlice will draw the slice.  you may defina a transparent color in slice.
+
+2010-05-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6a
+
+	* support unicode string
 
 0.9.5t
 
