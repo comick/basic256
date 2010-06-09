@@ -81,7 +81,14 @@ struct forframe {
   double step;
 };
 
-
+typedef struct {
+	QImage *image;
+	QImage *underimage;
+	int x;
+	int y;
+	bool visible;
+	bool active;
+} sprite;
 
 class Interpreter : public QThread
 {
@@ -146,6 +153,12 @@ class Interpreter : public QThread
   QString fontfamily;
   int fontpoint;
   int fontweight;
+  void clearsprites();
+  void spriteundraw(int);
+  void spriteredraw(int);
+  bool spritecollide(int, int);
+  sprite *sprites;
+  int nsprites;
 };
 
 

@@ -39,10 +39,10 @@ using namespace std;
 	#include <mmsystem.h>
 	#include <math.h>
 #else
-	#if LINUX_ESPEAK
+	#ifdef LINUX_ESPEAK
 		#include <speak_lib.h>
 	#endif
-	#if LINUX_FLITE
+	#ifdef LINUX_FLITE
 		#include <flite.h>
 		extern "C"
 		{

@@ -149,6 +149,15 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ss][Ee][Ee][Kk]\\b"						// seek
 		  << "\\b[Ss][Ii][Nn]\\b"						// sin
 		  << "\\b[Ss][Ii][Zz][Ee]\\b"						// size
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]\\b"						// spritedcollide
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Dd][Ii][Mm]\\b"						// spritedim
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Hh][Ii][Dd][Ee]\\b"						// spritehide
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Ll][Oo][Aa][Dd]\\b"						// spriteload
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Mm][Oo][Vv][Ee]\\b"						// spritemove
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Ss][Hh][Oo][Ww]\\b"						// spriteshow
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Rr][Oo][Tt][Aa][Tt][Ee]\\b"						// spriterotate
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Ss][Cc][Aa][Ll][Ee]\\b"						// spritescale
+		  << "\\b[Ss][Pp][Rr][Ii][Ee][Ss][Ll][Ii][Cc][Ee]\\b"						// spriteslice
 		  << "\\b[Ss][Tt][Aa][Mm][Pp]\\b"					// stamp
 		  << "\\b[Ss][Tt][Ee][Pp]\\b"						// step
 		  << "\\b[Ss][Yy][Ss][Tt][Ee][Mm]\\b"					// system

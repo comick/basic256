@@ -1,0 +1,21 @@
+# spritetext3.kbs = use mouse to move a sprite around
+# 2010-06-09 j.m.reneau
+
+color green
+rect 0,0,300,300
+
+spritedim 2
+
+fixed = 1
+mobile = 0
+
+spriteload fixed, "help.png"
+spriteplace fixed, 150,150
+
+spriteload mobile, "help.png"
+spriteplace mobile, 0,0
+
+while true
+   spriteplace mobile, mousex, mousey
+   print spritecollide(0,1)
+end while

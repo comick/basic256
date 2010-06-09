@@ -183,7 +183,17 @@
 #define OP_IMGLOAD 	       	0xd6
 #define OP_IMGLOAD_S 	       	0xd7
 #define OP_IMGLOAD_SR 	       	0xd8
-
+#define OP_SPRITEDIM 	       	0xd9
+#define OP_SPRITELOAD 	       	0xda
+#define OP_SPRITEMOVE 	       	0xdb
+#define OP_SPRITEHIDE 	       	0xdc
+#define OP_SPRITESHOW 	       	0xdd
+#define OP_SPRITECOLLIDE 	       	0xde
+#define OP_SPRITEPLACE 	       	0xdf
+#define OP_SPRITEX 	       	0xe0
+#define OP_SPRITEY 	       	0xe1
+#define OP_SPRITEH 	       	0xe2
+#define OP_SPRITEW 	       	0xe3
 
 
 // stack manipulation

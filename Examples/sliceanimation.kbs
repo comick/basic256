@@ -28,17 +28,17 @@ y = 0
 dy = rand * 3 + 1
 
 while true
-# get new loction to put slise at
+   # get new loction to put slise at
    x = x + dx
    if x < 0 or x > 200 then dx = dx * -1
    y = y + dy
    if y < 0 or y > 200 then dy = dy * -1
-# get whet is there before putting slice
+   # get whet is there before putting slice
    original$ = getslice(x,y,100,100)
-# draw the slize with white as a transparent color
+   # draw the slize with white as a transparent color
    putslice x,y,slice$,black
-refresh
-# change it back to what it was before the slice
+   refresh
+   # change it back to what it was before the slice
    putslice x,y,original$
 end while
 end

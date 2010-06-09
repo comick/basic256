@@ -256,6 +256,8 @@
 %token SAY SYSTEM
 %token VOLUME
 %token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE IMGLOAD
+%token SPRITEDIM SPRITELOAD SPRITEMOVE SPRITEHIDE SPRITESHOW SPRITEPLACE
+%token SPRITECOLLIDE SPRITEX SPRITEY SPRITEH SPRITEW
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
@@ -292,8 +294,7 @@
 %nonassoc NOT
 %left '<' LTE '>' GTE '=' NE
 %left '-' '+'
-%left MOD
-%left '*' '/' INTDIV
+%left '*' '/' MOD INTDIV
 %nonassoc UMINUS
 %left '^'
 
@@ -486,6 +487,12 @@ statement: gotostmt
 	 | wavstopstmt
 	 | putslicestmt
 	 | imgloadstmt
+	 | spritedimstmt
+	 | spriteloadstmt
+	 | spriteplacestmt
+	 | spritemovestmt
+	 | spritehidestmt
+	 | spriteshowstmt
 	 	| seekstmt
 	 	| clickclearstmt
 ;
@@ -694,6 +701,10 @@ wavplaystmt: WAVPLAY stringexpr  {addOp(OP_WAVPLAY);  }
          | WAVPLAY '(' stringexpr ')' { addOp(OP_WAVPLAY); }
 ;
 
+wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
+         | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
+;
+
 putslicestmt: PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
          | PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
 		 | PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
@@ -707,8 +718,25 @@ imgloadstmt: IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);
          | IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_SR); }
 ;
 
-wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
-         | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
+spritedimstmt: SPRITEDIM floatexpr { addOp(OP_SPRITEDIM); } 		// parens added by single floatexpr
+;
+
+spriteloadstmt: SPRITELOAD floatexpr ',' stringexpr  {addOp(OP_SPRITELOAD);  }
+         | SPRITELOAD '(' floatexpr ',' stringexpr ')' { addOp(OP_SPRITELOAD); }
+;
+
+spriteplacestmt: SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addOp(OP_SPRITEPLACE);  }
+         | SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SPRITEPLACE); }
+;
+
+spritemovestmt: SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addOp(OP_SPRITEMOVE);  }
+         | SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SPRITEMOVE); }
+;
+
+spritehidestmt: SPRITEHIDE floatexpr { addOp(OP_SPRITEHIDE); } 		// parens added by single floatexpr
+;
+
+spriteshowstmt: SPRITESHOW floatexpr { addOp(OP_SPRITESHOW); } 		// parens added by single floatexpr
 ;
 
 seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  } 		// parens added by single floatexpr
@@ -879,6 +907,11 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 | RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 		 | GETCOLOR { addOp(OP_GETCOLOR); }
 		 | GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
+		 | SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addOp(OP_SPRITECOLLIDE); }
+		 | SPRITEX '(' floatexpr ')' { addOp(OP_SPRITEX); }
+		 | SPRITEY '(' floatexpr ')' { addOp(OP_SPRITEY); }
+  		 | SPRITEH '(' floatexpr ')' { addOp(OP_SPRITEH); }
+		 | SPRITEW '(' floatexpr ')' { addOp(OP_SPRITEW); }
   ;
 
 stringlist: stringexpr { listlen = 1; }

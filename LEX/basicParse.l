@@ -201,19 +201,46 @@ logten [Ll][Oo][Gg][1][0]
 getslice [Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
+spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
+spriteload [Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]
+spritemove [Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]
+spriteplace [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]
+spritehide [Ss][Pp][Rr][Ii][Tt][Ee][Hh][Ii][Dd][Ee]
+spriteshow [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]
+spritecollide [Ss][Pp][Rr][Ii][Tt][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]
+spritex [Ss][Pp][Rr][Ii][Tt][Ee][Xx]
+spritey [Ss][Pp][Rr][Ii][Tt][Ee][Yy]
+spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
+spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
+
 %%
 
 
 {label} { 
 	  char *temp;
-	  char *c;
+	  char *c, *d;
 	  int num;
           
           count();
-          temp = c = strdup(yytext);
+          temp = strdup(yytext);
+		  // strip whitespace
+		  c = temp;
+		  while(*c == ' ' || *c == '\t') {
+		  	c++;
+		  }
+		  if (c!=temp) {
+			d = temp;
+			while(*c!=0x00) {
+				*d++ = *c++;
+			}
+			*d = 0x00;
+		  }
+		  // strip :
+		  c = temp;
           while (*c != ':') c++;
-          *c = 0;
-          num = getSymbol(temp);
+          *c = 0x0;
+          //
+		  num = getSymbol(temp);
           if (num < 0)
             {
               yylval.number = newSymbol(temp); //Doesn't conflict, because label only resolved after branch
@@ -350,6 +377,17 @@ imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 {getslice}       { count(); return GETSLICE; }
 {putslice}       { count(); return PUTSLICE; }
 {imgload}       { count(); return IMGLOAD; }
+{spritedim}       { count(); return SPRITEDIM; }
+{spriteload}       { count(); return SPRITELOAD; }
+{spriteplace}       { count(); return SPRITEPLACE; }
+{spritemove}       { count(); return SPRITEMOVE; }
+{spritehide}       { count(); return SPRITEHIDE; }
+{spriteshow}       { count(); return SPRITESHOW; }
+{spritecollide}       { count(); return SPRITECOLLIDE; }
+{spritex}       { count(); return SPRITEX; }
+{spritey}       { count(); return SPRITEY; }
+{spriteh}       { count(); return SPRITEH; }
+{spritew}       { count(); return SPRITEW; }
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }
