@@ -1,5 +1,12 @@
-2010-06-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6l (381)
+2010-06-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6n
+	* fixed several memory leaks with strings from stack and variable assignments
+	* added sprites - spritedim, spriteload, spritemove, spriteplace, spritex, spritey, spritew, spriteh, and spritecollide
 
+2010-06-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6m
+	* fixed linux compile with lib espeak
+	* added logic to parser to allow for whitespace before a label - to allow older examples to run
+
+2010-06-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6l
 	* fixed help display path when windows installed.
 	* added getslice, putslice, and imgload into syntax highlighter
 	* changed imgload from 0.9.6k to place the center of the image at the specified coordinates
