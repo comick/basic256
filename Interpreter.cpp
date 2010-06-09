@@ -194,6 +194,66 @@ Interpreter::clearvars()
 }
 
 
+void Interpreter::clearsprites() {
+	// meed to implement to cleanup garbage
+}
+
+void Interpreter::spriteundraw(int n) {
+	// undraw all visible sprites >= n
+	int x, y, i;
+	QPainter ian(image);
+	i = nsprites-1;
+	while(i>=n) {
+		if (sprites[i].active && sprites[i].visible) {
+			x = sprites[i].x- sprites[i].image->width()/2;
+			y = sprites[i].y - sprites[i].image->height()/2;
+			ian.drawImage(x, y, *(sprites[i].underimage));
+		}
+		i--;
+	}
+	ian.end();
+}
+
+void Interpreter::spriteredraw(int n) {
+	int x, y, i;
+	// redraw all sprites n to nsprites-1
+	i = n;
+	while(i<nsprites) {
+		if (sprites[i].active && sprites[i].visible) {
+			x = sprites[i].x - sprites[i].image->width()/2;
+			y = sprites[i].y - sprites[i].image->height()/2;
+			delete sprites[i].underimage;
+			sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
+			QPainter ian(image);
+			ian.drawImage(x, y, *(sprites[i].image));
+			ian.end();
+		}
+		i++;
+	}
+}
+
+bool Interpreter::spritecollide(int n1, int n2) {
+	int top1, bottom1, left1, right1;
+	int top2, bottom2, left2, right2;
+	
+	if (n1==n2) return true;
+	
+	left1 = sprites[n1].x - sprites[n1].image->width()/2;
+	left2 = sprites[n2].x - sprites[n2].image->width()/2;
+	right1 = left1 + sprites[n1].image->width();
+	right2 = left2 + sprites[n2].image->width();
+	top1 = sprites[n1].y - sprites[n1].image->height()/2;
+	top2 = sprites[n2].y - sprites[n2].image->height()/2;
+	bottom1 = top1 + sprites[n1].image->height();
+	bottom2 = top2 + sprites[n2].image->height();
+
+   if (bottom1<top2) return false;
+   if (top1>bottom2) return false;
+   if (right1<left2) return false;
+   if (left1>right2) return false;
+   return true;
+}
+
 int
 Interpreter::compileProgram(char *code)
 {
@@ -305,6 +365,7 @@ Interpreter::initialize()
 	fontfamily = QString::QString();
 	fontpoint = 0;
 	fontweight = 0;
+	nsprites = 0;
 }
 
 
@@ -316,6 +377,8 @@ Interpreter::cleanup()
 	stack.clear();
 	//Clean up variables
 	clearvars();
+	//Clean up sprites
+	clearsprites();
 	//Clean up, for frames, etc.
 
 	if (byteCode)
@@ -379,7 +442,7 @@ Interpreter::execByteCode()
 {
 	if (status == R_INPUTREADY)
 	{
-		stack.push(strdup(inputString.toUtf8().data()));
+		stack.push(inputString.toUtf8().data());
 		status = R_RUNNING;
 		return 0;
 	}
@@ -614,7 +677,7 @@ Interpreter::execByteCode()
 			{
 				if (!stream->getChar(&c))
 				{
-					stack.push(strdup(""));
+					stack.push("");
 					return 0;
 				}
 			}
@@ -644,7 +707,7 @@ Interpreter::execByteCode()
 			}
 			strarray[offset] = 0;
 
-			stack.push(strdup(strarray));
+			stack.push(strarray);
 			free(strarray);
 		}
 		break;
@@ -713,12 +776,13 @@ Interpreter::execByteCode()
 				stream->flush();
 			}
 
+			free(temp);
+
 			if (error == -1)
 			{
 				printError(tr("Unable to write to file"));
 			}
 
-			free(temp);
 		}
 		break;
 
@@ -955,23 +1019,26 @@ Interpreter::execByteCode()
 			if (vars[*i].type == T_UNUSED)
 			{
 				printError(tr("Unknown variable"));
+				free(val);
 				return -1;
 			}
 			else if (vars[*i].type != T_STRARRAY)
 			{
 				printError(tr("Not a string array variable"));
+				free(val);
 				return -1;
 			}
 			else if (index >= vars[*i].value.arr->size || index < 0)
 			{
 				printError(tr("Array index out of bounds"));
+				free(val);
 				return -1;
 			}
-
+			
 			strarray = vars[*i].value.arr->data.sdata;
 			if (strarray[index])
 			{
-				delete(strarray[index]);
+				free(strarray[index]);
 			}
 			strarray[index] = val;
 
@@ -998,17 +1065,20 @@ Interpreter::execByteCode()
 			if (vars[*i].type == T_UNUSED)
 			{
 				printError(tr("Unknown variable"));
+				free(val);
 				return -1;
 			}
 			else if (vars[*i].type != T_STRARRAY)
 			{
 				printError(tr("Not a string array variable"));
+				free(val);
 				return -1;
 			}
 			else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
 				yindex >= vars[*i].value.arr->ydim || yindex < 0)
 			{
 				printError(tr("Array index out of bounds"));
+				free(val);
 				return -1;
 			}
 
@@ -1018,7 +1088,7 @@ Interpreter::execByteCode()
 
 			if (strarray[index])
 			{
-				delete(strarray[index]);
+				free(strarray[index]);
 			}
 			strarray[index] = val;
 
@@ -1392,10 +1462,6 @@ Interpreter::execByteCode()
 			
 			if ((pos < 1) || (len < 0))
 			{
-				char foo[100];
-				sprintf(foo,"%i %i", pos, len);
-				printError(foo);
-				
 				printError(tr("Illegal argument"));
 				free(temp);
 				return -1;
@@ -1466,7 +1532,7 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 
-                        for(unsigned int p=0;p<strlen(temp);p++) {
+            for(unsigned int p=0;p<strlen(temp);p++) {
 				if(isalpha(temp[p])) temp[p] = toupper(temp[p]);
 			}
 
@@ -1481,7 +1547,7 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 
-                        for(unsigned int p=0;p<strlen(temp);p++) {
+            for(unsigned int p=0;p<strlen(temp);p++) {
 				if(isalpha(temp[p])) temp[p] = tolower(temp[p]);
 			}
 
@@ -2024,18 +2090,19 @@ Interpreter::execByteCode()
 			int w = stack.popint();
 			int y = stack.popint();
 			int x = stack.popint();
-			QString qs;
+			QString *qs = new QString();
 			QRgb rgb;
 			int tw, th;
-			qs.append(QString::number(w,16).rightJustified(4,'0'));
-			qs.append(QString::number(h,16).rightJustified(4,'0'));
+			qs->append(QString::number(w,16).rightJustified(4,'0'));
+			qs->append(QString::number(h,16).rightJustified(4,'0'));
 			for(th=0; th<h; th++) {
 				for(tw=0; tw<w; tw++) {
-					rgb = (*image).pixel(x+tw,y+th);
-					qs.append(QString::number(rgb%0x1000000,16).rightJustified(6,'0'));
+					rgb = image->pixel(x+tw,y+th);
+					qs->append(QString::number(rgb%0x1000000,16).rightJustified(6,'0'));
 				}
 			}
-			stack.push(strdup(qs.toUtf8().data()));
+			stack.push(qs->toUtf8().data());
+			delete qs;
 		}
 		break;
 		
@@ -2046,6 +2113,7 @@ Interpreter::execByteCode()
 			if (*op == OP_PUTSLICEMASK) mask = stack.popint();
 			char *txt = stack.popstring();
 			QString imagedata = QString::fromUtf8(txt);
+			free(txt);
 			int y = stack.popint();
 			int x = stack.popint();
 			bool ok;
@@ -2373,6 +2441,7 @@ Interpreter::execByteCode()
 				QImage i(QString::fromUtf8(file));
 				if(i.isNull()) {
 					printError(tr("Unable to load image file."));
+					free(file);
 					return -1;
 				} else {
 					QPainter ian(image);
@@ -2385,6 +2454,185 @@ Interpreter::execByteCode()
 					if (!fastgraphics) waitForGraphics();
 				}
 			}
+			free(file);
+		}
+		break;
+
+	case OP_SPRITEDIM:
+		{
+			int n = stack.popint();
+			op++;
+			//printError("spritedim - ");
+			// deallocate existing sprites
+			if (nsprites!=0) {
+				free(sprites);
+				nsprites = 0;
+			}
+			//printError("spritedim - af deallocate");
+			// create new ones that are not visible, active, and are at origin
+			if (n > 0) {
+				sprites = (sprite*) malloc(sizeof(sprite) * n);
+				nsprites = n;
+				while (n>0) {
+					n--;
+					sprites[n].image = new QImage();
+					sprites[n].underimage = new QImage();
+					sprites[n].active = false;
+					sprites[n].visible = false;
+					sprites[n].x = 0;
+					sprites[n].y = 0;
+				}
+			}
+			//printError("spritedim - af allocate");
+		}
+		break;
+
+	case OP_SPRITELOAD:
+		{
+			
+			op++;
+			
+			char *file = stack.popstring();
+			int n = stack.popint();
+
+			if(n < 0 || n >=nsprites) {
+				printError(tr("Sprite number out of range."));
+				free(file);
+				return -1;
+			}
+			
+			spriteundraw(n);
+			delete sprites[n].image;
+			sprites[n].image = 	new QImage(QString::fromUtf8(file));
+			if(sprites[n].image->isNull()) {
+				printError(tr("Unable to load image file."));
+				free(file);
+				return -1;
+			}
+			delete sprites[n].underimage;
+			sprites[n].underimage = new QImage();
+			sprites[n].visible = true;
+			sprites[n].active = true;
+			spriteredraw(n);
+			
+			free(file);
+		}
+		break;
+
+	case OP_SPRITEMOVE:
+	case OP_SPRITEPLACE:
+		{
+			
+			unsigned char opcode = *op;
+			op++;
+			
+			int y = stack.popint();
+			int x = stack.popint();
+			int n = stack.popint();
+			
+			if(n < 0 || n >=nsprites) {
+				printError(tr("Sprite number out of range."));
+				return -1;
+			}
+			if(!sprites[n].active) {
+				printError(tr("Sprite has not been assigned."));
+				return -1;
+			}
+			
+			spriteundraw(n);
+			if (opcode==OP_SPRITEMOVE) {
+				x += sprites[n].x;
+				y += sprites[n].y;
+				if (x > (int) graph->image->width()) x = (int) graph->image->width();
+				if (x < 0) x = 0;
+				if (y > (int) graph->image->height()) y = (int) graph->image->height();
+				if (y < 0) y = 0;
+			}
+			sprites[n].x = x;
+			sprites[n].y = y;
+			spriteredraw(n);
+			
+			if (!fastgraphics) waitForGraphics();
+			//printError("spritemove - af");
+			
+		}
+		break;
+
+	case OP_SPRITEHIDE:
+	case OP_SPRITESHOW:
+		{
+			
+			unsigned char opcode = *op;
+			op++;
+			
+			int n = stack.popint();
+
+			if(n < 0 || n >=nsprites) {
+				printError(tr("Sprite number out of range."));
+				return -1;
+			}
+			if(!sprites[n].active) {
+				printError(tr("Sprite has not been assigned."));
+				return -1;
+			}
+			
+			if (sprites[n].active && sprites[n].visible) {
+				spriteundraw(n);
+				sprites[n].visible = (opcode==OP_SPRITESHOW);
+				spriteredraw(n);
+			}
+			
+			if (!fastgraphics) waitForGraphics();
+			
+		}
+		break;
+
+	case OP_SPRITECOLLIDE:
+		{
+			
+			op++;
+			
+			int n1 = stack.popint();
+			int n2 = stack.popint();
+
+			if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
+				printError(tr("Sprite number out of range."));
+				return -1;
+			}
+			if(!sprites[n1].active || !sprites[n2].active) {
+				printError(tr("Sprite has not been assigned."));
+				return -1;
+			}
+			
+			stack.push(spritecollide(n1, n2));
+			
+		}
+		break;
+
+	case OP_SPRITEX:
+	case OP_SPRITEY:
+	case OP_SPRITEH:
+	case OP_SPRITEW:
+		{
+			
+			unsigned char opcode = *op;
+			op++;
+			int n = stack.popint();
+			
+			if(n < 0 || n >=nsprites) {
+				printError(tr("Sprite number out of range."));
+				return -1;
+			}
+			if(!sprites[n].active) {
+				printError(tr("Sprite has not been assigned."));
+				return -1;
+			}
+			
+			if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
+			if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
+			if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
+			if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
+			
 		}
 		break;
 
@@ -2594,6 +2842,14 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 
 			char *temp = stack.popstring();	// don't free - assigned to a variable
+			
+			// cleanup old string value if there is one
+			if (vars[*num].type == T_STRING && vars[*num].value.string != NULL)
+			{
+				free(vars[*num].value.string);
+				vars[*num].value.string = NULL;
+			}
+
 			vars[*num].type = T_STRING;
 			vars[*num].value.string = temp;
 
