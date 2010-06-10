@@ -297,6 +297,14 @@
         <source>Unable to load image file.</source>
         <translation>Невозможно загрузить графический файл.</translation>
     </message>
+    <message>
+        <source>Sprite number out of range.</source>
+        <translation>Номер спрайта вне диапазона.</translation>
+    </message>
+    <message>
+        <source>Sprite has not been assigned.</source>
+        <translation>Спрайт не был назначен.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
