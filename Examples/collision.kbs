@@ -76,8 +76,7 @@ return
 
 iskollision:
   kollision = 0
-  sqr = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
-  gosub getsqrt
+  sqrt = ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) ^ .5
   if sqrt < r1 + r2 then kollision = 1 : sound 400,2
 return
 
@@ -93,8 +92,7 @@ return
 
 getkollision:
   #normal vector un = unx, uny
-  sqr = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) : sqrt = 0
-  gosub getsqrt
+  sqrt = ((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) ^ .5
   unx = (x2 - x1) / sqrt
   uny = (y2 -y1) / sqrt
   
@@ -123,20 +121,6 @@ getkollision:
   # tangential and normal vector add to resulting velocities
   vx1 = vt1nx + vn1nx : vy1 = vt1ny + vn1ny
   vx2 = vt2nx + vn2nx : vy2 = vt2ny + vn2ny
-return
-
-getsqrt:
-  # sqr is the input
-  delta = 0.000001
-  l1 = sqr :  l2 = 1  # l1 * l2 = sqr
-  nextiter:
-    l1 = (l1 + l2)/2
-    l2 = sqr / l1
-    if abs(l2 - l1) < delta then goto endsqrt
-  goto nextiter
-
-  endsqrt:
-    sqrt = (l1+l2)/2
 return
 
 zeichne:

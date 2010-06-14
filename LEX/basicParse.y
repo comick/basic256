@@ -878,8 +878,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | CLICKY '(' ')' { addOp(OP_CLICKY); }
          | CLICKB { addOp(OP_CLICKB); }
          | CLICKB '(' ')' { addOp(OP_CLICKB); }
-         | CLEAR { addIntOp(OP_PUSHINT, 0xffffff); }
-         | CLEAR '(' ')' { addIntOp(OP_PUSHINT, 0xffffff); }
+         | CLEAR { addIntOp(OP_PUSHINT, -1); }
+         | CLEAR '(' ')' { addIntOp(OP_PUSHINT, -1); }
          | BLACK { addIntOp(OP_PUSHINT, 0x000000); }
          | BLACK '(' ')' { addIntOp(OP_PUSHINT, 0x000000); }
          | WHITE { addIntOp(OP_PUSHINT, 0xf8f8f8); }

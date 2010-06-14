@@ -37,7 +37,6 @@ int currentKey;
 BasicGraph::BasicGraph(BasicOutput *o)
 {
   image = NULL;
-  imask = NULL;
   resize(GSIZE_MIN, GSIZE_MIN);
   output = o;
   setMinimumSize(gwidth, gheight);
@@ -46,25 +45,24 @@ BasicGraph::BasicGraph(BasicOutput *o)
 void
 BasicGraph::resize(int width, int height)
 {
-  if (image != NULL && width == image->width() && height == image->height())
-    {
-      return;
+	if (image != NULL && width == image->width() && height == image->height()) {
+		return;
     }
-  if (width > GWIDTH_MAX) { width = GWIDTH_MAX; }
-  if (height > GHEIGHT_MAX) { height = GHEIGHT_MAX; }
-  gwidth  = width;
-  gheight = height;
-  delete image;
-  delete imask;
-  imagedata = new uchar[sizeof(int) * width * height];
-  image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
-  mouseX = 0;
-  mouseY = 0;
-  mouseB = 0;
-  clickX = 0;
-  clickY = 0;
-  clickB = 0;
-  setMouseTracking(true);
+	if (width > GWIDTH_MAX) { width = GWIDTH_MAX; }
+	if (height > GHEIGHT_MAX) { height = GHEIGHT_MAX; }
+	gwidth  = width;
+	gheight = height;
+	delete image;
+	imagedata = new uchar[sizeof(int) * width * height];
+	image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+	image->fill(Qt::color0);
+	mouseX = 0;
+	mouseY = 0;
+	mouseB = 0;
+	clickX = 0;
+	clickY = 0;
+	clickB = 0;
+	setMouseTracking(true);
 }
 
 
@@ -74,7 +72,6 @@ BasicGraph::paintEvent(QPaintEvent *)
   QPainter p2(this);
   gtop = (height() - gheight) / 2;
   gleft = (width() - gwidth) / 2;
-  //image->setAlphaChannel(*imask);
   p2.drawImage(gleft, gtop, *image);
 }
 

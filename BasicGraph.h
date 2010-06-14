@@ -36,7 +36,6 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
  public:
   BasicGraph(BasicOutput *);
   QImage *image;
-  QImage *imask;
   bool initActions(QMenu *, ToolBar *);
   // used to store current location of mouse
   // default value of -1 when no mouse recorded over graphic output

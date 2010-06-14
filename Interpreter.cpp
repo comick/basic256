@@ -2038,7 +2038,11 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int rgbval = stack.popint();
-			pencolor = QColor::fromRgb((QRgb) rgbval);
+			if (rgbval==-1) {
+				pencolor = Qt::color0;
+			} else {
+				pencolor = QColor::fromRgb((QRgb) rgbval);
+			}
 		}
 		break;
 
@@ -2063,14 +2067,22 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			stack.push((int) (rgb % 0x1000000));
+			if (rgb==Qt::color0) {
+				stack.push(-1);
+			} else {
+				stack.push((int) (rgb % 0x1000000));
+			}
 		}
 		break;
 		
 	case OP_GETCOLOR:
 		{
 			op++;
-			stack.push((int) (pencolor.rgb() % 0x1000000));
+			if (pencolor==Qt::color0) {
+				stack.push(-1);
+			} else {
+				stack.push((int) (pencolor.rgb() % 0x1000000));
+			}
 		}
 		break;
 		
@@ -2158,6 +2170,9 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(pencolor);
 			ian.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 			if (x1val >= 0 && y1val >= 0)
 			{
 				ian.drawLine(x0val, y0val, x1val, y1val);
@@ -2180,6 +2195,9 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setBrush(pencolor);
 			ian.setPen(pencolor);
+			if (pencolor==Qt::color0) {
+				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 			if (x1val > 0 && y1val > 0)
 			{
 				ian.drawRect(x0val, y0val, x1val - 1, y1val - 1);
@@ -2202,6 +2220,9 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 
 			if (vars[*i].type == T_ARRAY)
 			{
@@ -2246,6 +2267,9 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 
 			int pairs = *i / 2;
 			if (pairs < 3)
@@ -2287,6 +2311,9 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 
 			if (vars[*i].type == T_ARRAY)
 			{
@@ -2364,6 +2391,9 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 
 			int pairs = llist / 2;
 			if (pairs < 3)
@@ -2403,6 +2433,9 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(pencolor);
 			ian.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 			ian.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
 			ian.end();
 
@@ -2461,6 +2494,9 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(pencolor);
 			ian.setBrush(pencolor);
+			if (pencolor==Qt::color0) {
+				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			}
 			if(!fontfamily.isEmpty()) {
 				ian.setFont(QFont(fontfamily, fontpoint, fontweight));
 			}

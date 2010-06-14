@@ -1,3 +1,10 @@
+2010-06-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6p
+	* re-wrote the way color "Clear" works
+	- getcolor and pixel will return a -1 when the drawing color or pixel requested is clear (or after a clg and nothing has been drawn there)
+	- the CLEAR constant/function now has a value of -1
+	- all of the drawing commands (point,line,rect,cir,poly,stamp) now will replace pixels with a transparent when color is clear
+	# added clear of the graphics output area - when initialized to cleanup LINUX display
+
 2010-06-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6o
 	* added spritev - visible function
 	* added spriteslice - extract a sprite from the screen and demo program

@@ -1,6 +1,6 @@
 # spriteslice.kbs - draw something on the screen and capture (slice) it
 # into a sprite
-# 2010-06-13 j.m.reneau
+# 2010-06-14 j.m.reneau
 
 spritedim 4
 dim dx(4)
@@ -8,23 +8,24 @@ dim dy(4)
 
 # clear screen draw balls then slice out sprites
 clg
-# ball one - blue with inset square
+# ball one - blue with square hole
 color blue
 circle 100,100,20
-color darkblue
+color clear
 rect 90,90,20,20
-# ball 2 - green
+# ball 2 - green with hole
 color green
 circle 100,200,20
+color clear
+circle 100,200,10
 # ball 3 - red
 color red
 circle 200,100,20
-# fourth is a shape
+# fourth is a square with a triangle cut out
 color black
-rect 200,200,30,5
-rect 205,230,30,5
-rect 200,205,5,30
-rect 230,200,5,30
+rect 200,200,35,35
+color clear
+poly {217,205,205,230,230,230}
 
 # make sprites
 spriteslice 0,80,80,41,41
