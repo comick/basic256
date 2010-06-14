@@ -92,12 +92,6 @@ static int compareTwoStackVal(stackval *two, stackval *one)
 	else return 1;
 }
 
-
-
-
-
-
-
 void Interpreter::printError(QString message)
 {
 	emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + message + "\n"));
@@ -205,8 +199,8 @@ void Interpreter::spriteundraw(int n) {
 	i = nsprites-1;
 	while(i>=n) {
 		if (sprites[i].active && sprites[i].visible) {
-			x = sprites[i].x- sprites[i].image->width()/2;
-			y = sprites[i].y - sprites[i].image->height()/2;
+			x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
+			y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
 			ian.drawImage(x, y, *(sprites[i].underimage));
 		}
 		i--;
@@ -220,8 +214,8 @@ void Interpreter::spriteredraw(int n) {
 	i = n;
 	while(i<nsprites) {
 		if (sprites[i].active && sprites[i].visible) {
-			x = sprites[i].x - sprites[i].image->width()/2;
-			y = sprites[i].y - sprites[i].image->height()/2;
+			x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
+			y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
 			delete sprites[i].underimage;
 			sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 			QPainter ian(image);
@@ -238,12 +232,12 @@ bool Interpreter::spritecollide(int n1, int n2) {
 	
 	if (n1==n2) return true;
 	
-	left1 = sprites[n1].x - sprites[n1].image->width()/2;
-	left2 = sprites[n2].x - sprites[n2].image->width()/2;
+	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()/2.0);
+	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()/2.0);;
 	right1 = left1 + sprites[n1].image->width();
 	right2 = left2 + sprites[n2].image->width();
-	top1 = sprites[n1].y - sprites[n1].image->height()/2;
-	top2 = sprites[n2].y - sprites[n2].image->height()/2;
+	top1 = (int) (sprites[n1].y - (double) sprites[n1].image->height()/2.0);
+	top2 = (int) (sprites[n2].y - (double) sprites[n2].image->height()/2.0);
 	bottom1 = top1 + sprites[n1].image->height();
 	bottom2 = top2 + sprites[n2].image->height();
 
@@ -2036,15 +2030,15 @@ Interpreter::execByteCode()
 					printError(tr("RGB Color values must be in the range of 0 to 255."));
 					return -1;
 				}
-			pencolor = QColor(rval, gval, bval);
+			pencolor = QColor(rval, gval, bval, 255);
 		}
 		break;
 
 	case OP_SETCOLORINT:
 		{
 			op++;
-			QRgb rgbval = stack.popint();
-			pencolor = QColor(rgbval);
+			int rgbval = stack.popint();
+			pencolor = QColor::fromRgb((QRgb) rgbval);
 		}
 		break;
 
@@ -2069,15 +2063,14 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			stack.push((int) rgb % 0x1000000);
+			stack.push((int) (rgb % 0x1000000));
 		}
 		break;
 		
 	case OP_GETCOLOR:
 		{
 			op++;
-			QRgb rgb = pencolor.rgb();
-			stack.push((int) rgb % 0x1000000);
+			stack.push((int) (pencolor.rgb() % 0x1000000));
 		}
 		break;
 		
@@ -2185,8 +2178,8 @@ Interpreter::execByteCode()
 			int x0val = stack.popint();
 
 			QPainter ian(image);
-			ian.setPen(pencolor);
 			ian.setBrush(pencolor);
+			ian.setPen(pencolor);
 			if (x1val > 0 && y1val > 0)
 			{
 				ian.drawRect(x0val, y0val, x1val - 1, y1val - 1);
@@ -2455,184 +2448,6 @@ Interpreter::execByteCode()
 				}
 			}
 			free(file);
-		}
-		break;
-
-	case OP_SPRITEDIM:
-		{
-			int n = stack.popint();
-			op++;
-			//printError("spritedim - ");
-			// deallocate existing sprites
-			if (nsprites!=0) {
-				free(sprites);
-				nsprites = 0;
-			}
-			//printError("spritedim - af deallocate");
-			// create new ones that are not visible, active, and are at origin
-			if (n > 0) {
-				sprites = (sprite*) malloc(sizeof(sprite) * n);
-				nsprites = n;
-				while (n>0) {
-					n--;
-					sprites[n].image = new QImage();
-					sprites[n].underimage = new QImage();
-					sprites[n].active = false;
-					sprites[n].visible = false;
-					sprites[n].x = 0;
-					sprites[n].y = 0;
-				}
-			}
-			//printError("spritedim - af allocate");
-		}
-		break;
-
-	case OP_SPRITELOAD:
-		{
-			
-			op++;
-			
-			char *file = stack.popstring();
-			int n = stack.popint();
-
-			if(n < 0 || n >=nsprites) {
-				printError(tr("Sprite number out of range."));
-				free(file);
-				return -1;
-			}
-			
-			spriteundraw(n);
-			delete sprites[n].image;
-			sprites[n].image = 	new QImage(QString::fromUtf8(file));
-			if(sprites[n].image->isNull()) {
-				printError(tr("Unable to load image file."));
-				free(file);
-				return -1;
-			}
-			delete sprites[n].underimage;
-			sprites[n].underimage = new QImage();
-			sprites[n].visible = true;
-			sprites[n].active = true;
-			spriteredraw(n);
-			
-			free(file);
-		}
-		break;
-
-	case OP_SPRITEMOVE:
-	case OP_SPRITEPLACE:
-		{
-			
-			unsigned char opcode = *op;
-			op++;
-			
-			int y = stack.popint();
-			int x = stack.popint();
-			int n = stack.popint();
-			
-			if(n < 0 || n >=nsprites) {
-				printError(tr("Sprite number out of range."));
-				return -1;
-			}
-			if(!sprites[n].active) {
-				printError(tr("Sprite has not been assigned."));
-				return -1;
-			}
-			
-			spriteundraw(n);
-			if (opcode==OP_SPRITEMOVE) {
-				x += sprites[n].x;
-				y += sprites[n].y;
-				if (x > (int) graph->image->width()) x = (int) graph->image->width();
-				if (x < 0) x = 0;
-				if (y > (int) graph->image->height()) y = (int) graph->image->height();
-				if (y < 0) y = 0;
-			}
-			sprites[n].x = x;
-			sprites[n].y = y;
-			spriteredraw(n);
-			
-			if (!fastgraphics) waitForGraphics();
-			//printError("spritemove - af");
-			
-		}
-		break;
-
-	case OP_SPRITEHIDE:
-	case OP_SPRITESHOW:
-		{
-			
-			unsigned char opcode = *op;
-			op++;
-			
-			int n = stack.popint();
-
-			if(n < 0 || n >=nsprites) {
-				printError(tr("Sprite number out of range."));
-				return -1;
-			}
-			if(!sprites[n].active) {
-				printError(tr("Sprite has not been assigned."));
-				return -1;
-			}
-			
-			if (sprites[n].active && sprites[n].visible) {
-				spriteundraw(n);
-				sprites[n].visible = (opcode==OP_SPRITESHOW);
-				spriteredraw(n);
-			}
-			
-			if (!fastgraphics) waitForGraphics();
-			
-		}
-		break;
-
-	case OP_SPRITECOLLIDE:
-		{
-			
-			op++;
-			
-			int n1 = stack.popint();
-			int n2 = stack.popint();
-
-			if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
-				printError(tr("Sprite number out of range."));
-				return -1;
-			}
-			if(!sprites[n1].active || !sprites[n2].active) {
-				printError(tr("Sprite has not been assigned."));
-				return -1;
-			}
-			
-			stack.push(spritecollide(n1, n2));
-			
-		}
-		break;
-
-	case OP_SPRITEX:
-	case OP_SPRITEY:
-	case OP_SPRITEH:
-	case OP_SPRITEW:
-		{
-			
-			unsigned char opcode = *op;
-			op++;
-			int n = stack.popint();
-			
-			if(n < 0 || n >=nsprites) {
-				printError(tr("Sprite number out of range."));
-				return -1;
-			}
-			if(!sprites[n].active) {
-				printError(tr("Sprite has not been assigned."));
-				return -1;
-			}
-			
-			if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
-			if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
-			if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
-			if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
-			
 		}
 		break;
 
@@ -2950,14 +2765,234 @@ Interpreter::execByteCode()
 		break;
 
 
+		
+	case OP_EXTENDED00:
+		{
+			// extended op 0xe0xx - allow for an extra range of operations
+			op++;
+			switch(*op) {
+				case OP_SPRITEDIM:
+					{
+						int n = stack.popint();
+						op++;
+						// deallocate existing sprites
+						if (nsprites!=0) {
+							free(sprites);
+							nsprites = 0;
+						}
+						// create new ones that are not visible, active, and are at origin
+						if (n > 0) {
+							sprites = (sprite*) malloc(sizeof(sprite) * n);
+							nsprites = n;
+							while (n>0) {
+								n--;
+								sprites[n].image = new QImage();
+								sprites[n].underimage = new QImage();
+								sprites[n].active = false;
+								sprites[n].visible = false;
+								sprites[n].x = 0;
+								sprites[n].y = 0;
+							}
+						}
+					}
+					break;
+
+				case OP_SPRITELOAD:
+					{
+						op++;
+						
+						char *file = stack.popstring();
+						int n = stack.popint();
+						
+						if(n < 0 || n >=nsprites) {
+							printError(tr("Sprite number out of range."));
+							free(file);
+							return -1;
+						}
+						
+						spriteundraw(n);
+						delete sprites[n].image;
+						sprites[n].image = 	new QImage(QString::fromUtf8(file));
+						if(sprites[n].image->isNull()) {
+							printError(tr("Unable to load image file."));
+							free(file);
+							return -1;
+						}
+						delete sprites[n].underimage;
+						sprites[n].underimage = new QImage();
+						sprites[n].visible = false;
+						sprites[n].active = true;
+						spriteredraw(n);
+			
+						free(file);
+					}
+					break;
+					
+				case OP_SPRITESLICE:
+					{
+						op++;
+						
+						int h = stack.popint();
+						int w = stack.popint();
+						int y = stack.popint();
+						int x = stack.popint();
+						int n = stack.popint();
+						
+						if(n < 0 || n >=nsprites) {
+							printError(tr("Sprite number out of range."));
+							return -1;
+						}
+						
+						spriteundraw(n);
+						delete sprites[n].image;
+						sprites[n].image = new QImage(image->copy(x, y, w, h));
+						if(sprites[n].image->isNull()) {
+							printError(tr("Unable to slice image."));
+							return -1;
+						}
+						delete sprites[n].underimage;
+						sprites[n].underimage = new QImage();
+						sprites[n].visible = false;
+						sprites[n].active = true;
+						spriteredraw(n);
+					}
+					break;
+					
+				case OP_SPRITEMOVE:
+				case OP_SPRITEPLACE:
+					{
+						
+						unsigned char opcode = *op;
+						op++;
+						
+						double y = stack.popfloat();
+						double x = stack.popfloat();
+						int n = stack.popint();
+						
+						if(n < 0 || n >=nsprites) {
+							printError(tr("Sprite number out of range."));
+							return -1;
+						}
+						if(!sprites[n].active) {
+							printError(tr("Sprite has not been assigned."));
+							return -1;
+						}
+			
+						spriteundraw(n);
+						if (opcode==OP_SPRITEMOVE) {
+							x += sprites[n].x;
+							y += sprites[n].y;
+							if (x > (int) graph->image->width()) x = (double) graph->image->width();
+							if (x < 0) x = 0;
+							if (y > (int) graph->image->height()) y = (double) graph->image->height();
+							if (y < 0) y = 0;
+						}
+						sprites[n].x = x;
+						sprites[n].y = y;
+						spriteredraw(n);
+						
+						if (!fastgraphics) waitForGraphics();
+					}
+					break;
+
+				case OP_SPRITEHIDE:
+				case OP_SPRITESHOW:
+					{
+						
+						unsigned char opcode = *op;
+						op++;
+						
+						int n = stack.popint();
+						
+						if(n < 0 || n >=nsprites) {
+							printError(tr("Sprite number out of range."));
+							return -1;
+						}
+						if(!sprites[n].active) {
+							printError(tr("Sprite has not been assigned."));
+							return -1;
+						}
+						
+						spriteundraw(n);
+						sprites[n].visible = (opcode==OP_SPRITESHOW);
+						spriteredraw(n);
+						
+						if (!fastgraphics) waitForGraphics();
+			
+					}
+					break;
+
+				case OP_SPRITECOLLIDE:
+					{
+						
+						op++;
+						
+						int n1 = stack.popint();
+						int n2 = stack.popint();
+						
+						if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
+							printError(tr("Sprite number out of range."));
+							return -1;
+						}
+						if(!sprites[n1].active || !sprites[n2].active) {
+							printError(tr("Sprite has not been assigned."));
+							return -1;
+						}
+						
+						stack.push(spritecollide(n1, n2));
+						
+					}
+					break;
+
+			case OP_SPRITEX:
+			case OP_SPRITEY:
+			case OP_SPRITEH:
+			case OP_SPRITEW:
+			case OP_SPRITEV:
+				{
+					
+					unsigned char opcode = *op;
+					op++;
+					int n = stack.popint();
+					
+					if(n < 0 || n >=nsprites) {
+						printError(tr("Sprite number out of range."));
+						return -1;
+					}
+					if(!sprites[n].active) {
+						printError(tr("Sprite has not been assigned."));
+						return -1;
+					}
+					
+					if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
+					if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
+					if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
+					if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
+					if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
+					
+				}
+				break;
+				
+				// insert additional extended operations here
+				
+			default:
+				{
+					printError(tr("Invalid Extended Op-code."));
+					status = R_STOPPED;
+					return -1;
+					break;
+				}
+			}
+		}
+		break;
+		
 	case OP_STACKSWAP:
 		{
 			op++;
 			stack.swap();
 		}
 		break;
-
-
+		
 	default:
 		status = R_STOPPED;
 		return -1;

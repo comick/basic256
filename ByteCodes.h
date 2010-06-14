@@ -183,19 +183,25 @@
 #define OP_IMGLOAD 	       	0xd6
 #define OP_IMGLOAD_S 	       	0xd7
 #define OP_IMGLOAD_SR 	       	0xd8
-#define OP_SPRITEDIM 	       	0xd9
-#define OP_SPRITELOAD 	       	0xda
-#define OP_SPRITEMOVE 	       	0xdb
-#define OP_SPRITEHIDE 	       	0xdc
-#define OP_SPRITESHOW 	       	0xdd
-#define OP_SPRITECOLLIDE 	       	0xde
-#define OP_SPRITEPLACE 	       	0xdf
-#define OP_SPRITEX 	       	0xe0
-#define OP_SPRITEY 	       	0xe1
-#define OP_SPRITEH 	       	0xe2
-#define OP_SPRITEW 	       	0xe3
 
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0
+
+// extended opcodes (second byte)
+// first group e0xx
+#define OP_EXTENDED00			0xe0
+#define OP_SPRITEDIM 	       	0x00
+#define OP_SPRITELOAD 	       	0x01
+#define OP_SPRITESLICE 	       	0x02
+#define OP_SPRITEMOVE 	       	0x03
+#define OP_SPRITEHIDE 	       	0x04
+#define OP_SPRITESHOW 	       	0x05
+#define OP_SPRITECOLLIDE 	    0x06
+#define OP_SPRITEPLACE 	       	0x07
+#define OP_SPRITEX 	       		0x08
+#define OP_SPRITEY 	       		0x09
+#define OP_SPRITEH 	       		0x0a
+#define OP_SPRITEW 	       		0x0b
+#define OP_SPRITEV	       		0x0c
 

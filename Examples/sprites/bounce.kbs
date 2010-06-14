@@ -1,5 +1,5 @@
 # ball bounce program
-# 2010-06-09 j.m.reneau
+# 2010-06-13 j.m.reneau
 
 print "use mouse to bounce ball on paddle."
 
@@ -12,8 +12,10 @@ dy = 1
 spritedim 2
 spriteload 0, "ball.png"
 spriteplace 0,10,10
+spriteshow 0
 spriteload 1, "paddle"
 spriteplace 1,150,270
+spriteshow 1
 
 while spritey(0) < 295
    spriteplace 1, mousex, 270
@@ -22,7 +24,7 @@ while spritey(0) < 295
    spritemove 0, dx, dy
    if spritecollide(0,1) then
       dx = (dx + (spritex(1)-spritex(0)) * .05) * -1
-      dy = (dy + (spritey(1)-spritey(0)) * .05) * -1
+      dy = dy * -1.05
    end if
 end while
 

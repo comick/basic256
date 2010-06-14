@@ -1,3 +1,8 @@
+2010-06-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6o
+	* added spritev - visible function
+	* added spriteslice - extract a sprite from the screen and demo program
+	* changed sprite to be not visible when created - so that is can be moved and so that it does not change the screen when sliced out.
+
 2010-06-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6n
 	* fixed several memory leaks with strings from stack and variable assignments
 	* added sprites - spritedim, spriteload, spritemove, spriteplace, spritex, spritey, spritew, spriteh, and spritecollide

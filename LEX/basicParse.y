@@ -168,6 +168,14 @@
       byteOffset++;
     }
 
+    void
+    addExtendedOp(char extgroup, char extop)
+    {
+		addOp(extgroup);
+		addOp(extop);
+    }
+	
+	
 	unsigned int addInt(int data) {
 	  // add an integer to the bytecode at the current location
 	  // return starting location of the integer - so we can write to it later
@@ -256,8 +264,8 @@
 %token SAY SYSTEM
 %token VOLUME
 %token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE IMGLOAD
-%token SPRITEDIM SPRITELOAD SPRITEMOVE SPRITEHIDE SPRITESHOW SPRITEPLACE
-%token SPRITECOLLIDE SPRITEX SPRITEY SPRITEH SPRITEW
+%token SPRITEDIM SPRITELOAD SPRITESLICE SPRITEMOVE SPRITEHIDE SPRITESHOW SPRITEPLACE
+%token SPRITECOLLIDE SPRITEX SPRITEY SPRITEH SPRITEW SPRITEV
 %token WAVPLAY WAVSTOP
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
@@ -489,6 +497,7 @@ statement: gotostmt
 	 | imgloadstmt
 	 | spritedimstmt
 	 | spriteloadstmt
+	 | spriteslicestmt
 	 | spriteplacestmt
 	 | spritemovestmt
 	 | spritehidestmt
@@ -718,25 +727,29 @@ imgloadstmt: IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);
          | IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_SR); }
 ;
 
-spritedimstmt: SPRITEDIM floatexpr { addOp(OP_SPRITEDIM); } 		// parens added by single floatexpr
+spritedimstmt: SPRITEDIM floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITEDIM); } 		// parens added by single floatexpr
 ;
 
-spriteloadstmt: SPRITELOAD floatexpr ',' stringexpr  {addOp(OP_SPRITELOAD);  }
-         | SPRITELOAD '(' floatexpr ',' stringexpr ')' { addOp(OP_SPRITELOAD); }
+spriteloadstmt: SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITELOAD);  }
+         | SPRITELOAD '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITELOAD); }
 ;
 
-spriteplacestmt: SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addOp(OP_SPRITEPLACE);  }
-         | SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SPRITEPLACE); }
+spriteslicestmt: SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITESLICE);  }
+         | SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITESLICE); }
 ;
 
-spritemovestmt: SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addOp(OP_SPRITEMOVE);  }
-         | SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SPRITEMOVE); }
+spriteplacestmt: SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITEPLACE);  }
+         | SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEPLACE); }
 ;
 
-spritehidestmt: SPRITEHIDE floatexpr { addOp(OP_SPRITEHIDE); } 		// parens added by single floatexpr
+spritemovestmt: SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITEMOVE);  }
+         | SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEMOVE); }
 ;
 
-spriteshowstmt: SPRITESHOW floatexpr { addOp(OP_SPRITESHOW); } 		// parens added by single floatexpr
+spritehidestmt: SPRITEHIDE floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITEHIDE); } 		// parens added by single floatexpr
+;
+
+spriteshowstmt: SPRITESHOW floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITESHOW); } 		// parens added by single floatexpr
 ;
 
 seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  } 		// parens added by single floatexpr
@@ -907,11 +920,12 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 | RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 		 | GETCOLOR { addOp(OP_GETCOLOR); }
 		 | GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
-		 | SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addOp(OP_SPRITECOLLIDE); }
-		 | SPRITEX '(' floatexpr ')' { addOp(OP_SPRITEX); }
-		 | SPRITEY '(' floatexpr ')' { addOp(OP_SPRITEY); }
-  		 | SPRITEH '(' floatexpr ')' { addOp(OP_SPRITEH); }
-		 | SPRITEW '(' floatexpr ')' { addOp(OP_SPRITEW); }
+		 | SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITECOLLIDE); }
+		 | SPRITEX '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEX); }
+		 | SPRITEY '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEY); }
+  		 | SPRITEH '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEH); }
+		 | SPRITEW '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEW); }
+		 | SPRITEV '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEV); }
   ;
 
 stringlist: stringexpr { listlen = 1; }

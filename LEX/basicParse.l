@@ -203,6 +203,7 @@ putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
 spriteload [Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]
+spriteslice [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
 spritemove [Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]
 spriteplace [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]
 spritehide [Ss][Pp][Rr][Ii][Tt][Ee][Hh][Ii][Dd][Ee]
@@ -212,7 +213,7 @@ spritex [Ss][Pp][Rr][Ii][Tt][Ee][Xx]
 spritey [Ss][Pp][Rr][Ii][Tt][Ee][Yy]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
 spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
-
+spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 %%
 
 
@@ -379,6 +380,7 @@ spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 {imgload}       { count(); return IMGLOAD; }
 {spritedim}       { count(); return SPRITEDIM; }
 {spriteload}       { count(); return SPRITELOAD; }
+{spriteslice}       { count(); return SPRITESLICE; }
 {spriteplace}       { count(); return SPRITEPLACE; }
 {spritemove}       { count(); return SPRITEMOVE; }
 {spritehide}       { count(); return SPRITEHIDE; }
@@ -388,6 +390,7 @@ spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 {spritey}       { count(); return SPRITEY; }
 {spriteh}       { count(); return SPRITEH; }
 {spritew}       { count(); return SPRITEW; }
+{spritev}       { count(); return SPRITEV; }
 {seek}       { count(); return SEEK; }
 {size}       { count(); return SIZE; }
 {exists}       { count(); return EXISTS; }

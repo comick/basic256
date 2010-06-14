@@ -84,8 +84,8 @@ struct forframe {
 typedef struct {
 	QImage *image;
 	QImage *underimage;
-	int x;
-	int y;
+	double x;
+	double y;
 	bool visible;
 	bool active;
 } sprite;
