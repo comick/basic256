@@ -280,8 +280,8 @@ RunController::speakWords(QString text)
 	v = register_cmu_us_kal();
 	int length = flite_text_to_speech(text.toLatin1(),v,"play");
 	// wait for finish
-	clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
-  	while (clock() < endwait) {}
+	//clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
+  	//while (clock() < endwait) {}
 
 #endif
 }

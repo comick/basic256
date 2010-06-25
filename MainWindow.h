@@ -20,6 +20,7 @@
 #define __MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGridLayout>
 #include <QAction>
 #include <QMessageBox>
 

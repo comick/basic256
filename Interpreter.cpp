@@ -353,7 +353,8 @@ Interpreter::initialize()
 	status = R_RUNNING;
 	once = true;
 	currentLine = 1;
-	stream = NULL;
+	stream = new QFile *[NUMFILES];
+	for (int t=0;t<NUMFILES;t++) stream[t] = NULL;
 	emit(resizeGraph(300, 300));
 	image = graph->image;
 	fontfamily = QString::QString();
@@ -634,18 +635,24 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *name = stack.popstring();
-
-			if (stream != NULL)
-			{
-				stream->close();
-				stream = NULL;
+			
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
 			}
 
-			stream = new QFile(name);
+			if (stream[fn] != NULL)
+			{
+				stream[fn]->close();
+				stream[fn] = NULL;
+			}
+
+			stream[fn] = new QFile(name);
 
 			free(name);
 
-			if (stream == NULL || !stream->open(QIODevice::ReadWrite | QIODevice::Text))
+			if (stream[fn] == NULL || !stream[fn]->open(QIODevice::ReadWrite | QIODevice::Text))
 			{
 				printError(tr("Unable to open file"));
 				return -1;
@@ -658,34 +665,41 @@ Interpreter::execByteCode()
 	case OP_READ:
 		{
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
+
 			char c = ' ';
 
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("Can't read -- no open file."));
 				return -1;
 			}
 
+			int maxsize = 256;
+			char * strarray = (char *) malloc(maxsize);
+			memset(strarray, 0, maxsize);
+
 			//Remove leading whitespace
 			while (c == ' ' || c == '\t' || c == '\n')
 			{
-				if (!stream->getChar(&c))
+				if (!stream[fn]->getChar(&c))
 				{
-					stack.push("");
+					stack.push(strarray);
 					return 0;
 				}
 			}
 
 			//put back non-whitespace character
-			stream->ungetChar(c);
+			stream[fn]->ungetChar(c);
 
 			//read token
-			int maxsize = 256;
 			int offset = 0;
-			char * strarray = (char *) malloc(maxsize);
-			memset(strarray, 0, maxsize);
 
-			while (stream->getChar(strarray + offset) &&
+			while (stream[fn]->getChar(strarray + offset) &&
 			        *(strarray + offset) != ' ' &&
 			        *(strarray + offset) != '\t' &&
 			        *(strarray + offset) != '\n' &&
@@ -710,8 +724,13 @@ Interpreter::execByteCode()
 	case OP_READLINE:
 		{
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
 
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("Can't read -- no open file."));
 				return -1;
@@ -721,7 +740,7 @@ Interpreter::execByteCode()
 			int maxsize = 2048;
 			char * strarray = (char *) malloc(maxsize);
 			memset(strarray, 0, maxsize);
-			stream->readLine(strarray, maxsize);
+			stream[fn]->readLine(strarray, maxsize);
 			while((char) strarray[strlen(strarray)-1] == '\n') strarray[strlen(strarray)-1] = (char) 0x00;
 			stack.push(strdup(strarray));
 			free(strarray);
@@ -731,14 +750,19 @@ Interpreter::execByteCode()
 	case OP_EOF:
 		{
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
 
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("Can't read -- no open file."));
 				return -1;
 			}
 
-			if (stream->atEnd()) {
+			if (stream[fn]->atEnd()) {
 				stack.push(1);
 			} else {
 				stack.push(0);
@@ -753,21 +777,26 @@ Interpreter::execByteCode()
 			unsigned char whichop = *op;
 			op++;
 			char *temp = stack.popstring();
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
 
 			int error = 0;
 
-			if (stream != NULL)
+			if (stream[fn] != NULL)
 			{
-				quint64 oldPos = stream->pos();
-				stream->flush();
-				stream->seek(stream->size());
-				error = stream->write(temp, strlen(temp));
+				quint64 oldPos = stream[fn]->pos();
+				stream[fn]->flush();
+				stream[fn]->seek(stream[fn]->size());
+				error = stream[fn]->write(temp, strlen(temp));
 				if (whichop == OP_WRITELINE)
 				{
-					error = stream->write("\n", 1);
+					error = stream[fn]->write("\n", 1);
 				}
-				stream->seek(oldPos);
-				stream->flush();
+				stream[fn]->seek(oldPos);
+				stream[fn]->flush();
 			}
 
 			free(temp);
@@ -784,11 +813,16 @@ Interpreter::execByteCode()
 	case OP_CLOSE:
 		{
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
 
-			if (stream != NULL)
+			if (stream[fn] != NULL)
 			{
-				stream->close();
-				stream = NULL;
+				stream[fn]->close();
+				stream[fn] = NULL;
 			}
 		}
 		break;
@@ -797,17 +831,22 @@ Interpreter::execByteCode()
 	case OP_RESET:
 		{
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
 
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("reset() called when no file is open"));
 				return -1;
 			}
 			else
 			{
-				stream->close();
+				stream[fn]->close();
 
-				if (!stream->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+				if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
 				{
 					printError(tr("Unable to reset file"));
 					return -1;
@@ -820,12 +859,18 @@ Interpreter::execByteCode()
 		{
 			// push the current open file size on the stack
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
+
 			int size = 0;
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("Can't size -- no open file."));
 			} else {
-				size = stream->size();
+				size = stream[fn]->size();
 			}
 			stack.push(size);
 		}
@@ -835,6 +880,7 @@ Interpreter::execByteCode()
 		{
 			// push a 1 if file exists else zero
 			op++;
+
 			char *filename = stack.popstring();
 			if (QFile::exists(QString(filename)))
 			{
@@ -850,16 +896,22 @@ Interpreter::execByteCode()
 		{
 			// move file pointer to a specific loaction in file
 			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				printError(tr("Invallid File Number"));
+				return -1;
+			}
+
 			long pos = stack.popint();
 
-			if (stream == NULL)
+			if (stream[fn] == NULL)
 			{
 				printError(tr("seek() called when no file is open"));
 				return -1;
 			}
 			else
 			{
-				stream->seek(pos);
+				stream[fn]->seek(pos);
 			}
 		}
 		break;
@@ -2918,9 +2970,9 @@ Interpreter::execByteCode()
 						if (opcode==OP_SPRITEMOVE) {
 							x += sprites[n].x;
 							y += sprites[n].y;
-							if (x > (int) graph->image->width()) x = (double) graph->image->width();
+							if (x >= (int) graph->image->width()) x = (double) graph->image->width();
 							if (x < 0) x = 0;
-							if (y > (int) graph->image->height()) y = (double) graph->image->height();
+							if (y >= (int) graph->image->height()) y = (double) graph->image->height();
 							if (y < 0) y = 0;
 						}
 						sprites[n].x = x;

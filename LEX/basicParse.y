@@ -661,24 +661,37 @@ stampstmt: STAMP floatexpr ',' floatexpr ',' floatexpr ',' VARIABLE { addFloatOp
         | STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_SR_LIST, listlen); listlen=0; }
 ;
 
-openstmt: OPEN '(' stringexpr ')' { addOp(OP_OPEN); } 
-        | OPEN stringexpr         { addOp(OP_OPEN); }
+openstmt: OPEN '(' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_OPEN); } 
+        | OPEN stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_OPEN); }
+	| OPEN '(' floatexpr ',' stringexpr ')' { addOp(OP_OPEN); } 
+        | OPEN floatexpr ',' stringexpr         { addOp(OP_OPEN); }
 ;
 
-writestmt: WRITE '(' stringexpr ')' { addOp(OP_WRITE); }
-         | WRITE stringexpr         { addOp(OP_WRITE); }
+writestmt: WRITE '(' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITE); }
+	| WRITE stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITE); }
+	| WRITE '(' floatexpr ','stringexpr ')' { addOp(OP_WRITE); }
+	| WRITE floatexpr ','stringexpr         { addOp(OP_WRITE); }
 ;
 
-writelinestmt: WRITELINE '(' stringexpr ')' { addOp(OP_WRITELINE); }
-         | WRITELINE stringexpr         { addOp(OP_WRITELINE); }
+writelinestmt: WRITELINE '(' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
+	| WRITELINE stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
+	| WRITELINE '(' floatexpr ',' stringexpr ')' { addOp(OP_WRITELINE); }
+	| WRITELINE floatexpr ',' stringexpr         { addOp(OP_WRITELINE); }
 ;
 
-closestmt: CLOSE         { addOp(OP_CLOSE); }
-         | CLOSE '(' ')' { addOp(OP_CLOSE); }
+closestmt: CLOSE         { addIntOp(OP_PUSHINT, 0); addOp(OP_CLOSE); }
+	| CLOSE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_CLOSE); }
+	| CLOSE floatexpr { addOp(OP_CLOSE); }
 ;
 
-resetstmt: RESET         { addOp(OP_RESET); }
-         | RESET '(' ')' { addOp(OP_RESET); }
+resetstmt: RESET         { addIntOp(OP_PUSHINT, 0); addOp(OP_RESET); }
+	| RESET '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_RESET); }
+	| RESET floatexpr { addOp(OP_RESET); }
+;
+
+seekstmt: SEEK floatexpr  {addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP);addOp(OP_SEEK);  } 
+	| SEEK '(' floatexpr ',' floatexpr ')' { addOp(OP_SEEK); }
+	| SEEK floatexpr ',' floatexpr         { addOp(OP_SEEK); }
 ;
 
 inputstmt: inputexpr ',' STRINGVAR  { addIntOp(OP_STRINGASSIGN, $3); }
@@ -750,9 +763,6 @@ spritehidestmt: SPRITEHIDE floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITEHIDE
 ;
 
 spriteshowstmt: SPRITESHOW floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITESHOW); } 		// parens added by single floatexpr
-;
-
-seekstmt: SEEK floatexpr  {addOp(OP_SEEK);  } 		// parens added by single floatexpr
 ;
 
 clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
@@ -843,8 +853,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | BOOLTRUE '(' ')' { addIntOp(OP_PUSHINT, 1); }
          | BOOLFALSE { addIntOp(OP_PUSHINT, 0); }
          | BOOLFALSE '(' ')' { addIntOp(OP_PUSHINT, 0); }
-         | BOOLEOF                    { addOp(OP_EOF); }
-         | BOOLEOF '(' ')'                    { addOp(OP_EOF); }
+         | BOOLEOF                    { addIntOp(OP_PUSHINT, 0); addOp(OP_EOF); }
+         | BOOLEOF '(' ')'                    { addIntOp(OP_PUSHINT, 0); addOp(OP_EOF); }
+         | BOOLEOF '(' floatexpr ')'                    { addOp(OP_EOF); }
          | EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
          | YEAR { addOp(OP_YEAR); }
          | YEAR '(' ')' { addOp(OP_YEAR); }
@@ -862,8 +873,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | GRAPHWIDTH '(' ')' { addOp(OP_GRAPHWIDTH); }
          | GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
          | GRAPHHEIGHT '(' ')' { addOp(OP_GRAPHHEIGHT); }
-         | SIZE { addOp(OP_SIZE); }
-         | SIZE '(' ')' { addOp(OP_SIZE); }
+         | SIZE { addIntOp(OP_PUSHINT, 0); addOp(OP_SIZE); }
+         | SIZE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_SIZE); }
+         | SIZE '(' floatexpr ')' { addOp(OP_SIZE); }
          | KEY     { addOp(OP_KEY); }
          | KEY '(' ')'     { addOp(OP_KEY); }
          | MOUSEX { addOp(OP_MOUSEX); }
@@ -957,10 +969,12 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | LEFT '(' stringexpr ',' floatexpr ')' { addOp(OP_LEFT); }
           | RIGHT '(' stringexpr ',' floatexpr ')' { addOp(OP_RIGHT); }
           | GETSLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_GETSLICE); }
-          | READ { addOp(OP_READ); }
-          | READ '(' ')' { addOp(OP_READ); }
-          | READLINE { addOp(OP_READLINE); }
-          | READLINE '(' ')' { addOp(OP_READLINE); }
+          | READ { addIntOp(OP_PUSHINT, 0); addOp(OP_READ); }
+          | READ '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READ); }
+          | READ '(' floatexpr ')' { addOp(OP_READ); }
+          | READLINE { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
+          | READLINE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
+          | READLINE '(' floatexpr ')' { addOp(OP_READLINE); }
 ;
 
 %%

@@ -1,3 +1,10 @@
+2010-06-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6q
+	* found read statement removed from LEX - readded
+	* fixed string pointer conversion in readline
+	* changed sprite move to limit range to 0-graphwidth|graphheight-1
+	* changed all file io statements to allow for 0-7 files simultaneously - syntax didn't change for single file operations but new
+		filenumber parameter added to allow for multiple files
+
 2010-06-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6p
 	* re-wrote the way color "Clear" works
 	- getcolor and pixel will return a -1 when the drawing color or pixel requested is clear (or after a clg and nothing has been drawn there)

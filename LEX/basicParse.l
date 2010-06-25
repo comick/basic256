@@ -348,6 +348,7 @@ spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 {step}		{ count(); return STEP; }
 {next}		{ count(); return NEXT; }
 {open}		{ count(); return OPEN; }
+{read}		{ count(); return READ; }
 {write}		{ count(); return WRITE; }
 {close}		{ count(); return CLOSE; }
 {reset}		{ count(); return RESET; }

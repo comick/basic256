@@ -34,6 +34,7 @@
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
 
 #define NUMVARS 2000
+#define NUMFILES 8
 
 
 struct array
@@ -138,7 +139,7 @@ class Interpreter : public QThread
   BasicGraph *graph;
   variable vars[NUMVARS];
   Stack stack;
-  QFile *stream;
+  QFile **stream;
   unsigned char *op;
   frame *callstack;
   forframe *forstack;
