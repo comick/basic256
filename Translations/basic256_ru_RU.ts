@@ -305,6 +305,18 @@
         <source>Sprite has not been assigned.</source>
         <translation>Спрайт не был назначен.</translation>
     </message>
+    <message>
+        <source>Invallid File Number</source>
+        <translation>Неверный номер файла</translation>
+    </message>
+    <message>
+        <source>Unable to slice image.</source>
+        <translation>Невозможно отрезать изображение.</translation>
+    </message>
+    <message>
+        <source>Invalid Extended Op-code.</source>
+        <translation>Неверный расширенный Op-код.</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
