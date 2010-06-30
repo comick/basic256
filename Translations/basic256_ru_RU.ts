@@ -80,15 +80,15 @@
     </message>
     <message>
         <source>Search:</source>
-        <translation>Поиск:</translation>
+        <translation type="obsolete">Поиск:</translation>
     </message>
     <message>
         <source>Search Forward</source>
-        <translation>Поиск вперед</translation>
+        <translation type="obsolete">Поиск вперед</translation>
     </message>
     <message>
         <source>Search Backward</source>
-        <translation>Поиск назад</translation>
+        <translation type="obsolete">Поиск назад</translation>
     </message>
 </context>
 <context>
@@ -316,6 +316,10 @@
     <message>
         <source>Invalid Extended Op-code.</source>
         <translation>Неверный расширенный Op-код.</translation>
+    </message>
+    <message>
+        <source>Invalid directory name.</source>
+        <translation>Неверное имя каталога.</translation>
     </message>
 </context>
 <context>
