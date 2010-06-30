@@ -40,14 +40,12 @@ class DocumentationWin : public QDialog
   DocumentationWin(QWidget * parent);
 
 private slots:
-	void searchForward();
-	void searchBackward();
   
  private:
   QVBoxLayout* layout;
   QToolBar* toolbar;
   QWebView* docs;
-  QLineEdit* findthis;
+
 };
 
 #endif

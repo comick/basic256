@@ -181,6 +181,7 @@ BasicEdit::saveProgram()
 			f.close();
 			QFileInfo fi(f);
 			mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
+			QDir::setCurrent(fi.absolutePath());
 			codeChanged = false;
 		}
 	}

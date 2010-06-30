@@ -22,6 +22,7 @@
 #include <QImage>
 #include <QThread>
 #include <QFile>
+#include <QDir>
 #include <stdio.h>
 #include <cmath>
 #include "BasicGraph.h"

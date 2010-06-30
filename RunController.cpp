@@ -17,6 +17,7 @@
 
 
 
+#include <math.h>
 #include <iostream>
 #include <QMutex>
 #include <QWaitCondition>
@@ -34,10 +35,8 @@ using namespace std;
 	#include <servprov.h>
 	#include <sapi.h>
 	#include <string>
-	#include <iostream>
 	#include <cstdlib>
 	#include <mmsystem.h>
-	#include <math.h>
 #else
 	#ifdef LINUX_ESPEAK
 		#include <speak_lib.h>
@@ -53,7 +52,6 @@ using namespace std;
 	#include <stdlib.h>
 	#include <fcntl.h>
 	#include <sys/ioctl.h>
-	#include <math.h>
 	#include <time.h>
 	#include <linux/soundcard.h>
 #endif

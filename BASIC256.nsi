@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6p"
-  StrCpy $VERSIONDATE "2010-06-14"
+  StrCpy $VERSION "0.9.6r"
+  StrCpy $VERSIONDATE "2010-06-30"
 FunctionEnd
 
 Function customPage
@@ -91,7 +91,6 @@ Section "BASIC256"
   File CONTRIBUTORS
   File license.txt
   File /r /x ".svn" Examples 
-  File /r /x ".svn" ..\doc\help 
   
   SetOutPath $INSTDIR\Translations 
   File .\Translations\*.qm
@@ -138,7 +137,6 @@ Section "Uninstall"
   Delete $INSTDIR\license.txt
   RMDir /r $INSTDIR\Examples
   RMDir /r $INSTDIR\Translations
-  RMDir /r $INSTDIR\help
   Delete $INSTDIR\uninstall.exe
 
   ; Remove shortcuts, if any

@@ -1,3 +1,7 @@
+2010-06-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6r
+	* added currentdir and changedir statements to manage the current folder
+	* moved documentation to WIKI at doc.basic256.org and changed link in documentwindow.
+
 2010-06-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6q
 	* found read statement removed from LEX - readded
 	* fixed string pointer conversion in readline

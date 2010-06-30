@@ -214,6 +214,8 @@ spritey [Ss][Pp][Rr][Ii][Tt][Ee][Yy]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
 spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
+changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
+currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
 %%
 
 
@@ -404,6 +406,8 @@ spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 {clickb}       { count(); return CLICKB; }
 {system}       { count(); return SYSTEM; }
 {volume}       { count(); return VOLUME; }
+{currentdir}       { count(); return CURRENTDIR; }
+{changedir}       { count(); return CHANGEDIR; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

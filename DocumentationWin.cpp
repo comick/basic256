@@ -25,12 +25,7 @@ using namespace std;
 DocumentationWin::DocumentationWin (QWidget * parent)
 		:QDialog(parent)
 {
-	QString localecode = ((MainWindow *) parent)->localecode;
-	QString helpfile;
-	bool lookharder = true;
-	
-	QStringList searchpaths;
-	searchpaths << QApplication::applicationDirPath() + "/help/" << "/usr/share/basic256/help/";
+	//QString localecode = ((MainWindow *) parent)->localecode;
 	
 	resize(700,500);
 	
@@ -40,68 +35,15 @@ DocumentationWin::DocumentationWin (QWidget * parent)
     toolbar->addAction(docs->pageAction(QWebPage::Back));
     toolbar->addAction(docs->pageAction(QWebPage::Forward));
 	//
-	toolbar->addSeparator();
-	QLabel *label = new QLabel(tr("Search:"));
-	toolbar->addWidget(label);
-	findthis = new QLineEdit();
-	QSizePolicy policy = findthis->sizePolicy();
-	findthis->setSizePolicy(QSizePolicy::Preferred, policy.verticalPolicy());
-	toolbar->addWidget(findthis);
-	QAction *sfact = toolbar->addAction(QIcon(":/images/next.png"), tr("Search Forward"));
-	connect(sfact, SIGNAL(triggered()), this, SLOT(searchForward()));
-	QAction *sbact = toolbar->addAction(QIcon(":/images/previous.png"), tr("Search Backward"));
-	connect(sbact, SIGNAL(triggered()), this, SLOT(searchBackward()));
-	
 	layout = new QVBoxLayout;
-     layout->addWidget(toolbar);
-     layout->addWidget(docs);
+    layout->addWidget(toolbar);
+    layout->addWidget(docs);
 
-     this->setLayout(layout);
-     this->show();
+    this->setLayout(layout);
+    this->show();
 	
-	// set lookharder to false once we find a good candidate html file
-	for ( QStringList::Iterator path = searchpaths.begin(); path != searchpaths.end() && lookharder; ++path ) {
-		helpfile = *path + "help_" + localecode + ".html";
-		if (QFile::exists(helpfile)) {
-			lookharder = false;
-		}
-		else
-		{
-			// fall back to just the first two letters
-			helpfile = *path + "help_" + localecode.left(2) + ".html";
-			if (QFile::exists(helpfile)) {
-				lookharder = false;
-			}
-			else
-			{
-				// fall back to english
-				helpfile = *path + "help_en.html";
-				if (QFile::exists(helpfile)) {
-						lookharder = false;
-				}
-			}
-		}
-    }
-
-	if (lookharder) {
-		// unable to find help
-		docs->setHtml(QString("<html><body><h1>help folder and help items missing.</h1></body></html>"));
-	}
-	else
-	{
-		docs->load(helpfile);
-	}
+	docs->load(QString("http://doc.basic256.org"));
 	docs->show();
 	
 }
-
-void DocumentationWin::searchForward() {
-	docs->findText(findthis->text(), QWebPage::FindWrapsAroundDocument);
-}
-
-void DocumentationWin::searchBackward() {
-	docs->findText(findthis->text(), QWebPage::FindBackward | QWebPage::FindWrapsAroundDocument);
-}
-
-
 

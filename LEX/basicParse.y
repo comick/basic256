@@ -275,6 +275,7 @@
 %token CLEAR BLACK WHITE RED DARKRED GREEN DARKGREEN BLUE DARKBLUE
 %token CYAN DARKCYAN PURPLE DARKPURPLE YELLOW DARKYELLOW
 %token ORANGE DARKORANGE GREY DARKGREY
+%token CHANGEDIR CURRENTDIR
 
 %union 
 {
@@ -504,6 +505,7 @@ statement: gotostmt
 	 | spriteshowstmt
 	 	| seekstmt
 	 	| clickclearstmt
+		| changedirstmt
 ;
 
 dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -769,6 +771,10 @@ clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
          | CLICKCLEAR '(' ')' { addOp(OP_CLICKCLEAR); }
 ;
 
+changedirstmt: CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED00,OP_CHANGEDIR); }
+         | CHANGEDIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED00,OP_CHANGEDIR); }
+;
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -975,7 +981,9 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | READLINE { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' floatexpr ')' { addOp(OP_READLINE); }
-;
+		  | CURRENTDIR { addExtendedOp(OP_EXTENDED00,OP_CURRENTDIR); }
+		  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED00,OP_CURRENTDIR); }
+ ;
 
 %%
 

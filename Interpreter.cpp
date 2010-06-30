@@ -648,7 +648,7 @@ Interpreter::execByteCode()
 				stream[fn] = NULL;
 			}
 
-			stream[fn] = new QFile(name);
+			stream[fn] = new QFile(QString::fromUtf8(name));
 
 			free(name);
 
@@ -3058,6 +3058,27 @@ Interpreter::execByteCode()
 					if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
 					if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
 					
+				}
+				break;
+
+			
+			case OP_CHANGEDIR:
+					{
+						op++;
+						char *file = stack.popstring();
+						if(!QDir::setCurrent(QString::fromUtf8(file))) {
+							printError(tr("Invalid directory name."));
+							free(file);
+							return -1;
+						}
+						free(file);
+					}
+					break;
+
+			case OP_CURRENTDIR:
+				{
+					op++;
+					stack.push(QDir::currentPath().toUtf8().data());
 				}
 				break;
 				

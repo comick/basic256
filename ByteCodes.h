@@ -204,4 +204,6 @@
 #define OP_SPRITEH 	       		0x0a
 #define OP_SPRITEW 	       		0x0b
 #define OP_SPRITEV	       		0x0c
+#define OP_CHANGEDIR	       		0x0d
+#define OP_CURRENTDIR	       		0x0e
 
