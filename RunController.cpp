@@ -24,7 +24,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFile>
-#include <QSound>
 #include <QApplication>
 using namespace std;
 
@@ -56,13 +55,22 @@ using namespace std;
 	#include <linux/soundcard.h>
 #endif
 
+#ifdef USEQSOUND
+	#include <QSound>
+	QSound wavsound(QString(""));
+#endif
+#ifdef USESDL
+	#include <SDL/SDL.h>
+	#include <SDL/SDL_mixer.h>
+	#define SDL_CHAN_WAV 1
+	#define SDL_CHAN_SOUND 2
+#endif
+
 QMutex mutex;
 QMutex debugmutex;
 QWaitCondition waitCond;
 QWaitCondition waitDebugCond;
 QWaitCondition waitInput;
-
-QSound wavsound(QString(""));
 
 RunController::RunController(MainWindow *mw)
 {
@@ -101,6 +109,11 @@ RunController::RunController(MainWindow *mw)
 
 	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
 	QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
+
+#ifdef USESDL
+	//mono
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, AUDIO_S16SYS, 1, 2048);
+#endif
 }
 
 // play a list of counds 0,2,4... = frequency & 1,3,5... = duration in ms
@@ -171,7 +184,9 @@ RunController::playSounds(int notes, int* freqdur)
 		}
 	} 
 	
-#else
+#endif
+
+#ifdef LINUX_DSPSOUND
 	// Code loosely based on idea from TONEGEN by Timothy Pozar
 	// - Plays a sine wave via the dsp or standard out.
  
@@ -179,7 +194,6 @@ RunController::playSounds(int notes, int* freqdur)
 	int rate = 11025;
 	int devfh;
 	int i, test;
-	unsigned char *p;
 	double amplititude = tan((double) soundVolume / 10) * 0x7f;  // (half wave height)
 	
 	// lets build the output
@@ -189,7 +203,7 @@ RunController::playSounds(int notes, int* freqdur)
 		totaltime += freqdur[tnotes*2+1];
 	}
 	int totallength = rate * totaltime / 1000;
-	p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
+	unsigned char * p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
 	
 	int pos = 0; // current position
 	
@@ -218,6 +232,43 @@ RunController::playSounds(int notes, int* freqdur)
 	} else {
 		fprintf(stderr,"Unable to open /dev/dsp\n");
 	}
+#endif
+
+#ifdef USESDL
+	Mix_Chunk c;
+
+	c.allocated = 1; // sdl needs to free chunk data
+	c.volume = (unsigned char) (tan((double) soundVolume / 10) * 0x7f);
+	
+	// lets build the output
+	double wave = 0;
+	int totaltime = 0;
+	for(int tnotes=0;tnotes<notes;tnotes++) {
+		totaltime += freqdur[tnotes*2+1];
+	}
+	c.alen = MIX_DEFAULT_FREQUENCY * sizeof(short) * totaltime / 1000;
+	c.abuf = (unsigned char *) malloc(c.alen);
+	
+	int pos = 0; // current position
+	
+	for(int tnotes=0;tnotes<notes;tnotes++) {
+		// lets build a sine wave
+		int length = MIX_DEFAULT_FREQUENCY * freqdur[tnotes*2+1] / 1000;
+		double wavebit = 2 * M_PI / ((double) MIX_DEFAULT_FREQUENCY / (double) freqdur[tnotes*2]);
+		short s;
+		char *cs = (char *) &s;
+		for(int i = 0; i < length; i++) {
+			
+			s = (short) (sin(wave) * 0x7fff);
+			c.abuf[pos++] = cs[0];
+			c.abuf[pos++] = cs[1];
+			wave+=wavebit;
+		}
+	}
+
+    	Mix_PlayChannel(SDL_CHAN_SOUND,&c,0);
+	while(Mix_Playing(SDL_CHAN_SOUND)) usleep(1000);
+
 #endif
 }
 
@@ -299,17 +350,30 @@ RunController::system(char* text)
 
 void RunController::playWAV(QString file)
 {
+#ifdef USEQSOUND
 	if(QSound::isAvailable()) {
 		wavsound.play(file);
 	}
+#endif
+#ifdef USESDL
+	Mix_HaltChannel(SDL_CHAN_WAV);
+	Mix_Chunk *music;
+    	music = Mix_LoadWAV((char *) file.toUtf8().data());
+    	Mix_PlayChannel(SDL_CHAN_WAV,music,0);
+#endif
 }
 
 
 void RunController::stopWAV()
 {
+#ifdef USEQSOUND
 	if(QSound::isAvailable()) {
 		wavsound.stop();
 	}
+#endif
+#ifdef USESDL
+	Mix_HaltChannel(SDL_CHAN_WAV);
+#endif
 }
 
 void

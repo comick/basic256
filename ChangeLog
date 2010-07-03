@@ -1,3 +1,6 @@
+2010-07-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6s
+	* totally re-wrote linux sound functionallity to use the SDL library and SDL_mixer.  Resolved issued with QSound (requiring NAS) and the /dev/dsp not being released bu the TTS libraries.
+
 2010-06-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6r
 	* added currentdir and changedir statements to manage the current folder
 	* moved documentation to WIKI at doc.basic256.org and changed link in documentwindow.

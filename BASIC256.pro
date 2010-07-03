@@ -21,6 +21,7 @@ TRANSLATIONS	=	Translations/basic256_en_US.ts \
 win32 {
 	# use SAPI for speech
 	DEFINES 		+= WIN32
+	DEFINES 		+= USEQSOUND
 	LIBS			+= -lole32 \
 					-lsapi \
 					-lwinmm 
@@ -41,6 +42,14 @@ win32 {
 	
 	LIBS			+=	-lm
 
+	## include libraries for SDL audio for wav and sound output
+	DEFINES 		+= USESDL
+	LIBS			+= -lSDL
+	LIBS			+= -lSDL_mixer
+
+	## original - problematic LINUX sound
+	#DEFINES 		+= LINUX_DSPSOUND
+
 	## rules for make install
 	examplesDiceFiles.files = ./Examples/dice/*
 	examplesDiceFiles.path = /usr/share/basic256/Examples/dice
@@ -51,12 +60,6 @@ win32 {
 	examplesFiles.files = ./Examples/*
 	examplesFiles.path = /usr/share/basic256/Examples
 	INSTALLS += examplesFiles
-	helpImgFiles.files = ../doc/help/images/*
-	helpImgFiles.path = /usr/share/basic256/help/images
-	INSTALLS += helpImgFiles
-	helpFiles.files = ../doc/help/*
-	helpFiles.path = /usr/share/basic256/help
-	INSTALLS += helpFiles
 	transFiles.files = ./Translations/*.qm
 	transFiles.path = /usr/share/basic256
 	INSTALLS += transFiles
