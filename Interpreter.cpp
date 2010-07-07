@@ -2854,7 +2854,7 @@ Interpreter::execByteCode()
 
 
 		
-	case OP_EXTENDED00:
+	case OP_EXTENDED_0:
 		{
 			// extended op 0xe0xx - allow for an extra range of operations
 			op++;
@@ -3082,6 +3082,13 @@ Interpreter::execByteCode()
 				}
 				break;
 				
+			case OP_WAVWAIT:
+				{
+					op++;
+					emit(waitWAV());
+				}
+				break;
+
 				// insert additional extended operations here
 				
 			default:

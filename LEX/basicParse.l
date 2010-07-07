@@ -179,6 +179,7 @@ font [Ff][Oo][Nn][Tt]
 say [Ss][Aa][Yy]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
 wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
+wavwait [Ww][Aa][Vv][Ww][Aa][Ii][Tt]
 seek [Ss][Ee][Ee][Kk]
 size [Ss][Ii][Zz][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
@@ -378,6 +379,7 @@ currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
 {say}           { count(); return SAY; }
 {wavplay}       { count(); return WAVPLAY; }
 {wavstop}       { count(); return WAVSTOP; }
+{wavwait}       { count(); return WAVWAIT; }
 {getslice}       { count(); return GETSLICE; }
 {putslice}       { count(); return PUTSLICE; }
 {imgload}       { count(); return IMGLOAD; }

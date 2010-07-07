@@ -184,13 +184,29 @@
 #define OP_IMGLOAD_S 	       	0xd7
 #define OP_IMGLOAD_SR 	       	0xd8
 
+// extended codes
+#define OP_EXTENDED_0			0xe0
+#define OP_EXTENDED_1			0xe1
+#define OP_EXTENDED_2			0xe2
+#define OP_EXTENDED_3			0xe3
+#define OP_EXTENDED_4			0xe4
+#define OP_EXTENDED_5			0xe5
+#define OP_EXTENDED_6			0xe6
+#define OP_EXTENDED_7			0xe7
+#define OP_EXTENDED_8			0xe8
+#define OP_EXTENDED_9			0xe9
+#define OP_EXTENDED_A			0xea
+#define OP_EXTENDED_B			0xeb
+#define OP_EXTENDED_C			0xec
+#define OP_EXTENDED_D			0xed
+#define OP_EXTENDED_E			0xee
+#define OP_EXTENDED_F			0xef
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0
 
 // extended opcodes (second byte)
 // first group e0xx
-#define OP_EXTENDED00			0xe0
 #define OP_SPRITEDIM 	       	0x00
 #define OP_SPRITELOAD 	       	0x01
 #define OP_SPRITESLICE 	       	0x02
@@ -206,4 +222,5 @@
 #define OP_SPRITEV	       		0x0c
 #define OP_CHANGEDIR	       		0x0d
 #define OP_CURRENTDIR	       		0x0e
+#define OP_WAVWAIT		0x0f
 

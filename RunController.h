@@ -50,6 +50,7 @@ class RunController : public QObject
   void system(char*);
   void playWAV(QString);
   void stopWAV();
+  void waitWAV();
   void inputFilter(QString text);
   void outputFilter(QString text);
   void outputClear();

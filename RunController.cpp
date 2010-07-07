@@ -105,6 +105,7 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(playSounds(int, int*)), this, SLOT(playSounds(int, int*)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
+	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
 	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 
 	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
@@ -363,6 +364,18 @@ void RunController::playWAV(QString file)
 #endif
 }
 
+
+void RunController::waitWAV()
+{
+#ifdef USEQSOUND
+	if(QSound::isAvailable()) {
+		while(!wavsound.isFinished()) usleep(1000);
+	}
+#endif
+#ifdef USESDL
+	while(Mix_Playing(SDL_CHAN_WAV)) usleep(1000);
+#endif
+}
 
 void RunController::stopWAV()
 {

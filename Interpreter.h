@@ -127,6 +127,7 @@ class Interpreter : public QThread
   void system(char*);
   void speakWords(QString);
   void playWAV(QString);
+  void waitWAV();
   void stopWAV();
   void goToLine(int);
   void highlightLine(int);

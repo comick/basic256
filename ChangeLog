@@ -1,3 +1,6 @@
+2010-07-04 j.m.reneau <renejm@users.sourceforge.net> 0.9.6t
+	* added new wavwait statement to wait for the currently playing wav to finish
+
 2010-07-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6s
 	* totally re-wrote linux sound functionallity to use the SDL library and SDL_mixer.  Resolved issued with QSound (requiring NAS) and the /dev/dsp not being released bu the TTS libraries.
 

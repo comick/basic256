@@ -266,7 +266,7 @@
 %token GRAPHWIDTH GRAPHHEIGHT GETSLICE PUTSLICE IMGLOAD
 %token SPRITEDIM SPRITELOAD SPRITESLICE SPRITEMOVE SPRITEHIDE SPRITESHOW SPRITEPLACE
 %token SPRITECOLLIDE SPRITEX SPRITEY SPRITEH SPRITEW SPRITEV
-%token WAVPLAY WAVSTOP
+%token WAVPLAY WAVSTOP WAVWAIT
 %token SIZE SEEK EXISTS
 %token BOOLTRUE BOOLFALSE
 %token MOUSEX MOUSEY MOUSEB
@@ -494,6 +494,7 @@ statement: gotostmt
 	 | volumestmt
 	 | wavplaystmt
 	 | wavstopstmt
+	 | wavwaitstmt
 	 | putslicestmt
 	 | imgloadstmt
 	 | spritedimstmt
@@ -729,6 +730,10 @@ wavstopstmt: WAVSTOP         { addOp(OP_WAVSTOP); }
          | WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
 
+wavwaitstmt: WAVWAIT         { addExtendedOp(OP_EXTENDED_0,OP_WAVWAIT); }
+         | WAVWAIT '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_WAVWAIT); }
+;
+
 putslicestmt: PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
          | PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
 		 | PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
@@ -742,37 +747,37 @@ imgloadstmt: IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);
          | IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_SR); }
 ;
 
-spritedimstmt: SPRITEDIM floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITEDIM); } 		// parens added by single floatexpr
+spritedimstmt: SPRITEDIM floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITEDIM); } 		// parens added by single floatexpr
 ;
 
-spriteloadstmt: SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITELOAD);  }
-         | SPRITELOAD '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITELOAD); }
+spriteloadstmt: SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITELOAD);  }
+         | SPRITELOAD '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITELOAD); }
 ;
 
-spriteslicestmt: SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITESLICE);  }
-         | SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITESLICE); }
+spriteslicestmt: SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITESLICE);  }
+         | SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITESLICE); }
 ;
 
-spriteplacestmt: SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITEPLACE);  }
-         | SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEPLACE); }
+spriteplacestmt: SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITEPLACE);  }
+         | SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEPLACE); }
 ;
 
-spritemovestmt: SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED00,OP_SPRITEMOVE);  }
-         | SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEMOVE); }
+spritemovestmt: SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITEMOVE);  }
+         | SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEMOVE); }
 ;
 
-spritehidestmt: SPRITEHIDE floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITEHIDE); } 		// parens added by single floatexpr
+spritehidestmt: SPRITEHIDE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITEHIDE); } 		// parens added by single floatexpr
 ;
 
-spriteshowstmt: SPRITESHOW floatexpr { addExtendedOp(OP_EXTENDED00,OP_SPRITESHOW); } 		// parens added by single floatexpr
+spriteshowstmt: SPRITESHOW floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITESHOW); } 		// parens added by single floatexpr
 ;
 
 clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
          | CLICKCLEAR '(' ')' { addOp(OP_CLICKCLEAR); }
 ;
 
-changedirstmt: CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED00,OP_CHANGEDIR); }
-         | CHANGEDIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED00,OP_CHANGEDIR); }
+changedirstmt: CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
+         | CHANGEDIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
 ;
 
 immediatestrlist: '{' stringlist '}'
@@ -938,12 +943,12 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 | RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 		 | GETCOLOR { addOp(OP_GETCOLOR); }
 		 | GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
-		 | SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITECOLLIDE); }
-		 | SPRITEX '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEX); }
-		 | SPRITEY '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEY); }
-  		 | SPRITEH '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEH); }
-		 | SPRITEW '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEW); }
-		 | SPRITEV '(' floatexpr ')' { addExtendedOp(OP_EXTENDED00,OP_SPRITEV); }
+		 | SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITECOLLIDE); }
+		 | SPRITEX '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEX); }
+		 | SPRITEY '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEY); }
+  		 | SPRITEH '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEH); }
+		 | SPRITEW '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEW); }
+		 | SPRITEV '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEV); }
   ;
 
 stringlist: stringexpr { listlen = 1; }
@@ -981,8 +986,8 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | READLINE { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' floatexpr ')' { addOp(OP_READLINE); }
-		  | CURRENTDIR { addExtendedOp(OP_EXTENDED00,OP_CURRENTDIR); }
-		  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED00,OP_CURRENTDIR); }
+		  | CURRENTDIR { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
+		  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
  ;
 
 %%
