@@ -1,3 +1,8 @@
+2010-07-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6u
+	* fixed wavwait logic for compile under Win32.  Also noticed in the QSound documentation
+	  that wavwait will not work under Windows because of a quirk with the library.
+	* made the graphics and text output so that they may float
+
 2010-07-04 j.m.reneau <renejm@users.sourceforge.net> 0.9.6t
 	* added new wavwait statement to wait for the currently playing wav to finish
 

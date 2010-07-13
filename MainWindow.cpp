@@ -251,11 +251,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	maintbar->addAction(copyact);
 	maintbar->addAction(pasteact);
 
-	gdock->setFeatures(QDockWidget::DockWidgetMovable);
+	gdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	gdock->setWidget(goutputwgt);
 	gdock->setWindowTitle(QObject::tr("Graphics Output"));
 
-	tdock->setFeatures(QDockWidget::DockWidgetMovable);
+	tdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	tdock->setWidget(outputwgt);
 	tdock->setWindowTitle(QObject::tr("Text Output"));
 

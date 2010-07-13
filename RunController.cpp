@@ -369,11 +369,21 @@ void RunController::waitWAV()
 {
 #ifdef USEQSOUND
 	if(QSound::isAvailable()) {
-		while(!wavsound.isFinished()) usleep(1000);
+		while(!wavsound.isFinished())
+#ifdef WIN32
+	Sleep(1);
+#else
+	usleep(1000);
+#endif
 	}
 #endif
 #ifdef USESDL
-	while(Mix_Playing(SDL_CHAN_WAV)) usleep(1000);
+	while(Mix_Playing(SDL_CHAN_WAV))
+#ifdef WIN32
+	Sleep(1);
+#else
+	usleep(1000);
+#endif
 #endif
 }
 
