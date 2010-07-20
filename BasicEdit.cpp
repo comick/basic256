@@ -169,8 +169,8 @@ BasicEdit::saveProgram()
 		bool dooverwrite = true;
 		if (f.exists()) {
 			QMessageBox msgBox;
-			msgBox.setText(tr("The file ") + filename + tr(" exists on file."));
-			msgBox.setInformativeText(tr("Do you want wish to overwrite?"));
+			msgBox.setText(tr("The file ") + filename + tr(" already exists."));
+			msgBox.setInformativeText(tr("Do you want to overwrite?"));
 			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			msgBox.setDefaultButton(QMessageBox::Yes);
 			dooverwrite = (msgBox.exec() == QMessageBox::Yes);
@@ -215,7 +215,7 @@ BasicEdit::loadFile(QString s)
 		if (codeChanged) {
 			QMessageBox msgBox;
 			msgBox.setText(tr("Program modifications have not been saved."));
-			msgBox.setInformativeText(tr("Do you want wish to discard your changes?"));
+			msgBox.setInformativeText(tr("Do you want to discard your changes?"));
 			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			msgBox.setDefaultButton(QMessageBox::Yes);
 			doload = (msgBox.exec() == QMessageBox::Yes);

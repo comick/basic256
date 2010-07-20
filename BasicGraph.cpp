@@ -37,7 +37,7 @@ int currentKey;
 BasicGraph::BasicGraph(BasicOutput *o)
 {
   image = NULL;
-  resize(GSIZE_MIN, GSIZE_MIN);
+  resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
   output = o;
   setMinimumSize(gwidth, gheight);
 }
@@ -48,8 +48,6 @@ BasicGraph::resize(int width, int height)
 	if (image != NULL && width == image->width() && height == image->height()) {
 		return;
     }
-	if (width > GWIDTH_MAX) { width = GWIDTH_MAX; }
-	if (height > GHEIGHT_MAX) { height = GHEIGHT_MAX; }
 	gwidth  = width;
 	gheight = height;
 	delete image;
@@ -95,7 +93,7 @@ void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
-	// cascace call to mouse move so we record clicks real time like moves
+	// cascade call to mouse move so we record clicks real time like moves
 	mouseMoveEvent(e);
 }
 

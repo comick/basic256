@@ -280,7 +280,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	if (editor->codeChanged) {
 		QMessageBox msgBox;
 		msgBox.setText(tr("Program modifications have not been saved."));
-		msgBox.setInformativeText(tr("Do you want wish to discard your changes?"));
+		msgBox.setInformativeText(tr("Do you want to discard your changes?"));
 		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 		msgBox.setDefaultButton(QMessageBox::Yes);
 		doquit = (msgBox.exec() == QMessageBox::Yes);

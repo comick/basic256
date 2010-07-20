@@ -26,9 +26,8 @@
 #include "ViewWidgetIFace.h"
 #include "BasicOutput.h"
 
-#define GWIDTH_MAX  800
-#define GHEIGHT_MAX 600
-#define GSIZE_MIN   300
+#define GSIZE_INITIAL_WIDTH   300
+#define GSIZE_INITIAL_HEIGHT   300
 
 class BasicGraph : public QWidget, public ViewWidgetIFace
 {
