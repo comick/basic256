@@ -1,3 +1,9 @@
+2010-07-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.6w
+	* added decimal statemene to define maximum number of decimal places to display
+          (full precision of a double is still being maintained behind the scenes)
+	* fixed web site on about box
+	* added recent new statements to syntax highliter
+
 2010-07-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6v
 	* fixed several gramatical errors with file messages - thanks joel
 	* removed maximum size of graphical output widget

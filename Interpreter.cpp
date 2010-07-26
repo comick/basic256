@@ -141,6 +141,7 @@ Interpreter::Interpreter(BasicGraph *bg)
 	image = bg->image;
 	graph = bg;
 	fastgraphics = false;
+	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
 	for (int i = 0; i < NUMVARS; i++)
 	{
@@ -361,6 +362,8 @@ Interpreter::initialize()
 	fontpoint = 0;
 	fontweight = 0;
 	nsprites = 0;
+	stack.fToAMask = stack.defaultFToAMask;
+
 }
 
 
@@ -3088,6 +3091,20 @@ Interpreter::execByteCode()
 					emit(waitWAV());
 				}
 				break;
+
+			case OP_DECIMAL:
+					{
+						// set number of digits used in stack.popstring to
+						// specify max number of decimal places in float to string
+						op++;
+						int n = stack.popint();
+						if(n<0 || n > 15) {
+							printError(tr("Decimal mask must be in the range of 0 to 15."));
+							return -1;
+						}
+						stack.fToAMask = n;
+					}
+					break;
 
 				// insert additional extended operations here
 				

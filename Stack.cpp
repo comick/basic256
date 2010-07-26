@@ -7,6 +7,7 @@ Stack::Stack()
 	limit = bottom + initialSize;
 	top->type = T_UNUSED;
 	top->value.floatval = 0;
+	fToAMask = defaultFToAMask;
 }
 
 Stack::~Stack()
@@ -28,6 +29,7 @@ Stack::clear()
 	}
 	top->type = T_UNUSED;
 	top->value.floatval = 0;
+	fToAMask = defaultFToAMask;
 }
 
 void
@@ -169,7 +171,7 @@ Stack::popstring()
 	else if (top->type == T_FLOAT)
 	{
 		char buffer[64];
-		sprintf(buffer, "%#lf", top->value.floatval);
+		sprintf(buffer, "%#.*lf", fToAMask, top->value.floatval);
 		// strip trailing zeros and decimal point
 		while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
 		if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;

@@ -275,7 +275,7 @@
 %token CLEAR BLACK WHITE RED DARKRED GREEN DARKGREEN BLUE DARKBLUE
 %token CYAN DARKCYAN PURPLE DARKPURPLE YELLOW DARKYELLOW
 %token ORANGE DARKORANGE GREY DARKGREY
-%token CHANGEDIR CURRENTDIR
+%token CHANGEDIR CURRENTDIR DECIMAL
 
 %union 
 {
@@ -507,6 +507,7 @@ statement: gotostmt
 	 	| seekstmt
 	 	| clickclearstmt
 		| changedirstmt
+		| decimal
 ;
 
 dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -778,6 +779,9 @@ clickclearstmt: CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
 
 changedirstmt: CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
          | CHANGEDIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
+;
+
+decimal: DECIMAL floatexpr { addExtendedOp(OP_EXTENDED_0,OP_DECIMAL); }
 ;
 
 immediatestrlist: '{' stringlist '}'

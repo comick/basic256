@@ -217,6 +217,7 @@ spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
 currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
+decimal [Dd][Ee][Cc][Ii][Mm][Aa][Ll]
 %%
 
 
@@ -410,6 +411,7 @@ currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
 {volume}       { count(); return VOLUME; }
 {currentdir}       { count(); return CURRENTDIR; }
 {changedir}       { count(); return CHANGEDIR; }
+{decimal}       { count(); return DECIMAL; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

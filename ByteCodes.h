@@ -223,4 +223,5 @@
 #define OP_CHANGEDIR	       		0x0d
 #define OP_CURRENTDIR	       		0x0e
 #define OP_WAVWAIT		0x0f
+#define OP_DECIMAL		0x10
 

@@ -76,6 +76,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Aa][Nn][Dd]\\b"						// and
 		  << "\\b[Aa][Ss][Cc]\\b"						// asc
 		  << "\\b[Cc][Ee][Ii][Ll]\\b"						// ceil
+		  << "\\b[Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]\\b"			// changedir
 		  << "\\b[Cc][Hh][Rr]\\b"						// chr
 		  << "\\b[Cc][Ii][Rr][Cc][Ll][Ee]\\b"					// circle
 		  << "\\b[Cc][Ll][Ee][Aa][Rr]\\b"					// clear
@@ -89,6 +90,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Cc][Oo][Ll][Oo][Rr]\\b"					// color
 		  << "\\b[Cc][Oo][Ll][Oo][Uu][Rr]\\b"					// colour
 		  << "\\b[Cc][Oo][Ss]\\b"						// cos
+		  << "\\b[Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]\\b"			// currentdir
 		  << "\\b[Dd][Aa][Yy]\\b"						// day
 		  << "\\b[Dd][Ii][Mm]\\b"						// dim
 		  << "\\b[Dd][Oo]\\b"							// do
@@ -172,6 +174,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Vv][Oo][Ll][Uu][Mm][Ee]\\b"					// volume
 		  << "\\b[Ww][Aa][Vv][Pp][Ll][Aa][Yy]\\b"				// wavplay
 		  << "\\b[Ww][Aa][Vv][Ss][Tt][Oo][Pp]\\b"				// wavstop
+		  << "\\b[Ww][Aa][Vv][Ww][Aa][Ii][Tt]\\b"				// wavwait
 		  << "\\b[Ww][Hh][Ii][Ll][Ee]\\b"					// while
 		  << "\\b[Ww][Rr][Ii][Tt][Ee]\\b"					// write
 		  << "\\b[Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]\\b"			// writeline

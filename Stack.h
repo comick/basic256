@@ -12,6 +12,7 @@
 enum b_type {T_INT, T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED};
 
 
+
 typedef struct
 {
   b_type type;
@@ -38,6 +39,9 @@ class Stack
   char *popstring();
   void clean(stackval *);
   void clear();
+
+  static const int defaultFToAMask = 6;
+  int fToAMask;
 
  private:
   static const int initialSize = 64;
