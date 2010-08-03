@@ -24,7 +24,9 @@ Stack::clear()
 		if (top->type == T_STRING)
 		{
 			free(top->value.string);
+			top->value.string = NULL;
 		}
+		top->type = T_UNUSED;
 		top--;
 	}
 	top->type = T_UNUSED;
@@ -88,9 +90,11 @@ Stack::pop()
 void
 Stack::clean(stackval *sv)
 {
-	if (sv->type == T_STRING)
+	if (sv->type == T_STRING && sv->value.string)
 	{
 		free(sv->value.string);
+		top->value.string = NULL;
+		sv->type = T_UNUSED;
 	}
 }
 
@@ -125,6 +129,7 @@ Stack::popint()
 	{
 		i = (int) atoi(top->value.string);
 		free(top->value.string);
+		top->value.string = NULL;
 	}
 	top->type = T_UNUSED;
 	if (top > bottom) top--;

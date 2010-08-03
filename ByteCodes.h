@@ -224,4 +224,13 @@
 #define OP_CURRENTDIR	       		0x0e
 #define OP_WAVWAIT		0x0f
 #define OP_DECIMAL		0x10
+#define OP_DBOPEN		0x11
+#define OP_DBCLOSE		0x12
+#define OP_DBEXECUTE		0x13
+#define OP_DBOPENSET		0x14
+#define OP_DBCLOSESET		0x15
+#define OP_DBROW		0x16
+#define OP_DBINT		0x17
+#define OP_DBFLOAT		0x18
+#define OP_DBSTRING		0x19
 

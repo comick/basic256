@@ -2,6 +2,7 @@
 To compile, you'll need the open source version of QT4, GNU flex and bison.
 Specifcally for LINUX you will need:
 * FLite or Espeak development libraries
+* sqlite3 database development libraries
 * SDL and SDL_mixer development libraries
 * g++ compiler and base development libraries
 

@@ -254,7 +254,7 @@
 %token OPEN READ WRITE CLOSE RESET
 %token GOTO GOSUB RETURN REM END SETCOLOR
 %token GTE LTE NE
-%token DIM REDIM ALEN ALENX ALENY NOP
+%token DIM REDIM NOP
 %token TOINT TOSTRING LENGTH MID LEFT RIGHT UPPER LOWER INSTR
 %token CEIL FLOOR RAND SIN COS TAN ASIN ACOS ATAN ABS PI DEGREES RADIANS LOG LOGTEN
 %token AND OR XOR NOT
@@ -276,6 +276,7 @@
 %token CYAN DARKCYAN PURPLE DARKPURPLE YELLOW DARKYELLOW
 %token ORANGE DARKORANGE GREY DARKGREY
 %token CHANGEDIR CURRENTDIR DECIMAL
+%token DBOPEN DBCLOSE DBEXECUTE DBOPENSET DBCLOSESET DBROW DBINT DBFLOAT DBSTRING
 
 %union 
 {
@@ -507,7 +508,12 @@ statement: gotostmt
 	 	| seekstmt
 	 	| clickclearstmt
 		| changedirstmt
-		| decimal
+		| decimalstmt
+		| dbopenstmt
+		| dbclosestmt
+		| dbexecutestmt
+		| dbopensetstmt
+		| dbclosesetstmt
 ;
 
 dimstmt: DIM VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -781,7 +787,27 @@ changedirstmt: CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR);
          | CHANGEDIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
 ;
 
-decimal: DECIMAL floatexpr { addExtendedOp(OP_EXTENDED_0,OP_DECIMAL); }
+decimalstmt: DECIMAL floatexpr { addExtendedOp(OP_EXTENDED_0,OP_DECIMAL); }
+;
+
+dbopenstmt: DBOPEN stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBOPEN); }
+         | DBOPEN '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBOPEN); }
+;
+
+dbclosestmt: DBCLOSE { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSE); }
+         | DBCLOSE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSE); }
+;
+
+dbexecutestmt: DBEXECUTE stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBEXECUTE); }
+         | DBEXECUTE '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBEXECUTE); }
+;
+
+dbopensetstmt: DBOPENSET stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBOPENSET); }
+         | DBOPENSET '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBOPENSET); }
+;
+
+dbclosesetstmt: DBCLOSESET { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSESET); }
+         | DBCLOSESET '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSESET); }
 ;
 
 immediatestrlist: '{' stringlist '}'
@@ -953,6 +979,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
   		 | SPRITEH '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEH); }
 		 | SPRITEW '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEW); }
 		 | SPRITEV '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEV); }
+		 | DBROW '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBROW); }
+		 | DBINT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBINT); }
+		 | DBFLOAT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBFLOAT); }
   ;
 
 stringlist: stringexpr { listlen = 1; }
@@ -990,8 +1019,9 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
           | READLINE { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
           | READLINE '(' floatexpr ')' { addOp(OP_READLINE); }
-		  | CURRENTDIR { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
-		  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
+	  | CURRENTDIR { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
+	  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
+	  | DBSTRING '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBSTRING); }
  ;
 
 %%

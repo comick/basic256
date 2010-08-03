@@ -23,6 +23,7 @@
 #include <time.h>
 #include <cmath>
 #include <string>
+#include <sqlite3.h>
 #include <QString>
 #include <QPainter>
 #include <QPixmap>
@@ -96,6 +97,11 @@ void Interpreter::printError(QString message)
 {
 	emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + message + "\n"));
 	emit(goToLine(currentLine));
+}
+
+void Interpreter::printWarning(QString message)
+{
+	emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + message + "\n"));
 }
 
 void
@@ -363,7 +369,8 @@ Interpreter::initialize()
 	fontweight = 0;
 	nsprites = 0;
 	stack.fToAMask = stack.defaultFToAMask;
-
+dbconn = NULL;
+dbset = NULL;
 }
 
 
@@ -378,12 +385,21 @@ Interpreter::cleanup()
 	//Clean up sprites
 	clearsprites();
 	//Clean up, for frames, etc.
-
 	if (byteCode)
 	{
 		free(byteCode);
 		byteCode = NULL;
 	}
+	// cleanup database
+	if (dbset) {
+		sqlite3_finalize(dbset);
+		dbset = NULL;
+	}
+	if (dbconn) {
+		sqlite3_close(dbconn);
+		dbconn = NULL;
+	}
+						
 }
 
 void
@@ -3015,7 +3031,6 @@ Interpreter::execByteCode()
 
 				case OP_SPRITECOLLIDE:
 					{
-						
 						op++;
 						
 						int n1 = stack.popint();
@@ -3105,6 +3120,159 @@ Interpreter::execByteCode()
 						stack.fToAMask = n;
 					}
 					break;
+
+			case OP_DBOPEN:
+					{
+						op++;
+						// open database connection
+						char *file = stack.popstring();
+						// if a set is in progress or database open then close them first
+						if (dbset) {
+							sqlite3_finalize(dbset);
+							dbset = NULL;
+						}
+						if (dbconn) {
+							sqlite3_close(dbconn);
+							dbconn = NULL;
+						}
+						int error = sqlite3_open(file, &dbconn);
+						if (error) {
+							printError(tr("Unable to open SQLITE database."));
+							return -1;
+						}
+						free(file);
+					}
+					break;
+
+			case OP_DBCLOSE:
+					{
+						op++;
+						if (dbset) {
+							sqlite3_finalize(dbset);
+							dbset = NULL;
+						}
+						if (dbconn) {
+							sqlite3_close(dbconn);
+							dbconn = NULL;
+						}
+					}
+					break;
+
+			case OP_DBEXECUTE:
+					{
+						op++;
+						// execute a statement on the database
+						char *stmt = stack.popstring();
+						if(dbconn) {
+							int error = sqlite3_exec(dbconn, stmt, 0, 0, 0);
+							if (error != SQLITE_OK) {
+								printWarning(tr("Database query error (message follows)."));
+								printWarning(tr(sqlite3_errmsg(dbconn)));
+							}
+						} else {
+							printError(tr("Database must be opened first."));
+							return -1;
+						}
+						free(stmt);
+					}
+					break;
+
+			case OP_DBOPENSET:
+					{
+						op++;
+						// open recordset
+						char *stmt = stack.popstring();
+						if(dbconn) {
+							int error = sqlite3_prepare_v2(dbconn, stmt, 1000, &dbset, NULL);
+							if (error != SQLITE_OK) {
+								printWarning(tr("Database query error (message follows)."));
+								printWarning(tr(sqlite3_errmsg(dbconn)));
+								dbset = NULL;
+							}
+						} else {
+							printError(tr("Database must be opened first."));
+							return -1;
+						}
+						free(stmt);
+					}
+					break;
+
+			case OP_DBCLOSESET:
+					{
+						op++;
+						if (dbset) {
+							sqlite3_finalize(dbset);
+							dbset = NULL;
+						}
+					}
+					break;
+
+			case OP_DBROW:
+					{
+						op++;
+						// return true if we move to a new row else false
+						stack.push((sqlite3_step(dbset) == SQLITE_ROW?1:0));
+					}
+					break;
+
+			case OP_DBINT:
+					{
+						op++;
+						// get a column data (integer)
+						int n = stack.popint();
+						if (dbset) {
+							if (n < 0 || n >= sqlite3_column_count(dbset)) {
+								printError(tr("Column number out of range."));
+								return -1;
+							} else {
+								stack.push(sqlite3_column_int(dbset, n));
+							}
+						} else {
+							printError(tr("Record set must be opened first."));
+							return -1;
+						}
+					}
+					break;
+
+			case OP_DBFLOAT:
+					{
+						op++;
+						// get a column data (double)
+						int n = stack.popint();
+						if (dbset) {
+							if (n < 0 || n >= sqlite3_column_count(dbset)) {
+								printError(tr("Column number out of range."));
+								return -1;
+							} else {
+								stack.push(sqlite3_column_double(dbset, n));
+							}
+						} else {
+							printError(tr("Record set must be opened first."));
+							return -1;
+						}
+					}
+					break;
+
+			case OP_DBSTRING:
+					{
+						op++;
+						// get a column data (string)
+						int n = stack.popint();
+						if (dbset) {
+							if (n < 0 || n >= sqlite3_column_count(dbset)) {
+								printError(tr("Column number out of range."));
+								return -1;
+							} else {
+								char* data = (char*)sqlite3_column_text(dbset, n);
+								stack.push(data);
+							}
+						} else {
+							printError(tr("Record set must be opened first."));
+							return -1;
+						}
+					}
+					break;
+
 
 				// insert additional extended operations here
 				

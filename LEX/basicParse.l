@@ -84,9 +84,6 @@ remeol   [Rr][Ee][Mm]$
 remalt #.*$
 dim   [Dd][Ii][Mm]
 redim   [Rr][Ee][Dd][Ii][Mm]
-alen	[Aa][Ll][Ee][Nn]
-alenx	[Aa][Ll][Ee][Nn][Xx]
-aleny	[Aa][Ll][Ee][Nn][Yy]
 end   [Ee][Nn][Dd]
 for   [Ff][Oo][Rr]
 to    [Tt][Oo]
@@ -218,6 +215,15 @@ spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
 currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
 decimal [Dd][Ee][Cc][Ii][Mm][Aa][Ll]
+dbopen [Dd][Bb][Oo][Pp][Ee][Nn]
+dbclose [Dd][Bb][Cc][Ll][Oo][Ss][Ee]
+dbexecute [Dd][Bb][Ee][Xx][Ee][Cc][Uu][Tt][Ee]
+dbopenset [Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]
+dbcloseset [Dd][Bb][Cc][Ll][Oo][Ss][Ee][Ss][Ee][Tt]
+dbrow [Dd][Bb][Rr][Oo][Ww]
+dbint [Dd][Bb][Ii][Nn][Tt]
+dbfloat [Dd][Bb][Ff][Ll][Oo][Aa][Tt]
+dbstring [Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]
 %%
 
 
@@ -297,9 +303,6 @@ decimal [Dd][Ee][Cc][Ii][Mm][Aa][Ll]
 {print}		{ count(); return PRINT; }
 {dim}		{ count(); return DIM; }
 {redim}		{ count(); return REDIM; }
-{alen}		{ count(); return ALEN; }
-{alenx}		{ count(); return ALENX; }
-{aleny}		{ count(); return ALENY; }
 {cls}		{ count(); return CLS; }
 {clg}		{ count(); return CLG; }
 {plot}		{ count(); return PLOT; }
@@ -412,6 +415,15 @@ decimal [Dd][Ee][Cc][Ii][Mm][Aa][Ll]
 {currentdir}       { count(); return CURRENTDIR; }
 {changedir}       { count(); return CHANGEDIR; }
 {decimal}       { count(); return DECIMAL; }
+{dbopen}       { count(); return DBOPEN; }
+{dbclose}       { count(); return DBCLOSE; }
+{dbexecute}       { count(); return DBEXECUTE; }
+{dbopenset}       { count(); return DBOPENSET; }
+{dbcloseset}       { count(); return DBCLOSESET; }
+{dbrow}       { count(); return DBROW; }
+{dbint}       { count(); return DBINT; }
+{dbfloat}       { count(); return DBFLOAT; }
+{dbstring}       { count(); return DBSTRING; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

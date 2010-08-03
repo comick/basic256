@@ -1,3 +1,10 @@
+2010-08-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6y
+	* Added sqLite database processing - dbopen, dbclose, dbsetopen, dbsetclose, and dbexecute statements.
+		also dbint, dbfloat, dbstring, and dbrow functions to manipulate recordsets
+
+2010-07-27 j.m.reneau <renejm@users.sourceforge.net> 0.9.6x
+	* left alen, alenx, and aleny in lex files when adding 2d and redim of arrays - unused - removed
+
 2010-07-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.6w
 	* added decimal statemene to define maximum number of decimal places to display
           (full precision of a double is still being maintained behind the scenes)

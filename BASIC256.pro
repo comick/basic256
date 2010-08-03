@@ -6,6 +6,7 @@ TEMPLATE		=	app
 TARGET			=	BASIC256
 DEPENDPATH		+=	.
 INCLUDEPATH		+=	.
+TMAKE_CXXFLAGS = -g 
 CONFIG          	+=  debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
@@ -24,7 +25,10 @@ win32 {
 	DEFINES 		+= USEQSOUND
 	LIBS			+= -lole32 \
 					-lsapi \
-					-lwinmm 
+					-lwinmm
+# need t link to sqlite once I figure how
+
+
 } else {
 	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
 	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)
@@ -41,6 +45,7 @@ win32 {
 	#LIBS			+=	-lflite_usenglish
 	
 	LIBS			+=	-lm
+	LIBS			+=	-lsqlite3
 
 	## include libraries for SDL audio for wav and sound output
 	DEFINES 		+= USESDL

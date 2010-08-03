@@ -25,6 +25,7 @@
 #include <QDir>
 #include <stdio.h>
 #include <cmath>
+#include <sqlite3.h>
 #include "BasicGraph.h"
 #include "Stack.h"
 
@@ -137,6 +138,7 @@ class Interpreter : public QThread
  private:
   void waitForGraphics();
   void printError(QString);
+  void printWarning(QString);
   QImage *image;
   BasicGraph *graph;
   variable vars[NUMVARS];
@@ -162,6 +164,8 @@ class Interpreter : public QThread
   bool spritecollide(int, int);
   sprite *sprites;
   int nsprites;
+  sqlite3 *dbconn;
+  sqlite3_stmt *dbset;
 };
 
 

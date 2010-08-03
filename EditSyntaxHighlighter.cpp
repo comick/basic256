@@ -92,6 +92,15 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Cc][Oo][Ss]\\b"						// cos
 		  << "\\b[Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]\\b"			// currentdir
 		  << "\\b[Dd][Aa][Yy]\\b"						// day
+		  << "\\b[Dd][Bb][Cc][Ll][Oo][Ss][Ee]\\b"				// dbclose
+		  << "\\b[Dd][Bb][Cc][Ll][Oo][Ss][Ee][Ss][Ee][Tt]\\b"			// dbcloseset
+		  << "\\b[Dd][Bb][Ee][Xx][Ee][Cc][Uu][Tt][Ee]\\b"			// dbexecute
+		  << "\\b[Dd][Bb][Ff][Ll][Oo][Aa][Tt]\\b"				// dbfloat
+		  << "\\b[Dd][Bb][Ii][Nn][Tt]\\b"					// dbint
+		  << "\\b[Dd][Bb][Oo][Pp][Ee][Nn]\\b"					// dbopen
+		  << "\\b[Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]\\b"			// dbopenset
+		  << "\\b[Dd][Bb][Rr][Oo][Ww]\\b"					// dbrow
+		  << "\\b[Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]\\b"				// dbstring
 		  << "\\b[Dd][Ii][Mm]\\b"						// dim
 		  << "\\b[Dd][Oo]\\b"							// do
 		  << "\\b[Ee][Ll][Ss][Ee]\\b"						// else
