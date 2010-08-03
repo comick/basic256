@@ -11,6 +11,12 @@ Specifically for Windows you will need:
 * gtk win32 bundle headers and libraries from http://www.gtk.org/download-windows.html
 * the gretl development headers need to be added to mingw they are in a file called mingw-extra.zip
   and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
+* sqlite development libraries and headers need to be installed and downloaded
+  - use the *amalgation* zip file and copy the *.h files into MinGW/include
+  - download the windows dll xip file, extract files into MinGW/lib, and run the following
+    dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
+  - you will also need to place the sqlite.dll file either in your system path or in the
+    project/trunk/debug folder.
 
 Build Windows MINGW and LINUX:
 
@@ -28,7 +34,7 @@ Release Build (Windows):
   To build a nice WIN32 installer use the nullsoft scriptable install system file
   2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
   
-  You must also copy the QtCore4.dll, QtGui4.dll and mingwm10.dll to the release
+  You must also copy the QtCore4.dll, QtGui4.dll, sqlite3.dll, and mingwm10.dll to the release
   folder before testing the build or running the installer script.  Under QT 4.5.3
   be sure to use the dlls from C:\Qt\2009.04\qt\bin and not the ones from C:\Qt\2009.04\bin. 
   

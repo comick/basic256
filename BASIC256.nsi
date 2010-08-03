@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6w"
-  StrCpy $VERSIONDATE "2010-07-25"
+  StrCpy $VERSION "0.9.6y"
+  StrCpy $VERSIONDATE "2010-08-03"
 FunctionEnd
 
 Function customPage
@@ -83,6 +83,7 @@ Section "BASIC256"
   ; Put file there
   File .\release\BASIC256.exe
   File .\release\mingwm10.dll
+  File .\release\sqlite3.dll
   File .\release\QtCore4.dll
   File .\release\QtGui4.dll
   File .\release\QtNetwork4.dll
@@ -130,6 +131,7 @@ Section "Uninstall"
   ; Remove files and uninstaller
   Delete $INSTDIR\BASIC256.exe
   Delete $INSTDIR\mingwm10.dll
+  Delete $INSTDIR\sqlite3.dll
   Delete $INSTDIR\QtCore4.dll
   Delete $INSTDIR\QtGui4.dll
   Delete $INSTDIR\ChangeLog

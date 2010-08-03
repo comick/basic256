@@ -24,8 +24,9 @@ win32 {
 	DEFINES 		+= WIN32
 	DEFINES 		+= USEQSOUND
 	LIBS			+= -lole32 \
-					-lsapi \
-					-lwinmm
+				-lsapi \
+				-lwinmm \
+				-lsqlite3
 # need t link to sqlite once I figure how
 
 
@@ -45,7 +46,6 @@ win32 {
 	#LIBS			+=	-lflite_usenglish
 	
 	LIBS			+=	-lm
-	LIBS			+=	-lsqlite3
 
 	## include libraries for SDL audio for wav and sound output
 	DEFINES 		+= USESDL
