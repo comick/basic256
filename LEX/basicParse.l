@@ -155,8 +155,8 @@ octalinteger 0[oO][0-7]+
 binaryinteger 0[bB][01]+
 floatnum [0-9]*\.?[0-9]*
 string \"[^\"\n]*\"
-variable [a-zA-Z][a-zA-Z0-9]*
-stringvar [a-zA-Z][a-zA-Z0-9]*\$
+variable [a-zA-Z][a-zA-Z0-9_]*
+stringvar [a-zA-Z][a-zA-Z0-9_]*\$
 label     ^[ \t]*{variable}:
 blankline ^[ \t]*[\n]
 asc [Aa][Ss][Cc]

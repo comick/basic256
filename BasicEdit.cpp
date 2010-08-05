@@ -80,14 +80,20 @@ void
 BasicEdit::cursorMove()
 {
 	QTextCursor t(textCursor());
+	// get current column
+	int col = t.position();
+	t.movePosition(QTextCursor::StartOfLine);
+	col = col - t.position() + 1;
 	t.movePosition(QTextCursor::StartOfBlock);
+	// get line
 	int line = 1;
 	while (t.movePosition(QTextCursor::PreviousBlock))
 	{
 		line++;
 	}
 	currentLine = line;
-	mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(currentLine));
+	//
+	mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(currentLine) + tr(" Column: ") + QString::number(col));
 }
 
 void

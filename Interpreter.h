@@ -44,7 +44,7 @@
 #define ERROR_NEXTNOFOR 4
 #define ERROR_NEXTNOFOR_MESSAGE "Next without FOR"
 #define ERROR_FILENUMBER 5
-#define ERROR_FILENUMBER_MESSAGE "Invallid File Number"
+#define ERROR_FILENUMBER_MESSAGE "Invalid File Number"
 #define ERROR_FILEOPEN 6
 #define ERROR_FILEOPEN_MESSAGE "Unable to open file"
 #define ERROR_FILENOTOPEN 7

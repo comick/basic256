@@ -3,8 +3,11 @@
 # create a new database file or open it
 dbopen "dbtest.sqlite3"
 
-# delete old foo table then create and populate
+# delete old foo table - trap error if new database
+onerror errortrap
 dbexecute "drop table foo;"
+offerror
+# create and populate
 dbexecute "create table foo (id integer, words text, value decimal);"
 dbexecute "insert into foo values (1,'one',3.14);"
 dbexecute "insert into foo values (2,'two',6.28);"
@@ -19,3 +22,8 @@ dbcloseset
 
 # wrap everything up
 dbclose
+end
+
+errortrap:
+# accept error - display nothing - return to next statement
+return

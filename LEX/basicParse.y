@@ -317,7 +317,13 @@ program: validline '\n'
        | validline '\n' program 
 ;
 
-validline: compoundifstmt       { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+validline: label validstatement
+	| validstatement
+;
+
+label: LABEL        { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+
+validstatement: compoundifstmt       { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | ifstmt  { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | elsestmt   { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | endifstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
@@ -333,13 +339,12 @@ validline: compoundifstmt       { lastLineOffset = byteOffset; addIntOp(OP_CURRL
 			// push to iftable the byte location of the end of the last stmt (top of loop)
 			iftable[numifs] = lastLineOffset;
 			numifs++;
-			lastLineOffset = byteOffset; 
+			lastLineOffset = byteOffset;
 			addIntOp(OP_CURRLINE, linenumber);
 			}
          | untilstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
          | /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-         | LABEL        { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber + 1); }
 ;
 
 compoundifstmt: ifexpr THEN compoundstmt 
