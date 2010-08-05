@@ -93,15 +93,122 @@ static int compareTwoStackVal(stackval *two, stackval *one)
 	else return 1;
 }
 
-void Interpreter::printError(QString message)
+void Interpreter::printError(int e, QString message)
 {
-	emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + message + "\n"));
+	emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + getErrorMessage(e) + " " + message + "\n"));
 	emit(goToLine(currentLine));
 }
 
-void Interpreter::printWarning(QString message)
-{
-	emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + message + "\n"));
+QString Interpreter::getErrorMessage(int e) {
+	QString errormessage("");
+	switch(e) {
+		case ERROR_NOSUCHLABEL:
+			errormessage = tr(ERROR_NOSUCHLABEL_MESSAGE);
+			break;
+		case ERROR_FOR1:
+			errormessage = tr(ERROR_FOR1_MESSAGE);
+			break;
+		case ERROR_FOR2 :
+			errormessage = tr(ERROR_FOR2_MESSAGE);
+			break;
+		case ERROR_NEXTNOFOR:
+			errormessage = tr(ERROR_NEXTNOFOR_MESSAGE);
+			break;
+		case ERROR_FILENUMBER:
+			errormessage = tr(ERROR_FILENUMBER_MESSAGE);
+			break;
+		case ERROR_FILEOPEN:
+			errormessage = tr(ERROR_FILEOPEN_MESSAGE);
+			break;
+		case ERROR_FILENOTOPEN:
+			errormessage = tr(ERROR_FILENOTOPEN_MESSAGE);
+			break;
+		case ERROR_FILEWRITE:
+			errormessage = tr(ERROR_FILEWRITE_MESSAGE);
+			break;
+		case ERROR_FILERESET:
+			errormessage = tr(ERROR_FILERESET_MESSAGE);
+			break;
+		case ERROR_ARRAYSIZELARGE:
+			errormessage = tr(ERROR_ARRAYSIZELARGE_MESSAGE);
+			break;
+		case ERROR_ARRAYSIZESMALL:
+			errormessage = tr(ERROR_ARRAYSIZESMALL_MESSAGE);
+			break;
+		case ERROR_NOSUCHVARIABLE:
+			errormessage = tr(ERROR_NOSUCHVARIABLE_MESSAGE);
+			break;
+		case ERROR_NOTARRAY:
+			errormessage = tr(ERROR_NOTARRAY_MESSAGE);
+			break;
+		case ERROR_NOTSTRINGARRAY:
+			errormessage = tr(ERROR_NOTSTRINGARRAY_MESSAGE);
+			break;
+		case ERROR_ARRAYINDEX:
+			errormessage = tr(ERROR_ARRAYINDEX_MESSAGE);
+			break;
+		case ERROR_STRNEGLEN:
+			errormessage = tr(ERROR_STRNEGLEN_MESSAGE);
+			break;
+		case ERROR_STRSTART:
+			errormessage = tr(ERROR_STRSTART_MESSAGE);
+			break;
+		case ERROR_STREND:
+			errormessage = tr(ERROR_STREND_MESSAGE);
+			break;
+		case ERROR_NONNUMERIC:
+			errormessage = tr(ERROR_NONNUMERIC_MESSAGE);
+			break;
+		case ERROR_RGB:
+			errormessage = tr(ERROR_RGB_MESSAGE);
+			break;
+		case ERROR_PUTBITFORMAT:
+			errormessage = tr(ERROR_PUTBITFORMAT_MESSAGE);
+			break;
+		case ERROR_POLYARRAY:
+			errormessage = tr(ERROR_POLYARRAY_MESSAGE);
+			break;
+		case ERROR_POLYPOINTS:
+			errormessage = tr(ERROR_POLYPOINTS_MESSAGE);
+			break;
+		case ERROR_IMAGEFILE:
+			errormessage = tr(ERROR_IMAGEFILE_MESSAGE);
+			break;
+		case ERROR_SPRITENUMBER:
+			errormessage = tr(ERROR_SPRITENUMBER_MESSAGE);
+			break;
+		case ERROR_SPRITENA:
+			errormessage = tr(ERROR_SPRITENA_MESSAGE);
+			break;
+		case ERROR_SPRITESLICE:
+			errormessage = tr(ERROR_SPRITESLICE_MESSAGE);
+			break;
+		case ERROR_FOLDER:
+			errormessage = tr(ERROR_FOLDER_MESSAGE);
+			break;
+		case ERROR_DECIMALMASK:
+			errormessage = tr(ERROR_DECIMALMASK_MESSAGE);
+			break;
+		case ERROR_DBOPEN:
+			errormessage = tr(ERROR_DBOPEN_MESSAGE);
+			break;
+		case ERROR_DBQUERY:
+			errormessage = tr(ERROR_DBQUERY_MESSAGE);
+			break;
+		case ERROR_DBNOTOPEN:
+			errormessage = tr(ERROR_DBNOTOPEN_MESSAGE);
+			break;
+		case ERROR_DBCOLNO:
+			errormessage = tr(ERROR_DBCOLNO_MESSAGE);
+			break;
+		case ERROR_DBNOTSET:
+			errormessage = tr(ERROR_DBNOTSET_MESSAGE);
+			break;
+		case ERROR_EXTOPBAD:
+			errormessage = tr(ERROR_EXTOPBAD_MESSAGE);
+			break;
+	}
+	return errormessage;
 }
 
 void
@@ -289,7 +396,7 @@ Interpreter::compileProgram(char *code)
 			op += sizeof(int);
 		}
 
-		if (*op == OP_GOTO || *op == OP_GOSUB)
+		if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR)
 		{
 			op += sizeof(unsigned char);
 			int *i = (int *) op;
@@ -301,7 +408,7 @@ Interpreter::compileProgram(char *code)
 			}
 			else
 			{
-				printError(tr("No such label"));
+				printError(ERROR_NOSUCHLABEL,"");
 				return -1;
 			}
 		}
@@ -426,6 +533,12 @@ Interpreter::stop()
 void
 Interpreter::run()
 {
+	errornum = ERROR_NONE;
+	errormessage = "";
+	lasterrornum = ERROR_NONE;
+        lasterrormessage = "";
+	lasterrorline = 0;
+	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
 	emit(runFinished());
@@ -470,6 +583,29 @@ Interpreter::execByteCode()
 		return 0;
 	}
 
+	// if errnum is set then handle the last thrown error
+	if (errornum!=ERROR_NONE) {
+		lasterrornum = errornum;
+		lasterrormessage = errormessage;
+		lasterrorline = currentLine;
+		errornum = ERROR_NONE;
+		errormessage = "";
+		if(onerroraddress!=0) {
+			// progess call to subroutine for error handling
+			frame *temp = new frame;
+			temp->returnAddr = op;
+			temp->next = callstack;
+			callstack = temp;
+			op = byteCode + onerroraddress;
+			return 0;
+		} else {
+			// no error handler defined - display message and die
+			emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
+			emit(goToLine(currentLine));
+			return -1;
+		}
+	}
+	
 	while (*op == OP_CURRLINE)
 	{
 		op++;
@@ -484,6 +620,7 @@ Interpreter::execByteCode()
 			debugmutex.unlock();
 		}
 	}
+
 
 	switch(*op)
 	{
@@ -516,12 +653,22 @@ Interpreter::execByteCode()
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
-			frame *temp = new frame;
 
+			frame *temp = new frame;
 			temp->returnAddr = op;
 			temp->next = callstack;
 			callstack = temp;
 			op = byteCode + *i;
+		}
+		break;
+
+	case OP_ONERROR:
+		{
+			// get the address of the subroutine for error handling
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			onerroraddress = *i;
 		}
 		break;
 
@@ -584,15 +731,11 @@ Interpreter::execByteCode()
 			forstack = temp;
 			if (temp->step > 0 && vars[*i].value.floatval > temp->endNum)
 			{
-				printError(tr("Illegal FOR -- start number > end number"));
-				return -1;
-			}
-			else if (temp->step < 0 && vars[*i].value.floatval < temp->endNum)
+				errornum = ERROR_FOR1;
+			} else if (temp->step < 0 && vars[*i].value.floatval < temp->endNum)
 			{
-				printError(tr("Illegal FOR -- start number < end number"));
-				return -1;
+				errornum = ERROR_FOR2;
 			}
-
 		}
 		break;
 
@@ -609,42 +752,42 @@ Interpreter::execByteCode()
 			}
 			if (!temp)
 			{
-				printError(tr("Next without FOR"));
-				return -1;
-			}
+				errornum = ERROR_NEXTNOFOR;
+			} else {
 
-			double val = vars[*i].value.floatval;
-			val += temp->step;
-			vars[*i].value.floatval = val;
+				double val = vars[*i].value.floatval;
+				val += temp->step;
+				vars[*i].value.floatval = val;
 
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
-			}
+				if(debugMode)
+				{
+					emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
+				}
 
-			if (temp->step > 0 && val <= temp->endNum)
-			{
-				op = temp->returnAddr;
-			}
-			else if (temp->step < 0 && val >= temp->endNum)
-			{
-				op = temp->returnAddr;
-			}
-			else
-			{
-				if (temp->next)
+				if (temp->step > 0 && val <= temp->endNum)
 				{
-					temp->next->prev = temp->prev;
+					op = temp->returnAddr;
 				}
-				if (temp->prev)
+				else if (temp->step < 0 && val >= temp->endNum)
 				{
-					temp->prev->next = temp->next;
+					op = temp->returnAddr;
 				}
-				if (forstack == temp)
+				else
 				{
-					forstack = temp->next;
+					if (temp->next)
+					{
+						temp->next->prev = temp->prev;
+					}
+					if (temp->prev)
+					{
+						temp->prev->next = temp->next;
+					}
+					if (forstack == temp)
+					{
+						forstack = temp->next;
+					}
+					delete temp;
 				}
-				delete temp;
 			}
 		}
 		break;
@@ -654,29 +797,22 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *name = stack.popstring();
-			
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
+				errornum = ERROR_FILENUMBER;
+			} else {
+				if (stream[fn] != NULL)
+				{
+					stream[fn]->close();
+					stream[fn] = NULL;
+				}
+				stream[fn] = new QFile(QString::fromUtf8(name));
+				if (stream[fn] == NULL || !stream[fn]->open(QIODevice::ReadWrite | QIODevice::Text))
+				{
+					errornum = ERROR_FILEOPEN;
+				}
 			}
-
-			if (stream[fn] != NULL)
-			{
-				stream[fn]->close();
-				stream[fn] = NULL;
-			}
-
-			stream[fn] = new QFile(QString::fromUtf8(name));
-
 			free(name);
-
-			if (stream[fn] == NULL || !stream[fn]->open(QIODevice::ReadWrite | QIODevice::Text))
-			{
-				printError(tr("Unable to open file"));
-				return -1;
-			}
-
 		}
 		break;
 
@@ -686,56 +822,51 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			char c = ' ';
-
-			if (stream[fn] == NULL)
-			{
-				printError(tr("Can't read -- no open file."));
-				return -1;
-			}
-
-			int maxsize = 256;
-			char * strarray = (char *) malloc(maxsize);
-			memset(strarray, 0, maxsize);
-
-			//Remove leading whitespace
-			while (c == ' ' || c == '\t' || c == '\n')
-			{
-				if (!stream[fn]->getChar(&c))
+				errornum = ERROR_FILENUMBER;
+				stack.push(0);
+			} else {
+				char c = ' ';
+				if (stream[fn] == NULL)
 				{
+					errornum = ERROR_FILENOTOPEN;
+					stack.push(0);
+				} else {
+					int maxsize = 256;
+					char * strarray = (char *) malloc(maxsize);
+					memset(strarray, 0, maxsize);
+					//Remove leading whitespace
+					while (c == ' ' || c == '\t' || c == '\n')
+					{
+						if (!stream[fn]->getChar(&c))
+						{
+							stack.push(strarray);
+							free(strarray);
+							return 0;
+						}
+					}
+					//put back non-whitespace character
+					stream[fn]->ungetChar(c);
+					//read token
+					int offset = 0;
+					while (stream[fn]->getChar(strarray + offset) &&
+					        *(strarray + offset) != ' ' &&
+					        *(strarray + offset) != '\t' &&
+					        *(strarray + offset) != '\n' &&
+					        *(strarray + offset) != 0)
+					{
+						offset++;
+						if (offset >= maxsize)
+						{
+							maxsize *= 2;
+							strarray = (char *) realloc(strarray, maxsize);
+							memset(strarray + offset, 0, maxsize - offset);
+						}
+					}
+					strarray[offset] = 0;
 					stack.push(strarray);
-					return 0;
+					free(strarray);
 				}
 			}
-
-			//put back non-whitespace character
-			stream[fn]->ungetChar(c);
-
-			//read token
-			int offset = 0;
-
-			while (stream[fn]->getChar(strarray + offset) &&
-			        *(strarray + offset) != ' ' &&
-			        *(strarray + offset) != '\t' &&
-			        *(strarray + offset) != '\n' &&
-			        *(strarray + offset) != 0)
-			{
-				offset++;
-				if (offset >= maxsize)
-				{
-					maxsize *= 2;
-					strarray = (char *) realloc(strarray, maxsize);
-					memset(strarray + offset, 0, maxsize - offset);
-				}
-			}
-			strarray[offset] = 0;
-
-			stack.push(strarray);
-			free(strarray);
 		}
 		break;
 
@@ -745,46 +876,48 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
+				errornum = ERROR_FILENUMBER;
+				stack.push(0);
+			} else {
 
-			if (stream[fn] == NULL)
-			{
-				printError(tr("Can't read -- no open file."));
-				return -1;
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+					stack.push(0);
+				} else {
+					//read entire line
+					int maxsize = 2048;
+					char * strarray = (char *) malloc(maxsize);
+					memset(strarray, 0, maxsize);
+					stream[fn]->readLine(strarray, maxsize);
+					while((char) strarray[strlen(strarray)-1] == '\n') strarray[strlen(strarray)-1] = (char) 0x00;
+					stack.push(strdup(strarray));
+					free(strarray);
+				}
 			}
-
-			//read entire line
-			int maxsize = 2048;
-			char * strarray = (char *) malloc(maxsize);
-			memset(strarray, 0, maxsize);
-			stream[fn]->readLine(strarray, maxsize);
-			while((char) strarray[strlen(strarray)-1] == '\n') strarray[strlen(strarray)-1] = (char) 0x00;
-			stack.push(strdup(strarray));
-			free(strarray);
 		}
 		break;
 
 	case OP_EOF:
 		{
+			//return true to eof if error is returned
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			if (stream[fn] == NULL)
-			{
-				printError(tr("Can't read -- no open file."));
-				return -1;
-			}
-
-			if (stream[fn]->atEnd()) {
+				errornum = ERROR_FILENUMBER;
 				stack.push(1);
 			} else {
-				stack.push(0);
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+					stack.push(1);
+				} else {
+					if (stream[fn]->atEnd()) {
+						stack.push(1);
+					} else {
+						stack.push(0);
+					}
+				}
 			}
 		}
 		break;
@@ -798,33 +931,30 @@ Interpreter::execByteCode()
 			char *temp = stack.popstring();
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			int error = 0;
-
-			if (stream[fn] != NULL)
-			{
-				quint64 oldPos = stream[fn]->pos();
-				stream[fn]->flush();
-				stream[fn]->seek(stream[fn]->size());
-				error = stream[fn]->write(temp, strlen(temp));
-				if (whichop == OP_WRITELINE)
+				errornum = ERROR_FILENUMBER;
+			} else {
+				int error = 0;
+				if (stream[fn] == NULL)
 				{
-					error = stream[fn]->write("\n", 1);
+					errornum = ERROR_FILENOTOPEN;
+				} else {
+					quint64 oldPos = stream[fn]->pos();
+					stream[fn]->flush();
+					stream[fn]->seek(stream[fn]->size());
+					error = stream[fn]->write(temp, strlen(temp));
+					if (whichop == OP_WRITELINE)
+					{
+						error = stream[fn]->write("\n", 1);
+					}
+					stream[fn]->seek(oldPos);
+					stream[fn]->flush();
 				}
-				stream[fn]->seek(oldPos);
-				stream[fn]->flush();
+				if (error == -1)
+				{
+					errornum = ERROR_FILEWRITE;
+				}
 			}
-
 			free(temp);
-
-			if (error == -1)
-			{
-				printError(tr("Unable to write to file"));
-			}
-
 		}
 		break;
 
@@ -834,14 +964,15 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			if (stream[fn] != NULL)
-			{
-				stream[fn]->close();
-				stream[fn] = NULL;
+				errornum = ERROR_FILENUMBER;
+			} else {
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+				} else {
+					stream[fn]->close();
+					stream[fn] = NULL;
+				}
 			}
 		}
 		break;
@@ -852,23 +983,17 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			if (stream[fn] == NULL)
-			{
-				printError(tr("reset() called when no file is open"));
-				return -1;
-			}
-			else
-			{
-				stream[fn]->close();
-
-				if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+				errornum = ERROR_FILENUMBER;
+			} else {
+				if (stream[fn] == NULL)
 				{
-					printError(tr("Unable to reset file"));
-					return -1;
+					errornum = ERROR_FILENOTOPEN;
+				} else {	
+					stream[fn]->close();
+					if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+					{
+						errornum = ERROR_FILERESET;
+					}
 				}
 			}
 		}
@@ -880,18 +1005,19 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			int size = 0;
-			if (stream[fn] == NULL)
-			{
-				printError(tr("Can't size -- no open file."));
+				errornum = ERROR_FILENUMBER;
+				stack.push(0);
 			} else {
-				size = stream[fn]->size();
+				int size = 0;
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+					stack.push(0);
+				} else {
+					size = stream[fn]->size();
+				}
+				stack.push(size);
 			}
-			stack.push(size);
 		}
 		break;
 
@@ -917,24 +1043,18 @@ Interpreter::execByteCode()
 			op++;
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
-				printError(tr("Invallid File Number"));
-				return -1;
-			}
-
-			long pos = stack.popint();
-
-			if (stream[fn] == NULL)
-			{
-				printError(tr("seek() called when no file is open"));
-				return -1;
-			}
-			else
-			{
-				stream[fn]->seek(pos);
+				errornum = ERROR_FILENUMBER;
+			} else {
+				long pos = stack.popint();
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+				} else {
+					stream[fn]->seek(pos);
+				}
 			}
 		}
 		break;
-
 
 	case OP_DIM:
 	case OP_DIMSTR:
@@ -953,119 +1073,95 @@ Interpreter::execByteCode()
 
 			if (size > 100000)
 			{
-				printError(tr("Array dimension too large"));
-				return -1;
-			} else if (size < 1)
-			{
-				printError(tr("Array dimension too small"));
-				return -1;
-			}
+				errornum = ERROR_ARRAYSIZELARGE;
+			} else {
+				if (size < 1)
+				{
+					errornum = ERROR_ARRAYSIZESMALL;
+				} else {
 
-			if (whichdim == OP_REDIM || whichdim == OP_REDIMSTR) {
-				if (vars[var].type == T_UNUSED)
-				{
-					printError(tr("Unknown variable"));
-					return -1;
-				}	
-			}
-			
-			array *temp = new array;
-			
-			if (whichdim == OP_DIM || whichdim == OP_REDIM)
-			{
-				double *d = new double[size];
-				for (int j = 0; j < size; j++)
-				{
-					if(whichdim == OP_REDIM && j < vars[var].value.arr->size) {
-						d[j] = vars[var].value.arr->data.fdata[j];						
-					} else {
-						d[j] = 0;
+					if (whichdim == OP_REDIM || whichdim == OP_REDIMSTR) {
+						if (vars[var].type == T_UNUSED)
+						{
+							errornum = ERROR_NOSUCHVARIABLE;
+						}	
 					}
 				}
-				vars[var].type = T_ARRAY;
-				temp->data.fdata = d;
-				temp->size = size;
-				temp->xdim = xdim;
-				temp->ydim = ydim;
-				vars[var].value.arr = temp;
-			}
-			else
-			{
-				char **c = new char*[size];
-				for (int j = 0; j < size; j++)
-				{
-					if(whichdim == OP_REDIMSTR && j < vars[var].value.arr->size) {
-						c[j] = vars[var].value.arr->data.sdata[j];						
-					} else {
-						c[j] = strdup("");
-					}
-				}
-				vars[var].type = T_STRARRAY;
-				temp->data.sdata = c;
-				temp->size = size;
-				temp->xdim = xdim;
-				temp->ydim = ydim;
-				vars[var].value.arr = temp;
 			}
 
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[var]), NULL, size));
+			if (errornum == ERROR_NONE) {			
+				array *temp = new array;
+			
+				if (whichdim == OP_DIM || whichdim == OP_REDIM)
+				{
+					double *d = new double[size];
+					for (int j = 0; j < size; j++)
+					{
+						if(whichdim == OP_REDIM && j < vars[var].value.arr->size) {
+							d[j] = vars[var].value.arr->data.fdata[j];						
+						} else {
+							d[j] = 0;
+						}
+					}
+					vars[var].type = T_ARRAY;
+					temp->data.fdata = d;
+					temp->size = size;
+					temp->xdim = xdim;
+					temp->ydim = ydim;
+					vars[var].value.arr = temp;
+				} else {
+					char **c = new char*[size];
+					for (int j = 0; j < size; j++)
+					{
+						if(whichdim == OP_REDIMSTR && j < vars[var].value.arr->size) {
+							c[j] = vars[var].value.arr->data.sdata[j];						
+						} else {
+							c[j] = strdup("");
+						}
+					}
+					vars[var].type = T_STRARRAY;
+					temp->data.sdata = c;
+					temp->size = size;
+					temp->xdim = xdim;
+					temp->ydim = ydim;
+					vars[var].value.arr = temp;
+				}
+
+				if(debugMode)
+				{
+					emit(varAssignment(QString(symtable[var]), NULL, size));
+				}
 			}
 		}
 		break;
 
 
 	case OP_ALEN:
-		{
-			// return array length (total one dimensional length)
-
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			
-			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
-			{
-				stack.push(vars[*i].value.arr->size);
-			} else {
-				printError(tr("Not an array variable"));
-				return -1;
-			}
-		}
-		break;
-
 	case OP_ALENX:
-		{
-			// return x dimension lengh in 2d array model
-
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			
-			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
-			{
-				stack.push(vars[*i].value.arr->xdim);
-			} else {
-				printError(tr("Not an array variable"));
-				return -1;
-			}
-		}
-		break;
-
 	case OP_ALENY:
 		{
-			// return y dimension length in 2d array model
-
+			// return array lengths
+			unsigned char opcode = *op;
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
 			
 			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
 			{
-				stack.push(vars[*i].value.arr->ydim);
+				switch(opcode) {
+					case OP_ALEN:
+						stack.push(vars[*i].value.arr->size);
+						break;
+					case OP_ALENX:
+						stack.push(vars[*i].value.arr->xdim);
+						break;
+					case OP_ALENY:
+						stack.push(vars[*i].value.arr->ydim);
+						break;
+				}
 			} else {
-				printError(tr("Not an array variable"));
-				return -1;
+				errornum = ERROR_NOTARRAY;
+				stack.push(0);
 			}
 		}
 		break;
@@ -1076,40 +1172,39 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			char *val = stack.popstring(); // dont free - assigning to a string variable
+			char *val = stack.popstring(); // dont free if successful - assigning to a string variable
 			int index = stack.popint();
 
 			char **strarray;
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
+				errornum = ERROR_NOSUCHVARIABLE;
 				free(val);
-				return -1;
-			}
-			else if (vars[*i].type != T_STRARRAY)
-			{
-				printError(tr("Not a string array variable"));
-				free(val);
-				return -1;
-			}
-			else if (index >= vars[*i].value.arr->size || index < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				free(val);
-				return -1;
-			}
+			} else {
+				if (vars[*i].type != T_STRARRAY)
+				{
+					errornum = ERROR_NOTSTRINGARRAY;
+					free(val);
+				} else {
+					if (index >= vars[*i].value.arr->size || index < 0)
+					{
+						errornum = ERROR_ARRAYINDEX;
+						free(val);
+					} else {
+						strarray = vars[*i].value.arr->data.sdata;
+						if (strarray[index])
+						{
+							free(strarray[index]);
+						}
+						strarray[index] = val;
 			
-			strarray = vars[*i].value.arr->data.sdata;
-			if (strarray[index])
-			{
-				free(strarray[index]);
-			}
-			strarray[index] = val;
-
-			if(debugMode)
-			{
-			  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+						if(debugMode)
+						{
+							emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+						}
+					}
+				}
 			}
 		}
 		break;
@@ -1129,37 +1224,33 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
+				errornum = ERROR_NOSUCHVARIABLE;
 				free(val);
-				return -1;
-			}
-			else if (vars[*i].type != T_STRARRAY)
-			{
-				printError(tr("Not a string array variable"));
-				free(val);
-				return -1;
-			}
-			else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
-				yindex >= vars[*i].value.arr->ydim || yindex < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				free(val);
-				return -1;
-			}
-
-			strarray = vars[*i].value.arr->data.sdata;
-
-			index = xindex * vars[*i].value.arr->ydim + yindex;
-
-			if (strarray[index])
-			{
-				free(strarray[index]);
-			}
-			strarray[index] = val;
-
-			if(debugMode)
-			{
-			  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+			} else {
+				if (vars[*i].type != T_STRARRAY)
+				{
+					errornum = ERROR_NOTSTRINGARRAY;
+					free(val);
+				} else {
+					if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
+					{
+						errornum = ERROR_ARRAYINDEX;
+						free(val);
+					} else {
+						strarray = vars[*i].value.arr->data.sdata;
+						index = xindex * vars[*i].value.arr->ydim + yindex;
+						if (strarray[index])
+						{
+							free(strarray[index]);
+						}
+						strarray[index] = val;
+		
+						if(debugMode)
+						{
+							emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+						}
+					}
+				}
 			}
 		}
 		break;
@@ -1175,32 +1266,31 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
-				return -1;
-			}
-			else if (vars[*i].type != T_STRARRAY)
-			{
-				printError(tr("Not a string array variable"));
-				return -1;
-			}
-			else if (items > vars[*i].value.arr->size || items < 0)
-			{
-				printError(tr("Array dimension too small"));
-				return -1;
-			}
-
-			strarray = vars[*i].value.arr->data.sdata;
-			for (index = items - 1; index >= 0; index--)
-			{
-				char *str = stack.popstring(); // dont free we are assigning this to a variable
-				if (strarray[index])
+				errornum = ERROR_NOSUCHVARIABLE;
+			} else {
+				if (vars[*i].type != T_STRARRAY)
 				{
-					delete(strarray[index]);
-				}
-				strarray[index] = str;
-				if(debugMode)
-				{
-				  emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+					errornum = ERROR_NOTSTRINGARRAY;
+				} else {
+					if (items > vars[*i].value.arr->size || items < 0)
+					{
+						errornum = ERROR_ARRAYSIZESMALL;
+					} else {
+						strarray = vars[*i].value.arr->data.sdata;
+						for (index = items - 1; index >= 0; index--)
+						{
+							char *str = stack.popstring(); // dont free we are assigning this to a variable
+							if (strarray[index])
+							{
+								delete(strarray[index]);
+							}
+							strarray[index] = str;
+							if(debugMode)
+							{
+								emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1218,25 +1308,25 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
-				return -1;
-			}
-			else if (vars[*i].type != T_ARRAY)
-			{
-				printError(tr("Not an array variable"));
-				return -1;
-			}
-			else if (index >= vars[*i].value.arr->size || index < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				return -1;
-			}
-			array = vars[*i].value.arr->data.fdata;
-			array[index] = val;
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
-			}
+				errornum = ERROR_NOSUCHVARIABLE;
+			} else {
+				if (vars[*i].type != T_ARRAY)
+				{
+					errornum = ERROR_NOTARRAY;
+				} else {
+					if (index >= vars[*i].value.arr->size || index < 0)
+					{
+						errornum = ERROR_ARRAYINDEX;
+					} else {
+						array = vars[*i].value.arr->data.fdata;
+						array[index] = val;
+						if(debugMode)
+						{
+							emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+						}
+					}
+				}
+			}	
 		}
 		break;
 
@@ -1255,27 +1345,25 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
-				return -1;
-			}
-			else if (vars[*i].type != T_ARRAY)
-			{
-				printError(tr("Not an array variable"));
-				return -1;
-			}
-			else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
-				yindex >= vars[*i].value.arr->ydim || yindex < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				return -1;
-			}
-
-			array = vars[*i].value.arr->data.fdata;
-			index = xindex * vars[*i].value.arr->ydim + yindex;
-			array[index] = val;
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+				errornum = ERROR_NOSUCHVARIABLE;
+			} else {
+				if (vars[*i].type != T_ARRAY)
+				{
+					errornum = ERROR_NOTARRAY;
+				} else {
+					if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
+					{
+						errornum = ERROR_ARRAYINDEX;
+					} else {
+						array = vars[*i].value.arr->data.fdata;
+						index = xindex * vars[*i].value.arr->ydim + yindex;
+						array[index] = val;
+						if(debugMode)
+						{
+							emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
+						}
+					}
+				}
 			}
 		}
 		break;
@@ -1292,28 +1380,27 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
-				return -1;
-			}
-			else if (vars[*i].type != T_ARRAY)
-			{
-				printError(tr("Not an array variable"));
-				return -1;
-			}
-			else if (items > vars[*i].value.arr->size || items < 0)
-			{
-				printError(tr("Array dimension too small"));
-				return -1;
-			}
-
-			array = vars[*i].value.arr->data.fdata;
-			for (index = items - 1; index >= 0; index--)
-			{
-				double one = stack.popfloat();
-				array[index] = one;
-				if(debugMode)
+				errornum = ERROR_NOSUCHVARIABLE;
+			} else {
+				if (vars[*i].type != T_ARRAY)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(items), index));
+					errornum = ERROR_NOTARRAY;
+				} else {
+					if (items > vars[*i].value.arr->size || items < 0)
+					{
+						errornum = ERROR_ARRAYSIZESMALL;
+					} else {
+						array = vars[*i].value.arr->data.fdata;
+						for (index = items - 1; index >= 0; index--)
+						{
+							double one = stack.popfloat();
+							array[index] = one;
+							if(debugMode)
+							{
+								emit(varAssignment(QString(symtable[*i]), QString::number(items), index));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1329,23 +1416,26 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
 			{
-				printError(tr("Cannot access non-array variable"));
-				return -1;
-			} else if (index >= vars[*i].value.arr->size || index < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				return -1;
-			}
-
-			if (vars[*i].type == T_ARRAY)
-			{
-				double *array = vars[*i].value.arr->data.fdata;
-				stack.push(array[index]);
-			}
-			else
-			{
-				char **array = vars[*i].value.arr->data.sdata;
-				stack.push(array[index]);
+				errornum = ERROR_NOTARRAY;
+				stack.push(0);
+			} else {
+				if (index >= vars[*i].value.arr->size || index < 0)
+				{
+					errornum = ERROR_ARRAYINDEX;
+					stack.push(0);
+				} else {
+	
+					if (vars[*i].type == T_ARRAY)
+					{
+						double *array = vars[*i].value.arr->data.fdata;
+						stack.push(array[index]);
+					}
+					else
+					{
+						char **array = vars[*i].value.arr->data.sdata;
+						stack.push(array[index]);
+					}
+				}
 			}
 		}
 		break;
@@ -1361,26 +1451,27 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
 			{
-				printError(tr("Cannot access non-array variable"));
-				return -1;
-			} else if (xindex >= vars[*i].value.arr->xdim || xindex < 0 ||
-				yindex >= vars[*i].value.arr->ydim || yindex < 0)
-			{
-				printError(tr("Array index out of bounds"));
-				return -1;
-			}
-
-			index = xindex * vars[*i].value.arr->ydim + yindex;
-
-			if (vars[*i].type == T_ARRAY)
-			{
-				double *array = vars[*i].value.arr->data.fdata;
-				stack.push(array[index]);
-			}
-			else
-			{
-				char **array = vars[*i].value.arr->data.sdata;
-				stack.push(array[index]);
+				errornum = ERROR_NOTARRAY;
+				stack.push(0);
+			} else {
+				if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
+				{
+					errornum = ERROR_ARRAYINDEX;
+					stack.push(0);
+				} else {
+					index = xindex * vars[*i].value.arr->ydim + yindex;
+	
+					if (vars[*i].type == T_ARRAY)
+					{
+						double *array = vars[*i].value.arr->data.fdata;
+						stack.push(array[index]);
+					}
+					else
+					{
+						char **array = vars[*i].value.arr->data.sdata;
+						stack.push(array[index]);
+					}
+				}
 			}
 		}
 		break;
@@ -1393,29 +1484,29 @@ Interpreter::execByteCode()
 
 			if (vars[*i].type == T_UNUSED)
 			{
-				printError(tr("Unknown variable"));
-				return -1;
-			}
-
-			if (vars[*i].type == T_STRING)
-			{
-				stack.push(vars[*i].value.string);
-			}
-			else if (vars[*i].type == T_ARRAY)
-			{
-				char buffer[32];
-				sprintf(buffer, "array(0x%p)", vars[*i].value.arr);
-				stack.push(buffer);
-			}
-			else if (vars[*i].type == T_STRARRAY)
-			{
-				char buffer[32];
-				sprintf(buffer, "string array(0x%p)", vars[*i].value.arr);
-				stack.push(buffer);
-			}
-			else
-			{
-				stack.push(vars[*i].value.floatval);
+				errornum = ERROR_NOSUCHVARIABLE;
+				stack.push(0);
+			} else {
+				if (vars[*i].type == T_STRING)
+				{
+					stack.push(vars[*i].value.string);
+				}
+				else if (vars[*i].type == T_ARRAY)
+				{
+					char buffer[32];
+					sprintf(buffer, "array(0x%p)", vars[*i].value.arr);
+					stack.push(buffer);
+				}
+				else if (vars[*i].type == T_STRARRAY)
+				{
+					char buffer[32];
+					sprintf(buffer, "string array(0x%p)", vars[*i].value.arr);
+					stack.push(buffer);
+				}
+				else
+				{
+					stack.push(vars[*i].value.floatval);
+				}
 			}
 		}
 		break;
@@ -1525,53 +1616,38 @@ Interpreter::execByteCode()
 
 			QString qtemp = QString::fromUtf8(temp);
 			
-			if ((pos < 1) || (len < 0))
+			if ((len < 0))
 			{
-				printError(tr("Illegal argument"));
+				errornum = ERROR_STRNEGLEN;
+				stack.push(0);
 				free(temp);
-				return -1;
+			} else {
+				if ((pos < 1))
+				{
+					errornum = ERROR_STRSTART;
+					stack.push(0);
+					free(temp);
+				} else {
+					if ((pos < 1) || (pos > (int) qtemp.length()))
+					{
+						errornum = ERROR_STREND;
+						stack.push(0);
+						free(temp);
+					} else {
+						stack.push(strdup(qtemp.mid(pos-1,len).toUtf8().data()));
+						free(temp);
+					}
+				}
 			}
-
-			if (pos > (int) qtemp.length())
-			{
-				printError(tr("String not long enough for given starting character"));
-				free(temp);
-				return -1;
-			}
-			
-			stack.push(strdup(qtemp.mid(pos-1,len).toUtf8().data()));
-			
-			free(temp);
 		}
 		break;
 
 
 	case OP_LEFT:
-		{
-			// unicode save left string
-			op++;
-			int len = stack.popint();
-			char *temp = stack.popstring();
-			
-			QString qtemp = QString::fromUtf8(temp);
-			
-			if (len < 0)
-			{
-				printError(tr("Illegal argument"));
-				free(temp);
-				return -1;
-			}
-			
-			stack.push(strdup(qtemp.left(len).toUtf8().data()));
-			
-			free(temp);
-		}
-		break;
-
-
 	case OP_RIGHT:
 		{
-			// unicode save right string
+			// unicode safe left/right string
+			unsigned char opcode = *op;
 			op++;
 			int len = stack.popint();
 			char *temp = stack.popstring();
@@ -1580,48 +1656,42 @@ Interpreter::execByteCode()
 			
 			if (len < 0)
 			{
-				printError(tr("Illegal argument"));
+				errornum = ERROR_STRNEGLEN;
 				free(temp);
-				return -1;
+				stack.push(0);
+			} else {
+				switch(opcode) {
+					case OP_LEFT:
+						stack.push(strdup(qtemp.left(len).toUtf8().data()));
+						break;
+					case OP_RIGHT:
+						stack.push(strdup(qtemp.right(len).toUtf8().data()));
+						break;
+				}
+				free(temp);
 			}
-			
-			stack.push(strdup(qtemp.right(len).toUtf8().data()));
-			
-			free(temp);
 		}
 		break;
 
 
 	case OP_UPPER:
-		{
-			op++;
-			char *temp = stack.popstring();
-
-            for(unsigned int p=0;p<strlen(temp);p++) {
-				if(isalpha(temp[p])) temp[p] = toupper(temp[p]);
-			}
-
-			stack.push(temp);
-
-			free(temp);
-		}
-		break;
-
 	case OP_LOWER:
 		{
+			unsigned char opcode = *op;
 			op++;
 			char *temp = stack.popstring();
 
-            for(unsigned int p=0;p<strlen(temp);p++) {
-				if(isalpha(temp[p])) temp[p] = tolower(temp[p]);
+            		for(unsigned int p=0;p<strlen(temp);p++) {
+					if(opcode==OP_UPPER) {
+						if (isalpha(temp[p])) temp[p] = toupper(temp[p]);
+					} else {
+						if(isalpha(temp[p])) temp[p] = tolower(temp[p]);
+					}
 			}
-
 			stack.push(temp);
-
 			free(temp);
 		}
 		break;
-
 
 	case OP_ASC:
 		{
@@ -1741,83 +1811,78 @@ Interpreter::execByteCode()
 	case OP_INTDIV:
 	case OP_EXP:
 		{
+			unsigned char whichop = *op;
+			op++;
 			stackval *one = stack.pop();
 			stackval *two = stack.pop();
 			double oneval, twoval;
-			if (one->type == T_STRING || two->type == T_STRING)
+			if (one->type == T_STRING || two->type == T_STRING || one->type == T_ARRAY || two->type == T_ARRAY || one->type == T_STRARRAY || two->type == T_STRARRAY || one->type == T_UNUSED || two->type == T_UNUSED)
 			{
-				if (one->type == T_STRING)
-					free(one->value.string);
-				if (two->type == T_STRING)
-					free(two->value.string);
-				printError(tr("String in numeric expression"));
-				return -1;
-			}
-			if (one->type == two->type && one->type == T_INT)
-			{
-				switch (*op)
+				errornum = ERROR_NONNUMERIC;
+				stack.push(0);
+			} else {
+				if (one->type == two->type && one->type == T_INT)
 				{
-				case OP_ADD:
-					stack.push(one->value.intval + two->value.intval);
-					break;
-				case OP_SUB:
-					stack.push(two->value.intval - one->value.intval);
-					break;
-				case OP_MUL:
-					stack.push(two->value.intval * one->value.intval);
-					break;
-				case OP_MOD:
-					stack.push(two->value.intval % one->value.intval);
-					break;
-				case OP_DIV:
-					stack.push((double) two->value.intval / (double) one->value.intval);
-					break;
-				case OP_INTDIV:
-					stack.push(two->value.intval / one->value.intval);
-					break;
-				case OP_EXP:
-					stack.push(pow((double) two->value.intval, (double) one->value.intval));
-					break;
-				}
-			}
+					switch (whichop)
+					{
+					case OP_ADD:
+						stack.push(one->value.intval + two->value.intval);
+						break;
+					case OP_SUB:
+						stack.push(two->value.intval - one->value.intval);
+						break;
+					case OP_MUL:
+						stack.push(two->value.intval * one->value.intval);
+						break;
+					case OP_MOD:
+						stack.push(two->value.intval % one->value.intval);
+						break;
+					case OP_DIV:
+						stack.push((double) two->value.intval / (double) one->value.intval);
+						break;
+					case OP_INTDIV:
+						stack.push(two->value.intval / one->value.intval);
+						break;
+					case OP_EXP:
+						stack.push(pow((double) two->value.intval, (double) one->value.intval));
+						break;
+					}
+				} else {
+					if (one->type == T_INT)
+						oneval = (double) one->value.intval;
+					else
+						oneval = one->value.floatval;
+					if (two->type == T_INT)
+						twoval = (double) two->value.intval;
+					else
+						twoval = two->value.floatval;
 
-			else
-			{
-				if (one->type == T_INT)
-					oneval = (double) one->value.intval;
-				else
-					oneval = one->value.floatval;
-				if (two->type == T_INT)
-					twoval = (double) two->value.intval;
-				else
-					twoval = two->value.floatval;
-
-				switch(*op)
-				{
-				case OP_ADD:
-					stack.push(twoval + oneval);
-					break;
-				case OP_SUB:
-					stack.push(twoval - oneval);
-					break;
-				case OP_MUL:
-					stack.push(twoval * oneval);
-					break;
-				case OP_MOD:
-					stack.push((int) twoval % (int) oneval);
-					break;
-				case OP_DIV:
-					stack.push(twoval / oneval);
-					break;
-				case OP_INTDIV:
-					stack.push((int) twoval / (int) oneval);
-					break;
-				case OP_EXP:
-					stack.push(pow((double) twoval, (double) oneval));
-					break;
+					switch(whichop)
+					{
+					case OP_ADD:
+						stack.push(twoval + oneval);
+						break;
+					case OP_SUB:
+						stack.push(twoval - oneval);
+						break;
+					case OP_MUL:
+						stack.push(twoval * oneval);
+						break;
+					case OP_MOD:
+						stack.push((int) twoval % (int) oneval);
+						break;
+					case OP_DIV:
+						stack.push(twoval / oneval);
+						break;
+					case OP_INTDIV:
+						stack.push((int) twoval / (int) oneval);
+						break;
+					case OP_EXP:
+						stack.push(pow((double) twoval, (double) oneval));
+						break;
+					}
 				}
-			}
-			op++;
+			}	
 			stack.clean(one);
 			stack.clean(two);
 		}
@@ -2097,11 +2162,11 @@ Interpreter::execByteCode()
 			int gval = stack.popint();
 			int rval = stack.popint();
 			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
-				{
-					printError(tr("RGB Color values must be in the range of 0 to 255."));
-					return -1;
-				}
-			pencolor = QColor(rval, gval, bval, 255);
+			{
+				errornum = ERROR_RGB;
+			} else {
+				pencolor = QColor(rval, gval, bval, 255);
+			}
 		}
 		break;
 
@@ -2124,11 +2189,11 @@ Interpreter::execByteCode()
 			int gval = stack.popint();
 			int rval = stack.popint();
 			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
-				{
-					printError(tr("RGB Color values must be in the range of 0 to 255."));
-					return -1;
-				}
-			stack.push((int) qRgb(rval, gval, bval));
+			{
+				errornum = ERROR_RGB;
+			} else {
+				stack.push((int) qRgb(rval, gval, bval));
+			}
 		}
 		break;
 		
@@ -2223,8 +2288,7 @@ Interpreter::execByteCode()
 				}
 			}
 			if (!ok) {
-					printError(tr("String input to putbit incorrect."));
-					return -1;
+				errornum = ERROR_PUTBITFORMAT;
 			}
 			op++;
 		}
@@ -2300,30 +2364,26 @@ Interpreter::execByteCode()
 				int pairs = vars[*i].value.arr->size / 2;
 				if (pairs < 3)
 				{
-					printError(tr("Not enough points in array for poly()"));
-					return -1;
-				}
+					errornum = ERROR_POLYPOINTS;
+				} else {
 
-				double *array = vars[*i].value.arr->data.fdata;
-				QPointF *points = new QPointF[pairs];
-
-				for (int j = 0; j < pairs; j++)
-				{
-					points[j].setX(array[j*2]);
-					points[j].setY(array[(j*2)+1]);
+					double *array = vars[*i].value.arr->data.fdata;
+					QPointF *points = new QPointF[pairs];
+	
+					for (int j = 0; j < pairs; j++)
+					{
+						points[j].setX(array[j*2]);
+						points[j].setY(array[(j*2)+1]);
+					}
+					poly.drawPolygon(points, pairs);
+					poly.end();
+					if (!fastgraphics) waitForGraphics();
+					delete points;
 				}
-				poly.drawPolygon(points, pairs);
+			} else {
+				errornum = ERROR_POLYARRAY;
 				poly.end();
-				delete points;
-			} 
-			else
-			{
-				printError(tr("Argument not an array for poly()"));
-				poly.end();
-				return -1;
 			}
-
-			if (!fastgraphics) waitForGraphics();
 		}
 		break;
 
@@ -2345,22 +2405,22 @@ Interpreter::execByteCode()
 			int pairs = *i / 2;
 			if (pairs < 3)
 			{
-				printError(tr("Not enough points in immediate list for poly()"));
-				return -1;
+				errornum = ERROR_POLYPOINTS;
+			} else {
+				QPointF *points = new QPointF[pairs];
+				for (int j = 0; j < pairs; j++)
+				{
+					int ypoint = stack.popint();
+					int xpoint = stack.popint();
+					points[j].setX(xpoint);
+					points[j].setY(ypoint);
+				}
+				poly.drawPolygon(points, pairs);
+				poly.end();
+	
+				if (!fastgraphics) waitForGraphics();
+				delete points;
 			}
-			QPointF *points = new QPointF[pairs];
-			for (int j = 0; j < pairs; j++)
-			{
-				int ypoint = stack.popint();
-				int xpoint = stack.popint();
-				points[j].setX(xpoint);
-				points[j].setY(ypoint);
-			}
-			poly.drawPolygon(points, pairs);
-			poly.end();
-
-			if (!fastgraphics) waitForGraphics();
-			delete points;
 		}
 		break;
 
@@ -2391,36 +2451,34 @@ Interpreter::execByteCode()
 				int pairs = vars[*i].value.arr->size / 2;
 				if (pairs < 3)
 				{
-					printError(tr("Not enough points in array for stamp()"));
-					return -1;
-				}
+					errornum = ERROR_POLYPOINTS;
+				} else {
+	
+					if (scale>0) {
+						double *array = vars[*i].value.arr->data.fdata;
+						QPointF *points = new QPointF[pairs];
+	
+						for (int j = 0; j < pairs; j++)
+						{
+							double scalex = scale * array[j*2];
+							double scaley = scale * array[(j*2)+1];
+							double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
+							double roty = cos(rotate) * scaley + sin(rotate) * scalex;
+							points[j].setX(rotx + x);
+							points[j].setY(roty + y);
+						}
+						poly.drawPolygon(points, pairs);
+						poly.end();
+						if (!fastgraphics) waitForGraphics();
 
-				if (scale>0) {
-					double *array = vars[*i].value.arr->data.fdata;
-					QPointF *points = new QPointF[pairs];
-
-					for (int j = 0; j < pairs; j++)
-					{
-						double scalex = scale * array[j*2];
-						double scaley = scale * array[(j*2)+1];
-						double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-						double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-						points[j].setX(rotx + x);
-						points[j].setY(roty + y);
+						delete points;
 					}
-					poly.drawPolygon(points, pairs);
-					poly.end();
-					delete points;
 				}
-			} 
-			else
-			{
-				printError(tr("Argument not an array for stamp()"));
+			} else {
+				errornum = ERROR_POLYARRAY;
 				poly.end();
-				return -1;
 			}
 
-			if (!fastgraphics) waitForGraphics();
 		}
 		break;
 
@@ -2455,10 +2513,6 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			
-			//char message[1024];
-			//sprintf(message, "opcode= %d x=%d y=%d scale=%f rotate=%f", opcode,x,y,scale,rotate);
-			//printError(message);
-
 			QPainter poly(image);
 			poly.setPen(pencolor);
 			poly.setBrush(pencolor);
@@ -2469,26 +2523,26 @@ Interpreter::execByteCode()
 			int pairs = llist / 2;
 			if (pairs < 3)
 			{
-				printError(tr("Not enough points in immediate list for stamp()"));
-				return -1;
-			}
-			if (scale>0) {
-				QPointF *points = new QPointF[pairs];
-				for (int j = 0; j < pairs; j++)
-				{
-					double scalex = scale * list[(j*2)];
-					double scaley = scale * list[(j*2)+1];
-					double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-					double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-					points[j].setX(rotx + x);
-					points[j].setY(roty + y);
+				errornum = ERROR_POLYPOINTS;
+			} else {
+				if (scale>0) {
+					QPointF *points = new QPointF[pairs];
+					for (int j = 0; j < pairs; j++)
+					{
+						double scalex = scale * list[(j*2)];
+						double scaley = scale * list[(j*2)+1];
+						double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
+						double roty = cos(rotate) * scaley + sin(rotate) * scalex;
+						points[j].setX(rotx + x);
+						points[j].setY(roty + y);
+					}
+					poly.drawPolygon(points, pairs);
+	
+					poly.end();
+					
+					if (!fastgraphics) waitForGraphics();
+					delete points;
 				}
-				poly.drawPolygon(points, pairs);
-
-				poly.end();
-				
-				if (!fastgraphics) waitForGraphics();
-				delete points;
 			}
 		}
 		break;
@@ -2537,9 +2591,7 @@ Interpreter::execByteCode()
 			if (scale>0) {
 				QImage i(QString::fromUtf8(file));
 				if(i.isNull()) {
-					printError(tr("Unable to load image file."));
-					free(file);
-					return -1;
+					errornum = ERROR_IMAGEFILE;
 				} else {
 					QPainter ian(image);
 					if (rotate != 0 || scale != 1) {
@@ -2912,24 +2964,22 @@ Interpreter::execByteCode()
 						int n = stack.popint();
 						
 						if(n < 0 || n >=nsprites) {
-							printError(tr("Sprite number out of range."));
-							free(file);
-							return -1;
-						}
+							errornum = ERROR_SPRITENUMBER;
+						} else {
 						
-						spriteundraw(n);
-						delete sprites[n].image;
-						sprites[n].image = 	new QImage(QString::fromUtf8(file));
-						if(sprites[n].image->isNull()) {
-							printError(tr("Unable to load image file."));
-							free(file);
-							return -1;
+							spriteundraw(n);
+							delete sprites[n].image;
+							sprites[n].image = 	new QImage(QString::fromUtf8(file));
+							if(sprites[n].image->isNull()) {
+								errornum = ERROR_IMAGEFILE;
+							} else {
+								delete sprites[n].underimage;
+								sprites[n].underimage = new QImage();
+								sprites[n].visible = false;
+								sprites[n].active = true;
+							}
+							spriteredraw(n);
 						}
-						delete sprites[n].underimage;
-						sprites[n].underimage = new QImage();
-						sprites[n].visible = false;
-						sprites[n].active = true;
-						spriteredraw(n);
 			
 						free(file);
 					}
@@ -2946,22 +2996,21 @@ Interpreter::execByteCode()
 						int n = stack.popint();
 						
 						if(n < 0 || n >=nsprites) {
-							printError(tr("Sprite number out of range."));
-							return -1;
+							errornum = ERROR_SPRITENUMBER;
+						} else {
+							spriteundraw(n);
+							delete sprites[n].image;
+							sprites[n].image = new QImage(image->copy(x, y, w, h));
+							if(sprites[n].image->isNull()) {
+								errornum = ERROR_SPRITESLICE;
+							} else {
+								delete sprites[n].underimage;
+								sprites[n].underimage = new QImage();
+								sprites[n].visible = false;
+								sprites[n].active = true;
+							}
+							spriteredraw(n);
 						}
-						
-						spriteundraw(n);
-						delete sprites[n].image;
-						sprites[n].image = new QImage(image->copy(x, y, w, h));
-						if(sprites[n].image->isNull()) {
-							printError(tr("Unable to slice image."));
-							return -1;
-						}
-						delete sprites[n].underimage;
-						sprites[n].underimage = new QImage();
-						sprites[n].visible = false;
-						sprites[n].active = true;
-						spriteredraw(n);
 					}
 					break;
 					
@@ -2977,28 +3026,28 @@ Interpreter::execByteCode()
 						int n = stack.popint();
 						
 						if(n < 0 || n >=nsprites) {
-							printError(tr("Sprite number out of range."));
-							return -1;
+							errornum = ERROR_SPRITENUMBER;
+						} else {
+							if(!sprites[n].active) {
+								errornum = ERROR_SPRITENA;
+							} else {
+				
+								spriteundraw(n);
+								if (opcode==OP_SPRITEMOVE) {
+									x += sprites[n].x;
+									y += sprites[n].y;
+									if (x >= (int) graph->image->width()) x = (double) graph->image->width();
+									if (x < 0) x = 0;
+									if (y >= (int) graph->image->height()) y = (double) graph->image->height();
+									if (y < 0) y = 0;
+								}
+								sprites[n].x = x;
+								sprites[n].y = y;
+								spriteredraw(n);
+							
+								if (!fastgraphics) waitForGraphics();
+							}
 						}
-						if(!sprites[n].active) {
-							printError(tr("Sprite has not been assigned."));
-							return -1;
-						}
-			
-						spriteundraw(n);
-						if (opcode==OP_SPRITEMOVE) {
-							x += sprites[n].x;
-							y += sprites[n].y;
-							if (x >= (int) graph->image->width()) x = (double) graph->image->width();
-							if (x < 0) x = 0;
-							if (y >= (int) graph->image->height()) y = (double) graph->image->height();
-							if (y < 0) y = 0;
-						}
-						sprites[n].x = x;
-						sprites[n].y = y;
-						spriteredraw(n);
-						
-						if (!fastgraphics) waitForGraphics();
 					}
 					break;
 
@@ -3012,20 +3061,19 @@ Interpreter::execByteCode()
 						int n = stack.popint();
 						
 						if(n < 0 || n >=nsprites) {
-							printError(tr("Sprite number out of range."));
-							return -1;
-						}
-						if(!sprites[n].active) {
-							printError(tr("Sprite has not been assigned."));
-							return -1;
-						}
+							errornum = ERROR_SPRITENUMBER;
+						} else {
+							if(!sprites[n].active) {
+								errornum = ERROR_SPRITENA;
+							} else {
 						
-						spriteundraw(n);
-						sprites[n].visible = (opcode==OP_SPRITESHOW);
-						spriteredraw(n);
+								spriteundraw(n);
+								sprites[n].visible = (opcode==OP_SPRITESHOW);
+								spriteredraw(n);
 						
-						if (!fastgraphics) waitForGraphics();
-			
+								if (!fastgraphics) waitForGraphics();
+							}
+						}
 					}
 					break;
 
@@ -3037,16 +3085,14 @@ Interpreter::execByteCode()
 						int n2 = stack.popint();
 						
 						if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
-							printError(tr("Sprite number out of range."));
-							return -1;
+							errornum = ERROR_SPRITENUMBER;
+						} else {
+							if(!sprites[n1].active || !sprites[n2].active) {
+								 errornum = ERROR_SPRITENA;
+							} else {
+								stack.push(spritecollide(n1, n2));
+							}
 						}
-						if(!sprites[n1].active || !sprites[n2].active) {
-							printError(tr("Sprite has not been assigned."));
-							return -1;
-						}
-						
-						stack.push(spritecollide(n1, n2));
-						
 					}
 					break;
 
@@ -3062,20 +3108,20 @@ Interpreter::execByteCode()
 					int n = stack.popint();
 					
 					if(n < 0 || n >=nsprites) {
-						printError(tr("Sprite number out of range."));
-						return -1;
+						errornum = ERROR_SPRITENUMBER;
+						stack.push(0);	
+					} else {
+						if(!sprites[n].active) {
+							errornum = ERROR_SPRITENA;
+							stack.push(0);	
+						} else {
+							if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
+							if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
+							if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
+							if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
+							if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
+						}
 					}
-					if(!sprites[n].active) {
-						printError(tr("Sprite has not been assigned."));
-						return -1;
-					}
-					
-					if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
-					if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
-					if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
-					if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
-					if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
-					
 				}
 				break;
 
@@ -3085,9 +3131,7 @@ Interpreter::execByteCode()
 						op++;
 						char *file = stack.popstring();
 						if(!QDir::setCurrent(QString::fromUtf8(file))) {
-							printError(tr("Invalid directory name."));
-							free(file);
-							return -1;
+							errornum = ERROR_FOLDER;
 						}
 						free(file);
 					}
@@ -3114,10 +3158,10 @@ Interpreter::execByteCode()
 						op++;
 						int n = stack.popint();
 						if(n<0 || n > 15) {
-							printError(tr("Decimal mask must be in the range of 0 to 15."));
-							return -1;
+							errornum = ERROR_DECIMALMASK;
+						} else {
+							stack.fToAMask = n;
 						}
-						stack.fToAMask = n;
 					}
 					break;
 
@@ -3137,8 +3181,7 @@ Interpreter::execByteCode()
 						}
 						int error = sqlite3_open(file, &dbconn);
 						if (error) {
-							printError(tr("Unable to open SQLITE database."));
-							return -1;
+							errornum = ERROR_DBOPEN;
 						}
 						free(file);
 					}
@@ -3166,12 +3209,11 @@ Interpreter::execByteCode()
 						if(dbconn) {
 							int error = sqlite3_exec(dbconn, stmt, 0, 0, 0);
 							if (error != SQLITE_OK) {
-								printWarning(tr("Database query error (message follows)."));
-								printWarning(tr(sqlite3_errmsg(dbconn)));
+								errornum = ERROR_DBQUERY;
+								errormessage = sqlite3_errmsg(dbconn);
 							}
 						} else {
-							printError(tr("Database must be opened first."));
-							return -1;
+							errornum = ERROR_DBNOTOPEN;
 						}
 						free(stmt);
 					}
@@ -3185,13 +3227,12 @@ Interpreter::execByteCode()
 						if(dbconn) {
 							int error = sqlite3_prepare_v2(dbconn, stmt, 1000, &dbset, NULL);
 							if (error != SQLITE_OK) {
-								printWarning(tr("Database query error (message follows)."));
-								printWarning(tr(sqlite3_errmsg(dbconn)));
+								errornum = ERROR_DBQUERY;
+								errormessage = sqlite3_errmsg(dbconn);
 								dbset = NULL;
 							}
 						} else {
-							printError(tr("Database must be opened first."));
-							return -1;
+							errornum = ERROR_DBNOTOPEN;
 						}
 						free(stmt);
 					}
@@ -3216,69 +3257,79 @@ Interpreter::execByteCode()
 					break;
 
 			case OP_DBINT:
+			case OP_DBFLOAT:
+			case OP_DBSTRING:
 					{
+						unsigned char opcode = *op;
 						op++;
 						// get a column data (integer)
 						int n = stack.popint();
 						if (dbset) {
 							if (n < 0 || n >= sqlite3_column_count(dbset)) {
-								printError(tr("Column number out of range."));
-								return -1;
+								errornum = ERROR_DBCOLNO;
 							} else {
-								stack.push(sqlite3_column_int(dbset, n));
+								switch(opcode) {
+									case OP_DBINT:
+										stack.push(sqlite3_column_int(dbset, n));
+										break;
+									case OP_DBFLOAT:
+										stack.push(sqlite3_column_double(dbset, n));
+										break;
+									case OP_DBSTRING:
+										char* data = (char*)sqlite3_column_text(dbset, n);
+										stack.push(data);
+										break;
+								}
 							}
 						} else {
-							printError(tr("Record set must be opened first."));
-							return -1;
+							errornum = ERROR_DBNOTSET;
 						}
 					}
 					break;
 
-			case OP_DBFLOAT:
-					{
-						op++;
-						// get a column data (double)
-						int n = stack.popint();
-						if (dbset) {
-							if (n < 0 || n >= sqlite3_column_count(dbset)) {
-								printError(tr("Column number out of range."));
-								return -1;
-							} else {
-								stack.push(sqlite3_column_double(dbset, n));
-							}
-						} else {
-							printError(tr("Record set must be opened first."));
-							return -1;
-						}
-					}
-					break;
+			case OP_LASTERROR:
+				{
+					op++;
+					stack.push(lasterrornum);
+				}
+				break;
 
-			case OP_DBSTRING:
-					{
-						op++;
-						// get a column data (string)
-						int n = stack.popint();
-						if (dbset) {
-							if (n < 0 || n >= sqlite3_column_count(dbset)) {
-								printError(tr("Column number out of range."));
-								return -1;
-							} else {
-								char* data = (char*)sqlite3_column_text(dbset, n);
-								stack.push(data);
-							}
-						} else {
-							printError(tr("Record set must be opened first."));
-							return -1;
-						}
-					}
-					break;
+			case OP_LASTERRORLINE:
+				{
+					op++;
+					stack.push(lasterrorline);
+				}
+				break;
+
+			case OP_LASTERROREXTRA:
+				{
+					op++;
+					stack.push(lasterrormessage.toUtf8().data());
+				}
+				break;
+
+			case OP_LASTERRORMESSAGE:
+				{
+					op++;
+					stack.push(getErrorMessage(lasterrornum).toUtf8().data());
+				}
+				break;
+
+			case OP_OFFERROR:
+				{
+					// turn off error trapping
+					op++;
+					onerroraddress = 0;
+				}
+				break;
+
 
 
 				// insert additional extended operations here
 				
 			default:
 				{
-					printError(tr("Invalid Extended Op-code."));
+					printError(ERROR_EXTOPBAD, "");
 					status = R_STOPPED;
 					return -1;
 					break;

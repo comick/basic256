@@ -33,6 +33,80 @@
 #define M_PI 3.14159265
 #endif
 
+#ifndef ERROR_NONE
+#define ERROR_NONE 0
+#define ERROR_NOSUCHLABEL 1
+#define ERROR_NOSUCHLABEL_MESSAGE "No such label"
+#define ERROR_FOR1 2
+#define ERROR_FOR1_MESSAGE "Illegal FOR -- start number > end number"
+#define ERROR_FOR2 3
+#define ERROR_FOR2_MESSAGE "Illegal FOR -- start number < end number"
+#define ERROR_NEXTNOFOR 4
+#define ERROR_NEXTNOFOR_MESSAGE "Next without FOR"
+#define ERROR_FILENUMBER 5
+#define ERROR_FILENUMBER_MESSAGE "Invallid File Number"
+#define ERROR_FILEOPEN 6
+#define ERROR_FILEOPEN_MESSAGE "Unable to open file"
+#define ERROR_FILENOTOPEN 7
+#define ERROR_FILENOTOPEN_MESSAGE "File not open."
+#define ERROR_FILEWRITE 8
+#define ERROR_FILEWRITE_MESSAGE "Unable to write to file"
+#define ERROR_FILERESET 9
+#define ERROR_FILERESET_MESSAGE "Unable to reset file"
+#define ERROR_ARRAYSIZELARGE 10
+#define ERROR_ARRAYSIZELARGE_MESSAGE "Array dimension too large"
+#define ERROR_ARRAYSIZESMALL 11
+#define ERROR_ARRAYSIZESMALL_MESSAGE "Array dimension too small"
+#define ERROR_NOSUCHVARIABLE 12
+#define ERROR_NOSUCHVARIABLE_MESSAGE "Unknown variable"
+#define ERROR_NOTARRAY 13
+#define ERROR_NOTARRAY_MESSAGE "Not an array variable"
+#define ERROR_NOTSTRINGARRAY 14
+#define ERROR_NOTSTRINGARRAY_MESSAGE "Not a string array variable"
+#define ERROR_ARRAYINDEX 15
+#define ERROR_ARRAYINDEX_MESSAGE "Array index out of bounds"
+#define ERROR_STRNEGLEN 16
+#define ERROR_STRNEGLEN_MESSAGE "Substring length less that zero"
+#define ERROR_STRSTART 17
+#define ERROR_STRSTART_MESSAGE "Starting position less than zero"
+#define ERROR_STREND 18
+#define ERROR_STREND_MESSAGE "String not long enough for given starting character"
+#define ERROR_NONNUMERIC 19
+#define ERROR_NONNUMERIC_MESSAGE "Non-numeric value in numeric expression"
+#define ERROR_RGB 20
+#define ERROR_RGB_MESSAGE "RGB Color values must be in the range of 0 to 255."
+#define ERROR_PUTBITFORMAT 21
+#define ERROR_PUTBITFORMAT_MESSAGE "String input to putbit incorrect."
+#define ERROR_POLYARRAY 22
+#define ERROR_POLYARRAY_MESSAGE "Argument not an array for poly()/stamp()"
+#define ERROR_POLYPOINTS 23
+#define ERROR_POLYPOINTS_MESSAGE "Not enough points in array for poly()/stamp()"
+#define ERROR_IMAGEFILE 24
+#define ERROR_IMAGEFILE_MESSAGE "Unable to load image file."
+#define ERROR_SPRITENUMBER 25
+#define ERROR_SPRITENUMBER_MESSAGE "Sprite number out of range."
+#define ERROR_SPRITENA 26
+#define ERROR_SPRITENA_MESSAGE "Sprite has not been assigned."
+#define ERROR_SPRITESLICE 27
+#define ERROR_SPRITESLICE_MESSAGE "Unable to slice image."
+#define ERROR_FOLDER 28
+#define ERROR_FOLDER_MESSAGE "Invalid directory name."
+#define ERROR_DECIMALMASK 29
+#define ERROR_DECIMALMASK_MESSAGE "Decimal mask must be in the range of 0 to 15."
+#define ERROR_DBOPEN 30
+#define ERROR_DBOPEN_MESSAGE "Unable to open SQLITE database."
+#define ERROR_DBQUERY 31
+#define ERROR_DBQUERY_MESSAGE "Database query error (message follows)."
+#define ERROR_DBNOTOPEN 32
+#define ERROR_DBNOTOPEN_MESSAGE "Database must be opened first."
+#define ERROR_DBCOLNO 33
+#define ERROR_DBCOLNO_MESSAGE "Column number out of range."
+#define ERROR_DBNOTSET 34
+#define ERROR_DBNOTSET_MESSAGE "Record set must be opened first."
+#define ERROR_EXTOPBAD 35
+#define ERROR_EXTOPBAD_MESSAGE "Invalid Extended Op-code."
+#endif
+
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
 
 #define NUMVARS 2000
@@ -137,8 +211,8 @@ class Interpreter : public QThread
 
  private:
   void waitForGraphics();
-  void printError(QString);
-  void printWarning(QString);
+  void printError(int, QString);
+  QString getErrorMessage(int);
   QImage *image;
   BasicGraph *graph;
   variable vars[NUMVARS];
@@ -166,6 +240,12 @@ class Interpreter : public QThread
   int nsprites;
   sqlite3 *dbconn;
   sqlite3_stmt *dbset;
+  int errornum;
+  QString errormessage;
+  int lasterrornum;
+  QString lasterrormessage;
+  int lasterrorline;
+  int onerroraddress;
 };
 
 

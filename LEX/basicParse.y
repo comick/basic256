@@ -277,6 +277,7 @@
 %token ORANGE DARKORANGE GREY DARKGREY
 %token CHANGEDIR CURRENTDIR DECIMAL
 %token DBOPEN DBCLOSE DBEXECUTE DBOPENSET DBCLOSESET DBROW DBINT DBFLOAT DBSTRING
+%token ONERROR OFFERROR LASTERROR LASTERRORMESSAGE LASTERRORLINE LASTERROREXTRA
 
 %union 
 {
@@ -458,6 +459,8 @@ compoundstmt: statement | compoundstmt ':' statement
 
 statement: gotostmt
          | gosubstmt
+         | offerrorstmt
+         | onerrorstmt
          | returnstmt
          | printstmt
          | plotstmt
@@ -598,6 +601,14 @@ gotostmt: GOTO VARIABLE     { addIntOp(OP_GOTO, $2); }
 ;
 
 gosubstmt: GOSUB VARIABLE   { addIntOp(OP_GOSUB, $2); }
+;
+
+offerrorstmt: 
+	OFFERROR { addExtendedOp(OP_EXTENDED_0,OP_OFFERROR); }
+;
+
+onerrorstmt: 
+	ONERROR VARIABLE   { addIntOp(OP_ONERROR, $2); }
 ;
 
 returnstmt: RETURN          { addOp(OP_RETURN); }
@@ -982,6 +993,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 | DBROW '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBROW); }
 		 | DBINT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBINT); }
 		 | DBFLOAT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBFLOAT); }
+		 | LASTERROR { addExtendedOp(OP_EXTENDED_0,OP_LASTERROR); }
+		 | LASTERROR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERROR); }
+		 | LASTERRORLINE { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
+		 | LASTERRORLINE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
   ;
 
 stringlist: stringexpr { listlen = 1; }
@@ -1022,6 +1037,10 @@ stringexpr: stringexpr '+' stringexpr     { addOp(OP_CONCAT); }
 	  | CURRENTDIR { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
 	  | CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
 	  | DBSTRING '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBSTRING); }
+		 | LASTERRORMESSAGE { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORMESSAGE); }
+		 | LASTERRORMESSAGE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORMESSAGE); }
+		 | LASTERROREXTRA { addExtendedOp(OP_EXTENDED_0,OP_LASTERROREXTRA); }
+		 | LASTERROREXTRA '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERROREXTRA); }
  ;
 
 %%

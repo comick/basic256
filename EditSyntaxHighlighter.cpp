@@ -125,6 +125,10 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ii][Nn][Pp][Uu][Tt]\\b"					// input
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"					// instr
 		  << "\\b[Kk][Ee][Yy]\\b"						// key
+		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]\\b"						// lasterror
+		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]\\b"						// lasterrorextra
+		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]\\b"						// lasterrorline
+		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]\\b"						// lasterrormessage
 		  << "\\b[Ll][Ee][Ff][Tt]\\b"						// left
 		  << "\\b[Ll][Ii][Nn][Ee]\\b"						// line
 		  << "\\b[Ll][Ee][Nn][Gg][Tt][Hh]\\b"					// length
@@ -137,6 +141,8 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Mm][Oo][Uu][Ss][Ee][Yy]\\b"					// mousey
 		  << "\\b[Nn][Ee][Xx][Tt]\\b"						// next
 		  << "\\b[Nn][Oo][Tt]\\b"						// not
+		  << "\\b[Oo][Ff][Ff][Ee][Rr][Rr][Oo][Rr]\\b"						// offerror
+		  << "\\b[Oo][Nn][Ee][Rr][Rr][Oo][Rr]\\b"						// onerror
 		  << "\\b[Oo][Pp][Ee][Nn]\\b"						// open
 		  << "\\b[Oo][Rr]\\b"							// or
 		  << "\\b[Pp][Aa][Uu][Ss][Ee]\\b"					// pause

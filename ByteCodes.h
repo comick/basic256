@@ -101,6 +101,8 @@
 #define OP_CURRLINE      	0x4e
 #define OP_DIM           	0x4f
 #define OP_DIMSTR        	0x50
+#define OP_ONERROR         	0x51
+
 
 //2 Int argument ops
 #define OP_ARRAYLISTASSIGN	0x60
@@ -233,4 +235,10 @@
 #define OP_DBINT		0x17
 #define OP_DBFLOAT		0x18
 #define OP_DBSTRING		0x19
+#define OP_LASTERROR		0x1a
+#define OP_LASTERRORLINE		0x1b
+#define OP_LASTERRORMESSAGE		0x1c
+#define OP_LASTERROREXTRA		0x1d
+#define OP_OFFERROR		0x1e
+
 

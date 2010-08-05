@@ -1,3 +1,9 @@
+2010-08-04 j.m.reneau <renejm@users.sourceforge.net> 0.9.6z
+	* Rewrote the error messaging process to allow for error trapping and reporting logic in BASIC code
+	* added ONERROR label to jump to a subroutine to handle errors
+	* added LASTERROR, LASTERRORMESSAGE, LASTERRORLINE, and LASTERROREXTRA functions that describe last runtime error
+	* added OFFERROR statement to restore default error handling - fail on error
+
 2010-08-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6y
 	* Added sqLite database processing - dbopen, dbclose, dbsetopen, dbsetclose, and dbexecute statements.
 		also dbint, dbfloat, dbstring, and dbrow functions to manipulate recordsets

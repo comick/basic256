@@ -1,0 +1,80 @@
+#quotations - create a database of quotations
+
+# create a new database file or open it or create it with a few good quotes
+dbfile$ = "quotations.sqlite3"
+e = exists(dbfile$)
+dbopen dbfile$
+if (not e) then gosub createtable
+
+gosub getlastquote
+print "Database has " + lastquote + " quotes."
+
+menu:
+print "1 - view a random quote ** ";
+print "2 - list all quotes ** ";
+print "3 - add a quote ** ";
+print "0 - quit"
+input ">", choice
+
+if choice = 1 then gosub showquote
+if choice = 2 then gosub showall
+if choice = 3 then gosub addquote
+if choice <> 0 then goto menu
+
+# wrap everything up
+print "Good bye."
+dbclose
+end
+
+showquote: ####
+quote = 1 + int(rand * lastquote)
+dbopenset "select author, saying from quotes where id = " + quote + ";"
+while dbrow()
+   print dbstring(1)
+   print " - " + dbstring(0)
+end while
+dbcloseset
+return
+
+showall: ####
+dbopenset "select id, author, saying from quotes order by id;"
+while dbrow()
+   print dbint(0) + " " + dbstring(2) + " (" + dbstring(1) + ")" 
+end while
+dbcloseset
+return
+
+addquote: ####
+input "Quote>", quote$
+input "Author>", author$
+if quote$ = "" or author$ = "" then
+   print "You must supply both a quote and an author to add."
+   return
+end if
+lastquote = lastquote + 1
+dbexecute "insert into quotes values (" + lastquote + ",'" + author$ + "','" + quote$ + "');"
+print "Quote " + lastquote + " added."
+return
+
+getlastquote: ######
+# find the last quote number and set the variable lastquote
+lastquote = 0
+dbopenset "select max(id) from quotes"
+while dbrow()
+   lastquote =  dbint(0)
+end while
+dbcloseset
+return
+
+createtable: ########
+dbexecute "create table quotes (id integer primary key, author text, saying text);"
+dbexecute "insert into quotes values (1,'Abraham Lincoln (1809 - 1865)','Most folks are about as happy as they make up their minds to be.');"
+dbexecute "insert into quotes values (2,'George Burns (1896 - 1996)','Happiness is having a large, loving, caring, close-knit family in another city.');"
+dbexecute "insert into quotes values (3,'Jean Houston','At the height of laughter, the universe is flung into a kaleidoscope of new possibilities.');"
+dbexecute "insert into quotes values (4,'Doug Larson', 'Home computers are being called upon to perform many new functions, including the consumption of homework formerly eaten by the dog.');"
+dbexecute "insert into quotes values (5, 'Isaac Asimov', 'I do not fear computers. I fear the lack of them.');"
+dbexecute "insert into quotes values (6, 'Pierre Gallois', 'If you put tomfoolery into a computer, nothing comes out of it but tomfoolery. But this tomfoolery, having passed through a very expensive machine, is somehow ennobled and no-one dares criticize it.');"
+dbexecute "insert into quotes values (7, 'Robert Orben', 'To err is human--and to blame it on a computer is even more so.');"
+dbexecute "insert into quotes values (8, 'Herm Albright (1876 - 1944)', 'A positive attitude may not solve all your problems, but it will annoy enough people to make it worth the effort.');"
+dbexecute "insert into quotes values (9, 'William James (1842 - 1910)', 'The greatest discovery of my generation is that a human being can alter his life by altering his attitudes of mind.');"
+return

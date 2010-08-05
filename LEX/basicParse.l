@@ -224,6 +224,12 @@ dbrow [Dd][Bb][Rr][Oo][Ww]
 dbint [Dd][Bb][Ii][Nn][Tt]
 dbfloat [Dd][Bb][Ff][Ll][Oo][Aa][Tt]
 dbstring [Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]
+onerror [Oo][Nn][Ee][Rr][Rr][Oo][Rr]
+offerror [Oo][Ff][Ff][Ee][Rr][Rr][Oo][Rr]
+lasterror [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]
+lasterrormessage [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]
+lasterrorline [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]
+lasterrorextra [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]
 %%
 
 
@@ -424,6 +430,12 @@ dbstring [Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]
 {dbint}       { count(); return DBINT; }
 {dbfloat}       { count(); return DBFLOAT; }
 {dbstring}       { count(); return DBSTRING; }
+{onerror}       { count(); return ONERROR; }
+{offerror}       { count(); return OFFERROR; }
+{lasterror}       { count(); return LASTERROR; }
+{lasterrormessage}       { count(); return LASTERRORMESSAGE; }
+{lasterrorline}       { count(); return LASTERRORLINE; }
+{lasterrorextra}       { count(); return LASTERROREXTRA; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }
