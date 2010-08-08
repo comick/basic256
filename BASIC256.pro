@@ -7,10 +7,10 @@ TARGET			=	BASIC256
 DEPENDPATH		+=	.
 INCLUDEPATH		+=	.
 TMAKE_CXXFLAGS = -g 
-CONFIG          	+=  debug_and_release
+CONFIG          	+=  qt debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
-QT				+=	webkit
+QT			+=	webkit
 RESOURCES		+=	resources/resource.qrc
 RC_FILE         =   resources/basic256.rc
 TRANSLATIONS	=	Translations/basic256_en_US.ts \
@@ -18,6 +18,7 @@ TRANSLATIONS	=	Translations/basic256_en_US.ts \
 		        	Translations/basic256_ru_RU.ts \
 		        	Translations/basic256_sp.ts \
 		        	Translations/basic256_nl.ts
+LIBS			+= -lsqlite3
 
 win32 {
 	# use SAPI for speech
@@ -25,9 +26,7 @@ win32 {
 	DEFINES 		+= USEQSOUND
 	LIBS			+= -lole32 \
 				-lsapi \
-				-lwinmm \
-				-lsqlite3
-# need t link to sqlite once I figure how
+				-lwinmm
 
 
 } else {
@@ -56,13 +55,25 @@ win32 {
 	#DEFINES 		+= LINUX_DSPSOUND
 
 	## rules for make install
-	examplesDiceFiles.files = ./Examples/dice/*
+	examplesDiceFiles.files = ./Examples/dice/*.kbs \
+				./Examples/dice/*.wav
 	examplesDiceFiles.path = /usr/share/basic256/Examples/dice
 	INSTALLS += examplesDiceFiles
-	examplesTestingFiles.files = ./Examples/testing/*
+	examplesImgloadFiles.files = ./Examples/imgload/*.kbs \
+				./Examples/imgload/*.png \
+				./Examples/imgload/*.bmp
+	examplesImgloadFiles.path = /usr/share/basic256/Examples/imgload
+	INSTALLS += examplesImgloadFiles
+	examplesSpritesFiles.files = ./Examples/sprites/*.kbs \
+				./Examples/sprites/*.wav \
+				./Examples/sprites/*.png \
+				./Examples/sprites/*.bmp
+	examplesSpritesFiles.path = /usr/share/basic256/Examples/sprites
+	INSTALLS += examplesSpritesFiles
+	examplesTestingFiles.files = ./Examples/testing/*.kbs
 	examplesTestingFiles.path = /usr/share/basic256/Examples/testing
 	INSTALLS += examplesTestingFiles
-	examplesFiles.files = ./Examples/*
+	examplesFiles.files = ./Examples/*.kbs
 	examplesFiles.path = /usr/share/basic256/Examples
 	INSTALLS += examplesFiles
 	transFiles.files = ./Translations/*.qm
