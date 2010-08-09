@@ -37,6 +37,9 @@ class Stack
   int popint();
   double popfloat();
   char *popstring();
+  int toint(stackval *);
+  double tofloat(stackval *);
+  char *tostring(stackval *);
   void clean(stackval *);
   void clear();
 

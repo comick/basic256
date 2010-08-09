@@ -119,20 +119,26 @@ int
 Stack::popint()
 {
 	int i=0;
-	if (top->type == T_INT) {
-		i = top->value.intval;
-	}
-	else if (top->type == T_FLOAT) {
-		i = (int) top->value.floatval;
-	}
-	else if (top->type == T_STRING)
-	{
-		i = (int) atoi(top->value.string);
-		free(top->value.string);
-		top->value.string = NULL;
-	}
-	top->type = T_UNUSED;
+	i = toint(top);
+	clean(top);
 	if (top > bottom) top--;
+	return i;
+}
+
+int 
+Stack::toint(stackval *sv)
+{
+	int i=0;
+	if (sv->type == T_INT) {
+		i = sv->value.intval;
+	}
+	else if (sv->type == T_FLOAT) {
+		i = (int) sv->value.floatval;
+	}
+	else if (sv->type == T_STRING)
+	{
+		i = (int) atoi(sv->value.string);
+	}
 	return i;
 }
 
@@ -140,50 +146,64 @@ double
 Stack::popfloat()
 {
 	double f=0;
-	if (top->type == T_FLOAT) {
-		f = top->value.floatval;
-	}
-	else if (top->type == T_INT)
-	{
-		f = (double) top->value.intval;
-	}
-	else if (top->type == T_STRING)
-	{
-		f = (double) atof(top->value.string);
-		free(top->value.string);
-		top->value.string = NULL;
-	}
-	top->type = T_UNUSED;
+	f = tofloat(top);
+	clean(top);
 	if (top > bottom) top--;
+	return f;
+}
+
+double 
+Stack::tofloat(stackval *sv)
+{
+	double f=0;
+	if (sv->type == T_FLOAT) {
+		f = sv->value.floatval;
+	}
+	else if (sv->type == T_INT)
+	{
+		f = (double) sv->value.intval;
+	}
+	else if (sv->type == T_STRING)
+	{
+		f = (double) atof(sv->value.string);
+	}
 	return f;
 }
 
 char* 
 Stack::popstring()
 {
+	char *s=tostring(top);
+	top->type = T_UNUSED;
+	if (top > bottom) top--;
+	return s;
+}
+
+char* 
+Stack::tostring(stackval *sv)
+{
 	// don't forget to free() the string returned by this function when you are done with it
 	char *s=NULL;
-	if (top->type == T_STRING) {
-		s = top->value.string;
-		top->value.string = NULL;
+	if (sv->type == T_STRING) {
+		s = sv->value.string;
+		sv->value.string = NULL;
+		sv->type = T_UNUSED;
 	}
-	else if (top->type == T_INT)
+	else if (sv->type == T_INT)
 	{
 		char buffer[64];
-		sprintf(buffer, "%d", top->value.intval);
+		sprintf(buffer, "%d", sv->value.intval);
 		s = strdup(buffer);
 	}
-	else if (top->type == T_FLOAT)
+	else if (sv->type == T_FLOAT)
 	{
 		char buffer[64];
-		sprintf(buffer, "%#.*lf", fToAMask, top->value.floatval);
+		sprintf(buffer, "%#.*lf", fToAMask, sv->value.floatval);
 		// strip trailing zeros and decimal point
 		while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
 		if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
 		// return
 		s = strdup(buffer);
 	}
-	top->type = T_UNUSED;
-	if (top > bottom) top--;
 	return s;
 }

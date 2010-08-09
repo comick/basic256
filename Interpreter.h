@@ -210,6 +210,7 @@ class Interpreter : public QThread
   void resizeGraph(int, int);
 
  private:
+  int compareTwoStackVal(stackval *, stackval *);
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);

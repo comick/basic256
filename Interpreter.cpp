@@ -60,37 +60,45 @@ extern "C" {
 	extern char *symtable[];
 }
 
-static int compareTwoStackVal(stackval *two, stackval *one)
+int Interpreter::compareTwoStackVal(stackval *two, stackval *one)
 {
 	// complex compare logic - compare two stack types with each other
 	// return 1 if one>two  0 if one==two or -1 if one<two
-	// DOES NOT COMPARE ONE STRING WITH ONE NUMBER...
 	//
-	// both integers - compare
+	// one or both strings - [compare them as strings] strcmp
+	if (one->type == T_STRING || two->type == T_STRING)
+	{
+		char *sone, *stwo;
+		int i;
+		sone = stack.tostring(one);
+		stwo = stack.tostring(two);
+		i = strcmp(sone, stwo);
+		free(sone);
+		free(stwo);
+		return i;
+	}
+	// both integers - compare as integers
 	if (one->type == T_INT && two->type == T_INT)
 	{
-		if (one->value.intval == two->value.intval) return 0;
-		else if (one->value.intval < two->value.intval) return -1;
+		int ione, itwo;
+		ione = stack.toint(one);
+		itwo = stack.toint(two);
+		if (ione == itwo) return 0;
+		else if (ione < itwo) return -1;
 		else return 1;
 	}
-	// both floats - compare
-	if (one->type == T_FLOAT && two->type == T_FLOAT)
+	// one or more floats - compare them as floats
+	if (one->type == T_FLOAT || two->type == T_FLOAT)
 	{
-		if (one->value.floatval == two->value.floatval) return 0;
-		else if (one->value.floatval < two->value.floatval) return -1;
+		double fone, ftwo;
+		fone = stack.tofloat(one);
+		ftwo = stack.tofloat(two);
+		if (fone == ftwo) return 0;
+		else if (fone < ftwo) return -1;
 		else return 1;
 	}
-	// both strings - strcmp
-	if (one->type == T_STRING && two->type == T_STRING)
-	{
-		return(strcmp(one->value.string, two->value.string));
-	}
-	// mix of floats and integers - float both and compare
-	if (one->type == T_INT) one->value.floatval = (double) one->value.intval;
-	if (two->type == T_INT) two->value.floatval = (double) two->value.intval;
-	if (one->value.floatval == two->value.floatval) return 0;
-	else if (one->value.floatval < two->value.floatval) return -1;
-	else return 1;
+	// default equal
+	return 0;
 }
 
 void Interpreter::printError(int e, QString message)

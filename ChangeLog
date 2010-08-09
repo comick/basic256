@@ -1,3 +1,6 @@
+2010-08-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.27
+	* fixed string comparison problem caused since 0.9.6h
+
 2010-08-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6z
 	* Rewrote the error messaging process to allow for error trapping and reporting logic in BASIC code
 	* added ONERROR label to jump to a subroutine to handle errors
