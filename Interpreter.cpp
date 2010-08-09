@@ -479,7 +479,7 @@ Interpreter::initialize()
 	for (int t=0;t<NUMFILES;t++) stream[t] = NULL;
 	emit(resizeGraph(300, 300));
 	image = graph->image;
-	fontfamily = QString::QString();
+	fontfamily = QString("");
 	fontpoint = 0;
 	fontweight = 0;
 	nsprites = 0;
@@ -1721,7 +1721,7 @@ Interpreter::execByteCode()
 			QChar temp[2];
 			temp[0] = (QChar) code;
 			temp[1] = (QChar) 0;
-			QString qs = QString::QString(temp,1);
+			QString qs = QString(temp,1);
 			stack.push(strdup(qs.toUtf8().data()));
 		}
 		break;
