@@ -230,6 +230,11 @@ lasterror [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]
 lasterrormessage [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]
 lasterrorline [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]
 lasterrorextra [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]
+netlisten [Nn][Ee][Tt][Ll][Ii][Ss][Tt][Ee][Nn]
+netconnect [Nn][Ee][Tt][Cc][Oo][Nn][Nn][Ee][Cc][Tt]
+netwrite [Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
+netread [Nn][Ee][Tt][Rr][Ee][Aa][Dd]
+netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
 %%
 
 
@@ -436,6 +441,11 @@ lasterrorextra [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]
 {lasterrormessage}       { count(); return LASTERRORMESSAGE; }
 {lasterrorline}       { count(); return LASTERRORLINE; }
 {lasterrorextra}       { count(); return LASTERROREXTRA; }
+{netlisten}       { count(); return NETLISTEN; }
+{netconnect}       { count(); return NETCONNECT; }
+{netwrite}       { count(); return NETWRITE; }
+{netread}       { count(); return NETREAD; }
+{netclose}       { count(); return NETCLOSE; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

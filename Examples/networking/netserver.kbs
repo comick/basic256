@@ -1,0 +1,8 @@
+# get a message and send back success
+netlisten 9997
+do
+   n$ = netread
+   print n$
+   netwrite "I got '" + n$ + "'."
+until n$ = "end"
+netclose

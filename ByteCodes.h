@@ -240,5 +240,11 @@
 #define OP_LASTERRORMESSAGE		0x1c
 #define OP_LASTERROREXTRA		0x1d
 #define OP_OFFERROR		0x1e
+#define OP_NETLISTEN		0x1f
+#define OP_NETCONNECT		0x20
+#define OP_NETREAD		0x21
+#define OP_NETWRITE		0x22
+#define OP_NETCLOSE		0x23
+
 
 

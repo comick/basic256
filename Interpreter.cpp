@@ -24,6 +24,12 @@
 #include <cmath>
 #include <string>
 #include <sqlite3.h>
+#include <sys/types.h> 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#include <errno.h>
+
 #include <QString>
 #include <QPainter>
 #include <QPixmap>
@@ -214,6 +220,33 @@ QString Interpreter::getErrorMessage(int e) {
 			break;
 		case ERROR_EXTOPBAD:
 			errormessage = tr(ERROR_EXTOPBAD_MESSAGE);
+			break;
+		case ERROR_NETSOCK:
+			errormessage = tr(ERROR_NETSOCK_MESSAGE);
+			break;
+		case ERROR_NETHOST:
+			errormessage = tr(ERROR_NETHOST_MESSAGE);
+			break;
+		case ERROR_NETCONN:
+			errormessage = tr(ERROR_NETCONN_MESSAGE);
+			break;
+		case ERROR_NETREAD:
+			errormessage = tr(ERROR_NETREAD_MESSAGE);
+			break;
+		case ERROR_NETNONE:
+			errormessage = tr(ERROR_NETNONE_MESSAGE);
+			break;
+		case ERROR_NETWRITE:
+			errormessage = tr(ERROR_NETWRITE_MESSAGE);
+			break;
+		case ERROR_NETSOCKOPT:
+			errormessage = tr(ERROR_NETSOCKOPT_MESSAGE);
+			break;
+		case ERROR_NETBIND:
+			errormessage = tr(ERROR_NETBIND_MESSAGE);
+			break;
+		case ERROR_NETACCEPT:
+			errormessage = tr(ERROR_NETACCEPT_MESSAGE);
 			break;
 	}
 	return errormessage;
@@ -486,6 +519,7 @@ Interpreter::initialize()
 	stack.fToAMask = stack.defaultFToAMask;
 dbconn = NULL;
 dbset = NULL;
+netsockfd = -1;
 }
 
 
@@ -3328,6 +3362,139 @@ Interpreter::execByteCode()
 					// turn off error trapping
 					op++;
 					onerroraddress = 0;
+				}
+				break;
+
+			case OP_NETLISTEN:
+				{
+					op++;
+					int port = stack.popint();
+					if (netsockfd != 0) {
+						close(netsockfd);
+						netsockfd = 0;
+					}
+
+					int sockfd;
+					struct sockaddr_in serv_addr, cli_addr;
+					socklen_t clilen;
+	
+					sockfd = socket(AF_INET, SOCK_STREAM, 0);
+					if (sockfd < 0) {
+						errornum = ERROR_NETSOCK;
+						errormessage = strerror(errno);
+					} else {
+						int optval = 1;
+						if (setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(int))) {
+							errornum = ERROR_NETSOCKOPT;
+							errormessage = strerror(errno);
+							close(sockfd);
+						} else {
+							bzero((char *) &serv_addr, sizeof(serv_addr));
+							serv_addr.sin_family = AF_INET;
+							serv_addr.sin_addr.s_addr = INADDR_ANY;
+							serv_addr.sin_port = htons(port);
+							if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+								errornum = ERROR_NETBIND;
+								errormessage = strerror(errno);
+								close(sockfd);
+							} else {
+								listen(sockfd,5);
+								clilen = sizeof(cli_addr);
+								netsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+								if (netsockfd < 0) {
+									errornum = ERROR_NETACCEPT;
+									errormessage = strerror(errno);
+								}
+								close(sockfd);
+							}
+						}
+					}
+				}
+				break;
+
+			case OP_NETCONNECT:
+				{
+					op++;
+					int port = stack.popint();
+					char* address = stack.popstring();
+
+					if (netsockfd >= 0) {
+						close(netsockfd);
+						netsockfd = -1;
+					}
+					
+					struct sockaddr_in serv_addr;
+					struct hostent *server;
+
+					netsockfd = socket(AF_INET, SOCK_STREAM, 0);
+					if (netsockfd < 0) {
+						errornum = ERROR_NETSOCK;
+						errormessage = strerror(errno);
+					} else {
+
+						server = gethostbyname(address);
+						if (server == NULL) {
+							errornum = ERROR_NETHOST;
+							errormessage = strerror(errno);
+							netsockfd = -1;
+						} else {
+							bzero((char *) &serv_addr, sizeof(serv_addr));
+							serv_addr.sin_family = AF_INET;
+							bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+							serv_addr.sin_port = htons(port);
+							if (::connect(netsockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
+								errornum = ERROR_NETCONN;
+								errormessage = strerror(errno);
+								netsockfd = -1;
+							}
+						}
+					}
+					free(address);
+				}
+				break;
+
+			case OP_NETREAD:
+				{
+					op++;
+					if (netsockfd >= 0) {
+						int maxsize = 2048;
+						int n;
+						char * strarray = (char *) malloc(maxsize);
+						memset(strarray, 0, maxsize);
+						n = recv(netsockfd,strarray,2047,0);
+						if (n < 0) {
+							errornum = ERROR_NETREAD;
+							errormessage = strerror(errno);
+						}
+						stack.push(strdup(strarray));
+						free(strarray);
+					} else {
+						errornum = ERROR_NETNONE;
+						errormessage = strerror(errno);
+					}
+				}
+				break;
+
+			case OP_NETWRITE:
+				{
+					op++;
+					char* data = stack.popstring();
+					int n = send(netsockfd,data,strlen(data),0);
+					if (n < 0) {
+						errornum = ERROR_NETWRITE;
+						errormessage = strerror(errno);
+					}
+					free(data);
+				}
+				break;
+
+			case OP_NETCLOSE:
+				{
+					op++;
+					if (netsockfd >= 0) {
+						close(netsockfd);
+						netsockfd = -1;
+					}
 				}
 				break;
 

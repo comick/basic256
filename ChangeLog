@@ -1,3 +1,9 @@
+2010-08-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.28
+	* added first attempt at networking statements
+        - statements NETLISTEN, NETCONNECT, NETREAD, NETOPEN, and NETCLOSE
+	* added new networking folder to Examples with a few test programs
+	* not compiled or tested in Windows yet.
+
 2010-08-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.27
 	* fixed string comparison problem caused since 0.9.6h
 

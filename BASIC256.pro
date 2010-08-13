@@ -64,6 +64,9 @@ win32 {
 				./Examples/imgload/*.bmp
 	examplesImgloadFiles.path = /usr/share/basic256/Examples/imgload
 	INSTALLS += examplesImgloadFiles
+	examplesNetworkingFiles.files = ./Examples/networking/*.kbs
+	examplesNetworkingFiles.path = /usr/share/basic256/Examples/networking
+	INSTALLS += examplesNetworkingFiles
 	examplesSpritesFiles.files = ./Examples/sprites/*.kbs \
 				./Examples/sprites/*.wav \
 				./Examples/sprites/*.png \
