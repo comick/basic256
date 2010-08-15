@@ -278,7 +278,7 @@
 %token CHANGEDIR CURRENTDIR DECIMAL
 %token DBOPEN DBCLOSE DBEXECUTE DBOPENSET DBCLOSESET DBROW DBINT DBFLOAT DBSTRING
 %token ONERROR OFFERROR LASTERROR LASTERRORMESSAGE LASTERRORLINE LASTERROREXTRA
-%token NETLISTEN NETCONNECT NETREAD NETWRITE NETCLOSE
+%token NETLISTEN NETCONNECT NETREAD NETWRITE NETCLOSE NETDATA
 
 %union 
 {
@@ -836,7 +836,7 @@ netlistenstmt: NETLISTEN floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETLISTEN); 
 ;
 
 netconnectstmt: NETCONNECT stringexpr ',' floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
-         | NETCONNECT '(' stringexpr ',', floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
+         | NETCONNECT '(' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
 ;
 
 netwritestmt: NETWRITE stringexpr { addExtendedOp(OP_EXTENDED_0,OP_NETWRITE); }
@@ -1023,6 +1023,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		 | LASTERROR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERROR); }
 		 | LASTERRORLINE { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
 		 | LASTERRORLINE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
+		 | NETDATA { addExtendedOp(OP_EXTENDED_0,OP_NETDATA); }
+		 | NETDATA '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_NETDATA); }
   ;
 
 stringlist: stringexpr { listlen = 1; }

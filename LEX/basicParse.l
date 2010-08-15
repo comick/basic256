@@ -235,6 +235,7 @@ netconnect [Nn][Ee][Tt][Cc][Oo][Nn][Nn][Ee][Cc][Tt]
 netwrite [Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
 netread [Nn][Ee][Tt][Rr][Ee][Aa][Dd]
 netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
+netdata [Nn][Ee][Tt][Dd][Aa][Tt][Aa]
 %%
 
 
@@ -446,6 +447,7 @@ netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
 {netwrite}       { count(); return NETWRITE; }
 {netread}       { count(); return NETREAD; }
 {netclose}       { count(); return NETCLOSE; }
+{netdata}       { count(); return NETDATA; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

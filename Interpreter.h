@@ -232,6 +232,7 @@ class Interpreter : public QThread
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);
+  void netSockClose(int *);
   QImage *image;
   BasicGraph *graph;
   variable vars[NUMVARS];

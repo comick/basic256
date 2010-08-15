@@ -245,6 +245,7 @@
 #define OP_NETREAD		0x21
 #define OP_NETWRITE		0x22
 #define OP_NETCLOSE		0x23
+#define OP_NETDATA		0x24
 
 
 

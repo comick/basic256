@@ -28,6 +28,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <poll.h> 
 #include <errno.h>
 
 #include <QString>
@@ -252,6 +253,16 @@ QString Interpreter::getErrorMessage(int e) {
 	return errormessage;
 }
 
+void Interpreter::netSockClose(int *fd)
+{
+	// tidy up a network socket and mark the fd variable
+	// as closed
+	if(*fd>=0) {
+		close(*fd);
+	}
+	*fd = -1;
+}
+
 void
 Interpreter::setInputReady()
 {
@@ -297,6 +308,7 @@ Interpreter::Interpreter(BasicGraph *bg)
 	fastgraphics = false;
 	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
+	netsockfd = -1;
 	for (int i = 0; i < NUMVARS; i++)
 	{
 		vars[i].type = T_UNUSED;
@@ -519,7 +531,7 @@ Interpreter::initialize()
 	stack.fToAMask = stack.defaultFToAMask;
 dbconn = NULL;
 dbset = NULL;
-netsockfd = -1;
+netSockClose(&netsockfd);
 }
 
 
@@ -3374,38 +3386,38 @@ Interpreter::execByteCode()
 						netsockfd = 0;
 					}
 
-					int sockfd;
+					int tempsockfd;
 					struct sockaddr_in serv_addr, cli_addr;
 					socklen_t clilen;
 	
-					sockfd = socket(AF_INET, SOCK_STREAM, 0);
-					if (sockfd < 0) {
+					tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
+					if (tempsockfd < 0) {
 						errornum = ERROR_NETSOCK;
 						errormessage = strerror(errno);
 					} else {
 						int optval = 1;
-						if (setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(int))) {
+						if (setsockopt(tempsockfd,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(int))) {
 							errornum = ERROR_NETSOCKOPT;
 							errormessage = strerror(errno);
-							close(sockfd);
+							netSockClose(&tempsockfd);
 						} else {
 							bzero((char *) &serv_addr, sizeof(serv_addr));
 							serv_addr.sin_family = AF_INET;
 							serv_addr.sin_addr.s_addr = INADDR_ANY;
 							serv_addr.sin_port = htons(port);
-							if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+							if (bind(tempsockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
 								errornum = ERROR_NETBIND;
 								errormessage = strerror(errno);
-								close(sockfd);
+								netSockClose(&tempsockfd);
 							} else {
-								listen(sockfd,5);
+								listen(tempsockfd,5);
 								clilen = sizeof(cli_addr);
-								netsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+								netsockfd = accept(tempsockfd, (struct sockaddr *) &cli_addr, &clilen);
 								if (netsockfd < 0) {
 									errornum = ERROR_NETACCEPT;
 									errormessage = strerror(errno);
 								}
-								close(sockfd);
+								netSockClose(&tempsockfd);
 							}
 						}
 					}
@@ -3436,7 +3448,7 @@ Interpreter::execByteCode()
 						if (server == NULL) {
 							errornum = ERROR_NETHOST;
 							errormessage = strerror(errno);
-							netsockfd = -1;
+							netSockClose(&netsockfd);
 						} else {
 							bzero((char *) &serv_addr, sizeof(serv_addr));
 							serv_addr.sin_family = AF_INET;
@@ -3445,7 +3457,7 @@ Interpreter::execByteCode()
 							if (::connect(netsockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
 								errornum = ERROR_NETCONN;
 								errormessage = strerror(errno);
-								netsockfd = -1;
+								netSockClose(&netsockfd);
 							}
 						}
 					}
@@ -3491,12 +3503,30 @@ Interpreter::execByteCode()
 			case OP_NETCLOSE:
 				{
 					op++;
-					if (netsockfd >= 0) {
-						close(netsockfd);
-						netsockfd = -1;
+					netSockClose(&netsockfd);
+				}
+				break;
+
+			case OP_NETDATA:
+				{
+					op++;
+					// push 1 if there is data to read on network connection
+					// wait 1 ms for each poll
+					struct pollfd p[1];
+					p[0].fd = netsockfd;
+					p[0].events = POLLIN | POLLPRI;
+					if(poll(p, 1, 1)<0) {
+						stack.push(0);
+					} else {
+						if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
+							stack.push(1);
+						} else {
+							stack.push(0);
+						}
 					}
 				}
 				break;
+
 
 
 

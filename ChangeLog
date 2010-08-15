@@ -1,3 +1,7 @@
+2010-08-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.29
+	* cleaned up socket release (close)
+	* added NETDATA function to return true if data is waiting to be received
+
 2010-08-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.28
 	* added first attempt at networking statements
         - statements NETLISTEN, NETCONNECT, NETREAD, NETOPEN, and NETCLOSE
