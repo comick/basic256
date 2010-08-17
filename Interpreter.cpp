@@ -28,6 +28,7 @@
 
 #ifdef WIN32
 	#include <winsock.h>
+	typedef int socklen_t;
 #else
 	#include <sys/types.h> 
 	#include <sys/socket.h>
@@ -3415,7 +3416,7 @@ Interpreter::execByteCode()
 					op++;
 					int tempsockfd;
 					struct sockaddr_in serv_addr, cli_addr;
-					int clilen;
+					socklen_t clilen;
 
 					int port = stack.popint();
 					int fn = stack.popint();

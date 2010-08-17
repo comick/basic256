@@ -627,11 +627,10 @@ returnstmt: B256RETURN          { addOp(OP_RETURN); }
 colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
          | B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SETCOLORRGB); }
          | B256SETCOLOR floatexpr { addOp(OP_SETCOLORINT); }
-         | B256SETCOLOR '(' floatexpr  ')' { addOp(OP_SETCOLORINT); }
 ;
 
-soundstmt: B256SOUND B256VARIABLE { addIntOp(OP_SOUND_ARRAY, $2); }
-         | B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
+soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
+         | B256SOUND B256VARIABLE { addIntOp(OP_SOUND_ARRAY, $2); }
          | B256SOUND immediatelist { addIntOp(OP_SOUND_LIST, listlen); listlen=0; }
 	 | B256SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
          | B256SOUND floatexpr ',' floatexpr         { addOp(OP_SOUND); }
@@ -700,7 +699,7 @@ writestmt: B256WRITE stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STAC
 	| B256WRITE floatexpr ','stringexpr         { addOp(OP_WRITE); }
 ;
 
-writelinestmt: | B256WRITELINE stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
+writelinestmt: B256WRITELINE stringexpr         { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
 	| B256WRITELINE '(' floatexpr ',' stringexpr ')' { addOp(OP_WRITELINE); }
 	| B256WRITELINE floatexpr ',' stringexpr         { addOp(OP_WRITELINE); }
 ;

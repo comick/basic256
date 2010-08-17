@@ -1,3 +1,7 @@
+2010-08-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.31
+	* fixed linux to compile again after changes in 0.9.6.30
+	* removed most of the errors from LEX/basicParse.y 
+
 2010-08-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.30
 	* changed all tokens to B256... in lex folder to stop conflicts with windows wtypes.h
 	* work on porting to winsock (Windows) - have functioning well enough to test
