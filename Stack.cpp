@@ -115,6 +115,29 @@ Stack::swap()
 	top->value = temp.value;
 }
 
+void 
+Stack::topto2()
+{
+	// move the top of the stack under the next two
+	// 0, 1, 2, 3...  becomes 1, 2, 0, 3...
+
+	stackval temp;
+	stackval *two = top - 1;
+	stackval *three = top - 2;
+	
+	temp.type = top->type;
+	temp.value = top->value;
+	
+	top->type = two->type;
+	top->value = two->value;
+
+	two->type = three->type;
+	two->value = three->value;
+
+	three->type = temp.type;
+	three->value = temp.value;
+}
+
 int 
 Stack::popint()
 {

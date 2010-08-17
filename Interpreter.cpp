@@ -24,12 +24,17 @@
 #include <cmath>
 #include <string>
 #include <sqlite3.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
-#include <poll.h> 
 #include <errno.h>
+
+#ifdef WIN32
+	#include <winsock.h>
+#else
+	#include <sys/types.h> 
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <netdb.h> 
+	#include <poll.h> 
+#endif
 
 #include <QString>
 #include <QPainter>
@@ -249,18 +254,30 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_NETACCEPT:
 			errormessage = tr(ERROR_NETACCEPT_MESSAGE);
 			break;
+		case ERROR_NETSOCKNUMBER:
+			errormessage = tr(ERROR_NETSOCKNUMBER_MESSAGE);
+			break;
+		// put new messages here
+		case ERROR_NOTIMPLEMENTED:
+			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
+			break;
 	}
 	return errormessage;
 }
 
-void Interpreter::netSockClose(int *fd)
+int Interpreter::netSockClose(int fd)
 {
-	// tidy up a network socket and mark the fd variable
-	// as closed
-	if(*fd>=0) {
-		close(*fd);
+	// tidy up a network socket and return -1 to assign to the
+	// fd variable to mark as closed as closed
+	// call  f = netSockClose(f);
+	if(fd>=0) {
+		#ifdef WIN32
+			closesocket(fd);
+		#else
+			close(fd);
+		#endif
 	}
-	*fd = -1;
+	return(-1);
 }
 
 void
@@ -308,7 +325,7 @@ Interpreter::Interpreter(BasicGraph *bg)
 	fastgraphics = false;
 	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
-	netsockfd = -1;
+	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
 	for (int i = 0; i < NUMVARS; i++)
 	{
 		vars[i].type = T_UNUSED;
@@ -316,8 +333,24 @@ Interpreter::Interpreter(BasicGraph *bg)
 		vars[i].value.string = NULL;
 		vars[i].value.arr = NULL;
 	}
+	// on a windows box start winsock
+	#ifdef WIN32
+		WSAData wsaData;
+		int nCode;
+		if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+			emit(outputReady(tr("ERROR - Unable to initialize Winsock library.\n")));
+		}
+	#endif
 }
 
+Interpreter::~Interpreter() {
+	// need to add cleanup of stack and variables...
+	
+	// on a windows box stop winsock
+	#ifdef WIN32
+		WSACleanup();
+	#endif
+}
 
 void
 Interpreter::clearvars()
@@ -529,9 +562,9 @@ Interpreter::initialize()
 	fontweight = 0;
 	nsprites = 0;
 	stack.fToAMask = stack.defaultFToAMask;
-dbconn = NULL;
-dbset = NULL;
-netSockClose(&netsockfd);
+	dbconn = NULL;
+	dbset = NULL;
+	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t] = netSockClose(netsockfd[t]);
 }
 
 
@@ -3380,44 +3413,49 @@ Interpreter::execByteCode()
 			case OP_NETLISTEN:
 				{
 					op++;
-					int port = stack.popint();
-					if (netsockfd != 0) {
-						close(netsockfd);
-						netsockfd = 0;
-					}
-
 					int tempsockfd;
 					struct sockaddr_in serv_addr, cli_addr;
-					socklen_t clilen;
-	
-					tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
-					if (tempsockfd < 0) {
-						errornum = ERROR_NETSOCK;
-						errormessage = strerror(errno);
+					int clilen;
+
+					int port = stack.popint();
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
 					} else {
-						int optval = 1;
-						if (setsockopt(tempsockfd,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(int))) {
-							errornum = ERROR_NETSOCKOPT;
+						if (netsockfd[fn] >= 0) {
+							netsockfd[fn] = netSockClose(netsockfd[fn]);
+						}
+
+	
+						tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
+						if (tempsockfd < 0) {
+							errornum = ERROR_NETSOCK;
 							errormessage = strerror(errno);
-							netSockClose(&tempsockfd);
 						} else {
-							bzero((char *) &serv_addr, sizeof(serv_addr));
-							serv_addr.sin_family = AF_INET;
-							serv_addr.sin_addr.s_addr = INADDR_ANY;
-							serv_addr.sin_port = htons(port);
-							if (bind(tempsockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-								errornum = ERROR_NETBIND;
+							int optval = 1;
+							if (setsockopt(tempsockfd,SOL_SOCKET,SO_REUSEADDR,(char *)&optval,sizeof(int))) {
+								errornum = ERROR_NETSOCKOPT;
 								errormessage = strerror(errno);
-								netSockClose(&tempsockfd);
+								tempsockfd = netSockClose(tempsockfd);
 							} else {
-								listen(tempsockfd,5);
-								clilen = sizeof(cli_addr);
-								netsockfd = accept(tempsockfd, (struct sockaddr *) &cli_addr, &clilen);
-								if (netsockfd < 0) {
-									errornum = ERROR_NETACCEPT;
+								memset((char *) &serv_addr, 0, sizeof(serv_addr));
+								serv_addr.sin_family = AF_INET;
+								serv_addr.sin_addr.s_addr = INADDR_ANY;
+								serv_addr.sin_port = htons(port);
+								if (bind(tempsockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+									errornum = ERROR_NETBIND;
 									errormessage = strerror(errno);
+									tempsockfd = netSockClose(tempsockfd);
+								} else {
+									listen(tempsockfd,5);
+									clilen = sizeof(cli_addr);
+									netsockfd[fn] = accept(tempsockfd, (struct sockaddr *) &cli_addr, &clilen);
+									if (netsockfd[fn] < 0) {
+										errornum = ERROR_NETACCEPT;
+										errormessage = strerror(errno);
+									}
+									tempsockfd = netSockClose(tempsockfd);
 								}
-								netSockClose(&tempsockfd);
 							}
 						}
 					}
@@ -3427,37 +3465,45 @@ Interpreter::execByteCode()
 			case OP_NETCONNECT:
 				{
 					op++;
-					int port = stack.popint();
-					char* address = stack.popstring();
 
-					if (netsockfd >= 0) {
-						close(netsockfd);
-						netsockfd = -1;
-					}
-					
 					struct sockaddr_in serv_addr;
 					struct hostent *server;
 
-					netsockfd = socket(AF_INET, SOCK_STREAM, 0);
-					if (netsockfd < 0) {
-						errornum = ERROR_NETSOCK;
-						errormessage = strerror(errno);
+					int port = stack.popint();
+					char* address = stack.popstring();
+					int fn = stack.popint();
+					
+					
+					
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
 					} else {
 
-						server = gethostbyname(address);
-						if (server == NULL) {
-							errornum = ERROR_NETHOST;
+						if (netsockfd[fn] >= 0) {
+							netsockfd[fn] = netSockClose(netsockfd[fn]);
+						}
+					
+						netsockfd[fn] = socket(AF_INET, SOCK_STREAM, 0);
+						if (netsockfd[fn] < 0) {
+							errornum = ERROR_NETSOCK;
 							errormessage = strerror(errno);
-							netSockClose(&netsockfd);
 						} else {
-							bzero((char *) &serv_addr, sizeof(serv_addr));
-							serv_addr.sin_family = AF_INET;
-							bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
-							serv_addr.sin_port = htons(port);
-							if (::connect(netsockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-								errornum = ERROR_NETCONN;
+
+							server = gethostbyname(address);
+							if (server == NULL) {
+								errornum = ERROR_NETHOST;
 								errormessage = strerror(errno);
-								netSockClose(&netsockfd);
+								netsockfd[fn] = netSockClose(netsockfd[fn]);
+							} else {
+								memset((char *) &serv_addr, 0, sizeof(serv_addr));
+								serv_addr.sin_family = AF_INET;
+								memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
+								serv_addr.sin_port = htons(port);
+								if (::connect(netsockfd[fn],(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
+									errornum = ERROR_NETCONN;
+									errormessage = strerror(errno);
+									netsockfd[fn] = netSockClose(netsockfd[fn]);
+								}
 							}
 						}
 					}
@@ -3468,21 +3514,28 @@ Interpreter::execByteCode()
 			case OP_NETREAD:
 				{
 					op++;
-					if (netsockfd >= 0) {
-						int maxsize = 2048;
-						int n;
-						char * strarray = (char *) malloc(maxsize);
-						memset(strarray, 0, maxsize);
-						n = recv(netsockfd,strarray,2047,0);
-						if (n < 0) {
-							errornum = ERROR_NETREAD;
-							errormessage = strerror(errno);
-						}
-						stack.push(strdup(strarray));
-						free(strarray);
+					int MAXSIZE = 2048;
+					int n;
+					char * strarray = (char *) malloc(MAXSIZE);
+
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
+						stack.push(strdup(""));
 					} else {
-						errornum = ERROR_NETNONE;
-						errormessage = strerror(errno);
+						if (netsockfd[fn] < 0) {
+							errornum = ERROR_NETNONE;
+							stack.push(strdup(""));
+						} else {
+							memset(strarray, 0, MAXSIZE);
+							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
+							if (n < 0) {
+								errornum = ERROR_NETREAD;
+								errormessage = strerror(errno);
+							}
+							stack.push(strdup(strarray));
+							free(strarray);
+						}
 					}
 				}
 				break;
@@ -3491,10 +3544,19 @@ Interpreter::execByteCode()
 				{
 					op++;
 					char* data = stack.popstring();
-					int n = send(netsockfd,data,strlen(data),0);
-					if (n < 0) {
-						errornum = ERROR_NETWRITE;
-						errormessage = strerror(errno);
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
+					} else {
+						if (netsockfd[fn]<0) {
+							errornum = ERROR_NETNONE;
+						} else {
+							int n = send(netsockfd[fn],data,strlen(data),0);
+							if (n < 0) {
+								errornum = ERROR_NETWRITE;
+								errormessage = strerror(errno);
+							}
+						}
 					}
 					free(data);
 				}
@@ -3503,7 +3565,16 @@ Interpreter::execByteCode()
 			case OP_NETCLOSE:
 				{
 					op++;
-					netSockClose(&netsockfd);
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
+					} else {
+						if (netsockfd[fn]<0) {
+							errornum = ERROR_NETNONE;
+						} else {
+							netsockfd[fn] = netSockClose(netsockfd[fn]);
+						}
+					}
 				}
 				break;
 
@@ -3512,17 +3583,35 @@ Interpreter::execByteCode()
 					op++;
 					// push 1 if there is data to read on network connection
 					// wait 1 ms for each poll
-					struct pollfd p[1];
-					p[0].fd = netsockfd;
-					p[0].events = POLLIN | POLLPRI;
-					if(poll(p, 1, 1)<0) {
-						stack.push(0);
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMSOCKETS) {
+						errornum = ERROR_NETSOCKNUMBER;
 					} else {
-						if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
-							stack.push(1);
-						} else {
+						#ifdef WIN32
+						unsigned long n;
+						if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
 							stack.push(0);
+						} else {
+							if (n==0L) {
+								stack.push(0);
+							} else {
+								stack.push(1);
+							}
 						}
+						#else
+						struct pollfd p[1];
+						p[0].fd = netsockfd[fn];
+						p[0].events = POLLIN | POLLPRI;
+						if(poll(p, 1, 1)<0) {
+							stack.push(0);
+						} else {
+							if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
+								stack.push(1);
+							} else {
+								stack.push(0);
+							}
+						}
+						#endif
 					}
 				}
 				break;
@@ -3546,7 +3635,18 @@ Interpreter::execByteCode()
 	case OP_STACKSWAP:
 		{
 			op++;
+			// swap the top of the stack
+			// 0, 1, 2, 3...  becomes 1, 0, 2, 3...
 			stack.swap();
+		}
+		break;
+		
+	case OP_STACKTOPTO2:
+		{
+			// move the top of the stack under the next two
+			// 0, 1, 2, 3...  becomes 1, 2, 0, 3...
+			op++;
+			stack.topto2();
 		}
 		break;
 		

@@ -26,6 +26,7 @@ win32 {
 	DEFINES 		+= USEQSOUND
 	LIBS			+= -lole32 \
 				-lsapi \
+				-lws2_32 \
 				-lwinmm
 
 

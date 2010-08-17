@@ -33,6 +33,7 @@ class Stack
   void push(int);
   void push(double);
   void swap();
+  void topto2();
   stackval *pop();
   int popint();
   double popfloat();

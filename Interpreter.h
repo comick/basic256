@@ -123,13 +123,18 @@
 #define ERROR_NETBIND_MESSAGE "Unable to bind network socket."
 #define ERROR_NETACCEPT 44
 #define ERROR_NETACCEPT_MESSAGE "Unable to accept network connection."
+#define ERROR_NETSOCKNUMBER 45
+#define ERROR_NETSOCKNUMBER_MESSAGE "Invalid Socket Number"
+//
+#define ERROR_NOTIMPLEMENTED 9999
+#define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
 #endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
 
 #define NUMVARS 2000
 #define NUMFILES 8
-
+#define NUMSOCKETS 8
 
 struct array
 {
@@ -190,6 +195,7 @@ class Interpreter : public QThread
   Q_OBJECT;
  public:
   Interpreter(BasicGraph *);
+  ~Interpreter();
   int compileProgram(char *);
   void initialize();
   byteCodeData *getByteCode(char *);
@@ -232,7 +238,7 @@ class Interpreter : public QThread
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);
-  void netSockClose(int *);
+  int netSockClose(int);
   QImage *image;
   BasicGraph *graph;
   variable vars[NUMVARS];
@@ -266,7 +272,7 @@ class Interpreter : public QThread
   QString lasterrormessage;
   int lasterrorline;
   int onerroraddress;
-  int netsockfd;
+  int netsockfd[NUMSOCKETS];
 };
 
 

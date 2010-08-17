@@ -206,6 +206,7 @@
 
 // stack manipulation
 #define OP_STACKSWAP	0xf0
+#define OP_STACKTOPTO2	0xf1
 
 // extended opcodes (second byte)
 // first group e0xx
