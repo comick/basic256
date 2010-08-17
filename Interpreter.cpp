@@ -3427,7 +3427,7 @@ Interpreter::execByteCode()
 							netsockfd[fn] = netSockClose(netsockfd[fn]);
 						}
 
-	
+						// SOCK_DGRAM = UDP  SOCK_STREAM = TCP
 						tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
 						if (tempsockfd < 0) {
 							errornum = ERROR_NETSOCK;
