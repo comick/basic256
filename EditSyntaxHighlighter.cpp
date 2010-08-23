@@ -101,6 +101,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]\\b"			// dbopenset
 		  << "\\b[Dd][Bb][Rr][Oo][Ww]\\b"					// dbrow
 		  << "\\b[Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]\\b"				// dbstring
+		  << "\\b[Dd][Ee][Gg][Rr][Ee][Ee][Ss]\\b"				// degrees
 		  << "\\b[Dd][Ii][Mm]\\b"						// dim
 		  << "\\b[Dd][Oo]\\b"							// do
 		  << "\\b[Ee][Ll][Ss][Ee]\\b"						// else
@@ -158,6 +159,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Pp][Oo][Ll][Yy]\\b"						// poly
 		  << "\\b[Pp][Rr][Ii][Nn][Tt]\\b"					// print
 		  << "\\b[Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]\\b"					// putslice
+		  << "\\b[Rr][Aa][Dd][Ii][Aa][Nn][Ss]\\b"						// radians
 		  << "\\b[Rr][Aa][Nn][Dd]\\b"						// rand
 		  << "\\b[Rr][Ee][Aa][Dd]\\b"						// read
 		  << "\\b[Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]\\b"				// readline

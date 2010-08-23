@@ -31,8 +31,8 @@ using namespace std;
 #include "BasicGraph.h"
 #include "MainWindow.h"
 
-QMutex keymutex;
-int currentKey;
+extern QMutex keymutex;
+extern int currentKey;
 
 BasicGraph::BasicGraph(BasicOutput *o)
 {
@@ -103,6 +103,7 @@ void BasicGraph::mousePressEvent(QMouseEvent *e) {
 		clickY = mouseY = e->y() - gtop;
 		clickB = mouseB = e->buttons();
 	}
+    setFocus();
 }
 
 bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)

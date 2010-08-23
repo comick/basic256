@@ -51,10 +51,11 @@ using namespace std;
 #include "ByteCodes.h"
 #include "Interpreter.h"
 
+QMutex keymutex;
+int currentKey;
+
 extern QMutex mutex;
-extern QMutex keymutex;
 extern QMutex debugmutex;
-extern int currentKey;
 extern QWaitCondition waitCond;
 extern QWaitCondition waitDebugCond;
 extern QWaitCondition waitInput;

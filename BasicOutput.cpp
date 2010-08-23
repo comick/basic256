@@ -18,6 +18,7 @@
 #include <iostream>
 #include <QPainter>
 #include <QTextCursor>
+#include <QMutex>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -26,6 +27,9 @@
 #include <QMessageBox>
 
 #include "BasicOutput.h"
+
+extern QMutex keymutex;
+extern int currentKey;
 
 BasicOutput::BasicOutput( ) : QTextEdit () 
 {
@@ -81,7 +85,10 @@ BasicOutput::keyPressEvent(QKeyEvent *e)
   e->accept();
   if (!gettingInput)
     {
-      QTextEdit::keyPressEvent(e);
+      keymutex.lock();
+      currentKey = e->key();
+      keymutex.unlock();
+      //QTextEdit::keyPressEvent(e);
     }
   else
     {
