@@ -3618,6 +3618,17 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_KILL:
+				{
+					op++;
+					char *name = stack.popstring();
+					if(!QFile::remove(QString::fromUtf8(name))) {
+						errornum = ERROR_FILEOPEN;
+					}
+					free(name);
+				}
+				break;
+
 
 
 

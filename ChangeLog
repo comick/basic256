@@ -1,3 +1,6 @@
+2010-09-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.34
+	* Added kill statement to delete a file from the file system
+
 2010-08-22 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.33
 	* fixed problem with focus effecting "key" statement - if focus was ever lost from
 	- graphics window - key statement would stop working.  added key trap to BasicOutput

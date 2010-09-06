@@ -279,6 +279,7 @@
 %token B256DBOPEN B256DBCLOSE B256DBEXECUTE B256DBOPENSET B256DBCLOSESET B256DBROW B256DBINT B256DBFLOAT B256DBSTRING
 %token B256ONERROR B256OFFERROR B256LASTERROR B256LASTERRORMESSAGE B256LASTERRORLINE B256LASTERROREXTRA
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA
+%token B256KILL
 
 %union 
 {
@@ -496,6 +497,7 @@ statement: gotostmt
          | writelinestmt
          | closestmt
          | resetstmt
+         | killstmt
          | soundstmt
          | textstmt
 	 | fontstmt
@@ -755,7 +757,7 @@ wavwaitstmt: B256WAVWAIT         { addExtendedOp(OP_EXTENDED_0,OP_WAVWAIT); }
 putslicestmt: B256PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
          | B256PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_PUTSLICE); }
 		 | B256PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
-         | B256PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr  ',' floatexpr')' { addOp(OP_PUTSLICEMASK); }
+         | B256PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr  ',' floatexpr')' { addOp(OP_PUTSLICEMASK); };
 
 imgloadstmt: B256IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);  }
          | B256IMGLOAD '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD); }
@@ -836,6 +838,10 @@ netwritestmt: B256NETWRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKS
 netclosestmt: B256NETCLOSE { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
          | B256NETCLOSE '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
          | B256NETCLOSE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
+;
+
+killstmt: B256KILL stringexpr         { addExtendedOp(OP_EXTENDED_0,OP_KILL); }
+	| B256KILL '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_KILL); } 
 ;
 
 immediatestrlist: '{' stringlist '}'

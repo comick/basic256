@@ -126,6 +126,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ii][Nn][Pp][Uu][Tt]\\b"					// input
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"					// instr
 		  << "\\b[Kk][Ee][Yy]\\b"						// key
+		  << "\\b[Kk][Ii][Ll][Ll]\\b"						// kill
 		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]\\b"						// lasterror
 		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]\\b"						// lasterrorextra
 		  << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]\\b"						// lasterrorline
