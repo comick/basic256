@@ -141,6 +141,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Mm][Oo][Uu][Ss][Ee][Bb]\\b"					// mouseb
 		  << "\\b[Mm][Oo][Uu][Ss][Ee][Xx]\\b"					// mousex
 		  << "\\b[Mm][Oo][Uu][Ss][Ee][Yy]\\b"					// mousey
+		  << "\\b[Nn][Ee][Tt][Aa][Dd][Dd][Rr][Ee][Ss][Ss]\\b"						// netaddress
 		  << "\\b[Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]\\b"						// netclose
 		  << "\\b[Nn][Ee][Tt][Cc][Oo][Nn][Nn][Ee][Cc][Tt]\\b"						// netconnect
 		  << "\\b[Nn][Ee][Tt][Dd][Aa][Tt][Aa]\\b"						// netdata

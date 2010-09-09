@@ -236,6 +236,7 @@ netwrite [Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
 netread [Nn][Ee][Tt][Rr][Ee][Aa][Dd]
 netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
 netdata [Nn][Ee][Tt][Dd][Aa][Tt][Aa]
+netaddress [Nn][Ee][Tt][Aa][Dd][Dd][Rr][Ee][Ss][Ss]
 kill [Kk][Ii][Ll][Ll]
 %%
 
@@ -449,6 +450,7 @@ kill [Kk][Ii][Ll][Ll]
 {netread}       { count(); return B256NETREAD; }
 {netclose}       { count(); return B256NETCLOSE; }
 {netdata}       { count(); return B256NETDATA; }
+{netaddress}       { count(); return B256NETADDRESS; }
 {kill}       { count(); return B256KILL; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }

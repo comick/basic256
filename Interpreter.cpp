@@ -35,6 +35,9 @@
 	#include <netinet/in.h>
 	#include <netdb.h> 
 	#include <poll.h> 
+	#include <arpa/inet.h>
+	#include <net/if.h>
+	#include <ifaddrs.h>
 #endif
 
 #include <QString>
@@ -3615,6 +3618,49 @@ Interpreter::execByteCode()
 						}
 						#endif
 					}
+				}
+				break;
+
+			case OP_NETADDRESS:
+				{
+					op++;
+					// get first non "lo" ip4 address
+					#ifdef WIN32
+					char szHostname[100];
+					HOSTENT *pHostEnt;
+					int nAdapter = 0;
+					struct sockaddr_in sAddr;
+					gethostname( szHostname, sizeof( szHostname ));
+					pHostEnt = gethostbyname( szHostname );
+					memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
+					stack.push(strdup(inet_ntoa(sAddr.sin_addr)));
+					#else
+					bool good = false;
+					struct ifaddrs *myaddrs, *ifa;
+					void *in_addr;
+					char buf[64];
+					if(getifaddrs(&myaddrs) != 0) {
+						errornum = ERROR_NETNONE;
+					} else {
+						for (ifa = myaddrs; ifa != NULL && !good; ifa = ifa->ifa_next) {
+							if (ifa->ifa_addr == NULL) continue;
+							if (!(ifa->ifa_flags & IFF_UP)) continue;
+							if (ifa->ifa_addr->sa_family == AF_INET && strcmp(ifa->ifa_name, "lo") !=0 ) {
+								struct sockaddr_in *s4 = (struct sockaddr_in *)ifa->ifa_addr;
+								in_addr = &s4->sin_addr;
+								if (inet_ntop(ifa->ifa_addr->sa_family, in_addr, buf, sizeof(buf))) {
+									stack.push(strdup(buf));
+									good = true;
+								}
+							}
+						}
+						freeifaddrs(myaddrs);
+					}
+					if (!good) {
+						// on error give local loopback
+						stack.push(strdup("127.0.0.1"));
+					}
+					#endif
 				}
 				break;
 

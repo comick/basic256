@@ -1,3 +1,6 @@
+2010-09-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.35
+	* Added NETADDRESS to return the local IPv4 address as a string
+
 2010-09-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.34
 	* Added kill statement to delete a file from the file system
 
