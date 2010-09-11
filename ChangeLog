@@ -1,3 +1,7 @@
+2010-09-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.36
+	* added settings to restore IDE and help to size and location when re-opened
+	* added list of 9 most recently opened or saved items for quick open on file menu
+
 2010-09-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.35
 	* Added NETADDRESS to return the local IPv4 address as a string
 

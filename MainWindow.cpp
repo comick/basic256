@@ -33,6 +33,7 @@ using namespace std;
 #include "PauseButton.h"
 #include "DockWidget.h"
 #include "MainWindow.h"
+#include "Settings.h"
 #include "Version.h"
 
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
@@ -103,14 +104,43 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *printact = filemenu->addAction(QObject::tr("&Print"));
 	printact->setShortcut(Qt::Key_P + Qt::CTRL);
 	filemenu->addSeparator();
+	recentact[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[0]->setShortcut(Qt::Key_1 + Qt::CTRL);
+	recentact[1] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[1]->setShortcut(Qt::Key_2 + Qt::CTRL);
+	recentact[2] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[2]->setShortcut(Qt::Key_3 + Qt::CTRL);
+	recentact[3] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[3]->setShortcut(Qt::Key_4 + Qt::CTRL);
+	recentact[4] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[4]->setShortcut(Qt::Key_5 + Qt::CTRL);
+	recentact[5] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[5]->setShortcut(Qt::Key_6 + Qt::CTRL);
+	recentact[6] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[6]->setShortcut(Qt::Key_7 + Qt::CTRL);
+	recentact[7] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[7]->setShortcut(Qt::Key_8 + Qt::CTRL);
+	recentact[8] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
+	recentact[8]->setShortcut(Qt::Key_9 + Qt::CTRL);
+	filemenu->addSeparator();
 	QAction *exitact = filemenu->addAction(QObject::tr("&Exit"));
 	exitact->setShortcut(Qt::Key_Q + Qt::CTRL);
 	//
+	QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
 	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
 	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
 	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
 	QObject::connect(saveasact, SIGNAL(triggered()), editor, SLOT(saveAsProgram()));
 	QObject::connect(printact, SIGNAL(triggered()), editor, SLOT(slotPrint()));
+	QObject::connect(recentact[0], SIGNAL(triggered()), editor, SLOT(loadRecent0()));
+	QObject::connect(recentact[1], SIGNAL(triggered()), editor, SLOT(loadRecent1()));
+	QObject::connect(recentact[2], SIGNAL(triggered()), editor, SLOT(loadRecent2()));
+	QObject::connect(recentact[3], SIGNAL(triggered()), editor, SLOT(loadRecent3()));
+	QObject::connect(recentact[4], SIGNAL(triggered()), editor, SLOT(loadRecent4()));
+	QObject::connect(recentact[5], SIGNAL(triggered()), editor, SLOT(loadRecent5()));
+	QObject::connect(recentact[6], SIGNAL(triggered()), editor, SLOT(loadRecent6()));
+	QObject::connect(recentact[7], SIGNAL(triggered()), editor, SLOT(loadRecent7()));
+	QObject::connect(recentact[8], SIGNAL(triggered()), editor, SLOT(loadRecent8()));
 	QObject::connect(exitact, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit menu
@@ -268,7 +298,33 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	addDockWidget(Qt::RightDockWidgetArea, gdock);
 	addDockWidget(Qt::LeftDockWidgetArea, vardock);
 	setContextMenuPolicy(Qt::NoContextMenu);
+
+	// position where it was last on screen
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
+	move(settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint());
+
 }
+
+void MainWindow::updateRecent()
+{
+	//update recent list on file menu
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.beginGroup(SETTINGSGROUPHIST);
+	for (int i=0; i<9; i++) {
+		QString fn = settings.value(QString::number(i), "").toString();
+		QString path = QDir::currentPath() + "/";
+		if (QString::compare(path, fn.left(path.length()))==0) {
+			fn = fn.right(fn.length()-path.length());
+		}
+		recentact[i]->setEnabled(fn.length()!=0);		
+		recentact[i]->setVisible(fn.length()!=0);		
+		recentact[i]->setText("&" + QString::number(i+1) + " - " + fn);
+	}
+	settings.endGroup();
+
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -290,4 +346,10 @@ void MainWindow::closeEvent(QCloseEvent *e) {
      } else {
          e->ignore();
      }
+     
+     // save current screen posision
+     QSettings settings(SETTINGSORG, SETTINGSAPP);
+     settings.setValue(SETTINGSSIZE, size());
+     settings.setValue(SETTINGSPOS, pos());
+
 }

@@ -38,6 +38,7 @@ class DocumentationWin : public QDialog
   Q_OBJECT;
  public:
   DocumentationWin(QWidget * parent);
+  void closeEvent(QCloseEvent *);
 
 private slots:
   

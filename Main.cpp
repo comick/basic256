@@ -77,8 +77,8 @@ localecode = QLocale::system().name();
   MainWindow *mainwin = new MainWindow();
   
   mainwin->setObjectName( "mainwin" );
-  mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
-  mainwin->resize(800,600);
+  //mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
+  //mainwin->resize(800,600);
   mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
   mainwin->statusBar()->showMessage(QObject::tr("Ready."));
   mainwin->localecode = localecode;

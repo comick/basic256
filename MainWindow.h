@@ -31,6 +31,7 @@
 #include "VariableWin.h"
 #include "DocumentationWin.h"
 #include "EditSyntaxHighlighter.h"
+#include "Settings.h"
 
 
 class MainWindow : public QMainWindow
@@ -52,6 +53,13 @@ public:
 	EditSyntaxHighlighter * editsyntax;
 	
 	QString localecode;
+
+private:
+	QAction *recentact[SETTINGSGROUPHISTN]; 
+
+private slots:
+	void updateRecent();
+
 };
 
 #endif

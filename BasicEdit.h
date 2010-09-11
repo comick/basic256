@@ -49,6 +49,16 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   void fontMedium();
   void fontLarge();
   void fontHuge();
+  void loadRecent0();
+  void loadRecent1();
+  void loadRecent2();
+  void loadRecent3();
+  void loadRecent4();
+  void loadRecent5();
+  void loadRecent6();
+  void loadRecent7();
+  void loadRecent8();
+
  
  protected:
   void keyPressEvent(QKeyEvent *);
@@ -61,6 +71,9 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   int linePos;
   QString filename;
   void changeFontSize(unsigned int);
+  void addFileToRecentList(QString);
+ void loadRecent(int);
+
 };
 
 

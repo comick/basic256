@@ -28,6 +28,7 @@
 using namespace std;
 
 #include "BasicEdit.h"
+#include "Settings.h"
 
 BasicEdit::BasicEdit(QMainWindow *mw)
 {
@@ -189,8 +190,35 @@ BasicEdit::saveProgram()
 			mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
 			QDir::setCurrent(fi.absolutePath());
 			codeChanged = false;
+			addFileToRecentList(filename);
 		}
 	}
+}
+
+void BasicEdit::addFileToRecentList(QString fn) {
+	// keep list of recently open or saved files
+	// put file name at position 0 on list
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.beginGroup(SETTINGSGROUPHIST);
+	// if program is at top then do nothing
+	if (settings.value(QString::number(0), "").toString() != fn) {
+		// find end of scootdown
+		int e;
+		for(e=1; e<SETTINGSGROUPHISTN && settings.value(QString::number(e), "").toString() != fn; e++) {}
+		// scoot entries down
+		for (int i=e; i>=1; i--) {
+			settings.setValue(QString::number(i), settings.value(QString::number(i-1), ""));
+		}
+		settings.setValue(QString::number(0), fn);
+	}
+	settings.endGroup();
+
+	// print out for debugging
+	//settings.beginGroup(SETTINGSGROUPHIST);
+	//for (int i=0; i<SETTINGSGROUPHISTN; i++) {
+	//	printf("%i %s\n", i, settings.value(QString::number(i), "").toString().toUtf8().data());
+	//}
+	//settings.endGroup();
 }
 
 void
@@ -210,6 +238,25 @@ BasicEdit::loadProgram()
 {
 	QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
 	loadFile(s);
+}
+
+void BasicEdit::loadRecent0() { loadRecent(0); }
+void BasicEdit::loadRecent1() { loadRecent(1); }
+void BasicEdit::loadRecent2() { loadRecent(2); }
+void BasicEdit::loadRecent3() { loadRecent(3); }
+void BasicEdit::loadRecent4() { loadRecent(4); }
+void BasicEdit::loadRecent5() { loadRecent(5); }
+void BasicEdit::loadRecent6() { loadRecent(6); }
+void BasicEdit::loadRecent7() { loadRecent(7); }
+void BasicEdit::loadRecent8() { loadRecent(8); }
+
+void
+BasicEdit::loadRecent(int i)
+{
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.beginGroup(SETTINGSGROUPHIST);
+	loadFile(settings.value(QString::number(i), "").toString());
+	settings.endGroup();
 }
 
 void
@@ -237,6 +284,7 @@ BasicEdit::loadFile(QString s)
 			mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
 			QDir::setCurrent(fi.absolutePath());
 			codeChanged = false;
+			addFileToRecentList(s);
 		}
 	}
 

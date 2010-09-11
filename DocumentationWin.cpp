@@ -27,7 +27,10 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 {
 	//QString localecode = ((MainWindow *) parent)->localecode;
 	
-	resize(700,500);
+	// position where it was last on screen
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	resize(settings.value(SETTINGSDOCSIZE, QSize(700, 500)).toSize());
+	move(settings.value(SETTINGSDOCPOS, QPoint(150, 150)).toPoint());
 	
 	docs = new QWebView();
 
@@ -45,5 +48,13 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	docs->load(QString("http://doc.basic256.org"));
 	docs->show();
 	
+}
+
+void DocumentationWin::closeEvent(QCloseEvent *e) {
+     // save current screen posision
+     QSettings settings(SETTINGSORG, SETTINGSAPP);
+     settings.setValue(SETTINGSDOCSIZE, size());
+     settings.setValue(SETTINGSDOCPOS, pos());
+
 }
 
