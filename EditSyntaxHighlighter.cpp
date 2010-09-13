@@ -114,6 +114,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ff][Ll][Oo][Oo][Rr]\\b"					// floor
 		  << "\\b[Ff][Oo][Rr]\\b"						// for
 		  << "\\b[Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]\\b"					// getcolor
+		  << "\\b[Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]\\b"						// getsetting
 		  << "\\b[Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]\\b"					// getslice
 		  << "\\b[Gg][Oo][Ss][Uu][Bb]\\b"					// gosub
 		  << "\\b[Gg][Oo][Tt][Oo]\\b"						// goto
@@ -135,6 +136,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ll][Ii][Nn][Ee]\\b"						// line
 		  << "\\b[Ll][Ee][Nn][Gg][Tt][Hh]\\b"					// length
 		  << "\\b[Ll][Oo][Ww][Ee][Rr]\\b"					// lower
+		  << "\\b[Mm][Dd][5]\\b"						// md5
 		  << "\\b[Mm][Ii][Dd]\\b"						// mid
 		  << "\\b[Mm][Ii][Nn][Uu][Tt][Ee]\\b"					// minute
 		  << "\\b[Mm][Oo][Nn][Tt][Hh]\\b"					// month
@@ -174,6 +176,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Ss][Aa][Yy]\\b"						// say
 		  << "\\b[Ss][Ee][Cc][Oo][Nn][Dd]\\b"					// second
 		  << "\\b[Ss][Ee][Ee][Kk]\\b"						// seek
+		  << "\\b[Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]\\b"						// setsetting
 		  << "\\b[Ss][Ii][Nn]\\b"						// sin
 		  << "\\b[Ss][Ii][Zz][Ee]\\b"						// size
 		  << "\\b[Ss][Pp][Rr][Ii][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]\\b"						// spritedcollide

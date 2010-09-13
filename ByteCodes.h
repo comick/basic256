@@ -250,6 +250,8 @@
 #define OP_NETADDRESS		0x25
 #define OP_KILL		0x26
 #define OP_MD5		0x27
+#define OP_SETSETTING		0x28
+#define OP_GETSETTING		0x29
 
 
 

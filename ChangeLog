@@ -1,3 +1,6 @@
+2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.38
+	* added GETSETTING and SETSETTING for persistant application storage to the registery/config folder
+
 2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.37
 	* Created password protected preferences dialog - nothing on it yet except the password
 	* added MD5 function to return a hex string digest for a string

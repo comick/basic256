@@ -54,6 +54,7 @@ using namespace std;
 #include "ByteCodes.h"
 #include "Interpreter.h"
 #include "md5.h"
+#include "Settings.h"
 
 QMutex keymutex;
 int currentKey;
@@ -3684,6 +3685,44 @@ Interpreter::execByteCode()
 					free(stuff);
 				}
 				break;
+
+			case OP_SETSETTING:
+				{
+					op++;
+					char *stuff = stack.popstring();
+					char *key = stack.popstring();
+					char *app = stack.popstring();
+					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					settings.beginGroup(SETTINGSGROUPUSER);
+					settings.beginGroup(app);
+					settings.setValue(key, stuff);
+					settings.endGroup();
+					settings.endGroup();
+					free(stuff);
+					free(key);
+					free(app);
+				}
+				break;
+
+			case OP_GETSETTING:
+				{
+					op++;
+					char *key = stack.popstring();
+					char *app = stack.popstring();
+					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					settings.beginGroup(SETTINGSGROUPUSER);
+					settings.beginGroup(app);
+					stack.push(strdup(settings.value(key, "").toString().toUtf8().data()));
+					settings.endGroup();
+					settings.endGroup();
+					free(key);
+					free(app);
+				}
+				break;
+
+
+
+
 
 
 

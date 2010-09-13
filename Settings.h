@@ -40,4 +40,8 @@
 	#define SETTINGSGROUPHIST "SaveHistory"
 	#define SETTINGSGROUPHISTN 9
 
+	// store user settings (setsetting/getsetting) in seperate group
+	#define SETTINGSGROUPUSER "UserSettings"
+
+
 #endif

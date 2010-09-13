@@ -239,6 +239,8 @@ netdata [Nn][Ee][Tt][Dd][Aa][Tt][Aa]
 netaddress [Nn][Ee][Tt][Aa][Dd][Dd][Rr][Ee][Ss][Ss]
 kill [Kk][Ii][Ll][Ll]
 md5 [Mm][Dd][5]
+getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
+setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 %%
 
 
@@ -454,6 +456,8 @@ md5 [Mm][Dd][5]
 {netaddress}       { count(); return B256NETADDRESS; }
 {kill}       { count(); return B256KILL; }
 {md5}       { count(); return B256MD5; }
+{getsetting}       { count(); return B256GETSETTING; }
+{setsetting}       { count(); return B256SETSETTING; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

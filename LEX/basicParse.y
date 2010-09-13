@@ -279,7 +279,7 @@
 %token B256DBOPEN B256DBCLOSE B256DBEXECUTE B256DBOPENSET B256DBCLOSESET B256DBROW B256DBINT B256DBFLOAT B256DBSTRING
 %token B256ONERROR B256OFFERROR B256LASTERROR B256LASTERRORMESSAGE B256LASTERRORLINE B256LASTERROREXTRA
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA B256NETADDRESS
-%token B256KILL B256MD5
+%token B256KILL B256MD5 B256SETSETTING B256GETSETTING
 
 %union 
 {
@@ -529,6 +529,7 @@ statement: gotostmt
 		| netconnectstmt
 		| netwritestmt
 		| netclosestmt
+		| setsettingstmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -844,6 +845,10 @@ killstmt: B256KILL stringexpr         { addExtendedOp(OP_EXTENDED_0,OP_KILL); }
 	| B256KILL '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_KILL); } 
 ;
 
+setsettingstmt: B256SETSETTING stringexpr ',' stringexpr ',' stringexpr  { addExtendedOp(OP_EXTENDED_0,OP_SETSETTING); }
+	| B256SETSETTING '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SETSETTING); } 
+;
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -1074,6 +1079,7 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 		 | B256NETADDRESS { addExtendedOp(OP_EXTENDED_0,OP_NETADDRESS); }
 		 | B256NETADDRESS '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_NETADDRESS); }
 		 | B256MD5 '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_MD5); }
+		 | B256GETSETTING '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_GETSETTING); }
  ;
 
 %%
