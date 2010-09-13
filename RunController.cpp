@@ -23,11 +23,14 @@
 #include <QWaitCondition>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QFile>
 #include <QApplication>
 using namespace std;
 
 #include "RunController.h"
+#include "Settings.h"
+#include "md5.h"
 
 #ifdef WIN32
 	#include <windows.h> 
@@ -591,5 +594,27 @@ RunController::showDocumentation()
      docwin->show();
      docwin->raise();
      docwin->activateWindow();
+}
+
+void
+RunController::showPreferences()
+{
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
+	QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Preferences and Settings"),
+		tr("Password:"), QLineEdit::Password, QString:: null);
+	if (text.length()!=0) text = MD5(text.toUtf8().data()).hexdigest();
+	if (QString::compare(text, prefpass)==0) {
+		PreferencesWin *w = new PreferencesWin(mainwin);
+		w->show();
+		w->raise();
+		w->activateWindow();
+	} else {
+		QMessageBox msgBox;
+		msgBox.setText("Incorrect password.");
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		msgBox.exec();
+	}
 }
 

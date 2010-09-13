@@ -1,3 +1,7 @@
+2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.37
+	* Created password protected preferences dialog - nothing on it yet except the password
+	* added MD5 function to return a hex string digest for a string
+
 2010-09-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.36
 	* added settings to restore IDE and help to size and location when re-opened
 	* added list of 9 most recently opened or saved items for quick open on file menu

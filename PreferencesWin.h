@@ -17,27 +17,42 @@
 
 
 
-#include <QSettings>
+#include <QMessageBox>
+#include <QWidget>
+#include <QDialog>
+#include <QGridLayout>
+#include <QToolBar>
+#include <QLabel>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QAction>
+#include <QObject>
+#include <QIcon>
 
-#ifndef SETTINGSH
-	#define SETTINGSH
-	#define SETTINGSORG "BASIC-256 Consortium"
-	#define SETTINGSAPP "BASIC-256 IDE"
+#ifndef PREFERENCESWINH
 
-	// main window
-	#define SETTINGSSIZE "Main/Size"
-	#define SETTINGSPOS "Main/Pos"
-	// documentation window
-	#define SETTINGSDOCSIZE "Doc/Size"
-	#define SETTINGSDOCPOS "Doc/Pos"
-	// preferences window
-	#define SETTINGSPREFSIZE "Pref/Size"
-	#define SETTINGSPREFPOS "Pref/Pos"
-	#define SETTINGSPREFPASSWORD "Pref/Password"
+#define PREFERENCESWINH
 
+class PreferencesWin : public QDialog
+{
+  Q_OBJECT;
 
-	// store history of files as SaveHistory/0 ... SaveHistory/8 
-	#define SETTINGSGROUPHIST "SaveHistory"
-	#define SETTINGSGROUPHISTN 9
+ public:
+	PreferencesWin(QWidget * parent);
+	void closeEvent(QCloseEvent *);
+
+private slots:
+	void clickCancelButton();
+	void clickSaveButton();
+
+  
+private:
+	QLabel *passwordlabel;
+	QLineEdit *passwordinput;
+	QPushButton *cancelbutton;
+	QPushButton *savebutton;
+
+};
 
 #endif

@@ -53,6 +53,7 @@ using namespace std;
 #include "LEX/basicParse.tab.h"
 #include "ByteCodes.h"
 #include "Interpreter.h"
+#include "md5.h"
 
 QMutex keymutex;
 int currentKey;
@@ -3672,6 +3673,15 @@ Interpreter::execByteCode()
 						errornum = ERROR_FILEOPEN;
 					}
 					free(name);
+				}
+				break;
+
+			case OP_MD5:
+				{
+					op++;
+					char *stuff = stack.popstring();
+					stack.push(MD5(stuff).hexdigest());
+					free(stuff);
 				}
 				break;
 

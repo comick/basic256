@@ -249,6 +249,7 @@
 #define OP_NETDATA		0x24
 #define OP_NETADDRESS		0x25
 #define OP_KILL		0x26
+#define OP_MD5		0x27
 
 
 

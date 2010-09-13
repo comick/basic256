@@ -116,6 +116,8 @@ HEADERS			+=	DocumentationWin.h
 HEADERS			+=	Version.h
 HEADERS			+=	EditSyntaxHighlighter.h
 HEADERS         +=  Stack.h
+HEADERS         +=  PreferencesWin.h
+HEADERS         +=  md5.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
@@ -136,3 +138,6 @@ SOURCES			+=	VariableWin.cpp
 SOURCES			+=	DocumentationWin.cpp
 SOURCES			+=	EditSyntaxHighlighter.cpp
 SOURCES			+=  Stack.cpp
+SOURCES			+=  PreferencesWin.cpp
+SOURCES			+=  md5.cpp
+

@@ -163,6 +163,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
 	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
+	editmenu->addSeparator();
+	QAction *prefact = editmenu->addAction(QObject::tr("Preferences"));
+	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
 	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
@@ -256,7 +259,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
 	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
-	// About menu
+	// Help menu
 	QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
 	QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
 	docact->setShortcut(Qt::Key_F1);

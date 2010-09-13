@@ -30,6 +30,7 @@
 #include "BasicGraph.h"
 #include "VariableWin.h"
 #include "DocumentationWin.h"
+#include "PreferencesWin.h"
 #include "EditSyntaxHighlighter.h"
 #include "Settings.h"
 

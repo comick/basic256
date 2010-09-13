@@ -238,6 +238,7 @@ netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
 netdata [Nn][Ee][Tt][Dd][Aa][Tt][Aa]
 netaddress [Nn][Ee][Tt][Aa][Dd][Dd][Rr][Ee][Ss][Ss]
 kill [Kk][Ii][Ll][Ll]
+md5 [Mm][Dd][5]
 %%
 
 
@@ -452,6 +453,7 @@ kill [Kk][Ii][Ll][Ll]
 {netdata}       { count(); return B256NETDATA; }
 {netaddress}       { count(); return B256NETADDRESS; }
 {kill}       { count(); return B256KILL; }
+{md5}       { count(); return B256MD5; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

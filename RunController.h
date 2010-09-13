@@ -29,7 +29,6 @@
 #include "Interpreter.h"
 #include "MainWindow.h"
 
-
 class RunController : public QObject
 {
   Q_OBJECT;
@@ -63,6 +62,7 @@ class RunController : public QObject
   void saveByteCode();
   void stepThrough();
   void showDocumentation();
+  void showPreferences();
 
  private:
   Interpreter *i;
