@@ -25,6 +25,7 @@
 #include <QLabel>
 #include <QLabel>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QPushButton>
 #include <QAction>
 #include <QObject>
@@ -50,6 +51,8 @@ private slots:
 private:
 	QLabel *passwordlabel;
 	QLineEdit *passwordinput;
+	QCheckBox *systemcheckbox;
+	QCheckBox *settingcheckbox;
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;
 

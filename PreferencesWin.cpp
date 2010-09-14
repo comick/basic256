@@ -30,26 +30,39 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	resize(settings.value(SETTINGSPREFSIZE, QSize(500, 500)).toSize());
+	//resize(settings.value(SETTINGSPREFSIZE, QSize(500, 500)).toSize());
 	move(settings.value(SETTINGSPREFPOS, QPoint(200, 200)).toPoint());
 	setWindowTitle(tr("BASIC-256 Preferences and Settings"));
 
-	passwordlabel = new QLabel(tr("Password:"),this);
+	QGridLayout * layout = new QGridLayout();
+	int r=0;
+
+	passwordlabel = new QLabel(tr("Preferences and Settings Password:"),this);
 	passwordinput = new QLineEdit(QString::null,this);
 	passwordinput->setText(settings.value(SETTINGSPREFPASSWORD, "").toString());
 	passwordinput->setMaxLength(32);
 	passwordinput->setEchoMode(QLineEdit::Password);
+	layout->addWidget(passwordlabel,r,1,1,1);
+	layout->addWidget(passwordinput,r,2,1,2);
+	//
+	r++;
+	systemcheckbox = new QCheckBox(tr("Allow SYSTEM statement"),this);
+	systemcheckbox->setChecked(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool());
+	layout->addWidget(systemcheckbox,r,2,1,2);
+	//
+	r++;
+	settingcheckbox = new QCheckBox(tr("Allow GETSETTING/SETSETTING statements"),this);
+	settingcheckbox->setChecked(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool());
+	layout->addWidget(settingcheckbox,r,2,1,2);
+	//
+	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
 	savebutton = new QPushButton(tr("Save"), this);
 	connect(savebutton, SIGNAL(clicked()), this, SLOT (clickSaveButton()));
+	layout->addWidget(cancelbutton,r,2,1,1);
+	layout->addWidget(savebutton,r,3,1,1);
 	
-	//
-	QGridLayout * layout = new QGridLayout();
-	layout->addWidget(passwordlabel,1,1,1,1);
-	layout->addWidget(passwordinput,1,2,1,2);
-	layout->addWidget(cancelbutton,2,2,1,1);
-	layout->addWidget(savebutton,2,3,1,1);
 	this->setLayout(layout);
 	this->show();
 	
@@ -72,6 +85,9 @@ void PreferencesWin::clickSaveButton() {
 		settings.setValue(SETTINGSPREFPASSWORD, pw);
 	}
 	//
+	settings.setValue(SETTINGSALLOWSYSTEM, systemcheckbox->isChecked());
+	settings.setValue(SETTINGSALLOWSETTING, settingcheckbox->isChecked());
+	//
 	QMessageBox msgBox;
 	msgBox.setText("Preferences and settings have been saved.");
 	msgBox.setStandardButtons(QMessageBox::Ok);
@@ -84,7 +100,7 @@ void PreferencesWin::clickSaveButton() {
 void PreferencesWin::closeEvent(QCloseEvent *e) {
 	// save current screen posision
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	settings.setValue(SETTINGSPREFSIZE, size());
+	//settings.setValue(SETTINGSPREFSIZE, size());
 	settings.setValue(SETTINGSPREFPOS, pos());
 
 

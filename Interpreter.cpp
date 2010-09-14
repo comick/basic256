@@ -264,6 +264,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_NETSOCKNUMBER:
 			errormessage = tr(ERROR_NETSOCKNUMBER_MESSAGE);
 			break;
+		case ERROR_PERMISSION:
+			errormessage = tr(ERROR_PERMISSION_MESSAGE);
+			break;
 		// put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -2213,10 +2216,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *temp = stack.popstring();
-			//mutex.lock();
+			mutex.lock();
 			emit(speakWords(QString::fromUtf8(temp)));
-			//waitCond.wait(&mutex);
-			//mutex.unlock();
+			waitCond.wait(&mutex);
+			mutex.unlock();
 			free(temp);
 		}
 		break;
@@ -2225,10 +2228,16 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *temp = stack.popstring();
-			//mutex.lock();
-			emit(system(temp));
-			//waitCond.wait(&mutex);
-			//mutex.unlock();
+
+			QSettings settings(SETTINGSORG, SETTINGSAPP);
+			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
+				mutex.lock();
+				emit(executeSystem(temp));
+				waitCond.wait(&mutex);
+				mutex.unlock();
+			} else {
+				errornum = ERROR_PERMISSION;
+			}
 			free(temp);
 		}
 		break;
@@ -3693,11 +3702,15 @@ Interpreter::execByteCode()
 					char *key = stack.popstring();
 					char *app = stack.popstring();
 					QSettings settings(SETTINGSORG, SETTINGSAPP);
-					settings.beginGroup(SETTINGSGROUPUSER);
-					settings.beginGroup(app);
-					settings.setValue(key, stuff);
-					settings.endGroup();
-					settings.endGroup();
+					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
+						settings.beginGroup(SETTINGSGROUPUSER);
+						settings.beginGroup(app);
+						settings.setValue(key, stuff);
+						settings.endGroup();
+						settings.endGroup();
+					} else {
+						errornum = ERROR_PERMISSION;
+					}
 					free(stuff);
 					free(key);
 					free(app);
@@ -3710,11 +3723,15 @@ Interpreter::execByteCode()
 					char *key = stack.popstring();
 					char *app = stack.popstring();
 					QSettings settings(SETTINGSORG, SETTINGSAPP);
-					settings.beginGroup(SETTINGSGROUPUSER);
-					settings.beginGroup(app);
-					stack.push(strdup(settings.value(key, "").toString().toUtf8().data()));
-					settings.endGroup();
-					settings.endGroup();
+					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
+						settings.beginGroup(SETTINGSGROUPUSER);
+						settings.beginGroup(app);
+						stack.push(strdup(settings.value(key, "").toString().toUtf8().data()));
+						settings.endGroup();
+						settings.endGroup();
+					} else {
+						errornum = ERROR_PERMISSION;
+					}
 					free(key);
 					free(app);
 				}

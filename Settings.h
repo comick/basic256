@@ -31,9 +31,14 @@
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"
 	// preferences window
-	#define SETTINGSPREFSIZE "Pref/Size"
 	#define SETTINGSPREFPOS "Pref/Pos"
 	#define SETTINGSPREFPASSWORD "Pref/Password"
+
+	// permissions
+	#define SETTINGSALLOWSYSTEM "Allow/System"
+	#define SETTINGSALLOWSYSTEMDEFAULT true
+	#define SETTINGSALLOWSETTING "Allow/Setting"
+	#define SETTINGSALLOWSETTINGDEFAULT true
 
 
 	// store history of files as SaveHistory/0 ... SaveHistory/8 

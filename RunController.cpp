@@ -104,7 +104,7 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
 
 	QObject::connect(i, SIGNAL(setVolume(int)), this, SLOT(setVolume(int)));
-	QObject::connect(i, SIGNAL(system(char*)), this, SLOT(system(char*)));
+	QObject::connect(i, SIGNAL(executeSystem(char*)), this, SLOT(executeSystem(char*)));
 	QObject::connect(i, SIGNAL(playSounds(int, int*)), this, SLOT(playSounds(int, int*)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
@@ -347,9 +347,14 @@ RunController::setVolume(int volume)
 }
 
 void
-RunController::system(char* text)
+RunController::executeSystem(char* text)
 {
+	//fprintf(stderr,"system b4 %s\n", text);
+	mutex.lock();
 	system(text);
+	waitCond.wakeAll();
+	mutex.unlock();
+	//fprintf(stderr,"system af %s\n", text);
 }
 
 void RunController::playWAV(QString file)
@@ -599,12 +604,18 @@ RunController::showDocumentation()
 void
 RunController::showPreferences()
 {
+	bool good = true;
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
-	QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Preferences and Settings"),
-		tr("Password:"), QLineEdit::Password, QString:: null);
-	if (text.length()!=0) text = MD5(text.toUtf8().data()).hexdigest();
-	if (QString::compare(text, prefpass)==0) {
+	if (prefpass.length()!=0) {
+		char * digest;
+		QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Preferences and Settings"),
+			tr("Password:"), QLineEdit::Password, QString:: null);
+		digest = MD5(text.toUtf8().data()).hexdigest();
+		good = (QString::compare(digest, prefpass)==0);
+		free(digest);
+	}
+	if (good) {
 		PreferencesWin *w = new PreferencesWin(mainwin);
 		w->show();
 		w->raise();

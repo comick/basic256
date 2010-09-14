@@ -125,6 +125,8 @@
 #define ERROR_NETACCEPT_MESSAGE "Unable to accept network connection."
 #define ERROR_NETSOCKNUMBER 45
 #define ERROR_NETSOCKNUMBER_MESSAGE "Invalid Socket Number"
+#define ERROR_PERMISSION 46
+#define ERROR_PERMISSION_MESSAGE "You do not have permission to use this statement/function."
 //
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
@@ -223,7 +225,7 @@ class Interpreter : public QThread
   void getKey();
   void playSounds(int, int*);
   void setVolume(int);
-  void system(char*);
+  void executeSystem(char*);
   void speakWords(QString);
   void playWAV(QString);
   void waitWAV();
