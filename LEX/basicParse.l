@@ -241,6 +241,8 @@ kill [Kk][Ii][Ll][Ll]
 md5 [Mm][Dd][5]
 getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
+portin [Pp][Oo][Rr][Tt][Ii][Nn]
+portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 %%
 
 
@@ -458,6 +460,8 @@ setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 {md5}       { count(); return B256MD5; }
 {getsetting}       { count(); return B256GETSETTING; }
 {setsetting}       { count(); return B256SETSETTING; }
+{portin}       { count(); return B256PORTIN; }
+{portout}       { count(); return B256PORTOUT; }
 {rem}           { count(); return '\n'; }
 {remeol}        { count(); return '\n'; }
 {remalt}        { count(); return '\n'; }

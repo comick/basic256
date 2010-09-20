@@ -1,3 +1,6 @@
+2010-09-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.40
+	* INCOMPLETE - Code to start adding PORTIN/PORTOUT statementf for parallel port control
+
 2010-09-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.39
 	* fixed SYSTEM statement to use mutex to wait correctly
 	* added preference settings to allow or disable system, get/setsetting

@@ -22,6 +22,10 @@ Specifically for Windows you will need:
     dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
   - you will also need to place the sqlite.dll file in the project/trunk/debug 
     and project/trunk/release folders.
+* inpout32.dll
+  - download from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
+  - copy the file inpout32.dll into MinGW/lib
+  
 
 Build Windows MINGW and LINUX:
 

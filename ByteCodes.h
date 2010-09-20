@@ -252,6 +252,8 @@
 #define OP_MD5		0x27
 #define OP_SETSETTING		0x28
 #define OP_GETSETTING		0x29
+#define OP_PORTIN		0x2a
+#define OP_PORTOUT		0x2b
 
 
 

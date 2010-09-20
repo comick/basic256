@@ -29,6 +29,7 @@
 #ifdef WIN32
 	#include <winsock.h>
 	typedef int socklen_t;
+
 #else
 	#include <sys/types.h> 
 	#include <sys/socket.h>
@@ -64,6 +65,13 @@ extern QMutex debugmutex;
 extern QWaitCondition waitCond;
 extern QWaitCondition waitDebugCond;
 extern QWaitCondition waitInput;
+
+#ifdef WIN32
+	extern "C" { 
+		unsigned char Inp32(unsigned char);
+		void Out32(unsigned char, unsigned char);
+	}
+#endif
 
 #define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
 
@@ -3734,6 +3742,34 @@ Interpreter::execByteCode()
 					}
 					free(key);
 					free(app);
+				}
+				break;
+
+
+			case OP_PORTOUT:
+				{
+					op++;
+					int data = stack.popint();
+					int port = stack.popint();
+					#ifdef WIN32
+						Out32(port, data);
+					#else
+						errornum = ERROR_NOTIMPLEMENTED;
+					#endif
+				}
+				break;
+
+			case OP_PORTIN:
+				{
+					op++;
+					int data=0;
+					int port = stack.popint();
+					#ifdef WIN32
+						data = Inp32(port);
+					#else
+						errornum = ERROR_NOTIMPLEMENTED;
+					#endif
+					stack.push(data);
 				}
 				break;
 
