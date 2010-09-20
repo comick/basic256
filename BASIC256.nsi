@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6.35"
-  StrCpy $VERSIONDATE "2010-09-09"
+  StrCpy $VERSION "0.9.6.41"
+  StrCpy $VERSIONDATE "2010-09-20"
 FunctionEnd
 
 Function customPage
@@ -91,6 +91,7 @@ Section "BASIC256"
   File .\release\QtWebKit4.dll
   File .\release\QtXmlPatterns4.dll
   File .\release\sqlite3.dll
+  File .\release\inpout32.dll
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
@@ -142,6 +143,7 @@ Section "Uninstall"
   Delete $INSTDIR\QtWebKit4.dll
   Delete $INSTDIR\QtXmlPatterns4.dll
   Delete $INSTDIR\sqlite3.dll
+  Delete $INSTDIR\inpout32.dll
  Delete $INSTDIR\ChangeLog
   Delete $INSTDIR\CONTRIBUTORS
   Delete $INSTDIR\license.txt

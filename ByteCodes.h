@@ -254,6 +254,9 @@
 #define OP_GETSETTING		0x29
 #define OP_PORTIN		0x2a
 #define OP_PORTOUT		0x2b
+#define OP_BINARYOR		0x2c
+#define OP_BINARYAND		0x2d
+#define OP_BINARYNOT		0x2e
 
 
 

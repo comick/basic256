@@ -39,6 +39,8 @@
 	#define SETTINGSALLOWSYSTEMDEFAULT true
 	#define SETTINGSALLOWSETTING "Allow/Setting"
 	#define SETTINGSALLOWSETTINGDEFAULT true
+	#define SETTINGSALLOWPORT "Allow/Port"
+	#define SETTINGSALLOWPORTDEFAULT true
 
 
 	// store history of files as SaveHistory/0 ... SaveHistory/8 

@@ -1,3 +1,8 @@
+2010-09-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.41
+	* finished and tested PORTIN/PORTOUT statements for parallel port control (WINDOWS ONLY)
+	* added preference settings to allow or disable PORTIN/PORTOUT statements
+	* added three new operators &, | and ~ - bitwise and or and not that work with integers
+
 2010-09-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.40
 	* INCOMPLETE - Code to start adding PORTIN/PORTOUT statementf for parallel port control
 

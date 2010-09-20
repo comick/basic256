@@ -24,7 +24,10 @@ Specifically for Windows you will need:
     and project/trunk/release folders.
 * inpout32.dll
   - download from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
+  or http://logix4u.net/Legacy_Ports/Parallel_Port/Inpoutx64.dll_for_WIN_XP_64_bit.html
   - copy the file inpout32.dll into MinGW/lib
+  - you will also need to place the inpout32.dll file in the project/trunk/debug 
+    and project/trunk/release folders.
   
 
 Build Windows MINGW and LINUX:

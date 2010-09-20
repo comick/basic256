@@ -68,8 +68,8 @@ extern QWaitCondition waitInput;
 
 #ifdef WIN32
 	extern "C" { 
-		unsigned char Inp32(unsigned char);
-		void Out32(unsigned char, unsigned char);
+		unsigned char Inp32(short int);
+		void Out32(short int, unsigned char);
 	}
 #endif
 
@@ -3751,11 +3751,16 @@ Interpreter::execByteCode()
 					op++;
 					int data = stack.popint();
 					int port = stack.popint();
-					#ifdef WIN32
-						Out32(port, data);
-					#else
-						errornum = ERROR_NOTIMPLEMENTED;
-					#endif
+					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
+						#ifdef WIN32
+							Out32(port, data);
+						#else
+							errornum = ERROR_NOTIMPLEMENTED;
+						#endif
+					} else {
+						errornum = ERROR_PERMISSION;
+					}
 				}
 				break;
 
@@ -3764,14 +3769,46 @@ Interpreter::execByteCode()
 					op++;
 					int data=0;
 					int port = stack.popint();
-					#ifdef WIN32
-						data = Inp32(port);
-					#else
-						errornum = ERROR_NOTIMPLEMENTED;
-					#endif
+					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
+						#ifdef WIN32
+							data = Inp32(port);
+						#else
+							errornum = ERROR_NOTIMPLEMENTED;
+						#endif
+					} else {
+						errornum = ERROR_PERMISSION;
+					}
 					stack.push(data);
 				}
 				break;
+
+			case OP_BINARYOR:
+				{
+					op++;
+					int a = stack.popint();
+					int b = stack.popint();
+					stack.push(a|b);
+				}
+				break;
+
+			case OP_BINARYAND:
+				{
+					op++;
+					int a = stack.popint();
+					int b = stack.popint();
+					stack.push(a&b);
+				}
+				break;
+
+			case OP_BINARYNOT:
+				{
+					op++;
+					int a = stack.popint();
+					stack.push(~a);
+				}
+				break;
+
 
 
 

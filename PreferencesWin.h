@@ -53,6 +53,7 @@ private:
 	QLineEdit *passwordinput;
 	QCheckBox *systemcheckbox;
 	QCheckBox *settingcheckbox;
+	QCheckBox *portcheckbox;
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;
 

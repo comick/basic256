@@ -56,6 +56,11 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	layout->addWidget(settingcheckbox,r,2,1,2);
 	//
 	r++;
+	portcheckbox = new QCheckBox(tr("Allow PORTIN/PORTOUT statements"),this);
+	portcheckbox->setChecked(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool());
+	layout->addWidget(portcheckbox,r,2,1,2);
+	//
+	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
 	savebutton = new QPushButton(tr("Save"), this);
@@ -87,6 +92,7 @@ void PreferencesWin::clickSaveButton() {
 	//
 	settings.setValue(SETTINGSALLOWSYSTEM, systemcheckbox->isChecked());
 	settings.setValue(SETTINGSALLOWSETTING, settingcheckbox->isChecked());
+	settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
 	//
 	QMessageBox msgBox;
 	msgBox.setText("Preferences and settings have been saved.");

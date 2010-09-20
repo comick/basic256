@@ -280,6 +280,7 @@
 %token B256ONERROR B256OFFERROR B256LASTERROR B256LASTERRORMESSAGE B256LASTERRORLINE B256LASTERROREXTRA
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA B256NETADDRESS
 %token B256KILL B256MD5 B256SETSETTING B256GETSETTING B256PORTIN B256PORTOUT
+%token B256BINARYOR B256BINARYAND B256BINARYNOT
 
 %union 
 {
@@ -306,9 +307,10 @@
 %left B256AND 
 %nonassoc B256NOT
 %left '<' B256LTE '>' B256GTE '=' B256NE
+%left B256BINARYOR B256BINARYAND
 %left '-' '+'
 %left '*' '/' B256MOD B256INTDIV
-%nonassoc B256UMINUS
+%nonassoc B256UMINUS B256BINARYNOT
 %left '^'
 
 
@@ -872,6 +874,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
          | floatexpr B256INTDIV floatexpr { addOp(OP_INTDIV); }
          | floatexpr '/' floatexpr { addOp(OP_DIV); }
          | floatexpr '^' floatexpr { addOp(OP_EXP); }
+         | floatexpr B256BINARYOR floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYOR); }
+         | floatexpr B256BINARYAND floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYAND); }
+        | B256BINARYNOT floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYNOT); }
        | '-' floatexpr %prec B256UMINUS { addOp(OP_NEGATE); }
        | floatexpr B256AND floatexpr {addOp(OP_AND); }
        | floatexpr B256OR floatexpr { addOp(OP_OR); }
