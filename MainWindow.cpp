@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	        <p>Copyright &copy; 2006, The BASIC-256 Team</p> \
 	        <p>Please visit our web site at http://www.basic256.org for tutorials and documentation.</p> \
 	        <p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
-	        <p><i>You should have received a copy of the GNU General Public License along<br> \
+		   <p><i>You should have received a copy of the GNU General Public License along<br> \
 	        with this program; if not, write to the Free Software Foundation, Inc.,<br> \
 	        51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>",VERSION);
 

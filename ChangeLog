@@ -1,3 +1,6 @@
+2010-09-21 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.42
+	* tested inpout32 with Windows7-x64 and Vista-x32 and changed compiling instructions
+	
 2010-09-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.41
 	* finished and tested PORTIN/PORTOUT statements for parallel port control (WINDOWS ONLY)
 	* added preference settings to allow or disable PORTIN/PORTOUT statements
