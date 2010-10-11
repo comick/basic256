@@ -1146,11 +1146,11 @@ Interpreter::execByteCode()
 		{
 			// move file pointer to a specific loaction in file
 			op++;
+			long pos = stack.popint();
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
 			} else {
-				long pos = stack.popint();
 				if (stream[fn] == NULL)
 				{
 					errornum = ERROR_FILENOTOPEN;
