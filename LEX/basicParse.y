@@ -281,6 +281,8 @@
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA B256NETADDRESS
 %token B256KILL B256MD5 B256SETSETTING B256GETSETTING B256PORTIN B256PORTOUT
 %token B256BINARYOR B256BINARYAND B256BINARYNOT
+%token B256IMGSAVE
+
 
 %union 
 {
@@ -533,6 +535,7 @@ statement: gotostmt
 		| netclosestmt
 		| setsettingstmt
 		| portoutstmt
+		| imgsavestmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -855,6 +858,12 @@ setsettingstmt: B256SETSETTING stringexpr ',' stringexpr ',' stringexpr  { addEx
 portoutstmt: B256PORTOUT floatexpr ',' floatexpr  { addExtendedOp(OP_EXTENDED_0,OP_PORTOUT); }
 	| B256PORTOUT '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_PORTOUT); } 
 ;
+
+imgsavestmt: B256IMGSAVE stringexpr  {addStringOp(OP_PUSHSTRING, "PNG"); addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); } 
+	| B256IMGSAVE '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); }
+	| B256IMGSAVE stringexpr ',' stringexpr         { addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); }
+;
+
 
 immediatestrlist: '{' stringlist '}'
 ;

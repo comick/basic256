@@ -275,6 +275,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_PERMISSION:
 			errormessage = tr(ERROR_PERMISSION_MESSAGE);
 			break;
+		case ERROR_IMAGESAVETYPE:
+			errormessage = tr(ERROR_IMAGESAVETYPE_MESSAGE);
+			break;
 		// put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -3806,6 +3809,23 @@ Interpreter::execByteCode()
 					op++;
 					int a = stack.popint();
 					stack.push(~a);
+				}
+				break;
+
+			case OP_IMGSAVE:
+				{
+					// Image Save - Save image
+					char *type = stack.popstring();
+         				char *file = stack.popstring();
+					QStringList validtypes;
+					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
+					if (validtypes.indexOf(QString(type))!=-1) {
+         					image->save(QString::fromUtf8(file), type);
+					} else {
+						errornum = ERROR_IMAGESAVETYPE;
+					}
+					free(file);
+					free(type);
 				}
 				break;
 

@@ -243,6 +243,7 @@ getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
+imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 %%
 
 
@@ -406,6 +407,7 @@ portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 {getslice}       { count(); return B256GETSLICE; }
 {putslice}       { count(); return B256PUTSLICE; }
 {imgload}       { count(); return B256IMGLOAD; }
+{imgsave}       { count(); return B256IMGSAVE; }
 {spritedim}       { count(); return B256SPRITEDIM; }
 {spriteload}       { count(); return B256SPRITELOAD; }
 {spriteslice}       { count(); return B256SPRITESLICE; }

@@ -1,3 +1,6 @@
+2010-10-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.45
+	* added IMGSAVE statement to save graphics area as a .png or other  qt supported file type
+
 2010-10-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.44
 	* forces locale to "C" so that decimal mark '.' will always work
 
