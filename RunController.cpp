@@ -40,28 +40,35 @@ using namespace std;
 	#include <cstdlib>
 	#include <mmsystem.h>
 #else
-	#ifdef LINUX_ESPEAK
-		#include <speak_lib.h>
-	#endif
-	#ifdef LINUX_FLITE
-		#include <flite.h>
-		extern "C"
-		{
-			cst_voice* register_cmu_us_kal();
-		}
-	#endif
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <fcntl.h>
 	#include <sys/ioctl.h>
 	#include <time.h>
+#endif
+
+#ifdef LINUX
 	#include <linux/soundcard.h>
+#endif
+
+
+#ifdef LINUX_ESPEAK
+	#include <speak_lib.h>
+#endif
+
+#ifdef LINUX_FLITE
+	#include <flite.h>
+	extern "C"
+	{
+		cst_voice* register_cmu_us_kal();
+	}
 #endif
 
 #ifdef USEQSOUND
 	#include <QSound>
 	QSound wavsound(QString(""));
 #endif
+
 #ifdef USESDL
 	#include <SDL/SDL.h>
 	#include <SDL/SDL_mixer.h>
@@ -190,7 +197,7 @@ RunController::playSounds(int notes, int* freqdur)
 	
 #endif
 
-#ifdef LINUX_DSPSOUND
+#ifdef USEDSPSOUND
 	// Code loosely based on idea from TONEGEN by Timothy Pozar
 	// - Plays a sine wave via the dsp or standard out.
  
@@ -336,6 +343,13 @@ RunController::speakWords(QString text)
 	//clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
   	//while (clock() < endwait) {}
 
+#endif
+#ifdef MACX_SAY
+	// easy macosX implementation - call the command line say statement
+	text.replace("\""," quote ");
+	text.prepend("say \"");
+	text.append("\"");
+	executeSystem(text.toLatin1().data());
 #endif
 }
 

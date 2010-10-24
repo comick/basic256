@@ -28,12 +28,22 @@ Specifically for Windows you will need:
   - you will also need to place the inpout32.dll and inpout32.sys fileg in the project/trunk/debug 
     and project/trunk/release folders.
   
+For MAC 10.6.4
+	- QT
+	- XCode (from apple)
+	- MACPorts (Porticus front end is handy)
+		-	sqlite3
+		-	flex
+		-	libsdl_dev
+		-	libsdl_dev-framework
+		-	libsdl_mixer
+		-	libsdl_mixer-framework
 
-Build Windows MINGW and LINUX:
+Build Windows MINGW, LINUX, and MACX (g++):
 
   open a command window (cmd)
   type "make clean" and hit enter
-  type "qmake" and hit enter
+  type "qmake" and hit enter - for MACX "qmake -spec macx-g++"
   type "make" and hit enter 
   
   You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.

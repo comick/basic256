@@ -1,3 +1,7 @@
+2010-10-24 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.46
+	* initial MAC port - tested sound, say, playwav, database,
+	and networking
+
 2010-10-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.45
 	* added IMGSAVE statement to save graphics area as a .png or other  qt supported file type
 

@@ -31,7 +31,12 @@ win32 {
 				-lwinmm
 
 
-} else {
+}
+
+unix:!macx {
+	## this is the LINUX (unix-non-mac)
+	DEFINES		+= LINUX
+	
 	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
 	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)
 	DEFINES		+= 	LINUX_ESPEAK
@@ -52,9 +57,6 @@ win32 {
 	DEFINES 		+= USESDL
 	LIBS			+= -lSDL
 	LIBS			+= -lSDL_mixer
-
-	## original - problematic LINUX sound
-	#DEFINES 		+= LINUX_DSPSOUND
 
 	## rules for make install
 	examplesDiceFiles.files = ./Examples/dice/*.kbs \
@@ -87,6 +89,23 @@ win32 {
 	target.path = /usr/local/bin
 	INSTALLS += target
 
+}
+
+macx {
+	# macintosh
+	DEFINES +=	MACX
+	
+	DEFINES +=  MACX_SAY
+
+	LIBS			+= -L/opt/local/lib
+	INCLUDEPATH		+=	/opt/local/include
+
+	## include libraries for SDL audio for wav and sound output
+	DEFINES 		+= USESDL
+	LIBS			+= -lSDL
+	LIBS			+= -lSDL_mixer
+
+	
 }
 
 exists( ./LEX/Makefile ) {
