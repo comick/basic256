@@ -1,3 +1,8 @@
+2010-10-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.47
+	* initial MAC port - tested help & preferences
+	* added Mac Icon
+	* added logic to save font size as a preference
+
 2010-10-24 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.46
 	* initial MAC port - tested sound, say, playwav, database,
 	and networking

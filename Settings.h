@@ -27,9 +27,13 @@
 	// main window
 	#define SETTINGSSIZE "Main/Size"
 	#define SETTINGSPOS "Main/Pos"
+	#define SETTINGSFONTSIZE "Main/FontSize"
+	#define SETTINGSFONTSIZEDEFAULT 10
+	
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"
+	
 	// preferences window
 	#define SETTINGSPREFPOS "Pref/Pos"
 	#define SETTINGSPREFPASSWORD "Pref/Password"

@@ -33,10 +33,11 @@ using namespace std;
 BasicEdit::BasicEdit(QMainWindow *mw)
 {
 	QFont f;
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	mainwin = mw;
 	f.setFamily("Sans");
 	f.setFixedPitch(true);
-	f.setPointSize(10);
+	f.setPointSize(settings.value(SETTINGSFONTSIZE, SETTINGSFONTSIZEDEFAULT).toInt());
 	setFont(f);
 	currentMaxLine = 10;
 	currentLine = 1;
@@ -75,6 +76,8 @@ BasicEdit::changeFontSize(unsigned int pointSize)
 	f.setFixedPitch(true);
 	f.setPointSize(pointSize);
 	setFont(f);
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.setValue(SETTINGSFONTSIZE, pointSize);
 }
 
 void

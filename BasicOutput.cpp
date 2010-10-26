@@ -26,6 +26,7 @@
 #include <QPrinter>
 #include <QMessageBox>
 
+#include "Settings.h"
 #include "BasicOutput.h"
 
 extern QMutex keymutex;
@@ -35,6 +36,8 @@ BasicOutput::BasicOutput( ) : QTextEdit ()
 {
   setFocusPolicy(Qt::StrongFocus);
   gettingInput = false;
+  QSettings settings(SETTINGSORG, SETTINGSAPP);
+  changeFontSize(settings.value(SETTINGSFONTSIZE, SETTINGSFONTSIZEDEFAULT).toInt());
 }
 
 

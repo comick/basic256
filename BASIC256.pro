@@ -96,6 +96,8 @@ macx {
 	DEFINES +=	MACX
 	
 	DEFINES +=  MACX_SAY
+	
+	ICON = resources/basic256.icns
 
 	LIBS			+= -L/opt/local/lib
 	INCLUDEPATH		+=	/opt/local/include
