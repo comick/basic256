@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6.45"
-  StrCpy $VERSIONDATE "2010-10-17"
+  StrCpy $VERSION "0.9.6.48"
+  StrCpy $VERSIONDATE "2010-11-03"
 FunctionEnd
 
 Function customPage
