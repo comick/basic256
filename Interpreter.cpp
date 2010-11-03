@@ -2227,10 +2227,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *temp = stack.popstring();
-			mutex.lock();
 			emit(speakWords(QString::fromUtf8(temp)));
-			waitCond.wait(&mutex);
-			mutex.unlock();
 			free(temp);
 		}
 		break;
