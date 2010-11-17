@@ -1785,18 +1785,17 @@ Interpreter::execByteCode()
 	case OP_UPPER:
 	case OP_LOWER:
 		{
-			unsigned char opcode = *op;
 			op++;
 			char *temp = stack.popstring();
 
-            		for(unsigned int p=0;p<strlen(temp);p++) {
-					if(opcode==OP_UPPER) {
-						if (isalpha(temp[p])) temp[p] = toupper(temp[p]);
-					} else {
-						if(isalpha(temp[p])) temp[p] = tolower(temp[p]);
-					}
+			QString qtemp = QString::fromUtf8(temp);
+			if(opcode==OP_UPPER) {
+				qtemp = qtemp.toUpper();
+			} else {
+				qtemp = qtemp.toLower();
 			}
-			stack.push(temp);
+
+			stack.push(strdup(qtemp.toUtf8().data()));
 			free(temp);
 		}
 		break;
