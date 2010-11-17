@@ -9,11 +9,11 @@
     </message>
     <message>
         <source>New Program?</source>
-        <translation>Новая программа?</translation>
+        <translation>Начать новую программу?</translation>
     </message>
     <message>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
-        <translation>Вы уверены что хотите полностью очистить эту программу и начать новую?</translation>
+        <translation>Вы хотите удалить эту программу и начать новую?</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -57,11 +57,11 @@
     </message>
     <message>
         <source> exists on file.</source>
-        <translation> уже существует.</translation>
+        <translation type="obsolete"> уже существует.</translation>
     </message>
     <message>
         <source>Do you want wish to overwrite?</source>
-        <translation>Вы хотите его перезаписать?</translation>
+        <translation type="obsolete">Вы хотите его перезаписать?</translation>
     </message>
     <message>
         <source>Program modifications have not been saved.</source>
@@ -69,6 +69,22 @@
     </message>
     <message>
         <source>Do you want wish to discard your changes?</source>
+        <translation type="obsolete">Вы действительно готовы потерять изменения?</translation>
+    </message>
+    <message>
+        <source> Column: </source>
+        <translation> Колонка: </translation>
+    </message>
+    <message>
+        <source> already exists.</source>
+        <translation> уже существует.</translation>
+    </message>
+    <message>
+        <source>Do you want to overwrite?</source>
+        <translation>Вы хотите перезаписать?</translation>
+    </message>
+    <message>
+        <source>Do you want to discard your changes?</source>
         <translation>Вы действительно готовы потерять изменения?</translation>
     </message>
 </context>
@@ -111,15 +127,15 @@
     </message>
     <message>
         <source>No such label</source>
-        <translation>Нет такой метки</translation>
+        <translation type="obsolete">Нет такой метки</translation>
     </message>
     <message>
         <source>Next without FOR</source>
-        <translation>Next без FOR</translation>
+        <translation type="obsolete">Next без FOR</translation>
     </message>
     <message>
         <source>Array dimension too large</source>
-        <translation>Слишком много элементов в массиве</translation>
+        <translation type="obsolete">Слишком много элементов в массиве</translation>
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
@@ -127,15 +143,15 @@
     </message>
     <message>
         <source>Array index out of bounds</source>
-        <translation>Выход за границы массива</translation>
+        <translation type="obsolete">Выход за границы массива</translation>
     </message>
     <message>
         <source>Cannot access non-array variable</source>
-        <translation>Нельзя получить доступ к переменной, не являющейся массивом</translation>
+        <translation type="obsolete">Нельзя получить доступ к переменной, не являющейся массивом</translation>
     </message>
     <message>
         <source>Unknown variable</source>
-        <translation>Неизвестная переменная</translation>
+        <translation type="obsolete">Неизвестная переменная</translation>
     </message>
     <message>
         <source>Illegal argument to int()</source>
@@ -171,7 +187,7 @@
     </message>
     <message>
         <source>String in numeric expression</source>
-        <translation>Строка в численном выражении</translation>
+        <translation type="obsolete">Строка в численном выражении</translation>
     </message>
     <message>
         <source>Cannot compare strings with &gt; or &lt;=</source>
@@ -183,7 +199,7 @@
     </message>
     <message>
         <source>Unable to open file</source>
-        <translation>Невозможно открыть файл</translation>
+        <translation type="obsolete">Невозможно открыть файл</translation>
     </message>
     <message>
         <source>Illegal argument to open()</source>
@@ -191,11 +207,11 @@
     </message>
     <message>
         <source>Can&apos;t read -- no open file.</source>
-        <translation>Не удалось чтение - нет открытого файла.</translation>
+        <translation type="obsolete">Не удалось чтение - нет открытого файла.</translation>
     </message>
     <message>
         <source>Unable to write to file</source>
-        <translation>Невозможно записать в файл</translation>
+        <translation type="obsolete">Невозможно записать в файл</translation>
     </message>
     <message>
         <source>Illegal argument to write()</source>
@@ -211,15 +227,15 @@
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
-        <translation>Не хватает точек в массиве для poly()</translation>
+        <translation type="obsolete">Не хватает точек в массиве для poly()</translation>
     </message>
     <message>
         <source>reset() called when no file is open</source>
-        <translation>Вызов reset() без открытых файлов</translation>
+        <translation type="obsolete">Вызов reset() без открытых файлов</translation>
     </message>
     <message>
         <source>Unable to reset file</source>
-        <translation>Не удается очистить файл</translation>
+        <translation type="obsolete">Не удается очистить файл</translation>
     </message>
     <message>
         <source>Illegal argument to mid()</source>
@@ -227,7 +243,7 @@
     </message>
     <message>
         <source>String not long enough for given starting character</source>
-        <translation>Недостаточная длина строки для заданного начального символа</translation>
+        <translation type="obsolete">Недостаточная длина строки для заданного начального символа</translation>
     </message>
     <message>
         <source>Illegal argument to instr()</source>
@@ -235,91 +251,96 @@
     </message>
     <message>
         <source>Illegal FOR -- start number &gt; end number</source>
-        <translation>Неверный FOR -- начальный индекс &gt; конечного</translation>
+        <translation type="obsolete">Неверный FOR -- начальный индекс &gt; конечного</translation>
     </message>
     <message>
         <source>Illegal FOR -- start number &lt; end number</source>
-        <translation>Неверный FOR -- начальный индекс &lt; конечного</translation>
+        <translation type="obsolete">Неверный FOR -- начальный индекс &lt; конечного</translation>
     </message>
     <message>
         <source>Array dimension too small</source>
-        <translation>Размер массива слишком мал</translation>
+        <translation type="obsolete">Размер массива слишком мал</translation>
     </message>
     <message>
         <source>Can&apos;t size -- no open file.</source>
-        <translation>Размер неизвестен -- нет открытого файла.</translation>
+        <translation type="obsolete">Размер неизвестен -- нет открытого файла.</translation>
     </message>
     <message>
         <source>seek() called when no file is open</source>
-        <translation>ssek() вызывается, когда файл не открыт</translation>
+        <translation type="obsolete">ssek() вызывается, когда файл не открыт</translation>
     </message>
     <message>
         <source>Not a string array variable</source>
-        <translation>Нет переменной массива строк</translation>
+        <translation type="obsolete">Нет переменной массива строк</translation>
     </message>
     <message>
         <source>Not an array variable</source>
-        <translation>Нет переменной массива</translation>
+        <translation type="obsolete">Нет переменной массива</translation>
     </message>
     <message>
         <source>Argument not an array for poly()</source>
-        <translation>Аргумент для poly() не массив</translation>
+        <translation type="obsolete">Аргумент для poly() не массив</translation>
     </message>
     <message>
         <source>Not enough points in immediate list for poly()</source>
-        <translation>Недостаточно точек с списке для poly()</translation>
+        <translation type="obsolete">Недостаточно точек с списке для poly()</translation>
     </message>
     <message>
         <source>Not enough points in array for stamp()</source>
-        <translation>Недостаточно точек в массиве для stamp()</translation>
+        <translation type="obsolete">Недостаточно точек в массиве для stamp()</translation>
     </message>
     <message>
         <source>Argument not an array for stamp()</source>
-        <translation>Аргумент для stamp() не массив</translation>
+        <translation type="obsolete">Аргумент для stamp() не массив</translation>
     </message>
     <message>
         <source>Not enough points in immediate list for stamp()</source>
-        <translation>Недостаточно точек в списке для stamp()</translation>
+        <translation type="obsolete">Недостаточно точек в списке для stamp()</translation>
     </message>
     <message>
         <source>Illegal argument</source>
-        <translation>Неверный аргумент</translation>
+        <translation type="obsolete">Неверный аргумент</translation>
     </message>
     <message>
         <source>RGB Color values must be in the range of 0 to 255.</source>
-        <translation>Значения RGB цветов должны быть в диапазоне от 0 до 255.</translation>
+        <translation type="obsolete">Значения RGB цветов должны быть в диапазоне от 0 до 255.</translation>
     </message>
     <message>
         <source>String input to putbit incorrect.</source>
-        <translation>Строка ввода в putbit некорректна.</translation>
+        <translation type="obsolete">Строка ввода в putbit некорректна.</translation>
     </message>
     <message>
         <source>Unable to load image file.</source>
-        <translation>Невозможно загрузить графический файл.</translation>
+        <translation type="obsolete">Невозможно загрузить графический файл.</translation>
     </message>
     <message>
         <source>Sprite number out of range.</source>
-        <translation>Номер спрайта вне диапазона.</translation>
+        <translation type="obsolete">Номер спрайта вне диапазона.</translation>
     </message>
     <message>
         <source>Sprite has not been assigned.</source>
-        <translation>Спрайт не был назначен.</translation>
+        <translation type="obsolete">Спрайт не был назначен.</translation>
     </message>
     <message>
         <source>Invallid File Number</source>
-        <translation>Неверный номер файла</translation>
+        <translation type="obsolete">Неверный номер файла</translation>
     </message>
     <message>
         <source>Unable to slice image.</source>
-        <translation>Невозможно отрезать изображение.</translation>
+        <translation type="obsolete">Невозможно отрезать изображение.</translation>
     </message>
     <message>
         <source>Invalid Extended Op-code.</source>
-        <translation>Неверный расширенный Op-код.</translation>
+        <translation type="obsolete">Неверный расширенный Op-код.</translation>
     </message>
     <message>
         <source>Invalid directory name.</source>
-        <translation>Неверное имя каталога.</translation>
+        <translation type="obsolete">Неверное имя каталога.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to initialize Winsock library.
+</source>
+        <translation>ОШИБКА - невозможно инциализировать Winsock.</translation>
     </message>
 </context>
 <context>
@@ -330,7 +351,11 @@
     </message>
     <message>
         <source>Do you want wish to discard your changes?</source>
-        <translation>Вы действительно готовы потерять изменения?</translation>
+        <translation type="obsolete">Вы действительно готовы потерять изменения?</translation>
+    </message>
+    <message>
+        <source>Do you want to discard your changes?</source>
+        <translation>Вы готовы потерять изменения?</translation>
     </message>
 </context>
 <context>
@@ -507,19 +532,19 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Cu&amp;t</source>
-        <translation>Вырезать</translation>
+        <translation>В&amp;ырезать</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation>Копировать</translation>
+        <translation>&amp;Копировать</translation>
     </message>
     <message>
         <source>&amp;Paste</source>
-        <translation>Вставить</translation>
+        <translation>&amp;Вставить</translation>
     </message>
     <message>
         <source>Select &amp;All</source>
-        <translation>Выбрать всё</translation>
+        <translation>Выбрать вс&amp;ё</translation>
     </message>
     <message>
         <source>&amp;Beautify</source>
@@ -527,23 +552,23 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation>Просмотр</translation>
+        <translation>&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Text Window</source>
-        <translation>Окно текста</translation>
+        <translation>&amp;Ввод-вывод текста</translation>
     </message>
     <message>
         <source>&amp;Graphics Window</source>
-        <translation>Окно графики</translation>
+        <translation>Вывод &amp;графики</translation>
     </message>
     <message>
         <source>&amp;Variable Watch Window</source>
-        <translation>Окно просмотра переменных</translation>
+        <translation>&amp;Просмотр переменных</translation>
     </message>
     <message>
         <source>&amp;Toolbars</source>
-        <translation>Панели инструментов</translation>
+        <translation>&amp;Панели инструментов</translation>
     </message>
     <message>
         <source>&amp;Main</source>
@@ -551,31 +576,31 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Text Output</source>
-        <translation>Текстовый вывод</translation>
+        <translation>&amp;Вывод текста</translation>
     </message>
     <message>
         <source>&amp;Graphics Output</source>
-        <translation>Графический вывод</translation>
+        <translation>Вывод &amp;графики</translation>
     </message>
     <message>
         <source>&amp;Run</source>
-        <translation>Старт</translation>
+        <translation>&amp;Старт</translation>
     </message>
     <message>
         <source>&amp;Debug</source>
-        <translation>Отладка</translation>
+        <translation>&amp;Отладка</translation>
     </message>
     <message>
         <source>S&amp;tep</source>
-        <translation>Шаг</translation>
+        <translation>&amp;Шаг</translation>
     </message>
     <message>
         <source>&amp;Stop</source>
-        <translation>Стоп</translation>
+        <translation>Ст&amp;оп</translation>
     </message>
     <message>
         <source>Save Compiled &amp;Byte Code</source>
-        <translation>Сохранить &amp;байт-код</translation>
+        <translation type="obsolete">Сохранить &amp;байт-код</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -617,6 +642,10 @@ Please check your printer settings.</source>
         <source>&amp;Redo</source>
         <translation>&amp;Повтор</translation>
     </message>
+    <message>
+        <source>Preferences</source>
+        <translation>Настройки</translation>
+    </message>
 </context>
 <context>
     <name>RunController</name>
@@ -643,6 +672,14 @@ Please check your printer settings.</source>
     <message>
         <source>Any File </source>
         <translation>Все файлы </translation>
+    </message>
+    <message>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation>BASIC-256 настройки и параметры</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>Пароль:</translation>
     </message>
 </context>
 <context>
