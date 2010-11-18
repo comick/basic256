@@ -268,6 +268,7 @@ class Interpreter : public QThread
   bool spritecollide(int, int);
   sprite *sprites;
   int nsprites;
+  void closeDatabase();
   sqlite3 *dbconn;
   sqlite3_stmt *dbset;
   int errornum;

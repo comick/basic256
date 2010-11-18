@@ -605,6 +605,10 @@ Interpreter::cleanup()
 		free(byteCode);
 		byteCode = NULL;
 	}
+	closeDatabase();
+}
+
+void Interpreter::closeDatabase() {
 	// cleanup database
 	if (dbset) {
 		sqlite3_finalize(dbset);
@@ -614,7 +618,6 @@ Interpreter::cleanup()
 		sqlite3_close(dbconn);
 		dbconn = NULL;
 	}
-						
 }
 
 void
@@ -649,6 +652,7 @@ Interpreter::run()
 	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
+	closeDatabase();
 	emit(runFinished());
 }
 
@@ -1785,6 +1789,7 @@ Interpreter::execByteCode()
 	case OP_UPPER:
 	case OP_LOWER:
 		{
+			unsigned char opcode = *op;
 			op++;
 			char *temp = stack.popstring();
 
@@ -3300,14 +3305,7 @@ Interpreter::execByteCode()
 			case OP_DBCLOSE:
 					{
 						op++;
-						if (dbset) {
-							sqlite3_finalize(dbset);
-							dbset = NULL;
-						}
-						if (dbconn) {
-							sqlite3_close(dbconn);
-							dbconn = NULL;
-						}
+						closeDatabase();
 					}
 					break;
 

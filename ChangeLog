@@ -1,3 +1,6 @@
+2010-11-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.49
+	* added close of database files if database not closed by program
+
 2010-11-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.48
 	* removed mutex from say statement - eliminate frezing after speech
 
