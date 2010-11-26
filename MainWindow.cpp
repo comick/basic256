@@ -72,12 +72,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QDialog *aboutdialog = new QDialog();
 	char* abouttext = (char *) malloc(2048);
 	sprintf(abouttext,"<h2 align='center'>BASIC-256 -- Version %s</h2> \
-	        <p>Copyright &copy; 2006, The BASIC-256 Team</p> \
-	        <p>Please visit our web site at http://www.basic256.org for tutorials and documentation.</p> \
-	        <p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
-		   <p><i>You should have received a copy of the GNU General Public License along<br> \
-	        with this program; if not, write to the Free Software Foundation, Inc.,<br> \
-	        51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>",VERSION);
+		<p>Copyright &copy; 2006, The BASIC-256 Team</p> \
+		<p>Please visit our web site at <a href=http://www.basic256.org>www.basic256.org</a> for tutorials and documentation.</p> \
+		<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
+		<p><i>You should have received a copy of the GNU General Public License along<br> \
+		with this program; if not, write to the Free Software Foundation, Inc.,<br> \
+		51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>",VERSION);
 
 	QLabel *aboutlabel = new QLabel(QObject::tr(abouttext), aboutdialog);
 	QGridLayout *aboutgrid = new QGridLayout();
@@ -98,10 +98,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	openact->setShortcut(Qt::Key_O + Qt::CTRL);
 	QAction *saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
 	saveact->setShortcut(Qt::Key_S + Qt::CTRL);
-	QAction *saveasact = filemenu->addAction(QObject::tr("Save &As"));
+	QAction *saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As"));
 	saveasact->setShortcut(Qt::Key_S + Qt::CTRL + Qt::SHIFT);
 	filemenu->addSeparator();
-	QAction *printact = filemenu->addAction(QObject::tr("&Print"));
+	QAction *printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print"));
 	printact->setShortcut(Qt::Key_P + Qt::CTRL);
 	filemenu->addSeparator();
 	recentact[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
@@ -123,7 +123,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	recentact[8] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
 	recentact[8]->setShortcut(Qt::Key_9 + Qt::CTRL);
 	filemenu->addSeparator();
-	QAction *exitact = filemenu->addAction(QObject::tr("&Exit"));
+	QAction *exitact = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
 	exitact->setShortcut(Qt::Key_Q + Qt::CTRL);
 	//
 	QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	editmenu->addSeparator();
 	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	editmenu->addSeparator();
-	QAction *prefact = editmenu->addAction(QObject::tr("Preferences"));
+	QAction *prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
