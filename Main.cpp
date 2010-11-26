@@ -63,9 +63,13 @@ int main(int argc, char *argv[])
 	}
 
 	QTranslator qtTranslator;
-	ok = qtTranslator.load("qt_" + localecode);
+	#ifdef WIN32
+		ok = qtTranslator.load("qt_" + localecode);
+	#else
+		ok = qtTranslator.load("qt_" + localecode, "/usr/share/qt4/translations/");
+	#endif
 	qapp.installTranslator(&qtTranslator);
-  
+
 	QTranslator kbTranslator;
 	#ifdef WIN32
 		ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
@@ -75,7 +79,7 @@ int main(int argc, char *argv[])
 	qapp.installTranslator(&kbTranslator);
 
 	MainWindow *mainwin = new MainWindow();
-  
+
 	mainwin->setObjectName( "mainwin" );
 	//mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
 	//mainwin->resize(800,600);
