@@ -359,6 +359,37 @@
     </message>
 </context>
 <context>
+    <name>PreferencesWin</name>
+    <message>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation>BASIC-256 настройки и параметры</translation>
+    </message>
+    <message>
+        <source>Preferences and Settings Password:</source>
+        <translation>Пароль для настроек:</translation>
+    </message>
+    <message>
+        <source>Allow SYSTEM statement</source>
+        <translation>Разрешить SYSTEM</translation>
+    </message>
+    <message>
+        <source>Allow GETSETTING/SETSETTING statements</source>
+        <translation>Разрешить GETSETTING/SETSETTING</translation>
+    </message>
+    <message>
+        <source>Allow PORTIN/PORTOUT statements</source>
+        <translation>Разрешить PORTIN/PORTOUT</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Run</source>
@@ -434,11 +465,11 @@
     </message>
     <message>
         <source>Graphics Output</source>
-        <translation>Графический вывод</translation>
+        <translation>Окно вывода графики</translation>
     </message>
     <message>
         <source>Text Output</source>
-        <translation>Текстовый вывод</translation>
+        <translation>Окно ввода-вывода текста</translation>
     </message>
     <message>
         <source>Ready.</source>
@@ -454,7 +485,7 @@
     </message>
     <message>
         <source>Print</source>
-        <translation>Распечатать</translation>
+        <translation>Печать</translation>
     </message>
     <message>
         <source>Print Text Output</source>
@@ -483,7 +514,7 @@
     <message>
         <source>Unable to carry out printing.
 Please check your printer settings.</source>
-        <translation>Не удается вывести информацию на принтер .
+        <translation>Не удается распечатать информацию.
 Проверьте настройки принтера.</translation>
     </message>
     <message>
@@ -508,7 +539,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Открыть</translation>
+        <translation>&amp;Открыть...</translation>
     </message>
     <message>
         <source>&amp;Save</source>
@@ -516,11 +547,11 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Save &amp;As</source>
-        <translation>Сохранить &amp;как</translation>
+        <translation>Сохранить &amp;как...</translation>
     </message>
     <message>
         <source>&amp;Print</source>
-        <translation>П&amp;ечать</translation>
+        <translation>П&amp;ечать...</translation>
     </message>
     <message>
         <source>&amp;Exit</source>
@@ -532,7 +563,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Cu&amp;t</source>
-        <translation>В&amp;ырезать</translation>
+        <translation>Вы&amp;резать</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
@@ -544,27 +575,27 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>Select &amp;All</source>
-        <translation>Выбрать вс&amp;ё</translation>
+        <translation>Вы&amp;делить все</translation>
     </message>
     <message>
         <source>&amp;Beautify</source>
-        <translation>Крас&amp;ивый код</translation>
+        <translation>Красивый к&amp;од</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation>&amp;Просмотр</translation>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <source>&amp;Text Window</source>
-        <translation>&amp;Ввод-вывод текста</translation>
+        <translation>&amp;Окно ввода-вывода текста</translation>
     </message>
     <message>
         <source>&amp;Graphics Window</source>
-        <translation>Вывод &amp;графики</translation>
+        <translation>Окно вывода &amp;графики</translation>
     </message>
     <message>
         <source>&amp;Variable Watch Window</source>
-        <translation>&amp;Просмотр переменных</translation>
+        <translation>&amp;Наблюдение за переменными</translation>
     </message>
     <message>
         <source>&amp;Toolbars</source>
@@ -576,7 +607,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Text Output</source>
-        <translation>&amp;Вывод текста</translation>
+        <translation>&amp;Ввод-вывод текста</translation>
     </message>
     <message>
         <source>&amp;Graphics Output</source>
@@ -584,7 +615,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Run</source>
-        <translation>&amp;Старт</translation>
+        <translation>С&amp;тарт</translation>
     </message>
     <message>
         <source>&amp;Debug</source>
@@ -636,7 +667,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>&amp;Undo</source>
-        <translation>&amp;Отмена</translation>
+        <translation>О&amp;тмена</translation>
     </message>
     <message>
         <source>&amp;Redo</source>
@@ -667,7 +698,7 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>BASIC-256 Compiled File </source>
-        <translation>Скомпилированный файл BASIC-256 </translation>
+        <translation>Компилированный файл BASIC-256 </translation>
     </message>
     <message>
         <source>Any File </source>
@@ -686,11 +717,11 @@ Please check your printer settings.</source>
     <name>VariableWin</name>
     <message>
         <source>Variable Watch</source>
-        <translation>Просмотр переменных</translation>
+        <translation>Наблюдение за переменными</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation>Имя переменной</translation>
     </message>
     <message>
         <source>Value</source>
