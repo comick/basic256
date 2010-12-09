@@ -1,3 +1,6 @@
+2010-11-26 sergey lupin <renejm@users.sourceforge.net> 0.9.6.50
+	* icon updates and fixed to upper and lower
+
 2010-11-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.49
 	* added close of database files if database not closed by program
 
