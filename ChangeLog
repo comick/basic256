@@ -1,5 +1,8 @@
-2010-11-26 sergey lupin <renejm@users.sourceforge.net> 0.9.6.50
-	* icon updates and fixed to upper and lower
+2010-12-10 sergey irupin <lamp@altlinux.org> 0.9.6.51 (449)
+	* add 2 mathematics functions - sqr()/sqrt(), exp()
+
+2010-11-26 sergey irupin <lamp@altlinux.org> 0.9.6.50 (448)
+	* icon updates and fixed functions upper() and lower()
 
 2010-11-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.49
 	* added close of database files if database not closed by program
@@ -13,11 +16,10 @@
 	* added logic to save font size as a preference
 
 2010-10-24 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.46
-	* initial MAC port - tested sound, say, playwav, database,
-	and networking
+	* initial MAC port - tested sound, say, playwav, database, and networking
 
 2010-10-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.45
-	* added IMGSAVE statement to save graphics area as a .png or other  qt supported file type
+	* added IMGSAVE statement to save graphics area as a .png or other qt supported file type
 
 2010-10-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.44
 	* forces locale to "C" so that decimal mark '.' will always work
@@ -39,7 +41,6 @@
 2010-09-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.39
 	* fixed SYSTEM statement to use mutex to wait correctly
 	* added preference settings to allow or disable system, get/setsetting
-
 
 2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.38
 	* added GETSETTING and SETSETTING for persistant application storage to the registery/config folder
@@ -132,8 +133,7 @@
 	* found read statement removed from LEX - readded
 	* fixed string pointer conversion in readline
 	* changed sprite move to limit range to 0-graphwidth|graphheight-1
-	* changed all file io statements to allow for 0-7 files simultaneously - syntax didn't change for single file operations but new
-		filenumber parameter added to allow for multiple files
+	* changed all file io statements to allow for 0-7 files simultaneously - syntax didn't change for single file operations but new filenumber parameter added to allow for multiple files
 
 2010-06-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6p
 	* re-wrote the way color "Clear" works
@@ -162,16 +162,13 @@
 	* added rotate and scale parameters to imgload like stamp
 
 2010-05-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.6k (377)
-
 	* added imgload statement to load a bmp, gif, jpg, or pgn from a file and siaplsy it on the graphics output window
 	* compiled new ru translation from Sergey
 
 2010-05-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6j (376)
-
 	* added ability to enter integers in code with 0[bB][01] for binary 0[oO][0-7] for octal and 0[xX][0-9a-fA-F] for hexidecimal
 
 2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6i (374)
-
 	* added dialog to verify overwriting file
 	* added dialog to verify loading program and loosing changes
 	* changed new dialog to only appear if unsaved changes are in buffer
@@ -180,49 +177,39 @@
 	* changed genhelp.list to make all ids and see also links lowercase - for LINUX
 
 2010-05-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6h (370)
-
 	* added search to Documentation Window
 
 2010-05-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6g (369)
-
 	* changed Documentation Window to use WebView to fix the #tags for navigation
 
 2010-05-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6f (362)
-
 	* added error statements to linus sound and speech functions.  They are still rough and troublesome.
 
 2010-05-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6e (361)
-
 	* added statements to BASIC256.pro file so qmake would make the "make install" for linux to ease build
 
 2010-05-10 j.m.reneau <renejm@users.sourceforge.net> 0.9.6c (359)
-
 	* changes for fontsize
 	* update Russian translation
 
 2010-05-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6b (353)
-
 	* GetSlice returns a hex string representing a slice (rectangular area) of the screen
 	* PutSlice will draw the slice.  you may defina a transparent color in slice.
 
 2010-05-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6a (350)
-
 	* handle Utf8 strings (drblast)
 	* rewrite string functions to use unicode characters
 	* now program save and load in utf8
 	* compiled RU translation
 
 2010-04-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.5v (329)
-
 	* added \ operator for integer division
 	* added log() and log10() functions
 
 2010-04-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.5t (326)
-
 	* Redim an array to change it's size while maintaining it's contents
 
 2010-03-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.5m (318)
-
 	* changed color staretemt to accept a single number RGB value r*255^2+g*255+b.
 	* changed colors to constants that return a color integer
 	* added rgb function to take color triplet and return color integer
@@ -230,130 +217,104 @@
 	* added pixel to get the color value of a pixel on the graphics output
 
 2010-02-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.5l (316)
-
 	* finished linux implementastion of new sound command
 
 2010-01-29 j.m.reneau <renejm@users.sourceforge.net> 0.9.5j (315)
-
 	* added cut, copy and paste icons to tool bar
 	* added option for sound to accept an array or list of frequency and durations.  This allows for fast smooth transition when playing multiple tones in a stream. linux logic not tested with this commit.
 
 2010-01-28 j.m.reneau <renejm@users.sourceforge.net> 0.9.5i (312)
-
 	* added volume command to control the amplitude of the sound wave out
 	* changed LINUX TTS to flite engine from espeak. espeak was having problems releasing the /dev/dsp device
 	* cleaned up syntax high-liter
 
 2010-01-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.5h (311)
-
 	* added system command and cleaned up documentation
 
 2010-01-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.5g (310)
-
 	* re-wrote say to use libespeak under linux - need to get same change made to windows
 	* added logic to do the sound command in LINUX by writing a sine wave to /dev/dsp
 	* update doc.lisp and compiling.txt with info
 	* changed say command to use Microsoft SAPI instead of running a command line version of espeak. Also changed the Windows version of sound to generate a wave out to the soundcard and only use the system speaker if sound is not available (sound on a laptop)
 
 2010-01-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.5e (308)
-
 	* added UPPER and LOWER character functions, cleaned up syntax highlighter
 
 2010-01-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.5c (306)
-
 	* added two dimensional arrays to language (dim, reference, assignment, and input without prompt.  Still need to add to input with a prompt.
 	* updated documentation and 15puzzle.kbs example
 
 2010-01-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.5c (303)
-
 	* added left and right string functions, documented them
 	* cleaned up syntax highliter with newer reserved words and fixed string highlight
 
 2009-12-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.4g (296)
-
 	* added multi line if/endif and if/else/endif.  a;so added while/endwhile loop
 
 0.9.4f
-
 	* Asc, Chr, Float, Font, Text
 
 2009-12-21 j.m.reneau <renejm@users.sourceforge.net> 0.9.4e
-
 	* added mouse functions - Mouseb, Mousex, Mousey, Clickb, Clickx, Clicky, Clickclear
 
 2009-12-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.4
-
 	* added date and time functions - Day,  Hour,  Minute,  Month,  Second, Year
 	* added file functions - Eof, Writeline, Exist, Seek, Size
 	* added sound and speak functions - Say, WAVplay, WAVstop
 
 2009-11-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.3o
-
 	* added STAMP to draw a scaled poly at a position on the graphics display - sort of a simple sprite
 	* added TRUE and FALSE boolean constant values
 	* corrected problem with x&y reversing when an indirect list was defined for a POLY
 	* removed the unused number of points from the syntax of POLY
 
 2009-11-04 j.m.reneau <renejm@users.sourceforge.net> 0.9.3n
-
 	* added SIZE, EXISTS, and SEEK for use during file IO
 
 2009-11-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.3m
-
 	* rewrite popint/popfloat/popstring in interperter.cpp to return type not a stack value
 
 2009-11-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.3l
-
 	* added alternate syntax of input statement to allow a numeric variable or array.  If non numeric data is entered a zero will be stored in the variable
 	* added logic to allow for < > <= >= comparisons of strings
 
 2009-10-31 j.m.reneau <renejm@users.sourceforge.net> 0.9.3k
-
 	* added WAVPLAY and WAVSTOP commands to asynchronously play a wav audio file and to stop it
 
 2009-10-29 j.m.reneau <renejm@users.sourceforge.net> 0.9.3j
-
 	* added GRAPHHEIGHT and GRAPHIDTH to return the size of the graphics window
 	* worked on the HTML documentation, added GRAPHSIZE, GRAPHWIDTH, and GRAPHHEIGHT
 
 2009-10-28 j.m.reneau <renejm@users.sourceforge.net> 0.9.3.i
-
 	* worked my prior changes into the trunk
 
 2009-10-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.3h
-
 	* changed say statement to allow for same arguments (float and string) as print
 	* changes say to use espeak without a direct path to the exe file. requires espeak in path on windows
 
 2008-09-23 j.m.reneau <renejm@users.sourceforge.net> 0.9.3g
-
 	* added SAY statement to call locally installed espeak to tts string - need to re-write for linux and would like to see it use the espeak lib
 
 2008-09-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.3f
-
 	* added font "fontname", point, weight and text x, y, "txt" commands to paint text onto the graphics window (TestPrograms/testtextfont.kbs"
 
 2008-09-07 <renejm@users.sourceforge.net>
-
 	* added logic to yyerror in LEX\basicParse.y to fix syntax error line number problem.  If an error was the last token on the line it would report the error on the next line. check yytoken if \n and if it is then report previous line
 	* added column number to syntax error printing - added count logic to basicParse.l
 	* fixed rand - it would return values between 0 and 1 with 1 inclusive changed to return almost one but not quite (see TestPrograms/random_one.kbs)
 
 2008-09-05 <renejm@users.sourceforge.net>
-
 	* changed yacc scriopt for order of operations
 	* removed imask logic from BasicGraph and Interperter.  Was causing refresh and draw errors on fast (dual core win32 xp&vista) boxes
 	* split version # out of MainWindow into Version.h
 
 2008-09-01 <renejm@users.sourceforge.net>
-
 	* Added array testing to array input like logic added 2008-08-29
 	* Added COLOR #,#,# to set colors by rgb
 	* changed poly to draw filled not just outline
 	* created NSIS install script for Win32
 
 2008-08-29 <renejm@users.sourceforge.net>
-
 	* Added Functions asc, chr, float
 	* Added command readline and writeline to i/o an entire line as a string
 	* Added boolean flag eof to test if file was at eof
@@ -368,80 +329,64 @@
 	* added YEAR MONTH DAY HOUD MINUTE SECOND as constants like RAND and PI
 
 2006-12-12 <drblast@users.sourceforge.net>
-
 	* LEX\basicParse.y: Added sound command.
 	* LEX\basicParse.l: Added sound command.
 	* RunController.cpp (playSound): Added sound support.
 	* Interpreter.cpp (execByteCode): Added sound support.
 
 2006-12-10 <drblast@users.sourceforge.net>
-
 	* BasicEdit.cpp (newProgram): fixed file overwrite bug when new program saves as last file's name.
 	* LEX\basicParse.l: Added semicolon as alternate remark command
 
 2006-12-04 <drblast@users.sourceforge.net>
-
 	* VariableWin.cpp (addVar): Changed variable window to use TreeWidget instead of a list, to allow for showing arrays.
 
 2006-11-28 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Changed variable window updates to only occur in debug mode. Otherwise this is a severe performance hit for programs updating many variables in tight loops.
 	* VariableWin.cpp (clearTable): Added Variable Watch window.
 
 2006-11-26 <drblast@users.sourceforge.net>
-
 	* MainWindow.cpp (QMainWindow): Added two items to view menu to enable/disable text and graphics output windows.
 
 2006-11-20 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Merged file ops and changed them to work more simply.
 	 Changed array printing to print pointer address instead of int, which should fix the 64 bit compile problem.
 
 2006-11-19 <fhendrikx@users.sourceforge.net>
-
 	* Added file operations "open", "read", "write", "close". The read and write functions work on a token basis. EOF is returned by returning an empty token.
 	* Added code to test new functions "fileops1.kbs" (and 2 and 3). 
 
 2006-11-17 <fhendrikx@users.sourceforge.net>
-
 	* Added string "length" function and sample code "length.kbs"
 	* Added alternative spelling for "color" function: "colour"
 	* Added "poly" function and sample code "polygon.kbs"
 
 2006-11-07 <drblast@users.sourceforge.net>
-
 	* LEX\basicParse.y: Fixed rather important memory allocation bug that affected large programs that used lots of if statements.
 	* Interpreter.cpp (execByteCode): Fixed bug 1589686
 
 2006-11-03 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (compileProgram): Changed the way the interpreter keeps track of line numbers. Now there's a CURRLINE bytecode which is executed every time the line changes. Also added step-by-step debugging.
 
 2006-11-02 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Printing of floating point instead of integers fixed.
 
 2006-11-01 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Added OP_LINE, which draws lines.
 
 2006-10-31 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Added pause command
 	* BasicEdit.cpp (cursorMove): Added slot to calculate line number when the cursor moves, and display it on the status bar.
 
 2006-10-25 <drblast@users.sourceforge.net>
-
 	* Main.cpp (main): Added actions to edit menu. Removed close button on output windows.
 
 2006-10-20 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp: Added internationalization support.
 	* BasicEdit.cpp: Added internationalization support.
 	* Main.cpp (main): Added internationalization support.
 
 2006-10-18 <drblast@users.sourceforge.net>
-
 	* BasicEdit.cpp (BasicEdit): Editor now won't accept rich text, fixing weird font bugs.
 	* RunController.cpp (saveByteCode): Added saveByteCode function which saves the compiled byte code to a .kbc file.
 	* Main.cpp (main): Added save byte code function and Advanced menu.
@@ -450,7 +395,6 @@
 	Separated initialize from compileProgram to support saving byte code as a file.
 	
 2006-10-16 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (execByteCode): Added and, not, xor, and or operations
 	* LEX\basicParse.y: Added AND, NOT, XOR, OR
 	* LEX\basicParse.l: Added floor, ceil, int, str, and rand tokens
@@ -459,24 +403,20 @@
 	* Interpreter.cpp (execByteCode): Added arrays and string arrays.
 
 2006-10-11 <drblast@users.sourceforge.net>
-
 	* BasicGraph.cpp (keyPressEvent): Added keyPressEvent to set currentKey global variable whenever a key is pressed during run time.
 	* LEX\basicParse.y: Added KEY keyword as floatexpr
 	* Interpreter.cpp (execByteCode): Added OP_KEY operation, which gets the last key pressed.
 
 2006-10-09 <drblast@users.sourceforge.net>
-
 	* LEX\basicParse.y: Added colon as multiple statement separator
 
 2006-10-07 <drblast@users.sourceforge.net>
-
 	* RunController.cpp (stopRun): Changed to threaded model.
 	* Interpreter.cpp (execByteCode): Changed to a threaded model.
 	* BasicOutput.cpp (getInput): Added slot to support threading.
 	* Interpreter.cpp (execByteCode): Changed from using QPixmaps for graphical output to QImage, which is thread-safe.
 
 2006-10-06 <drblast@users.sourceforge.net>
-
 	* Interpreter.cpp (pause): Removed unnecessary pause and unpause functions
 	* RunController.cpp (pauseResume): Enabled Pause/Resume feature
 	* PauseButton.h: Created Pause button which changes text based on operation 

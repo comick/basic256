@@ -42,7 +42,7 @@
 #define OP_SUB   		0x11
 #define OP_MUL   		0x12
 #define OP_DIV   		0x13
-#define OP_EXP   		0x14
+#define OP_EX	 		0x14
 #define OP_NEGATE		0x15
 
 #define OP_PRINT 		0x16
@@ -60,8 +60,8 @@
 #define OP_CLS			0x20
 #define OP_CLG			0x21
 #define OP_GRAPHSIZE            0x22
-#define OP_GRAPHWIDTH	0x23
-#define OP_GRAPHHEIGHT	0x24
+#define OP_GRAPHWIDTH		0x23
+#define OP_GRAPHHEIGHT		0x24
 
 #define OP_SIN			0x28
 #define OP_COS			0x29
@@ -132,15 +132,15 @@
 #define OP_TEXT			0x9e
 #define OP_FONT			0x9f
 #define OP_SAY			0xa0
-#define OP_WAVPLAY			0xa1
-#define OP_WAVSTOP			0xa2
+#define OP_WAVPLAY		0xa1
+#define OP_WAVSTOP		0xa2
 #define OP_SEEK			0xa3
 #define OP_SIZE			0xa4
-#define OP_EXISTS			0xa5
-#define OP_STAMP			0xa6		// stamp with 4 numbers x,y,scale,rotation and an array
-#define OP_STAMP_LIST		0xa7		// stamp with x, y, and an immediate list
-#define OP_STAMP_S_LIST		0xa8		// stamp with x, y, scale and an immediate list
-#define OP_STAMP_SR_LIST	0xa9		// stamp with x, y, scale, and rotation and an immediate list
+#define OP_EXISTS		0xa5
+#define OP_STAMP		0xa6	// stamp with 4 numbers x,y,scale,rotation and an array
+#define OP_STAMP_LIST		0xa7	// stamp with x, y, and an immediate list
+#define OP_STAMP_S_LIST		0xa8	// stamp with x, y, scale and an immediate list
+#define OP_STAMP_SR_LIST	0xa9	// stamp with x, y, scale, and rotation and an immediate list
 #define OP_POLY_LIST		0xaa
 #define OP_MOUSEX		0xab
 #define OP_MOUSEY		0xac
@@ -177,36 +177,38 @@
 #define OP_ALENX 	       	0xce
 #define OP_ALENY 	       	0xcf
 #define OP_INTDIV 	       	0xd0
-#define OP_LOG 	       	0xd1
+#define OP_LOG			0xd1
 #define OP_LOGTEN 	       	0xd2
 #define OP_GETSLICE 	       	0xd3
 #define OP_PUTSLICE 	       	0xd4
-#define OP_PUTSLICEMASK 	       	0xd5
+#define OP_PUTSLICEMASK		0xd5
 #define OP_IMGLOAD 	       	0xd6
 #define OP_IMGLOAD_S 	       	0xd7
 #define OP_IMGLOAD_SR 	       	0xd8
+#define OP_SQR			0xd9
+#define OP_EXP			0xda
 
 // extended codes
-#define OP_EXTENDED_0			0xe0
-#define OP_EXTENDED_1			0xe1
-#define OP_EXTENDED_2			0xe2
-#define OP_EXTENDED_3			0xe3
-#define OP_EXTENDED_4			0xe4
-#define OP_EXTENDED_5			0xe5
-#define OP_EXTENDED_6			0xe6
-#define OP_EXTENDED_7			0xe7
-#define OP_EXTENDED_8			0xe8
-#define OP_EXTENDED_9			0xe9
-#define OP_EXTENDED_A			0xea
-#define OP_EXTENDED_B			0xeb
-#define OP_EXTENDED_C			0xec
-#define OP_EXTENDED_D			0xed
-#define OP_EXTENDED_E			0xee
-#define OP_EXTENDED_F			0xef
+#define OP_EXTENDED_0		0xe0
+#define OP_EXTENDED_1		0xe1
+#define OP_EXTENDED_2		0xe2
+#define OP_EXTENDED_3		0xe3
+#define OP_EXTENDED_4		0xe4
+#define OP_EXTENDED_5		0xe5
+#define OP_EXTENDED_6		0xe6
+#define OP_EXTENDED_7		0xe7
+#define OP_EXTENDED_8		0xe8
+#define OP_EXTENDED_9		0xe9
+#define OP_EXTENDED_A		0xea
+#define OP_EXTENDED_B		0xeb
+#define OP_EXTENDED_C		0xec
+#define OP_EXTENDED_D		0xed
+#define OP_EXTENDED_E		0xee
+#define OP_EXTENDED_F		0xef
 
 // stack manipulation
-#define OP_STACKSWAP	0xf0
-#define OP_STACKTOPTO2	0xf1
+#define OP_STACKSWAP		0xf0
+#define OP_STACKTOPTO2		0xf1
 
 // extended opcodes (second byte)
 // first group e0xx
@@ -216,15 +218,15 @@
 #define OP_SPRITEMOVE 	       	0x03
 #define OP_SPRITEHIDE 	       	0x04
 #define OP_SPRITESHOW 	       	0x05
-#define OP_SPRITECOLLIDE 	    0x06
+#define OP_SPRITECOLLIDE	0x06
 #define OP_SPRITEPLACE 	       	0x07
-#define OP_SPRITEX 	       		0x08
-#define OP_SPRITEY 	       		0x09
-#define OP_SPRITEH 	       		0x0a
-#define OP_SPRITEW 	       		0x0b
-#define OP_SPRITEV	       		0x0c
-#define OP_CHANGEDIR	       		0x0d
-#define OP_CURRENTDIR	       		0x0e
+#define OP_SPRITEX 	       	0x08
+#define OP_SPRITEY 	       	0x09
+#define OP_SPRITEH 	       	0x0a
+#define OP_SPRITEW 	       	0x0b
+#define OP_SPRITEV	       	0x0c
+#define OP_CHANGEDIR	       	0x0d
+#define OP_CURRENTDIR	       	0x0e
 #define OP_WAVWAIT		0x0f
 #define OP_DECIMAL		0x10
 #define OP_DBOPEN		0x11
@@ -237,9 +239,9 @@
 #define OP_DBFLOAT		0x18
 #define OP_DBSTRING		0x19
 #define OP_LASTERROR		0x1a
-#define OP_LASTERRORLINE		0x1b
-#define OP_LASTERRORMESSAGE		0x1c
-#define OP_LASTERROREXTRA		0x1d
+#define OP_LASTERRORLINE	0x1b
+#define OP_LASTERRORMESSAGE	0x1c
+#define OP_LASTERROREXTRA	0x1d
 #define OP_OFFERROR		0x1e
 #define OP_NETLISTEN		0x1f
 #define OP_NETCONNECT		0x20
@@ -248,8 +250,8 @@
 #define OP_NETCLOSE		0x23
 #define OP_NETDATA		0x24
 #define OP_NETADDRESS		0x25
-#define OP_KILL		0x26
-#define OP_MD5		0x27
+#define OP_KILL			0x26
+#define OP_MD5			0x27
 #define OP_SETSETTING		0x28
 #define OP_GETSETTING		0x29
 #define OP_PORTIN		0x2a
@@ -258,6 +260,4 @@
 #define OP_BINARYAND		0x2d
 #define OP_BINARYNOT		0x2e
 #define OP_IMGSAVE		0x2f
-
-
 

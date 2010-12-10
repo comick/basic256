@@ -1861,6 +1861,8 @@ Interpreter::execByteCode()
 	case OP_RADIANS:
 	case OP_LOG:
 	case OP_LOGTEN:
+	case OP_SQR:
+	case OP_EXP:
 		{
 			unsigned char whichop = *op;
 			op += sizeof(unsigned char);
@@ -1910,6 +1912,12 @@ Interpreter::execByteCode()
 			case OP_LOGTEN:
 				stack.push(log10(val));
 				break;
+			case OP_SQR:
+				stack.push(sqrt(val));
+				break;
+			case OP_EXP:
+				stack.push(exp(val));
+				break;
 			}
 		}
 		break;
@@ -1921,7 +1929,7 @@ Interpreter::execByteCode()
 	case OP_MOD:
 	case OP_DIV:
 	case OP_INTDIV:
-	case OP_EXP:
+	case OP_EX:
 		{
 			unsigned char whichop = *op;
 			op++;
@@ -1955,7 +1963,7 @@ Interpreter::execByteCode()
 					case OP_INTDIV:
 						stack.push(two->value.intval / one->value.intval);
 						break;
-					case OP_EXP:
+					case OP_EX:
 						stack.push(pow((double) two->value.intval, (double) one->value.intval));
 						break;
 					}
@@ -1989,7 +1997,7 @@ Interpreter::execByteCode()
 					case OP_INTDIV:
 						stack.push((int) twoval / (int) oneval);
 						break;
-					case OP_EXP:
+					case OP_EX:
 						stack.push(pow((double) twoval, (double) oneval));
 						break;
 					}
@@ -3868,13 +3876,5 @@ Interpreter::execByteCode()
 		break;
 	}
 
-
-
-
 	return 0;
 }
-
-
-
-
-
