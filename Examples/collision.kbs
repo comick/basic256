@@ -76,8 +76,7 @@ return
 
 iskollision:
   kollision = 0
-  sqrt = ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) ^ .5
-  if sqrt < r1 + r2 then kollision = 1 : sound 400,2
+  if sqr((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) < r1 + r2 then kollision = 1 : sound 400,2
 return
 
 wandball1:
@@ -92,9 +91,9 @@ return
 
 getkollision:
   #normal vector un = unx, uny
-  sqrt = ((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) ^ .5
-  unx = (x2 - x1) / sqrt
-  uny = (y2 -y1) / sqrt
+  sq = sqr((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
+  unx = (x2 - x1) / sq
+  uny = (y2 -y1) / sq
   
   #tangential vector ut
   utx = -uny : uty = unx
