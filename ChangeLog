@@ -1,3 +1,7 @@
+2010-12-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.52
+	* moved variables out of interperter into a new object in preparation for some day adding multiple run levels to handle true functions and subroutines
+	* also celeaned up several variable related memory leaks
+
 2010-12-10 sergey irupin <lamp@altlinux.org> 0.9.6.51 (449)
 	* add 2 mathematics functions - sqr()/sqrt(), exp()
 

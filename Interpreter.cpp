@@ -347,13 +347,6 @@ Interpreter::Interpreter(BasicGraph *bg)
 	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
 	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
-	for (int i = 0; i < NUMVARS; i++)
-	{
-		vars[i].type = T_UNUSED;
-		vars[i].value.floatval = 0;
-		vars[i].value.string = NULL;
-		vars[i].value.arr = NULL;
-	}
 	// on a windows box start winsock
 	#ifdef WIN32
 		WSAData wsaData;
@@ -365,49 +358,11 @@ Interpreter::Interpreter(BasicGraph *bg)
 }
 
 Interpreter::~Interpreter() {
-	// need to add cleanup of stack and variables...
-	
 	// on a windows box stop winsock
 	#ifdef WIN32
 		WSACleanup();
 	#endif
 }
-
-void
-Interpreter::clearvars()
-{
-	for (int i = 0; i < NUMVARS; i++)
-	{
-		if (vars[i].type == T_STRING && vars[i].value.string != NULL)
-		{
-			free(vars[i].value.string);
-			vars[i].value.string = NULL;
-		}
-		else if (vars[i].type == T_ARRAY && vars[i].value.arr != NULL)
-		{
-			delete(vars[i].value.arr->data.fdata);
-			delete(vars[i].value.arr);
-		}
-		else if (vars[i].type == T_STRARRAY && vars[i].value.arr != NULL)
-		{
-			for (int j = 0; j < vars[i].value.arr->size; j++)
-			{
-				if (vars[i].value.arr->data.sdata[j])
-				{
-					free(vars[i].value.arr->data.sdata[j]);
-					vars[i].value.arr->data.sdata[j] = NULL;
-				}
-			}
-			delete(vars[i].value.arr->data.sdata);
-			delete(vars[i].value.arr);
-		}
-		vars[i].type = T_UNUSED;
-		vars[i].value.floatval = 0;
-		vars[i].value.string = NULL;
-		vars[i].value.arr = NULL;
-	}
-}
-
 
 void Interpreter::clearsprites() {
 	// meed to implement to cleanup garbage
@@ -472,7 +427,7 @@ bool Interpreter::spritecollide(int n1, int n2) {
 int
 Interpreter::compileProgram(char *code)
 {
-	clearvars();
+	variables.clear();
 	if (newByteCode(strlen(code)) < 0)
 	{
 		return -1;
@@ -596,7 +551,7 @@ Interpreter::cleanup()
 	//Clean up stack
 	stack.clear();
 	//Clean up variables
-	clearvars();
+	variables.clear();
 	//Clean up sprites
 	clearsprites();
 	//Clean up, for frames, etc.
@@ -825,12 +780,11 @@ Interpreter::execByteCode()
 			temp->prev = NULL;
 			temp->variable = *i;
 
-			vars[*i].type = T_FLOAT;
-			vars[*i].value.floatval = startnum;
+			variables.setfloat(*i, startnum);
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
+				emit(varAssignment(QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1));
 			}
 
 			temp->endNum = endnum;
@@ -841,10 +795,10 @@ Interpreter::execByteCode()
 				forstack->prev = temp;
 			}
 			forstack = temp;
-			if (temp->step > 0 && vars[*i].value.floatval > temp->endNum)
+			if (temp->step > 0 && variables.getfloat(*i) > temp->endNum)
 			{
 				errornum = ERROR_FOR1;
-			} else if (temp->step < 0 && vars[*i].value.floatval < temp->endNum)
+			} else if (temp->step < 0 && variables.getfloat(*i) < temp->endNum)
 			{
 				errornum = ERROR_FOR2;
 			}
@@ -867,13 +821,13 @@ Interpreter::execByteCode()
 				errornum = ERROR_NEXTNOFOR;
 			} else {
 
-				double val = vars[*i].value.floatval;
+				double val = variables.getfloat(*i);
 				val += temp->step;
-				vars[*i].value.floatval = val;
+				variables.setfloat(*i, val);
 
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(vars[*i].value.floatval), -1));
+					emit(varAssignment(QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1));
 				}
 
 				if (temp->step > 0 && val <= temp->endNum)
@@ -1169,84 +1123,46 @@ Interpreter::execByteCode()
 		break;
 
 	case OP_DIM:
-	case OP_DIMSTR:
 	case OP_REDIM:
+		{
+			unsigned char whichdim = *op;
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			int ydim = stack.popint();
+			int xdim = stack.popint();
+			variables.arraydimfloat(*i, xdim, ydim, whichdim == OP_REDIM);
+			if (variables.error()==ERROR_NONE) {
+				if(debugMode)
+				{
+					emit(varAssignment(QString(symtable[*i]), NULL, xdim * ydim));
+				}
+			} else {
+				 errornum = variables.error();
+			}
+		}
+		break;
+
+	case OP_DIMSTR:
 	case OP_REDIMSTR:
 		{
 			unsigned char whichdim = *op;
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
-			int var = i[0];
 			int ydim = stack.popint();
 			int xdim = stack.popint();
-
-			int size = xdim * ydim;
-
-			if (size > 100000)
-			{
-				errornum = ERROR_ARRAYSIZELARGE;
-			} else {
-				if (size < 1)
-				{
-					errornum = ERROR_ARRAYSIZESMALL;
-				} else {
-
-					if (whichdim == OP_REDIM || whichdim == OP_REDIMSTR) {
-						if (vars[var].type == T_UNUSED)
-						{
-							errornum = ERROR_NOSUCHVARIABLE;
-						}	
-					}
-				}
-			}
-
-			if (errornum == ERROR_NONE) {			
-				array *temp = new array;
-			
-				if (whichdim == OP_DIM || whichdim == OP_REDIM)
-				{
-					double *d = new double[size];
-					for (int j = 0; j < size; j++)
-					{
-						if(whichdim == OP_REDIM && j < vars[var].value.arr->size) {
-							d[j] = vars[var].value.arr->data.fdata[j];						
-						} else {
-							d[j] = 0;
-						}
-					}
-					vars[var].type = T_ARRAY;
-					temp->data.fdata = d;
-					temp->size = size;
-					temp->xdim = xdim;
-					temp->ydim = ydim;
-					vars[var].value.arr = temp;
-				} else {
-					char **c = new char*[size];
-					for (int j = 0; j < size; j++)
-					{
-						if(whichdim == OP_REDIMSTR && j < vars[var].value.arr->size) {
-							c[j] = vars[var].value.arr->data.sdata[j];						
-						} else {
-							c[j] = strdup("");
-						}
-					}
-					vars[var].type = T_STRARRAY;
-					temp->data.sdata = c;
-					temp->size = size;
-					temp->xdim = xdim;
-					temp->ydim = ydim;
-					vars[var].value.arr = temp;
-				}
-
+			variables.arraydimstring(*i, xdim, ydim, whichdim == OP_REDIMSTR);
+			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[var]), NULL, size));
+					emit(varAssignment(QString(symtable[*i]), NULL, xdim * ydim));
 				}
+			} else {
+				 errornum = variables.error();
 			}
 		}
 		break;
-
 
 	case OP_ALEN:
 	case OP_ALENX:
@@ -1258,23 +1174,18 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			
-			if (vars[*i].type == T_ARRAY || vars[*i].type == T_STRARRAY)
-			{
-				switch(opcode) {
-					case OP_ALEN:
-						stack.push(vars[*i].value.arr->size);
-						break;
-					case OP_ALENX:
-						stack.push(vars[*i].value.arr->xdim);
-						break;
-					case OP_ALENY:
-						stack.push(vars[*i].value.arr->ydim);
-						break;
-				}
-			} else {
-				errornum = ERROR_NOTARRAY;
-				stack.push(0);
+			switch(opcode) {
+				case OP_ALEN:
+					stack.push(variables.arraysize(*i));
+					break;
+				case OP_ALENX:
+					stack.push(variables.arraysizex(*i));
+					break;
+				case OP_ALENY:
+					stack.push(variables.arraysizey(*i));
+					break;
 			}
+			if (variables.error()!=ERROR_NONE) errornum = variables.error();
 		}
 		break;
 
@@ -1287,37 +1198,15 @@ Interpreter::execByteCode()
 			char *val = stack.popstring(); // dont free if successful - assigning to a string variable
 			int index = stack.popint();
 
-			char **strarray;
-
-			if (vars[*i].type == T_UNUSED)
-			{
-				errornum = ERROR_NOSUCHVARIABLE;
-				free(val);
-			} else {
-				if (vars[*i].type != T_STRARRAY)
+			variables.arraysetstring(*i, index, val);
+			if (variables.error()==ERROR_NONE) {
+				if(debugMode)
 				{
-					errornum = ERROR_NOTSTRINGARRAY;
-					free(val);
-				} else {
-					if (index >= vars[*i].value.arr->size || index < 0)
-					{
-						errornum = ERROR_ARRAYINDEX;
-						free(val);
-					} else {
-						strarray = vars[*i].value.arr->data.sdata;
-						if (strarray[index])
-						{
-							free(strarray[index]);
-						}
-						strarray[index] = val;
-			
-						if(debugMode)
-						{
-							emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
-						}
-					}
+					emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index));
 				}
-			}
+			} else {
+				errornum = variables.error();
+			}			
 		}
 		break;
 
@@ -1330,40 +1219,17 @@ Interpreter::execByteCode()
 			char *val = stack.popstring(); // dont free - assigning to a string variable
 			int yindex = stack.popint();
 			int xindex = stack.popint();
-			int index;
 
-			char **strarray;
-
-			if (vars[*i].type == T_UNUSED)
-			{
-				errornum = ERROR_NOSUCHVARIABLE;
-				free(val);
-			} else {
-				if (vars[*i].type != T_STRARRAY)
+			variables.array2dsetstring(*i, xindex, yindex, val);
+			if (variables.error()==ERROR_NONE) {
+				if(debugMode)
 				{
-					errornum = ERROR_NOTSTRINGARRAY;
-					free(val);
-				} else {
-					if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
-					{
-						errornum = ERROR_ARRAYINDEX;
-						free(val);
-					} else {
-						strarray = vars[*i].value.arr->data.sdata;
-						index = xindex * vars[*i].value.arr->ydim + yindex;
-						if (strarray[index])
-						{
-							free(strarray[index]);
-						}
-						strarray[index] = val;
-		
-						if(debugMode)
-						{
-							emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
-						}
-					}
+					int index = xindex * variables.arraysizey(*i) + yindex;
+					emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index));
 				}
-			}
+			} else {
+				errornum = variables.error();
+			}			
 		}
 		break;
 
@@ -1373,37 +1239,19 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			int items = i[1];
 			op += 2 * sizeof(int);
-			int index;
-			char **strarray;
 
-			if (vars[*i].type == T_UNUSED)
+			for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 			{
-				errornum = ERROR_NOSUCHVARIABLE;
-			} else {
-				if (vars[*i].type != T_STRARRAY)
-				{
-					errornum = ERROR_NOTSTRINGARRAY;
-				} else {
-					if (items > vars[*i].value.arr->size || items < 0)
+				char *str = stack.popstring(); // dont free we are assigning this to a variable
+				variables.arraysetstring(*i, index, str);
+				if (variables.error()==ERROR_NONE) {
+					if(debugMode)
 					{
-						errornum = ERROR_ARRAYSIZESMALL;
-					} else {
-						strarray = vars[*i].value.arr->data.sdata;
-						for (index = items - 1; index >= 0; index--)
-						{
-							char *str = stack.popstring(); // dont free we are assigning this to a variable
-							if (strarray[index])
-							{
-								delete(strarray[index]);
-							}
-							strarray[index] = str;
-							if(debugMode)
-							{
-								emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(strarray[index]), index));
-							}
-						}
+						emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index));
 					}
-				}
+				} else {
+					errornum = variables.error();
+				}			
 			}
 		}
 		break;
@@ -1416,29 +1264,16 @@ Interpreter::execByteCode()
 
 			double val = stack.popfloat();
 			int index = stack.popint();
-			double *array;
-
-			if (vars[*i].type == T_UNUSED)
-			{
-				errornum = ERROR_NOSUCHVARIABLE;
-			} else {
-				if (vars[*i].type != T_ARRAY)
+			
+			variables.arraysetfloat(*i, index, val);
+			if (variables.error()==ERROR_NONE) {
+				if(debugMode)
 				{
-					errornum = ERROR_NOTARRAY;
-				} else {
-					if (index >= vars[*i].value.arr->size || index < 0)
-					{
-						errornum = ERROR_ARRAYINDEX;
-					} else {
-						array = vars[*i].value.arr->data.fdata;
-						array[index] = val;
-						if(debugMode)
-						{
-							emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
-						}
-					}
+					emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index));
 				}
-			}	
+			} else {
+				errornum = variables.error();
+			}			
 		}
 		break;
 
@@ -1451,32 +1286,17 @@ Interpreter::execByteCode()
 			double val = stack.popfloat();
 			int yindex = stack.popint();
 			int xindex = stack.popint();
-			int index;
 			
-			double *array;
-
-			if (vars[*i].type == T_UNUSED)
-			{
-				errornum = ERROR_NOSUCHVARIABLE;
-			} else {
-				if (vars[*i].type != T_ARRAY)
+			variables.array2dsetfloat(*i, xindex, yindex, val);
+			if (variables.error()==ERROR_NONE) {
+				if(debugMode)
 				{
-					errornum = ERROR_NOTARRAY;
-				} else {
-					if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
-					{
-						errornum = ERROR_ARRAYINDEX;
-					} else {
-						array = vars[*i].value.arr->data.fdata;
-						index = xindex * vars[*i].value.arr->ydim + yindex;
-						array[index] = val;
-						if(debugMode)
-						{
-							emit(varAssignment(QString(symtable[*i]), QString::number(val), index));
-						}
-					}
+					int index = xindex * variables.arraysizey(*i) + yindex;
+					emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index));
 				}
-			}
+			} else {
+				errornum = variables.error();
+			}			
 		}
 		break;
 
@@ -1487,67 +1307,45 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			int items = i[1];
 			op += 2 * sizeof(int);
-			int index;
-			double *array;
 
-			if (vars[*i].type == T_UNUSED)
+			for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 			{
-				errornum = ERROR_NOSUCHVARIABLE;
-			} else {
-				if (vars[*i].type != T_ARRAY)
-				{
-					errornum = ERROR_NOTARRAY;
-				} else {
-					if (items > vars[*i].value.arr->size || items < 0)
+				double one = stack.popfloat();
+				variables.arraysetfloat(*i, index, one);
+				if (variables.error()==ERROR_NONE) {
+					if(debugMode)
 					{
-						errornum = ERROR_ARRAYSIZESMALL;
-					} else {
-						array = vars[*i].value.arr->data.fdata;
-						for (index = items - 1; index >= 0; index--)
-						{
-							double one = stack.popfloat();
-							array[index] = one;
-							if(debugMode)
-							{
-								emit(varAssignment(QString(symtable[*i]), QString::number(items), index));
-							}
-						}
+						emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index));
 					}
-				}
+				} else {
+					errornum = variables.error();
+				}			
 			}
+
 		}
 		break;
 
 
 	case OP_DEREF:
 		{
+
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
 			int index = stack.popint();
 
-			if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
+			if (variables.type(*i) == T_STRARRAY)
+			{
+				stack.push(variables.arraygetstring(*i, index));
+			}
+			else if (variables.type(*i) == T_ARRAY)
+			{
+				stack.push(variables.arraygetfloat(*i, index));
+			}
+			else
 			{
 				errornum = ERROR_NOTARRAY;
 				stack.push(0);
-			} else {
-				if (index >= vars[*i].value.arr->size || index < 0)
-				{
-					errornum = ERROR_ARRAYINDEX;
-					stack.push(0);
-				} else {
-	
-					if (vars[*i].type == T_ARRAY)
-					{
-						double *array = vars[*i].value.arr->data.fdata;
-						stack.push(array[index]);
-					}
-					else
-					{
-						char **array = vars[*i].value.arr->data.sdata;
-						stack.push(array[index]);
-					}
-				}
 			}
 		}
 		break;
@@ -1559,31 +1357,19 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			int yindex = stack.popint();
 			int xindex = stack.popint();
-			int index;
 
-			if (vars[*i].type != T_ARRAY && vars[*i].type != T_STRARRAY)
+			if (variables.type(*i) == T_STRARRAY)
+			{
+				stack.push(variables.array2dgetstring(*i, xindex, yindex));
+			}
+			else if (variables.type(*i) == T_ARRAY)
+			{
+				stack.push(variables.array2dgetfloat(*i, xindex, yindex));
+			}
+			else
 			{
 				errornum = ERROR_NOTARRAY;
 				stack.push(0);
-			} else {
-				if (xindex >= vars[*i].value.arr->xdim || xindex < 0 || yindex >= vars[*i].value.arr->ydim || yindex < 0)
-				{
-					errornum = ERROR_ARRAYINDEX;
-					stack.push(0);
-				} else {
-					index = xindex * vars[*i].value.arr->ydim + yindex;
-	
-					if (vars[*i].type == T_ARRAY)
-					{
-						double *array = vars[*i].value.arr->data.fdata;
-						stack.push(array[index]);
-					}
-					else
-					{
-						char **array = vars[*i].value.arr->data.sdata;
-						stack.push(array[index]);
-					}
-				}
 			}
 		}
 		break;
@@ -1594,31 +1380,18 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			if (vars[*i].type == T_UNUSED)
+			if (variables.type(*i) == T_STRING)
+			{
+				stack.push(variables.getstring(*i));
+			}
+			else if (variables.type(*i) == T_FLOAT)
+			{
+				stack.push(variables.getfloat(*i));
+			}
+			else
 			{
 				errornum = ERROR_NOSUCHVARIABLE;
 				stack.push(0);
-			} else {
-				if (vars[*i].type == T_STRING)
-				{
-					stack.push(vars[*i].value.string);
-				}
-				else if (vars[*i].type == T_ARRAY)
-				{
-					char buffer[32];
-					sprintf(buffer, "array(0x%p)", vars[*i].value.arr);
-					stack.push(buffer);
-				}
-				else if (vars[*i].type == T_STRARRAY)
-				{
-					char buffer[32];
-					sprintf(buffer, "string array(0x%p)", vars[*i].value.arr);
-					stack.push(buffer);
-				}
-				else
-				{
-					stack.push(vars[*i].value.floatval);
-				}
 			}
 		}
 		break;
@@ -2185,17 +1958,16 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			
-			if (vars[*i].type == T_ARRAY)
+			if (variables.type(*i) == T_ARRAY)
 			{
-				int length = vars[*i].value.arr->size;
-				double *array = vars[*i].value.arr->data.fdata;
+				int length = variables.arraysize(*i);
 				
 				int* freqdur;
 				freqdur = (int*) malloc(length * sizeof(int));
 				
 				for (int j = 0; j < length; j++)
 				{
-					freqdur[j] = (int) array[j];
+					freqdur[j] = (int) variables.arraygetfloat(*i, j);
 				}
 				
 				emit(playSounds(length / 2 , freqdur));
@@ -2482,21 +2254,20 @@ Interpreter::execByteCode()
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 
-			if (vars[*i].type == T_ARRAY)
+			if (variables.type(*i) == T_ARRAY)
 			{
-				int pairs = vars[*i].value.arr->size / 2;
+				int pairs = variables.arraysize(*i) / 2;
 				if (pairs < 3)
 				{
 					errornum = ERROR_POLYPOINTS;
 				} else {
 
-					double *array = vars[*i].value.arr->data.fdata;
 					QPointF *points = new QPointF[pairs];
 	
 					for (int j = 0; j < pairs; j++)
 					{
-						points[j].setX(array[j*2]);
-						points[j].setY(array[(j*2)+1]);
+						points[j].setX(variables.arraygetfloat(*i, j*2));
+						points[j].setY(variables.arraygetfloat(*i, j*2+1));
 					}
 					poly.drawPolygon(points, pairs);
 					poly.end();
@@ -2569,22 +2340,21 @@ Interpreter::execByteCode()
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 
-			if (vars[*i].type == T_ARRAY)
+			if (variables.type(*i) == T_ARRAY)
 			{
-				int pairs = vars[*i].value.arr->size / 2;
+				int pairs = variables.arraysize(*i) / 2;
 				if (pairs < 3)
 				{
 					errornum = ERROR_POLYPOINTS;
 				} else {
 	
 					if (scale>0) {
-						double *array = vars[*i].value.arr->data.fdata;
 						QPointF *points = new QPointF[pairs];
 	
 						for (int j = 0; j < pairs; j++)
 						{
-							double scalex = scale * array[j*2];
-							double scaley = scale * array[(j*2)+1];
+							double scalex = scale * variables.arraygetfloat(*i, j*2);
+							double scaley = scale * variables.arraygetfloat(*i, j*2+1);
 							double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
 							double roty = cos(rotate) * scaley + sin(rotate) * scalex;
 							points[j].setX(rotx + x);
@@ -2916,18 +2686,11 @@ Interpreter::execByteCode()
 			double temp = stack.popfloat();
 
 
-			if (vars[*num].type == T_ARRAY)
-			{
-				delete(vars[*num].value.arr->data.fdata);
-				delete(vars[*num].value.arr);
-			}
-
-			vars[*num].type = T_FLOAT;
-			vars[*num].value.floatval = temp;
+			variables.setfloat(*num, temp);
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*num]), QString::number(vars[*num].value.floatval), -1));
+				emit(varAssignment(QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1));
 			}
 		}
 		break;
@@ -2940,19 +2703,11 @@ Interpreter::execByteCode()
 
 			char *temp = stack.popstring();	// don't free - assigned to a variable
 			
-			// cleanup old string value if there is one
-			if (vars[*num].type == T_STRING && vars[*num].value.string != NULL)
-			{
-				free(vars[*num].value.string);
-				vars[*num].value.string = NULL;
-			}
-
-			vars[*num].type = T_STRING;
-			vars[*num].value.string = temp;
+			variables.setstring(*num, temp);
 
 			if(debugMode)
 			{
-			  emit(varAssignment(QString(symtable[*num]), QString::fromUtf8(vars[*num].value.string), -1));
+			  emit(varAssignment(QString(symtable[*num]), QString::fromUtf8(variables.getstring(*num)), -1));
 			}
 		}
 		break;
