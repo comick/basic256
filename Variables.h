@@ -1,5 +1,10 @@
+// implement variables using a c++ map of the variable number and a pointer to the variable structure
+// this will allow for a dynamically allocated number of variables
+// 2010-12-13 j.m.reneau
+
 #pragma once
 
+#include <map>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +13,6 @@
 #include "Stack.h"
 
 
-#define VARIABLE_NUMVARS 2000
 #define VARIABLE_MAXARRAYELEMENTS 100000
 
 struct array
@@ -40,8 +44,8 @@ class Variables
 	public:
 		Variables();
 		~Variables();
+		//
 		void clear();
-		void clearvariable(int);
 		//
 		int type(int);
 		int error();
@@ -73,6 +77,8 @@ class Variables
 
 	private:
 		int lasterror;
-		variable vars[VARIABLE_NUMVARS];
+		std::map<int, variable*> varmap;
+		void clearvariable(variable*);
+		variable* getvfromnum(int, bool);
 
 };

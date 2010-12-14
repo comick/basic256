@@ -1,3 +1,6 @@
+2010-12-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.53
+	* changed variables object to use a map for storage and not a static array - in preparation for some day handling run levels
+
 2010-12-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.52
 	* moved variables out of interperter into a new object in preparation for some day adding multiple run levels to handle true functions and subroutines
 	* also celeaned up several variable related memory leaks
