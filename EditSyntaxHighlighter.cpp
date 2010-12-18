@@ -69,6 +69,7 @@ void EditSyntaxHighlighter::initKeywords()
   HighlightRule rule;
 
   m_keywordFmt.setForeground(Qt::darkBlue);
+  m_keywordFmt.setFontWeight(QFont::Bold);
   QStringList keywordPatterns;
 
   keywordPatterns
@@ -125,6 +126,7 @@ void EditSyntaxHighlighter::initKeywords()
 		  << "\\b[Hh][Oo][Uu][Rr]\\b"						// hour
 		  << "\\b[Ii][Ff]\\b"							// if
 		  << "\\b[Ii][Mm][Gg][Ll][Oo][Aa][Dd]\\b"				// imgload
+		  << "\\b[Ii][Mm][Gg][Ss][Aa][Vv][Ee]\\b"				// imgsave
 		  << "\\b[Ii][Nn][Pp][Uu][Tt]\\b"					// input
 		  << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"					// instr
 		  << "\\b[Kk][Ee][Yy]\\b"						// key

@@ -1,7 +1,7 @@
-2010-12-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.53
+2010-12-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.53 (452)
 	* changed variables object to use a map for storage and not a static array - in preparation for some day handling run levels
 
-2010-12-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.52
+2010-12-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.52 (451)
 	* moved variables out of interperter into a new object in preparation for some day adding multiple run levels to handle true functions and subroutines
 	* also celeaned up several variable related memory leaks
 
@@ -11,91 +11,94 @@
 2010-11-26 sergey irupin <lamp@altlinux.org> 0.9.6.50 (448)
 	* icon updates and fixed functions upper() and lower()
 
-2010-11-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.49
+2010-11-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.49 (443)
 	* added close of database files if database not closed by program
 
-2010-11-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.48
+2010-11-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.48 (439)
 	* removed mutex from say statement - eliminate frezing after speech
 
-2010-10-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.47
+2010-10-25 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.47 (438)
 	* initial MAC port - tested help & preferences
 	* added Mac Icon
 	* added logic to save font size as a preference
 
-2010-10-24 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.46
+2010-10-24 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.46 (437)
 	* initial MAC port - tested sound, say, playwav, database, and networking
 
-2010-10-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.45
+2010-10-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.45 (435)
 	* added IMGSAVE statement to save graphics area as a .png or other qt supported file type
 
-2010-10-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.44
+2010-10-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.44 (434)
 	* forces locale to "C" so that decimal mark '.' will always work
 
-2010-10-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.43
+2010-10-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.43 (433)
 	* fixed seek statement
 
 2010-09-21 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.42
 	* tested inpout32 with Windows7-x64 and Vista-x32 and changed compiling instructions
 	
-2010-09-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.41
+2010-09-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.41 (431)
 	* finished and tested PORTIN/PORTOUT statements for parallel port control (WINDOWS ONLY)
 	* added preference settings to allow or disable PORTIN/PORTOUT statements
 	* added three new operators &, | and ~ - bitwise and or and not that work with integers
 
-2010-09-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.40
+2010-09-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.40 (430)
 	* INCOMPLETE - Code to start adding PORTIN/PORTOUT statementf for parallel port control
 
-2010-09-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.39
+2010-09-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.39 (429)
 	* fixed SYSTEM statement to use mutex to wait correctly
 	* added preference settings to allow or disable system, get/setsetting
 
-2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.38
+2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.38 (428)
 	* added GETSETTING and SETSETTING for persistant application storage to the registery/config folder
 
-2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.37
+2010-09-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.37 (427)
 	* Created password protected preferences dialog - nothing on it yet except the password
 	* added MD5 function to return a hex string digest for a string
 
-2010-09-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.36
+2010-09-11 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.36 (425)
 	* added settings to restore IDE and help to size and location when re-opened
 	* added list of 9 most recently opened or saved items for quick open on file menu
 
-2010-09-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.35
+2010-09-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.35 (423)
 	* Added NETADDRESS to return the local IPv4 address as a string
 
-2010-09-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.34
+2010-09-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.34 (422)
 	* Added kill statement to delete a file from the file system
 
-2010-08-22 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.33
+2010-08-22 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.33 (421)
 	* fixed problem with focus effecting "key" statement - if focus was ever lost from
 	- graphics window - key statement would stop working.  added key trap to BasicOutput
 	- and logic to allow BasicGraph to regain focus
 	* syntax highliter updated for a few misses commands
 
-2010-08-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.31
+2010-08-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.32 (419)
+	* Added net* statements and functions to the syntax highlighter and a new networking example
+
+2010-08-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.31 (418)
 	* fixed linux to compile again after changes in 0.9.6.30
 	* removed most of the errors from LEX/basicParse.y 
 
-2010-08-16 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.30
+2010-08-17 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.30 (416)
 	* changed all tokens to B256... in lex folder to stop conflicts with windows wtypes.h
 	* work on porting to winsock (Windows) - have functioning well enough to test
 	* changed net commands to act like file io commands and allow up to 8 open
 	- sockets 0-7 with 0 being the default.
 	
-2010-08-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.29
+2010-08-15 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.29 (416)
 	* cleaned up socket release (close)
 	* added NETDATA function to return true if data is waiting to be received
 
-2010-08-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.28
+2010-08-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.28 (415)
 	* added first attempt at networking statements
         - statements NETLISTEN, NETCONNECT, NETREAD, NETOPEN, and NETCLOSE
 	* added new networking folder to Examples with a few test programs
 	* not compiled or tested in Windows yet.
 
-2010-08-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.27
+2010-08-09 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.27 (412)
 	* fixed string comparison problem caused since 0.9.6h
 
-2010-08-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6z
+2010-08-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6z (409)
 	* Rewrote the error messaging process to allow for error trapping and reporting logic in BASIC code
 	* added ONERROR label to jump to a subroutine to handle errors
 	* added LASTERROR, LASTERRORMESSAGE, LASTERRORLINE, and LASTERROREXTRA functions that describe last runtime error
@@ -105,23 +108,22 @@
 	* added _ as a valid character in a veriable or label name (first letter MUST still be a letter)
 
 2010-08-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6y
-	* Added sqLite database processing - dbopen, dbclose, dbsetopen, dbsetclose, and dbexecute statements.
-		also dbint, dbfloat, dbstring, and dbrow functions to manipulate recordsets
+	* Added sqLite database processing - dbopen, dbclose, dbsetopen, dbsetclose, and dbexecute statements, also dbint, dbfloat, dbstring, and dbrow functions to manipulate recordsets
 
 2010-07-27 j.m.reneau <renejm@users.sourceforge.net> 0.9.6x
 	* left alen, alenx, and aleny in lex files when adding 2d and redim of arrays - unused - removed
 
-2010-07-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.6w
+2010-07-26 j.m.reneau <renejm@users.sourceforge.net> 0.9.6w (405)
 	* added decimal statemene to define maximum number of decimal places to display
           (full precision of a double is still being maintained behind the scenes)
 	* fixed web site on about box
 	* added recent new statements to syntax highliter
 
-2010-07-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6v
+2010-07-21 j.m.reneau <renejm@users.sourceforge.net> 0.9.6v (403)
 	* fixed several gramatical errors with file messages - thanks joel
 	* removed maximum size of graphical output widget
 
-2010-07-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6u
+2010-07-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6u (402)
 	* fixed wavwait logic for compile under Win32.  Also noticed in the QSound documentation
 	  that wavwait will not work under Windows because of a quirk with the library.
 	* made the graphics and text output so that they may float
@@ -142,7 +144,7 @@
 	* changed sprite move to limit range to 0-graphwidth|graphheight-1
 	* changed all file io statements to allow for 0-7 files simultaneously - syntax didn't change for single file operations but new filenumber parameter added to allow for multiple files
 
-2010-06-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6p
+2010-06-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6p (393)
 	* re-wrote the way color "Clear" works
 	- getcolor and pixel will return a -1 when the drawing color or pixel requested is clear (or after a clg and nothing has been drawn there)
 	- the CLEAR constant/function now has a value of -1
@@ -330,34 +332,33 @@
 	* combined redudant graphics wait mutex logic in Interperter
 	* in Interperter added popint, popfloat, popstring to the stack and changed most ops to use these new pops so that type checking could be removed in the op code
 	* found error in array element assign (string and number) if assigning as an array a non array variable or a non defined variable
-	* found error in arraylist assign (string and number) if assigning as an array a non array variable or a non defined variable
-		see uaarray.kbs
+	* found error in arraylist assign (string and number) if assigning as an array a non array variable or a non defined variable - see uaarray.kbs
 	* added print statement with no string to go to next line
 	* added YEAR MONTH DAY HOUD MINUTE SECOND as constants like RAND and PI
 
-2006-12-12 <drblast@users.sourceforge.net>
+2006-12-12 ian larsen <drblast@users.sourceforge.net>
 	* LEX\basicParse.y: Added sound command.
 	* LEX\basicParse.l: Added sound command.
 	* RunController.cpp (playSound): Added sound support.
 	* Interpreter.cpp (execByteCode): Added sound support.
 
-2006-12-10 <drblast@users.sourceforge.net>
+2006-12-10 ian larsen <drblast@users.sourceforge.net>
 	* BasicEdit.cpp (newProgram): fixed file overwrite bug when new program saves as last file's name.
 	* LEX\basicParse.l: Added semicolon as alternate remark command
 
-2006-12-04 <drblast@users.sourceforge.net>
+2006-12-04 ian larsen <drblast@users.sourceforge.net> 0.9.1
 	* VariableWin.cpp (addVar): Changed variable window to use TreeWidget instead of a list, to allow for showing arrays.
 
-2006-11-28 <drblast@users.sourceforge.net>
+2006-11-28 ian larsen <drblast@users.sourceforge.net> 0.9
 	* Interpreter.cpp (execByteCode): Changed variable window updates to only occur in debug mode. Otherwise this is a severe performance hit for programs updating many variables in tight loops.
 	* VariableWin.cpp (clearTable): Added Variable Watch window.
 
-2006-11-26 <drblast@users.sourceforge.net>
+2006-11-26 ian larsen <drblast@users.sourceforge.net>
 	* MainWindow.cpp (QMainWindow): Added two items to view menu to enable/disable text and graphics output windows.
 
-2006-11-20 <drblast@users.sourceforge.net>
+2006-11-20 ian larsen <drblast@users.sourceforge.net>
 	* Interpreter.cpp (execByteCode): Merged file ops and changed them to work more simply.
-	 Changed array printing to print pointer address instead of int, which should fix the 64 bit compile problem.
+	* Changed array printing to print pointer address instead of int, which should fix the 64 bit compile problem.
 
 2006-11-19 <fhendrikx@users.sourceforge.net>
 	* Added file operations "open", "read", "write", "close". The read and write functions work on a token basis. EOF is returned by returning an empty token.
@@ -368,32 +369,32 @@
 	* Added alternative spelling for "color" function: "colour"
 	* Added "poly" function and sample code "polygon.kbs"
 
-2006-11-07 <drblast@users.sourceforge.net>
+2006-11-07 ian larsen <drblast@users.sourceforge.net> 0.8
 	* LEX\basicParse.y: Fixed rather important memory allocation bug that affected large programs that used lots of if statements.
 	* Interpreter.cpp (execByteCode): Fixed bug 1589686
 
-2006-11-03 <drblast@users.sourceforge.net>
+2006-11-03 ian larsen <drblast@users.sourceforge.net>
 	* Interpreter.cpp (compileProgram): Changed the way the interpreter keeps track of line numbers. Now there's a CURRLINE bytecode which is executed every time the line changes. Also added step-by-step debugging.
 
-2006-11-02 <drblast@users.sourceforge.net>
+2006-11-02 ian larsen <drblast@users.sourceforge.net>
 	* Interpreter.cpp (execByteCode): Printing of floating point instead of integers fixed.
 
-2006-11-01 <drblast@users.sourceforge.net>
+2006-11-01 ian larsen <drblast@users.sourceforge.net>
 	* Interpreter.cpp (execByteCode): Added OP_LINE, which draws lines.
 
-2006-10-31 <drblast@users.sourceforge.net>
+2006-10-31 ian larsen <drblast@users.sourceforge.net>
 	* Interpreter.cpp (execByteCode): Added pause command
 	* BasicEdit.cpp (cursorMove): Added slot to calculate line number when the cursor moves, and display it on the status bar.
 
-2006-10-25 <drblast@users.sourceforge.net>
+2006-10-25 ian larsen <drblast@users.sourceforge.net> 0.7
 	* Main.cpp (main): Added actions to edit menu. Removed close button on output windows.
 
-2006-10-20 <drblast@users.sourceforge.net>
+2006-10-20 ian larsen <drblast@users.sourceforge.net> 0.6
 	* Interpreter.cpp: Added internationalization support.
 	* BasicEdit.cpp: Added internationalization support.
 	* Main.cpp (main): Added internationalization support.
 
-2006-10-18 <drblast@users.sourceforge.net>
+2006-10-18 ian larsen <drblast@users.sourceforge.net>
 	* BasicEdit.cpp (BasicEdit): Editor now won't accept rich text, fixing weird font bugs.
 	* RunController.cpp (saveByteCode): Added saveByteCode function which saves the compiled byte code to a .kbc file.
 	* Main.cpp (main): Added save byte code function and Advanced menu.
@@ -401,7 +402,7 @@
 	* Interpreter.cpp (execByteCode): Added mathematical functions FLOOR, CEIL, RAND, SIN, COS, TAN, and ABS
 	Separated initialize from compileProgram to support saving byte code as a file.
 	
-2006-10-16 <drblast@users.sourceforge.net>
+2006-10-16 ian larsen <drblast@users.sourceforge.net> 0.5
 	* Interpreter.cpp (execByteCode): Added and, not, xor, and or operations
 	* LEX\basicParse.y: Added AND, NOT, XOR, OR
 	* LEX\basicParse.l: Added floor, ceil, int, str, and rand tokens
@@ -409,23 +410,26 @@
 	* Interpreter.h (struct variable): Added arrays and string arrays.
 	* Interpreter.cpp (execByteCode): Added arrays and string arrays.
 
-2006-10-11 <drblast@users.sourceforge.net>
+2006-10-11 ian larsen <drblast@users.sourceforge.net> 0.4
 	* BasicGraph.cpp (keyPressEvent): Added keyPressEvent to set currentKey global variable whenever a key is pressed during run time.
 	* LEX\basicParse.y: Added KEY keyword as floatexpr
 	* Interpreter.cpp (execByteCode): Added OP_KEY operation, which gets the last key pressed.
 
-2006-10-09 <drblast@users.sourceforge.net>
+2006-10-09 ian larsen <drblast@users.sourceforge.net>
 	* LEX\basicParse.y: Added colon as multiple statement separator
 
-2006-10-07 <drblast@users.sourceforge.net>
+2006-10-07 <drblast@users.sourceforge.net> 0.3.1
 	* RunController.cpp (stopRun): Changed to threaded model.
 	* Interpreter.cpp (execByteCode): Changed to a threaded model.
 	* BasicOutput.cpp (getInput): Added slot to support threading.
 	* Interpreter.cpp (execByteCode): Changed from using QPixmaps for graphical output to QImage, which is thread-safe.
 
-2006-10-06 <drblast@users.sourceforge.net>
+2006-10-06 ian larsen <drblast@users.sourceforge.net> 0.3
 	* Interpreter.cpp (pause): Removed unnecessary pause and unpause functions
 	* RunController.cpp (pauseResume): Enabled Pause/Resume feature
 	* PauseButton.h: Created Pause button which changes text based on operation 
 	* Main.cpp (main): Removed Renumber Lines menu option
 	(main): Pause/Resume button enabled
+
+2006-09-30 ian larsen <drblast@users.sourceforge.net> 0.1
+	* În sourceforge.net uploaded the first version
