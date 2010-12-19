@@ -245,6 +245,7 @@ void EditSyntaxHighlighter::initColors()
   QStringList colorPatterns;
 
   colorPatterns
+		<< "\\b[Cc][Ll][Ee][Aa][Rr]\\b"					// clear
 		<< "\\b[Bb][Ll][Aa][Cc][Kk]\\b"					// black
 		<< "\\b[Ww][Hh][Ii][Tt][Ee]\\b"					// white
 		<< "\\b([Dd][Aa][Rr][Kk]){0,1}[Rr][Ee][Dd]\\b"			// red and darkred
