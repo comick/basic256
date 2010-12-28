@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	#ifndef WIN32
 		// load initial file
 		if (argv[optind]) {
-			QString s = QString::fromAscii(argv[optind]);
+			QString s = QString::fromUtf8(argv[optind]);
 			if (s.endsWith(".kbs")) {
 				QFileInfo fi(s);
 				if (fi.exists()) {
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	#else
 		if (argc >= 1 && argv[1] != NULL)
 		{
-			QString s = QString::fromAscii(argv[1]);
+			QString s = QString::fromUtf8(argv[1]);
 			if (s.endsWith(".kbs")) {
 				QFileInfo fi(s);
 				if (fi.exists()) {
