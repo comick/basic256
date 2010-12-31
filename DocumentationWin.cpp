@@ -1,22 +1,23 @@
-/** Copyright (C) 2010, J.M.Reneau
+/** Copyright (C) 2010, J.M.Reneau, S.W.Irupin
  **
- **  This program is free software; you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation; either version 2 of the License, or
- **  (at your option) any later version.
+ ** This program is free software; you can redistribute it and/or modify
+ ** it under the terms of the GNU General Public License as published by
+ ** the Free Software Foundation; either version 2 of the License, or
+ ** (at your option) any later version.
  **
- **  This program is distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
+ ** This program is distributed in the hope that it will be useful,
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ ** GNU General Public License for more details.
  **
- **  You should have received a copy of the GNU General Public License along
- **  with this program; if not, write to the Free Software Foundation, Inc.,
- **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ ** You should have received a copy of the GNU General Public License along
+ ** with this program; if not, write to the Free Software Foundation, Inc.,
+ ** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+ 
+ 
 #include <iostream>
-
 using namespace std;
 
 #include "DocumentationWin.h"
@@ -25,36 +26,61 @@ using namespace std;
 DocumentationWin::DocumentationWin (QWidget * parent)
 		:QDialog(parent)
 {
-	//QString localecode = ((MainWindow *) parent)->localecode;
-	
+	QString localecode = ((MainWindow *) parent)->localecode;
+	QString indexfile;
+	QString windowsPath;
+	QString linuxPath;
+
+	windowsPath = "./help/";
+	linuxPath = "/usr/share/basic256/help/";
+	indexfile = "index.html";
+
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	resize(settings.value(SETTINGSDOCSIZE, QSize(700, 500)).toSize());
 	move(settings.value(SETTINGSDOCPOS, QPoint(150, 150)).toPoint());
-	
-	docs = new QWebView();
 
-	toolbar = new QToolBar(tr("Help Navigation"));
-    toolbar->addAction(docs->pageAction(QWebPage::Back));
-    toolbar->addAction(docs->pageAction(QWebPage::Forward));
-	//
+	docs = new QTextBrowser( this );
+	toolbar = new QToolBar( this );
+
+	QAction *backward = new QAction(QIcon(":images/backward.png"), tr("&Back"), this);
+	connect(backward, SIGNAL(triggered()), docs, SLOT(backward()));
+	connect(docs, SIGNAL(backwardAvailable(bool)), backward, SLOT(setEnabled(bool)));
+	toolbar->addAction(backward);
+
+	QAction *forward = new QAction(QIcon(":images/forward.png"), tr("&Forward"), this);
+	connect(forward, SIGNAL(triggered()), docs, SLOT(forward()));
+	connect(docs, SIGNAL(forwardAvailable(bool)), forward, SLOT(setEnabled(bool)));
+	toolbar->addAction(forward);
+
+	QAction *home = new QAction(QIcon(":images/home.png"), tr("&Home"), this);
+	connect(home, SIGNAL(triggered()), docs, SLOT(home()));
+	toolbar->addAction(home);
+
+	toolbar->addSeparator();
+
+	QAction *exit = new QAction(QIcon(":images/exit.png"), tr("&Exit"), this);
+	connect(exit, SIGNAL(triggered()), this, SLOT(close()));
+	toolbar->addAction(exit);
+
 	layout = new QVBoxLayout;
-    layout->addWidget(toolbar);
-    layout->addWidget(docs);
+	layout->addWidget(toolbar);
+	layout->addWidget(docs);
 
-    this->setLayout(layout);
-    this->show();
-	
-	docs->load(QString("http://doc.basic256.org"));
-	docs->show();
-	
+	this->setLayout(layout);
+	this->setWindowTitle(QObject::tr("BASIC-256 Reference"));
+	this->show();
+
+	docs->setSearchPaths(QStringList() << windowsPath+localecode.left(2) << windowsPath+"en" << linuxPath+localecode.left(2) << linuxPath+"en");
+	docs->setSource(QUrl(indexfile));
+}
+
+void DocumentationWin::resizeEvent(QResizeEvent *e) {
+	this->resize(size());
 }
 
 void DocumentationWin::closeEvent(QCloseEvent *e) {
-     // save current screen posision
-     QSettings settings(SETTINGSORG, SETTINGSAPP);
-     settings.setValue(SETTINGSDOCSIZE, size());
-     settings.setValue(SETTINGSDOCPOS, pos());
-
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.setValue(SETTINGSDOCSIZE, size());
+	settings.setValue(SETTINGSDOCPOS, pos());
 }
-
