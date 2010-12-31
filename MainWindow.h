@@ -52,15 +52,16 @@ public:
 	VariableWin * vardock;
 	DocumentationWin * docdock;
 	EditSyntaxHighlighter * editsyntax;
-	
+
 	QString localecode;
 
 private:
 	QAction *recentact[SETTINGSGROUPHISTN]; 
 
 private slots:
+	void onlineHelp();
 	void updateRecent();
-
+	void about();
 };
 
 #endif

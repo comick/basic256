@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include <QApplication>
+#include <QDesktopServices>
 #include <QGridLayout>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -39,6 +40,9 @@ using namespace std;
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		:	QMainWindow(parent, f)
 {
+
+	setWindowIcon(QIcon(":/images/basic256.png"));
+
 	QWidget * centerWidget = new QWidget();
 	centerWidget->setObjectName( "centerWidget" );
 
@@ -68,23 +72,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	RunController *rc = new RunController(this);
 	editsyntax = new EditSyntaxHighlighter(editor->document());
-
-	QDialog *aboutdialog = new QDialog();
-	char* abouttext = (char *) malloc(2048);
-	sprintf(abouttext,"<h2 align='center'>BASIC-256 -- Version %s</h2> \
-		<p>Copyright &copy; 2006, The BASIC-256 Team</p> \
-		<p>Please visit our web site at <a href=http://www.basic256.org>www.basic256.org</a> for tutorials and documentation.</p> \
-		<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>\
-		<p><i>You should have received a copy of the GNU General Public License along<br> \
-		with this program; if not, write to the Free Software Foundation, Inc.,<br> \
-		51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>",VERSION);
-
-	QLabel *aboutlabel = new QLabel(QObject::tr(abouttext), aboutdialog);
-	QGridLayout *aboutgrid = new QGridLayout();
-	free(abouttext);
-
-	aboutgrid->addWidget(aboutlabel, 0, 0);
-	aboutdialog->setLayout(aboutgrid);
 
 	// Main window toolbar
 	QToolBar *maintbar = new QToolBar();
@@ -130,6 +117,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
 	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
 	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
+	//QObject::connect(editor, SIGNAL(textChanged()), saveact, SLOT(setEnabled()));
+	//saveact->setEnabled(false);
 	QObject::connect(saveasact, SIGNAL(triggered()), editor, SLOT(saveAsProgram()));
 	QObject::connect(printact, SIGNAL(triggered()), editor, SLOT(slotPrint()));
 	QObject::connect(recentact[0], SIGNAL(triggered()), editor, SLOT(loadRecent0()));
@@ -146,16 +135,22 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	// Edit menu
 	QMenu *editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
 	QAction *undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
+	QObject::connect(editor, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
 	QObject::connect(undoact, SIGNAL(triggered()), editor, SLOT(undo()));
 	undoact->setShortcut(Qt::Key_U + Qt::CTRL);
+	undoact->setEnabled(false);
 	QAction *redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
+	QObject::connect(editor, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
 	QObject::connect(redoact, SIGNAL(triggered()), editor, SLOT(redo()));
 	redoact->setShortcut(Qt::Key_R + Qt::CTRL);
+	redoact->setEnabled(false);
 	editmenu->addSeparator();
 	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
 	cutact->setShortcut(Qt::Key_X + Qt::CTRL);
+	cutact->setEnabled(false);
 	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
 	copyact->setShortcut(Qt::Key_C + Qt::CTRL);
+	copyact->setEnabled(false);
 	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
 	pasteact->setShortcut(Qt::Key_P + Qt::CTRL);
 	editmenu->addSeparator();
@@ -168,7 +163,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
+	QObject::connect(editor, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
 	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
+	QObject::connect(editor, SIGNAL(copyAvailable(bool)), copyact, SLOT(setEnabled(bool)));
 	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
 	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
@@ -194,6 +191,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
 	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
 	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
+	editmenu->addSeparator();
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
 	variableWinVisibleAct->setCheckable(true);
@@ -243,6 +241,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QMenu *runmenu = menuBar()->addMenu(QObject::tr("&Run"));
 	runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("&Run"));
 	runact->setShortcut(Qt::Key_F5);
+	editmenu->addSeparator();
 	debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("&Debug"));
 	debugact->setShortcut(Qt::Key_F5 + Qt::CTRL);
 	stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("S&tep"));
@@ -264,8 +263,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
 	docact->setShortcut(Qt::Key_F1);
 	QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
+	QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
+	QObject::connect(onlinehact, SIGNAL(triggered()), this, SLOT(onlineHelp()));
+	helpmenu->addSeparator();
 	QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256"));
-	QObject::connect(aboutact, SIGNAL(triggered()), aboutdialog, SLOT(show()));
+	QObject::connect(aboutact, SIGNAL(triggered()), this, SLOT(about()));
 
 	// Add actions to main window toolbar
 	maintbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -309,6 +311,25 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 }
 
+void MainWindow::onlineHelp()
+{
+	QDesktopServices::openUrl(QUrl("http://doc.basic256.org"));
+}
+
+void MainWindow::about()
+{
+	QMessageBox::about(this, QObject::tr("About BASIC-256"),
+		QObject::tr("<h2>BASIC-256</h2>"
+		"version <b>"VERSION"</b>"
+		"<p>Copyright &copy; 2006-2010, The BASIC-256 Team</p>"
+		"<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>"
+		"<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>"
+		"<p><i>You should have received a copy of the GNU General Public License along "
+		"with this program; if not, write to the Free Software Foundation, Inc., "
+		"51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"));
+
+}
+
 void MainWindow::updateRecent()
 {
 	//update recent list on file menu
@@ -328,7 +349,6 @@ void MainWindow::updateRecent()
 
 }
 
-
 MainWindow::~MainWindow()
 {
 }
@@ -345,14 +365,14 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 		doquit = (msgBox.exec() == QMessageBox::Yes);
 	}
 	if (doquit) {
-         e->accept();
-     } else {
-         e->ignore();
-     }
-     
-     // save current screen posision
-     QSettings settings(SETTINGSORG, SETTINGSAPP);
-     settings.setValue(SETTINGSSIZE, size());
-     settings.setValue(SETTINGSPOS, pos());
+		e->accept();
+	} else {
+		e->ignore();
+	}
+
+	// save current screen posision
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.setValue(SETTINGSSIZE, size());
+	settings.setValue(SETTINGSPOS, pos());
 
 }
