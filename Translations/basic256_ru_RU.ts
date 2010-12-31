@@ -92,7 +92,7 @@
     <name>DocumentationWin</name>
     <message>
         <source>Help Navigation</source>
-        <translation>Навигация по справке</translation>
+        <translation type="obsolete">Навигация по справке</translation>
     </message>
     <message>
         <source>Search:</source>
@@ -105,6 +105,22 @@
     <message>
         <source>Search Backward</source>
         <translation type="obsolete">Поиск назад</translation>
+    </message>
+    <message>
+        <source>&amp;Back</source>
+        <translation>&amp;Назад</translation>
+    </message>
+    <message>
+        <source>&amp;Forward</source>
+        <translation>&amp;Вперед</translation>
+    </message>
+    <message>
+        <source>&amp;Home</source>
+        <translation>&amp;Домой</translation>
+    </message>
+    <message>
+        <source>&amp;Exit</source>
+        <translation>В&amp;ыход</translation>
     </message>
 </context>
 <context>
@@ -362,31 +378,31 @@
     <name>PreferencesWin</name>
     <message>
         <source>BASIC-256 Preferences and Settings</source>
-        <translation>BASIC-256 настройки и параметры</translation>
+        <translation type="obsolete">BASIC-256 настройки и параметры</translation>
     </message>
     <message>
         <source>Preferences and Settings Password:</source>
-        <translation>Пароль для настроек:</translation>
+        <translation type="obsolete">Пароль для настроек:</translation>
     </message>
     <message>
         <source>Allow SYSTEM statement</source>
-        <translation>Разрешить SYSTEM</translation>
+        <translation type="obsolete">Разрешить SYSTEM</translation>
     </message>
     <message>
         <source>Allow GETSETTING/SETSETTING statements</source>
-        <translation>Разрешить GETSETTING/SETSETTING</translation>
+        <translation type="obsolete">Разрешить GETSETTING/SETSETTING</translation>
     </message>
     <message>
         <source>Allow PORTIN/PORTOUT statements</source>
-        <translation>Разрешить PORTIN/PORTOUT</translation>
+        <translation type="obsolete">Разрешить PORTIN/PORTOUT</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation type="obsolete">Отмена</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation>Сохранить</translation>
+        <translation type="obsolete">Сохранить</translation>
     </message>
 </context>
 <context>
@@ -461,7 +477,7 @@
     </message>
     <message>
         <source>About BASIC-256</source>
-        <translation type="obsolete">О BASIC-256</translation>
+        <translation>О BASIC-256</translation>
     </message>
     <message>
         <source>Graphics Output</source>
@@ -676,6 +692,18 @@ Please check your printer settings.</source>
     <message>
         <source>Preferences</source>
         <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>BASIC-256 Reference</source>
+        <translation>Справочник по BASIC-256</translation>
+    </message>
+    <message>
+        <source>&amp;Online help</source>
+        <translation>&amp;Интернет-справка</translation>
+    </message>
+    <message>
+        <source>&lt;h2&gt;BASIC-256&lt;/h2&gt;version &lt;b&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
