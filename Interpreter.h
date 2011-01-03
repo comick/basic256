@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <cmath>
 #include <sqlite3.h>
+#include <dirent.h>
 #include "BasicGraph.h"
 #include "Stack.h"
 #include "Variables.h"
@@ -154,6 +155,8 @@ class Interpreter : public QThread
   int lasterrorline;
   int onerroraddress;
   int netsockfd[NUMSOCKETS];
+  DIR *directorypointer;			// used by dir function
+
 };
 
 

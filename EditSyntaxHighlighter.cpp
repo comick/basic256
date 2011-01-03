@@ -107,6 +107,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Dd][Ee][Cc][Ii][Mm][Aa][Ll]\\b"					// decimal
 		<< "\\b[Dd][Ee][Gg][Rr][Ee][Ee][Ss]\\b"					// degrees
 		<< "\\b[Dd][Ii][Mm]\\b"							// dim
+		<< "\\b[Dd][Ii][Rr]\\b"							// dir
 		<< "\\b[Dd][Oo]\\b"							// do
 		<< "\\b[Ee][Ll][Ss][Ee]\\b"						// else
 		<< "\\b[Ee][Nn][Dd]\\b"							// end

@@ -952,13 +952,8 @@ Interpreter::execByteCode()
 					stack.push(0);
 				} else {
 					//read entire line
-					int maxsize = 2048;
-					char * strarray = (char *) malloc(maxsize);
-					memset(strarray, 0, maxsize);
-					stream[fn]->readLine(strarray, maxsize);
-					while((char) strarray[strlen(strarray)-1] == '\n') strarray[strlen(strarray)-1] = (char) 0x00;
-					stack.push(strdup(strarray));
-					free(strarray);
+					QByteArray l = stream[fn]->readLine();
+					stack.push(strdup(l.data()));
 				}
 			}
 		}
@@ -3572,6 +3567,7 @@ Interpreter::execByteCode()
 			case OP_IMGSAVE:
 				{
 					// Image Save - Save image
+					op++;
 					char *type = stack.popstring();
          				char *file = stack.popstring();
 					QStringList validtypes;
@@ -3586,11 +3582,41 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_DIR:
+				{
+					// Get next directory entry - id path send start a new folder else get next file name
+					// return "" if we have no names on list - skippimg . and ..
+					op++;
+					char *folder = stack.popstring();
+					if (strlen(folder)>0) {
+						directorypointer = opendir( folder );
+					}
+					if (directorypointer != NULL) {
+						struct dirent *dirp;
+						dirp = readdir(directorypointer);
+						while(dirp != NULL && dirp->d_name[0]=='.') dirp = readdir(directorypointer);
+						if (dirp) {
+							stack.push(strdup(dirp->d_name));
+						} else {
+							stack.push(strdup(""));
+							closedir(directorypointer);
+							directorypointer = NULL;
+						}
+					} else {
+						errornum = ERROR_FOLDER;
+						stack.push(strdup(""));
+					}
+					free(folder);
+				}
+				break;
 
 
 
 
 
+
+				
+				
 
 
 

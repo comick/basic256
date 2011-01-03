@@ -247,6 +247,7 @@ imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 sqr [Ss][Qq][Rr]
 sqrt [Ss][Qq][Rr][Tt]
 exp [Ee][Xx][Pp]
+dir [Dd][Ii][Rr]
 
 %%
 
@@ -438,6 +439,7 @@ exp [Ee][Xx][Pp]
 {volume}	{ count(); return B256VOLUME; }
 {currentdir}	{ count(); return B256CURRENTDIR; }
 {changedir}	{ count(); return B256CHANGEDIR; }
+{dir}	{ count(); return B256DIR; }
 {decimal}	{ count(); return B256DECIMAL; }
 {dbopen}	{ count(); return B256DBOPEN; }
 {dbclose}	{ count(); return B256DBCLOSE; }

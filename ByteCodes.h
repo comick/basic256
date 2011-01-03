@@ -260,4 +260,5 @@
 #define OP_BINARYAND		0x2d
 #define OP_BINARYNOT		0x2e
 #define OP_IMGSAVE		0x2f
+#define OP_DIR		0x30
 
