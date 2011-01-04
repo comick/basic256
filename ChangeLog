@@ -1,3 +1,10 @@
+2011-01-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.55
+* allow assignment of indirect list of values {} to redimision an array to the correct size
+* added two optional arguments to INSTR() - Start and IgnoreCase
+* added Unicode safe string REPLACE function.
+* added Unicode safe substring count COUNT() function.
+* added EXPLODE() function to split a string into a string or numeric array
+
 2011-01-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.54
 * added dir function
 

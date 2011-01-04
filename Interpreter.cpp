@@ -1234,7 +1234,9 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			int items = i[1];
 			op += 2 * sizeof(int);
-
+			
+			if (variables.arraysize(*i)!=items) variables.arraydimstring(*i, items, 1, false);
+			
 			for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 			{
 				char *str = stack.popstring(); // dont free we are assigning this to a variable
@@ -1248,6 +1250,58 @@ Interpreter::execByteCode()
 					errornum = variables.error();
 				}			
 			}
+		}
+		break;
+		
+	case OP_EXPLODE:
+	case OP_EXPLODE_C:
+	case OP_EXPLODESTR:
+	case OP_EXPLODESTR_C:
+		{
+			// unicode safe explode a string to an array function
+			bool ok;
+			unsigned char opcode = *op;
+			op++;
+			int *i = (int *) op;		// variable number
+			op += sizeof(int);
+			
+			Qt::CaseSensitivity casesens = Qt::CaseSensitive;
+			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODE_C) {
+				if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
+			}
+	
+			char *needle = stack.popstring();
+			char *haystack = stack.popstring();
+			QString qneedle = QString::fromUtf8(needle);
+			QString qhaystack = QString::fromUtf8(haystack);
+					
+			QStringList list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
+			
+			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR) {
+				if (variables.arraysize(*i)!=list.size()) variables.arraydimstring(*i, list.size(), 1, false);
+			} else {
+				if (variables.arraysize(*i)!=list.size()) variables.arraydimfloat(*i, list.size(), 1, false);
+			}
+
+			for(int x=0; x<list.size(); x++) {
+				if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR) {
+					variables.arraysetstring(*i, x, strdup(list.at(x).toUtf8().data()));
+					if (variables.error()==ERROR_NONE) {
+						if(debugMode) emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, x)), x));
+					} else {
+						errornum = variables.error();
+					}			
+				} else {
+					variables.arraysetfloat(*i, x, list.at(x).toDouble(&ok));
+					if (variables.error()==ERROR_NONE) {
+						emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, x)), x));
+					} else {
+						errornum = variables.error();
+					}			
+				}
+			}
+			free(needle);
+			free(haystack);
 		}
 		break;
 
@@ -1302,7 +1356,9 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			int items = i[1];
 			op += 2 * sizeof(int);
-
+			
+			if (variables.arraysize(*i)!=items) variables.arraydimfloat(*i, items, 1, false);
+			
 			for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 			{
 				double one = stack.popfloat();
@@ -1332,10 +1388,16 @@ Interpreter::execByteCode()
 			if (variables.type(*i) == T_STRARRAY)
 			{
 				stack.push(variables.arraygetstring(*i, index));
+				if (variables.error()!=ERROR_NONE) {
+					errornum = variables.error();
+				}			
 			}
 			else if (variables.type(*i) == T_ARRAY)
 			{
 				stack.push(variables.arraygetfloat(*i, index));
+				if (variables.error()!=ERROR_NONE) {
+					errornum = variables.error();
+				}			
 			}
 			else
 			{
@@ -1356,10 +1418,16 @@ Interpreter::execByteCode()
 			if (variables.type(*i) == T_STRARRAY)
 			{
 				stack.push(variables.array2dgetstring(*i, xindex, yindex));
+				if (variables.error()!=ERROR_NONE) {
+					errornum = variables.error();
+				}			
 			}
 			else if (variables.type(*i) == T_ARRAY)
 			{
 				stack.push(variables.array2dgetfloat(*i, xindex, yindex));
+				if (variables.error()!=ERROR_NONE) {
+					errornum = variables.error();
+				}			
 			}
 			else
 			{
@@ -1600,16 +1668,29 @@ Interpreter::execByteCode()
 
 
 	case OP_INSTR:
+	case OP_INSTR_S:
+	case OP_INSTR_SC:
 		{
 			// unicode safe instr function
+			unsigned char opcode = *op;
 			op++;
+			
+			Qt::CaseSensitivity casesens = Qt::CaseSensitive;
+			int start = 0;
+			if(opcode==OP_INSTR_SC) {
+				if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
+			}
+			if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
+				start = stack.popfloat()-1;
+			}
+			
 			char *str = stack.popstring();
 			char *hay = stack.popstring();
 
 			QString qstr = QString::fromUtf8(str);
 			QString qhay = QString::fromUtf8(hay);
 			
-			stack.push((int) (qhay.indexOf(qstr)+1));
+			stack.push((int) (qhay.indexOf(qstr, start, casesens)+1));
 
 			free(str);
 			free(hay);
@@ -3609,6 +3690,60 @@ Interpreter::execByteCode()
 					free(folder);
 				}
 				break;
+
+			case OP_REPLACE:
+			case OP_REPLACE_C:
+				{
+					// unicode safe replace function
+					unsigned char opcode = *op;
+					op++;
+					
+					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
+					if(opcode==OP_REPLACE_C) {
+						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
+					}
+			
+					char *to = stack.popstring();
+					char *from = stack.popstring();
+					char *haystack = stack.popstring();
+
+					QString qto = QString::fromUtf8(to);
+					QString qfrom = QString::fromUtf8(from);
+					QString qhaystack = QString::fromUtf8(haystack);
+			
+					stack.push(strdup(qhaystack.replace(qfrom, qto, casesens).toUtf8().data()));
+
+					free(to);
+					free(from);
+					free(haystack);
+				}
+				break;
+
+			case OP_COUNT:
+			case OP_COUNT_C:
+				{
+					// unicode safe count function
+					unsigned char opcode = *op;
+					op++;
+					
+					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
+					if(opcode==OP_COUNT_C) {
+						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
+					}
+			
+					char *needle = stack.popstring();
+					char *haystack = stack.popstring();
+
+					QString qneedle = QString::fromUtf8(needle);
+					QString qhaystack = QString::fromUtf8(haystack);
+			
+					stack.push((int) (qhaystack.count(qneedle, casesens)));
+
+					free(needle);
+					free(haystack);
+				}
+				break;
+
 
 
 

@@ -1,0 +1,10 @@
+# counttest.jbs 2011-01-03 j.m.reneau
+# for version 0.9.6.55
+
+a$ = "We all live in a yellow submarine, yellow submarine, yellow, submarine."
+
+print a$
+print "count of w = " + count(a$,"w")
+print "count of W = " + count(a$,"W")
+print "count of YeLlOw (ignore case) = " + count(a$,"YeLlOw",true)
+print "count of W (ignore case) = " + count(a$,"W",true)

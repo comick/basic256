@@ -76,12 +76,15 @@
 #define OP_LENGTH		0x31
 #define OP_MID			0x32
 #define OP_INSTR		0x33
+#define OP_INSTR_S		0x34
+#define OP_INSTR_SC		0x35
 
-#define OP_OPEN			0x35
-#define OP_READ			0x36
-#define OP_WRITE		0x37
-#define OP_CLOSE		0x38
-#define OP_RESET		0x39
+
+#define OP_OPEN			0x36
+#define OP_READ			0x37
+#define OP_WRITE		0x38
+#define OP_CLOSE		0x39
+#define OP_RESET		0x3a
 
 #define OP_SOUND		0x40
 
@@ -102,6 +105,11 @@
 #define OP_DIM           	0x4f
 #define OP_DIMSTR        	0x50
 #define OP_ONERROR         	0x51
+#define OP_EXPLODESTR		0x52
+#define OP_EXPLODESTR_C		0x53
+#define OP_EXPLODE		0x54
+#define OP_EXPLODE_C		0x55
+
 
 
 //2 Int argument ops
@@ -261,4 +269,11 @@
 #define OP_BINARYNOT		0x2e
 #define OP_IMGSAVE		0x2f
 #define OP_DIR		0x30
+#define OP_REPLACE		0x31
+#define OP_REPLACE_C		0x32
+#define OP_COUNT		0x33
+#define OP_COUNT_C		0x34
+#define OP_IMPLODE		0x35
+#define OP_IMPLODE_D		0x36
+
 

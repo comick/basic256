@@ -1,0 +1,9 @@
+# replacetest.jbs 2011-01-03 j.m.reneau
+# for version 0.9.6.55
+
+a$ = "We all live in a yellow submarine, yellow submarine, yellow, submarine."
+
+print a$
+print Replace(a$,"yellow","blue")
+print Replace(a$,"we","Aliens")
+print Replace(a$, "we", "Beatles", true)

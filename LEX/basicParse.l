@@ -248,7 +248,10 @@ sqr [Ss][Qq][Rr]
 sqrt [Ss][Qq][Rr][Tt]
 exp [Ee][Xx][Pp]
 dir [Dd][Ii][Rr]
-
+replace [Rr][Ee][Pp][Ll][Aa][Cc][Ee]
+count [Cc][Oo][Uu][Nn][Tt]
+explode [Ee][Xx][Pp][Ll][Oo][Dd][Ee]
+implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 %%
 
 {label} {
@@ -469,6 +472,10 @@ dir [Dd][Ii][Rr]
 {setsetting}	{ count(); return B256SETSETTING; }
 {portin}	{ count(); return B256PORTIN; }
 {portout}	{ count(); return B256PORTOUT; }
+{replace}	{ count(); return B256REPLACE; }
+{count}	{ count(); return B256COUNT; }
+{explode}	{ count(); return B256EXPLODE; }
+{implode}	{ count(); return B256IMPLODE; }
 {rem}		{ count(); return '\n'; }
 {remeol}	{ count(); return '\n'; }
 {remalt}	{ count(); return '\n'; }

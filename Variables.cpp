@@ -149,7 +149,7 @@ char *Variables::getstring(int varnum)
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
 	}
-	return(NULL);
+	return strdup("");
 }
 
 void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
@@ -429,7 +429,7 @@ char *Variables::arraygetstring(int varnum, int index)
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
 	}
-	return(NULL);
+	return strdup("");
 }
 
 char *Variables::array2dgetstring(int varnum, int x, int y)
@@ -450,7 +450,7 @@ char *Variables::array2dgetstring(int varnum, int x, int y)
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
 	}
-	return(NULL);
+	return strdup("");
 }
 
 
