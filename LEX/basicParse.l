@@ -130,6 +130,7 @@ right [Rr][Ii][Gg][Hh][Tt]
 upper [Uu][Pp][Pp][Ee][Rr]
 lower [Ll][Oo][Ww][Ee][Rr]
 instr [Ii][Nn][Ss][Tt][Rr]
+instrx [Ii][Nn][Ss][Tt][Rr][Xx]
 ceil [Cc][Ee][Ii][Ll]
 floor [Ff][Ll][Oo][Oo][Rr]
 abs [Aa][Bb][Ss]
@@ -251,6 +252,9 @@ dir [Dd][Ii][Rr]
 replace [Rr][Ee][Pp][Ll][Aa][Cc][Ee]
 count [Cc][Oo][Uu][Nn][Tt]
 explode [Ee][Xx][Pp][Ll][Oo][Dd][Ee]
+replacex [Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]
+countx [Cc][Oo][Uu][Nn][Tt][Xx]
+explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 %%
 
@@ -305,6 +309,7 @@ implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 {upper}		{ count(); return B256UPPER; }
 {lower}		{ count(); return B256LOWER; }
 {instr}		{ count(); return B256INSTR; }
+{instrx}		{ count(); return B256INSTRX; }
 {ceil}		{ count(); return B256CEIL; }
 {floor}		{ count(); return B256FLOOR; }
 {abs}		{ count(); return B256ABS; }
@@ -475,6 +480,9 @@ implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 {replace}	{ count(); return B256REPLACE; }
 {count}	{ count(); return B256COUNT; }
 {explode}	{ count(); return B256EXPLODE; }
+{replacex}	{ count(); return B256REPLACEX; }
+{countx}	{ count(); return B256COUNTX; }
+{explodex}	{ count(); return B256EXPLODEX; }
 {implode}	{ count(); return B256IMPLODE; }
 {rem}		{ count(); return '\n'; }
 {remeol}	{ count(); return '\n'; }

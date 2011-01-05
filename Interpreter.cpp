@@ -1257,6 +1257,8 @@ Interpreter::execByteCode()
 	case OP_EXPLODE_C:
 	case OP_EXPLODESTR:
 	case OP_EXPLODESTR_C:
+	case OP_EXPLODEX:
+	case OP_EXPLODEXSTR:
 		{
 			// unicode safe explode a string to an array function
 			bool ok;
@@ -1275,16 +1277,21 @@ Interpreter::execByteCode()
 			QString qneedle = QString::fromUtf8(needle);
 			QString qhaystack = QString::fromUtf8(haystack);
 					
-			QStringList list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
+			QStringList list;
+			if(opcode==OP_EXPLODE || opcode==OP_EXPLODE_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODESTR_C) {
+				list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
+			} else {
+				list = qhaystack.split(QRegExp(qneedle), QString::KeepEmptyParts);
+			}
 			
-			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR) {
+			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
 				if (variables.arraysize(*i)!=list.size()) variables.arraydimstring(*i, list.size(), 1, false);
 			} else {
 				if (variables.arraysize(*i)!=list.size()) variables.arraydimfloat(*i, list.size(), 1, false);
 			}
 
 			for(int x=0; x<list.size(); x++) {
-				if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR) {
+				if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
 					variables.arraysetstring(*i, x, strdup(list.at(x).toUtf8().data()));
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode) emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, x)), x));
@@ -1670,18 +1677,21 @@ Interpreter::execByteCode()
 	case OP_INSTR:
 	case OP_INSTR_S:
 	case OP_INSTR_SC:
+	case OP_INSTRX:
+	case OP_INSTRX_S:
 		{
 			// unicode safe instr function
 			unsigned char opcode = *op;
 			op++;
 			
 			Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-			int start = 0;
 			if(opcode==OP_INSTR_SC) {
 				if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 			}
-			if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
-				start = stack.popfloat()-1;
+
+			int start = 1;
+			if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC || opcode==OP_INSTRX_S) {
+				start = stack.popfloat();
 			}
 			
 			char *str = stack.popstring();
@@ -1690,7 +1700,23 @@ Interpreter::execByteCode()
 			QString qstr = QString::fromUtf8(str);
 			QString qhay = QString::fromUtf8(hay);
 			
-			stack.push((int) (qhay.indexOf(qstr, start, casesens)+1));
+			printf("start %i  length %i \n", start, qstr.length());
+			
+			int pos = 0;
+			if(start < 1) {
+				errornum = ERROR_STRSTART;
+			} else {
+				if (start > qhay.length()) {
+					errornum = ERROR_STREND;
+				} else {
+					if(opcode==OP_INSTR || opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
+						pos = qhay.indexOf(qstr, start-1, casesens)+1;
+					} else {
+						pos = qhay.indexOf(QRegExp(qstr), start-1)+1;
+					}
+				}
+			}
+			stack.push(pos);
 
 			free(str);
 			free(hay);
@@ -3693,6 +3719,7 @@ Interpreter::execByteCode()
 
 			case OP_REPLACE:
 			case OP_REPLACE_C:
+			case OP_REPLACEX:
 				{
 					// unicode safe replace function
 					unsigned char opcode = *op;
@@ -3711,7 +3738,11 @@ Interpreter::execByteCode()
 					QString qfrom = QString::fromUtf8(from);
 					QString qhaystack = QString::fromUtf8(haystack);
 			
-					stack.push(strdup(qhaystack.replace(qfrom, qto, casesens).toUtf8().data()));
+					if(opcode==OP_REPLACE || opcode==OP_REPLACE_C) {
+						stack.push(strdup(qhaystack.replace(qfrom, qto, casesens).toUtf8().data()));
+					} else {
+						stack.push(strdup(qhaystack.replace(QRegExp(qfrom), qto).toUtf8().data()));
+					}
 
 					free(to);
 					free(from);
@@ -3721,6 +3752,7 @@ Interpreter::execByteCode()
 
 			case OP_COUNT:
 			case OP_COUNT_C:
+			case OP_COUNTX:
 				{
 					// unicode safe count function
 					unsigned char opcode = *op;
@@ -3737,7 +3769,11 @@ Interpreter::execByteCode()
 					QString qneedle = QString::fromUtf8(needle);
 					QString qhaystack = QString::fromUtf8(haystack);
 			
-					stack.push((int) (qhaystack.count(qneedle, casesens)));
+					if(opcode==OP_COUNT || opcode==OP_COUNT_C) {
+						stack.push((int) (qhaystack.count(qneedle, casesens)));
+					} else {
+						stack.push((int) (qhaystack.count(QRegExp(qneedle))));
+					}
 
 					free(needle);
 					free(haystack);

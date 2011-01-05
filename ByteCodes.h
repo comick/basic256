@@ -78,13 +78,15 @@
 #define OP_INSTR		0x33
 #define OP_INSTR_S		0x34
 #define OP_INSTR_SC		0x35
+#define OP_INSTRX		0x36
+#define OP_INSTRX_S		0x37
 
 
-#define OP_OPEN			0x36
-#define OP_READ			0x37
-#define OP_WRITE		0x38
-#define OP_CLOSE		0x39
-#define OP_RESET		0x3a
+#define OP_OPEN			0x38
+#define OP_READ			0x39
+#define OP_WRITE		0x3a
+#define OP_CLOSE		0x3b
+#define OP_RESET		0x3c
 
 #define OP_SOUND		0x40
 
@@ -109,6 +111,8 @@
 #define OP_EXPLODESTR_C		0x53
 #define OP_EXPLODE		0x54
 #define OP_EXPLODE_C		0x55
+#define OP_EXPLODEXSTR		0x56
+#define OP_EXPLODEX		0x57
 
 
 
@@ -271,9 +275,11 @@
 #define OP_DIR		0x30
 #define OP_REPLACE		0x31
 #define OP_REPLACE_C		0x32
-#define OP_COUNT		0x33
-#define OP_COUNT_C		0x34
-#define OP_IMPLODE		0x35
-#define OP_IMPLODE_D		0x36
+#define OP_REPLACEX		0x33
+#define OP_COUNT		0x34
+#define OP_COUNT_C		0x35
+#define OP_COUNTX		0x36
+#define OP_IMPLODE		0x37
+#define OP_IMPLODE_D		0x38
 
 

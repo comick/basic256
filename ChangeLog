@@ -1,3 +1,9 @@
+2011-01-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.56
+* Added INSTRX() to return position of a Regular Expression
+* added REPLACEX() function to find an regular expression and replace with a string.
+* added COUNTX() function to retuen number of occourances of a regular expression.
+* added EXPLODEX() function to split a string into a string or numeric array on a regular expression
+
 2011-01-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.55
 * allow assignment of indirect list of values {} to redimision an array to the correct size
 * added two optional arguments to INSTR() - Start and IgnoreCase
