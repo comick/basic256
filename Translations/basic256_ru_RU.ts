@@ -378,31 +378,35 @@
     <name>PreferencesWin</name>
     <message>
         <source>BASIC-256 Preferences and Settings</source>
-        <translation type="obsolete">BASIC-256 настройки и параметры</translation>
+        <translation>BASIC-256 настройки и параметры</translation>
     </message>
     <message>
         <source>Preferences and Settings Password:</source>
-        <translation type="obsolete">Пароль для настроек:</translation>
+        <translation>Пароль для настроек:</translation>
     </message>
     <message>
         <source>Allow SYSTEM statement</source>
-        <translation type="obsolete">Разрешить SYSTEM</translation>
+        <translation>Разрешить SYSTEM</translation>
     </message>
     <message>
         <source>Allow GETSETTING/SETSETTING statements</source>
-        <translation type="obsolete">Разрешить GETSETTING/SETSETTING</translation>
+        <translation>Разрешить GETSETTING/SETSETTING</translation>
     </message>
     <message>
         <source>Allow PORTIN/PORTOUT statements</source>
-        <translation type="obsolete">Разрешить PORTIN/PORTOUT</translation>
+        <translation>Разрешить PORTIN/PORTOUT</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="obsolete">Отмена</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="obsolete">Сохранить</translation>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <source>Preferences and settings have been saved.</source>
+        <translation>Настройки и параметры сохранены.</translation>
     </message>
 </context>
 <context>

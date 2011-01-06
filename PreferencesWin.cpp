@@ -27,7 +27,7 @@ using namespace std;
 PreferencesWin::PreferencesWin (QWidget * parent)
 		:QDialog(parent)
 {
-	
+
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	//resize(settings.value(SETTINGSPREFSIZE, QSize(500, 500)).toSize());
@@ -70,7 +70,7 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	
 	this->setLayout(layout);
 	this->show();
-	
+
 }
 
 void PreferencesWin::clickCancelButton() {
@@ -95,7 +95,7 @@ void PreferencesWin::clickSaveButton() {
 	settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
 	//
 	QMessageBox msgBox;
-	msgBox.setText("Preferences and settings have been saved.");
+	msgBox.setText(tr("Preferences and settings have been saved."));
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setDefaultButton(QMessageBox::Ok);
 	msgBox.exec();
@@ -108,7 +108,6 @@ void PreferencesWin::closeEvent(QCloseEvent *e) {
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	//settings.setValue(SETTINGSPREFSIZE, size());
 	settings.setValue(SETTINGSPREFPOS, pos());
-
 
 }
 

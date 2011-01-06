@@ -143,16 +143,16 @@ Section "Uninstall"
   Delete $INSTDIR\phonon4.dll
   Delete $INSTDIR\QtCore4.dll
   Delete $INSTDIR\QtGui4.dll
-  Delete $INSTDIR\QtNetwork4.dll
-  Delete $INSTDIR\QtWebKit4.dll
-  Delete $INSTDIR\QtXmlPatterns4.dll
+;  Delete $INSTDIR\QtNetwork4.dll
+;  Delete $INSTDIR\QtWebKit4.dll
+;  Delete $INSTDIR\QtXmlPatterns4.dll
   Delete $INSTDIR\sqlite3.dll
   Delete $INSTDIR\inpout32.dll
- Delete $INSTDIR\ChangeLog
+  Delete $INSTDIR\ChangeLog
   Delete $INSTDIR\CONTRIBUTORS
   Delete $INSTDIR\license.txt
   RMDir /r $INSTDIR\Examples
- RMDir /r $INSTDIR\help
+  RMDir /r $INSTDIR\help
   RMDir /r $INSTDIR\Translations
   Delete $INSTDIR\uninstall.exe
 
