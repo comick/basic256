@@ -93,6 +93,8 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Cc][Oo][Ll][Oo][Rr]\\b"						// color
 		<< "\\b[Cc][Oo][Ll][Oo][Uu][Rr]\\b"					// colour
 		<< "\\b[Cc][Oo][Ss]\\b"							// cos
+		<< "\\b[Cc][Oo][Uu][Nn][Tt]\\b"					// count
+		<< "\\b[Cc][Oo][Uu][Nn][Tt][Xx]\\b"			// countx
 		<< "\\b[Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]\\b"			// currentdir
 		<< "\\b[Dd][Aa][Yy]\\b"							// day
 		<< "\\b[Dd][Bb][Cc][Ll][Oo][Ss][Ee]\\b"					// dbclose
@@ -116,6 +118,8 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Oo][Ff]\\b"							// eof
 		<< "\\b[Ee][Xx][Ii][Ss][Tt][Ss]\\b"					// exists
 		<< "\\b[Ee][Xx][Pp]\\b"							// exp
+		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee]\\b"			// explode
+		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]\\b"	// explodex
 		<< "\\b[Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]\\b"		// fastgraphics
 		<< "\\b[Ff][Ll][Oo][Oo][Rr]\\b"						// floor
 		<< "\\b[Ff][Oo][Nn][Tt]\\b"						// font
@@ -134,6 +138,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ii][Mm][Gg][Ss][Aa][Vv][Ee]\\b"					// imgsave
 		<< "\\b[Ii][Nn][Pp][Uu][Tt]\\b"						// input
 		<< "\\b[Ii][Nn][Ss][Tt][Rr]\\b"						// instr
+		<< "\\b[Ii][Nn][Ss][Tt][Rr][Xx]\\b"				// instrx
 		<< "\\b[Ii][Nn][Tt]\\b"							// int
 		<< "\\b[Kk][Ee][Yy]\\b"							// key
 		<< "\\b[Kk][Ii][Ll][Ll]\\b"						// kill
@@ -183,6 +188,8 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Rr][Ee][Cc][Tt]\\b"						// rect
 		<< "\\b[Rr][Ee][Dd][Ii][Mm]\b"						// redim
 		<< "\\b[Rr][Ee][Ff][Rr][Ee][Ss][Hh]\\b"					// refresh
+		<< "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee]\\b"					// replace
+		<< "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]\\b"				// replacex
 		<< "\\b[Rr][Ee][Ss][Ee][Tt]\\b"						// reset
 		<< "\\b[Rr][Ee][Tt][Uu][Rr][Nn]\\b"	        			// return
 		<< "\\b[Rr][Gg][Bb]\\b"							// rgb

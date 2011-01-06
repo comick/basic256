@@ -1,21 +1,26 @@
-2011-01-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.56
-* Added INSTRX() to return position of a Regular Expression
-* added REPLACEX() function to find an regular expression and replace with a string.
-* added COUNTX() function to retuen number of occourances of a regular expression.
-* added EXPLODEX() function to split a string into a string or numeric array on a regular expression
+2011-01-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.56 (469)
+	* added INSTRX() to return position of a Regular Expression
+	* added REPLACEX() function to find an regular expression and replace with a string
+	* added COUNTX() function to retuen number of occourances of a regular expression
+	* added EXPLODEX() function to split a string into a string or numeric array on a regular expression
 
-2011-01-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.55
-* allow assignment of indirect list of values {} to redimision an array to the correct size
-* added two optional arguments to INSTR() - Start and IgnoreCase
-* added Unicode safe string REPLACE function.
-* added Unicode safe substring count COUNT() function.
-* added EXPLODE() function to split a string into a string or numeric array
+2011-01-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.55 (468)
+	* allow assignment of indirect list of values {} to redimision an array to the correct size
+	* added two optional arguments to INSTR() - Start and IgnoreCase
+	* added Unicode safe string REPLACE function
+	* added Unicode safe substring count COUNT() function
+	* added EXPLODE() function to split a string into a string or numeric array
 
-2011-01-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.54
-* added dir function
+2011-01-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.54 (467)
+	* added dir() function
+
+2010-12-31 sergey irupin <lamp@altlinux.org> 0.9.6.53 (466)
+	* add offline help system
+	* replace About window
+	* fixed highlighting of keywords
 
 2010-12-13 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.53 (452)
-* changed variables object to use a map for storage and not a static array - in preparation for some day handling run levels
+	* changed variables object to use a map for storage and not a static array - in preparation for some day handling run levels
 
 2010-12-12 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.52 (451)
 	* moved variables out of interperter into a new object in preparation for some day adding multiple run levels to handle true functions and subroutines
