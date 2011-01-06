@@ -113,7 +113,7 @@
 #define OP_EXPLODE_C		0x55
 #define OP_EXPLODEXSTR		0x56
 #define OP_EXPLODEX		0x57
-
+#define OP_IMPLODE		0x58
 
 
 //2 Int argument ops
@@ -279,7 +279,5 @@
 #define OP_COUNT		0x34
 #define OP_COUNT_C		0x35
 #define OP_COUNTX		0x36
-#define OP_IMPLODE		0x37
-#define OP_IMPLODE_D		0x38
 
 

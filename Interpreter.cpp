@@ -1312,6 +1312,42 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_IMPLODE:
+		{
+
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			
+			char *delim = stack.popstring();
+			QString qdelim = QString::fromUtf8(delim);
+
+			QString stuff = "";
+
+			if (variables.type(*i) == T_STRARRAY || variables.type(*i) == T_ARRAY)
+			{
+				int kount = variables.arraysize(*i);
+				for(int n=0;n<kount;n++) {
+					if (n>0) stuff.append(qdelim);
+					if (variables.type(*i) == T_STRARRAY) {
+						stuff.append(QString::fromUtf8(variables.arraygetstring(*i, n)));
+					} else {
+						stack.push(variables.arraygetfloat(*i, n));
+						stuff.append(stack.popstring());
+					}
+				}
+			} else {
+				errornum = ERROR_NOTARRAY;
+			}
+
+			stack.push(strdup(stuff.toUtf8().data()));
+		
+			free(delim);
+		}
+		break;
+
+
+
 	case OP_ARRAYASSIGN:
 		{
 			op++;

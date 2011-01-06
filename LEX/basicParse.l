@@ -480,6 +480,7 @@ implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 {replace}	{ count(); return B256REPLACE; }
 {count}	{ count(); return B256COUNT; }
 {explode}	{ count(); return B256EXPLODE; }
+{implode}	{ count(); return B256IMPLODE; }
 {replacex}	{ count(); return B256REPLACEX; }
 {countx}	{ count(); return B256COUNTX; }
 {explodex}	{ count(); return B256EXPLODEX; }

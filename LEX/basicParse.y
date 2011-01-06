@@ -1078,6 +1078,11 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACE); }
 	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACE_C); }
 	| B256REPLACEX '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACEX); }
+	| B256IMPLODE '(' B256STRINGVAR ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
+	| B256IMPLODE '(' B256STRINGVAR ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
+	| B256IMPLODE '(' B256VARIABLE ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
+	| B256IMPLODE '(' B256VARIABLE ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
+
 ;
 
 %%
