@@ -87,9 +87,9 @@ Section "BASIC256"
   File .\release\phonon4.dll
   File .\release\QtCore4.dll
   File .\release\QtGui4.dll
-  File .\release\QtNetwork4.dll
-  File .\release\QtWebKit4.dll
-  File .\release\QtXmlPatterns4.dll
+;  File .\release\QtNetwork4.dll
+;  File .\release\QtWebKit4.dll
+;  File .\release\QtXmlPatterns4.dll
   File .\release\sqlite3.dll
   File .\release\inpout32.dll
   File ChangeLog
