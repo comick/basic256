@@ -139,7 +139,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ii][Mm][Pp][Ll][Oo][Dd][Ee]\\b"					// implode
 		<< "\\b[Ii][Nn][Pp][Uu][Tt]\\b"						// input
 		<< "\\b[Ii][Nn][Ss][Tt][Rr]\\b"						// instr
-		<< "\\b[Ii][Nn][Ss][Tt][Rr][Xx]\\b"				// instrx
+		<< "\\b[Ii][Nn][Ss][Tt][Rr][Xx]\\b"					// instrx
 		<< "\\b[Ii][Nn][Tt]\\b"							// int
 		<< "\\b[Kk][Ee][Yy]\\b"							// key
 		<< "\\b[Kk][Ii][Ll][Ll]\\b"						// kill
@@ -173,6 +173,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Nn][Ee][Rr][Rr][Oo][Rr]\\b"					// onerror
 		<< "\\b[Oo][Pp][Ee][Nn]\\b"						// open
 		<< "\\b[Oo][Rr]\\b"							// or
+		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
 		<< "\\b[Pp][Ii]\\b"							// pi
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel

@@ -100,6 +100,8 @@ Section "BASIC256"
   SetOutPath $INSTDIR\help 
   File /r /x ".svn" ..\doc\help\en 
   File /r /x ".svn" ..\doc\help\ru 
+  File /r /x ".svn" ..\doc\help\de 
+  File /r /x ".svn" ..\doc\help\fr 
   
   SetOutPath $INSTDIR\Translations 
   File .\Translations\*.qm
