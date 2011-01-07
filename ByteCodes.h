@@ -279,5 +279,6 @@
 #define OP_COUNT		0x34
 #define OP_COUNT_C		0x35
 #define OP_COUNTX		0x36
+#define OP_OSTYPE		0x37
 
 

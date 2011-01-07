@@ -258,6 +258,8 @@ addStringOp(char op, char *data) {
 %token B256BINARYOR B256BINARYAND B256BINARYNOT
 %token B256IMGSAVE
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
+%token B256OSTYPE
+
 
 %union
 {
@@ -1024,6 +1026,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256COUNT '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNT); }
 	| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNT_C); }
 	| B256COUNTX '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNTX); }
+	| B256OSTYPE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_OSTYPE); }
 ;
 
 stringlist: stringexpr { listlen = 1; }

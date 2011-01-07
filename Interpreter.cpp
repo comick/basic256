@@ -530,7 +530,9 @@ Interpreter::initialize()
 	once = true;
 	currentLine = 1;
 	stream = new QFile *[NUMFILES];
-	for (int t=0;t<NUMFILES;t++) stream[t] = NULL;
+	for (int t=0;t<NUMFILES;t++) {
+		stream[t] = NULL;
+	}
 	emit(resizeGraph(300, 300));
 	image = graph->image;
 	fontfamily = QString("");
@@ -540,7 +542,9 @@ Interpreter::initialize()
 	stack.fToAMask = stack.defaultFToAMask;
 	dbconn = NULL;
 	dbset = NULL;
-	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t] = netSockClose(netsockfd[t]);
+	for (int t=0;t<NUMSOCKETS;t++) {
+		netsockfd[t] = netSockClose(netsockfd[t]);
+	}
 }
 
 
@@ -561,6 +565,10 @@ Interpreter::cleanup()
 		byteCode = NULL;
 	}
 	closeDatabase();
+	if(directorypointer) {
+		closedir(directorypointer);
+		directorypointer = NULL;
+	}
 }
 
 void Interpreter::closeDatabase() {
@@ -3732,6 +3740,10 @@ Interpreter::execByteCode()
 					op++;
 					char *folder = stack.popstring();
 					if (strlen(folder)>0) {
+						if(directorypointer) {
+							closedir(directorypointer);
+							directorypointer = NULL;
+						}
 						directorypointer = opendir( folder );
 					}
 					if (directorypointer != NULL) {
@@ -3816,9 +3828,23 @@ Interpreter::execByteCode()
 				}
 				break;
 
-
-
-
+			case OP_OSTYPE:
+				{
+					// Return type of OS this compile was for
+					op++;
+					int os = -1;
+					#ifdef WIN32
+						os = 0;
+					#endif
+					#ifdef LINUX
+						os = 1;
+					#endif
+					#ifdef MACX
+						os = 2;
+					#endif
+					stack.push(os);
+				}
+				break;
 
 
 

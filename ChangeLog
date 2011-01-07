@@ -1,3 +1,6 @@
+2011-01-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.58
+	* added OSTYPE function to return the type of OS this was compiled
+
 2011-01-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.57
 	* added IMPLODE to change an array to a string
 

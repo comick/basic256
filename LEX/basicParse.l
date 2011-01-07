@@ -256,6 +256,7 @@ replacex [Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]
 countx [Cc][Oo][Uu][Nn][Tt][Xx]
 explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
+ostype [Oo][Ss][Tt][Yy][Pp][Ee]
 %%
 
 {label} {
@@ -484,7 +485,7 @@ implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 {replacex}	{ count(); return B256REPLACEX; }
 {countx}	{ count(); return B256COUNTX; }
 {explodex}	{ count(); return B256EXPLODEX; }
-{implode}	{ count(); return B256IMPLODE; }
+{ostype}	{ count(); return B256OSTYPE; }
 {rem}		{ count(); return '\n'; }
 {remeol}	{ count(); return '\n'; }
 {remalt}	{ count(); return '\n'; }
