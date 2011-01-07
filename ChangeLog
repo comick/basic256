@@ -1,8 +1,9 @@
 2011-01-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.58
 	* added OSTYPE function to return the type of OS this was compiled
 
-2011-01-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.57
+2011-01-06 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.57 (473)
 	* added IMPLODE to change an array to a string
+	* updated Russian translation
 
 2011-01-05 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.56 (469)
 	* added INSTRX() to return position of a Regular Expression
@@ -13,7 +14,7 @@
 2011-01-03 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.55 (468)
 	* allow assignment of indirect list of values {} to redimision an array to the correct size
 	* added two optional arguments to INSTR() - Start and IgnoreCase
-	* added Unicode safe string REPLACE function
+	* added Unicode safe string REPLACE() function
 	* added Unicode safe substring count COUNT() function
 	* added EXPLODE() function to split a string into a string or numeric array
 
