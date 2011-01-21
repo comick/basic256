@@ -344,6 +344,13 @@ RunController::speakWords(QString text)
   	//while (clock() < endwait) {}
 
 #endif
+#ifdef LINUX_ESPEAK_EXECUTE
+	// easy espeak implementation when all else fails
+	text.replace("\""," quote ");
+	text.prepend("espeak \"");
+	text.append("\"");
+	executeSystem(text.toLatin1().data());
+#endif
 #ifdef MACX_SAY
 	// easy macosX implementation - call the command line say statement
 	text.replace("\""," quote ");

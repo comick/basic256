@@ -1,3 +1,7 @@
+2011-01-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.59
+	* added option to use espeak for TTS from shell not as a library
+              * update documentation in BASIC256.pro and COMPILING.txt
+
 2011-01-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.58
 	* added OSTYPE function to return the type of OS this was compiled
 

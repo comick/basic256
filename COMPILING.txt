@@ -1,12 +1,18 @@
+Compiling Instructions and Dependencies - 2010-01-20
 
-To compile, you'll need the open source version of QT4, GNU flex and bison.
-Specifcally for LINUX you will need:
-* FLite or Espeak development libraries
-* sqlite3 database development libraries
-* SDL and SDL_mixer development libraries
-* g++ compiler and base development libraries
+LINUX you will need:
+* g++
+* qt4-dev-tools
+* flex
+* bison
+* libsdl-mixer??-dev
+* libespeak-dev (if using the LINUX_ESPEAK option in BASIC256.pro)
+  - this option gives an integrated library approach to the say statement
+* espeak (if using the LINUX_ESPEAK_EXECUTE option in BASIC256.pro)
+  - use this option and install if the library use of portaudio conflicts with other sound systems installed
+* and the sqlite3 amalgamation installed from sqlite.org
 
-Specifically for Windows you will need:
+Windows you will need:
 * mingw c++ compiler for Win32
   - be sure to edit your system environment path to include the <install path>\bin folder
 * qt sdk

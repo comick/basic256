@@ -37,13 +37,15 @@ unix:!macx {
 	## this is the LINUX (unix-non-mac)
 	DEFINES		+= LINUX
 	
-	## for the SAY command (LINUX) you need to choose one TTS engine - uncomment the one desired
-	## espeak library (causes problems with sound statement in 0.9.5i under ubuntu 9.10 - suggest flite)
+	## TTS Option 1 - ececute 'espak' command to speak 
+	#DEFINES		+= 	LINUX_ESPEAK_EXECUTE
+
+	## TTS Option 2 - use the espeak library
 	DEFINES		+= 	LINUX_ESPEAK
 	INCLUDEPATH		+=	/usr/include/espeak
 	LIBS			+=	-lespeak
 
-	## flite library
+	## TTS Option 3 - use the flite library
 	#DEFINES			+= 	LINUX_FLITE
 	#INCLUDEPATH		+=	/usr/include/flite
 	#LIBS			+=	-lflite_cmu_us_kal16
