@@ -272,7 +272,7 @@
 #define OP_BINARYAND		0x2d
 #define OP_BINARYNOT		0x2e
 #define OP_IMGSAVE		0x2f
-#define OP_DIR		0x30
+#define OP_DIR			0x30
 #define OP_REPLACE		0x31
 #define OP_REPLACE_C		0x32
 #define OP_REPLACEX		0x33
@@ -280,5 +280,6 @@
 #define OP_COUNT_C		0x35
 #define OP_COUNTX		0x36
 #define OP_OSTYPE		0x37
+#define OP_MSEC			0x38
 
 

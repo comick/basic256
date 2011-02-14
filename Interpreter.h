@@ -23,6 +23,7 @@
 #include <QThread>
 #include <QFile>
 #include <QDir>
+#include <QTime>
 #include <stdio.h>
 #include <cmath>
 #include <sqlite3.h>
@@ -156,6 +157,7 @@ class Interpreter : public QThread
   int onerroraddress;
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;			// used by dir function
+  QTime runtimer;				// used by 
 
 };
 

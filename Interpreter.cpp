@@ -545,6 +545,7 @@ Interpreter::initialize()
 	for (int t=0;t<NUMSOCKETS;t++) {
 		netsockfd[t] = netSockClose(netsockfd[t]);
 	}
+	runtimer.start();
 }
 
 
@@ -3843,6 +3844,14 @@ Interpreter::execByteCode()
 						os = 2;
 					#endif
 					stack.push(os);
+				}
+				break;
+
+			case OP_MSEC:
+				{
+					// Return number of milliseconds the BASIC256 program has been running
+					op++;
+					stack.push((int) (runtimer.elapsed()));
 				}
 				break;
 
