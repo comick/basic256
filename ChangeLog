@@ -1,3 +1,8 @@
+2011-02-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.61
+	* fixed windows only problem with DIR statement
+	* restructured and documented the doc tree
+	* worked on the windows installer to allow for optional install of offline help and examples
+
 2011-02-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.60
 	* added MSEC function to return program running time in milliseconds
 

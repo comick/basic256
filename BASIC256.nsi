@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6.56"
-  StrCpy $VERSIONDATE "2011-01-05"
+  StrCpy $VERSION "0.9.6.61"
+  StrCpy $VERSIONDATE "2011-02-14"
 FunctionEnd
 
 Function customPage
@@ -56,6 +56,8 @@ InstallDirRegKey HKLM "Software\BASIC256" "Install_Dir"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
+InstType "Full"
+InstType "Minimal"
 ;--------------------------------
 
 ; Pages
@@ -75,34 +77,22 @@ UninstPage instfiles
 ; The stuff to install
 Section "BASIC256"
 
-  SectionIn RO
+  SectionIn 1 2 RO
   
-  ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
-  ; Put file there
   File .\release\BASIC256.exe
   File .\release\libgcc_s_dw2-1.dll
   File .\release\mingwm10.dll
   File .\release\phonon4.dll
   File .\release\QtCore4.dll
   File .\release\QtGui4.dll
-;  File .\release\QtNetwork4.dll
-;  File .\release\QtWebKit4.dll
-;  File .\release\QtXmlPatterns4.dll
   File .\release\sqlite3.dll
   File .\release\inpout32.dll
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
-  File /r /x ".svn" Examples
-  
-  SetOutPath $INSTDIR\help 
-  File /r /x ".svn" ..\doc\help\en 
-  File /r /x ".svn" ..\doc\help\ru 
-  File /r /x ".svn" ..\doc\help\de 
-  File /r /x ".svn" ..\doc\help\fr 
-  
+
   SetOutPath $INSTDIR\Translations 
   File .\Translations\*.qm
 
@@ -118,14 +108,44 @@ Section "BASIC256"
   
 SectionEnd
 
-; Optional section (can be disabled by the user)
+; Start Menu Shrtcuts (can be disabled by the user)
 Section "Start Menu Shortcuts"
-
+  SectionIn 1
   SetOutPath $INSTDIR 
   CreateDirectory "$SMPROGRAMS\BASIC256"
   CreateShortCut "$SMPROGRAMS\BASIC256\BASIC256.lnk" "$INSTDIR\BASIC256.exe" "" "$INSTDIR\BASIC256.exe" 0
   CreateShortCut "$SMPROGRAMS\BASIC256\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  
+SectionEnd
+
+; Offline Help (can be disabled by the user for each language)
+SectionGroup "Off-line Help and Documentation"
+  Section "English (en)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\en
+    File /x ".svn" ..\doc\help\en\*.*
+  SectionEnd 
+  Section "Russian (ru)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\ru
+    File /x ".svn" ..\doc\help\ru\*.*
+  SectionEnd
+  Section "French (fr)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\fr
+    File /x ".svn" ..\doc\help\fr\*.*
+  SectionEnd
+  Section "German (de)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\de
+    File /x ".svn" ..\doc\help\de\*.*
+  SectionEnd
+SectionGroupEnd
+
+; Examples (can be disabled by the user)
+Section "Example Programs"
+  SectionIn 1
+  SetOutPath $INSTDIR
+  File /r /x ".svn" Examples
 SectionEnd
 
 ;--------------------------------
@@ -145,9 +165,6 @@ Section "Uninstall"
   Delete $INSTDIR\phonon4.dll
   Delete $INSTDIR\QtCore4.dll
   Delete $INSTDIR\QtGui4.dll
-;  Delete $INSTDIR\QtNetwork4.dll
-;  Delete $INSTDIR\QtWebKit4.dll
-;  Delete $INSTDIR\QtXmlPatterns4.dll
   Delete $INSTDIR\sqlite3.dll
   Delete $INSTDIR\inpout32.dll
   Delete $INSTDIR\ChangeLog
