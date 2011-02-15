@@ -1,3 +1,6 @@
+2011-02-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.60
+	* added MSEC function to return program running time in milliseconds
+
 2011-01-20 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.59
 	* added option to use espeak for TTS from shell not as a library
               * update documentation in BASIC256.pro and COMPILING.txt

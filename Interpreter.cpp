@@ -344,6 +344,7 @@ Interpreter::Interpreter(BasicGraph *bg)
 	image = bg->image;
 	graph = bg;
 	fastgraphics = false;
+	directorypointer=NULL;
 	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
 	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
@@ -566,7 +567,7 @@ Interpreter::cleanup()
 		byteCode = NULL;
 	}
 	closeDatabase();
-	if(directorypointer) {
+	if(directorypointer != NULL) {
 		closedir(directorypointer);
 		directorypointer = NULL;
 	}
@@ -3741,7 +3742,7 @@ Interpreter::execByteCode()
 					op++;
 					char *folder = stack.popstring();
 					if (strlen(folder)>0) {
-						if(directorypointer) {
+						if(directorypointer != NULL) {
 							closedir(directorypointer);
 							directorypointer = NULL;
 						}
