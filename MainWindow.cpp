@@ -157,10 +157,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *selectallact = editmenu->addAction(QObject::tr("Select &All"));
 	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
+	QAction *findact = editmenu->addAction(QObject::tr("&Find"));
+	editmenu->addSeparator();
 	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	editmenu->addSeparator();
 	QAction *prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
-	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
 	QObject::connect(editor, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
@@ -168,7 +169,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(editor, SIGNAL(copyAvailable(bool)), copyact, SLOT(setEnabled(bool)));
 	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
+	QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
 	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
+	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 
 	bool extraSepAdded = false;
 	if (outputwgt->usesMenu())

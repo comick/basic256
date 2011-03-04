@@ -33,6 +33,7 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
  public:
   BasicEdit(QMainWindow *);
   void loadFile(QString);
+  void findString(QString, int);
   bool codeChanged;
 
  public slots:

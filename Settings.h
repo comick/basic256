@@ -38,6 +38,9 @@
 	#define SETTINGSPREFPOS "Pref/Pos"
 	#define SETTINGSPREFPASSWORD "Pref/Password"
 
+	// Find window
+	#define SETTINGSFINDPOS "Find/Pos"
+
 	// permissions
 	#define SETTINGSALLOWSYSTEM "Allow/System"
 	#define SETTINGSALLOWSYSTEMDEFAULT true

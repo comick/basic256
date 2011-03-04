@@ -28,6 +28,7 @@
 #include "BasicGraph.h"
 #include "Interpreter.h"
 #include "MainWindow.h"
+#include "FindWin.h"
 
 class RunController : public QObject
 {
@@ -63,6 +64,7 @@ class RunController : public QObject
   void stepThrough();
   void showDocumentation();
   void showPreferences();
+  void showFind();
 
  private:
   Interpreter *i;

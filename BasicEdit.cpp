@@ -384,4 +384,19 @@ void BasicEdit::beautifyProgram()
 	codeChanged = true;
 }
 
+void BasicEdit::findString(QString s, int direction)
+{
+	if (direction==0)
+	{
+		find(s);
+	} else {
+		find(s, QTextDocument::FindBackward);
+	}
+	//QMessageBox msgBox;
+	//msgBox.setText(QString("Find ") + s);
+	//msgBox.setStandardButtons(QMessageBox::Ok);
+	//msgBox.setDefaultButton(QMessageBox::Ok);
+	//msgBox.exec();
+}
+
 

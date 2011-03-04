@@ -1,3 +1,6 @@
+2011-03-04 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.62
+	* Added find dialog
+
 2011-02-14 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.61
 	* fixed windows only problem with DIR statement
 	* restructured and documented the doc tree

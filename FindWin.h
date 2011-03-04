@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/** Copyright (C) 2011, J.M.Reneau.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -16,9 +16,47 @@
  **/
 
 
-#ifndef __VERSION
-#define __VERSION
 
-#define VERSION "0.9.6.62 (2011-03-04)"
+#include <QMessageBox>
+#include <QWidget>
+#include <QDialog>
+#include <QGridLayout>
+#include <QToolBar>
+#include <QLabel>
+#include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QAction>
+#include <QObject>
+#include <QIcon>
+#include "BasicEdit.h"
+
+#ifndef FINDWINH
+
+#define FINDWINH
+
+class FindWin : public QDialog
+{
+  Q_OBJECT;
+
+ public:
+	FindWin(QWidget *);
+	void closeEvent(QCloseEvent *);
+
+private slots:
+	void clickCancelButton();
+	void clickForwardButton();
+	void clickBackButton();
+  
+private:
+	BasicEdit * be;
+	QLabel *searchforlabel;
+	QLineEdit *searchforinput;
+	QPushButton *cancelbutton;
+	QPushButton *forwardbutton;
+	QPushButton *backbutton;
+
+};
 
 #endif
