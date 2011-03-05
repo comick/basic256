@@ -29,6 +29,7 @@
 #include "Interpreter.h"
 #include "MainWindow.h"
 #include "FindWin.h"
+#include "ReplaceWin.h"
 
 class RunController : public QObject
 {
@@ -65,6 +66,7 @@ class RunController : public QObject
   void showDocumentation();
   void showPreferences();
   void showFind();
+  void showReplace();
 
  private:
   Interpreter *i;

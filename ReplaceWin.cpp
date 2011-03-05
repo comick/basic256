@@ -19,12 +19,12 @@
 
 using namespace std;
 
-#include "FindWin.h"
+#include "ReplaceWin.h"
 #include "Settings.h"
 #include "MainWindow.h"
 #include "md5.h"
 
-FindWin::FindWin (QWidget * parent)
+ReplaceWin::ReplaceWin (QWidget * parent)
 {
 
 	// parent must be basicedit
@@ -33,51 +33,65 @@ FindWin::FindWin (QWidget * parent)
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	move(settings.value(SETTINGSFINDPOS, QPoint(200, 200)).toPoint());
-	setWindowTitle(tr("BASIC-256 Find"));
+	setWindowTitle(tr("BASIC-256 Replace"));
 
 	QGridLayout * layout = new QGridLayout();
 	int r=0;
 
-	searchforlabel = new QLabel(tr("Search For:"),this);
-	searchforinput = new QLineEdit(QString::null,this);
-	searchforinput->setMaxLength(100);
-	layout->addWidget(searchforlabel,r,1,1,1);
-	layout->addWidget(searchforinput,r,2,1,2);
+	fromlabel = new QLabel(tr("From:"),this);
+	frominput = new QLineEdit(QString::null,this);
+	frominput->setMaxLength(100);
+	layout->addWidget(fromlabel,r,1,1,1);
+	layout->addWidget(frominput,r,2,1,3);
+	//
+	r++;
+	tolabel = new QLabel(tr("To:"),this);
+	toinput = new QLineEdit(QString::null,this);
+	toinput->setMaxLength(100);
+	layout->addWidget(tolabel,r,1,1,1);
+	layout->addWidget(toinput,r,2,1,3);
 	//
 	r++;
 	casesenscheckbox = new QCheckBox(tr("Case Sensitive"),this);
 	casesenscheckbox->setChecked(false);
-	layout->addWidget(casesenscheckbox,r,2,1,2);
+	layout->addWidget(casesenscheckbox,r,2,1,3);
 	//
 	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
-	forwardbutton = new QPushButton(tr("Search Forward"), this);
-	connect(forwardbutton, SIGNAL(clicked()), this, SLOT (clickForwardButton()));
-	backbutton = new QPushButton(tr("Search Backwards"), this);
-	connect(backbutton, SIGNAL(clicked()), this, SLOT (clickBackButton()));
 	layout->addWidget(cancelbutton,r,1,1,1);
-	layout->addWidget(forwardbutton,r,2,1,1);
-	layout->addWidget(backbutton,r,3,1,1);
-	
+	replaceallbutton = new QPushButton(tr("Replace All"), this);
+	connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
+	layout->addWidget(replaceallbutton,r,2,1,1);
+	replacebutton = new QPushButton(tr("Replace"), this);
+	connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
+	layout->addWidget(replacebutton,r,3,1,1);
+	findbutton = new QPushButton(tr("Find"), this);
+	connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
+	layout->addWidget(findbutton,r,4,1,1);
+	//
 	this->setLayout(layout);
 	this->show();
 
 }
 
-void FindWin::clickCancelButton() {
+void ReplaceWin::clickCancelButton() {
 	close();
 }
 
-void FindWin::clickForwardButton() {
-	be->findString(searchforinput->text(), false, casesenscheckbox->isChecked());
+void ReplaceWin::clickFindButton() {
+	be->findString(frominput->text(), false, casesenscheckbox->isChecked());
 }
 
-void FindWin::clickBackButton() {
-	be->findString(searchforinput->text(), true, casesenscheckbox->isChecked());
+void ReplaceWin::clickReplaceButton() {
+	be->replaceString(frominput->text(), toinput->text(), casesenscheckbox->isChecked(), false);
 }
 
-void FindWin::closeEvent(QCloseEvent *e) {
+void ReplaceWin::clickReplaceAllButton() {
+	be->replaceString(frominput->text(), toinput->text(), casesenscheckbox->isChecked(), true);
+}
+
+void ReplaceWin::closeEvent(QCloseEvent *e) {
 	// save current screen posision
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	settings.setValue(SETTINGSFINDPOS, pos());

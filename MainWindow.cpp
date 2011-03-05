@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
 	QAction *findact = editmenu->addAction(QObject::tr("&Find"));
+	QAction *replaceact = editmenu->addAction(QObject::tr("&Replace"));
 	editmenu->addSeparator();
 	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	editmenu->addSeparator();
@@ -170,6 +171,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
 	QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
+	QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
 	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 

@@ -41,6 +41,9 @@
 	// Find window
 	#define SETTINGSFINDPOS "Find/Pos"
 
+	// Replace window
+	#define SETTINGSREPLACEPOS "Replace/Pos"
+
 	// permissions
 	#define SETTINGSALLOWSYSTEM "Allow/System"
 	#define SETTINGSALLOWSYSTEMDEFAULT true

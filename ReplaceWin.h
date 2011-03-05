@@ -32,31 +32,35 @@
 #include <QIcon>
 #include "BasicEdit.h"
 
-#ifndef FINDWINH
+#ifndef REPLACEWINH
 
-#define FINDWINH
+#define REPLACEWINH
 
-class FindWin : public QDialog
+class ReplaceWin : public QDialog
 {
   Q_OBJECT;
 
  public:
-	FindWin(QWidget *);
+	ReplaceWin(QWidget *);
 	void closeEvent(QCloseEvent *);
 
 private slots:
 	void clickCancelButton();
-	void clickForwardButton();
-	void clickBackButton();
+	void clickFindButton();
+	void clickReplaceButton();
+	void clickReplaceAllButton();
   
 private:
 	BasicEdit * be;
-	QLabel *searchforlabel;
-	QLineEdit *searchforinput;
+	QLabel *fromlabel;
+	QLineEdit *frominput;
+	QLabel *tolabel;
+	QLineEdit *toinput;
 	QCheckBox *casesenscheckbox;
 	QPushButton *cancelbutton;
-	QPushButton *forwardbutton;
-	QPushButton *backbutton;
+	QPushButton *findbutton;
+	QPushButton *replacebutton;
+	QPushButton *replaceallbutton;
 
 };
 

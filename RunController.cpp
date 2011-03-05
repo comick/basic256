@@ -650,13 +650,20 @@ RunController::showPreferences()
 	}
 }
 
-void
-RunController::showFind()
+void RunController::showFind()
 {
-     FindWin *docwin = new FindWin(te);
-     docwin->show();
-     docwin->raise();
-     docwin->activateWindow();
+     FindWin *win = new FindWin(te);
+     win->show();
+     win->raise();
+     win->activateWindow();
+}
+
+void RunController::showReplace()
+{
+     ReplaceWin *win = new ReplaceWin(te);
+     win->show();
+     win->raise();
+     win->activateWindow();
 }
 
 

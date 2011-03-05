@@ -25,6 +25,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QMessageBox>
+#include <QFlags>
 using namespace std;
 
 #include "BasicEdit.h"
@@ -384,19 +385,42 @@ void BasicEdit::beautifyProgram()
 	codeChanged = true;
 }
 
-void BasicEdit::findString(QString s, int direction)
+void BasicEdit::findString(QString s, bool reverse, bool casesens)
 {
-	if (direction==0)
-	{
-		find(s);
-	} else {
-		find(s, QTextDocument::FindBackward);
+	QTextDocument::FindFlags flag;
+	if (reverse) flag |= QTextDocument::FindBackward;
+	if (casesens) flag |= QTextDocument::FindCaseSensitively;
+	if (!find(s, flag)) {
+		QMessageBox msgBox;
+		msgBox.setText(tr("String not found."));
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		msgBox.exec();
 	}
-	//QMessageBox msgBox;
-	//msgBox.setText(QString("Find ") + s);
-	//msgBox.setStandardButtons(QMessageBox::Ok);
-	//msgBox.setDefaultButton(QMessageBox::Ok);
-	//msgBox.exec();
 }
+
+void BasicEdit::replaceString(QString from, QString to, bool casesens, bool doall)
+{
+	bool doone = true;
+	QTextDocument::FindFlags flag;
+	if (casesens) flag |= QTextDocument::FindCaseSensitively;
+	while (doone) {
+		if (from.compare(this->textCursor().selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))!=0) {
+ 			if (!find(from, flag)) {
+				QMessageBox msgBox;
+				msgBox.setText(tr("String not found."));
+				msgBox.setStandardButtons(QMessageBox::Ok);
+				msgBox.setDefaultButton(QMessageBox::Ok);
+				msgBox.exec();
+				doall = false;
+			}
+		} else {
+			this->textCursor().clearSelection();
+			this->textCursor().insertText(to);
+		}
+		doone = doall;
+	}
+}
+
 
 

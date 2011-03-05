@@ -144,6 +144,7 @@ HEADERS			+=	EditSyntaxHighlighter.h
 HEADERS			+=	Stack.h
 HEADERS			+=	PreferencesWin.h
 HEADERS			+=	FindWin.h
+HEADERS			+=	ReplaceWin.h
 HEADERS			+=	md5.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
@@ -168,5 +169,6 @@ SOURCES			+=	EditSyntaxHighlighter.cpp
 SOURCES			+=	Stack.cpp
 SOURCES			+=	PreferencesWin.cpp
 SOURCES			+=	FindWin.cpp
+SOURCES			+=	ReplaceWin.cpp
 SOURCES			+=	md5.cpp
 
