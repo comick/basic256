@@ -45,19 +45,19 @@ class FindWin : public QDialog
 	void closeEvent(QCloseEvent *);
 
 private slots:
+	void changeSearchForInput(QString);
 	void clickCancelButton();
-	void clickForwardButton();
-	void clickBackButton();
+	void clickFindButton();
   
 private:
+	void saveSettings();
 	BasicEdit * be;
 	QLabel *searchforlabel;
 	QLineEdit *searchforinput;
-	QCheckBox *casesenscheckbox;
+	QCheckBox *casecheckbox;
+	QCheckBox *backcheckbox;
 	QPushButton *cancelbutton;
-	QPushButton *forwardbutton;
-	QPushButton *backbutton;
-
+	QPushButton *findbutton;
 };
 
 #endif

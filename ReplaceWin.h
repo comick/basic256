@@ -40,11 +40,12 @@ class ReplaceWin : public QDialog
 {
   Q_OBJECT;
 
- public:
+public:
 	ReplaceWin(QWidget *);
 	void closeEvent(QCloseEvent *);
 
 private slots:
+	void changeFromInput(QString);
 	void clickCancelButton();
 	void clickFindButton();
 	void clickReplaceButton();
@@ -52,11 +53,12 @@ private slots:
   
 private:
 	BasicEdit * be;
+	void saveSettings();
 	QLabel *fromlabel;
 	QLineEdit *frominput;
 	QLabel *tolabel;
 	QLineEdit *toinput;
-	QCheckBox *casesenscheckbox;
+	QCheckBox *casecheckbox;
 	QPushButton *cancelbutton;
 	QPushButton *findbutton;
 	QPushButton *replacebutton;

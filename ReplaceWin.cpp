@@ -39,22 +39,23 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 	int r=0;
 
 	fromlabel = new QLabel(tr("From:"),this);
-	frominput = new QLineEdit(QString::null,this);
-	frominput->setMaxLength(100);
 	layout->addWidget(fromlabel,r,1,1,1);
+	frominput = new QLineEdit(settings.value(SETTINGSREPLACEFROM, "").toString());
+	frominput->setMaxLength(100);
+	connect(frominput, SIGNAL(textChanged(QString)), this, SLOT (changeFromInput(QString)));
 	layout->addWidget(frominput,r,2,1,3);
 	//
 	r++;
 	tolabel = new QLabel(tr("To:"),this);
-	toinput = new QLineEdit(QString::null,this);
-	toinput->setMaxLength(100);
 	layout->addWidget(tolabel,r,1,1,1);
+	toinput = new QLineEdit(settings.value(SETTINGSREPLACETO, "").toString());
+	toinput->setMaxLength(100);
 	layout->addWidget(toinput,r,2,1,3);
 	//
 	r++;
-	casesenscheckbox = new QCheckBox(tr("Case Sensitive"),this);
-	casesenscheckbox->setChecked(false);
-	layout->addWidget(casesenscheckbox,r,2,1,3);
+	casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
+	casecheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACECASEDEFAULT).toBool());
+	layout->addWidget(casecheckbox,r,2,1,3);
 	//
 	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
@@ -72,7 +73,13 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 	//
 	this->setLayout(layout);
 	this->show();
+	changeFromInput(frominput->text());
+}
 
+void ReplaceWin::changeFromInput(QString t) {
+		replacebutton->setEnabled((t.length() != 0) && (t.compare(be->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
+		replaceallbutton->setEnabled(t.length() != 0);
+		findbutton->setEnabled(t.length() != 0);
 }
 
 void ReplaceWin::clickCancelButton() {
@@ -80,21 +87,31 @@ void ReplaceWin::clickCancelButton() {
 }
 
 void ReplaceWin::clickFindButton() {
-	be->findString(frominput->text(), false, casesenscheckbox->isChecked());
+	saveSettings();
+	be->findString(frominput->text(), false, casecheckbox->isChecked());
+	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceButton() {
-	be->replaceString(frominput->text(), toinput->text(), casesenscheckbox->isChecked(), false);
+	saveSettings();
+	be->replaceString(frominput->text(), toinput->text(), casecheckbox->isChecked(), false);
+	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceAllButton() {
-	be->replaceString(frominput->text(), toinput->text(), casesenscheckbox->isChecked(), true);
+	saveSettings();
+	be->replaceString(frominput->text(), toinput->text(), casecheckbox->isChecked(), true);
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {
-	// save current screen posision
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	settings.setValue(SETTINGSFINDPOS, pos());
+	saveSettings();
+}
 
+void ReplaceWin::saveSettings() {
+	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	settings.setValue(SETTINGSREPLACEPOS, pos());
+	settings.setValue(SETTINGSREPLACEFROM, frominput->text());
+	settings.setValue(SETTINGSREPLACETO, toinput->text());
+	settings.setValue(SETTINGSREPLACECASE, casecheckbox->isChecked());
 }
 

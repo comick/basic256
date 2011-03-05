@@ -408,7 +408,7 @@ void BasicEdit::replaceString(QString from, QString to, bool casesens, bool doal
 		if (from.compare(this->textCursor().selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))!=0) {
  			if (!find(from, flag)) {
 				QMessageBox msgBox;
-				msgBox.setText(tr("String not found."));
+				msgBox.setText(tr("Replace completed."));
 				msgBox.setStandardButtons(QMessageBox::Ok);
 				msgBox.setDefaultButton(QMessageBox::Ok);
 				msgBox.exec();

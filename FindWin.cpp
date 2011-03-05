@@ -39,48 +39,58 @@ FindWin::FindWin (QWidget * parent)
 	int r=0;
 
 	searchforlabel = new QLabel(tr("Search For:"),this);
-	searchforinput = new QLineEdit(QString::null,this);
-	searchforinput->setMaxLength(100);
 	layout->addWidget(searchforlabel,r,1,1,1);
+	searchforinput = new QLineEdit(settings.value(SETTINGSFINDSTRING, "").toString());
+	searchforinput->setMaxLength(100);
+	connect(searchforinput, SIGNAL(textChanged(QString)), this, SLOT (changeSearchForInput(QString)));
 	layout->addWidget(searchforinput,r,2,1,2);
 	//
 	r++;
-	casesenscheckbox = new QCheckBox(tr("Case Sensitive"),this);
-	casesenscheckbox->setChecked(false);
-	layout->addWidget(casesenscheckbox,r,2,1,2);
+	casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
+	casecheckbox->setChecked(settings.value(SETTINGSFINDCASE, SETTINGSFINDCASEDEFAULT).toBool());
+	layout->addWidget(casecheckbox,r,2,1,2);
 	//
 	r++;
-	cancelbutton = new QPushButton(tr("Cancel"), this);
+	backcheckbox = new QCheckBox(tr("Search Backwards"),this);
+	backcheckbox->setChecked(settings.value(SETTINGSFINDBACK, SETTINGSFINDBACKDEFAULT).toBool());
+	layout->addWidget(backcheckbox,r,2,1,2);
+	//
+	r++;
+	cancelbutton = new QPushButton(tr("Close"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
-	forwardbutton = new QPushButton(tr("Search Forward"), this);
-	connect(forwardbutton, SIGNAL(clicked()), this, SLOT (clickForwardButton()));
-	backbutton = new QPushButton(tr("Search Backwards"), this);
-	connect(backbutton, SIGNAL(clicked()), this, SLOT (clickBackButton()));
-	layout->addWidget(cancelbutton,r,1,1,1);
-	layout->addWidget(forwardbutton,r,2,1,1);
-	layout->addWidget(backbutton,r,3,1,1);
+	layout->addWidget(cancelbutton,r,2,1,1);
+	findbutton = new QPushButton(tr("Find"), this);
+	connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
+	layout->addWidget(findbutton,r,3,1,1);
 	
 	this->setLayout(layout);
 	this->show();
+	changeSearchForInput(searchforinput->text());
 
+}
+
+void FindWin::changeSearchForInput(QString t) {
+		findbutton->setEnabled(t.length() != 0);
 }
 
 void FindWin::clickCancelButton() {
 	close();
 }
 
-void FindWin::clickForwardButton() {
-	be->findString(searchforinput->text(), false, casesenscheckbox->isChecked());
-}
-
-void FindWin::clickBackButton() {
-	be->findString(searchforinput->text(), true, casesenscheckbox->isChecked());
+void FindWin::clickFindButton() {
+	saveSettings();	
+	be->findString(searchforinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
 }
 
 void FindWin::closeEvent(QCloseEvent *e) {
-	// save current screen posision
+	saveSettings();	
+}
+
+void FindWin::saveSettings() {
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	settings.setValue(SETTINGSFINDPOS, pos());
-
+	settings.setValue(SETTINGSFINDSTRING, searchforinput->text());
+	settings.setValue(SETTINGSFINDCASE, casecheckbox->isChecked());
+	settings.setValue(SETTINGSFINDBACK, backcheckbox->isChecked());
 }
 
