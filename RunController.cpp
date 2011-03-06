@@ -29,6 +29,7 @@
 using namespace std;
 
 #include "RunController.h"
+#include "MainWindow.h"
 #include "Settings.h"
 #include "md5.h"
 
@@ -92,6 +93,9 @@ RunController::RunController(MainWindow *mw)
 	goutput = mainwin->goutput;
 	statusbar = mainwin->statusBar();
 
+	findwin = NULL;
+	replacewin = NULL;
+
 	soundVolume = 5;	// set default sound volume to 1/2
 
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
@@ -126,6 +130,14 @@ RunController::RunController(MainWindow *mw)
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, AUDIO_S16SYS, 1, 2048);
 #endif
 }
+
+RunController::~RunController()
+{
+	if(findwin!=NULL) findwin->close();
+	if(replacewin!=NULL) replacewin->close();
+	//printf("rcdestroy\n");
+}
+
 
 // play a list of counds 0,2,4... = frequency & 1,3,5... = duration in ms
 // notes is arraylength/2 (number of notes)
@@ -652,18 +664,18 @@ RunController::showPreferences()
 
 void RunController::showFind()
 {
-     FindWin *win = new FindWin(te);
-     win->show();
-     win->raise();
-     win->activateWindow();
+     if (!findwin) findwin = new FindWin(te);
+     findwin->show();
+     findwin->raise();
+     findwin->activateWindow();
 }
 
 void RunController::showReplace()
 {
-     ReplaceWin *win = new ReplaceWin(te);
-     win->show();
-     win->raise();
-     win->activateWindow();
+     if (!replacewin) replacewin = new ReplaceWin(te);
+     replacewin->show();
+     replacewin->raise();
+     replacewin->activateWindow();
 }
 
 

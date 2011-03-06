@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	goutputwgt->setViewWidget(goutput);
 
 	RunController *rc = new RunController(this);
+	rcvoidpointer = rc;
 	editsyntax = new EditSyntaxHighlighter(editor->document());
 
 	// Main window toolbar
@@ -316,6 +317,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 }
 
+MainWindow::~MainWindow()
+{
+	//printf("mwdestroy\n");
+	((RunController *) rcvoidpointer)->~RunController();
+}
+
 void MainWindow::onlineHelp()
 {
 	QDesktopServices::openUrl(QUrl("http://doc.basic256.org"));
@@ -354,10 +361,6 @@ void MainWindow::updateRecent()
 
 }
 
-MainWindow::~MainWindow()
-{
-}
-
 void MainWindow::closeEvent(QCloseEvent *e) {
 	// quit the application but ask if there are unsaved changes in buffer
 	bool doquit = true;
@@ -379,5 +382,10 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	settings.setValue(SETTINGSSIZE, size());
 	settings.setValue(SETTINGSPOS, pos());
+
+	// close any windows from the runcontroller
+	RunController *rc = (RunController *) rcvoidpointer;
+	if (rc->findwin) rc->findwin->close();
+	if (rc->replacewin) rc->replacewin->close();
 
 }

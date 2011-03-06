@@ -36,6 +36,9 @@ class RunController : public QObject
   Q_OBJECT;
  public:
   RunController(MainWindow *);
+  ~RunController();
+  FindWin *findwin;
+  ReplaceWin *replacewin;
 
  signals:
   void debugStarted();
@@ -79,7 +82,6 @@ class RunController : public QObject
   QString bytefilename;
   MainWindow *mainwin;
   int soundVolume;
-
 
 };
 

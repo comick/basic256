@@ -114,5 +114,8 @@ int main(int argc, char *argv[])
 
 	setlocale(LC_ALL,"C");
 
-	return qapp.exec();
+	int returnval = qapp.exec();
+
+	mainwin->~MainWindow();
+ 	return returnval;
 }

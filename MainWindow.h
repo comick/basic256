@@ -57,6 +57,9 @@ public:
 
 private:
 	QAction *recentact[SETTINGSGROUPHISTN]; 
+	// void pointer to the run controller
+	// can't specify type because of circular reference
+	void *rcvoidpointer;		
 
 private slots:
 	void onlineHelp();

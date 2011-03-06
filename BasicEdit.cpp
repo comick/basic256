@@ -417,6 +417,7 @@ void BasicEdit::replaceString(QString from, QString to, bool casesens, bool doal
 		} else {
 			this->textCursor().clearSelection();
 			this->textCursor().insertText(to);
+			codeChanged = true;
 		}
 		doone = doall;
 	}
