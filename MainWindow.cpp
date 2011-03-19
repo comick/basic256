@@ -194,16 +194,20 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// View menuBar
 	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("&View"));
+	QAction *editWinVisibleAct = viewmenu->addAction(QObject::tr("&Edit Window"));
 	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
 	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
 	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
 	editmenu->addSeparator();
+	editWinVisibleAct->setCheckable(true);
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
 	variableWinVisibleAct->setCheckable(true);
+	editWinVisibleAct->setChecked(true);
 	textWinVisibleAct->setChecked(true);
 	graphWinVisibleAct->setChecked(true);
 	variableWinVisibleAct->setChecked(false);
+	QObject::connect(editWinVisibleAct, SIGNAL(toggled(bool)), editorwgt, SLOT(setVisible(bool)));
 	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), tdock, SLOT(setVisible(bool)));
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
 	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
