@@ -100,7 +100,6 @@ RunController::RunController(MainWindow *mw)
 
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
 	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
-	QObject::connect(i, SIGNAL(resizeGraph(int, int)), this, SLOT(goutputResize(int, int)));
 	QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
 	QObject::connect(i, SIGNAL(clearText()), this, SLOT(outputClear()));
 
@@ -124,6 +123,10 @@ RunController::RunController(MainWindow *mw)
 
 	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
 	QObject::connect(i, SIGNAL(varAssignment(QString, QString, int)), mainwin->vardock, SLOT(addVar(QString, QString, int)));
+
+	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
+	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
+
 
 #ifdef USESDL
 	//mono
@@ -523,16 +526,6 @@ RunController::outputFilter(QString text)
 }
 
 void
-RunController::goutputResize(int width, int height)
-{
-	mutex.lock();
-	goutput->resize(width, height);
-	goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
-	waitCond.wakeAll();
-	mutex.unlock();
-}
-
-void
 RunController::goutputFilter()
 {
 	mutex.lock();
@@ -677,5 +670,28 @@ void RunController::showReplace()
      replacewin->raise();
      replacewin->activateWindow();
 }
+
+void
+RunController::mainWindowsVisible(int w, bool v)
+{
+	//printf("mwv %i %i\n",w,v);
+	if (w==0) mainwin->editWinVisibleAct->setChecked(v);
+	if (w==1) mainwin->graphWinVisibleAct->setChecked(v);
+	if (w==2) mainwin->textWinVisibleAct->setChecked(v);
+}
+
+void
+RunController::mainWindowsResize(int w, int width, int height)
+{
+	// only resize graphics window now - may add other windows later
+	mutex.lock();
+	if (w==1) {
+		goutput->resize(width, height);
+		goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
+	}
+	waitCond.wakeAll();
+	mutex.unlock();
+}
+
 
 

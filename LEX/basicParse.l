@@ -258,6 +258,9 @@ explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 ostype [Oo][Ss][Tt][Yy][Pp][Ee]
 msec [Mm][Ss][Ee][Cc]
+editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 %%
 
 {label} {
@@ -488,6 +491,9 @@ msec [Mm][Ss][Ee][Cc]
 {explodex}	{ count(); return B256EXPLODEX; }
 {ostype}	{ count(); return B256OSTYPE; }
 {msec}		{ count(); return B256MSEC; }
+{editvisible}	{ count(); return B256EDITVISIBLE; }
+{graphvisible}	{ count(); return B256GRAPHVISIBLE; }
+{outputvisible}	{ count(); return B256OUTPUTVISIBLE; }
 {rem}		{ count(); return '\n'; }
 {remeol}	{ count(); return '\n'; }
 {remalt}	{ count(); return '\n'; }

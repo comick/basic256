@@ -46,9 +46,15 @@ public:
 	QAction * debugact;
 	QAction * stepact;
 	QAction * stopact;
+	QAction *editWinVisibleAct;
+	QAction *textWinVisibleAct;
+	QAction *graphWinVisibleAct;
   	BasicEdit * editor;
   	BasicOutput * output;
 	BasicGraph * goutput;
+	BasicWidget * editorwgt;
+	BasicWidget * outputwgt;
+	BasicWidget * goutputwgt;
 	VariableWin * vardock;
 	DocumentationWin * docdock;
 	EditSyntaxHighlighter * editsyntax;

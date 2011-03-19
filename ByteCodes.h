@@ -281,5 +281,9 @@
 #define OP_COUNTX		0x36
 #define OP_OSTYPE		0x37
 #define OP_MSEC			0x38
+#define OP_EDITVISIBLE		0x39
+#define OP_GRAPHVISIBLE		0x40
+#define OP_OUTPUTVISIBLE	0x41
+
 
 

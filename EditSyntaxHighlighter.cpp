@@ -111,6 +111,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Dd][Ii][Mm]\\b"							// dim
 		<< "\\b[Dd][Ii][Rr]\\b"							// dir
 		<< "\\b[Dd][Oo]\\b"							// do
+		<< "\\b[Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"   		// editvisible
 		<< "\\b[Ee][Ll][Ss][Ee]\\b"						// else
 		<< "\\b[Ee][Nn][Dd]\\b"							// end
 		<< "\\b[Ee][Nn][Dd][Ii][Ff]\\b"						// endif
@@ -131,6 +132,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Gg][Oo][Tt][Oo]\\b"						// goto
 		<< "\\b[Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]\\b"			// graphheignt
 		<< "\\b[Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]\\b"   			// graphsize
+		<< "\\b[Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"   		// graphvisible
 		<< "\\b[Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]\\b"   			// graphwidth
 		<< "\\b[Hh][Oo][Uu][Rr]\\b"						// hour
 		<< "\\b[Ii][Ff]\\b"							// if
@@ -175,6 +177,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Pp][Ee][Nn]\\b"						// open
 		<< "\\b[Oo][Rr]\\b"							// or
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
+		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
 		<< "\\b[Pp][Ii]\\b"							// pi
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel

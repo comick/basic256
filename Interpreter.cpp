@@ -534,7 +534,7 @@ Interpreter::initialize()
 	for (int t=0;t<NUMFILES;t++) {
 		stream[t] = NULL;
 	}
-	emit(resizeGraph(300, 300));
+	emit(mainWindowsResize(1, 300, 300));
 	image = graph->image;
 	fontfamily = QString("");
 	fontpoint = 0;
@@ -2737,7 +2737,7 @@ Interpreter::execByteCode()
 			if (width > 0 && height > 0)
 			{
 				mutex.lock();
-				emit(resizeGraph(width, height));
+				emit(mainWindowsResize(1, width, height));
 				waitCond.wait(&mutex);
 				mutex.unlock();
 			}
@@ -3855,6 +3855,23 @@ Interpreter::execByteCode()
 					stack.push((int) (runtimer.elapsed()));
 				}
 				break;
+
+			case OP_EDITVISIBLE:
+			case OP_GRAPHVISIBLE:
+			case OP_OUTPUTVISIBLE:
+				{
+					unsigned char opcode = *op;
+					op++;
+					int show = stack.popint();
+					if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
+					if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
+					if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
+				}
+				break;
+
+
+
+
 
 
 

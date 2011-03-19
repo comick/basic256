@@ -1,3 +1,6 @@
+2011-03-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.65
+	* Added GRAPHVISIBLE, EDITVISIBLE, and OUTPUTVISIBLE statements to hide sections if the UI from a running program.
+
 2011-03-18 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.64
 	* Added option to View menu to hide Edit Widget (program source)
 
@@ -158,6 +161,7 @@
 	* changed parser to allow labels at the begining of any line or on a line by themselves
 	* added display of column number of cursor in status bar when editing
 	* added _ as a valid character in a veriable or label name (first letter MUST still be a letter)
+
 
 2010-08-02 j.m.reneau <renejm@users.sourceforge.net> 0.9.6y
 	* Added sqLite database processing - dbopen, dbclose, dbsetopen, dbsetclose, and dbexecute statements, also dbint, dbfloat, dbstring, and dbrow functions to manipulate recordsets

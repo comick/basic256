@@ -114,7 +114,8 @@ class Interpreter : public QThread
   void goToLine(int);
   void highlightLine(int);
   void varAssignment(QString name, QString value, int arraylen);
-  void resizeGraph(int, int);
+  void mainWindowsResize(int, int, int);
+  void mainWindowsVisible(int, bool);
 
  private:
   int compareTwoStackVal(stackval *, stackval *);

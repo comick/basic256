@@ -63,11 +63,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	vardock = new VariableWin(this);
 
-	BasicWidget * editorwgt = new BasicWidget();
+	editorwgt = new BasicWidget();
 	editorwgt->setViewWidget(editor);
-	BasicWidget * outputwgt = new BasicWidget(QObject::tr("Text Output"));
+	outputwgt = new BasicWidget(QObject::tr("Text Output"));
 	outputwgt->setViewWidget(output);
-	BasicWidget * goutputwgt = new BasicWidget(QObject::tr("Graphics Output"));
+	goutputwgt = new BasicWidget(QObject::tr("Graphics Output"));
 	goutputwgt->setViewWidget(goutput);
 
 	RunController *rc = new RunController(this);
@@ -194,9 +194,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// View menuBar
 	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("&View"));
-	QAction *editWinVisibleAct = viewmenu->addAction(QObject::tr("&Edit Window"));
-	QAction *textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
-	QAction *graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
+	editWinVisibleAct = viewmenu->addAction(QObject::tr("&Edit Window"));
+	textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
+	graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
 	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
 	editmenu->addSeparator();
 	editWinVisibleAct->setCheckable(true);

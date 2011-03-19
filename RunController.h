@@ -59,7 +59,7 @@ class RunController : public QObject
   void outputFilter(QString text);
   void outputClear();
   void goutputFilter();
-  void goutputResize(int, int);
+  void mainWindowsResize(int, int, int);
   void startDebug();
   void startRun();
   void stopRun();
@@ -70,6 +70,7 @@ class RunController : public QObject
   void showPreferences();
   void showFind();
   void showReplace();
+  void mainWindowsVisible(int, bool);
 
  private:
   Interpreter *i;

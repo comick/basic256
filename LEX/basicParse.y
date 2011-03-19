@@ -259,6 +259,7 @@ addStringOp(char op, char *data) {
 %token B256IMGSAVE
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
+%token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
 
 
 %union
@@ -505,6 +506,9 @@ statement: gotostmt
 	| setsettingstmt
 	| portoutstmt
 	| imgsavestmt
+	| editvisiblestmt
+	| graphvisiblestmt
+	| outputvisiblestmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -836,6 +840,14 @@ imgsavestmt: B256IMGSAVE stringexpr  {addStringOp(OP_PUSHSTRING, "PNG"); addExte
 	| B256IMGSAVE stringexpr ',' stringexpr { addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); }
 ;
 
+editvisiblestmt: B256EDITVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_EDITVISIBLE); }
+;
+
+graphvisiblestmt: B256GRAPHVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_GRAPHVISIBLE); }
+;
+
+outputvisiblestmt: B256OUTPUTVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_OUTPUTVISIBLE); }
+;
 
 immediatestrlist: '{' stringlist '}'
 ;
