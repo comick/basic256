@@ -129,6 +129,11 @@ SectionGroup "Off-line Help and Documentation"
     SetOutPath $INSTDIR\help\ru
     File /x ".svn" ..\doc\help\ru\*.*
   SectionEnd
+  Section "Spanish (es)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\es
+    File /x ".svn" ..\doc\help\es\*.*
+  SectionEnd
   Section "French (fr)"
     SectionIn 1
     SetOutPath $INSTDIR\help\fr

@@ -1,3 +1,6 @@
+2011-05-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.65
+	* renamed spanish help file to es not sp
+
 2011-03-19 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.65
 	* Added GRAPHVISIBLE, EDITVISIBLE, and OUTPUTVISIBLE statements to hide sections if the UI from a running program.
 
