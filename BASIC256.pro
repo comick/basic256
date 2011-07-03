@@ -27,7 +27,6 @@ win32 {
 	LIBS			+= -lole32 \
 				-lsapi \
 				-lws2_32 \
-				-linpout32 \
 				-lwinmm
 
 

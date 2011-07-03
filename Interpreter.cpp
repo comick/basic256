@@ -28,8 +28,16 @@
 
 #ifdef WIN32
 	#include <winsock.h>
+	#include <windows.h>
+
 	typedef int socklen_t;
 
+	// for parallel port operations
+	HINSTANCE inpout32dll = NULL;
+	typedef unsigned char (CALLBACK* InpOut32InpType)(short int);
+	typedef void (CALLBACK* InpOut32OutType)(short int, unsigned char);
+	InpOut32InpType Inp32 = NULL;
+	InpOut32OutType Out32 = NULL;
 #else
 	#include <sys/types.h> 
 	#include <sys/socket.h>
@@ -66,12 +74,12 @@ extern QWaitCondition waitCond;
 extern QWaitCondition waitDebugCond;
 extern QWaitCondition waitInput;
 
-#ifdef WIN32
-	extern "C" { 
-		unsigned char Inp32(short int);
-		void Out32(short int, unsigned char);
-	}
-#endif
+//#ifdef WIN32
+//	extern "C" { 
+//		unsigned char Inp32(short int);
+//		void Out32(short int, unsigned char);
+//	}
+//#endif
 
 #define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
 
@@ -350,10 +358,27 @@ Interpreter::Interpreter(BasicGraph *bg)
 	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
 	// on a windows box start winsock
 	#ifdef WIN32
+		//
+		// initialize the winsock network library
 		WSAData wsaData;
 		int nCode;
 		if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
 			emit(outputReady(tr("ERROR - Unable to initialize Winsock library.\n")));
+		}
+		//
+		// initialize the inpout32 dll
+		inpout32dll  = LoadLibrary(L"inpout32.dll");
+		if (inpout32dll==NULL) {
+			emit(outputReady(tr("ERROR - Unable to find inpout32.dll - direct port I/O disabled.\n")));
+		} else {
+			Inp32 = (InpOut32InpType) GetProcAddress(inpout32dll, "Inp32");
+			if (Inp32==NULL) {
+				emit(outputReady(tr("ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.\n")));
+			}
+			Out32 = (InpOut32OutType) GetProcAddress(inpout32dll, "Out32");
+			if (Inp32==NULL) {
+				emit(outputReady(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
+			}
 		}
 	#endif
 }
@@ -3662,7 +3687,11 @@ Interpreter::execByteCode()
 					QSettings settings(SETTINGSORG, SETTINGSAPP);
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
-							Out32(port, data);
+							if (Out32==NULL) {
+								errornum = ERROR_NOTIMPLEMENTED;
+							} else {
+								Out32(port, data);
+							}
 						#else
 							errornum = ERROR_NOTIMPLEMENTED;
 						#endif
@@ -3680,7 +3709,11 @@ Interpreter::execByteCode()
 					QSettings settings(SETTINGSORG, SETTINGSAPP);
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
-							data = Inp32(port);
+							if (Inp32==NULL) {
+								errornum = ERROR_NOTIMPLEMENTED;
+							} else {
+								data = Inp32(port);
+							}
 						#else
 							errornum = ERROR_NOTIMPLEMENTED;
 						#endif

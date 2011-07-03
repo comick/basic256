@@ -1,4 +1,4 @@
-Compiling Instructions and Dependencies - 2010-01-20
+Compiling Instructions and Dependencies - 2011-06-30
 
 LINUX you will need:
 * g++
@@ -13,21 +13,27 @@ LINUX you will need:
 * and the sqlite3 amalgamation installed from sqlite.org
 
 Windows you will need:
-* mingw c++ compiler for Win32
-  - be sure to edit your system environment path to include the <install path>\bin folder
-* qt sdk
-  - if you download the qt 4.6 SDK mingw is included in the download with the path <qt install path>\2010.04\mingw
-  - you should use this mingw as it links with QT without version errors
-  - be sure to edit your system environment path to include the <qt install path>nnnn.nn\qt\bin folder
-* gtk win32 bundle headers and libraries from http://www.gtk.org/download-windows.html
+
+* mingw c++ compiler for Win32 and the qt sdk
+  - the easiest way to get this installed and working is to use the
+    Qt SDK version 1.x.x from the downloas page at QT.  Choose a custom install and select mingw to be installed
+  - You will have problems getting this to work if you do not have the EXACT mingw version required
+  - be sure you have the following (or similar) fildres listed in the PATH system variable
+    C:\QtSDK\mingw\bin and C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin
+
+* gtk win32 bundle headers and libraries from http://www.gtk.org/download/win32.php
+  - extract the zip file to the mingw folder
+
 * the gretl development headers need to be added to mingw they are in a file called mingw-extra.zip
   and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
-* sqlite development libraries and headers need to be installed and downloaded
+
+* sqlite development libraries and headers need to be installed and downloaded fron http://www.sqlite.org/download.html
   - use the *amalgation* zip file and copy the *.h files into MinGW/include
-  - download the windows dll xip file, extract files into MinGW/lib, and run the following
+  - download the windows dll zip file, extract files into MinGW/lib, and run the following
     dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
   - you will also need to place the sqlite.dll file in the project/trunk/debug 
     and project/trunk/release folders.
+
 * inpout32.dll
   - download version 1.2 from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
   - copy the file inpout32.dll into MinGW/lib

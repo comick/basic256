@@ -27,13 +27,10 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 		:QDialog(parent)
 {
 	QString localecode = ((MainWindow *) parent)->localecode;
-	QString indexfile;
-	QString windowsPath;
-	QString linuxPath;
-
-	windowsPath = "./help/";
-	linuxPath = "/usr/share/basic256/help/";
-	indexfile = "index.html";
+	QString windowsPath = QApplication::applicationDirPath() + "/help/";
+	QString linuxPath = "/usr/share/basic256/help/";
+	QString currentPath = "./";
+	QString indexfile = "index.html";
 
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
@@ -71,7 +68,13 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	this->setWindowTitle(QObject::tr("BASIC-256 Reference"));
 	this->show();
 
-	docs->setSearchPaths(QStringList() << windowsPath+localecode.left(2) << windowsPath+"en" << linuxPath+localecode.left(2) << linuxPath+"en");
+	docs->setSearchPaths(QStringList()
+		<< windowsPath+localecode.left(2)
+		<< linuxPath+localecode.left(2)
+		<< currentPath+localecode.left(2)
+		<< windowsPath+"en"
+		<< linuxPath+"en"
+		<< currentPath+"en");
 	docs->setSource(QUrl(indexfile));
 }
 

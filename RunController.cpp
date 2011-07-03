@@ -49,7 +49,9 @@ using namespace std;
 #endif
 
 #ifdef LINUX
-	#include <linux/soundcard.h>
+   // sys/soundcard.h instead of linux/soundcard.h in Debian so that we don't
+   // FTBFS on kfreebsd (See Debian bug #594164).
+   #include <sys/soundcard.h>
 #endif
 
 
