@@ -89,37 +89,37 @@ unix:!macx {
 	INSTALLS += transFiles
 	# EN - english help files
 	helpENFiles.files = ../doc/help/en/*.html \
-		../doc/help/en/*.css \
-		../doc/help/en/*.png \
-		../doc/help/en/*.jpg
+		./help/en/*.css \
+		./help/en/*.png \
+		./help/en/*.jpg
 	helpENFiles.path = /usr/share/basic256/help/en
 	INSTALLS += helpENFiles
 	# DE - german help files
 	helpDEFiles.files = ../doc/help/de/*.html \
-		../doc/help/de/*.css \
-		../doc/help/de/*.png \
-		../doc/help/de/*.jpg
+		./help/de/*.css \
+		./help/de/*.png \
+		./help/de/*.jpg
 	helpDEFiles.path = /usr/share/basic256/help/de
 	INSTALLS += helpDEFiles
 	# ES - spanish help files
 	helpESFiles.files = ../doc/help/es/*.html \
-		../doc/help/es/*.css \
-		../doc/help/es/*.png \
-		../doc/help/es/*.jpg
+		./help/es/*.css \
+		./help/es/*.png \
+		./help/es/*.jpg
 	helpESFiles.path = /usr/share/basic256/help/es
 	INSTALLS += helpESFiles
 	# FR - french help files
 	helpFRFiles.files = ../doc/help/fr/*.html \
-		../doc/help/fr/*.css \
-		../doc/help/fr/*.png \
-		../doc/help/fr/*.jpg
+		./help/fr/*.css \
+		./help/fr/*.png \
+		./help/fr/*.jpg
 	helpFRFiles.path = /usr/share/basic256/help/fr
 	INSTALLS += helpFRFiles
 	# RU - russian help files
 	helpRUFiles.files = ../doc/help/ru/*.html \
-		../doc/help/ru/*.css \
-		../doc/help/ru/*.png \
-		../doc/help/ru/*.jpg
+		./help/ru/*.css \
+		./help/ru/*.png \
+		./help/ru/*.jpg
 	helpRUFiles.path = /usr/share/basic256/help/ru
 	INSTALLS += helpRUFiles
 	# all language translation files
