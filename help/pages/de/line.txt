@@ -1,0 +1,7 @@
+===== Line =====
+==== Format ====
+line //x0//, //y0//, //x1//, //y1//
+==== Beschreibung ====
+Zeichnet eine Linie von Punkt x0,y0 zu Punkt x1, y1.
+==== Beispiel ====
+' ' line 0,0,299,299' '

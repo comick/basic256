@@ -1,0 +1,9 @@
+==== Spritehide ====
+=== Формат: ===
+**spriteh**ide номер_спрайта
+=== Описание: ===
+Скрывает спрайт. Образ и положение при этом сохраняются.
+=== Смотри также: ===
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+=== Впервые в версии: ===
+0.9.6n

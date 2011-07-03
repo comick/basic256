@@ -1,0 +1,36 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>decimal</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> Decimal </h2>
+<h3> Формат: </h3>
+<b>decimal</b> выражение<br/>
+<b>decimal</b>( выражение )
+<h3> Описание: </h3>
+Определяет максимальное количество десятичных знаков (0-16) после запятой, при преобразовании числа с плавающей точкой в строку. Это не влияет на точность числовых расчетов, а только изменяет отображение числа в виде строки. По умолчанию отображается максимум 6 цифр после запятой.
+<h3> Смотри также: </h3>
+<a href="print.html">Print</a>, <a href="string.html">String</a>
+<h3> Пример: </h3>
+
+<pre>
+print 2/3
+decimal 10
+print 2/3
+decimal 15
+print 2/3
+</pre>
+Будет напечатано
+<pre>
+0.666667
+0.6666666667
+0.666666666666667
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.6w
+</body>
+</html>

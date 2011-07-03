@@ -1,0 +1,11 @@
+===== Arrays =====
+Los arrays ( a veces denominados vectores, matrices o "arreglos") se crean usando el comando DIM o redimensionadas usando REDIM. Pueden contener datos numéricos o cadenas. El acceso a un elemento determinado del array se consigue indicando mediante corchetes la posición del elemento, empezando desde cero. También pueden crearse y acceder a arrays de dos dimensiones.\\
+El tamaño de un array puede obtenerse usando [?][?,] y [,?] al final de la variable de array.
+
+==== Ejemplo ====
+<code>
+print myarray[4]
+</code>
+mostrará en la pantalla el quinto elemento de "myarray"
+
+

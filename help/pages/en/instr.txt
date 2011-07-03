@@ -1,0 +1,23 @@
+===== Instr =====
+==== Format ====
+**instr** ( //haystack// , //needle// )\\
+**instr** ( //haystack// , //needle// , //start// )\\
+**instr** ( //haystack// , //needle// , //start// , //caseinsensitive//)\\
+
+==== Description ====
+Check to see if the string //needle// is contained in the string //haystack//.  If it is, then this function will return the index of starting character of the first place where //needle// occurs.  Otherwise, this function will return 0.  You may also specify an optional starting location for the search to begin //start// and a boolean value //caseinsensitive// to specify that the search will treat upper and lower case letters the same.
+==== Note ====
+String indices begin at 1.
+==== Example ====
+<code>
+print instr("Hello", "lo")
+print instr("101,222,333",",",5)
+</code>
+will display
+<code>
+4
+8
+</code>
+
+==== Version ==== 
+0.9.6.55

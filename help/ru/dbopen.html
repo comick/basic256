@@ -1,0 +1,61 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dbopen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> DBOpen </h2>
+<h3> Формат: </h3>
+<b>dbopen</b> SQLite_имя_файла<br/>
+<b>dbopen</b>( SQLite_имя_файла )
+<h3> Описание: </h3>
+Открывает файл SQLite базы данных. Если файл не существует, - создается новый. Больше информации о базах данных и, в частности, об SQLite можно найти на домашней странице SQLite <a href="http:<i>sqlite.org.html">http:</i>sqlite.org</a> и странице SQL на Wikipedia <a href="http:<i>ru.wikipedia.org/wiki/sql.html">http:</i>ru.wikipedia.org/wiki/SQL</a>.
+<h3> Смотри также: </h3>
+<a href="dbclose.html">DBClose</a>, <a href="dbcloseset.html">DBCloseSet</a>, <a href="dbexecute.html">DBExecute</a>, <a href="dbfloat.html">DBFloat</a>, <a href="dbint.html">DBInt</a>, <a href="dbopenset.html">DBOpenSet</a>, <a href="dbrow.html">DBRow</a>, <a href="dbstring.html">DBString</a>
+<h3> Пример: </h3>
+
+<pre>
+# cоздаем базу и в ней таблицу foo, заполняем ее данными, затем делаем запрос к базе и читаем данные из таблицы
+
+# cоздаем новую базу данных или открываем существующую
+dbopen "dbtest.sqlite3"
+
+# удаляем старую таблицу foo, перехватываем ошибку, если база новая
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# создаем и заполняем таблицу
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,&#039;one&#039;,3.14);"
+dbexecute "insert into foo values (2,&#039;two&#039;,6.28);"
+
+dbexecute "insert into foo values (3,&#039;three&#039;,9.43);"
+
+# формируем запрос к базе и выдаем записи в цикле
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# закрываем базу
+dbclose
+end
+
+errortrap:
+# oбрабатываем ошибку. ничего не отображаем, просто переходим к следующей строке программы
+return
+</pre>
+Будет напечатано
+<pre>
+1one3.14
+3three9.43
+2two6.28
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.6y
+</body>
+</html>

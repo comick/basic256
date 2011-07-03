@@ -1,0 +1,9 @@
+===== Spritey =====
+==== Format ====
+**spritey** ( //spritenumber// )
+==== Description ====
+Returns the y coordinate of the center of a loaded sprite.
+==== See Also ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]]
+==== New To Version ==== 
+0.9.6n

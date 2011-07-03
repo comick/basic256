@@ -1,0 +1,32 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>getcolor</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> GetColor </h1>
+<h2> Formato </h2>
+getcolor<br/>
+getcolor()
+
+<h2> Descripción </h2>
+Devuelve el valor RGB del color de dibujo actual (el último que se haya establecido con la instrucción color). El valor RGB se calcula como ((rojo * 256) + verde *256) + azul, donde rojo, verde y azul toman valor entre 0 y 255. Si se estableció CLEAR como color de dibujo, se devuelve el valor -1.  
+
+<h2> Ver también </h2>
+<a href="color.html">Color</a>, <a href="rgb.html">Rgb</a>
+<h2> Ejemplo </h2>
+<pre>
+color red
+print getcolor
+</pre>
+mostrará:
+<pre>
+16711680
+</pre>
+
+<h2> Disponible desde la versión </h2> 
+0.9.5m
+</body>
+</html>

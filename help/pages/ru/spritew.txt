@@ -1,0 +1,9 @@
+==== Spritew ====
+=== Формат: ===
+**spritew**( номер_спрайта )
+=== Описание: ===
+Возвращает ширину (в пикселях) загруженного спрайта.
+=== Смотри также: ===
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritex|Spritex]], [[spritey|Spritey]]
+=== Впервые в версии: ===
+0.9.6n

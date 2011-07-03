@@ -1,0 +1,46 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>ifthen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> If / Then </h1>
+<h2> Format </h2>
+<b>if</b> <i>booleanexpr</i> <b>then</b> <i>statement</i>
+----
+<b>if</b> <i>booleanexpr</i> <b>then</b><br/>
+<i>statement(s)</i><br/>
+<b>end if</b>
+----
+<b>if</b> <i>booleanexpr</i> <b>then</b><br/>
+<i>statement(s)</i><br/>
+<b>else</b><br/>
+<i>statement(s)</i><br/>
+<b>end if</b>
+
+<h2> Description </h2>
+A single line IF evaluates <i>booleanexpr</i>, when true the <i>statement(s)</i> following the then is executed, otherwise execution continues on the next line. There are also two forms of a multi-line if statement, one with a true block and one with a true and a false block of code to execute.
+<h2> Example </h2>
+<pre>
+print "Guess my letter - press a key"
+# wait for the user to press a key
+do
+  a = key
+  pause .01
+until a <> 0
+#
+if chr(a) = "Z" then
+   print "Yippie, you pressed the Z key!!!"
+else
+   print "darn, you pressed something else."
+end if
+#
+end
+</pre>
+
+<h2> New To Version </h2> 
+0.9.4g
+</body>
+</html>

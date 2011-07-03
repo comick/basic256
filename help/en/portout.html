@@ -1,0 +1,39 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>portout</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> PortOut </h1>
+<h2> Format </h2>
+<b>portout</b> ( <i>io port number</i>, <i>value</i> )
+
+<h2> Description </h2>
+
+Writes value (0-255) to system I/O port.
+
+Reading and writing system I/O ports can be dangerous and can cause unpredictable results.  This statement may be disabled because of potential system security issues.  Availability may be configured in the IDE by going to the Edit>Preferences menu.    
+
+Functionality only available in Windows port.  Under Vista and Windows 7 you should run BASIC-256 with elevated permissions (Administrator) once to install the inpout32 driver required for this functionality to work.  Once the driver has been installed the PortIn/PortOut statements will work without giving an elevated privilege level.
+
+<h2> See Also </h2>
+
+<a href="portin.html">PortIn</a>
+
+<h2> Example </h2>
+
+<pre>
+for y = 0 to 255
+   portout 0x378,y
+   print y + " " + portin(0x379)
+   pause .1
+next
+</pre>
+will output the numbers 0-255 to the standard first printer port and print the value of the status register.
+
+<h2> New To Version </h2> 
+0.9.6.41
+</body>
+</html>

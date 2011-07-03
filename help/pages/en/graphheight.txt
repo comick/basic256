@@ -1,0 +1,11 @@
+===== Graphheight =====
+==== Format ====
+graphheight\\
+graphheight()
+
+==== Description ====
+Returns the height (y dimension) of the current graphics display window.
+==== See Also ====
+[[graphsize|Graphsize]], [[graphwidth|Graphwidth]]
+==== New To Version ==== 
+0.9.3

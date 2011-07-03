@@ -1,0 +1,22 @@
+===== Replacex =====
+
+==== Format ====
+**replacex** ( //haystack// , //regex// , //tostring// )
+
+==== Description ====
+Return a new string where all occurrences of substrings matching the regular expression //regex// are replaced by //tostring// in the string //haystack//.
+
+==== Example ====
+<code>
+a$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
+print Replacex(a$,"ye.*ow","blue")
+print Replacex(a$, "[wW]e", "Beatles")
+</code>
+will display
+<code>
+We all live in a blue submarine.
+Beatles all live in a yellow submarine, yellow submarine, yellow submarine.
+</code>
+
+==== New to Version ==== 
+0.9.6.56

@@ -1,0 +1,22 @@
+===== Replace =====
+
+==== Format ====
+**replace** ( //haystack// , //fromstring// , //tostring// )\\
+**replace** ( //haystack// , //fromstring// , //tostring// , //caseinsensitive//)
+
+==== Description ====
+Return a new string where all occurrences or //fromstring// are replaced by //tostring// in the string //haystack//.  You may also specify an optional boolean value //caseinsensitive// to specify that the search will treat upper and lower case letters the same.
+
+==== Example ====
+<code>
+a$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
+print Replace(a$,"yellow","blue")
+print Replace(a$, "we", "Beatles", true)</code>
+will display
+<code>
+We all live in a blue submarine, blue submarine, blue submarine.
+Beatles all live in a yellow submarine, yellow submarine, yellow submarine.
+</code>
+
+==== New to Version ==== 
+0.9.6.55

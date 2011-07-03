@@ -1,0 +1,11 @@
+===== PutSlice =====
+==== Format ====
+**putslice** //x//, //y//, //slice$//\\
+**putslice** //x//, //y//, //slice$//, //transparent color//
+
+==== Description ====
+Put the graphics stored in the slice string on the screen at x,y. If a transparent color is specified then do not plot points of that color in the slice.
+==== See Also ====
+[[getslice|GetSlice]]
+==== New To Version ==== 
+0.9.6b

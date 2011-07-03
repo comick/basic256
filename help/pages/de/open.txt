@@ -1,0 +1,10 @@
+===== Open =====
+==== Format ====
+open //Dateiname//
+==== Beschreibung ====
+&Ouml;ffnet eine Datei zum Lesen und Schreiben. Der //Dateiname// mu&szlig; als Zeichenkette angegeben werden
+            und kann eine absolute oder relative Pfadangabe enthalten.
+==== Note ====
+Zu einem gegebenen Zeitpunkt kann nur eine Datei ge&ouml;ffnet sein. Wenn eine neue Datei ge&ouml;ffnet wird, w&auml;hrend eine andere Datei bereits offen ist, wird diese andere Datei geschlossen.
+==== Siehe auch ====
+Close, Read, Write, Reset

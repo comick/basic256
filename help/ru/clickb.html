@@ -1,0 +1,43 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>clickb</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> Clickb </h2>
+<h3> Формат: </h3>
+<b>clickb</b><br/>
+<b>clickb</b>()
+<h3> Описание: </h3>
+Возвращает номер кнопки мыши, которую пользователь нажал последний раз (в то время как курсор мыши был над областью графического вывода). Возвращает 0, если нажатие не было зафиксировано. Если было нажато несколько кнопок одновременно, то вернется сумма значений нажатых кнопок. 
+<h3> Return Values </h3>|Value|Mouse Button Pressed|
+<table border=1>
+<tr><td>0<td>None</tr>
+<tr><td>1<td>Left</tr>
+<tr><td>2<td>Right</tr>
+<tr><td>4<td>Center</tr>
+
+
+</table>
+<h3> Смотри также: </h3>
+<a href="clickclear.html">Clickclear</a>, <a href="clickx.html">Clickx</a>, <a href="clicky.html">Clicky</a>, <a href="mouseb.html">Mouseb</a>, <a href="mousex.html">Mousex</a>, <a href="mousey.html">Mousey</a>
+<h3> Пример: </h3>
+
+<pre>
+# очищаем историю нажатий
+clickclear
+# ждем, пока пользователь нажмет на кнопку мыши
+print "Щелкни мышкой в окне графического вывода"
+while clickb = 0
+  pause .01
+endwhile
+# Показываем, где пользователь щелкнул
+print "Вы нажали в точке (" + clickx + "," + clicky + ")"
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.4d
+</body>
+</html>

@@ -1,0 +1,34 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>font</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Font </h1>
+<h2> Formato </h2>
+font <i>NombredeFuente</i>, <i>puntos</i>, <i>peso</i>
+<h2> Descripción </h2>
+Establece <i>NombredeFuente</i> como fuente a usar por la instrucción texto. El tamaño se define en <i>puntos</i> (1/72"). <i>Peso</i> representa un número de 1 a 100 que define el grosor de los caracteres: Fino=25, Normal=50 y Negrita=75.
+
+<h2> Ejemplo </h2>
+<pre>
+color grey
+rect 0,0,graphwidth,graphheight
+color red
+font "Times New Roman",18,50
+text 10,100,"This is Times New Roman"
+color darkgreen
+font "Tahoma",28,100
+text 10,200,"This is BOLD!"
+</pre>
+mostrará:<br/>
+<img src="fonttext.png" alt="fonttext.png" />
+
+<h2> Ver también </h2>
+<a href="text.html">Text</a>
+<h2> Disponible desde la versión </h2> 
+0.9.4
+</body>
+</html>

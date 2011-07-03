@@ -1,0 +1,9 @@
+===== Reset =====
+==== Format ====
+**reset**\\
+**reset()**\\
+**reset**(//filenumber//)
+==== Description ====
+Clears an open file.  All data stored in the file is lost.  If the file number is not specified file number zero (0) will be used.
+==== See Also ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

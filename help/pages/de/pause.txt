@@ -1,0 +1,7 @@
+===== Pause =====
+==== Format ====
+pause //Sekunden//
+==== Beschreibung ====
+H&auml;lt die Programmausf&uuml;hrung f&uuml;r die angegebene Anzahl Sekunden an. Der //Sekunden//-Wert kann eine Flie&szlig;kommazahl sein, damit sind auch Pausen kleiner als eine Sekunde m&ouml;glich.
+==== Beispiel ====
+' ' pause 0.1' '

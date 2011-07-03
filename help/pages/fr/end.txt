@@ -1,0 +1,22 @@
+===== End =====
+
+==== Format ====
+
+end
+
+==== Description ====
+
+Halts program execution.
+
+==== Example ====
+
+<code>
+print "I am done."
+end
+print "Or am I?"
+</code>
+will print
+<code>
+I am done.
+</code>
+

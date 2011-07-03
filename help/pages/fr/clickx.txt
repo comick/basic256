@@ -1,0 +1,23 @@
+===== Clickx =====
+
+==== Format ====
+
+**clickx**\\
+**clickx** ( )
+
+==== Description ====
+
+Retourne l'abscisse x du pointeur de la souris sur la surface graphic output au dernier clic.
+
+==== Voir aussi ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Exemple ====
+
+Voir le programme de la page de [[clickb|Clickb]].
+
+==== Disponible à partir de la version ==== 
+
+0.9.4d
+

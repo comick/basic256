@@ -1,0 +1,13 @@
+===== Sound =====
+==== Formato ====
+**sound** //frecuencia//, //duración//\\
+**sound** ( //frecuencia//, //duración// )\\
+**sound** ( //array// )\\
+**sound** //array//\\
+**sound** {frecuencia1, duración1, frecuencia2, duración2, ...}
+==== Descripción ====
+Produce un sonido mediante los altavoces del equipo. La frecuencia se expresa en Hz y la duración en milisegundos (1/1000 de un segundo). La instrucción puede recibir también  un array o lista que contenga las frecuencias y duraciones. Esto elimina cualquier chasquido entre sonidos cuando se hace sonar sucesivamente más de uno.
+El soporte para sonido en sistemas LINUX se incorporó en la versión 0.0.5g. La instrucción fue modificada para usar el dispositivo de sonido predeterminado en Windows en la versión 0.9.5h.
+   
+==== Ver también ====
+[[volume|Volume]]

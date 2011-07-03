@@ -1,0 +1,30 @@
+===== Day =====
+
+==== Formato ====
+
+**day**\\
+**day** ( )
+
+==== Descripción ====
+
+Devuelve el actual día del mes (1-31), de acuerdo con el reloj del sistema.
+
+==== Ver también ====
+
+[[hour|Hour]], [[minute|Minute]], [[month|Month]], [[Msec|Msec]], [[second|Second]], [[year|Year]]
+
+==== Ejemplo ====
+
+<code>
+print "La fecha de hoy es ";
+print day + "/" (month + 1) + "/" + year
+</code>
+mostrará:
+<code>
+La fecha de hoy es 30/11/2009
+</code>
+
+==== Disponible desde la versión ==== 
+
+0.9.4
+

@@ -1,0 +1,9 @@
+===== WAVstop =====
+==== Formato ====
+**wavstop**
+==== Descripción ====
+Detiene la reproducción del archivo de audio WAV que se está ejecutando en segundo plano.
+==== Ver también ====
+[[wavplay|WAVplay]] [[wavwait|WAVwait]]
+==== Disponible desde la versión ==== 
+0.9.4

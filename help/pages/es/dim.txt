@@ -1,0 +1,41 @@
+===== Dim =====
+
+==== Formato ====
+
+**dim** //VariableNumérica// ( //NúmeroEntero// )\\
+**dim** //VariableCadena$// ( //NúmeroEntero// )\\
+**dim** //VariableNumérica// ( //filas// , //columnas// )\\
+**dim** //VariableCadena$// ( //filas// , //columnas// )
+
+==== Descripción ====
+Crea y devuelve un nuevo array de longitud //NúmeroEntero// o un array bidimensional organizado en //filas// y //columnas//. Dependiendo de la variable a que se asigne, se crea un array numérico o de cadenas.\\
+El primer elemento de un array tiene como índice 0 (cero). El rango de los índices va desde 0 hasta longitud-1.
+
+==== Ver también ====
+
+[[redim|Redim]]
+
+==== Ejemplo ====
+
+<code>
+dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + " " + z[4]
+</code>
+dará como resultado:
+<code>
+1 5
+</code>
+
+==== Ejemplo 2 ====
+<code>
+dim c$(4)
+c$ = {"cow", "brow", "how", "now"}
+print c$[2] + " " + c$[3] + " ";
+print c$[1] + " " + c$[0] + "?"
+</code>
+mostrará
+<code>
+how now brown cow?
+</code>
+

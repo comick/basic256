@@ -1,0 +1,9 @@
+===== Close =====
+==== Format ====
+**close**\\
+**close** //filenumber//\\
+**close** ( //filenumber// )
+==== Beschreibung ====
+Schlie&szlig;t die aktuell ge&ouml;ffnete Datei. Wenn gerade keine Datei offen ist, hat der Befehl keine Wirkung.
+==== Siehe auch ====
+[[open|Open]], [[read|Read]], [[write|Write]], [[reset|Reset]]

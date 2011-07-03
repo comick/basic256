@@ -1,0 +1,22 @@
+===== Lower =====
+==== Formato ====
+**lower**( //cadena//)
+
+==== Descripción ====
+Devuelve //cadena// con todos los caracteres alfabéticos convertidos en minúsculas.
+
+==== Ver también ====
+[[upper|Upper]]
+
+==== Ejemplo ====
+
+<code>
+print lower("AZul!")
+</code>
+mostrará:
+<code>
+azul!
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.5e

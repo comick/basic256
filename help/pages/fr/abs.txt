@@ -1,0 +1,22 @@
+===== Abs =====
+
+==== Format ====
+
+**abs** ( //expression// )
+
+==== Description ====
+
+Retourne la valeur absolue d'une //expression// numérique.
+
+==== Exemple ====
+
+<code>
+print abs(-45)
+print abs(6.45)
+</code>
+permet d'afficher
+<code>
+45
+6.45
+</code>
+

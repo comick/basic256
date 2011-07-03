@@ -1,0 +1,9 @@
+===== Float =====
+==== Format ====
+float ( //expression// )
+==== Description ====
+Convert //expression// to a floating point (decimal) number. Float will convert a string or an integer to a decimal value. If the expression can not be converted then a zero will be returned.
+==== See Also ====
+[[int|Int]]
+==== New To Version ==== 
+0.9.4

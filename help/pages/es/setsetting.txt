@@ -1,0 +1,32 @@
+===== SetSetting =====
+==== Formato ====
+**setsetting** //nombre_programa//, //nombre_clave//, //Valor//\\
+**setsetting** ( //nombre_programa//, //nombre_clave//, //valor// )
+
+==== Descripción ====
+
+Guarda un //valor// en el registro del sistema ( o en otro almacenamiento permanente). El //nombre_programa// y el //nombre_clave// se usan para clasificar los valores y asegurar que se acceda a tales configuraciones cuando se necesite y sean cambiadas accidentamente por otros programas.
+ 
+
+El valor guardado estará disponible para otros programas BASIC-256 y debería permanecer así durante mucho tiempo.
+
+Esta instrucción puede ser desactivada en prevención de posibles problemas de seguridad del sistema. La configuración se puede hacer en el IDE, accediendo al menú Edición>Preferencias. 
+
+
+==== Ver también ====
+
+[[GetSetting|GetSetting]]
+
+==== Ejemplo ====
+
+<code>
+setsetting "EstePrograma", "PruebaConfiguración", "Valor de la configuración"
+print getsetting("EstePrograma", "PruebaConfiguración")
+</code>
+mostrará:
+<code>
+Valor de la configuración
+</code>
+
+==== Disponible desde la versiónn ==== 
+0.9.6.38

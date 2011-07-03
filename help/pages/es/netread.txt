@@ -1,0 +1,18 @@
+===== NetRead =====
+
+==== Formato ====
+**netread**\\
+**netread** ( )\\
+**netread** ( //NúmerodeSocket// )
+ 
+==== Descripción ====
+Lee datos de la conexión de red especificada y los devuelve como una cadena. Esta función esperará hasta que se reciban datos. Si no se especifica //NúmerodeSocket//, se utilizará el socket número cero (0). 
+
+==== Ejemplo ====
+Ver ejemplo de uso en la página de [[NetConnect|NetConnect]].
+
+==== Ver también ====
+[[NetAddress|NetAddress]], [[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetData|NetData]], [[NetListen|NetListen]], [[NetWrite|NetWrite]]
+
+==== Disponible desde la versión ==== 
+0.9.6.31

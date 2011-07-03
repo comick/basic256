@@ -1,0 +1,27 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>key</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> Key </h2>
+<h3> Формат: </h3>
+<b>key</b><br/>
+<b>key</b>()
+<h3> Описание: </h3>
+Немедленно возвращает целое число, соответствующее нажатой на клавиатуре клавиши.
+<h3> Пример: </h3>
+Код
+<pre>
+if key = 47 then print key
+</pre>
+ не будет работать, поскольку функция key вызывается дважды и каждый раз будет давать разные значения. Вот правильное использование функции key: 
+<pre>
+a = key
+if a = 47 then print a
+</pre>
+
+</body>
+</html>

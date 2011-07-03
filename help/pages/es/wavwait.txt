@@ -1,0 +1,9 @@
+===== WAVwait =====
+==== Formato ====
+**wavwait**
+==== Descripción ====
+Espera a que termine el archivo WAV que se está ejecutando.
+==== Ver también ====
+[[wavplay|WAVplay]] [[wavstop|WAVstop]]
+==== Disponible desde la versiónn ==== 
+0.9.6t

@@ -1,0 +1,40 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>getsetting</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> GetSetting </h1>
+<h2> Format </h2>
+<b>getsetting</b> ( <i>program_name</i>, <i>key_name</i> )
+
+<h2> Description </h2>
+
+Retrieve a setting from the system registry (or other persistent storage).  The <i>program_name</i> and <i>key_name</i> are required by this function to access a previously saved setting.  The empty string "" will be returned if the requested setting has not been previously set.
+
+The saved value will be available to other BASIC-256 programs and should remain available for an extended period.
+
+This statement may be disabled because of potential system security issues.  Availability may be configured in the IDE by going to the Edit>Preferences menu.    
+
+<h2> See Also </h2>
+
+<a href="setsetting.html">SetSetting</a>
+
+<h2> Example </h2>
+
+<pre>
+setsetting "thisprogram", "testsetting", "value of setting"
+print getsetting("thisprogram", "testsetting")
+</pre>
+will print
+<pre>
+value of setting
+</pre>
+
+
+<h2> New To Version </h2> 
+0.9.6.38
+</body>
+</html>

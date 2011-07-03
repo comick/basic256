@@ -1,0 +1,22 @@
+===== Upper =====
+==== Formato ====
+**upper** ( //cadena// )
+
+==== Descripción ====
+Devuelve //cadena// con todos los caracteres alfabéticos convertidos en mayúsculas.
+
+==== Ver también ====
+[[lower|Lower]]
+
+==== Ejemplo ====
+
+<code>
+print upper("AZul!")
+</code>
+mostrará
+<code>
+AZUL!
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.5e

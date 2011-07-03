@@ -1,0 +1,16 @@
+===== Mid =====
+==== Format ====
+**mid**( //string//, //start character//, //length//)
+
+==== Description ====
+Returns a portion of the specified //string//, starting from the //start character//, and continuing for //length// characters.
+==== See Also ====
+[[left|Left]], [[right|Right]]
+==== Example ====
+<code>
+print mid("Hello", 2, 3)
+</code>
+will display
+<code>
+ell
+</code>

@@ -1,0 +1,12 @@
+===== Sound =====
+==== Format ====
+**sound** //frequency//, //duration//\\
+**sound** ( //frequency//, //duration// )\\
+**sound** ( //array// )\\
+**sound** //array//\\
+**sound** {frequency1, duration1, frequency2, duration2, ...}
+==== Description ====
+Play a sound from the computer's speakers.Frequency is expressed in Hz and duration is expressed in milliseconds (1000 in a second). An array or list containing frequency and durations may also be passed.  This eliminates any clicking between sounds when more than one is being output sequentially.
+Sound support for LINUX systems was added in version 0.9.5g.  Sound was changed to use the default sound device in Windows in version 0.9.5h
+==== See Also ====
+[[volume|Volume]]

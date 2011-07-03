@@ -1,0 +1,9 @@
+==== Spritecollide ====
+=== Формат: ===
+**spritecollide**( спрайт1, спрайт2 )
+=== Описание: ===
+Функция возвращает истину, если два спрайта сталкиваются. Функция spritecollide предполагает, что спрайты помещены в прямоугольники размером охватывающим загруженный образ. Факт столкновения выясняется с использованием этих прямоугольников. Для круглых или странной формы спрайтов функция может определять столкновения там, где их нет.
+=== Смотри также: ===
+[[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+=== Впервые в версии: ===
+0.9.6n

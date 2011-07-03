@@ -1,0 +1,32 @@
+===== While / End While =====
+
+==== Formato ====
+**while** //ExpresiónBooleana//\\
+//instrucción(es)//\\
+**end while**
+
+==== Descripción ====
+Ejecuta la(s) //instrucción(es)// dentro del bucle WHILE hasta que //ExpresiónBooleana// se evalúe como falso. El bucle WHILE / END WHILE ejecuta las instrucciones cero o más veces. La evaluación se hace antes de que el código que está dentro del bucle sea ejecutado.
+
+==== Ver también ====
+[[dountil|Do / Until]], [[fornext|For / Next]]
+
+==== Ejemplo ====
+<code>
+r = 1
+while r < 6
+  print r
+  r = r + 1
+end while
+</code>
+mostrará:
+<code>
+1
+2
+3
+4
+5
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.4g

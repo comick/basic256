@@ -1,0 +1,29 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>imgload</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Imgload </h1>
+
+<h2> Formato </h2>
+<b>imgload</b> <i>x</i>, <i>y</i>, <i>NombredeArchivo</i><br/>
+<b>imgload</b> <i>x</i>, <i>y</i>, <i>escala</i>, <i>NombredeArchivo</i><br/>
+<b>imgload</b> <i>x</i>, <i>y</i>, <i>escala</i>, <i>rotación</i>, <i>NombredeArchivo</i><br/>
+
+<h2> Descripción </h2>
+Carga una imagen almacenada en un archivo y la muestra en el área de gráficos.<br/>
+Los parámetros <i>x</i> e <i>y</i> representan la posición en la pantalla para el CENTRO de la imagen cargada. Este comportamiento es diferente al del resto de las instrucciones gráficas. El eje de rotación también es ese CENTRO.<br/>
+La instrucción Imgload lee la mayoría de los formatos gráficos de archivo, incluyendo BMP (Windows Bitmap), GIF (Graphic Interchange Format),JPG/JPEG (Joint Photographic Experts Group) y PNG (Portable Network Graphics).<br/>
+De manera opcional, el tamaño de la imagen cargada puede ser definida por <i>escala</i> (1=tamaño normal). También puede rotarse la imagen de acuerdo con un ángulo especificado ( en radianes, en sentido de las agujas del reloj) en torno al centro de la imagen.
+
+
+<h2> Ver también </h2>
+<a href="imgsave.html">ImgSave</a>
+
+<h2> Disponible desde la versión </h2> 
+0.9.6l
+</body>
+</html>

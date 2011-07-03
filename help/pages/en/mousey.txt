@@ -1,0 +1,11 @@
+===== Mousey =====
+==== Format ====
+**mousey**\\
+**mousey**()
+
+==== Description ====
+Returns the current or last mouse y location of the mouse pointer over the graphic output.
+==== See Also ====
+[[clickb|Clickb]], [[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]]
+==== New To Version ==== 
+0.9.4d

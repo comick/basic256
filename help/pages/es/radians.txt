@@ -1,0 +1,10 @@
+===== Radianes =====
+==== Formato ====
+**radians** ( //expresión// )
+
+==== Descripción ====
+{{ :en:radians.png|}}
+Convierte un ángulo en grados a radianes.\\
+
+==== Ver también ====
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[sin|Sin]], [[tan|Tan]]

@@ -1,0 +1,4 @@
+===== Variables =====
+Los nombres de variables que contienen valores numéricos deben comenzar con una letra y pueden consistir en cualquier número de caracteres alfanuméricos. Se diferencia entre  mayúsculas y minúsculas. Pueden ser usadas en sustitución de constantes numéricas.\\
+\\
+Los nombres de las variables que contienen cadenas siguen las mismas reglas que las variables numéricas, pero deben terminar con un signo de dolar ($). Pueden ser usadas en sustitución de constantes de cadena.

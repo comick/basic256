@@ -1,0 +1,7 @@
+===== Refresh =====
+==== Formato ====
+**refresh**
+==== Descripción ====
+Actualiza la ventana de gráficos para mostrar lo que se ha dibujado desde el último comando refresh. Refresh sólo funciona en el modo [[fastgraphics|Fastgraphics]].
+==== Ver también ====
+[[fastgraphics|Fastgraphics]]

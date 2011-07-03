@@ -1,0 +1,5 @@
+===== Cls =====
+==== Format ====
+**cls**
+==== Description ====
+Clears the text output window.

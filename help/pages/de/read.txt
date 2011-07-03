@@ -1,0 +1,7 @@
+===== Read =====
+==== Format ====
+read
+==== Beschreibung ====
+Liest einen Token von der gerade ge&ouml;ffneten Datei ein und gibt ihn zur&uuml;ck. Ein Token ist jegliche Zeichenkette, die mit einem Leerzeichen, einem Tabulator oder dem Zeilenende endet.
+==== Siehe auch ====
+Open, Close, Write, Reset

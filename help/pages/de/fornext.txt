@@ -1,0 +1,7 @@
+===== For/Next =====
+==== Format ====
+for //Variable// = //Ausdruck1// to //Ausdruck2// [ step //Ausdruck3// ] <br>...<br> next //Variable//
+==== Beschreibung ====
+ Die Befehle FOR und NEXT werden zusammen benutzt, um einen Befehl oder eine Gruppe von Befehlen eine bestimmte Anzahl mal hintereinander auszuf&uuml;hren. Beim Betreten der FOR-Schleife wird //Variable// auf das Ergebnis von //Ausdruck1// gesetzt. \\ Nach jedem NEXT Kommando wird //Variable// entweder um 1 erh&ouml;ht (Standard), oder, bei Benutzung des optionalen STEP Befehls, um den Wert von //Ausdruck3// erh&ouml;ht. F&uuml;r Werte von STEP gr&ouml;&szlig;er null wird die Schleife so oft durchlaufen, bis //Variable// gr&ouml;&szlig;er oder gleich //Ausdruck2// ist. Bei negativen STEP-Werten ist die Abbruchbedingung erreicht, wenn //Variable// kleiner oder gleich //Ausdruck2// ist
+==== Beispiel ====
+' ' for i = 1 to 10<br>  print i<br>next i' '

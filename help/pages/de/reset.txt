@@ -1,0 +1,7 @@
+===== Reset =====
+==== Format ====
+reset
+==== Beschreibung ====
+L&ouml;scht den Inhalt der aktuell ge&ouml;ffneten Datei. Der Inhalt der Datei geht verloren.
+==== Siehe auch ====
+Open, Read, Close, Write

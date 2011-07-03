@@ -1,0 +1,11 @@
+===== Pixel =====
+==== Format ====
+**pixel** (//x//, //y// )
+
+==== Description ====
+Returns the RGB value of the pixel at the //x// and //y// coordinate. If the pixels has not been set since the last [[clg|Clg]] command or was drawn with the color CLEAR a -1 will be returned.
+
+==== See Also ====
+[[rgb|Rgb]]
+==== New To Version ==== 
+0.9.5m

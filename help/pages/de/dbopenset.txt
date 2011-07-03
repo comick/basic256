@@ -1,0 +1,20 @@
+===== DBClose =====
+
+==== Format ====
+**dbopenset** //SqlStatement//\\
+**dbopenset** ( //SqlStatement// )
+
+==== Description ====
+Perform an SQL statement and create a record set so that the program may loop through and use the results.
+
+==== Example ====
+See example of usage on [[DBOpen|DBOpen]] page.
+
+==== See Also ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== External Links ====
+More information about databases in general and SQLite specifically can be found at [[http://sqlite.org|SQLite Home Page]] and [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== New To Version ==== 
+0.9.6y

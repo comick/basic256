@@ -1,0 +1,9 @@
+===== Exists =====
+==== Format ====
+exists ( //expression// )
+==== Description ====
+Returns a binary flag (true/false) that will signal if the file path specified by the expression exists.
+==== See Also ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
+==== New To Version ==== 
+0.9.4

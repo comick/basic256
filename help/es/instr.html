@@ -1,0 +1,36 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>instr</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Instr </h1>
+
+<h2> Formato </h2>
+<b>instr</b> ( <i>pajar</i> , <i>aguja</i> )<br/>
+<b>instr</b> ( <i>pajar</i> , <i>aguja</i> , <i>inicio</i> )<br/>
+<b>instr</b> ( <i>pajar</i> , <i>aguja</i> , <i>inicio</i> , <i>NoDistinguirMayúsculas</i>)<br/>
+
+<h2> Descripción </h2>
+Comprueba si la cadena <i>aguja</i> está contenida en la cadena <i>pajar</i>. Si así ocurre, esta función devuelve la posición del carácter inicial del primer lugar donde <i>aguja</i> aparece. En otro caso, la función devuelve 0. Puede también especificarse opcionalmente una posición de partida para que la búsqueda comience en <i>inicio</i> y el valor booleano <i>NoDistinguirMayúsculas</i> para indicar que la búsqueda no diferencie entre mayúsculas y minúsculas.
+
+<h2> Nota </h2>
+La primera posición en la cadena es la 1.
+
+<h2> Ejemplo </h2>
+<pre>
+print instr("Hello", "lo")
+print instr("101,222,333",",",5)
+</pre>
+mostrará:
+<pre>
+4
+8
+</pre>
+
+<h2> Versión </h2> 
+0.9.6.55
+</body>
+</html>

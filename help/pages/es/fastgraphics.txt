@@ -1,0 +1,9 @@
+===== FastGraphics =====
+==== Formato ====
+fastgraphics
+==== Descripción ====
+Activa el modo "fastgraphics" hasta que el programa se detenga. El modo "fastgraphics" supone que la pantalla de gráficos no se actualiza hasta que se presente una instrucción REFRESH. Puede ser utilizado para acelerar significativamente animaciones complejas y eliminar parpadeos.
+==== Nota ====
+Cuando se hagan animaciones, se recomienda poner todas las instrucciones de dibujo en subrutinas y usar una única instrucción REFRESH después de que se haya dibujado completamente cada imagen o "frame".
+==== Ver también ====
+[[refresh|Refresh]]

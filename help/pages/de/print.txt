@@ -1,0 +1,7 @@
+===== Print =====
+==== Format ====
+print //Ausdruck// [ ; ]
+==== Beschreibung ====
+Gibt einen Text im Textfenster aus, gefolgt von einem Zeilenumbruch. Wenn das optionale Semikolon am Ende vorhanden ist, erfolgt kein Zeilenumbruch.
+==== Beispiel ====
+' ' print "Hallo "; : print"Du !"' '

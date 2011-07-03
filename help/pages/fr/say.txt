@@ -1,0 +1,8 @@
+===== Say =====
+==== Format ====
+**say** //expression//\\
+**say** ( //expression// )
+==== Description ====
+Utilise le moteur du système de synthèse vocale (TTS - Text to Speech) pour dire //l'expression//. Dans GNU/Linux, les bibliothèques FLite ou eSpeak sont nécessaires. Dans Windows, la voix SAPI par défaut actuelle sera utilisée.
+==== Nouveau dans la version ==== 
+0.9.4

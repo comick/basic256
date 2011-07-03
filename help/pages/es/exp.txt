@@ -1,0 +1,24 @@
+===== Exp =====
+
+==== Formato ====
+
+**exp** ( //exponente// )
+
+==== Descripción ====
+
+Devuelve la base del logaritmo natural //e// (aprox.: 2,718282) elevada a //exponente//. Es la inversa de la función [log|Log]].
+
+==== Ejemplo ====
+
+<code>
+print exp(1)
+print exp(log(10))
+</code>
+mostrará:
+<code>
+2.718282
+10
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.6.51

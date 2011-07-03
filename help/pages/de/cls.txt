@@ -1,0 +1,5 @@
+===== Cls =====
+==== Format ====
+**cls**
+==== Beschreibung ====
+L&ouml;scht den Inhalt des Textfensters.

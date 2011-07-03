@@ -1,0 +1,20 @@
+===== DBExecute =====
+
+==== Format ====
+**dbexecute** //SqlStatement//\\
+**dbexecute** ( //SqlStatement// )
+
+==== Description ====
+Execute an SQL statement on the open SQLite database file.  This statement does not create a record set.
+
+==== Example ====
+See example of usage on [[DBOpen|DBOpen]] page.
+
+==== See Also ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== External Links ====
+More information about databases in general and SQLite specifically can be found at [[http://sqlite.org|SQLite Home Page]] and [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== New To Version ==== 
+0.9.6y

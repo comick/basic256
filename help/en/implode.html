@@ -1,0 +1,39 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>implode</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Implode </h1>
+<h2> Format </h2>
+<b>implode</b> ( <i>arrayvariable</i> )<br/>
+<b>implode</b> ( <i>arrayvariable</i> , <i>delimiter</i> )
+
+<h2> Description </h2>
+Append the elements in an array into a string.  Optionally placing the <i>delimiter</i> between the elements.  This is functionally the opposite of the <a href="explode.html">Explode</a> function.
+
+<h2> Example </h2>
+<pre>
+dim a$(1)
+dim b(1)
+a$ = Explode("How now brown cow"," ")
+print implode(a$,"-")
+print implode(a$)
+b = Explode("1,2,3.33,4.44,5.55",",")
+print implode(b,", ")
+print implode(b)
+</pre>
+will display
+<pre>
+How-now-brown-cow
+Hownowbrowncow
+1, 2, 3.33, 4.44, 5.55
+123.334.445.55
+</pre>
+
+<h2> Version </h2> 
+0.9.6.57
+</body>
+</html>

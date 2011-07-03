@@ -1,0 +1,9 @@
+===== Instr =====
+==== Format ====
+instr //Zeichenkette1//, //Zeichenkette2//
+==== Beschreibung ====
+Pr&uuml;ft, ob //Zeichenkette2// in //Zeichenkette1// enthalten ist. Wenn ja, wird der Index des Anfangszeichens des ersten Vorkommens von //Zeichenkette2// zur&uuml;ckgeliefert. Anderenfalls gibt der Befehl 0 zur&uuml;ck.
+==== Note ====
+Alle Indexe/Positionen innerhalb von Zeichenketten beginnen mit 1.
+==== Beispiel ====
+' ' Die Zeile <code>print instr("Hallo", "lo")</code> gibt <code>4</code> im Textfenster aus.' '

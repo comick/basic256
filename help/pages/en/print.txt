@@ -1,0 +1,9 @@
+===== Print =====
+==== Format ====
+**print** //expression// [ ; ]
+
+==== Description ====
+Writes text to the text output window, appending a new line.  If the optional semicolon is included, no new line is appended.
+
+==== See Also ====
+[[decimal|Decimal]]

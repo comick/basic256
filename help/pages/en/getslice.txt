@@ -1,0 +1,10 @@
+===== GetSlice =====
+==== Format ====
+getslice(//x//, //y//, //width//, //height//)
+==== Description ====
+Return a string that contains a Hexadecimal representation of the rectangle defined by the parameters.  String is formatted as first 4 bytes - width, next 4 bytes - height, 6 bytes for each pixel (width * height).
+
+==== See Also ====
+[[putslice|PutSlice]]
+==== New To Version ==== 
+0.9.6b

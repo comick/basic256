@@ -1,0 +1,11 @@
+===== Graphwidth =====
+==== Format ====
+graphwidth\\
+graphwidth()
+
+==== Description ====
+Returns the width (x dimension) of the current graphics display window.
+==== See Also ====
+[[graphheight|Graphheight]], [[graphsize|Graphsize]]
+==== New To Version ==== 
+0.9.3

@@ -1,0 +1,14 @@
+===== Gosub / Return =====
+
+==== Formato ====
+**gosub** //etiqueta//\\
+\\
+etiqueta:\\
+//instrucción(es)//\\
+**return**
+
+==== Descripción ====
+Salta a la //etiqueta// especificada. Cuando se encuentre una instrucción RETURN, la ejecución del programa continuará en la linea siguiente a la de la instrucción GOSUB. Las instrucciones GOSUB pueden ser anidadas.
+
+==== Ver también ====
+[[goto|Goto]]

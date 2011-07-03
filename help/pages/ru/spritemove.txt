@@ -1,0 +1,10 @@
+==== Spritemove ====
+=== Формат: ===
+**spritemove** номер_спрайта, dx, dy \\
+**spritemove**( номер_спрайта, dx, dy )
+=== Описание: ===
+Перемещает спрайт из текущей позиции на указанное число пикселей. Перемещение ограничено текущими размерами экрана.
+=== Смотри также: ===
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+=== Впервые в версии: ===
+0.9.6n

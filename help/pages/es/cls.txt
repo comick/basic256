@@ -1,0 +1,5 @@
+===== Cls =====
+==== Formato ====
+**cls**
+==== Descripción ====
+Borra el contenido de la ventana de texto.

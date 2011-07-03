@@ -1,0 +1,9 @@
+===== Graphsize =====
+==== Formato ====
+graphsize //x_expresión//, //y_expresión//
+==== Descripción ====
+Cambia el tamaño del área de gráficos y redibuja la aplicación BASIC256.
+==== Ver también ====
+[[graphheight|Graphheight]], [[graphwidth|Graphwidth]]
+==== Disponible desde la versión ==== 
+0.9.3

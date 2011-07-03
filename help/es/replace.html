@@ -1,0 +1,32 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>replace</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Replace </h1>
+
+<h2> Formato </h2>
+<b>replace</b> ( <i>pajar</i> , <i>DeCadena</i> , <i>ACadena</i> )<br/>
+<b>replace</b> ( <i>pajar</i> , <i>DeCadena</i> , <i>ACadena</i> , <i>NoDistinguirMayúsculas</i>)
+
+<h2> Descripción </h2>
+Devuelve una nueva cadena donde todas las apariciones de <i>DeCadena</i> son sustituidas por <i>ACadena</i> en la cadena <i>pajar</i>. Puede también especificarse el valor booleano opcional <i>NoDistinguirMayúsculas</i> para indicar que la búsqueda no diferencie entre mayúsculas y minúsculas.
+
+<h2> Ejemplo </h2>
+<pre>
+a$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
+print Replace(a$,"yellow","blue")
+print Replace(a$, "we", "Beatles", true)</pre>
+mostrará:
+<pre>
+We all live in a blue submarine, blue submarine, blue submarine.
+Beatles all live in a yellow submarine, yellow submarine, yellow submarine.
+</pre>
+
+<h2> Disponible desde la versión </h2> 
+0.9.6.55
+</body>
+</html>

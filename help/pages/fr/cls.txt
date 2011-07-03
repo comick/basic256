@@ -1,0 +1,5 @@
+===== Cls =====
+==== Format ====
+**cls**
+==== Description ====
+Nettoie la fenêtre text output.

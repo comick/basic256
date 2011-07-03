@@ -1,0 +1,10 @@
+===== Spritemove =====
+==== Format ====
+**spritemove** //spritenumber//, //dx//, //dy//\\
+**spritemove** ( //spritenumber//, //dx//, //dy// )
+==== Description ====
+Move a sprite from its current position by the specified number of pixels.  Motion will be limited to the current screen.
+==== See Also ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== New To Version ==== 
+0.9.6n

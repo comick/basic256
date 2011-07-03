@@ -1,0 +1,11 @@
+===== Mousex =====
+==== Format ====
+**mousex**\\
+**mousex**()
+
+==== Description ====
+Returns the current or last mouse x location of the mouse pointer over the graphic output.
+==== See Also ====
+[[clickb|Clickb]], [[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousey|Mousey]]
+==== New To Version ==== 
+0.9.4d

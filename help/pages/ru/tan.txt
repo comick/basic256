@@ -1,0 +1,28 @@
+==== Tan ====
+=== Формат: ===
+**tan**( выражение )
+=== Описание: ===
+Вычисляет тангенс выражения. //Выражение// должно быть задано в радианах. Заметка: эта функция не дает точного результата.
+=== Смотри также: ===
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[sin|Sin]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]]
+=== Пример: ===
+
+<code>
+clg
+color black
+# draw a line across the graphic output
+line 0,150,300,150
+# where do we start
+lastx = 0
+lasty = tan(0) * 50 + 150
+# now step across the line and draw
+for x = 0 to 300 step 5
+   angle = x / 300 * 2 * pi
+   y = tan(angle) * 50 + 150
+   line lastx, lasty, x, y
+   lastx = x
+   lasty = y
+next x
+</code>
+|Будет изображено\\
+{{tan.png|Tan}}

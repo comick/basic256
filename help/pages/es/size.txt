@@ -1,0 +1,12 @@
+===== Size =====
+==== Formato ====
+**size**\\
+**size()**\\
+**size**(//NúmerodeArchivo//)
+==== Descripción ====
+Devuelve el tamaño en bytes de un archivo abierto. Si el número de archivo no se especifica, se usa el número cero (0).
+
+==== Ver también ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]]
+==== Disponible desde la versión ==== 
+0.9.4

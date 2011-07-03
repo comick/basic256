@@ -1,0 +1,19 @@
+===== Rect =====
+==== Formato ====
+**rect** //x//,//y//,//anchura//,//altura//\\
+**rect** ( //x//, //y//, //anchura//, //altura// )
+==== Descripción ====
+Dibuja un  rectángulo de (anchura x altura) pixels, usando el color actual. La esquina superior izquierda estará situada en //x//, //y//.
+=== Ejemplo ====
+<code>
+color white
+rect 0,0,300,300
+color red
+rect 50,50,150,150
+color blue
+rect 100,100,150,150
+color green
+rect 10,140,280,20
+</code>
+mostrará:\\
+{{:en:rect.png|}}

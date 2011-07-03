@@ -1,0 +1,14 @@
+===== Spriteplace =====
+
+==== Formato ====
+**spriteplace** //NúmeroSprite//, //x//, //y//\\
+**spriteplace** ( //NúmeroSprite//, //x//, //y// )
+
+==== Descripción ====
+Sitúa el centro de un sprite en una posición específica de la pantalla. Al igual que en [[imgload|Imgload]], la posición del sprite se refiere al punto central del sprite y no a la esquina superior izquierda, como ocurre con la mayoría de las instrucciones gráficas.
+
+==== Ver también ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+
+==== Disponible desde la versión ==== 
+0.9.6n

@@ -1,0 +1,72 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>color</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Color </h1>
+
+<h2> Format </h2>
+
+<b>color</b> <i>colorname</i><br/>
+<b>color</b> ( <i>colorname</i> )<br/>
+<b>color</b> <i>red</i>, <i>blue</i>, <i>green</i><br/>
+<b>color</b> ( <i>red</i>, <i>blue</i>, <i>green</i> )<br/>
+<b>color</b> <i>rgb_value</i><br/>
+<b>color</b> ( <i>rgb_value</i> )<br/>
+
+<h2> Description </h2>
+
+Sets the current drawing color to <i>colorname</i>; to RGB color made up of <i>red</i>, <i>blue</i>, <i>green</i> components; or to RGB value.
+
+There is a special color named CLEAR, with a value of -1.  If the current color is set to this value the pixels or shapes drawn will clear the pixels of the graphics output area and make them transparent.  This is especially useful when creating sprites using the Spriteslice command.<br/>
+
+<table border=1>
+<tr><th>Color names and RGB values<th><th><th></tr>
+<tr><th>Color Name<th>RGB Values<th></tr>
+<tr><td>black<td>0, 0, 0<td><hi #000000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>white<td>255, 255, 255<td><hi #FFFFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>red<td>255, 0, 0<td><hi #FF0000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkred<td>128, 0, 0<td><hi #800000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>green<td>0, 255, 0<td><hi #00FF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkgreen<td>0, 128, 0<td><hi #008000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>blue<td>0, 0, 255<td><hi #0000FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkblue<td>0, 0, 128<td><hi #000080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>cyan<td>0, 255, 255<td><hi #00FFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkcyan<td>0, 128, 128<td><hi #008080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>purple<td>255, 0, 255<td><hi #FF00FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkpurple<td>128, 0, 128<td><hi #800080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>yellow<td>255, 255, 0<td><hi #FFFF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkyellow<td>128, 128 ,0<td><hi #808000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>orange<td>255, 102, 0<td><hi #FF6600>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkorange<td>176, 61 ,0<td><hi #B03D00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>grey<td>164, 164 ,164<td><hi #A4A4A4>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkgrey<td>128, 128 ,128<td><hi #808080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>clear<td>-1<td>~~SP~~</tr>
+
+</table>
+<h2> See Also </h2>
+
+<a href="rgb.html">Rgb</a>, <a href="getcolor.html">GetColor</a>
+
+<h2> Example </h2>
+
+<pre>
+clg
+color rgb(128,128,128)
+rect 0,0,graphwidth, graphheight
+color red
+circle 100,100,50
+color 255,160,160
+circle 100,100,25
+</pre>
+Will draw a grey rectangle with a red circle with a pink middle.<br/>
+<img src="color.png" alt="color.png" />
+<h2> New To Version </h2> 
+
+0.9.5m
+
+</body>
+</html>

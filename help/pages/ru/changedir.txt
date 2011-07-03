@@ -1,0 +1,10 @@
+==== Changedir ====
+=== Формат: ===
+**changedir** выражение\\
+**changedir**( выражение )
+=== Описание: ===
+Меняет текущий рабочий каталог на путь, указанный в заданном выражении. Для всех систем, (включая Windows) только прямой слеш (/) должен использоваться как разделитель каталогов внутри полного пути.
+=== Смотри также: ===
+[[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[exists|Exists]], [[kill|Kill]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
+=== Впервые в версии: ===
+0.9.6r

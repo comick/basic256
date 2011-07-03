@@ -1,0 +1,12 @@
+===== Ceil =====
+==== Format ====
+**ceil** ( //Ausdruck// )
+==== Beschreibung ====
+Gibt die kleinste ganze Zahl zur&uuml;ck, die gr&ouml;&szlig;er oder gleich //Ausdruck// ist.
+==== Siehe auch ====
+[[floor|Floor]]
+==== Beispiel ====
+<code>
+i = floor(-1.25)
+rem i ist -1
+</code>

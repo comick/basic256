@@ -1,0 +1,91 @@
+===== Fehler-Codes =====
+
+==== Beschreibung ====
+Dies ist eine Liste der Runtime-Error-Codes, welche durch die [[lasterror|LastError]]-Funktion und der Text-Error Messages durch die [[Lasterrormessage|LastErrorMessage]]-Function mitgeteilt werden.
+
+|Error #||Error Description|
+|1|ERROR_NOSUCHLABEL|"Label not known"|
+|2|ERROR_FOR1|"Illegal FOR -- start number > end number"|
+|3|ERROR_FOR2|"Illegal FOR -- start number < end number"|
+|4|ERROR_NEXTNOFOR|"Next without FOR"|
+|5|ERROR_FILENUMBER|"Invalid File Number"|
+|6|ERROR_FILEOPEN|"Unable to open file"|
+|7|ERROR_FILENOTOPEN|"File not open."|
+|8|ERROR_FILEWRITE|"Unable to write to file"|
+|9|ERROR_FILERESET|"Unable to reset file"|
+|10|ERROR_ARRAYSIZELARGE|"Array dimension too large"|
+|11|ERROR_ARRAYSIZESMALL|"Array dimension too small"|
+|12|ERROR_NOSUCHVARIABLE|"Unknown variable"|
+|13|ERROR_NOTARRAY|"Not an array variable"|
+|14|ERROR_NOTSTRINGARRAY|"Not a string array variable"|
+|15|ERROR_ARRAYINDEX|"Array index out of bounds"|
+|16|ERROR_STRNEGLEN|"Substring length less that zero"|
+|17|ERROR_STRSTART|"Starting position less than zero"|
+|18|ERROR_STREND|"String not long enough for given starting character"|
+|19|ERROR_NONNUMERIC|"Non-numeric value in numeric expression"|
+|20|ERROR_RGB|"RGB Color values must be in the range of 0 to 255."|
+|21|ERROR_PUTBITFORMAT|"String input to putbit incorrect."|
+|22|ERROR_POLYARRAY|"Argument not an array for poly()/stamp()"|
+|23|ERROR_POLYPOINTS|"Not enough points in array for poly()/stamp()"|
+|24|ERROR_IMAGEFILE|"Unable to load image file."|
+|25|ERROR_SPRITENUMBER|"Sprite number out of range."|
+|26|ERROR_SPRITENA|"Sprite has not been assigned."|
+|27|ERROR_SPRITESLICE|"Unable to slice image."|
+|28|ERROR_FOLDER|"Invalid directory name."|
+|29|ERROR_DECIMALMASK|"Decimal mask must be in the range of 0 to 15."|
+|30|ERROR_DBOPEN|"Unable to open SQLITE database."|
+|31|ERROR_DBQUERY|"Database query error (message follows)."|
+|32|ERROR_DBNOTOPEN|"Database must be opened first."|
+|33|ERROR_DBCOLNO|"Column number out of range."|
+|34|ERROR_DBNOTSET|"Record set must be opened first."|
+|35|ERROR_EXTOPBAD|"Invalid Extended Op-code."|
+|36|ERROR_NETSOCK|"Error opening network socket."|
+|37|ERROR_NETHOST|"Error finding network host."|
+|38|ERROR_NETCONN|"Unable to connect to network host."|
+|39|ERROR_NETREAD|"Unable to read from network connection."|
+|40|ERROR_NETNONE|"Network connection has not been opened."|
+|41|ERROR_NETWRITE|"Unable to write to network connection."|
+|42|ERROR_NETSOCKOPT|"Unable to set network socket options."|
+|43|ERROR_NETBIND|"Unable to bind network socket."|
+|44|ERROR_NETACCEPT|"Unable to accept network connection."|
+|45|ERROR_NETSOCKNUMBER|"Invalid Socket Number"|
+|9999|ERROR_NOTIMPLEMENTED|"Feature not implemented in this environment."|
+
+==== Beispiel ====
+
+<code>
+# test error trapping
+onerror nicetrap
+print 1
+next haha
+print 2
+open 999, "bogus.file"
+print "Runs Anyway"
+
+# test error trapping off and fail at any error (default)
+offerror
+print 3
+next hoho
+print "never get here"
+
+end
+
+nicetrap:
+# this is the nice error handler
+print "trap and run - error on line " + lasterrorline + " - error number " + lasterror + " message " + lasterrormessage + " (" + lasterrorextra + ")"
+return
+</code>
+will display\\
+<code>
+1
+trap and run - error on line 4 - error number 4 message Next without FOR ()
+2
+trap and run - error on line 6 - error number 5 message Invalid File Number ()
+Runs Anyway
+3
+ERROR on line 12: Next without FOR 
+</code>
+
+==== Siehe auch ====
+[[Lasterror|Lasterror]], [[Lasterrorextra|Lasterrorextra]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Offerror|Offerror]], [[Onerror|Onerror]]
+

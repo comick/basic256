@@ -1,0 +1,10 @@
+===== Kill =====
+==== Format ====
+**kill** //filename//\\
+**kill**(//filename//)\\
+
+==== Description ====
+Delete the specified //filename// from the system.
+
+==== See Also ====
+[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

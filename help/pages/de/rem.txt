@@ -1,0 +1,5 @@
+===== Rem =====
+==== Format ====
+rem //Kommentar
+==== Beschreibung ====
+Steht am Anfang einer Kommentarzeile. Zeilen, die mit REM beginnen, werden bei der Programmausf&uuml;hrung ignoriert.

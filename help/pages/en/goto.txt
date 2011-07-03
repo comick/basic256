@@ -1,0 +1,20 @@
+===== Goto =====
+==== Format ====
+goto //label//
+==== Description ====
+Jumps to the specified label.
+==== See Also ====
+[[gosubreturn|Gosub / Return]]
+==== Example ====
+<code>
+print "I";
+goto skipit
+print " don't";
+skipit: #
+print " want cookies."
+</code>
+will print
+<code>
+I want cookies.
+</code>
+

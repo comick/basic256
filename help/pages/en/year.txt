@@ -1,0 +1,19 @@
+===== Year =====
+==== Format ====
+**year**\\
+**year** ( )
+==== Description ====
+Returns the current system clock's 4 digit year.
+==== Example ====
+<code>
+print "today's date is ";
+print (month + 1) + "/" + day + "/" + year
+</code>
+will display
+<code>
+today's date is 11/30/2009
+</code>
+==== See Also ====
+[[day|Day]], [[hour| Hour]], [[minute| Minute]], [[month| Month]], [[Msec|Msec]], [[second| Second]]
+==== New To Version ==== 
+0.9.4

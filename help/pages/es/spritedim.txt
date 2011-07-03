@@ -1,0 +1,14 @@
+===== Spritedim =====
+
+==== Formato ====
+**spritedim** //n//\\
+**spritedim** ( //n// )
+
+==== Descripción ====
+Crea //n// áreas de almacenamiento de sprites en la memoria . En el programa se accede a los sprites por un número de sprite de 0 a n-1.
+
+==== Ver también ====
+[[spritecollide|Spritecollide]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+
+==== Disponible desde la versión ==== 
+0.9.6n

@@ -1,0 +1,30 @@
+===== Day =====
+
+==== Format ====
+
+**day**\\
+**day** ( )
+
+==== Description ====
+
+Returns the current system clock's day of the month (1-31).
+
+==== See Also ====
+
+[[hour|Hour]], [[minute|Minute]], [[month|Month]], [[second|Second]], [[year|Year]]
+
+==== Example ====
+
+<code>
+print "today's date is ";
+print (month + 1) + "/" + day + "/" + year
+</code>
+will print|
+<code>
+today's date is 11/30/2009
+</code>
+
+==== New To Version ==== 
+
+0.9.4
+

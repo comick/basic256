@@ -1,0 +1,8 @@
+===== Arrays =====
+Arrays are allocated using the DIM command or resided using Redim.  They may hold numeric or string data.  Access to specific elements in an array is accomplished by using square brackets along with the integer offset of the element, starting from zero.  Arrays may also be dimensioned and accessed using two dimensions.\\
+Array sizes may also be extracted using [?] [?,] and [,?] on the end of the array variable.
+==== Example ====
+<code>
+print myarray[4]
+</code>
+will display on the screen the fifth element in 'myarray'

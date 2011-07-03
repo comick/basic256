@@ -1,0 +1,6 @@
+===== Rem =====
+==== Format ====
+**rem** //comment//\\
+**#** //comment//
+==== Description ====
+Line comment.  A line beginning with REM (or the shortened #) is ignored.

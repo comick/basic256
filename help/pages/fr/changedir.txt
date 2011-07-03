@@ -1,0 +1,14 @@
+===== Changedir =====
+
+==== Format ====
+**changedir** //expression//\\
+**changedir** ( //expression// )
+
+==== Description ====
+Change de répertoire de travail pour le chemin spécifié par l'//expression//. Pour toutes le OS (y compris Windows) un anti-slash (/) est utilisé pour séparer les répertoire au sein d'un chemin complet.
+
+==== Voir aussi ====
+[[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]
+
+==== Disponible à partir de la version ====
+0.9.6r

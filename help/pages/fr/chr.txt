@@ -1,0 +1,28 @@
+===== Chr =====
+
+==== Format ====
+
+**chr** ( //expression// )
+
+==== Description ====
+
+Converti l'entier //expression// en le caractère correspondant en code ASCII. Voir la page consacrée à asc pour un tableau de converson des caractères ASCII.
+
+==== Voir aussi ====
+
+[[asc|Asc]]
+
+==== Exemple ====
+
+<code>
+print chr(66)+chr(111)+chr(111)+chr(33)
+</code>
+affichera
+<code>
+Boo!
+</code>
+
+==== Disponible à partir de la version ==== 
+
+0.9.4
+

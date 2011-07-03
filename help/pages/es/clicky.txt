@@ -1,0 +1,23 @@
+===== Clicky =====
+
+==== Formato ====
+
+**clicky**\\
+**clicky** ( )
+
+==== Descripción ====
+
+Devuelve la coordenada y que el puntero del ratón tenía sobre el área de gráficos en el momento en que el usuario pulsó por última vez un botón del ratón. 
+
+==== Ver también ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clickx|Clickx]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Ejemplo ====
+
+Ver programa de ejemplo en [[clickb|Clickb]].
+
+==== Disponible desde la versión ==== 
+
+0.9.4d
+

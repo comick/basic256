@@ -1,0 +1,25 @@
+===== Month =====
+==== Formato ====
+**month**\\
+**month**()
+
+==== Descripción ====
+Devuelve el mes actual de acuerdo con el reloj del sistema. Enero es 0, febrero es 1,...diciembre es 11.
+
+==== Ejemplo ====
+<code>
+cls
+dim n$(12)
+n$ = {"ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"}
+print day + "-" + n$[month] + "-" + year
+</code>
+el día de Año Nuevo mostraría:
+<code>
+1-ene-2010
+</code>
+
+==== Ver también ====
+[[day|Day]], [[hour|Hour]], [[minute|Minute]], [[Msec|Msec]], [[second|Second]], [[year|Year]]
+
+==== Disponible desde la versión ==== 
+0.9.4

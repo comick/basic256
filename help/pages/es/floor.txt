@@ -1,0 +1,7 @@
+===== Floor =====
+==== Formato ====
+floor ( //expression// )
+==== Descripción ====
+Devuelve el mayor entero que sea menor o igual que //expresión//.
+==== Ver también ====
+[[ceil|Ceil]]

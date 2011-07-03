@@ -1,0 +1,13 @@
+===== Read =====
+
+==== Formato ====
+**read**\\
+**read**()\\
+**read**(//NúmerodeArchivo//)
+
+==== Descripción ====
+
+Lee y devuelve un token de un archivo abierto. Un token es cualquier cadena de caracteres separada por un espacio, tabulación o carácter de nueva linea. Si el número de archivo no se especifica, se usa el número cero (0).
+
+==== Ver también ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

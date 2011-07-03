@@ -1,0 +1,12 @@
+==== Lasterrorextra ====
+=== Формат: ===
+**lasterror**extra\\
+**lasterror**extra( )
+=== Описание: ===
+Возвращает дополнительную информацию об ошибке.
+=== Смотри также: ===
+[[errorcodes|Error Codes]], [[lasterror|Lasterror]], [[lasterrorline|Lasterrorline]], [[lasterrormessage|Lasterrormessage]], [[offerror|Offerror]], [[onerror|Onerror]]
+=== Пример: ===
+Пример смотри на странице [[errorcodes|Коды ошибок]].
+=== Впервые в версии: ===
+0.9.6z

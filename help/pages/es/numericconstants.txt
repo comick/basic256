@@ -1,0 +1,5 @@
+===== Constantes numéricas =====
+
+Las constantes numéricas son cualesquiera caracteres numéricos, opcionalmente precedidos por un signo menos para indicar números negativos, y, en su caso, un punto decimal seguido por más caracteres numéricos que indican los valores decimales.\\
+\\
+Los valores enteros positivos también pueden expresarse en sistema binario (base 2), octal (base 8) y hexadecimal (base 16). Basta con preceder los valores binarios con 0b (0b1110 = 14), los octales con 0o (0o177 = 27) y los hexadecimales con 0x (0xff= 255).

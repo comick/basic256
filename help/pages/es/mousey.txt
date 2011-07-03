@@ -1,0 +1,14 @@
+===== Mousey =====
+
+==== Formato ====
+**mousey**\\
+**mousey**()
+
+==== Descripción ====
+Devuelve la actual o última coordenada y del puntero del ratón en el área de gráficos.
+ 
+==== Ver también ====
+[[clickb|Clickb]], [[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]]
+
+==== Disponible desde la versión ==== 
+0.9.4d

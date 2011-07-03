@@ -1,0 +1,12 @@
+===== Msec =====
+==== Formato ====
+**msec**\\
+**msec**()
+==== Descripción ====
+Devuelve el número de milisegundos que el programa actual ha estado ejecutándose.
+
+==== Ver también ====
+[[day|Day]], [[hour|Hour]], [[minute|Minute]], [[month|Month]], [[second|Second]], [[year|Year]]
+
+==== Disponible desde la versión ==== 
+0.9.6.60

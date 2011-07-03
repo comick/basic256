@@ -1,0 +1,10 @@
+===== String =====
+
+==== Format ====
+**string** ( //expression// )
+
+==== Description ====
+Returns the string representation of a number.
+
+==== See Also ====
+[[decimal|Decimal]]

@@ -1,0 +1,20 @@
+===== DBopenset =====
+
+==== Formato ====
+**dbopenset** //InstrucciónSQL//\\
+**dbopenset** ( //InstrucciónSQL// )
+
+==== Descripción ====
+Ejecuta una instrucción SQL y crea un //recordset// que el programa puede utilizar.
+
+==== Ejemplo ====
+Ver ejemplo de uso en la página de [[DBOpen|DBOpen]].
+
+==== Ver también ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Enlaces externos ====
+Puede encontrarse más información acerca de bases de datos en general y SQLite en particular en [[http://sqlite.org|SQLite Home Page]] y [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== Disponible desde la versión ==== 
+0.9.6y

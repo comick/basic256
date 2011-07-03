@@ -1,0 +1,72 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>color</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Color </h1>
+
+<h2> Formato </h2>
+
+<b>color</b> <i>NombredelColor</i><br/>
+<b>color</b> ( <i>NombredelColor</i> )<br/>
+<b>color</b> <i>rojo</i>, <i>azul</i>, <i>verde</i><br/>
+<b>color</b> ( <i>rojo</i>, <i>azul</i>, <i>verde</i> )<br/>
+<b>color</b> <i>valor_rgb</i><br/>
+<b>color</b> ( <i>valor_rgb</i> )<br/>
+
+<h2> Descripción </h2>
+Establece como color de dibujo actual el <i>NombredelColor</i>, el color RGB - compuesto por la combinación <i>rojo</i>, <i>azul</i>, <i>verde</i>- , o el valor RGB.<br/>
+
+Hay un color especial denominado CLEAR, cuyo valor es -1. Si se establece como color actual, los pixels o figuras que se dibujen borrarán los pixels del área de gráficos y los harán transparentes. Esto es especialmente útil cuando se crean sprites usando el comando Spriteslice.<br/>  
+
+<table border=1>
+<tr><th>Nombres de color y valores RGB<th><th><th></tr>
+<tr><th>Nombre del color<th>Valores RGB<th></tr>
+<tr><td>black<td>0, 0, 0<td><hi #000000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>white<td>255, 255, 255<td><hi #FFFFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>red<td>255, 0, 0<td><hi #FF0000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkred<td>128, 0, 0<td><hi #800000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>green<td>0, 255, 0<td><hi #00FF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkgreen<td>0, 128, 0<td><hi #008000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>blue<td>0, 0, 255<td><hi #0000FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkblue<td>0, 0, 128<td><hi #000080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>cyan<td>0, 255, 255<td><hi #00FFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkcyan<td>0, 128, 128<td><hi #008080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>purple<td>255, 0, 255<td><hi #FF00FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkpurple<td>128, 0, 128<td><hi #800080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>yellow<td>255, 255, 0<td><hi #FFFF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkyellow<td>128, 128 ,0<td><hi #808000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>orange<td>255, 102, 0<td><hi #FF6600>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkorange<td>176, 61 ,0<td><hi #B03D00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>grey<td>164, 164 ,164<td><hi #A4A4A4>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>darkgrey<td>128, 128 ,128<td><hi #808080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi></tr>
+<tr><td>clear<td>-1<td>~~SP~~</tr>
+
+</table>
+<h2> Ver también </h2>
+
+<a href="rgb.html">Rgb</a>, <a href="getcolor.html">GetColor</a>
+
+<h2> Ejemplo </h2>
+
+<pre>
+clg
+color rgb(128,128,128)
+rect 0,0,graphwidth, graphheight
+color red
+circle 100,100,50
+color 255,160,160
+circle 100,100,25
+</pre>
+dibujará un rectángulo gris con un círculo rojo con el centro rosa.<br/>
+<img src="color.png" alt="color.png" />
+
+<h2> Disponible desde la versión </h2> 
+
+0.9.5m
+
+</body>
+</html>

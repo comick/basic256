@@ -1,0 +1,57 @@
+===== DBOpen =====
+
+==== Format ====
+**dbopen** //SQLiteFile//\\
+**dbopen** ( //SQLiteFile// )
+
+==== Description ====
+Ouvre un fichier de base de données SQLite. Si le fichier n'existe pas, il est créé.
+
+==== Exemple ====
+<code>
+#database foo - crée une base de données, peuple une table, ouvre un enregistrement et lit les données de la table.
+
+# crée un nouveau fichier de base de données ou l'ouvre
+dbopen "dbtest.sqlite3"
+
+# efface l'ancienne foo table - renvoie une erreur si c'est une nouvelle base de données
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# crée et peuple
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,'one',3.14);"
+dbexecute "insert into foo values (2,'two',6.28);"
+dbexecute "insert into foo values (3,'three',9.43);"
+
+# ouvre un enregistrement et tourne en boucle  à travers les lignes de données
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# rassemble tout
+dbclose
+end
+
+errortrap:
+# accepte l'erreur - n'affiche rien - va à la prochaine commande
+return
+</code>
+affichera
+<code>
+1one3.14
+3three9.43
+2two6.28
+</code>
+
+
+==== Voir aussi ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Lien externes ====
+De plus amples informations (en anglais) sur les bases de données en général et SQLite en particulier, sont disponibles aux adresses suivantes : [[http://sqlite.org|Page d'accueil de SQLite]] et [[http://en.wikipedia.org/wiki/SQL|SQL sur Wikipedia]].
+
+==== Disponible à partir de la version ==== 
+0.9.6y

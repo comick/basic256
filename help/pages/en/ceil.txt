@@ -1,0 +1,26 @@
+===== Ceil =====
+
+==== Format ====
+
+**ceil** ( //expression// )
+
+==== Description ====
+
+Returns the lowest integer that is greater than or equal to //expression//.
+
+==== See Also ====
+
+[[floor|Floor]]
+
+==== Example ====
+
+<code>
+print ceil(9.1)
+print ceil(-5.4)
+</code>
+will print
+<code>
+10
+-5
+</code>
+

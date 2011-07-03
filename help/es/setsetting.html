@@ -1,0 +1,42 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>setsetting</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> SetSetting </h1>
+<h2> Formato </h2>
+<b>setsetting</b> <i>nombre_programa</i>, <i>nombre_clave</i>, <i>Valor</i><br/>
+<b>setsetting</b> ( <i>nombre_programa</i>, <i>nombre_clave</i>, <i>valor</i> )
+
+<h2> Descripción </h2>
+
+Guarda un <i>valor</i> en el registro del sistema ( o en otro almacenamiento permanente). El <i>nombre_programa</i> y el <i>nombre_clave</i> se usan para clasificar los valores y asegurar que se acceda a tales configuraciones cuando se necesite y sean cambiadas accidentamente por otros programas.
+ 
+
+El valor guardado estará disponible para otros programas BASIC-256 y debería permanecer así durante mucho tiempo.
+
+Esta instrucción puede ser desactivada en prevención de posibles problemas de seguridad del sistema. La configuración se puede hacer en el IDE, accediendo al menú Edición>Preferencias. 
+
+
+<h2> Ver también </h2>
+
+<a href="getsetting.html">GetSetting</a>
+
+<h2> Ejemplo </h2>
+
+<pre>
+setsetting "EstePrograma", "PruebaConfiguración", "Valor de la configuración"
+print getsetting("EstePrograma", "PruebaConfiguración")
+</pre>
+mostrará:
+<pre>
+Valor de la configuración
+</pre>
+
+<h2> Disponible desde la versiónn </h2> 
+0.9.6.38
+</body>
+</html>

@@ -1,0 +1,7 @@
+===== Plot =====
+==== Formato ====
+**plot** //x//, //y//\\
+**plot** ( //x//, //y// )
+
+==== Descripción ====
+Cambia el pixel situado en las coordenadas //x//, //y// del área de gráficos al color actual.

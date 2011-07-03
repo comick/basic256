@@ -1,0 +1,10 @@
+===== WAVplay =====
+==== Format ====
+**wavplay** //filename//\\
+**wavplay** ( //filename// )
+==== Description ====
+Play WAV audio file asynchronously (in the background).
+==== See Also ====
+[[wavstop|WAVstop]] [[wavwait|WAVwait]]
+==== New To Version ==== 
+0.9.4

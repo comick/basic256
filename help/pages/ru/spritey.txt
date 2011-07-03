@@ -1,0 +1,9 @@
+==== Spritey ====
+=== Формат: ===
+**spritey**( номер_спрайта )
+=== Описание: ===
+Возвращает координату y центра загруженного спрайта.
+=== Смотри также: ===
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]]
+=== Впервые в версии: ===
+0.9.6n

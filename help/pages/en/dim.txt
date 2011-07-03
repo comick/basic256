@@ -1,0 +1,42 @@
+===== Dim =====
+
+==== Format ====
+
+**dim** //numericvariable// ( //integer// )\\
+**dim** //stringvariable$// ( //integer// )\\
+**dim** //numericvariable// ( //rows// , //columns// )\\
+**dim** //stringvariable$// ( //rows// , //columns// )
+
+==== Description ====
+
+Returns a newly created single dimensional array of length //integer// or a 2 dimensional array thst can be addressed by //row// and //column//. Depending on the variable assignment, a string or numerical array is created.\\
+The first element of an array has an index of 0 (zero).  Indexes range from 0 to length-1.
+
+==== See Also ====
+
+[[redim|Redim]]
+
+==== Example ====
+
+<code>
+dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + " " + z[4]
+</code>
+will print
+<code>
+1 5
+</code>
+
+==== Example Two ====
+<code>
+dim c$(4)
+c$ = {"cow", "brow", "how", "now"}
+print c$[2] + " " + c$[3] + " ";
+print c$[1] + " " + c$[0] + "?"
+</code>
+will print
+<code>
+how now brown cow?
+</code>
+

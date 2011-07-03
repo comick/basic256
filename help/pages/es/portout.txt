@@ -1,0 +1,30 @@
+===== PortOut =====
+
+==== Formato ====
+**portout** ( //número de puerto de e/s//, //valor// )
+
+==== Descripción ====
+
+Escribe un valor (0-255) en un puerto de E/S del sistema.
+
+Leer y escribir en los puertos de E/S del sistema puede ser peligroso y causar resultados impredecibles. Esta instrucción puede ser desactivada en prevención de posibles problemas de seguridad del sistema. La configuración se puede hacer en el IDE, accediendo al menú Edición>Preferencias.
+
+Esta funcionalidad sólo está disponible para los puertos de Windows. En Vista y Windows 7 se debe ejecutar BASIC-256 con permisos elevados (Administrador) una primera vez, para instalar el driver inpout32, necesario para que esta funcionalidad esté disponible. Una vez que el driver haya sido instalado, las instrucciones **PortIn/PortOut** funcionarán sin que sea necesario un nivel elevado de privilegios.
+
+==== Ver también ====
+
+[[PortIn|PortIn]]
+
+==== Ejemplo ====
+
+<code>
+for y = 0 to 255
+   portout 0x378,y
+   print y + " " + portin(0x379)
+   pause .1
+next
+</code>
+escribirá los números 0-255 en el primer puerto de impresora (puerto paralelo estándar) y mostrará el valor del registro de estado.
+ 
+==== Disponible desde la versión ==== 
+0.9.6.41

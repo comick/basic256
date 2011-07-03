@@ -1,0 +1,106 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>errorcodes</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Códigos de error </h1>
+
+<h2> Descripción </h2>
+Esta es una lista de los códigos de error en tiempo de ejecución que devuelve la función <a href="lasterror.html">LastError</a>, así como de los mensajes de error que devuelve la función <a href="lasterrormessage.html">LastErrorMessage</a>.
+
+
+<table border=1>
+<tr><td>Error nº<td>Mensaje<td>Descripción del error<</tr>
+<tr><td>1<td>ERROR_NOSUCHLABEL<td>"No such label"<td>La etiqueta no existe</tr>
+<tr><td>2<td>ERROR_FOR1<td>"Illegal FOR -- start number > end number"<td>FOR ilegal: número de inicio>número de fin </tr>
+<tr><td>3<td>ERROR_FOR2<td>"Illegal FOR -- start number < end number"<td>FOR ilegal: número de inicio<número de fin </tr>
+<tr><td>4<td>ERROR_NEXTNOFOR<td>"Next without FOR"<td> Next sin FOR</tr>
+<tr><td>5<td>ERROR_FILENUMBER<td>"Invalid File Number"<td>Número de archivo no válido </tr>
+<tr><td>6<td>ERROR_FILEOPEN<td>"Unable to open file"<td> No es posible abrir el archivo </tr>
+<tr><td>7<td>ERROR_FILENOTOPEN<td>"File not open."<td> El archivo no está abierto </tr>
+<tr><td>8<td>ERROR_FILEWRITE<td>"Unable to write to file"<td>No es posible escribir en el archivo </tr>
+<tr><td>9<td>ERROR_FILERESET<td>"Unable to reset file"<td> No es posible reiniciar el archivo </tr>
+<tr><td>10<td>ERROR_ARRAYSIZELARGE<td>"Array dimension too large"<td> La dimensión del array es demasiado grande </tr>
+<tr><td>11<td>ERROR_ARRAYSIZESMALL<td>"Array dimension too small"<td> La dimensión del array es demasiado pequeña</tr>
+<tr><td>12<td>ERROR_NOSUCHVARIABLE<td>"Unknown variable"<td> Variable desconocida</tr>
+<tr><td>13<td>ERROR_NOTARRAY<td>"Not an array variable"<td> No es una variable de array</tr>
+<tr><td>14<td>ERROR_NOTSTRINGARRAY<td>"Not a string array variable"<td> No es una variable de array de cadenas </tr>
+<tr><td>15<td>ERROR_ARRAYINDEX<td>"Array index out of bounds"<td>El índice del array está fuera del límite </tr>
+<tr><td>16<td>ERROR_STRNEGLEN<td>"Substring length less that zero"<td> La longitud de la subcadena es menor que cero</tr>
+<tr><td>17<td>ERROR_STRSTART<td>"Starting position less than zero"<td> La posición de inicio es menor que cero</tr>
+<tr><td>18<td>ERROR_STREND<td>"String not long enough for given starting character"<td> La cadena no es suficientemente larga para el carácter de inicio dado</tr>
+<tr><td>19<td>ERROR_NONNUMERIC<td>"Non-numeric value in numeric expression"<td>Valor no numérico en expresión númerica</tr>
+<tr><td>20<td>ERROR_RGB<td>"RGB Color values must be in the range of 0 to 255."<td> Los valores de color RGB deben estar entre 0 y 255</tr>
+<tr><td>21<td>ERROR_PUTBITFORMAT<td>"String input to putbit incorrect."<td>  <</tr>
+<tr><td>22<td>ERROR_POLYARRAY<td>"Argument not an array for poly()/stamp()"<td> El argumento no es un array para poly()/stamp() </tr>
+<tr><td>23<td>ERROR_POLYPOINTS<td>"Not enough points in array for poly()/stamp()"<td> No hay suficientes puntos en el array par poly()/stamp() </tr>
+<tr><td>24<td>ERROR_IMAGEFILE<td>"Unable to load image file."<td> No es posible cargar el archivo del gráfico </tr>
+<tr><td>25<td>ERROR_SPRITENUMBER<td>"Sprite number out of range."<td> El número del sprite está fuera de rango </tr>
+<tr><td>26<td>ERROR_SPRITENA<td>"Sprite has not been assigned."<td> El sprite no ha sido asignado </tr>
+<tr><td>27<td>ERROR_SPRITESLICE<td>"Unable to slice image."<td> No es posible recortar la imagen </tr>
+<tr><td>28<td>ERROR_FOLDER<td>"Invalid directory name."<td> Nombre del directorio no válido </tr>
+<tr><td>29<td>ERROR_DECIMALMASK<td>"Decimal mask must be in the range of 0 to 15."<td> La máscara decimal debe estar entre 0 y 15 </tr>
+<tr><td>30<td>ERROR_DBOPEN<td>"Unable to open SQLITE database."<td> No es posible abrir la base de datos SQLITE</tr>
+<tr><td>31<td>ERROR_DBQUERY<td>"Database query error (message follows)."<td> Error en la consulta a la base de datos</tr>
+<tr><td>32<td>ERROR_DBNOTOPEN<td>"Database must be opened first."<td> La base de datos debe ser antes abierta  </tr>
+<tr><td>33<td>ERROR_DBCOLNO<td>"Column number out of range."<td> Número de columna fuera de rango </tr>
+<tr><td>34<td>ERROR_DBNOTSET<td>"Record set must be opened first."<td> El recordset debe ser antes abierto </tr>
+<tr><td>35<td>ERROR_EXTOPBAD<td>"Invalid Extended Op-code."<td> Código de op. extendido no válido </tr>
+<tr><td>36<td>ERROR_NETSOCK<td>"Error opening network socket."<td> Error al abrir el socket de la red</tr>
+<tr><td>37<td>ERROR_NETHOST<td>"Error finding network host."<td> Error al buscar el host de la red</tr>
+<tr><td>38<td>ERROR_NETCONN<td>"Unable to connect to network host."<td> No es posible conectar con el host de la red </tr>
+<tr><td>39<td>ERROR_NETREAD<td>"Unable to read from network connection."<td> No es posible leer la conexión de red </tr>
+<tr><td>40<td>ERROR_NETNONE<td>"Network connection has not been opened."<td> La conexión de red no ha sido abierta</tr>
+<tr><td>41<td>ERROR_NETWRITE<td>"Unable to write to network connection."<td> No es posible escribir en la conexión de red</tr>
+<tr><td>42<td>ERROR_NETSOCKOPT<td>"Unable to set network socket options."<td> No es posible configurar las opciones del socket de la red</tr>
+<tr><td>43<td>ERROR_NETBIND<td>"Unable to bind network socket."<td> No es posible asociar el socket de la red </tr>
+<tr><td>44<td>ERROR_NETACCEPT<td>"Unable to accept network connection."<td> No es posible aceptar la conexión de red </tr>
+<tr><td>45<td>ERROR_NETSOCKNUMBER<td>"Invalid Socket Number"<td> Número de socket no válido </tr>
+<tr><td>9999<td>ERROR_NOTIMPLEMENTED<td>"Feature not implemented in this environment."<td> Característica no disponible en este entorno</tr>
+
+</table>
+<h2> Ejemplo </h2>
+
+<pre>
+# Prueba de captura de errores
+onerror nicetrap
+print 1
+next haha
+print 2
+open 999, "archivo.falso"
+print "Se ejecuta siempre"
+
+# prueba con captura de errores desactivada y fallo ante cualquier error (por defecto)
+offerror
+print 3
+next hoho
+print "nunca llega aquí"
+
+end
+
+nicetrap:
+# Esta es la subrutina que maneja el error
+print "captura y sigue - error en la linea " + lasterrorline + " - número de error: " + lasterror + " mensaje: " + lasterrormessage + " (" + lasterrorextra + ")"
+return
+
+</pre>
+mostrará<br/>
+<pre>
+1
+captura y sigue - error en la linea 4 - número de error: 4 mensaje: Next without FOR ()
+2
+captura y sigue - error en la linea 6 - número de error: 5 mensaje: Invalid File Number ()
+Se ejecuta siempre
+3
+ERROR on line 12: Next without FOR 
+
+</pre>
+
+<h2> Ver también </h2>
+<a href="lasterror.html">Lasterror</a>, <a href="lasterrorextra.html">Lasterrorextra</a>, <a href="lasterrorline.html">Lasterrorline</a>, <a href="lasterrormessage.html">Lasterrormessage</a>, <a href="offerror.html">Offerror</a>, <a href="onerror.html">Onerror</a>
+
+</body>
+</html>

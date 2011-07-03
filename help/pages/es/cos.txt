@@ -1,0 +1,39 @@
+===== Cos =====
+
+==== Formato ====
+
+**cos** ( //expresión// )
+
+==== Descripción ====
+
+Calcula el coseno de //expresión//. //Expresión// debe estar en radianes.
+
+==== Nota ====
+
+La función **cos** no produce un resultado exacto.
+
+==== Ver también ====
+
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]
+
+==== Ejemplo ====
+
+<code>
+clg
+color black
+# Traza una linea que cruza del area de gráficos
+line 0,150,300,150
+# punto inicial
+lastx = 0
+lasty = cos(0) * 50 + 150
+# ahora, avanzamos a lo largo de la linea y trazamos
+for x = 0 to 300 step 5
+   angle = x / 300 * 2 * pi
+   y = cos(angle) * 50 + 150
+   line lastx, lasty, x, y
+   lastx = x
+   lasty = y
+next x
+</code>
+mostrará:\\
+{{cos.jpg|Cosine Curve}}

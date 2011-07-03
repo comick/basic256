@@ -1,0 +1,52 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dim</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Dim </h1>
+
+<h2> Format </h2>
+
+<b>dim</b> <i>numericvariable</i> ( <i>integer</i> )<br/>
+<b>dim</b> <i>stringvariable$</i> ( <i>integer</i> )<br/>
+<b>dim</b> <i>numericvariable</i> ( <i>rows</i> , <i>columns</i> )<br/>
+<b>dim</b> <i>stringvariable$</i> ( <i>rows</i> , <i>columns</i> )
+
+<h2> Description </h2>
+
+Retourne un nouveau tableau à 1 dimension de longueur <i>integer</i> ou à 2 dimensions qui peut être adressé par <i>row</i> et <i>column</i>. Selon l'assignation de la variable, un tableau numérique ou de chaînes de caractères est créé.<br/>
+Le premier élément d'un tableau a l'index 0 (zéro). Les index allant ainsi de 0 à {longueur}-1.
+
+<h2> Voir aussi </h2>
+
+<a href="redim.html">Redim</a>
+
+<h2> Exemple </h2>
+
+<pre>
+dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + " " + z[4]
+</pre>
+affichera
+<pre>
+1 5
+</pre>
+
+<h2> Exemple 2 </h2>
+<pre>
+dim c$(4)
+c$ = {"à", "bulot, "laque", "L'anneau"}
+print c$[2] + " " + c$[3] + " ";
+print c$[1] + " " + c$[0] + "!"
+</pre>
+affichera
+<pre>
+L'anneau laque à bulot!
+</pre>
+
+</body>
+</html>

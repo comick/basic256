@@ -1,0 +1,11 @@
+===== Size =====
+==== Format ====
+**size**\\
+**size()**\\
+**size**(//filenumber//)
+==== Description ====
+Returns the length, in bytes, of an opened file.  If the file number is not specified file number zero (0) will be used.
+==== See Also ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]]
+==== New To Version ==== 
+0.9.4

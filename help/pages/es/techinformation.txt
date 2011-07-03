@@ -1,0 +1,26 @@
+===== Developer and Technical =====
+
+==== Visión General ====
+Los programas BASIC-256 se compilan inicialmenta en //bytecodes// usando LEX y YACC, y posteriormente se ejecutan interpretando el //bytecode// en una //stack machine//. Para añadir funciones basta con añadir un //bytecode//, indicando a LEX y YACC cómo analizar la sintaxis y codificando la instrucción apropiada en el intérprete. Para quien nunca haya escrito un compilador o intérprete, las entrañas de BASIC-256 pueden ofrecer una excelente introducción a los fundamentos de este tipo de programación.
+
+Es importante tener presente que BASIC-256 es un lenguaje de enseñanza para niños ( entre 7 y 9 años), por lo que se pretende evitar conceptos avanzados tanto como sea posible. Aunque sería divertido hacer de BASIC-256 un lenguaje de alto nivel potente, existen ya lenguajes mucho más adecuados para ello: Python, Scheme.
+
+==== Pendiente de desarrollo ====
+
+  - Control de errores en tiempo real en el editor ( análisis inmediato de cada linea que es escrita).
+
+==== La vida de un programa BASIC-256 ====
+
+  - El programa BASIC es convertido en símbolos o //tokens// por LEX
+  - LEX proporciona los //tokens// a YACC
+  - YACC determina si la linea tiene una sintaxis válida. Si es así, añade los //bytecodes// adecuados al programa de //bytecodes//.
+  - Si no se produce ningún error de sintaxis, la parte escrita en C++ del programa interpreta el //bytecode//, de instrucción en instrucción, usando una //stack machine//:
+  - Los errores en tiempo de ejecución detienen el programa y muestran un mensaje de error en la pantalla.
+  
+==== Salida Gráfica ====
+
+Todas las funciones gráficas se llevan a cabo en un buffer, el cual es trasladado inmediatamente a la pantalla después de cada operación. Esto es intencionalmente ineficiente. El modo "rápido" de hacerlo sería tener un hilo separado para el renderizado que llamase a una rutina de volcado en pantalla cuando estuviese listo, o hacer todo el renderizado en la rutina de pantalla.
+
+Esta es una ilustración de las concesiones hechas en BASIC-256 para mantener las cosas simples. Nos interesa que los niños sean capaces de ver los puntos moverse por la pantalla sin tener que explicar que son el doble buffering o el multi-hilo. También queremos que puedan escribir juegos como Pong, que analizan colisiones usando fórmulas geométricas básicas, y dibujen la pelota y las palas con un simple bucle. El presente enfoque permite hacer esto.
+
+Nota: Para acelerar las cosas para niños que hacen programas más avanzados, se ha añadido el modo [[fastgraphics|FASTGRAPHICS]]. Cuando se utiliza ester modo, la pantalla se actualiza solamente cuando el programa BASIC usa la instrucción [[refresh|REFRESH]] . Esto permite a los niños beneficiarse del doble buffering sin tener que entenderlo completamente.

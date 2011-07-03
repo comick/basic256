@@ -1,0 +1,21 @@
+===== Year =====
+==== Formato ====
+**year**\\
+**year** ( )
+==== Descripción ====
+Devuelve el año actual (con cuatro dígitos), de acuerdo con el reloj del sistema.
+
+==== Ejemplo ====
+<code>
+print "La fecha de hoy es ";
+print day + "/" (month + 1) + "/" + year
+</code>
+mostrará:
+<code>
+La fecha de hoy es 30/11/2009
+</code>
+==== Ver también ====
+[[day|Day]], [[hour| Hour]], [[minute| Minute]], [[month| Month]], [[Msec|Msec]], [[second| Second]]
+
+==== Disponible desde la versión ==== 
+0.9.4

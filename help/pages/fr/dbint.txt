@@ -1,0 +1,19 @@
+===== DBInt =====
+
+==== Format ====
+**dbint** ( //ColumnNumber// )
+
+==== Description ====
+Retourne la valeur entière de la //colonne demandée// de la ligne active de l'enregistrement ouvert.
+
+==== Exemple ====
+Voir l'exemple de la page de [[DBOpen|DBOpen]].
+
+==== Voir aussi ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Liens externes ====
+De plus amples informations (en anglais) sur les bases de données en général et SQLite en particulier, sont disponibles aux adresses suivantes : [[http://sqlite.org|Page d'accueil de SQLite]] et [[http://en.wikipedia.org/wiki/SQL|SQL sur Wikipedia]].
+
+==== Disponible à partir de la version ==== 
+0.9.6y

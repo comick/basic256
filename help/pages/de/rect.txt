@@ -1,0 +1,5 @@
+===== Rect =====
+==== Format ====
+rect //x//,//y//,//b//,//h//
+==== Beschreibung ====
+Zeichnet ein mit der aktuellen Farbe ausgef&uuml;lltes Rechteck mit der H&ouml;he //h// Pixel und der Breite //b// Pixel. Die obere linke Ecke hat die Koodinaten //x//,//y//.

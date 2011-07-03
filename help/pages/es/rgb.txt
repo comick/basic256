@@ -1,0 +1,9 @@
+===== Rgb =====
+==== Formato ====
+**rgb**( //rojo//, //verde//, //azul// )
+==== Descripción ====
+Devuelve el valor RGB del color definido por sus componentes rojo, verde y azul. Los valores válidos para rojo, verde y azul van del 0 al 255.
+==== Ver también ====
+[[color|Color]], [[getcolor|GetColor]], [[pixel|Pixel]]
+==== Disponible desde la versión ==== 
+0.9.5m

@@ -1,0 +1,29 @@
+===== PortOut =====
+==== Format ====
+**portout** ( //io port number//, //value// )
+
+==== Description ====
+
+Writes value (0-255) to system I/O port.
+
+Reading and writing system I/O ports can be dangerous and can cause unpredictable results.  This statement may be disabled because of potential system security issues.  Availability may be configured in the IDE by going to the Edit>Preferences menu.    
+
+Functionality only available in Windows port.  Under Vista and Windows 7 you should run BASIC-256 with elevated permissions (Administrator) once to install the inpout32 driver required for this functionality to work.  Once the driver has been installed the PortIn/PortOut statements will work without giving an elevated privilege level.
+
+==== See Also ====
+
+[[PortIn|PortIn]]
+
+==== Example ====
+
+<code>
+for y = 0 to 255
+   portout 0x378,y
+   print y + " " + portin(0x379)
+   pause .1
+next
+</code>
+will output the numbers 0-255 to the standard first printer port and print the value of the status register.
+
+==== New To Version ==== 
+0.9.6.41

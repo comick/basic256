@@ -1,0 +1,18 @@
+===== MD5 =====
+==== Formato ====
+**md5** ( //cadena// )
+==== Descripción ====
+Devuelve una cadena con el valor hexadecimal del resumen MD5 del argumento //cadena//. Esta función se deriva del Algoritmo de Resumen de Mensaje MD5 de RSA Data Security, Inc.
+
+==== Ejemplo ====
+<code>
+print MD5("Something")
+print MD5("something")
+</code>
+mostrará:
+<code>
+73f9977556584a369800e775b48f3dbe
+437b930db84b8079c2dd804a71936b5f
+</code>
+==== Disponible desde la versión ==== 
+0.9.6.37

@@ -1,0 +1,7 @@
+====Operatoren====
+Die Operatoren +,-,*,/ werden für die Addition, Subtraktion, Multiplikation und Division genutzt. Gültige Operanden sind numerische Konstanten und/oder numerische Variablen.
+Der = Operator wird zur Zuweisung von Werten zu Variablen und zum Testen auf Gleichheit verwendet.
+Der + Operator kann benutzt werden, um jegliche Kombination von Zeichenketten-Konstanten und Zeichenketten-Variablen aneinanderzufügen.
+Der : Operator trennt mehrere Befehle in einer Zeile voneinander.
+Der ; Operator unterdrückt den Zeilenvorschub, der normalerweise nach einem PRINT erfolgt. Beispiel: <code>print "Hallo";</code>
+Der # Operator ist eine Abküzung für den REM-Befehl, und ist mit ihm austauschbar.

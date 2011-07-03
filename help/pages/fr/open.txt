@@ -1,0 +1,13 @@
+===== Open =====
+==== Format ====
+**open** //filename//\\
+**open**(//filename//)\\
+**open** //filenumber//, //filename//\\
+**open**(//filenumber//, //filename//)
+
+==== Description ====
+Opens a file for reading and writing.  The //filename// is specified as a string, and may be an absolute or relative path.  If the file number is not specified file number zero (0) will be used.
+==== Note ====
+BASIC256 may have up to 8 files open at a single time.  The files are numbered from 0 to 7.  Opening a file to a number while another is already open to that number will close the open file.
+==== See Also ====
+[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

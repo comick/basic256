@@ -1,0 +1,50 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>sin</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Sin </h1>
+
+<h2> Formato </h2>
+
+<b>sin</b> ( <i>expresión</i> )
+
+<h2> Descripción </h2>
+
+Calcula el seno de <i>expresión</i>. <i>Expresión</i> debe estar en radianes.
+
+<h2> Nota </h2>
+
+La función <b>sin</b> no produce un resultado exacto.
+
+<h2> Ver también </h2>
+
+<a href="acos.html">Acos</a>, <a href="asin.html">Asin</a>, <a href="atan.html">Atan</a>, <a href="cos.html">Cos</a>, <a href="degrees.html">Degrees</a>, <a href="radians.html">Radians</a>, <a href="tan.html">Tan</a>
+
+<h2> Ejemplo </h2>
+
+<pre>
+clg
+color black
+# Traza una linea que cruza el area de gráficos
+line 0,150,300,150
+# punto inicial
+lastx = 0
+lasty = sin(0) * 50 + 150
+# ahora, avanzamos a lo largo de la linea y trazamos
+for x = 0 to 300 step 5
+   angle = x / 300 * 2 * pi
+   y = sin(angle) * 50 + 150
+   line lastx, lasty, x, y
+   lastx = x
+   lasty = y
+next x
+</pre>
+mostrará:
+<img src="sin.jpg" alt="sin.jpg" />
+
+</body>
+</html>

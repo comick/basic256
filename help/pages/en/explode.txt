@@ -1,0 +1,66 @@
+===== Explode =====
+
+==== Format ====
+stringarrayvariable$ = **explode** ( //string// , //delimiter// )\\
+stringarrayvariable$ = **explode** ( //string// , //delimiter// , //caseinsensitive// )\\
+arrayvariable$ = **explode** ( //string// , //delimiter// )\\
+arrayvariable$ = **explode** ( //string// , //delimiter// , //caseinsensitive// )
+
+==== Description ====
+Splits up //string// into substrings wherever the //delimiter// occurs.  Substrings are stored in either the string or numeric array defined in the assignment statement.  The array will be re-dimensioned to the exact size to store all of the substrings.
+
+You may also specify an optional boolean value //caseinsensitive// to specify that the search will treat upper and lower case letters the same.
+
+
+==== Example ====
+<code>
+# explode on spaces
+a$ = "We all live in a yellow submarine."
+print a$
+w$ = explode(a$," ")
+for t = 0 to w$[?]-1
+   print "w$["+t+"]=" + w$[t]
+next t
+
+# explode on A or a
+a$ = "klj;lkjalkjAlkj;"
+print a$
+w$ = explode(a$,"A",true)
+for t = 0 to w$[?]-1
+   print "w$["+t+"]=" + w$[t]
+next t
+
+# explode numbers on comma
+a$="1,2,3,77,foo,9.987,6.45"
+print a$
+n = explode(a$,",")
+for t = 0 to n[?]-1
+   print "n["+t+"]=" + n[t]
+next t
+</code>
+will display
+<code>
+We all live in a yellow submarine.
+w$[0]=We
+w$[1]=all
+w$[2]=live
+w$[3]=in
+w$[4]=a
+w$[5]=yellow
+w$[6]=submarine.
+klj;lkjalkjAlkj;
+w$[0]=klj;lkj
+w$[1]=lkj
+w$[2]=lkj;
+1,2,3,77,foo,9.987,6.45
+n[0]=1
+n[1]=2
+n[2]=3
+n[3]=77
+n[4]=0
+n[5]=9.987
+n[6]=6.45
+</code>
+
+==== New to Version ==== 
+0.9.6.55

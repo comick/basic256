@@ -1,0 +1,17 @@
+===== Key =====
+==== Format ====
+key\\
+key()
+
+==== Description ====
+Immediately returns an integer value corresponding to the currently pressed keyboard key.  If no key has been pressed since the last call to the **key** function then the number zero (0) will be returned.
+
+==== Note ====
+<code>
+if key = 47 then print key
+</code>
+will not display the desired results, because it's calling key twice in succession, and will return different values each time.  This code will do what you want:
+<code>
+a = key
+if a = 47 then print a
+</code>

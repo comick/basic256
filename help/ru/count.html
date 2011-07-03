@@ -1,0 +1,32 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>count</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> Count </h2>
+<h3> Формат: </h3>
+<b>count</b>( строка, искомая_строка )<br/>
+<b>count</b>( строка, искомое, регистр_не_важен )
+<h3> Описание: </h3>
+Возвращает количество строк <i>искомая_строка</i> в переменной или константе <i>строка</i>. Вы также можете указать дополнительное булево значение <i>регистр_не_важен</i> = true, если хотите не учитывать регистр букв.
+<h3> Смотри также: </h3>
+<a href="countx.html">Countx</a>
+<h3> Пример: </h3>
+
+<pre>
+print count("Привет", "ве")
+print count("Буйвол, буйвол, БуЙвОл.","БУЙВОЛ",true)
+</pre>
+Будет напечатано
+<pre>
+1
+3
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.6.55
+</body>
+</html>

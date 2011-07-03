@@ -1,0 +1,23 @@
+===== Clickx =====
+
+==== Format ====
+
+**clickx**\\
+**clickx** ( )
+
+==== Description ====
+
+Returns the mouse x location of the mouse pointer over the graphic output last time the user clicked a mouse button.
+
+==== See Also ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Example ====
+
+See sample program on [[clickb|Clickb]].
+
+==== New To Version ==== 
+
+0.9.4d
+

@@ -1,0 +1,17 @@
+===== Key =====
+==== Formato ====
+key\\
+key()
+
+==== Descripción ====
+Devuelve un valor entero que corresponde a la tecla que ha sido pulsada en el teclado. Si no se ha pulsado ninguna tecla desde la última llamada a la función **key**, esta devuelve el valor cero (0).
+
+==== Nota ====
+<code>
+if key = 47 then print key
+</code>
+no mostrará los resultados deseados, debido a que se esta llamando a la función dos veces y ésta devolverá diferentes valores cada vez. Este código sí hace lo que se pretende:
+<code>
+a = key
+if a = 47 then print a
+</code>

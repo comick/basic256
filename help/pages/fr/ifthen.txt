@@ -1,0 +1,36 @@
+===== If / Then =====
+==== Format ====
+**if** //booleanexpr// **then** //statement//
+----
+**if** //booleanexpr// **then**\\
+//statement(s)//\\
+**end if**
+----
+**if** //booleanexpr// **then**\\
+//statement(s)//\\
+**else**\\
+//statement(s)//\\
+**end if**
+
+==== Description ====
+A single line IF evaluates //booleanexpr//, when true the //statement(s)// following the then is executed, otherwise execution continues on the next line. There are also two forms of a multi-line if statement, one with a true block and one with a true and a false block of code to execute.
+==== Example ====
+<code>
+print "Guess my letter - press a key"
+# wait for the user to press a key
+do
+  a = key
+  pause .01
+until a <> 0
+#
+if chr(a) = "Z" then
+   print "Yippie, you pressed the Z key!!!"
+else
+   print "darn, you pressed something else."
+end if
+#
+end
+</code>
+
+==== New To Version ==== 
+0.9.4g

@@ -1,0 +1,20 @@
+===== Circle =====
+
+==== Format ====
+
+**circle** //x//,//y//,//r//
+
+==== Description ====
+
+Draws a circle centered at x,y with a radius r using the current color.
+
+==== Example ====
+
+<code>
+color blue
+rect 0,0,300,300
+color red
+circle 100,100,50
+</code>
+draws\\
+{{:en:cir.png|Circle}}

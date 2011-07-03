@@ -1,0 +1,23 @@
+===== Count =====
+
+==== Formato ====
+**count** ( //pajar// , //aguja// )\\
+**count** ( //pajar// , //aguja// , //NoDistinguirMayúsculas//)
+
+==== Descripción ====
+Devuelve el número de veces que la cadena //aguja// aparece en la cadena //pajar//. También puede especificarse un valor booleano //NoDistinguirMayúsculas// que indica que la búsqueda tratará como una misma letra la mayúscula y la minúscula.
+
+
+==== Ejemplo ====
+<code>
+print count("Hello", "lo")
+print count("Buffalo buffalo buffalo.","BUFFALO",true)
+</code>
+mostrará:
+<code>
+1
+3
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.6.55

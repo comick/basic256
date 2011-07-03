@@ -1,0 +1,7 @@
+===== Floor =====
+==== Format ====
+floor ( //expression// )
+==== Description ====
+Returns the greatest integer that is less than or equal to //expression//
+==== See Also ====
+[[ceil|Ceil]]

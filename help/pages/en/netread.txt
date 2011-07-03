@@ -1,0 +1,18 @@
+===== NetRead =====
+
+==== Format ====
+**netread**\\
+**netread** ( )\\
+**netread** ( //socket_number// )
+ 
+==== Description ====
+Read data from the specified network connection and return it as a string.  This function will wait until data is received.   If //socket_number// is not specified socket number zero (0) will be used.
+
+==== Example ====
+See example of usage on [[NetConnect|NetConnect]] page.
+
+==== See Also ====
+[[NetAddress|NetAddress]], [[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetData|NetData]], [[NetListen|NetListen]], [[NetWrite|NetWrite]]
+
+==== New To Version ==== 
+0.9.6.31

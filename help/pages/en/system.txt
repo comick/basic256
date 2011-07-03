@@ -1,0 +1,13 @@
+===== System =====
+
+==== Format ====
+**system** //expression//\\
+**system** ( //expression// )
+
+==== Description ====
+Execute a system command in a terminal window.  WARNING: This can be a very dangerous statement.  Only use it if you know what you are doing.
+
+This statement may be disabled because of potential system security issues.  Availability may be configured in the IDE by going to the Edit>Preferences menu.
+   
+==== New To Version ==== 
+0.9.5h

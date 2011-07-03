@@ -1,0 +1,18 @@
+===== LastError =====
+
+==== Format ====
+**lasterror**\\
+**lasterror** ( )
+
+==== Description ====
+Returns the last runtime error number.
+
+==== Example ====
+
+See example of usage on [[Errorcodes|Error Codes]] page.
+
+==== See Also ====
+[[Errorcodes|Error Codes]], [[Lasterrorextra|Lasterrorextra]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Offerror|Offerror]], [[Onerror|Onerror]]
+
+==== New To Version ==== 
+0.9.6z

@@ -1,0 +1,30 @@
+==== Imgsave ====
+=== Формат: ===
+**imgsave** имя_файла\\
+**imgsave** имя_файла, тип_файла\\
+**imgsave**( имя_файла )\\
+**imgsave** ( имя_файла, тип_файла )
+=== Описание: ===
+Сохраняет текущее состояние окна вывода графики в графический файл. По умолчанию сохранение происходит в формате Portable Networks Graphics (PNG). Вы можете дополнительно указать //тип_файла// как "BMP", "JPG", "JPEG" или "PNG". Иногда в сохраненном изображении "неиспользованные" области могут быть заполнены черным цветом. Это вызвано использованием оператора [[clg|Clg]] с указанием цвета -1 (прозрачный). Когда изображение сохраняется "прозрачность" меняется на черный цвет. Используйте следующий фрагмент:
+<code>
+color white
+rect 0, 0, graphwidth, graphheight
+</code>
+
+=== Смотри также: ===
+[[imgload|ImgLoad]]
+=== Пример: ===
+
+<code>
+color white
+rect 0, 0, graphwidth, graphheight
+for t = 0 to 100
+  color rand()*256, rand()* 256, rand()*256
+  rect rand()*graphwidth, rand()*graphheight, rand()*graphwidth, rand()*graphheight
+next t
+imgsave "testimgsave1.png"
+imgsave "testimgsave2.jpg", "jpg"
+</code>
+
+=== Впервые в версии: ===
+0.9.6.45

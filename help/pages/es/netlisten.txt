@@ -1,0 +1,19 @@
+===== NetListen =====
+
+==== Format ====
+**netlisten** //NúmerodePuerto//\\
+**netlisten** ( //NúmerodePuerto//)\\
+**netlisten** //NúmerodeSocket//, //NúmerodePuerto//\\
+**netlisten** ( //NúmerodeSocket//, //NúmerodePuerto//)
+
+==== Descripción ====
+Abre una conexión de red (servidor) en un determinado puerto y espera a que otro programa se conecte. Si no se especifica //NúmerodeSocket//, se usará el número cero (0).
+
+==== Ejemplo ====
+Ver ejemplo de uso en la página de [[NetConnect|NetConnect]].
+
+==== Ver también ====
+[[NetAddress|NetAddress]], [[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetData|NetData]], [[NetRead|NetRead]], [[NetWrite|NetWrite]]
+
+==== Disponible desde la versión ==== 
+0.9.6.31

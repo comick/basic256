@@ -1,0 +1,40 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>poly</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Poly </h1>
+<h2> Formato </h2>
+<b>poly</b> <i>variable de array numérica</i><br/>
+<b>poly</b> {x1, y1, x2, y2, x3, y3 ...}
+
+<h2> Descripción </h2>
+Dibuja un polígono. Los lados del polígono son definidos por los valores almacenados en el array, el cual debe contener pares x,y secuencialmente. La (longitud del array/2) dará el número de puntos. Un polígono puede tambien especificarse usando una lista de pares x,y encerrada entre llaves {}.
+
+<h2> Nota </h2>
+El número de puntos, como argumento del array, fue eliminado de la instrucción <b>poly</b> en la versión 0.9.4
+
+<h2> Ver también </h2>
+<a href="stamp.html">Stamp</a>
+<h2> Ejemplo </h2>
+<pre>
+color blue
+rect 0,0,300,300
+color green
+dim tri(6)
+tri = {100, 100, 200, 200, 100, 200}
+poly tri
+</pre>
+<pre>
+color blue
+rect 0,0,300,300
+color green
+poly {100, 100, 200, 200, 100, 200}
+</pre>
+Ambos programas usan la instrucción <b>poly</b> para dibujar lo siguiente:<br/>
+<img src="poly.png" alt="poly.png" />
+</body>
+</html>

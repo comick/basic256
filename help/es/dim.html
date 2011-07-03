@@ -1,0 +1,51 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dim</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Dim </h1>
+
+<h2> Formato </h2>
+
+<b>dim</b> <i>VariableNumérica</i> ( <i>NúmeroEntero</i> )<br/>
+<b>dim</b> <i>VariableCadena$</i> ( <i>NúmeroEntero</i> )<br/>
+<b>dim</b> <i>VariableNumérica</i> ( <i>filas</i> , <i>columnas</i> )<br/>
+<b>dim</b> <i>VariableCadena$</i> ( <i>filas</i> , <i>columnas</i> )
+
+<h2> Descripción </h2>
+Crea y devuelve un nuevo array de longitud <i>NúmeroEntero</i> o un array bidimensional organizado en <i>filas</i> y <i>columnas</i>. Dependiendo de la variable a que se asigne, se crea un array numérico o de cadenas.<br/>
+El primer elemento de un array tiene como índice 0 (cero). El rango de los índices va desde 0 hasta longitud-1.
+
+<h2> Ver también </h2>
+
+<a href="redim.html">Redim</a>
+
+<h2> Ejemplo </h2>
+
+<pre>
+dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + " " + z[4]
+</pre>
+dará como resultado:
+<pre>
+1 5
+</pre>
+
+<h2> Ejemplo 2 </h2>
+<pre>
+dim c$(4)
+c$ = {"cow", "brow", "how", "now"}
+print c$[2] + " " + c$[3] + " ";
+print c$[1] + " " + c$[0] + "?"
+</pre>
+mostrará
+<pre>
+how now brown cow?
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+===== Sintaxis del programa =====
+
+Los programas de BASIC-256 consisten en una serie de instrucciones, separadas en lineas distintas, que se ejecutan en el orden en que aparecen.

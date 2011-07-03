@@ -1,0 +1,13 @@
+===== Spriteh =====
+
+==== Formato ====
+**spriteh** ( //NúmeroSprite// )
+
+==== Descripción ====
+Devuelve la altura, en pixels, de un sprite que se ha cargado.
+
+==== Ver también ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+
+==== Disponible desde la versión ==== 
+0.9.6n

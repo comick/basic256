@@ -1,0 +1,22 @@
+===== Goto =====
+==== Formato ====
+**goto** //etiqueta//
+==== Descripción ====
+Salta a la //etiqueta// especificada.
+
+==== Ver también ====
+[[gosubreturn|Gosub / Return]]
+
+==== Ejemplo ====
+<code>
+print "A mi";
+goto salta
+print " no";
+salta:
+print " me gustan las galletas."
+</code>
+will print
+<code>
+A mi me gustan las galletas.
+</code>
+

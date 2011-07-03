@@ -1,0 +1,37 @@
+==== Dir ====
+=== Формат: ===
+**dir**()\\
+**dir**( папка )
+=== Описание: ===
+Открывает //папку// для извлечения имен файлов или папок, которые содержатся в ней.
+=== Пример: ===
+
+<code>
+f$ = dir("c:\")
+while f$ <> ""
+   print f$
+   f$ = dir()
+end while
+</code>
+Будет напечатано что-то вроде
+<code>
+$Recycle.Bin
+autoexec.bat
+Backup
+Boot
+bootmgr
+Documents and Settings
+IO.SYS
+MSDOS.SYS
+MSOCache
+pagefile.sys
+Program Files
+ProgramData
+System Volume Information
+temp
+Users
+Windows
+</code>
+
+=== Впервые в версии: ===
+0.9.6.55

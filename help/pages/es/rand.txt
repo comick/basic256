@@ -1,0 +1,9 @@
+===== Rand =====
+==== Formato ====
+**rand**\\
+**rand**()
+
+==== Descripción ====
+Devuelve un número aleatorio entre 0 y 1. La distribución de los valores es uniforme.
+==== Nota ====
+Para obtener números aleatorios entre otro intervalo de valores, basta con multiplicar o sumar los números apropiados. Por ejemplo, para generar un entero entre 0 y 10, puede usarse la expresión  int(rand * 10).

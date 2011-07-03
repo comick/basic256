@@ -1,0 +1,17 @@
+===== NetAddress =====
+
+==== Formato ====
+**netaddress**\\
+**netaddress** ( )
+
+==== Descripción ====
+Devuelve una cadena con la dirección IPv4 de nuestra máquina en la red local.
+
+==== Ejemplo ====
+Ver ejemplo de uso en la página de [[NetConnect|NetConnect]].
+
+==== Ver también ====
+[[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetData|NetData]], [[NetListen|NetListen]], [[NetRead|NetRead]], [[NetWrite|NetWrite]]
+
+==== Disponible desde la versión ==== 
+0.9.6.35

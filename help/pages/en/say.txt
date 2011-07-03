@@ -1,0 +1,19 @@
+===== Say =====
+==== Format ====
+**say** //expression//\\
+**say** ( //expression// )
+==== Description ====
+Uses the the system Text to Speech (TTS) engine to say the //expression//.  In LINUX the FLite or eSpeak libraries are required.  In Windows the current default SAPI voice will be used.
+
+==== Notes ====
+Windows SAPI will use the default voice you have defined on your control panel.  To change the default for Linux/Mac using the ESpeak library you need to copy the desired voice file to the name //default//.
+
+<code>
+# Statements to set default language to 'fr' on Ubuntu 10.10
+# Your system may be different
+cd /usr/share/espeak-data/voices
+sudo cp fr default
+</code>
+
+==== New To Version ==== 
+0.9.4

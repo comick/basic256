@@ -1,0 +1,22 @@
+===== Mouseb =====
+==== Formato ====
+**mouseb**\\
+**mouseb**()
+
+==== Descripción ====
+Devuelve los botones del ratón que el usuario está pulsando ( si está sobre el área de gráficos). Devuelve 0 si no se registra ninguna pulsación. Si se pulsan varios botones, el valor es la suma de los valores de los botones pulsados. 
+
+
+^Valores devueltos^^
+^Valor^Botón del ratón pulsado^
+|0|Ninguno|
+|1|Izquierdo|
+|2|Derecho|
+|4|Central|
+
+
+==== Ver también ====
+[[clickb|Clickb]], [[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Disponible desde la versión ==== 
+0.9.4d

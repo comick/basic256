@@ -1,0 +1,7 @@
+===== Int =====
+==== Format ====
+int ( //expression// )
+==== Description ====
+Convert //expression// to an integer (whole) number. Int will convert a string or a float to an integer value. If the expression can not be converted then a zero will be returned.
+==== See Also ====
+[[float|Float]]

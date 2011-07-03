@@ -1,0 +1,12 @@
+==== DBCloseSet ====
+=== Формат: ===
+**dbclose**set\\
+**dbclose**set( )
+=== Описание: ===
+Закрывает текущий открытый [[dbopenset|DBOpenSet]] запрос. Больше информации о базах данных и, в частности, об SQLite можно найти на домашней странице SQLite [[http://sqlite.org|http://sqlite.org]] и странице SQL на Wikipedia [[http://ru.wikipedia.org/wiki/SQL|http://ru.wikipedia.org/wiki/SQL]].
+=== Смотри также: ===
+[[dbclose|DBClose]], [[dbexecute|DBExecute]], [[dbfloat|DBFloat]], [[dbint|DBInt]], [[dbopen|DBOpen]], [[dbopenset|DBOpenSet]], [[dbrow|DBRow]], [[dbstring|DBString]]
+=== Пример: ===
+Смотри пример использования на странице [[dbopen|DBOpen]].
+=== Впервые в версии: ===
+0.9.6y

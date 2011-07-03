@@ -1,0 +1,20 @@
+===== Say =====
+==== Formato ====
+**say** //expresión//\\
+**say** ( //expresión// )
+==== Descripción ====
+Usa el motor del sistema "Text to Speech" (TTS) para decir la //expresión//. En LINUX son necesarias las bibliotecas FLite o eSpeak. En Windows se usará la voz SAPI predeterminada.
+ 
+==== Notas ====
+En Windows, SAPI usará la voz predeterminada que se haya definido en el panel de control. En Linux/Mac, si se usa la biblioteca eSpeak es necesario copiar el archivo de voz elegido con el nombre //default//.
+ 
+
+<code>
+# Instrucciones para establecer como lenguaje predeterminado "es" en Ubuntu 10.10
+# (en tu sistema podría ser diferente)
+cd /usr/share/espeak-data/voices
+sudo cp es default
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.4

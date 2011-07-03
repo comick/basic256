@@ -1,0 +1,12 @@
+===== PutSlice =====
+==== Formato ====
+**putslice** //x//, //y//, //recorte$//\\
+**putslice** //x//, //y//, //recorte$//, //ColorTransparente//
+
+==== Descripción ====
+Pone en la pantalla el gráfico almacenado en la cadena //recorte$//, situándolo en las coordenadas x,y. Si se especifica un color transparente, los puntos de ese color no se dibujan.
+
+==== Ver también ====
+[[getslice|GetSlice]]
+==== Disponible desde la versión ==== 
+0.9.6b

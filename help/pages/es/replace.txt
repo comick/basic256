@@ -1,0 +1,22 @@
+===== Replace =====
+
+==== Formato ====
+**replace** ( //pajar// , //DeCadena// , //ACadena// )\\
+**replace** ( //pajar// , //DeCadena// , //ACadena// , //NoDistinguirMayúsculas//)
+
+==== Descripción ====
+Devuelve una nueva cadena donde todas las apariciones de //DeCadena// son sustituidas por //ACadena// en la cadena //pajar//. Puede también especificarse el valor booleano opcional //NoDistinguirMayúsculas// para indicar que la búsqueda no diferencie entre mayúsculas y minúsculas.
+
+==== Ejemplo ====
+<code>
+a$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
+print Replace(a$,"yellow","blue")
+print Replace(a$, "we", "Beatles", true)</code>
+mostrará:
+<code>
+We all live in a blue submarine, blue submarine, blue submarine.
+Beatles all live in a yellow submarine, yellow submarine, yellow submarine.
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.6.55

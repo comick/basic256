@@ -1,0 +1,22 @@
+===== GetColor =====
+==== Formato ====
+getcolor\\
+getcolor()
+
+==== Descripción ====
+Devuelve el valor RGB del color de dibujo actual (el último que se haya establecido con la instrucción color). El valor RGB se calcula como ((rojo * 256) + verde *256) + azul, donde rojo, verde y azul toman valor entre 0 y 255. Si se estableció CLEAR como color de dibujo, se devuelve el valor -1.  
+
+==== Ver también ====
+[[color|Color]], [[rgb|Rgb]]
+==== Ejemplo ====
+<code>
+color red
+print getcolor
+</code>
+mostrará:
+<code>
+16711680
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.5m

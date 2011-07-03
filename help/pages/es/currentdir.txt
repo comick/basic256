@@ -1,0 +1,15 @@
+===== Currentdir =====
+
+==== Formato ====
+**currentdir**\\
+**currentdir** ( )
+
+==== Descripción ====
+
+Devuelve el nombre de la ruta completa del directorio actual de BASIC-256. Para separar las carpetas en la descripción de la ruta completa se usa la barra (/), cualquiera que sea el sistema (incluido Windows). 
+
+==== Ver también ====
+[[changedir|Changedir]], [[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]
+
+==== Disponible desde la versión ====
+0.9.6r

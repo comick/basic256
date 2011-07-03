@@ -1,0 +1,66 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dbopen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> DBOpen </h1>
+
+<h2> Format </h2>
+<b>dbopen</b> <i>SQLiteFile</i><br/>
+<b>dbopen</b> ( <i>SQLiteFile</i> )
+
+<h2> Description </h2>
+Open an SQLite database file.  If the file does not exist then create it.
+
+<h2> Example </h2>
+<pre>
+#database foo - create a database, populate a table, open a recordset and read data from table.
+
+# create a new database file or open it
+dbopen "dbtest.sqlite3"
+
+# delete old foo table - trap error if new database
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# create and populate
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,'one',3.14);"
+dbexecute "insert into foo values (2,'two',6.28);"
+dbexecute "insert into foo values (3,'three',9.43);"
+
+# open a recordset and loop through the rows of data
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# wrap everything up
+dbclose
+end
+
+errortrap:
+# accept error - display nothing - return to next statement
+return
+</pre>
+will display
+<pre>
+1one3.14
+3three9.43
+2two6.28
+</pre>
+
+<h2> See Also </h2>
+<a href="dbclose.html">DBClose</a>, <a href="dbcloseset.html">DBCloseSet</a>, <a href="dbexecute.html">DBExecute</a>, <a href="dbfloat.html">DBFloat</a>, <a href="dbint.html">DBInt</a>, <a href="dbopenset.html">DBOpenSet</a>, <a href="dbrow.html">DBRow</a>, <a href="dbstring.html">DBString</a>
+
+<h2> External Links </h2>
+More information about databases in general and SQLite specifically can be found at <a href="http:<i>sqlite.org.html">SQLite Home Page</a> and <a href="http:</i>en.wikipedia.org/wiki/sql.html">SQL at Wikipedia</a>.
+
+<h2> New To Version </h2> 
+0.9.6y
+</body>
+</html>

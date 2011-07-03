@@ -1,0 +1,40 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>implode</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> Implode </h2>
+<h3> Формат: </h3>
+<b>implode</b>( массив )<br/>
+<b>implode</b>( массив, разделитель )
+<h3> Описание: </h3>
+Объединяет элементы массива в строку. При необходимости можно указать <i>разделитель</i>, который будет помещен между элементами массива. Противоположна функции <a href=explode.html>Explode</a>.
+<h3> Смотри также: </h3>
+<a href="explode.html">Explode</a>, <a href="explodex.html">Explodex</a>
+<h3> Пример: </h3>
+
+<pre>
+dim a$(1)
+dim b(1)
+a$ = Explode("Как поживает коричневая корова?"," ")
+print implode(a$,"-")
+print implode(a$)
+b = Explode("1,2,3.33,4.44,5.55",",")
+print implode(b,", ")
+print implode(b)
+</pre>
+Будет напечатано
+<pre>
+Как-поживает-коричневая-корова?
+Какпоживаеткоричневаякорова?
+1, 2, 3.33, 4.44, 5.55
+123.334.445.55
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.6.57
+</body>
+</html>

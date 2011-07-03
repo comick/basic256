@@ -1,0 +1,12 @@
+==== Lasterrormessage ====
+=== Формат: ===
+**lasterror**message\\
+**lasterror**message( )
+=== Описание: ===
+Возвращает строку сообщения последней ошибки.
+=== Смотри также: ===
+[[errorcodes|Error Codes]], [[lasterror|Lasterror]], [[lasterrorextra|Lasterrorextra]], [[lasterrorline|Lasterrorline]], [[offerror|Offerror]], [[onerror|Onerror]]
+=== Пример: ===
+Пример смотри на странице [[errorcodes|Коды ошибок]].
+=== Впервые в версии: ===
+0.9.6z

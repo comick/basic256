@@ -1,0 +1,44 @@
+===== Stamp =====
+==== Formato ====
+**stamp** //x//, //y//, //array//\\
+**stamp** //x//, //y//, {x1, y1, x2, y2, x3, y3 ...}\\
+**stamp** //x//, //y//, //escala//, //array//\\
+**stamp** //x//, //y//, //escala//, {x1, y1, x2, y2, x3, y3 ...}\\
+**stamp** //x//, //y//, //escala//, //rotación//, //array//\\
+**stamp** //x//, //y//, //escala//, //rotación//, {x1, y1, x2, y2, x3, y3 ...}
+
+==== Descripción ====
+Dibuja un polígono con la esquina superior izquierda (origen) en x,y. De manera opcional, el tamaño del polígono puede ser definido por //escala// (1=tamaño normal). También se puede rotar la imagen de acuerdo con un ángulo especificado ( en radianes, en sentido de las agujas del reloj) en torno al origen. Los lados del polígono son definidos por los valores almacenados en el array, el cual debe contener pares x,y secuencialmente. La (longitud del array/2) dará el número de puntos. El polígono puede también especificarse usando una lista de pares x,y encerrada entre llaves {}.
+
+==== Ver también ====
+[[poly|Poly]]
+==== Ejemplo ====
+Los dos bloques de código que aparecen a continuación dibujan un par de triángulos verdes en el área de gráficos:
+
+<code>
+clg
+color blue
+rect 0,0,300,300
+color green
+dim tri(6)
+tri = {0, 0, 100, 100, 0, 100}
+# dibuja el triángulo en 0,0 (tamaño normal)
+stamp 100, 100, tri
+# dibuja el triángulo en 200,100 (mitad del tamaño)
+stamp 200, 100, .5, tri
+</code>
+
+<code>
+clg
+color blue
+rect 0,0,300,300
+color green
+# dibuja el triángulo en 0,0 (tamaño normal)
+stamp 100, 100, {0, 0, 100, 100, 0, 100}
+# dibuja el triángulo en 200,100 (mitad del tamaño)
+stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}
+</code>
+Ambos programas mostrarán:\\
+{{:en:stamp.png|}}
+==== Disponible desde la versión ==== 
+0.9.4

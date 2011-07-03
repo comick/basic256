@@ -1,0 +1,5 @@
+===== Length =====
+==== Format ====
+length( //string// )
+==== Description ====
+Returns the number of characters in //string//

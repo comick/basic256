@@ -1,0 +1,20 @@
+===== DBClose =====
+
+==== Format ====
+**dbclose**\\
+**dbclose** ( )
+
+==== Description ====
+Ferme le fichier de données SQLite actuellement ouvert.
+
+==== Exemple ====
+Voir l'exemple de la page de [[DBOpen|DBOpen]].
+
+==== Voir aussi ====
+[[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Liens externes ====
+De plus amples informations (en anglais) sur les bases de données en général et SQLite en particulier sont disponibles aux adresses suivantes : [[http://sqlite.org|SQLite Home Page]] et [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== Disponible à partir de la version ==== 
+0.9.6y

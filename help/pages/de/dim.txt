@@ -1,0 +1,16 @@
+===== Dim =====
+==== Format ====
+**dim** //numericvariable//( //AnzahlElemente// )\\
+**dim** //stringvariable$//( //AnzahlElemente// )\\
+**dim** //numericvariable//( //rows// , //columns// )\\
+**dim** //stringvariable$//( //rows// , //columns// )==== Beschreibung ====
+Liefert ein neu erzeugtes Feld der L&auml;nge //AnzahlElemente// zur&uuml;ck. Der Typ des erzeugten Feldes (Zeichenkettenfeld oder numerisches Feld) wird durch den Typ von //Variable// bestimmt.
+==== Note ====
+Auf Elemente des Feldes wird via //Variable//[//Index//] zugegriffen. //Index// l&auml;uft von 0 bis (AnzahlElemente - 1)
+==== Beispiel ====
+<code>
+dim f(100)
+f[0] = 1
+dim c$(5)
+c$[4] = "Hi!"
+</code>

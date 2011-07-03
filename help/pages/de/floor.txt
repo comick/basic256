@@ -1,0 +1,9 @@
+===== Floor =====
+==== Format ====
+floor ( //Ausdruck// )
+==== Beschreibung ====
+Gibt die gr&ouml;&szlig;te ganze Zahl zur&uuml;ck, die kleiner oder gleich //Ausdruck// ist.
+==== Siehe auch ====
+Ceil
+==== Beispiel ====
+' ' i = floor(-1.25)  rem i ist -2' '

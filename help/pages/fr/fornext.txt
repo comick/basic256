@@ -1,0 +1,13 @@
+===== For / Next =====
+==== Format ====
+**for** //variable// =  //expression1// **to** //expression2// [ **step** //expression3// ] \\
+//statement(s)//\\
+**next** //variable//
+
+==== Description ====
+
+The FOR and NEXT commands are used in conjunction to execute a command or group of commands a specified number of times. When the FOR command is first encountered, the //variable// is set to //expresssion1//.\\
+After each NEXT command, //variable// is incremented by 1 (the default), or by //expression3// if the optional STEP is used, until //variable// is greater than or equal to //expression2// for positive step values, or less than or equal to //expression2// for negative step values.
+
+==== See Also ====
+[[dountil|Do / Until]], [[whileendwhile|While / End While]]

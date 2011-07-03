@@ -1,0 +1,7 @@
+===== Atan =====
+==== Formato ====
+**atan** ( //expression// )
+==== Descripción ====
+Calcula el arco-tangente de // expresión//. Los ángulos deben expresarse en radianes (0 a 2pi).
+==== Ver también ====
+[[acos|Acos]], [[asin|Asin]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]

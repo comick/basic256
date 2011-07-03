@@ -1,0 +1,19 @@
+===== NetData =====
+
+==== Formato ====
+**netdata**\\
+**netdata** ( )\\
+**netdata** //NúmerodeSocket//\\
+**netdata** ( //NúmerodeSocket// )
+
+==== Descripción ====
+Devuelve el valor verdadero (true,1) si hay datos esperando a ser leídos usando la función [NetRead|NetRead]]. En otro caso devuelve el valor falso (false,0). Si no se especifica un //NúmerodeSocket//, se usará el número cero (0).
+
+==== Ejemplo ====
+Ver ejemplo de uso en la página de [[NetConnect|NetConnect]].
+
+==== Ver también ====
+[[NetAddress|NetAddress]], [[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetListen|NetListen]], [[NetRead|NetRead]], [[NetWrite|NetWrite]]
+
+==== Disponible desde la versión ==== 
+0.9.6.31

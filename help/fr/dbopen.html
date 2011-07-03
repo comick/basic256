@@ -1,0 +1,67 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dbopen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> DBOpen </h1>
+
+<h2> Format </h2>
+<b>dbopen</b> <i>SQLiteFile</i><br/>
+<b>dbopen</b> ( <i>SQLiteFile</i> )
+
+<h2> Description </h2>
+Ouvre un fichier de base de données SQLite. Si le fichier n'existe pas, il est créé.
+
+<h2> Exemple </h2>
+<pre>
+#database foo - crée une base de données, peuple une table, ouvre un enregistrement et lit les données de la table.
+
+# crée un nouveau fichier de base de données ou l'ouvre
+dbopen "dbtest.sqlite3"
+
+# efface l'ancienne foo table - renvoie une erreur si c'est une nouvelle base de données
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# crée et peuple
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,'one',3.14);"
+dbexecute "insert into foo values (2,'two',6.28);"
+dbexecute "insert into foo values (3,'three',9.43);"
+
+# ouvre un enregistrement et tourne en boucle  à travers les lignes de données
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# rassemble tout
+dbclose
+end
+
+errortrap:
+# accepte l'erreur - n'affiche rien - va à la prochaine commande
+return
+</pre>
+affichera
+<pre>
+1one3.14
+3three9.43
+2two6.28
+</pre>
+
+
+<h2> Voir aussi </h2>
+<a href="dbclose.html">DBClose</a>, <a href="dbcloseset.html">DBCloseSet</a>, <a href="dbexecute.html">DBExecute</a>, <a href="dbfloat.html">DBFloat</a>, <a href="dbint.html">DBInt</a>, <a href="dbopenset.html">DBOpenSet</a>, <a href="dbrow.html">DBRow</a>, <a href="dbstring.html">DBString</a>
+
+<h2> Lien externes </h2>
+De plus amples informations (en anglais) sur les bases de données en général et SQLite en particulier, sont disponibles aux adresses suivantes : <a href="http:<i>sqlite.org.html">Page d'accueil de SQLite</a> et <a href="http:</i>en.wikipedia.org/wiki/sql.html">SQL sur Wikipedia</a>.
+
+<h2> Disponible à partir de la version </h2> 
+0.9.6y
+</body>
+</html>

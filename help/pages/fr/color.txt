@@ -1,0 +1,60 @@
+===== Color =====
+
+==== Format ====
+
+**color** //colorname//\\
+**color** ( //colorname// )\\
+**color** //red//, //blue//, //green//\\
+**color** ( //red//, //blue//, //green// )\\
+**color** //rgb_value//\\
+**color** ( //rgb_value// )\\
+
+==== Description ====
+
+Règle la couleur active comme étant la couleur appelée //colorname//; de composantes rouge, bleue et verte //red//, //blue//, //green// ; ou de valeur  RGB //rgb_value//.
+
+Il y a une couleur spéciale appelée CLEAR, de valeur -1.  Si la couleur courante est réglée sur cette valeur, les pixels ou formes dessinés effaceront les pixels sur lesquels ils passeront et les rendront transparents. C'est particulièrement utile pour créer des sprites avec la commande Spriteslice.\\
+
+^Noms des couleurs et leur valeur RGB^^^^
+^Nom de la couleur^Valeur RGB^^
+|black|0, 0, 0|<hi #000000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|white|255, 255, 255|<hi #FFFFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|red|255, 0, 0|<hi #FF0000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkred|128, 0, 0|<hi #800000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|green|0, 255, 0|<hi #00FF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkgreen|0, 128, 0|<hi #008000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|blue|0, 0, 255|<hi #0000FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkblue|0, 0, 128|<hi #000080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|cyan|0, 255, 255|<hi #00FFFF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkcyan|0, 128, 128|<hi #008080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|purple|255, 0, 255|<hi #FF00FF>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkpurple|128, 0, 128|<hi #800080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|yellow|255, 255, 0|<hi #FFFF00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkyellow|128, 128 ,0|<hi #808000>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|orange|255, 102, 0|<hi #FF6600>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkorange|176, 61 ,0|<hi #B03D00>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|grey|164, 164 ,164|<hi #A4A4A4>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|darkgrey|128, 128 ,128|<hi #808080>~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~~~SP~~</hi>|
+|clear|-1|~~SP~~|
+
+==== Voir aussi ====
+
+[[rgb|Rgb]], [[getcolor|GetColor]]
+
+==== Exemple ====
+
+<code>
+clg
+color rgb(128,128,128)
+rect 0,0,graphwidth, graphheight
+color red
+circle 100,100,50
+color 255,160,160
+circle 100,100,25
+</code>
+Dessinera un rectangle gris avec dedans un cercle rouge et un centre rose.\\
+{{:en:color.png|Color}}
+==== Disponible à partir de la version ==== 
+
+0.9.5m
+

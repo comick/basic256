@@ -1,0 +1,23 @@
+===== Clickx =====
+
+==== Formato ====
+
+**clickx**\\
+**clickx** ( )
+
+==== Descripción ====
+
+Devuelve la coordenada x que el puntero del ratón tenía en el área de gráficos en el momento en que el usuario pulsó por última vez un botón del ratón.
+
+==== Ver también ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Ejemplo ====
+
+Ver el programa de ejemplo en [[clickb|Clickb]].
+
+==== Disponible desde la versión ==== 
+
+0.9.4d
+

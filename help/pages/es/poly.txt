@@ -1,0 +1,30 @@
+===== Poly =====
+==== Formato ====
+**poly** //variable de array numérica//\\
+**poly** {x1, y1, x2, y2, x3, y3 ...}
+
+==== Descripción ====
+Dibuja un polígono. Los lados del polígono son definidos por los valores almacenados en el array, el cual debe contener pares x,y secuencialmente. La (longitud del array/2) dará el número de puntos. Un polígono puede tambien especificarse usando una lista de pares x,y encerrada entre llaves {}.
+
+==== Nota ====
+El número de puntos, como argumento del array, fue eliminado de la instrucción **poly** en la versión 0.9.4
+
+==== Ver también ====
+[[stamp|Stamp]]
+==== Ejemplo ====
+<code>
+color blue
+rect 0,0,300,300
+color green
+dim tri(6)
+tri = {100, 100, 200, 200, 100, 200}
+poly tri
+</code>
+<code>
+color blue
+rect 0,0,300,300
+color green
+poly {100, 100, 200, 200, 100, 200}
+</code>
+Ambos programas usan la instrucción **poly** para dibujar lo siguiente:\\
+{{:en:poly.png|}}

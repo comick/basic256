@@ -1,0 +1,4 @@
+===== Constantes numériques =====
+Les constantes numériques peuvent être n'importe quel(s) caractère(s) numérique(s), précédé ou non d'un signe moins (pour les nombres négatifs) et une éventuelle décimale (pour les nombres à virgule flottante).\\
+\\
+Les nombres positifs entiers peuvent aussi être exprimées en binaire (base 2), octal (base 8) et hexadécimal (base 16).  Faites précéder les entrées binaires de 0b (0b1110 = 14), octales de 0o (0o177 = 127) et hexadécimales de 0x (0xff = 255).

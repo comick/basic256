@@ -1,0 +1,5 @@
+===== Length =====
+==== Formato ====
+length( //cadena// )
+==== Descripción ====
+Devuelve el número de caracteres que hay en //cadena//.

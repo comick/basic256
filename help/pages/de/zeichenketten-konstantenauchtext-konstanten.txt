@@ -1,0 +1,2 @@
+====Zeichenketten-Konstanten (auch Text-Konstanten)====
+Zeichenkettenkonstanten sind  null oder mehr Zeichen, die in Anführungszeichen (") eingeschlossen sind.

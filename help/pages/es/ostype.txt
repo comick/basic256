@@ -1,0 +1,34 @@
+===== Ostype =====
+
+==== Formato ====
+
+**ostype** ( )\\
+
+==== Descripción ====
+
+Devuelve un número que representa el sistema operativo/entorno de software para el que fue compilado el archivo ejecutable de BASIC256.
+
+^Valores devueltos^^
+^Valor^Tipo^
+|0|Windows|
+|1|Linux|
+|2|Macintosh|
+
+==== Ejemplo ====
+
+<code>
+print "Estás usando un equipo con ";
+if ostype() = 0 then
+   print "windows";
+else
+   print "unix/linux";
+end if
+</code>
+mostrará algo como esto:
+<code>
+Estás usando un equipo con unix/linux.
+</code>
+
+==== Disponible desde la versión ==== 
+
+0.9.6.58

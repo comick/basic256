@@ -1,0 +1,11 @@
+==== Onerror ====
+=== Формат: ===
+**onerror** метка
+=== Описание: ===
+Вызывает исполнение подпрограммы обозначенной меткой //метка//, когда происходит ошибка времени исполнения. Управление передается на следующую строчку программы после оператора [[gosubreturn|Return]] в подпрограмме.
+=== Смотри также: ===
+[[errorcodes|Error Codes]], [[lasterror|Lasterror]], [[lasterrorextra|Lasterrorextra]], [[lasterrorline|Lasterrorline]], [[lasterrormessage|Lasterrormessage]], [[offerror|Offerror]]
+=== Пример: ===
+Пример смотри на странице [[errorcodes|Коды ошибок]].
+=== Впервые в версии: ===
+0.9.6z

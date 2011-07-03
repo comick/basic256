@@ -1,0 +1,93 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>netconnect</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> NetConnect </h1>
+
+<h2> Formato </h2>
+<b>netconnect</b> <i>NombredeServidor</i>, <i>NúmerodePuerto</i><br/>
+<b>netconnect</b> ( <i>NombredeServidor</i>, <i>NúmerodePuerto</i> )<br/>
+<b>netconnect</b> <i>NúmerodeSocket</i>, <i>NombredeServidor</i>, <i>NúmerodePuerto</i><br/>
+<b>netconnect</b> ( <i>NúmerodeSocket</i>, <i>NombredeServidor</i>, <i>NúmerodePuerto</i> )
+
+<h2> Descripción </h2>
+Abre una conexión de red (cliente) con un servidor. La dirección IP o el nombre del host del servidor se especifica en el argumento <i>NombredeServidor</i>, y el número de puerto de rede en el argumento <i>NúmerodePuerto</i>. Si no se indica un <i>NúmerodeSocket</i> se utilizara el número cero (0).
+
+<h2> Ejemplo </h2>
+Abra dos instancias de BASIC-256 en un mismo equipo. Pegue el código "servidor" en una y el código "cliente" en el otro. Ejecute en primer lugar el servidor y después el cliente. Puede verse como los mensajes son enviados de un lado a otro entre los dos procesos.
+
+<h3> Código Servidor </h3>
+<pre>
+# get a message and send back success
+print "wait for connection on " + netaddress()
+netlisten 9997
+print "got connection"
+do
+   while not netdata
+      pause .1
+      print ".";
+   end while
+   n$ = netread
+   print n$
+   netwrite "I got '" + n$ + "'."
+until n$ = "end"
+netclose
+</pre>
+mostrará (donde xxx.xxx.xxx.xxx es la dirección IPv4 de su equipo):
+<pre>
+wait for connection on xxx.xxx.xxx.xxx
+got connection
+.1 Hi There
+....2 Hi There
+........3 Hi There
+..........4 Hi There
+.....5 Hi There
+.......6 Hi There
+....7 Hi There
+..........8 Hi There
+....9 Hi There
+.....10 Hi There
+.end
+</pre>
+
+<h3> Código cliente </h3>
+<pre>
+# el usuario debe teclear un mensaje y enviarlo al servidor
+input "enter message?", m$
+netconnect "127.0.0.1", 9997
+for t = 1 to 10
+   pause rand
+   netwrite t + " " + m$
+   print netread
+next t
+netwrite "end"
+print netread
+netclose
+</pre>
+mostrara:
+<pre>
+enter message?Hi There
+I got '1 Hi There'.
+I got '2 Hi There'.
+I got '3 Hi There'.
+I got '4 Hi There'.
+I got '5 Hi There'.
+I got '6 Hi There'.
+I got '7 Hi There'.
+I got '8 Hi There'.
+I got '9 Hi There'.
+I got '10 Hi There'.
+I got 'end'.
+</pre>
+
+<h2> Ver también </h2>
+<a href="netaddress.html">NetAddress</a>, <a href="netclose.html">NetClose</a>, <a href="netdata.html">NetData</a>, <a href="netlisten.html">NetListen</a>, <a href="netread.html">NetRead</a>, <a href="netwrite.html">NetWrite</a>
+
+<h2> Disponible desde la versión </h2> 
+0.9.6.31
+</body>
+</html>

@@ -1,0 +1,6 @@
+===== Rem =====
+==== Formato ====
+**rem** //comentario//\\
+**#** //comentario//
+==== Descripción ====
+Linea de comentario. Una linea que comienza con REM ( o la abreviatura #) se ignora.

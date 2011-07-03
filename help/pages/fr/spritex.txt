@@ -1,0 +1,9 @@
+===== Spritex =====
+==== Format ====
+**spritex** ( //spritenumber// )
+==== Description ====
+Returns the x coordinate of the center of a loaded sprite.
+==== See Also ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritey|Spritey]]
+==== New To Version ==== 
+0.9.6n

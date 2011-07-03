@@ -1,0 +1,19 @@
+===== OffError =====
+
+==== Formato ====
+**offerror**
+
+==== Descripción ====
+
+Desactiva la captura  de errores y restaura el comportamiento por defecto en caso de error.
+
+==== Ejemplo ====
+
+Ver ejemplo de uso en la página [[Errorcodes|Códigos de error]].
+
+
+==== Ver también ====
+[[Errorcodes|Error Codes]], [[Lasterror|Lasterror]], [[Lasterrorextra|Lasterrorextra]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Onerror|Onerror]]
+
+==== Disponible desde la versión ==== 
+0.9.6z

@@ -1,0 +1,66 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dbopen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> DBOpen </h1>
+
+<h2> Formato </h2>
+<b>dbopen</b> <i>ArchivoSQLite</i><br/>
+<b>dbopen</b> ( <i>ArchivoSQLite</i> )
+
+<h2> Descripción </h2>
+Abre un archivo de base de datos SQLite. Si el archivo no existe, lo crea.
+
+<h2> Ejemplo </h2>
+<pre>
+#base de datos "foo" - crea una base de datos, introduce datos en una tabla, abre un recordset y lee datos desde la tabla.
+
+# crea un nuevo archivo de base de datos o lo abre
+dbopen "dbtest.sqlite3"
+
+# borra la tabla existente en foo - Si es una base de datos nueva, el error se captura
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# crea la tabla e introduce datos en ella
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,'one',3.14);"
+dbexecute "insert into foo values (2,'two',6.28);"
+dbexecute "insert into foo values (3,'three',9.43);"
+
+# abre un recordset y recorre las filas de datos
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# cierra todo
+dbclose
+end
+
+errortrap:
+# acepta el error - no muestra nada - vuelve a la instrucción siguiente
+return
+</pre>
+mostrará:
+<pre>
+1one3.14
+3three9.43
+2two6.28
+</pre>
+
+<h2> Ver también </h2>
+<a href="dbclose.html">DBClose</a>, <a href="dbcloseset.html">DBCloseSet</a>, <a href="dbexecute.html">DBExecute</a>, <a href="dbfloat.html">DBFloat</a>, <a href="dbint.html">DBInt</a>, <a href="dbopenset.html">DBOpenSet</a>, <a href="dbrow.html">DBRow</a>, <a href="dbstring.html">DBString</a>
+
+<h2> Enlaces externos </h2>
+Puede encontrarse más información acerca de bases de datos en general y SQLite en particular en <a href="http:<i>sqlite.org.html">SQLite Home Page</a> y <a href="http:</i>en.wikipedia.org/wiki/sql.html">SQL at Wikipedia</a>.
+
+<h2> Disponible desde la versión </h2> 
+0.9.6y
+</body>
+</html>

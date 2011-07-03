@@ -1,0 +1,9 @@
+===== Float =====
+==== Formato ====
+float ( //expresión// )
+==== Descripción ====
+Convierte //expresión// en un número de punto flotante (decimal). Float convertirá una cadena o un entero a un valor decimal. Si la expresión no puede ser convertida, se devuelve un valor cero.
+==== Ver también ====
+[[int|Int]]
+==== Disponible desde la versión ==== 
+0.9.4

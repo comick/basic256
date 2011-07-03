@@ -1,0 +1,17 @@
+===== MD5 =====
+==== Format ====
+**md5** ( //string// )
+==== Description ====
+Returns a hexadecimal string with the MD5 digest of the //string// argument.  This function was derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm.
+==== Example ====
+<code>
+print MD5("Something")
+print MD5("something")
+</code>
+will display
+<code>
+73f9977556584a369800e775b48f3dbe
+437b930db84b8079c2dd804a71936b5f
+</code>
+==== New To Version ==== 
+0.9.6.37

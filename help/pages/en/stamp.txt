@@ -1,0 +1,40 @@
+===== Stamp =====
+==== Format ====
+**stamp** //x//, //y//, //array//\\
+**stamp** //x//, //y//, {x1, y1, x2, y2, x3, y3 ...}\\
+**stamp** //x//, //y//, //scale//, //array//\\
+**stamp** //x//, //y//, //scale//, {x1, y1, x2, y2, x3, y3 ...}\\
+**stamp** //x//, //y//, //scale//, //rotation//, //array//\\
+**stamp** //x//, //y//, //scale//, //rotation//, {x1, y1, x2, y2, x3, y3 ...}
+==== Description ====
+Draws a polygon with top left corner (origin) at x, y. Optionally scales size of polygon by the defined scale (1=normal size). Also optionally rotates the polygon by a specified angle around the origin (clockwise in radians).  The sides of the polygon are defined by the values in an array, which should be stored as x,y pairs, sequentially. The length of the array/2 will define the number of points.  A stamped polygon can also be specified using a list of x,y pairs enclosed in curly braces {}.
+==== See Also ====
+[[poly|Poly]]
+==== Example ====
+Both of the code blocks below will draw a pair of green triangles on the graphics window:
+<code>
+clg
+color blue
+rect 0,0,300,300
+color green
+dim tri(6)
+tri = {0, 0, 100, 100, 0, 100}
+# stamp the triangle at 0,0 (full size)
+stamp 100, 100, tri
+# stamp the triangle at 200,100 (half size)
+stamp 200, 100, .5, tri
+</code>
+<code>
+clg
+color blue
+rect 0,0,300,300
+color green
+# stamp the triangle at 0,0 (full size)
+stamp 100, 100, {0, 0, 100, 100, 0, 100}
+# stamp the triangle at 200,100 (half size)
+stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}
+</code>
+Both programs will draw:\\
+{{:en:stamp.png|}}
+==== New To Version ==== 
+0.9.4

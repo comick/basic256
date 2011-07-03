@@ -1,0 +1,32 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>getcolor</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h2> GetColor </h2>
+<h3> Формат: </h3>
+<b>getcolor</b><br/>
+<b>getcolor</b>()
+<h3> Описание: </h3>
+Возвращает RGB значение текущего установленного цвета (того, который был последний раз установлен командой <a href="color.html">color</a>). RGB вычисляется как ((red * 256) + green * 256) + blue где red, green, и blue целые числа в диапазоне от 0 до 255.
+<h3> Смотри также: </h3>
+<a href="color.html">Color</a>, <a href="rgb.html">Rgb</a>
+<h3> Пример: </h3>
+
+<pre>
+color red
+print getcolor
+
+</pre>
+Будет напечатано
+<pre>
+16711680
+</pre>
+
+<h3> Впервые в версии: </h3>
+0.9.5m
+</body>
+</html>

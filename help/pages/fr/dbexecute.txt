@@ -1,0 +1,20 @@
+===== DBExecute =====
+
+==== Format ====
+**dbexecute** //SqlStatement//\\
+**dbexecute** ( //SqlStatement// )
+
+==== Description ====
+Exécute une commande SQL sur le fichier de base de données SQLite ouvert. Cette commande ne produit pas d'enregistrement.
+
+==== Exemple ====
+Voir l'exemple de la page de [[DBOpen|DBOpen]].
+
+==== Voir aussi ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Liens externes ====
+De plus amples informations (en anglais) sur les bases de données en général et SQLite en particulier sont disponibles aux adresses suivantes : [[http://sqlite.org|Page d'accueil de SQLite]] et [[http://en.wikipedia.org/wiki/SQL|SQL sur Wikipedia]].
+
+==== Disponible à partir de la version ==== 
+0.9.6y

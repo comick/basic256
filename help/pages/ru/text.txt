@@ -1,0 +1,24 @@
+==== Text ====
+=== Формат: ===
+**text** x, y, строка
+=== Описание: ===
+Рисует текстовую строку в окне графического вывода от точки x,y используя текущий цвет и шрифт.
+=== Смотри также: ===
+[[color|Color]], [[font|Font]]
+=== Пример: ===
+
+<code>
+color grey
+rect 0,0,graphwidth,graphheight
+color red
+font "Times New Roman",18,50
+text 10,100,"This is Times New Roman"
+
+color darkgreen
+font "Tahoma",28,100
+text 10,200,"This is BOLD!"
+</code>
+Будет изображено\\
+{{fonttext.png|fonttext}}
+=== Впервые в версии: ===
+0.9.4

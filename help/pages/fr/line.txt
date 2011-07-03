@@ -1,0 +1,20 @@
+===== Line =====
+==== Format ====
+**line** //x0//, //y0//, //x1//, //y1//\\
+**line**(//x0//, //y0//, //x1//, //y1//)
+
+==== Description ====
+Draws a line from the point x0,y0 to the point x1, y1.
+
+==== Example ====
+
+<code>
+color white
+rect 0,0,300,300
+color black
+line 50,50,200,200
+line 100,200,200,200
+line 100,200,50,50
+</code>
+draws\\
+{{:en:line.png|Line}}

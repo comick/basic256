@@ -1,0 +1,8 @@
+===== Tableaux =====
+Les tableaux sot affectés à l'aide de la commande DIM ou redimensionnés avec Redim.  Ils peuvent contenir des données numériques ou des chaînes de caractères. Pour accéder à un élément donné d'un tableau on utilise les crochets "[ et ]" autour du rang de l'élément voulu (la numérotation partant de zéro). Les tableaux peuvent aussi dimensionnés et interrogés sur 2 dimensions.\\
+Le taille d'un tableau peut être retournée par une des commandes suivantes : [?] [?,] ou [,?] à la fin du nom du tableau.
+==== Exemple ====
+<code>
+print myarray[4]
+</code>
+affichera à l'écran le 5eme élément du tableau 'myarray'

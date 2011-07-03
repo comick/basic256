@@ -1,0 +1,295 @@
+# make html documentation from WIKI file
+# HTML from makedoc.kbs by Sergey Lupin
+#
+# modification history
+# Date		Programmer	Description
+#		sergey lupin	Original program makedoc.kbs
+# 2011-01-07	j.m.reneau	heavily modified to create user doc files
+# 2011-05-01	j.m.reneau	added es - spanish
+#
+
+# to use this utility to generate simple html folders for eash of the languages
+# for 1 & 2 use ftp to get the raw docuwiki files
+# 1. get the folders data/media/[...] and save the language folders into ./media
+# 2. get the folders data/pages/[...] and save the language folders into ./pages
+# 3. create empty folders for each of the languages
+#
+# the tree should look like this
+# ./wikitohtml.kbs
+# ./[...]
+# ./media/[...]/[*.png|*.jpg|*.gif]
+# ./pages/[...]/*.txt
+#
+# 4. execute the program to build html into the language folders
+
+# define constants
+q$ = chr(34)
+if ostype() = 0 then
+   copy$ = "copy"
+else
+   copy$ = "cp"
+end if
+
+wikipath$ = "./pages/en/"
+mediapath$ = "./media/en/"
+htmlpath$ = "en/"
+gosub doafolder
+wikipath$ = "./pages/ru/"
+mediapath$ = "./media/ru/"
+htmlpath$ = "ru/"
+gosub doafolder
+wikipath$ = "./pages/fr/"
+mediapath$ = "./media/fr/"
+htmlpath$ = "fr/"
+gosub doafolder
+wikipath$ = "./pages/de/"
+mediapath$ = "./media/de/"
+htmlpath$ = "de/"
+gosub doafolder
+wikipath$ = "./pages/es/"
+mediapath$ = "./media/es/"
+htmlpath$ = "es/"
+gosub doafolder
+print "done"
+
+end
+
+doafolder:
+q$ = chr(34)
+filename$ = dir(wikipath$)
+while (filename$ <> "")
+   print filename$
+   if instr(filename$,"singlepage",true) = 0 then
+      print wikipath$ + filename$
+      open 1, wikipath$+filename$
+      open 2, htmlpath$ + lower(replace(replace(filename$,"start","index",true),".txt",".html",true))
+      reset 2
+      # html header
+      writeline 2, "<html>"
+      writeline 2, "<header>"
+      writeline 2, "<meta http-equiv="+q$+"content-type"+q$+" content="+q$+"text/html; charset=utf-8"+q$+">"
+      writeline 2, "<title>"+lower(replace(filename$,".txt","",true))+"</title>"
+      writeline 2, "<link type='text/css' rel='stylesheet' href='style.css'>"
+      writeline 2, "</header>"
+      writeline 2, "<body>"
+      writeline 2, "<div style='float:right'><a href='index.html'>Index</a></div>"
+      inul = false
+      inol = false
+      intable = false
+      while not eof(1)
+         l$ = readline(1)
+         gosub trimline
+         if l$ <> "" then
+            gosub escapedchar
+            find$ = "=====" : odd$ = "<h1>" : even$ = "</h1>":  gosub replaceevenodd
+            find$ = "====" : odd$ = "<h2>" : even$ = "</h2>":  gosub replaceevenodd
+            find$ = "===" : odd$ = "<h3>" : even$ = "</h3>":  gosub replaceevenodd
+            find$ = "**" : odd$ = "<b>" : even$ = "</b>":  gosub replaceevenodd
+            find$ = "//" : odd$ = "<i>" : even$ = "</i>":  gosub replaceevenodd
+            find$ = "__" : odd$ = "<u>" : even$ = "</u>":  gosub replaceevenodd
+            l$ = replace(l$, "<code>", "<pre>", true)
+            l$ = replace(l$, "</code>", "</pre>", true)
+            l$ = replace(l$,"\\","<br/>")
+            gosub changelink
+            gosub changeimage
+            gosub ulitem
+            gosub olitem
+            gosub table
+         end if
+         writeline 2, l$
+      end while
+      writeline 2, "</body>"
+      writeline 2, "</html>"
+      close 2
+      close 1
+   end if
+   filename$ = dir()
+end while
+
+print htmlpath$ + "style.css"
+open 2, htmlpath$ + "style.css"
+writeline 2, "html {padding: 5px 5px 5px 5px;font-size: medium;font: 100% Arial,Helvetica,sans-serif}"
+writeline 2, "h2 {font-size: x-large;}"
+writeline 2, "h3 {font-size: medium;color: gray}"
+writeline 2, "b {font-weight: bold}"
+writeline 2, "pre {margin: 10px 10px 10px 10px;padding: 10px 5px 10px 5px;border: 1px dashed #808080;background: #cccccc;color: #000000;}"
+writeline 2, "img {margin: 10px 10px 10px 10px;	border: 1px dashed #808080;}"
+close 2
+
+return
+
+table:
+# find a table row
+closemltag = false
+if length(l$) >= 2 then
+   if left(l$,1)="|" or left(l$,1)="^" then
+      l$ = replace(l$,"|","<td>")
+      l$ = replace(l$,"^","<th>")
+      l$ = "<tr>" + mid(l$,1,length(l$)-4) + "</tr>"
+      if not intable then
+         intable = true
+         l$ = "<table border=1>" + chr(10) + l$
+      end if
+   else
+      closemltag = true
+   end if
+else
+   closemltag = true
+end if
+if closemltag and intable then
+   intable = false
+   l$ = "</table>" + chr(10) + l$
+end if
+return
+
+escapedchar:
+# find chars escaped with %%x%%
+pos = instr(l$,"%%")
+while pos <> 0
+   pos2 = instr(l$,"%%",pos+1)
+   if pos2 <> 0 then
+      if (pos>1) then
+         before$ = left(l$,pos-1)
+      else
+         before$ = ""
+      end if
+      if (pos2 + 2 > length(l$)) then
+         after$ = ""
+      else
+         after$ = mid(l$,pos2 + 2,99999)
+      end if
+      imagefile$ = mid(l$,pos+2, pos2 - pos - 2)
+      l$ = before$
+      for pos = 1 to length(imagefile$)
+         l$ = l$ + "&" + chr(35) + right("0000" + asc( mid(imagefile$, pos, 1)), 3) + ";"
+      next pos
+      l$ = l$ + after$
+   end if
+   pos = instr(l$,"%%")
+end while
+return
+
+ulitem:
+# find an un ordered list line
+closemltag = false
+if length(l$) >= 5 then
+   if left(l$,4)="  * " then
+      l$ = "<li>" + mid(l$,5,999999) + "</li>"
+      if not inul then
+         inul = true
+         l$ = "<ul>" + chr(10) + l$
+      end if
+   else
+      closemltag = true
+   end if
+else
+   closemltag = true
+end if
+if closemltag and inul then
+   inul = false
+   l$ = "</ul>" + chr(10) + l$
+end if
+return
+
+olitem:
+# find an ordered list line
+closemltag = false
+if length(l$) >= 5 then
+   if left(l$,4)="  - " then
+      l$ = "<li>" + mid(l$,5,999999) + "</li>"
+      if not inol then
+         inol = true
+         l$ = "<ol>" + chr(10) + l$
+      end if
+   else
+      closemltag = true
+   end if
+else
+   closemltag = true
+end if
+if closemltag and inol then
+   inul = false
+   l$ = "</ol>" + chr(10) + l$
+end if
+return
+
+trimline:
+l$ = replace(l$,chr(10),"")
+l$ = replace(l$,chr(13),"")
+return
+
+changelink:
+pos = instr(l$,"[[")
+while pos <> 0
+   pos2 = instr(l$,"|",pos)
+   if pos2 <> 0 then
+      pos3 = instr(l$,"]]",pos2)
+      if pos3 <> 0 then
+         if (pos>1) then
+            before$ = left(l$,pos-1)
+         else
+            before$ = ""
+         end if
+         if (pos3 + 2 > length(l$)) then
+            after$ = ""
+         else
+            after$ = mid(l$,pos3 + 2,99999)
+         end if
+         l$ = before$ + "<a href=" + q$ + lower(mid(l$,pos+2, pos2 - pos - 2)) + ".html" + q$ + ">" + mid(l$,pos2+1, pos3 - pos2 - 1) + "</a>" + after$
+      end if
+   end if
+   pos = instr(l$,"[[")
+end while
+return
+
+changeimage:
+pos = instr(l$,"{{")
+while pos <> 0
+   pos2 = instr(l$,"|",pos)
+   pos3 = instr(l$,"}}",pos)
+   if pos2 = 0 then pos2 = pos3
+   if pos3 <> 0 then
+      if (pos>1) then
+         before$ = left(l$,pos-1)
+      else
+         before$ = ""
+      end if
+      if (pos3 + 2 > length(l$)) then
+         after$ = ""
+      else
+         after$ = mid(l$,pos3 + 2,99999)
+      end if
+      imagefile$ = replacex(lower(mid(l$,pos+2, pos2 - pos - 2)),":..:","")
+      l$ = before$ + "<img src=" + q$ + imagefile$  + q$ + " alt=" + q$ + imagefile$ + q$ + " />" + after$
+      stmt$ = copy$ + " " + mediapath$ +  imagefile$ + " " +  htmlpath$
+      print stmt$
+      system stmt$
+   end if
+   pos = instr(l$,"[[")
+end while
+return
+
+replaceevenodd:
+k = 0
+pos = instr(l$,find$)
+while pos <> 0
+   k = k + 1
+   if (pos>1) then
+      before$ = left(l$,pos-1)
+   else
+      before$ = ""
+   end if
+   if (pos + length(find$) > length(l$)) then
+      after$ = ""
+   else
+      after$ = mid(l$,pos + length(find$),99999)
+   end if
+   if k%2 = 0 then
+      l$ =  before$+ even$ + after$
+   else
+      l$ = before$ + odd$ + after$
+   end if
+   pos = instr(l$,find$)
+end while
+return
+

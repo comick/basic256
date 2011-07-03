@@ -1,0 +1,12 @@
+===== Input =====
+==== Formato ====
+**input** //expresión//, //VariableCadena//\\
+**input** //expresión//, //VariableNumérica//\\
+**input** //VariableCadena//\\
+**input** //VariableNumérica//
+
+==== Descripción ====
+Espera a que el usuario teclee una linea de texto en el área de texto. Cuando el usuario pulsa la tecla intro o return, se lee la linea y se almacena en //VariableCadena// o //VariableNumérica//.\\ 
+Opcionalmente, la función puede mostrar el texto //expresión// al usuario.\\
+Si se ha especificado una variable numérica y se introducen datos no numéricos, se asignará el valor cero a la variable.\\
+También pueden especificarse referencias a los elementos de un array.

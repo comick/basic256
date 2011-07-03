@@ -1,0 +1,19 @@
+===== DBString =====
+
+==== Format ====
+**dbstring** ( //ColumnNumber// )
+
+==== Description ====
+Return a string from the specified column of the current row of the open recordset.
+
+==== Example ====
+See example of usage on [[DBOpen|DBOpen]] page.
+
+==== See Also ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]]
+
+==== External Links ====
+More information about databases in general and SQLite specifically can be found at [[http://sqlite.org|SQLite Home Page]] and [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== New To Version ==== 
+0.9.6y

@@ -1,0 +1,7 @@
+===== Int =====
+==== Formato ====
+int ( //expresión// )
+==== Descripción ====
+Convierte //expresión// en un número entero. Int convierte una cadena o un número de punto flotante en un valor entero. Si la expresión no puede convertirse, se devuelve un valor cero.
+==== Ver también ====
+[[float|Float]]

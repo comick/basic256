@@ -1,0 +1,10 @@
+===== Volume =====
+==== Formato ====
+**volume** //nivel//\\
+**volume** ( //nivel// )
+==== Descripción ====
+Ajusta el volumen de las notas que suenan con la instrucción [[sound|Sound]]. El //nivel// del volumen debe ser un valor numérico entre 0 y 10. El nivel por defecto es 5. 
+==== Ver también ====
+[[sound|Sound]]
+==== Disponible desde la versión ==== 
+0.9.5i

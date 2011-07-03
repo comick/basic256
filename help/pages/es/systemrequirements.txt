@@ -1,0 +1,13 @@
+===== Requerimientos =====
+
+**Windows (2000,XP,Vista,Windows 7):**
+  * 128MB de RAM
+  * 100MB de espacio en el disco duro
+  * MinGW, QT 4.0, GNU Flex y Bison (para la compilación)
+
+**Unix/Linux/FreeBSD:**
+  * 64MB de RAM
+  * 15MB deespacio en el disco duro
+  * Librerias de desarrollo de QT 4.0 (para la compilación)
+  * GNU Flex y Bison (para la compilación)
+

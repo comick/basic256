@@ -1,0 +1,17 @@
+===== Upper =====
+==== Format ====
+**upper** ( //string// )
+==== Description ====
+Returns //string// with all alphabetic characters converted to upper case.
+==== See Also ====
+[[lower|Lower]]
+==== Example ====
+<code>
+print upper("BlUe!")
+</code>
+will display
+<code>
+BLUE!
+</code>
+==== New To Version ==== 
+0.9.5e

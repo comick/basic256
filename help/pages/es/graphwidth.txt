@@ -1,0 +1,12 @@
+===== Graphwidth =====
+==== Formato ====
+graphwidth\\
+graphwidth()
+
+==== Descripción ====
+Devuelve la anchura (dimensión x) del área de gráficos actual.
+
+==== Ver también ====
+[[graphheight|Graphheight]], [[graphsize|Graphsize]]
+==== Disponible desde la versión ==== 
+0.9.3

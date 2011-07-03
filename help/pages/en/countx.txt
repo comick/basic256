@@ -1,0 +1,22 @@
+===== Countx =====
+
+==== Format ====
+**countx** ( //haystack// , //regex// )
+
+==== Description ====
+Return the count of the regular expression //regex// in the string //haystack//.
+
+
+==== Example ====
+<code>
+print countx("Hello", "[hH]")
+print countx("Buffalo buffalo buffalo.","[Bb]uffalo")
+</code>
+will display
+<code>
+1
+3
+</code>
+
+==== New to Version ==== 
+0.9.6.56

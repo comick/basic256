@@ -1,0 +1,19 @@
+===== NetClose =====
+
+==== Format ====
+**netclose**\\
+**netclose** ( )\\
+**netclose** //socket_number//\\
+**netclose** ( //socket_number// )
+
+==== Description ====
+Close the specified network connection (socket). If //socket_number// is not specified socket number zero (0) will be used. 
+
+==== Example ====
+See example of usage on [[NetConnect|NetConnect]] page.
+
+==== See Also ====
+[[NetConnect|NetConnect]], [[NetData|NetData]], [[NetListen|NetListen]], [[NetRead|NetRead]], [[NetWrite|NetWrite]]
+
+==== New To Version ==== 
+0.9.6.31

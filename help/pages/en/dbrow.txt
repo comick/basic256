@@ -1,0 +1,20 @@
+===== DBRow =====
+
+==== Format ====
+**dbrow**\\
+**dbrow** ( )
+
+==== Description ====
+Function that advances the record set to the next row.  Returns a true value if there is a row or false if we are at the end of the record set.
+
+==== Example ====
+See example of usage on [[DBOpen|DBOpen]] page.
+
+==== See Also ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBString|DBString]]
+
+==== External Links ====
+More information about databases in general and SQLite specifically can be found at [[http://sqlite.org|SQLite Home Page]] and [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+==== New To Version ==== 
+0.9.6y

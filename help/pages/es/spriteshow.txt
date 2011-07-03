@@ -1,0 +1,14 @@
+===== Spriteshow =====
+
+==== Formato ====
+**spriteshow** //NúmeroSprite//\\
+**spriteshow** ( //NúmeroSprite// )
+
+==== Descripción ====
+Muestra un sprite que está oculto.
+
+==== Ver también ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+
+==== Disponible desde la versión ==== 
+0.9.6n

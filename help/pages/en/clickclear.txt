@@ -1,0 +1,23 @@
+===== Clickclear =====
+
+==== Format ====
+
+**clickclear**\\
+**clickclear** ( )
+
+==== Description ====
+
+Sets ClickB, Clickx, and Clicky to zero so that we can easily tell when the next mouse click is recorded.
+
+==== See Also ====
+
+[[clickb|Clickb]], [[clickx|Clickx]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Example ====
+
+See sample program on [[clickb|Clickb]].
+
+==== New To Version ==== 
+
+0.9.4d
+

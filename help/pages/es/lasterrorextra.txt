@@ -1,0 +1,18 @@
+===== LastErrorExtra =====
+
+==== Formato ====
+**lasterrorextra**\\
+**lasterrorextra** ( )
+
+==== Description ====
+Devuelve información "extra" del error, relativa a la instrucción que lo causa.
+
+==== Ejemplo ====
+
+Ver ejemplo de uso en la página [[Errorcodes|Códigos de error]].
+
+==== Ver también ====
+[[Errorcodes|Error Codes]], [[Lasterror|Lasterror]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Offerror|Offerror]], [[Onerror|Onerror]]
+
+==== Disponible desde la version ==== 
+0.9.6z

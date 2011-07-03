@@ -1,0 +1,25 @@
+===== Sqr o Sqrt =====
+
+==== Formato ====
+
+**sqr** ( //expresión// )\\
+**sqrt** ( //expresión// )
+
+==== Descripción ====
+
+Devuelve la raiz cuadrada de // expresión//.
+
+==== Ejemplo ====
+
+<code>
+print sqr(2)
+print sqrt(10)
+</code>
+mostrará:
+<code>
+1.414214
+3.162278
+</code>
+
+==== Disponible desde la versión ==== 
+0.9.6.51

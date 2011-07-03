@@ -1,0 +1,12 @@
+===== Readline =====
+==== Formato ====
+**readline**\\
+**readline**()\\
+**readline**(//NúmerodeArchivo//)
+
+==== Descripción ====
+
+Lee y devuelve una linea completa de un archivo abierto. Si el número de archivo no se especifica, se usa el número cero.
+
+==== Ver también ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

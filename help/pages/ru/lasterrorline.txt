@@ -1,0 +1,12 @@
+==== Lasterrorline ====
+=== Формат: ===
+**lasterror****line**\\
+**lasterror****line**( )
+=== Описание: ===
+Возвращает номер строки программы, где произошла ошибка.
+=== Смотри также: ===
+[[errorcodes|Error Codes]], [[lasterror|Lasterror]], [[lasterrorextra|Lasterrorextra]], [[lasterrormessage|Lasterrormessage]], [[offerror|Offerror]], [[onerror|Onerror]]
+=== Пример: ===
+Пример смотри на странице [[errorcodes|Коды ошибок]].
+=== Впервые в версии: ===
+0.9.6z

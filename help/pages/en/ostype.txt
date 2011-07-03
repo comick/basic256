@@ -1,0 +1,35 @@
+===== Ostype =====
+
+==== Format ====
+
+**ostype** ( )\\
+
+==== Description ====
+
+Returns a number representing the operating system/software environment that this BASIC256 executable file was compiled for.
+
+^Return Values^^
+^Value^Type^
+|0|Windows|
+|1|Linux|
+|2|Macintosh|
+
+==== Example ====
+
+<code>
+print "You are using a ";
+if ostype() = 0 then
+   print "windows";
+else
+   print "unix/linux";
+end if
+print " machine."
+</code>
+Will display something like
+<code>
+You are using a unix/linux machine.
+</code>
+
+==== New To Version ==== 
+
+0.9.6.58
