@@ -37,22 +37,28 @@ int main(int argc, char *argv[])
 {
 	QApplication qapp(argc, argv);
 	char *lang = NULL;		// locale code passed with argument -l on command line
+	bool loadandgo = false;		// if -r option then run code in loadandgo mode
 	bool ok;
 	QString localecode;		// either lang or the system localle - stored on mainwin for help display
 
 	#if !defined(WIN32) || defined(__MINGW32__)
-		int opt = getopt(argc, argv, "l:");
-		while (opt != -1)
+
+		while (true)
 		{
+			int opt = getopt(argc, argv, "rl:");
+			if (opt == -1) break;
+
 			switch ((char) opt)
 			{
 				case 'l':
 					lang = optarg;
 					break;
+				case 'r':
+					loadandgo = true;
+					break;
 				default:
 					break;
 			}
-			opt = getopt(argc, argv, "l:");
 		}
 	#endif
 
@@ -88,9 +94,10 @@ int main(int argc, char *argv[])
 	mainwin->localecode = localecode;
 	mainwin->show();
 
-	#ifndef WIN32
-		// load initial file
-		if (argv[optind]) {
+	#if !defined(WIN32) || defined(__MINGW32__)
+		// load initial file -- POSIX style
+		if (optind < argc) {
+			// printf("extra arg %s\n",argv[optind]);
 			QString s = QString::fromUtf8(argv[optind]);
 			if (s.endsWith(".kbs")) {
 				QFileInfo fi(s);
@@ -100,6 +107,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	#else
+		// load initial file -- Win style
 		if (argc >= 1 && argv[1] != NULL)
 		{
 			QString s = QString::fromUtf8(argv[1]);
@@ -113,6 +121,8 @@ int main(int argc, char *argv[])
 	#endif
 
 	setlocale(LC_ALL,"C");
+
+	if (loadandgo) mainwin->loadAndGoMode();
 
 	int returnval = qapp.exec();
 

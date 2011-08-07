@@ -1,3 +1,6 @@
+2011-08-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.67
+	* added -r option to command line to switch UI to run only mode
+
 2011-07-01 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.66
 	* changed inpout32.dll linking to dynamic for Windows port to eliminate the dll hell
 	* merged in http://patch-tracker.debian.org/patch/series/view/basic256/0.9.6.60-2/04_portable_sound.diff

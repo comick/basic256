@@ -79,17 +79,17 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	addToolBar(maintbar);
 
 	// File menu
-	QMenu *filemenu = menuBar()->addMenu(QObject::tr("&File"));
-	QAction *newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
+	filemenu = menuBar()->addMenu(QObject::tr("&File"));
+	newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
 	newact->setShortcut(Qt::Key_N + Qt::CTRL);
-	QAction *openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open"));
+	openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open"));
 	openact->setShortcut(Qt::Key_O + Qt::CTRL);
-	QAction *saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
+	saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
 	saveact->setShortcut(Qt::Key_S + Qt::CTRL);
-	QAction *saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As"));
+	saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As"));
 	saveasact->setShortcut(Qt::Key_S + Qt::CTRL + Qt::SHIFT);
 	filemenu->addSeparator();
-	QAction *printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print"));
+	printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print"));
 	printact->setShortcut(Qt::Key_P + Qt::CTRL);
 	filemenu->addSeparator();
 	recentact[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
@@ -111,9 +111,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	recentact[8] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
 	recentact[8]->setShortcut(Qt::Key_9 + Qt::CTRL);
 	filemenu->addSeparator();
-	QAction *exitact = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
+	exitact = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
 	exitact->setShortcut(Qt::Key_Q + Qt::CTRL);
 	//
+	showRecentList = true;
 	QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
 	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
 	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
@@ -134,36 +135,36 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(exitact, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit menu
-	QMenu *editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
-	QAction *undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
+	editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
+	undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
 	QObject::connect(editor, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
 	QObject::connect(undoact, SIGNAL(triggered()), editor, SLOT(undo()));
 	undoact->setShortcut(Qt::Key_U + Qt::CTRL);
 	undoact->setEnabled(false);
-	QAction *redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
+	redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
 	QObject::connect(editor, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
 	QObject::connect(redoact, SIGNAL(triggered()), editor, SLOT(redo()));
 	redoact->setShortcut(Qt::Key_R + Qt::CTRL);
 	redoact->setEnabled(false);
 	editmenu->addSeparator();
-	QAction *cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
+	cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
 	cutact->setShortcut(Qt::Key_X + Qt::CTRL);
 	cutact->setEnabled(false);
-	QAction *copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
+	copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
 	copyact->setShortcut(Qt::Key_C + Qt::CTRL);
 	copyact->setEnabled(false);
-	QAction *pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
+	pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
 	pasteact->setShortcut(Qt::Key_P + Qt::CTRL);
 	editmenu->addSeparator();
-	QAction *selectallact = editmenu->addAction(QObject::tr("Select &All"));
+	selectallact = editmenu->addAction(QObject::tr("Select &All"));
 	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
-	QAction *findact = editmenu->addAction(QObject::tr("&Find"));
-	QAction *replaceact = editmenu->addAction(QObject::tr("&Replace"));
+	findact = editmenu->addAction(QObject::tr("&Find"));
+	replaceact = editmenu->addAction(QObject::tr("&Replace"));
 	editmenu->addSeparator();
-	QAction *beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
+	beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	editmenu->addSeparator();
-	QAction *prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
+	prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
 	QObject::connect(editor, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
@@ -193,11 +194,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	}
 
 	// View menuBar
-	QMenu *viewmenu = menuBar()->addMenu(QObject::tr("&View"));
+	viewmenu = menuBar()->addMenu(QObject::tr("&View"));
 	editWinVisibleAct = viewmenu->addAction(QObject::tr("&Edit Window"));
 	textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
 	graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
-	QAction *variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
+	variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
 	editmenu->addSeparator();
 	editWinVisibleAct->setCheckable(true);
 	textWinVisibleAct->setCheckable(true);
@@ -248,7 +249,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(fontHugeAct, SIGNAL(triggered()), output, SLOT(fontHuge()));
 
 	// Run menu
-	QMenu *runmenu = menuBar()->addMenu(QObject::tr("&Run"));
+	runmenu = menuBar()->addMenu(QObject::tr("&Run"));
 	runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("&Run"));
 	runact->setShortcut(Qt::Key_F5);
 	editmenu->addSeparator();
@@ -349,20 +350,52 @@ void MainWindow::about()
 void MainWindow::updateRecent()
 {
 	//update recent list on file menu
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	settings.beginGroup(SETTINGSGROUPHIST);
-	for (int i=0; i<9; i++) {
-		QString fn = settings.value(QString::number(i), "").toString();
-		QString path = QDir::currentPath() + "/";
-		if (QString::compare(path, fn.left(path.length()))==0) {
-			fn = fn.right(fn.length()-path.length());
+	if (showRecentList) {
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+		settings.beginGroup(SETTINGSGROUPHIST);
+		for (int i=0; i<9; i++) {
+			QString fn = settings.value(QString::number(i), "").toString();
+			QString path = QDir::currentPath() + "/";
+			if (QString::compare(path, fn.left(path.length()))==0) {
+				fn = fn.right(fn.length()-path.length());
+			}
+			recentact[i]->setEnabled(fn.length()!=0);		
+			recentact[i]->setVisible(fn.length()!=0);		
+			recentact[i]->setText("&" + QString::number(i+1) + " - " + fn);
 		}
-		recentact[i]->setEnabled(fn.length()!=0);		
-		recentact[i]->setVisible(fn.length()!=0);		
-		recentact[i]->setText("&" + QString::number(i+1) + " - " + fn);
+		settings.endGroup();
+	} else {
+		for (int i=0; i<9; i++) {
+			recentact[i]->setEnabled(false);		
+			recentact[i]->setVisible(false);		
+		}
 	}
-	settings.endGroup();
+}
 
+void MainWindow::loadAndGoMode()
+{
+	//disable everything except what is needed to quit, stop and run a program.
+	// called by Main when -r option is sent
+	editWinVisibleAct->setChecked(false);
+	newact->setVisible(false);
+	openact->setVisible(false);
+	saveact->setVisible(false);
+	saveasact->setVisible(false);
+	printact->setVisible(false);
+	showRecentList = false;
+	editmenu->setTitle("");
+	editmenu->setVisible(false);
+	undoact->setVisible(false);
+	redoact->setVisible(false);
+	cutact->setVisible(false);
+	copyact->setVisible(false);
+	pasteact->setVisible(false);
+	editWinVisibleAct->setVisible(false);
+	variableWinVisibleAct->setVisible(false);
+	debugact->setVisible(false);
+	stepact->setVisible(false);
+
+	runact->activate(QAction::Trigger);
 }
 
 void MainWindow::closeEvent(QCloseEvent *e) {

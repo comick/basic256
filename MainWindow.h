@@ -42,6 +42,7 @@ public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();
 	void closeEvent(QCloseEvent *);
+	void loadAndGoMode();
 	QAction * runact;
 	QAction * debugact;
 	QAction * stepact;
@@ -62,7 +63,33 @@ public:
 	QString localecode;
 
 private:
+	QMenu * filemenu;
+	QAction * newact;
+	QAction * openact;
+	QAction * saveact;
+	QAction * saveasact;
+	QAction * printact;
+	bool showRecentList;
 	QAction *recentact[SETTINGSGROUPHISTN]; 
+	QAction * exitact;
+
+	QMenu * editmenu;
+	QAction *undoact;
+	QAction *redoact;
+	QAction *cutact;
+	QAction *copyact;
+	QAction *pasteact;
+	QAction *selectallact;
+	QAction *findact;
+	QAction *replaceact;
+	QAction *beautifyact;
+	QAction *prefact;
+
+	QMenu *viewmenu;
+	QAction *variableWinVisibleAct;
+
+	QMenu *runmenu;
+
 	// void pointer to the run controller
 	// can't specify type because of circular reference
 	void *rcvoidpointer;		
