@@ -235,7 +235,7 @@ addStringOp(char op, char *data) {
 %token B256AND B256OR B256XOR B256NOT
 %token B256PAUSE B256SOUND
 %token B256ASC B256CHR B256TOFLOAT B256READLINE B256WRITELINE B256BOOLEOF B256MOD B256INTDIV
-%token B256YEAR B256MONTH B256DAY B256HOUR B256MINUTE B256SECOND B256TEXT B256FONT
+%token B256YEAR B256MONTH B256DAY B256HOUR B256MINUTE B256SECOND B256TEXT B256FONT B256TEXTWIDTH
 %token B256SAY B256SYSTEM
 %token B256VOLUME
 %token B256GRAPHWIDTH B256GRAPHHEIGHT B256GETSLICE B256PUTSLICE B256IMGLOAD
@@ -849,6 +849,7 @@ graphvisiblestmt: B256GRAPHVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_GR
 outputvisiblestmt: B256OUTPUTVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_OUTPUTVISIBLE); }
 ;
 
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -1042,7 +1043,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256OSTYPE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_OSTYPE); }
 	| B256MSEC { addExtendedOp(OP_EXTENDED_0,OP_MSEC); }
 	| B256MSEC '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_MSEC); }
+	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_TEXTWIDTH); }
 ;
+
+
 
 stringlist: stringexpr { listlen = 1; }
 	| stringexpr ',' stringlist { listlen++; }

@@ -3902,13 +3902,26 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_TEXTWIDTH:
+				{
+					// return the number of pixels the test string will require for diaplay
+					op++;
+					char *txt = stack.popstring();
+					int w = 0;
+					QPainter ian(image);
+					if(!fontfamily.isEmpty()) {
+						ian.setFont(QFont(fontfamily, fontpoint, fontweight));
+					}
+					w = QFontMetrics(ian.font()).width(QString::fromUtf8(txt));
+					ian.end();
+					free(txt);
+					stack.push((int) (w));
+
+				}
+				break;
 
 
 
-
-
-
-				
 				
 
 

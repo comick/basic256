@@ -284,6 +284,7 @@
 #define OP_EDITVISIBLE		0x39
 #define OP_GRAPHVISIBLE		0x40
 #define OP_OUTPUTVISIBLE	0x41
+#define OP_TEXTWIDTH		0x42
 
 
 

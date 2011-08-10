@@ -173,6 +173,7 @@ hour [Hh][Oo][Uu][Rr]
 minute [Mm][Ii][Nn][Uu][Tt][Ee]
 second [Ss][Ee][Cc][Oo][Nn][Dd]
 text [Tt][Ee][Xx][Tt]
+textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
 font [Ff][Oo][Nn][Tt]
 say [Ss][Aa][Yy]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
@@ -416,6 +417,7 @@ outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 {minute}	{ count(); return B256MINUTE; }
 {second}	{ count(); return B256SECOND; }
 {text}		{ count(); return B256TEXT; }
+{textwidth}		{ count(); return B256TEXTWIDTH; }
 {font}		{ count(); return B256FONT; }
 {say}		{ count(); return B256SAY; }
 {wavplay}	{ count(); return B256WAVPLAY; }

@@ -1,3 +1,6 @@
+2011-08-08 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.68
+	* added TEXTWIDTH statement to return width of a string i the current font before output to the graphics area
+
 2011-08-07 j.m.reneau <renejm@users.sourceforge.net> 0.9.6.67
 	* added -r option to command line to switch UI to run only mode
 
