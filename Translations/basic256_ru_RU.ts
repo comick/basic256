@@ -87,6 +87,14 @@
         <source>Do you want to discard your changes?</source>
         <translation>Вы действительно готовы потерять изменения?</translation>
     </message>
+    <message>
+        <source>String not found.</source>
+        <translation>Строка не найдена.</translation>
+    </message>
+    <message>
+        <source>Replace completed.</source>
+        <translation>Замена выполнена.</translation>
+    </message>
 </context>
 <context>
     <name>DocumentationWin</name>
@@ -121,6 +129,33 @@
     <message>
         <source>&amp;Exit</source>
         <translation>В&amp;ыход</translation>
+    </message>
+</context>
+<context>
+    <name>FindWin</name>
+    <message>
+        <source>BASIC-256 Find</source>
+        <translation>BASIC-256 Найти</translation>
+    </message>
+    <message>
+        <source>Search For:</source>
+        <translation>Найти:</translation>
+    </message>
+    <message>
+        <source>Case Sensitive</source>
+        <translation>Учитывать регистр</translation>
+    </message>
+    <message>
+        <source>Search Backwards</source>
+        <translation>Искать назад</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Найти</translation>
     </message>
 </context>
 <context>
@@ -357,6 +392,21 @@
         <source>ERROR - Unable to initialize Winsock library.
 </source>
         <translation>ОШИБКА - невозможно инциализировать Winsock.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>ОШИБКА - не найден inpout32.dll - .порт ввода-вывода отключен.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>ОШИБКА - не найден Inp32 в inpout32.dll - .порт ввода-вывода отключен.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>ОШИБКА - не найден Out32 в inpout32.dll - .порт ввода-вывода отключен.</translation>
     </message>
 </context>
 <context>
@@ -712,6 +762,53 @@ Please check your printer settings.</source>
     <message>
         <source>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
         <translation>&lt;/b&gt;&lt;p&gt;Авторское право &amp;copy; 2006-2010, Команда BASIC-256&lt;/p&gt;&lt;p&gt;На веб-сайте &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; вы найдете руководства и документацию.&lt;/p&gt;&lt;p&gt;В файле CONTRIBUTORS - имена и контакты разработчиков и переводчиков проекта.&lt;/p&gt;&lt;p&gt;&lt;i&gt;Вы должны получить копию GNU General Public License вместе с этой программой, а если нет, напишите в Free Software Foundation, Inc, 51-Франклин-стрит, 5й этаж, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;Find</source>
+        <translation>&amp;Найти</translation>
+    </message>
+    <message>
+        <source>&amp;Replace</source>
+        <translation>&amp;Заменить</translation>
+    </message>
+    <message>
+        <source>&amp;Edit Window</source>
+        <translation>&amp;Окно редактора</translation>
+    </message>
+</context>
+<context>
+    <name>ReplaceWin</name>
+    <message>
+        <source>BASIC-256 Replace</source>
+        <translation>BASIC-256 Заменить</translation>
+    </message>
+    <message>
+        <source>From:</source>
+        <translation>Заменить:</translation>
+    </message>
+    <message>
+        <source>To:</source>
+        <translation>На:</translation>
+    </message>
+    <message>
+        <source>Case Sensitive</source>
+        <translation>Учитывать регистр</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Replace All</source>
+        <translation>Заменить всё</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <translation>Заменить</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Найти</translation>
     </message>
 </context>
 <context>
