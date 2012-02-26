@@ -6,6 +6,8 @@
 #		sergey lupin	Original program makedoc.kbs
 # 2011-01-07	j.m.reneau	heavily modified to create user doc files
 # 2011-05-01	j.m.reneau	added es - spanish
+# 2012-02-26	j.m.reneau	added nl - dutch
+#			modified link gosub to handle link without pipe and text
 #
 
 # to use this utility to generate simple html folders for eash of the languages
@@ -30,26 +32,37 @@ else
    copy$ = "cp"
 end if
 
+EN:
 wikipath$ = "./pages/en/"
 mediapath$ = "./media/en/"
 htmlpath$ = "en/"
 gosub doafolder
+RU:
 wikipath$ = "./pages/ru/"
 mediapath$ = "./media/ru/"
 htmlpath$ = "ru/"
 gosub doafolder
+FR:
 wikipath$ = "./pages/fr/"
 mediapath$ = "./media/fr/"
 htmlpath$ = "fr/"
 gosub doafolder
+DE:
 wikipath$ = "./pages/de/"
 mediapath$ = "./media/de/"
 htmlpath$ = "de/"
 gosub doafolder
+ES:
 wikipath$ = "./pages/es/"
 mediapath$ = "./media/es/"
 htmlpath$ = "es/"
 gosub doafolder
+NL:
+wikipath$ = "./pages/nl/"
+mediapath$ = "./media/nl/"
+htmlpath$ = "nl/"
+gosub doafolder
+
 print "done"
 
 end
@@ -79,21 +92,31 @@ while (filename$ <> "")
       while not eof(1)
          l$ = readline(1)
          gosub trimline
+         l$ = replace(l$, "++++", "", true)
+        #print l$
          if l$ <> "" then
             gosub escapedchar
+            find$ = "======" : odd$ = "<h1>" : even$ = "</h1>":  gosub replaceevenodd
             find$ = "=====" : odd$ = "<h1>" : even$ = "</h1>":  gosub replaceevenodd
             find$ = "====" : odd$ = "<h2>" : even$ = "</h2>":  gosub replaceevenodd
             find$ = "===" : odd$ = "<h3>" : even$ = "</h3>":  gosub replaceevenodd
             find$ = "**" : odd$ = "<b>" : even$ = "</b>":  gosub replaceevenodd
             find$ = "//" : odd$ = "<i>" : even$ = "</i>":  gosub replaceevenodd
             find$ = "__" : odd$ = "<u>" : even$ = "</u>":  gosub replaceevenodd
+             l$ = replace(l$, "<code basic4gl>", "<pre>", true)
             l$ = replace(l$, "<code>", "<pre>", true)
-            l$ = replace(l$, "</code>", "</pre>", true)
+             l$ = replace(l$, "</code>", "</pre>", true)
             l$ = replace(l$,"\\","<br/>")
+            if l$="---" or l$="----" or l$="-----" or l$="------" then l$ = "<hr/>"
+            #print "b4 cl"
             gosub changelink
+            #print "b4 ci"
             gosub changeimage
+            #print "b4 ul"
             gosub ulitem
+            #print "b4 ol"
             gosub olitem
+            #print "b4 table"
             gosub table
          end if
          writeline 2, l$
@@ -223,6 +246,7 @@ pos = instr(l$,"[[")
 while pos <> 0
    pos2 = instr(l$,"|",pos)
    if pos2 <> 0 then
+      ## we got a link WITH pipe and words - use the Words after pipe for the link text
       pos3 = instr(l$,"]]",pos2)
       if pos3 <> 0 then
          if (pos>1) then
@@ -235,7 +259,27 @@ while pos <> 0
          else
             after$ = mid(l$,pos3 + 2,99999)
          end if
-         l$ = before$ + "<a href=" + q$ + lower(mid(l$,pos+2, pos2 - pos - 2)) + ".html" + q$ + ">" + mid(l$,pos2+1, pos3 - pos2 - 1) + "</a>" + after$
+         wikiname$ = lower(mid(l$,pos+2, pos2 - pos - 2))
+         gosub fixwikiname
+         l$ = before$ + "<a href=" + q$ + wikiname$ + ".html" + q$ + ">" + mid(l$,pos2+1, pos3 - pos2 - 1) + "</a>" + after$
+      end if
+   else
+      ## we got a link without pipe and words - use the link name for the link text
+      pos3 = instr(l$,"]]",pos)
+      if pos3 <> 0 then
+         if (pos>1) then
+            before$ = left(l$,pos-1)
+         else
+            before$ = ""
+         end if
+         if (pos3 + 2 > length(l$)) then
+            after$ = ""
+         else
+            after$ = mid(l$,pos3 + 2,99999)
+         end if
+         wikiname$ = lower(mid(l$,pos+2, pos3 - pos - 2))
+         gosub fixwikiname
+         l$ = before$ + "<a href=" + q$ +  wikiname$ + ".html" + q$ + ">" + mid(l$,pos+2, pos3 - pos - 2) + "</a>" + after$
       end if
    end if
    pos = instr(l$,"[[")
@@ -293,3 +337,10 @@ while pos <> 0
 end while
 return
 
+fixwikiname: ##
+## if wikiname$ includes xx: on the front if it change it to a rel path to the correct language sub folder
+if instr(wikiname$,":") then
+   wikiname$ = "../" + replace(wikiname$, ":", "/")
+end if
+wikiname$ = replace(wikiname$,"start","index",true)
+return

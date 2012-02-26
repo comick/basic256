@@ -19,6 +19,6 @@ Will draw.\\
 {{:en:fonttext.png|}}
 
 ==== See Also ====
-[[color|Color]], [[font|Font]]
+[[color|Color]], [[font|Font]], [[TextWidth|TextWidth]]
 ==== New To Version ==== 
 0.9.4

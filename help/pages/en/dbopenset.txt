@@ -1,4 +1,4 @@
-===== DBClose =====
+===== DBOpenset =====
 
 ==== Format ====
 **dbopenset** //SqlStatement//\\

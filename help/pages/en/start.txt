@@ -1,4 +1,4 @@
-==== BASIC-256 Syntax Reference 0.9.6.65 ====
+==== BASIC-256 Syntax Reference 0.9.6.67 ====
   * [[ProgramSyntax|Program Syntax]]
   * [[NumericConstants|Numeric Constants]]
   * [[StringConstants|String Constants]]
@@ -6,6 +6,7 @@
   * [[Arrays|Arrays]]
   * [[AnonymousArrays|Anonymous Arrays]]
   * [[Operators|Operators]]
+  * [[CommandLine|Command Line Options]]
   * [[Errorcodes|Error Codes]]
  
 ==== Statements and Functions - Alphabetic ====
@@ -25,7 +26,7 @@
   * [[Pause|Pause]], [[Pixel|Pixel]], [[Plot|Plot]], [[Poly|Poly]], [[PortIn|PortIn]], [[PortOut|PortOut]], [[Print|Print]], [[PutSlice|PutSlice]]\\
   * [[Radians|Radians]], [[Rand|Rand]], [[Read|Read]], [[Readline|Readline]], [[Rect|Rect]], [[Redim|Redim]], [[Refresh|Refresh]], [[Rem|Rem]], [[Reset|Reset]], [[Replace|Replace]], [[Replacex|Replacex]], [[Rgb|Rgb]], [[Right|Right]]\\
   * [[Say|Say]], [[Second|Second]], [[Seek|Seek]], [[SetSetting|SetSetting]], [[Sin|Sin]], [[Size|Size]], [[Sound|Sound]], [[Spritecollide|Spritecollide]], [[Spritedim|Spritedim]], [[Spriteh|Spriteh]], [[Spritehide|Spritehide]], [[Spriteload|Spriteload]], [[Spritemove|Spritemove]], [[Spriteplace|Spriteplace]], [[Spriteshow|Spriteshow]], [[Spriteslice|Spriteslice]], [[Spritev|Spritev]], [[Spritew|Spritew]], [[Spritex|Spritex]], [[Spritey|Spritey]], [[Sqr|Sqr]], [[Stamp|Stamp]], [[String|String]], [[System|System]]\\
-  * [[Tan|Tan]], [[Text|Text]]\\
+  * [[Tan|Tan]], [[Text|Text]], [[TextWidth|TextWidth]]\\
   * [[Upper|Upper]]\\
   * [[Volume|Volume]]\\
   * [[WAVplay|WAVplay]], [[WAVstop|WAVstop]], [[wavwait|WAVwait]], [[WhileEndWhile|While / End While]], [[Write|Write]], [[Writeline|Writeline]]\\
@@ -51,7 +52,10 @@
 [[Color|Color]], [[GetColor|GetColor]], [[Rgb|Rgb]]
 
 == Drawing ==
-[[Circle|Circle]], [[Font|Font]], [[Line|Line]], [[Plot|Plot]], [[Poly|Poly]], [[Rect|Rect]], [[Stamp|Stamp]], [[Text|Text]]
+[[Circle|Circle]], [[Line|Line]], [[Plot|Plot]], [[Poly|Poly]], [[Rect|Rect]], [[Stamp|Stamp]]
+
+== Graphical Text ==
+[[Font|Font]], [[Text|Text]], [[TextWidth|TextWidth]]
 
 == Graphics Window ==
 [[Clg|Clg]], [[FastGraphics|FastGraphics]],  [[Graphheight|Graphheight]], [[Graphsize|Graphsize]], [[graphvisible|GraphVisible]], [[Graphwidth|Graphwidth]], [[Refresh|Refresh]] 
