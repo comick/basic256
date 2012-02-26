@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="nl_NL">
+<TS version="2.0" language="nl">
 <context>
     <name>BasicEdit</name>
     <message>
@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
-        <translation>Wilt u echt dit programma wijzigen en een nieuwe beginnen?</translation>
+        <translation>Wilt u dit echt programma wissen en een nieuwe beginnen?</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Ja</translation>
+        <translation type="obsolete">Ja</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Annuleren</translation>
+        <translation type="obsolete">Annuleren</translation>
     </message>
     <message>
         <source>Untitled - BASIC-256</source>
@@ -45,11 +45,89 @@
     </message>
     <message>
         <source>Open a file</source>
-        <translation>Bestand openen</translation>
+        <translation>Open een bestand</translation>
     </message>
     <message>
         <source>BASIC-256 file </source>
-        <translation>BASIC-256 Bestand </translation>
+        <translation>BASIC-256 bestand </translation>
+    </message>
+    <message>
+        <source> Column: </source>
+        <translation>Kolom:</translation>
+    </message>
+    <message>
+        <source>The file </source>
+        <translation>Het bestand </translation>
+    </message>
+    <message>
+        <source> already exists.</source>
+        <translation> bestaat reeds.</translation>
+    </message>
+    <message>
+        <source>Do you want to overwrite?</source>
+        <translation>Wilt u dit bestand overschrijven?</translation>
+    </message>
+    <message>
+        <source>Program modifications have not been saved.</source>
+        <translation>Aanpassingen werden niet bewaard.</translation>
+    </message>
+    <message>
+        <source>Do you want to discard your changes?</source>
+        <translation>Wilt u de aanpassingen negeren?</translation>
+    </message>
+    <message>
+        <source>String not found.</source>
+        <translation>String niet gevonden.</translation>
+    </message>
+    <message>
+        <source>Replace completed.</source>
+        <translation>Vervanging uitgevoerd.</translation>
+    </message>
+</context>
+<context>
+    <name>DocumentationWin</name>
+    <message>
+        <source>&amp;Back</source>
+        <translation>&amp;Terug</translation>
+    </message>
+    <message>
+        <source>&amp;Forward</source>
+        <translation>&amp;Vooruit</translation>
+    </message>
+    <message>
+        <source>&amp;Home</source>
+        <translation>&amp;Begin</translation>
+    </message>
+    <message>
+        <source>&amp;Exit</source>
+        <translation>Af&amp;sluiten</translation>
+    </message>
+</context>
+<context>
+    <name>FindWin</name>
+    <message>
+        <source>BASIC-256 Find</source>
+        <translation>BASIC-256 Zoeken</translation>
+    </message>
+    <message>
+        <source>Search For:</source>
+        <translation>Zoek naar:</translation>
+    </message>
+    <message>
+        <source>Case Sensitive</source>
+        <translation>Hoofdlettergevoelig</translation>
+    </message>
+    <message>
+        <source>Search Backwards</source>
+        <translation>Zoek naar Boven</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Sluiten</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Zoek</translation>
     </message>
 </context>
 <context>
@@ -64,15 +142,15 @@
     </message>
     <message>
         <source>No such label</source>
-        <translation>Geen label met die naam</translation>
+        <translation type="obsolete">Geen label met die naam</translation>
     </message>
     <message>
         <source>Next without FOR</source>
-        <translation>NEXT zonder FOR</translation>
+        <translation type="obsolete">NEXT zonder FOR</translation>
     </message>
     <message>
         <source>Array dimension too large</source>
-        <translation>Array te groot</translation>
+        <translation type="obsolete">Array te groot</translation>
     </message>
     <message>
         <source>Cannot assign non-string to string array</source>
@@ -80,15 +158,15 @@
     </message>
     <message>
         <source>Array index out of bounds</source>
-        <translation>Array index buiten grens</translation>
+        <translation type="obsolete">Array index buiten grens</translation>
     </message>
     <message>
         <source>Cannot access non-array variable</source>
-        <translation>Geen toegang tot niet-array variabele</translation>
+        <translation type="obsolete">Geen toegang tot niet-array variabele</translation>
     </message>
     <message>
         <source>Unknown variable</source>
-        <translation>Onbekende variabele</translation>
+        <translation type="obsolete">Onbekende variabele</translation>
     </message>
     <message>
         <source>Illegal argument to int()</source>
@@ -124,7 +202,7 @@
     </message>
     <message>
         <source>String in numeric expression</source>
-        <translation>String in numerieke uitdrukking</translation>
+        <translation type="obsolete">String in numerieke uitdrukking</translation>
     </message>
     <message>
         <source>Cannot compare strings with &gt; or &lt;=</source>
@@ -136,7 +214,7 @@
     </message>
     <message>
         <source>Unable to open file</source>
-        <translation>Kan bestand niet openen</translation>
+        <translation type="obsolete">Kan bestand niet openen</translation>
     </message>
     <message>
         <source>Illegal argument to open()</source>
@@ -144,11 +222,11 @@
     </message>
     <message>
         <source>Can&apos;t read -- no open file.</source>
-        <translation>Lezen nicht mogelijk -- geen open bestand.</translation>
+        <translation type="obsolete">Lezen nicht mogelijk -- geen open bestand.</translation>
     </message>
     <message>
         <source>Unable to write to file</source>
-        <translation>Kan niet in bestand schrijven</translation>
+        <translation type="obsolete">Kan niet in bestand schrijven</translation>
     </message>
     <message>
         <source>Illegal argument to write()</source>
@@ -164,15 +242,15 @@
     </message>
     <message>
         <source>Not enough points in array for poly()</source>
-        <translation>Niet genoeg punten in array voor poly()</translation>
+        <translation type="obsolete">Niet genoeg punten in array voor poly()</translation>
     </message>
     <message>
         <source>reset() called when no file is open</source>
-        <translation>reset() gebruikt -- maar er is geen bestand open</translation>
+        <translation type="obsolete">reset() gebruikt -- maar er is geen bestand open</translation>
     </message>
     <message>
         <source>Unable to reset file</source>
-        <translation>reset() niet mogelijk</translation>
+        <translation type="obsolete">reset() niet mogelijk</translation>
     </message>
     <message>
         <source>Illegal argument to mid()</source>
@@ -180,7 +258,7 @@
     </message>
     <message>
         <source>String not long enough for given starting character</source>
-        <translation>String niet lang genoeg voor het gegeven karakter</translation>
+        <translation type="obsolete">String niet lang genoeg voor het gegeven karakter</translation>
     </message>
     <message>
         <source>Illegal argument to instr()</source>
@@ -192,67 +270,133 @@
     </message>
     <message>
         <source>Illegal FOR -- start number &gt; end number</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ongeldig FOR commando .--.start is groter dan einde</translation>
     </message>
     <message>
         <source>Illegal FOR -- start number &lt; end number</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ongeldig FOR commando .--.start is kleiner dan einde</translation>
     </message>
     <message>
         <source>Array dimension too small</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Rij dimensie is te klein</translation>
     </message>
     <message>
         <source> around end of line.</source>
-        <translation type="unfinished"></translation>
+        <translation>ergens op het einde van de lijn</translation>
     </message>
     <message>
         <source> around column </source>
-        <translation type="unfinished"></translation>
+        <translation>rond kolom</translation>
     </message>
     <message>
         <source>Can&apos;t size -- no open file.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Kan grootte niet bepalen -- er is geen open bestand.</translation>
     </message>
     <message>
         <source>seek() called when no file is open</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">seek() opgeroepen, maar geen enkel bestand is open</translation>
     </message>
     <message>
         <source>Not a string array variable</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Geen String Reeks Variabele</translation>
     </message>
     <message>
         <source>Not an array variable</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Geen Reeks Variabele</translation>
     </message>
     <message>
         <source>Argument not an array for poly()</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Argument is geen reeks voor poly()</translation>
     </message>
     <message>
         <source>Not enough points in immediate list for poly()</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Niet genoeg punten in directe lijst voor poly() functie</translation>
     </message>
     <message>
         <source>Not enough points in array for stamp()</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Niet genoeg punten in directe lijst voor stamp() functie</translation>
     </message>
     <message>
         <source>Argument not an array for stamp()</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Argument is geen Reeks voor stamp() functie</translation>
     </message>
     <message>
         <source>Not enough points in immediate list for stamp()</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Niet genoeg punten in directe lijst voor stamp() functie</translation>
     </message>
     <message>
         <source>Illegal argument</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ongeldig argument</translation>
     </message>
     <message>
         <source>RGB Color values must be in the range of 0 to 255.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">RGB kleurwaarden moeten tussen 0 en 255 zijn.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to initialize Winsock library.
+</source>
+        <translation>FOUT - Winsock initialisatie gaat niet.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>Kan inpout32.dll niet vinden - direct port I/O werd afgezet.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>Kan inp32 in inpout32.dll niet vinden - direct port I/O werd afgezet.</translation>
+    </message>
+    <message>
+        <source>ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation>Kan Out32 in inpout32.dll niet vinden - direct port I/O werd afgezet.</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindow</name>
+    <message>
+        <source>Program modifications have not been saved.</source>
+        <translation>Aanpassingen aan het programma werden nog niet bewaard.</translation>
+    </message>
+    <message>
+        <source>Do you want to discard your changes?</source>
+        <translation>Wil u de aanpassingen negeren?</translation>
+    </message>
+</context>
+<context>
+    <name>PreferencesWin</name>
+    <message>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation>BASIC-256 Instellingen en Voorkeuren</translation>
+    </message>
+    <message>
+        <source>Preferences and Settings Password:</source>
+        <translation>Instellingen en Voorkeuren Paswoord:</translation>
+    </message>
+    <message>
+        <source>Allow SYSTEM statement</source>
+        <translation>Laat SYSTEM opdracht toe</translation>
+    </message>
+    <message>
+        <source>Allow GETSETTING/SETSETTING statements</source>
+        <translation>Laat GESTSETTING/SETSETTING opdrachten toe</translation>
+    </message>
+    <message>
+        <source>Allow PORTIN/PORTOUT statements</source>
+        <translation>Laat PORTIN/PORTOUT opdrachten toe</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Opslaan</translation>
+    </message>
+    <message>
+        <source>Preferences and settings have been saved.</source>
+        <translation>Instellingen en Voorkeuren werden bewaard.</translation>
     </message>
 </context>
 <context>
@@ -335,15 +479,15 @@
     </message>
     <message>
         <source>About BASIC-256</source>
-        <translation type="obsolete">Over BASIC-256</translation>
+        <translation>Over BASIC-256</translation>
     </message>
     <message>
         <source>Graphics Output</source>
-        <translation>Grafikkenvenster</translation>
+        <translation>Grafisch Venster</translation>
     </message>
     <message>
         <source>Text Output</source>
-        <translation>Tekstvenster</translation>
+        <translation>Tekst Venster</translation>
     </message>
     <message>
         <source>Ready.</source>
@@ -355,7 +499,7 @@
     </message>
     <message>
         <source>Print Code</source>
-        <translation>Code afdrukken</translation>
+        <translation>Programma afdrukken</translation>
     </message>
     <message>
         <source>Print</source>
@@ -367,7 +511,7 @@
     </message>
     <message>
         <source>Print Graphics Output</source>
-        <translation>Grafikkenvenster afdrukken</translation>
+        <translation>Grafisch Venster afdrukken</translation>
     </message>
     <message>
         <source>View</source>
@@ -409,122 +553,221 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bestand</translation>
     </message>
     <message>
         <source>&amp;New</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nieuw</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Openen</translation>
     </message>
     <message>
         <source>&amp;Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Be&amp;waren</translation>
     </message>
     <message>
         <source>Save &amp;As</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewaren &amp;Als</translation>
     </message>
     <message>
         <source>&amp;Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Af&amp;drukken</translation>
     </message>
     <message>
         <source>&amp;Exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Af&amp;sluiten</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Aan&amp;passen</translation>
     </message>
     <message>
         <source>Cu&amp;t</source>
-        <translation type="unfinished"></translation>
+        <translation>K&amp;nippen</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Kopiëren</translation>
     </message>
     <message>
         <source>&amp;Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Plakken</translation>
     </message>
     <message>
         <source>Select &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Alles Selecteren</translation>
     </message>
     <message>
         <source>&amp;Beautify</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Maak Mooier</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bekijken</translation>
     </message>
     <message>
         <source>&amp;Text Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tekst Venster</translation>
     </message>
     <message>
         <source>&amp;Graphics Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Grafisch Venster</translation>
     </message>
     <message>
         <source>&amp;Variable Watch Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Variabelen Verklikker Venster</translation>
     </message>
     <message>
         <source>&amp;Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Werkbalken</translation>
     </message>
     <message>
         <source>&amp;Main</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Programma</translation>
     </message>
     <message>
         <source>&amp;Text Output</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tekst Venster</translation>
     </message>
     <message>
         <source>&amp;Graphics Output</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Grafisch Venster</translation>
     </message>
     <message>
         <source>&amp;Run</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Voer Uit</translation>
     </message>
     <message>
         <source>&amp;Debug</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fouten Opsporen</translation>
     </message>
     <message>
         <source>S&amp;tep</source>
-        <translation type="unfinished"></translation>
+        <translation>S&amp;tap vooruit</translation>
     </message>
     <message>
         <source>&amp;Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Stoppen</translation>
     </message>
     <message>
         <source>Save Compiled &amp;Byte Code</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Bewaar &amp;Gecomplieerde Byte Code</translation>
     </message>
     <message>
         <source>&amp;About</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Over</translation>
     </message>
     <message>
         <source>&amp;About BASIC-256</source>
-        <translation type="unfinished"></translation>
+        <translation>Over &amp;BASIC-256</translation>
+    </message>
+    <message>
+        <source>BASIC-256 Reference</source>
+        <translation>BASIC-256 Referentie</translation>
+    </message>
+    <message>
+        <source>&amp;Undo</source>
+        <translation>&amp;Ongedaan maken</translation>
+    </message>
+    <message>
+        <source>&amp;Redo</source>
+        <translation>Opnieu&amp;w doen</translation>
+    </message>
+    <message>
+        <source>&amp;Find</source>
+        <translation>&amp;Zoeken</translation>
+    </message>
+    <message>
+        <source>&amp;Replace</source>
+        <translation>&amp;Vervang</translation>
+    </message>
+    <message>
+        <source>Preferences</source>
+        <translation>V&amp;oorkeuren</translation>
+    </message>
+    <message>
+        <source>&amp;Edit Window</source>
+        <translation>&amp;Bewerken Venster</translation>
+    </message>
+    <message>
+        <source>&amp;Font Size</source>
+        <translation>&amp;Lettertype en grootte</translation>
+    </message>
+    <message>
+        <source>&amp;Small</source>
+        <translation>&amp;Klein</translation>
+    </message>
+    <message>
+        <source>&amp;Medium</source>
+        <translation>&amp;Gemiddeld</translation>
+    </message>
+    <message>
+        <source>&amp;Large</source>
+        <translation>G&amp;root</translation>
+    </message>
+    <message>
+        <source>&amp;Huge</source>
+        <translation>&amp;Zeer groot</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Hulp</translation>
+    </message>
+    <message>
+        <source>&amp;Online help</source>
+        <translation>&amp;Online Hulp</translation>
+    </message>
+    <message>
+        <source>&lt;h2&gt;BASIC-256&lt;/h2&gt;version &lt;b&gt;</source>
+        <translation>&lt;h2&gt;BASIC-256&lt;/h2&gt;versie &lt;b&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, Het BASIC-256 Team&lt;/p&gt;&lt;p&gt;Bezoek onze website op &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; voor handleidingen en documentatie.&lt;/p&gt;&lt;p&gt;Neem de tijd om de lijst van CONTRIBUTORS door te nemen van dit project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;U zou een kopie van de GNU General Public License samen met dit programma moeten ontvangen hebben;Is dat niet het geval, dan kan u schrijven naar &apos;the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>ReplaceWin</name>
+    <message>
+        <source>BASIC-256 Replace</source>
+        <translation>BASIC-256 Vervang</translation>
+    </message>
+    <message>
+        <source>From:</source>
+        <translation>Van:</translation>
+    </message>
+    <message>
+        <source>To:</source>
+        <translation>Naar:</translation>
+    </message>
+    <message>
+        <source>Case Sensitive</source>
+        <translation>Hoofdlettergevoelig</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+    <message>
+        <source>Replace All</source>
+        <translation>Vervang alles</translation>
+    </message>
+    <message>
+        <source>Replace</source>
+        <translation>Vervang</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Zoek</translation>
     </message>
 </context>
 <context>
     <name>RunController</name>
     <message>
         <source>Running</source>
-        <translation>Uitgevoert</translation>
+        <translation>Wordt Uitgevoerd</translation>
     </message>
     <message>
         <source>Ready.</source>
@@ -532,7 +775,7 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>Paused</source>
-        <translation>Pause</translation>
+        <translation>Gepauzeerd</translation>
     </message>
     <message>
         <source>Save file as</source>
@@ -540,18 +783,26 @@ Check uw printer instelling.</translation>
     </message>
     <message>
         <source>BASIC-256 Compiled File </source>
-        <translation>BASIC-256 gecompileerd bestand </translation>
+        <translation>Bewaar Gecomplieerde B&amp;yte Code</translation>
     </message>
     <message>
         <source>Any File </source>
         <translation>Alle bestanden </translation>
+    </message>
+    <message>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation>BASIC-256 Voorkeuren en Instellingen</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>Paswoord:</translation>
     </message>
 </context>
 <context>
     <name>VariableWin</name>
     <message>
         <source>Variable Watch</source>
-        <translation>Variabelenvenster</translation>
+        <translation>Variabele:Opvolgen</translation>
     </message>
     <message>
         <source>Name</source>
