@@ -1,0 +1,35 @@
+===== Graphsize =====
+==== Formaat ====
+graphsize //breedte//, //hoogte//
+==== Beschrijving ====
+Verandert de grootte van het grafische venster en past dan ook de Basic-256 venster aan.
+//breedte// en //grootte// worden in pixels uitgedrukt en zijn tussen 0 en ... //de grootte van je scherm//.\\
+Dit zijn sommige standaard formaten : 
+  * 800x600
+  * 1024x768
+
+==== Opmerkingen ====
+  * Als je de grootte van het grafisch venster groter maakt dan je scherm, verdwijnen knoppen en andere delen van het Basic-256 scherm. Dit maakt het verder lastig, bvb om je programma te bewaren voor je de applicatie verlaat. 
+  * Als je Basic-256 aflsuit en je start terug op dan heb je de standaard grootte terug ( 300x300)
+  * je kan eigenlijk ook waarden < 0 meegeven. Wat zie je dan nog?
+
+Met volgend voorbeeld kleur ik het hele grafisch venster groen. \\
+  * Eerst wordt de grootte en breedte van het venster gezet via [[graphsize]], 
+  * dan zet ik de tekenkleur  op blauw via [[color]].) 
+  * Vervolgens maak ik een vierhoek met [[rect]], waarbij de grootte en de breedte overeenkomen met het grafisch venster [[graphwidth]],[[graphheight]]. 
+
+Dit alles was nodig om de grootte van het grafisch venster te tonen. Probeer gerust andere groottes.
+<code basic4gl>
+clg
+graphsize 800,600
+color blue
+rect 0,0,graphwidth,graphheight
+</code>
+==== Zie ook ====
+[[graphheight|Graphheight]], [[graphwidth|Graphwidth]]
+==== Nieuw vanaf ==== 
+0.9.3
+
+
+----
+[[graphheight|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[graphvisible|volgende]]

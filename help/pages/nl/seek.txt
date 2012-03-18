@@ -1,0 +1,22 @@
+===== Seek =====
+==== Formaat ====
+**seek** //plaats//\\
+**seek** ( //plaats// )\\
+**seek** //filenumber//, //plaats//\\
+**seek** ( //filenumber//, //plaats// )
+==== Beschrijving ====
+Deze funcite verplaatst de 'lezen/schrijven' plaats zoals opgegeven met //plaats// (aantal bytes vanaf het begin van het bestand)
+Als je geen bestandnummer opgeeft, wordt de functie uitgevoerd op bestandnummer 0, voor zover die er is. 
+
+==== Voorbeeld ====
+FIXME
+<code basic4gl>
+</code>
+
+==== zie ook ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[size|Size]]
+==== Nieuw vanaf ==== 
+0.9.4
+
+----
+[[size|vorige]] | [[write_and_read|Lezen en schrijven]] | [[size|volgende]]

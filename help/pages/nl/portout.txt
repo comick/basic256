@@ -1,0 +1,34 @@
+===== PortOut =====
+==== Formaat ====
+**portout** ( //io port number// )
+
+==== Beschrijving ====
+
+De functie schrijft een systeem I/O poort in het geheugen in.
+
+Het lezen en :!: **schrijven van systeem I/O poorten is gevaarlijk**:!: zijn en kan zorgen voor onvoorspelbare resultaten. Deze functie wordt normaal uitgeschakeld om veiligeheidsredenen. Via Edit>Preferences kan je dit aanpassen. 
+
+Deze functie **is alleen beschikbaar voor het Windows Platform** :!:
+
+==== Zie ook====
+
+[[PortOut|PortOut]]
+
+==== Voorbeeld ====
+
+<code>
+for y = 0 to 255
+   portout 0x378,y
+   print y + " " + portin(0x379)
+   pause .1
+next
+</code>
+gaat de getallen 0-255 naar de eerste standaard printer poort sturen en de waarde van het status register afprinten.
+
+
+==== Nieuw vanaf ==== 
+0.9.6.41
+
+
+----
+[[portin|vorige]] | [[miscellaneous|Speciale Opdrachten]]

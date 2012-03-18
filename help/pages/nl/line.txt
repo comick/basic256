@@ -1,0 +1,27 @@
+===== Line =====
+==== Formaat ====
+**line** //x<sub>0</sub>//, //y<sub>0</sub>//, //x<sub>1</sub>//, //y<sub>1</sub>//\\
+**line**(//x<sub>0</sub>//, //y<sub>0</sub>//, //x<sub>1</sub>//, //y<sub>1</sub>//)
+
+==== Beschrijving ====
+
+Met deze functie teken je een ... lijn :-) \\ 
+
+De lijn gaat van (//x<sub>0</sub>//,//y<sub>0</sub>//) naar (//x<sub>1</sub>//,//y<sub>1</sub>//) 
+
+==== Voorbeeld ====
+
+<code basic4gl>
+color white
+rect 0,0,300,300
+color black
+line 50,50,200,200
+line 100,200,200,200
+line 100,200,50,50
+</code>
+maakt volgende tekening 
+
+{{:en:line.png|Line}}
+
+----
+[[circle|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[plot|volgende]]

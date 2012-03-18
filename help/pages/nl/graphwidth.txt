@@ -1,0 +1,27 @@
+===== Graphwidth =====
+==== Formaat ====
+graphwidth\\
+graphwidth()
+
+==== Beschrijving ====
+Geeft de breedte terug (x dimensie) van het huidig grafisch venster.
+==== Voorbeeld ====
+Met volgend voorbeeld kleur ik het hele grafisch venster groen. \\
+  * Eerst wordt de grootte en breedte van het venster gezet via [[graphsize]], 
+  * dan zet ik de tekenkleur  op groen via [[color]]. 
+  * Vervolgens maak ik een vierhoek met [[rect]], waarbij de breedte overeenkomt met het grafisch venster, maar niet de hoogte. Die blijft op 20 staan.
+
+Je kan ook de grootte van de vierkant met getallen invullen, maar dan wordt geen rekening gehouden met het grafisch venster. Als je dan een groter of kleiner venster maakt, klopt je tekening niet meer. 
+<code basic4gl>
+clg
+graphsize 100,100
+color green
+rect 0,0,graphwidth,20
+</code>
+==== Zie ook ====
+[[graphsize|Graphsize]], [[graphheight|Graphheight]]
+==== Nieuw vanaf ==== 
+0.9.3
+
+----
+[[graphvisible|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[refresh|volgende]]

@@ -1,0 +1,17 @@
+===== Spritecollide =====
+==== Formaat ====
+**spritecollide** ( //sprite1//,  //sprite2//)
+==== Beschrijving ====
+MEt deze functie kan je weten of 2 sprites tegen elkaar botsen of niet. De [[spritecollide]] functie veronderstelt dat de 2 sprites met een rechthoek verbonden zijn ter grootte van het opgeladen beeld. De botsin wordt berekend door deze rechthoeken te gebruiken. Voor ronde of rare gevormde slides kan het dus zijn dat deze functie onterechte botsingen detecteerd.
+
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken
+</code>
+==== Zie ook ====
+[[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+
+----
+[[putslice|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spritedim|volgende]]

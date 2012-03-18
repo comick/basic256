@@ -1,0 +1,44 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>instr</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Instr </h1>
+<h2> Formaat </h2>
+<b>instr</b> ( <i>hooiberg</i> , <i>naald</i> )<br/>
+<b>instr</b> ( <i>hooiberg</i> , <i>naald</i> , <i>start</i> )<br/>
+<b>instr</b> ( <i>hooiberg</i> , <i>naald</i> , <i>start</i> , <i>hoofdletterongevoelig</i>)<br/>
+
+<h2> Beschrijving </h2>
+Met deze functie ga je naar of je de string <i>naald</i> in de -grotere- string <i>hooiberg</i> kan vinden.<br/>
+* als dit zo is, dan geeft de functie de plaats van de <i>naald</i> in de <i>hooiberg</i> terug, wat we ook de index noemen.
+* wordt niets gevonden, dan geeft de functie 0 terug.
+
+Je kan ook opgeven dat er in de <i>hooiberg</i> pas vanaf positie <i>start</i> mag gezocht worden.<br/>
+Je kan bovendien meegeven of bij het zoeken ook gelt moet worden op het feit dat de zoektocht ook hoofdlettergevoelig is. Is dit niet zo, dan worden grote en kleine letters gelijkgesteld.
+
+<h2> Nota </h2>
+De index begint op 1.
+
+<h2> Voorbeeld </h2>
+<pre>
+print instr("Hello", "lo")
+print instr("101,222,333",",",5)
+</pre>
+
+geeft dan
+<pre>
+4
+8
+</pre>
+
+<h2> Versie</h2> 
+0.9.6.55
+
+<hr/>
+<a href="decimal.html">vorige</a> | <a href="stringcommand.html">Stringbewerkingen</a> | <a href="instrx.html">volgende</a>
+</body>
+</html>

@@ -1,0 +1,27 @@
+===== Abs =====
+
+==== Formaat ====
+
+**abs** ( //uitdrukking// )
+
+==== Beschrijving ====
+
+Dit is een wiskundige functie.\\ 
+Geeft de absolute waarde ([[http://nl.wikipedia.org/wiki/Absolute_waarde|wat is dat nu weer]]) terug van een numerieke //uitdrukking//.
+
+Hier kan je een beetje oefenen...[[http://users.telenet.be/pm-gent/Wiskunde/Hot/wis1_abs_tg1.htm| absolute waarde]]
+==== Voorbeeld ====
+
+<code basic4gl>
+print abs(-45)
+print abs(6.45)
+</code>
+
+geeft dan 
+<code>
+45
+6.45
+</code>
+
+----
+[[mathematical|Wiskundige Functies]] | [[acos|volgende]]

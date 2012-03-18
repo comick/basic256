@@ -1,0 +1,33 @@
+===== Open =====
+==== Formaat ====
+**open** //bestand//\\
+**open**(//bestand//)\\
+**open** //bestandsnr//, //bestand//\\
+**open**(//bestandsnr//, //bestand//)
+
+==== Beschrijving ====
+Deze functie opent een bestand om erin te schrijven of te lezen.\\
+
+in //bestand// geef je de //bestandsnaam// op met een absoluut of relatief pad ((zie moeilijke woorden)). Als je geen //bestandsnr// meegeeft, dan wordt het //bestandsnr// = 0. Open je dan een nieuw //bestand//, zonder evenwel het bestandsnr mee te geven, zorgt ervoor dat je eerder geopend bestand gesloten wordt. 
+
+Probeer dus altijd een //bestandsnr// mee te geven !
+
+Indien het opgegeven bestand niet bestaat, krijg je geen foutmelding, maar wordt het bestand gewoon aangemaakt. Als je dus een bestaand bestand wil openen, wees dan zeker dat je het op de goede plaats zoekt ! Dit kan je doen met de [[nl:exists|Exists]] functie.
+
+==== Opmerking ====
+Met BASIC256 mag je tot 8 bestanden tegelijk openen.  Bestandnummers zijn dan 0 tot 7
+
+==== Voorbeeld====
+<code basic4gl>
+print currentdir ( )
+open(1,"bestand.txt")
+</code>
+
+geen feedback... als het bestand bestaat wordt het geopend, anders wordt dat bestand aangemaakt.
+
+
+==== Zie Ook ====
+[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[Kill|Kill]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]
+
+----
+[[exists|vorige]] | [[write_and_read|Lezen en schrijven]] | [[read|volgende]]

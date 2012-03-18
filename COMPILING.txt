@@ -1,4 +1,4 @@
-Compiling Instructions and Dependencies - 2011-06-30
+Compiling Instructions and Dependencies - 2012-03-16
 
 LINUX you will need:
 * g++
@@ -16,7 +16,7 @@ Windows you will need:
 
 * mingw c++ compiler for Win32 and the qt sdk
   - the easiest way to get this installed and working is to use the
-    Qt SDK version 1.x.x from the downloas page at QT.  Choose a custom install and select mingw to be installed
+    Qt SDK version 1.x.x from the download page at QT.  Choose a custom install and select mingw to be installed
   - You will have problems getting this to work if you do not have the EXACT mingw version required
   - be sure you have the following (or similar) fildres listed in the PATH system variable
     C:\QtSDK\mingw\bin and C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin
@@ -24,10 +24,12 @@ Windows you will need:
 * gtk win32 bundle headers and libraries from http://www.gtk.org/download/win32.php
   - extract the zip file to the mingw folder
 
-* the gretl development headers need to be added to mingw they are in a file called mingw-extra.zip
+* the gretl development headers need to be added to mingw they are in a file
+  called mingw-extra.zip
   and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
 
-* sqlite development libraries and headers need to be installed and downloaded fron http://www.sqlite.org/download.html
+* sqlite development libraries and headers need to be installed and downloaded from
+  http://www.sqlite.org/download.html
   - use the *amalgation* zip file and copy the *.h files into MinGW/include
   - download the windows dll zip file, extract files into MinGW/lib, and run the following
     dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
@@ -40,6 +42,12 @@ Windows you will need:
   - you will also need to place the inpout32.dll and inpout32.sys fileg in the project/trunk/debug 
     and project/trunk/release folders.
   
+* Microsoft Speech SDK 5.1
+  available from http://www.microsoft.com/download/en/details.aspx?id=10121
+  - install the SpeechSDK51.exe file
+  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
+    C:\QtSDK\mingw\lib
+
 For MAC 10.6.4
 	- QT
 	- XCode (from apple)
@@ -71,9 +79,7 @@ Release Build (Windows):
   To build a nice WIN32 installer use the nullsoft scriptable install system file
   2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
   
-  You must also copy the QtCore4.dll, QtGui4.dll, sqlite3.dll, and mingwm10.dll to the release
-  folder before testing the build or running the installer script.  Under QT 4.5.3
-  be sure to use the dlls from C:\Qt\nnnn.nn\qt\bin and not the ones from C:\Qt\nnnn.nn\bin. 
+  Make sure the dll and library files are copied in the folders as above. 
   
   make clean
   qmake -config release

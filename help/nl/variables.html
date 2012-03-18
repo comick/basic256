@@ -1,0 +1,84 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>variables</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Variabelen </h1>
+
+<h1> Wat is een variabele ? </h1>
+Numerieke en String constanten kunnen niet veranderen. Ze hebben de waarde die we ze meegeven. Maar soms moet de computer iets onthouden om later terug te nemen. En computer onthoudt gegevens in het geheugen in benoemde lokaties. 
+
+Is de inhoud van zo'n lokatie veranderbaar dan heb je een variabele. 
+
+Een variable krijgt een naam. Die naam beslis je zelf. Daarna zeg je aan de computer wat er in de variabele zit. Dat kan zowel een numerieke waarde zijn als een string.
+
+<h1> Hoe schrijf je een variabele ? </h1>
+De naam van een variabele:
+<ul>
+<li>moet beginnen met een letter </li>
+<li>mag alleen uit letters, cijfers en het onderstrepingsteken bestaan (dus geen speciale tekens) </li>
+<li>mag maximaal 255 karakters bevatten </li>
+<li>mag niet gelijk zijn aan een sleutelwoord van BASIC</li>
+<li>is hoofdlettergevoelig</li>
+<li>een string variabele moet eindigen met een dollar teken oftewel: $</li>
+
+</ul>
+Dit zijn <b>geldige</b> variabelen
+<pre>
+ Naam$
+ Naam123$
+ naam$
+ n12er
+</pre>
+
+Dit zijn <b>slechte</b> variabelen
+<pre>
+ Naam  ( indien je de bedoeling hebt om er een naam in te zetten)
+ 123Naam$
+ if$  (dit is een sleutelwoord)
+ if  ( dit is een sleutelwoord)
+</pre>
+
+Na de naam van de variabele zet je het gelijkteken =
+
+Daarna geef je de waarde mee die je aan je variabele wil geven.
+
+Je kan natuurlijk de waarde van de variabele verschillende keren weergeven. Dan neemt de computer wel de laatste waarde die je aan de variabele hebt meegegeven.
+
+meegeven van een waarde aan een variabele
+
+<pre>
+ Naam$="Jip en Janneke"
+</pre>
+
+<h1> Hoe ziet het eruit? </h1>
+ 
+<img src="variables.png" alt="variables.png" />
+
+<h1>Voorbeeldje </h1>
+ 
+In dit voorbeeldje gebruiken we 4 variabelen en geven we hen elk een waarde.
+Een variabele kan ook samengesteld worden door andere variabelen.
+Zoals je ziet is een variabele hoefdlettergevoelig. naam$ en Naam$ zijn niet dezelfde. 
+
+
+<pre>
+Naam$ = "Jan Peeters"
+naam$ = "Jip en Janneke"
+n12SEZsd$= 23
+n12SEZsd$= 100
+alle_namen$=Naam$ + " " + naam$
+
+Print Naam$
+Print 
+Print alle_namen$
+Print 
+Print n12SEZsd$
+</pre>
+
+<a href="../nl/stringconstants.html">vorige</a>  | <a href="../nl/index.html">Begin</a> |  <a href="../nl/arrays.html">volgende</a> 
+</body>
+</html>

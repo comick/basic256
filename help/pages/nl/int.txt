@@ -1,0 +1,29 @@
+===== Int =====
+==== Formaat ====
+int ( //expression// )
+==== Beschrijving ====
+De functie converteer de //expression// naar een geheel getal. 
+Zowel een string als een decimaal getal worden dan geconverteerd.Lukt de conversie niet, dan wordt 0 teruggestuurd.
+
+Deze functie is vooral nuttig samen met de [[rand]] functie. 
+
+==== Voorbeeld ====
+<code basic4gl>
+a= 4.53
+print a
+print int(a)
+</code>
+geeft dan 
+<code>
+4.53
+4
+</code>
+
+
+==== Zie ook ====
+[[float|Float]]
+
+
+
+----
+[[floor|vorige]] | [[mathematical|Wiskundige Functies]] | [[log|volgende]]

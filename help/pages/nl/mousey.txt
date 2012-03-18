@@ -1,0 +1,25 @@
+===== MouseY =====
+
+==== Formaat ====
+
+**mousey**\\
+**mousey** ( )
+
+==== Beschrijving ====
+
+De functie geeft de y-coördinaat terug van de plaats waar u nu met de muis staat of waar u het laatst in het grafisch venster hebt geklikt. De y-coördinaat is de vertikale as van beneden naar boven.
+
+==== Zie ook ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Voorbeeld ====
+
+
+==== Nieuw vanaf ==== 
+
+0.9.4d
+
+
+----
+[[mousex|vorige]] | [[mouse_interaction|Muisbesturing]]

@@ -1,0 +1,44 @@
+===== Month =====
+==== Formaat ====
+**month**\\
+**month**()
+
+==== Beschrijving ====
+Geeft de maand terug op basis van de tijd van de computer.
+
+  * januari=>**0**  ( en niet 1 dus !!!! )
+  * februari=>1
+  * maart=>2
+  * april=>3
+  * mei=>4
+  * juni=>5
+  * juli=>6
+  * augustus=>7
+  * september=>8
+  * oktober=>9
+  * november=>10
+  * december=>**11** ( geen 12 dus )
+
+==== Voorbeeld ====
+<code basic4gl>
+cls
+dim n$(12)
+n$ = {"Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+print day + "-" + n$[month] + "-" + year
+</code>
+
+Op nieuwjaar 2013 wordt dan volgende getoond
+<code>
+1-Jan-2013
+</code>
+
+==== Zie ook ====
+[[day|Day]], [[hour|Hour]], [[minute|Minute]], [[Msec|Msec]], [[second|Second]], [[year|Year]]
+
+==== Nieuw vanaf ==== 
+0.9.4
+
+
+
+----
+[[day|vorige]] | [[datehour|Datum en Uur]] | [[year|volgende]]

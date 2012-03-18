@@ -1,0 +1,28 @@
+===== Graphheight =====
+==== Formaat ====
+graphheight\\
+graphheight()
+
+==== Beschrijving ====
+Geeft de hoogte terug (y dimensie) van het huidig grafisch venster.
+==== Voorbeeld ====
+Met volgend voorbeeld kleur ik het hele grafisch venster groen. \\
+  * Eerst wordt de grootte en breedte van het venster gezet via [[graphsize]], 
+  * dan zet ik de tekenkleur  op groen via [[color]]. 
+  * Vervolgens maak ik een vierhoek met [[rect]], waarbij de hoogte overeenkomt met het grafisch venster, maar niet de breedte. Die blijft op 50 staan.
+
+Je kan ook de grootte van de vierkant met getallen invullen, maar dan wordt geen rekening gehouden met het grafisch venster. Als je dan een groter of kleiner venster maakt, klopt je tekening niet meer. 
+<code basic4gl>
+clg
+graphsize 100,100
+color green
+rect 0,0,50,graphheight
+</code>
+==== Zie ook ====
+[[graphsize|Graphsize]], [[graphwidth|Graphwidth]]
+==== Nieuw vanaf ==== 
+0.9.3
+
+
+----
+[[fastgraphics|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[graphsize|volgende]]

@@ -1,0 +1,23 @@
+===== Mouseb =====
+==== Formaat ====
+**mouseb**\\
+**mouseb**()
+
+==== Beschrijving ====
+De functie geeft de huidige knop weer die ingedrukt wordt, naar analogie van [[clickb]], alleen gaat het hier over de knop die op het moment zelf wordt ingedukt.
+
+
+^Resultaten^^
+^Waarde^Muisknop die wordt ingedrukt^
+|0|Geen|
+|1|Links|
+|2|Rechts|
+|4|Midden|
+
+==== Zie ook ====
+[[clickb|Clickb]], [[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mousex|Mousex]], [[mousey|Mousey]]
+==== Nieuw vanaf ==== 
+0.9.4d
+
+----
+[[clicky|vorige]] | [[mouse_interaction|Muisbesturing]] | [[mousex|volgende]]

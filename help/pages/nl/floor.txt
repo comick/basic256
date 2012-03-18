@@ -1,0 +1,31 @@
+===== Floor =====
+
+==== Formaat ====
+
+**floor** ( //uitdrukking// )
+
+==== Beschrijving ====
+
+Afronden naar **beneden** (floor is het Engelse woord voor //vloer//).\\ Het getal van de //uitdrukking// wordt daarbij afgerond naar het laagste gehele getal dat kleiner is dan of gelijk is aan het oorspronkelijke getal.\\ 
+  * Voor positieve getallen wordt dat dus 3,14 → 3 en 5,85 → 5. 
+  * Voor negatieve getallen wordt dezelfde regel toegepast: −4,24 → −5.
+
+==== Zie ook ====
+
+[[ceil|Ceil]]
+
+==== Voorbeeld ====
+
+<code basic4gl>
+print floor(9.1)
+print floor(-5.4)
+</code>
+
+geeft dan
+<code>
+9
+-6
+</code>
+
+----
+[[float|vorige]] | [[mathematical|Wiskundige Functies]] | [[int|volgende]]

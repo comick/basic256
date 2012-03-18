@@ -1,0 +1,15 @@
+===== Spritev =====
+==== Formaat ====
+**spritev** ( //spritenummer// )
+==== Beschrijving ====
+De functie geeft aan of de sprite getoond wordt of niet.
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken
+</code>
+==== Zie Ook ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spriteh|Spriteh]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+----
+[[spriteslice|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spritew|volgende]]

@@ -1,0 +1,35 @@
+===== Say =====
+==== Formaat ====
+**say** //uitdrukking//\\
+**say** ( //uitdrukking// )
+==== Beschrijving ====
+
+deze functie maakt gebruik van de Text-to-Speech (TTS) om de //uitdrukking// uit te spreken. De meeste operating systemen ( ubuntu, windows) hebben de TTS om teksten en informatie op het scherm om te zetten naar woorden 
+  * In LINUX worden FLite of eSpeak libraries vereist.  
+  * In Windows wordt de standaard SAPI stem gebruikt.
+
+==== Opemerking ====
+Windows SAPI zal de stem gebruiken die je in je controlepaneel hebt gedefinieerd. 
+Om de standaard in Linux/Mac te veranderen op basis van de ESpeak library moet je de gewenste stembestanden naar //default// kopiëren.
+
+<code java>
+# Opdrachten uit te voeren om 'nl' op Ubuntu 10.10 te activeren
+# kan afwijken van je eigen systeem... 
+cd /usr/share/espeak-data/voices
+sudo cp nl default
+</code>
+
+==== Voorbeeld ====
+<code qbasic>
+say "Dit wordt een heel lange tekst om op te zeggen. Ik zal maar stoppen. 4 3 2 1 STOP."
+Say " 1100234 euro"
+say 100/10
+</code>
+
+Heb je gemerkt dat de comuter de leestekens en getallen goed uitspreekt? En dat je hem zelf het antwoord van een berekening kan laten zeggen?
+
+==== Nieuw vanaf ==== 
+0.9.4
+
+----
+ [[sound_commands|Geluid]] | [[sound|volgende]]

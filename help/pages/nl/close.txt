@@ -1,0 +1,40 @@
+===== Close =====
+
+==== Formaat ====
+
+**close**\\
+**close** ( )\\
+**close** //Bestandnr//\\
+**close** ( //Bestandnr// )
+
+==== Beschrijving ====
+
+Deze functie sluit een bestand dat open is. Indien dat bestand niet open was, dan gebeurt er niets. Indien het //Bestandnr// niet wordt weergegeven, wordt 0 genomen .
+
+Als je verwijst naar een bestandsnummer dat niet bestaat, krijg je wel een foutmelding.
+
+close betekent //(sluiten)// in het Engels.
+
+==== Zie ook  ====
+
+[[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]]
+
+==== Voorbeeld  ====
+<code basic4gl>
+print currentdir ( )
+open(1, "bestand.txt")
+close 1
+</code>
+
+geeft geen feedback.
+
+
+<code basic4gl>
+print currentdir ( )
+open(1, "bestand.txt")
+close 
+</code>
+
+Geeft foutbericht. De close functie probeert bestandnummer 0 te sluiten, maar die bestaat niet, en je krijgt de fout:  FOUT op lijn 4: File not open. 
+----
+[[changedir|vorige]] | [[write_and_read|Lezen en schrijven]] | [[dir|volgende]]

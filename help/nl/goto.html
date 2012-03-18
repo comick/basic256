@@ -1,0 +1,54 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>goto</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Goto </h1>
+<h2> Formaat </h2>
+goto <i>etiket</i>
+
+<i>etiket</i>  
+<ul>
+<li>moet met een letter beginnen</li>
+<li>mag geen sleutelwoord zijn </li>
+<li>moet eindigen met  :#</li>
+</ul>
+<h2> Beschrijving </h2>
+Gaat naar het <i>etiket</i> 
+Een etiket wordt ook vaak label genoemd in het engels en bij het programmeren. 
+
+Zoals je weet worden de opdrachten in een BASIC256 programma mooi na elkaar uitgevoerd. Met deze opdracht kan je daarvan afwijken en kan je het progamma heel wat verder of zelfs helemaal terug laten beginnen. 
+
+Met dat laatste mooet je wel opletten. Het is inderdaad mogelijk dat je daardoor in een lus terechtkomt dat nooit eindigt !!!! Dan blijft je programma voor altijd doorlopen, tenzij je het hardhandig stopt, maar dit is niet zo mooi. 
+
+<ul>
+<li>Een aantal programmeurs vindt het gebuik van goto in de programma's niet altijd mooi en een goed idee. </li>
+<li>Zorg trouwens goed dat de label/etiket dat je meegeeft ook bestaat, anders krijg je een foutmelding van je programma.</li>
+<li>Het is een goede gewoonte geen sleutelwoorden te gebuiken voor je etiketten. Dit zal niet goed werken</li>
+
+</ul>
+<h2> Zie ook </h2>
+<a href="gosubreturn.html">Gosub / Return</a>
+<h2> Voorbeeld </h2>
+<pre>
+print "Ik wil";
+goto gaverder
+print " geen";
+gaverder: #
+print " koekjes."
+</pre>
+
+zal het volgende tonen
+<pre>
+Ik wil koekjes.
+</pre>
+
+<i>print " geen"</i> wordt dus niet uitgevoerd.
+
+<hr/>
+<a href="goto.html">vorige</a> | <a href="../nl/programcontrol.html">Programma Controle</a> | <a href="fornext.html">volgende</a>
+</body>
+</html>

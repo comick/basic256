@@ -1,0 +1,109 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>operators</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Operatoren </h1>
+
+<h1> Rekenkundige operatoren <h2>
+
+De operatoren +, -, *, / en ^ worden gebruikt voor het optellen, aftrekken, vermenigvuldigen, delen, machtsverheffen van floating point-en integer getallen. Geldige operanden zijn numerieke constanten en / of numerieke variabelen. 
+
+De operatoren %, \, &, |, en ~ worden gebruikt voor modulo, integer delingen, bitwise en bitwise of en bitsgewijze negatie (niet) van integer uitdrukkingen te berekenen. Floating point getallen worden omgezet naar een integer waarde voor de berekening. 
+
+<ul>
+<li>De operator = wordt gebruikt zowel voor toewijzing aan variabelen, en om te testen op gelijkheid. </li>
+<li>De operator + kan gebruikt worden om aaneenschakeling van elke combinatie van string constanten en string variabelen uit te voeren. </li>
+<li>De: operator kan meerdere statements op eenzelfde regel scheidnen. </li>
+<li>De; operator onderdrukt de nieuwe lijn die is afgedrukt vanuit een PRINT statement. </li>
+<li>De # operator is een sneltoets voor de Rem statement, en is uitwisselbaar met het. </li>
+
+</ul>
+<h1> Logische operatoren <h2>
+
+Logische operatoren zijn gebaseerd op de Booleaanse algebra. Het resultaat van een booleaanse bewerking heeft slechts twee mogelijke resultaten: waar of onwaar. 
+
+In verschillende talen die in de wiskunde en informatica worden gebruikt, bestaan er verschillende aanduidingen (tekens) voor de booleaanse operatoren.
+
+<h2> NOT </h2>
+
+resultaat = '''NOT''' A
+
+Het resultaat is tegenovergesteld. "NOT A" is onwaar als "A" waar is en als "A" onwaar is, is "NOT A" waar. Dit is een unaire (unary) operator, dat wil zeggen, met slechts een parameter. Alle anderen in deze lijst zijn binaire (binary) operatoren.
+
+<table border=1>
+<tr><th>A<th>R</tr>
+<tr><td>0<td><b>1</b></tr>
+<tr><td>1<td><b>0</b><</tr>
+
+</table>
+<h2> AND </h2>
+
+resultaat = A '''AND''' B
+
+Het resultaat is waar als zowel "A" als "B" waar zijn, in alle andere gevallen is het resultaat onwaar.
+
+<table border=1>
+<tr><th>A<th>B<th>R</tr>
+<tr><td>0<td>0<td><b>0</b></tr>
+<tr><td>0<td>1<td><b>0</b><t</tr>
+<tr><td>1<td>0<td><b>0</b></tr>
+<tr><td>1<td>1<td><b>1</b><</tr>
+
+</table>
+<h2> OR </h2>
+
+resultaat = A '''OR''' B
+
+Het resultaat is waar als "A" waar is of als "B" waar is of als beide waar zijn. Het resultaat is onwaar als zowel "A" als "B" onwaar zijn.
+
+<table border=1>
+<tr><th>A<th>B<th>R</tr>
+<tr><td>0<td>0<td><b>0</b></tr>
+<tr><td>0<td>1<td><b>1</b><t</tr>
+<tr><td>1<td>0<td><b>1</b></tr>
+<tr><td>1<td>1<td><b>1</b><</tr>
+
+</table>
+<h2> XOR </h2>
+
+resultaat = A '''XOR''' B
+
+Het resultaat is waar als "A" waar is en "B" onwaar, of als "A" onwaar is en "B" waar. Als "A" en "B" beide waar zijn of beide onwaar zijn is het resultaat onwaar. Deze functie is equivalent aan (A AND NOT B) OR (B AND NOT A)
+
+<table border=1>
+<tr><th>A<th>B<th>R</tr>
+<tr><td>0<td>0<td><b>0</b></tr>
+<tr><td>0<td>1<td><b>1</b><t</tr>
+<tr><td>1<td>0<td><b>1</b></tr>
+<tr><td>1<td>1<td><b>0</b><</tr>
+
+</table>
+<h1> Relationele operatoren <h2>
+
+
+<h1> Volgorde van Operatoren <h2>
+
+<table border=1>
+<tr><th>Volgorde van Operatoren<th><th></tr>
+<tr><th>Volgorde<th>Operator<th>Kategorie/Beschrijving</tr>
+<tr><td>1<td>( )<td>Groupering</tr>
+<tr><td>2<td>&#094;<td>Exponent</tr>
+<tr><td>3<td>- ~<td>Unary Minus en Bitwise Negatie (NOT)</tr>
+<tr><td>4<td>* / \<td>Vermenigvuldiging and Deling</tr>
+<tr><td>5<td>%<td> Modulo </tr>
+<tr><td>6<td>+ -<td>Som, Samentrekking, and Verschil</tr>
+<tr><td>7<td>& &#124;<td>Bitwise EN of Bitwise OF</tr>
+<tr><td>8<td>< <= > >= = <><td>Vergelijkingen</tr>
+<tr><td>9<td>NOT<td>Unary Not</tr>
+<tr><td>10<td>AND<td>Logische EN</tr>
+<tr><td>11<td>OR<td>Logische OF</tr>
+<tr><td>12<td>XOR<td>Logische Exclusive OF</tr>
+
+</table>
+<a href="../nl/anonymousarrays.html">vorige</a> | <a href="../nl/index.html">Begin</a> | <a href="../nl/errorcodes.html">volgende</a>
+</body>
+</html>

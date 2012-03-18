@@ -1,0 +1,38 @@
+===== Eof =====
+
+==== Formaat ====
+
+eof\\
+eof()\\
+eof(//Bestandnr//)
+
+==== Beschrijving ====
+
+Met deze functie kan je weten of we het laatste stukje van een bestand hebben bereikt of niet ( true/false)((true=1 en false=0)). Als je het //Bestandnr// niet meegeeft, dan wordt bestandnummer 0 verondersteld.
+
+Je krijgt een foutmelding als je EOF probeert te doen op een bestandnummer dat geen open bestand bevat.
+
+Je gebruikt deze functie om te weten of je alles al hebt gelezen bvb. Probeer je dan nog eens te lezen (na de EOF) dan krijg je een foutmelding.
+
+==== Zie ook ====
+
+[[close|Close]], [[exists|Exists]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
+
+==== Voorbeeld ==== 
+<code basic4gl>
+print currentdir ( )
+open(1, "bestand.txt")
+print eof(1)
+close 1
+</code>
+
+geeft 
+<code>
+1 #omdat bestand.txt niets bevat 
+</code>
+==== Nieuw vanaf ==== 
+
+0.9.4
+
+----
+[[currentdir|vorige]] | [[write_and_read|Lezen en schrijven]] | [[exists|volgende]]

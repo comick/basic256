@@ -1,0 +1,17 @@
+===== Asin =====
+==== Formaat ====
+**asin** ( //uitdrukking// )
+==== Beschrijving ====
+Berekent de arcsinus (boogsinus) van //uitdrukking//.  De hoek moet in radianen worden meegegeven (0 tot 2pi).\\ 
+de functie wordt ook af en toe als sin<sup>-1</sup> genoteerd. Meer informatie over deze functie vind je op de wiki : [[http://nl.wikipedia.org/wiki/Arcsinus|asin]]
+==== Voorbeeld ====
+<code basci4gl>
+print asin(.1215)
+</code>
+
+
+==== Zie ook ====
+[[acos|Acos]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]
+
+----
+[[acos|vorige]] | [[mathematical|Wiskundige Functies]] | [[atan|volgende]]

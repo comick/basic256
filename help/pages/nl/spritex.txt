@@ -1,0 +1,15 @@
+===== Spritex =====
+==== Formaat ====
+**spritex** ( //spritenummer// )
+==== Beschrijving ====
+De functie geeft de x coördinaat van de het midden van een geladen sprite terug.
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken
+</code>
+==== Zie Ook ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spriteh|Spriteh]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+----
+[[spritew|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spritey|volgende]]

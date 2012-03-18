@@ -1,0 +1,12 @@
+====== Moeilijke woorden ======
+
+Hierna vind je de lijst van moeilijke of nieuwe woorden die in deze documentatie worden gebruikt. 
+
+^woord^betekenis^
+|hash| het versleutelen van een gegeven, zodat je het originele niet kunt lezen |
+|reguliere expressie| is een manier om patronen te beschrijven waarmee een computer tekst kan herkennen| 
+|relatief pad| het beginpunt van het pad is de huidige plaats. Zo'n pad begint niet met een schuine streep.|
+|absoluut pad| er is geen twijfel over het beginpunt van het pad. Het start aan de root van het bestandssysteem. Dit wordt aangeduid met de schuine streep|
+|gekwalificeerd pad | absoluuut pad met opgaven van de server| 
+|slash|schuine streep meestal slash of forward slash |
+

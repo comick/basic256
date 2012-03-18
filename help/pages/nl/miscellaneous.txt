@@ -1,0 +1,19 @@
+====== Speciale commando's ======
+===== Waarom =====
+
+Basic-256 draait bovenop een operating systeem (bestuursysteem) die ervoor zorgt dat je iets ziet, dat je iets met je computer kan doen. De volgende opdrachten laten toe om vanuit basic-256 een aantal elementen van het berstuursysteem te gebruiken. 
+
+Let wel op met wat je doet.!!!!
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+|[[System|System]]| voer opdrachten uit ...direct op je systeem!|
+| [[ostype|Ostype]]| zoek uit welk systeem je hebt |
+| [[editvisible|Editvisible]]| hop, hop, hop, venstertje weg!! |
+| [[commandline|CommandLine]]| alles vanuit de opdrachtlijn...|
+| [[getsetting|GetSetting]]| haal parameters op...|
+| [[setsettings|SetSetting]]| schrijf een paramater weg...|
+| [[portin|Portin]]|Schrijf een waarde weg op een I/O poort |
+| [[portout|Portout]]|Lees een waarde uit een I/O poort |
+
+----
+[[nl:start|Begin]] 

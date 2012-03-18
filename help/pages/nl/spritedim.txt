@@ -1,0 +1,18 @@
+===== Spritedim =====
+==== Formaat ====
+**spritedim** //n//\\
+**spritedim** ( //n// )
+==== Beschrijving ====
+Deze functie maakt //n// sprite plaatshouders in het geheugen.  Sprites worden in het programma aangeroepen door een nummer van 0 to n-1.
+
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken
+</code>
+==== Zie ook ====
+[[spritecollide|Spritecollide]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+
+----
+[[spritecollide|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spriteh|volgende]]

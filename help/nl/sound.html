@@ -1,0 +1,53 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>sound</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Sound </h1>
+<h2> Formaat </h2>
+<b>sound</b> <i>frequentie</i>, <i>duur</i><br/>
+<b>sound</b> ( <i>frequentie</i>, <i>duur</i> )<br/>
+<b>sound</b> ( <i>deuntje</i> )<br/>
+<b>sound</b> <i>deuntje</i><br/>
+<b>sound</b> {frequentie1, duur1, frequentie2, duur2, ...}
+<h2> Beschrijving </h2>
+Dankzij <i>sound</i> kan je een geluid om de luidsprekers van de computer laten horen.<br/>
+De <i>frequentie</i> wordt in <a href="../http/<i>nl.wikipedia.org/wiki/hertz_(eenheid).html">Hz.</a> uitgedrukt en de </i>duur<i> in  milliseconden (1000 in een seconde).
+
+Je kan ook een deuntje opstellen in een array, waardoor je het vervelende klikgeluid tussen elke toon voorkomt. 
+
+<h2> Opmerking </h2>
+
+Ondersteuning voor geluid werd in LINUX systemen vanaf versie 0.9.5g. toegeovoegd.<br/>
+In versie 0.9.5h werd voor Windows gebruikt gemaakt van de standaard geluidsettings.
+
+<h2> Zie ook </h2>
+<a href="volume.html">Volume</a>
+
+<h2> Voorbeeld </h2> 
+
+<file basic4gl c3_littlefuge.kbs>
+# Muziekstuk van J.S.Bach - XVIII Fuge in G moll.
+tempo = 100 # noten per minuut
+milimin = 1000 * 60 # miliseconds in een minuut
+q = milimin / tempo # kwartnoot is een maat
+h = q * 2 # halve note (2 quarters)
+e = q / 2 # 1/8 note (1/2 quarter)
+s = q / 4 # 1/16 note (1/4 quarter)
+de = e + s # dotted eight - eight + 16th
+dq = q + e # doted quarter - quarter + eight
+
+sound{392, q, 587, q, 466, dq, 440, e, 392, e,466, e, 440, e, 392, e, 370, e, 440, e, 294, q,392, e, 294, e, 440, e, 294, e, 466, e, 440, s,392, s, 440, e, 294, e, 392, e, 294, s, 392, s,440, e, 294, s, 440, s, 466, e, 440, s, 392, s,440, s, 294, s}
+</file>
+
+Dit voorbeeld komt uit het boek <i>"So You Want to Learn to Program"?</i> van (James M. Reneau, M.S) 
+
+
+
+<hr/>
+<a href="say.html">vorige</a> | <a href="sound_commands.html">Geluid</a> | <a href="volume.html">volgende</a>
+</body>
+</html>

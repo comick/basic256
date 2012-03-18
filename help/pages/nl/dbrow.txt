@@ -1,0 +1,21 @@
+===== DBRow =====
+
+==== Formaat ====
+**dbrow**\\
+**dbrow** ( )
+
+==== Beschrijving ====
+De functie wordt gebruikt om naar het volgend record in de open recordset te gaan. \\ De functie geef //true// weer als er een nieuwe rij werd gelezen, of geeft een //false// als er geen nieuwe rij werd uitgelezen en je op het einde van de recordset staat.
+
+==== Voorbeeld ====
+Het uitgewerkt voorbeeld vind je bij [[DBOpen|DBOpen]].
+
+==== Zie ook ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBString|DBString]]
+
+
+==== Nieuw vanaf ==== 
+0.9.6y
+
+----
+[[dbopenset|vorige]] | [[database|Databank]] | [[dbstring|volgende]]

@@ -1,0 +1,41 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>size</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Size </h1>
+<h2> Formaat </h2>
+<b>size</b><br/>
+<b>size()</b><br/>
+<b>size</b>(<i>filenumber</i>)
+<h2> Beschrijving </h2>
+Deze functie geeft weer hoe groot het bestand is in bytes((<a href="../http/<i>www.jeroen.com/woordenboek/binair_stelsel.html">http:<i>www.jeroen.com/woordenboek/binair_stelsel</a>)). Geef je geen bestandnummer in, dan wordt de functie uitgevoerd op bestandnummer 0, als ze bestaat natuurlijk.
+<h2>Voorbeeld </h2>
+<pre>
+print currentdir
+open (1,"Foo.txt")
+print size(1) 
+close 1
+</pre>
+
+geeft dan 
+<pre>
+/home/guest # werkdirectory :-) 
+40 # dit bestand is dus 40 bytes lang
+</pre>
+
+Geef je geen bestandnummer in, dan probeert het programma 0. Maar aangezien er geen bestand geopend is voor 0, krijg je <i>FOUT op lijn 3: File not open. </i>
+
+
+<h2> Zie Ook </h2>
+<a href="close.html">Close</a>, <a href="eof.html">Eof</a>, <a href="open.html">Open</a>, <a href="read.html">Read</a>, <a href="readline.html">Readline</a>, <a href="reset.html">Reset</a>, <a href="write.html">Write</a>, <a href="writeline.html">Writeline</a>, <a href="exists.html">Exists</a>, <a href="seek.html">Seek</a>
+<h2> Nieuw Vanaf </h2> 
+0.9.4
+
+<hr/>
+<a href="seek.html">vorige</a> | <a href="write_and_read.html">Lezen en schrijven</a> | <a href="write.html">volgende</a>
+</body>
+</html>

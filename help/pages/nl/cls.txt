@@ -1,0 +1,18 @@
+===== Cls =====
+==== Formaat ====
+**cls**
+==== Beschrijving ====
+Deze opdracht wist de informatie die in het teskstvenster staat. 
+
+
+=== Voorbeeld === 
+<code basic4gl>
+ print " dit is een printopdracht met een grote tekst die over verschillende lijnen getoond wordt. Binnen enkele ogenblikken zal deze tekst gewist worden."
+ pause 7
+ cls
+</code>
+
+
+
+----
+[[print|vorige]] | [[keyboard|klavier en tekst]] | [[outputvisible|volgende]]

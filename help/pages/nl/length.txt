@@ -1,0 +1,23 @@
+===== Length =====
+==== Formaat ====
+length( //string// )
+==== Beschrjiving ====
+Deze functie geeft het aantal karakters van de string //string//
+==== Voorbeel ====
+<code basic4gl>
+a$= "Hoe lang is dit zinnetje nu?"
+print a$
+print "de string a is " + length(a$) + " karakters lang."
+</code>
+
+geeft dan 
+<code>
+Hoe lang is dit zinnetje nu?
+de string a is 28 karakters lang.
+</code>
+
+
+----
+[[left|vorige]] | [[stringcommand|Stringbewerkingen]] | [[lower|volgende]]
+
+

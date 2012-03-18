@@ -1,0 +1,58 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>gosubreturn</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Gosub / Return </h1>
+<h2> Formaat </h2>
+<b>gosub</b> <i>etiket</i><br/>
+<br/>
+etiket:<br/>
+<i>opdracht(en)</i><br/>
+<b>return</b>
+
+<i>etiket</i>  
+<ul>
+<li>moet met een letter beginnen</li>
+<li>mag geen sleutelwoord zijn </li>
+<li>moet eindigen met  :#</li>
+
+</ul>
+<h2> Beschrijving </h2>
+Gaat naar een welbepaald etiket. Wanneer het RETURN commando wordt tegengekomen,gaat het programma gewoon verder op de lijn die volgt op het GOSUB commando.  GOSUB kunnen genest worden, je kan dus verschillende keren een GOSUB uitvoeren.
+
+Ook hier moet je opletten. Als je veel GOSUB opdrachten gebruikt, kan het zijn dat je je eigen programma niet meer begrijpt.  Dus als je een programma schrijft die ook door anderen zal worden gebruikt en aangepast, let je daarvoor extra op. 
+
+<h2> Zie ook </h2>
+<a href="goto.html">Goto</a>
+
+<h2> Voorbeeld </h2>
+<pre>
+print "Ik wil";
+gosub haaldelijst
+print " eten.";
+end
+haaldelijst: #
+print " koekjes,"
+print " snoep,"
+print " dessert"
+return
+</pre>
+
+zal het volgende tonen
+<pre>
+Ik wil koekjes, snoep, dessert eten
+</pre>
+
+Voor <i> print " eten." </i> wordt uitgevoerd wordt eerst alles van <i>haaldelijst</i> tot <i>return</i> uitgeoverd.
+
+<img src="gosub.png" alt="gosub.png" />
+
+
+<hr/>
+<a href="end.html">vorige</a> | <a href="../nl/programcontrol.html">Programma Controle</a> | <a href="ifthen.html">volgende</a>
+</body>
+</html>

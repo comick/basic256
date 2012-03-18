@@ -1,0 +1,45 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>writeline</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> WriteLine </h1>
+<h2> Formaat </h2>
+<b>writeline</b> <i>string</i><br/>
+<b>writeline</b> ( <i>string</i> )<br/>
+<b>writeline</b> <i>filenumber</i>, <i>string</i><br/>
+<b>writeline</b> ( <i>filenumber</i>, <i>string</i> )
+<h2> Beschrijving </h2>
+De functie schrijft <i>string</i> aan het einde van een open bestand toe samen met een nieuwe lijn. Als je dan nog eens wegshrijft, is dat op de nieuwe lijn!<br/>  Als je het bestandsnummer (<i>filenumber</i>) niet meegeeft, dan wordt 0 genomen.
+<h2> Voorbeeld</h2>
+<pre>
+print currentdir
+open (1,"Foo.txt")
+writeline (1,"Hello")
+writeline (1,"Dit komt op de volgende lijn na Hello")
+close 1
+</pre>
+
+ Print currentdir gebruik ik om te weten waar ik een bestand open. Dit is de plaats waar Foo.txt zal worden geopend ( of weggeschreven) 
+ Verder zijn er 2 write opdrachten. In het Foo.txt bestand zie je echter alles mooi op een lijn. 
+ Ik voer een close uit om het bestand mooi te sluiten. De informatie wordt wel onmiddellijk in het bestand gezet, maar je bent nooit zeker he.
+
+dit geeft dan het bestand
+<file txt Foo.txt>
+Hello
+Dit komt op de volgende lijn na Hello
+</file>
+<h2> Zie ook</h2>
+<a href="close.html">Close</a>, <a href="eof.html">Eof</a>, <a href="open.html">Open</a>, <a href="read.html">Read</a>, <a href="readline.html"> Readline</a>, <a href="reset.html"> Reset</a>, <a href="writeline.html"> Writeline</a>, <a href="exists.html"> Exists</a>, <a href="seek.html"> Seek</a>, <a href="size.html"> Size</a>
+
+<a href="close.html">Close</a>, <a href="eof.html"> Eof</a>, <a href="open.html"> Open</a>, <a href="read.html"> Read</a>, <a href="readline.html"> Readline</a>, <a href="reset.html"> Reset</a>, <a href="write.html"> Write</a>, <a href="exists.html"> Exists</a>, <a href="seek.html"> Seek</a>, <a href="size.html"> Size</a>
+<h2> New To Version </h2> 
+0.9.4
+
+<hr/>
+<a href="write.html">vorige</a> | <a href="write_and_read.html">Lezen en schrijven</a> 
+</body>
+</html>

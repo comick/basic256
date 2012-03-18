@@ -1,0 +1,27 @@
+===== Radians =====
+==== Formaat ====
+**radians** ( //expression// )
+
+==== Beschrijving ====
+{{:en:radians.png|}}
+Converteert  een  hoek in graden naar radianen.\\
+
+==== Zie Ook ====
+<code baci4gl>
+hoek = 360 
+print "Hoek in graden: " + hoek
+print "Hoek in radialen: " + radians(hoek)
+</code>
+geeft dan 
+<code>
+hoek = 360 
+Hoek in graden: 360
+Hoek in radialen: 6.283185
+</code>
+6.28 = 2*pi
+==== Zie Ook ====
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[sin|Sin]], [[tan|Tan]]
+
+
+----
+[[log10|vorige]] | [[mathematical|Wiskundige Functies]] | [[rand|volgende]]

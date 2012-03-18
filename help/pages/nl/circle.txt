@@ -1,0 +1,23 @@
+===== Circle =====
+
+==== Formaat ====
+
+**circle** //x//,//y//,//r//
+
+==== Beschrijving ====
+
+Hiermee ga je dus een cirkel tekenen die het middelpunt heeft op de //x//,//y// coördinaat in het grafisch venster, met een straal van //r//
+
+==== Voorbeeld ====
+
+<code basic4gl>
+color yellow
+rect 0,0,300,300
+color red
+circle 120,120,80
+</code>
+toont het mooie beeld\\
+{{:nl:circle.png|}}
+
+----
+[[getcolor|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[line|volgende]]

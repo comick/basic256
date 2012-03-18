@@ -1,0 +1,22 @@
+====== Programma controle ======
+===== Waarom =====
+De eerste programma's die werden geschreven deden exact wat ze moesten doen, maar ook niets anders. Tof zou je zeggen, maar daarmee ga je echt niet ver.\\ 
+Heel snel zal je van je programma een aantal dingen gaan vragen: opdrachten opnieuw uitvoeren of opdrachten uitvoeren onder een voorwaarde. Dan heb je dus die programma controle opdrachten nodig. 
+
+Ga gerust een kijkje nemen op wiki ivm met [[http://nl.wikipedia.org/wiki/Gestructureerd_programmeren|gestructureerd programmeren]]
+===== Welke opdrachten hebben we? =====
+
+^Opdracht ^ Wat doet dat ^
+|[[Goto|Goto]]| Ga nu verder naar...  | 
+|[[ForNext|For / Next]]| Voert dezelfde opdracht verschillende keren uit |
+|[[DoUntil|Do / Until]]| Voert de opdracht uit tot iets ok is|
+|[[End|End]]| Stop maar met de uitvoering! |
+|[[GosubReturn|Gosub / Return]]| Doe eerst dit en kom dan terug | 
+|[[IfThen|If / Then]]| Als dit waar is, doe dat maar |
+|[[Pause|Pause]]| Wacht eens even!! |
+|[[comment|Rem]]| psst, dit moet je weten |
+|[[WhileEndWhile|While / End While]]| Voer de opdracht uit zolang iets ok is |
+
+
+----
+[[nl:start|Begin]] 

@@ -1,0 +1,27 @@
+===== Replacex =====
+
+==== Formaat ====
+**replacex** ( //hooiberg// , //regex// , //nieuwestring// )
+
+==== Beschrijving ====
+Bij deze functie wordt in //hooiberg// de //regex// reguliere uitdrukking vervangen door de //nieuwestring//. 
+
+
+==== Voorbeeld ====
+<code basic4gl>
+a$ = "Hanse panse kevertje die klom eens op de deur"
+print Replacex(a$,"an.*e","em")
+print Replacex(a$, "deur", "hek")
+</code>
+
+wordt dan 
+<code>
+Hemur
+Hanse panse kevertje die klom eens op de hek
+</code>
+
+==== nieuw vanaf==== 
+0.9.6.56
+
+----
+[[replace|vorige]] | [[stringcommand|Stringbewerkingen]] | [[right|volgende]]

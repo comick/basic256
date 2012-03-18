@@ -1,0 +1,57 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>stamp</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Stamp </h1>
+<h2> Format </h2>
+<b>stamp</b> <i>x</i>, <i>y</i>, <i>array</i><br/>
+<b>stamp</b> <i>x</i>, <i>y</i>, {x1, y1, x2, y2, x3, y3 ...}<br/>
+<b>stamp</b> <i>x</i>, <i>y</i>, <i>schaal</i>, <i>array</i><br/>
+<b>stamp</b> <i>x</i>, <i>y</i>, <i>schaal</i>, {x1, y1, x2, y2, x3, y3 ...}<br/>
+<b>stamp</b> <i>x</i>, <i>y</i>, <i>schaal</i>, <i>rotatie</i>, <i>array</i><br/>
+<b>stamp</b> <i>x</i>, <i>y</i>, <i>schaal</i>, <i>rotatie</i>, {x1, y1, x2, y2, x3, y3 ...}
+<h2> Beschrijving </h2>
+Met deze functie teken je een veelhoek (ploygoon) met de linkerbovenhoek in (<i>x</i>,<i>y</i>), in de opgegeven schaalgrootte <i>schaal</i> en draait dit in de opgegeven <i>rotatie</i> (kloksgewijs). Zowel <i>schaal</i> als <i>rotatie</i> zijn optioneel. <br/>
+
+De hoeken van de veelhoek worden zoals bij de <a href="poly.html">poly</a> functie gedefinieerd door het aantal (<i>x</i>,<i>y</i>) coördinaten in de <i>array</i>.<br/> 
+Je kan de veelhoek ook definiëren met { } in plaats van de array.
+
+<h2> Zie ook </h2>
+<a href="poly.html">Poly</a>
+<h2> Voorbeeld </h2>
+Beide programma's zullen 2 driehoeken tekenen, waarvan de 2 kleiner is.
+<pre>
+clg
+color blue
+rect 0,0,300,300
+color green
+dim driehoek(6)
+tri = {0, 0, 100, 100, 0, 100}
+# Teken de driehoek op 0,0 (volledige grootte)
+stamp 100, 100, driehoek
+#  Teken de driehoek op 200,100 (halve grootte)
+stamp 200, 100, .5, driehoek
+</pre>
+<pre>
+clg
+color blue
+rect 0,0,300,300
+color green
+# Teken de driehoek op 0,0 (volledige grootte)
+stamp 100, 100, {0, 0, 100, 100, 0, 100}
+#  Teken de driehoek op 200,100 (halve grootte)
+stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}
+</pre>
+Dit wordt dan:<br/>
+<img src="stamp.png" alt="stamp.png" />
+<h2> Nieuw vanaf </h2> 
+0.9.4
+
+<hr/>
+<a href="rect.html">vorige</a> | <a href="a_real_dali.html">Tekenen en kleuren</a> | <a href="font.html">volgende</a>
+</body>
+</html>

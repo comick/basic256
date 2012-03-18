@@ -1,0 +1,26 @@
+===== Degrees =====
+==== Formaat ====
+**degrees** ( //expression// )
+==== Beschrijving ====
+{{:en:radians.png|}}
+
+Deze functie converteert een hoek in radianen naar graden.
+
+==== Voorbeeld ====
+<code basci4gl>
+print 2*pi
+print degrees(2*pi)
+</code>
+
+geeft dan 
+<code>
+6.283185
+360
+</code>
+
+==== Zie ook ====
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]
+
+
+----
+[[cos|vorige]] | [[mathematical|Wiskundige Functies]] | [[exp|volgende]]

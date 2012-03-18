@@ -1,0 +1,17 @@
+===== Spritehide =====
+==== Formaat ====
+**spritehide** //spritenummer//
+**spritehide** ( //spritenummer// )
+==== Beschrijving ====
+De functie verbergt een sprite, de informatie erover blijft wel behouden.
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken
+</code>
+==== Zie Ook ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+
+----
+[[spriteh|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spriteload|volgende]]

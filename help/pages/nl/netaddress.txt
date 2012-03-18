@@ -1,0 +1,23 @@
+===== NetAddress =====
+
+==== Formaat ====
+**netaddress**\\
+**netaddress** ( )
+
+==== Beschrijving ====
+De Functie geeft het IPv4 address terug van deze comuter op het locale netwerk. 
+
+==== Voorbeeld ====
+<code basic4gl>
+print "Mijn netwerk adress is:" + netaddress
+</code>
+
+==== Zie ook ====
+[[NetClose|NetClose]], [[NetConnect|NetConnect]], [[NetData|NetData]], [[NetListen|NetListen]], [[NetRead|NetRead]], [[NetWrite|NetWrite]]
+
+==== Nieuw vanaf==== 
+0.9.6.35
+
+
+----
+[[network|Netwerk]] | [[netclose|volgende]]

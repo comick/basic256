@@ -1,0 +1,30 @@
+===== GraphVisible =====
+
+==== Formaat ====
+**graphvisible** ( //boolean// )\\
+**graphvisible** //boolean//
+
+==== Beschrijving ====
+Met deze functie kan je het grafisch venster tonen of verbergen. de //boolean// heeft de waarde   0 of 1.\\
+Het is een manier om programmatorisch(( via je programma dus)) een van de opties van Basic-256 aan te passen. 
+
+==== Voorbeeld ====
+<code basic4gl>
+clg # maak het grafisch venster leeg
+color blue # zet tekenkleur op blauw (alles is goed behalve grijs)
+rect 0,0,graphwidth,graphheight (# teken een vierhoek zo groot als het grafisch venster
+pause 3 # wacht 3 seconden 
+graphvisible(0) # grafisch venster verwijnt...
+print "grafisch venster is weg...en komt terug in een aantal seconden"
+pause 5
+graphvisible(1) # grafisch venster is terug...
+</code>
+
+==== Zie ook ====
+[[editvisible|EditVisible]], [[outputvisible|OutputVisible]]
+
+==== New To Version ==== 
+0.9.6.65
+
+----
+[[graphsize|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[graphwidth|volgende]]

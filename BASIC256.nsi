@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.6.66"
-  StrCpy $VERSIONDATE "2011-07-06"
+  StrCpy $VERSION "0.9.6.69"
+  StrCpy $VERSIONDATE "2012-02-26"
 FunctionEnd
 
 Function customPage
@@ -44,7 +44,7 @@ FunctionEnd
 Name "BASIC256 $VERSION ($VERSIONDATE)"
 
 ; The file to write
-OutFile "BASIC256-$VERSION_Win32_Install.exe"
+OutFile BASIC256-$VERSION_Win32_Install.exe
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\BASIC256
@@ -82,13 +82,14 @@ Section "BASIC256"
   SetOutPath $INSTDIR
   
   File .\release\BASIC256.exe
-  File .\release\libgcc_s_dw2-1.dll
-  File .\release\mingwm10.dll
-  File .\release\phonon4.dll
-  File .\release\QtCore4.dll
-  File .\release\QtGui4.dll
-  File .\release\sqlite3.dll
-  File .\release\inpout32.dll
+  File c:\qtsdk\mingw\bin\libgcc_s_dw2-1.dll
+  File c:\qtsdk\mingw\bin\mingwm10.dll
+  File c:\qtsdk\mingw\lib\sqlite3.dll
+  File c:\qtsdk\mingw\lib\inpout32.dll
+  File c:\qtsdk\mingw\lib\InstallDriver.exe
+  File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\phonon4.dll
+  File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\QtCore4.dll
+  File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\QtGui4.dll
   File ChangeLog
   File CONTRIBUTORS
   File license.txt
@@ -119,21 +120,16 @@ SectionEnd
 
 ; Offline Help (can be disabled by the user for each language)
 SectionGroup "Off-line Help and Documentation"
+  Section "Dutch (nl)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\nl
+    File /x ".svn" .\help\nl\*.*
+  SectionEnd
   Section "English (en)"
     SectionIn 1
     SetOutPath $INSTDIR\help\en
     File /x ".svn" .\help\en\*.*
   SectionEnd 
-  Section "Russian (ru)"
-    SectionIn 1
-    SetOutPath $INSTDIR\help\ru
-    File /x ".svn" .\help\ru\*.*
-  SectionEnd
-  Section "Spanish (es)"
-    SectionIn 1
-    SetOutPath $INSTDIR\help\es
-    File /x ".svn" .\help\es\*.*
-  SectionEnd
   Section "French (fr)"
     SectionIn 1
     SetOutPath $INSTDIR\help\fr
@@ -143,6 +139,16 @@ SectionGroup "Off-line Help and Documentation"
     SectionIn 1
     SetOutPath $INSTDIR\help\de
     File /x ".svn" .\help\de\*.*
+  SectionEnd
+  Section "Russian (ru)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\ru
+    File /x ".svn" .\help\ru\*.*
+  SectionEnd
+  Section "Spanish (es)"
+    SectionIn 1
+    SetOutPath $INSTDIR\help\es
+    File /x ".svn" .\help\es\*.*
   SectionEnd
 SectionGroupEnd
 
@@ -172,6 +178,7 @@ Section "Uninstall"
   Delete $INSTDIR\QtGui4.dll
   Delete $INSTDIR\sqlite3.dll
   Delete $INSTDIR\inpout32.dll
+  Delete $INSTDIR\InstallDriver.exe
   Delete $INSTDIR\ChangeLog
   Delete $INSTDIR\CONTRIBUTORS
   Delete $INSTDIR\license.txt

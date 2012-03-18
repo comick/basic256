@@ -1,0 +1,69 @@
+====== Grafische Functies ======
+===== Waarom =====
+
+Alleen door de lengte van de beschikbaare functies, kan je afleiden dat je met basic-256 wel iets grafisch kan maken....\\  
+Hier vind je dus alle nodige functies om een cirkle, vierkant, of andere figuur te maken. Klaar? Hier gaan we dan
+
+===== Welke opdrachten hebben we? =====
+^Opdracht^Kategorie^Wat doet het^
+| [[Color|Color]]|Kleuren | Neem een kleurpotlood van de kleur .... |
+| [[Rgb|Rgb]]|Kleuren| Converteert de ene kleurcode in een andere rgb kleurcode|
+| [[GetColor|GetColor]]|Kleuren | wat was de kleur van mijn potlood nu?|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Circle|Circle]]| Tekenen|Ik maak een cirkel |
+| [[Line|Line]]| Tekenen|of teken gewoon een rechte lijn |
+| [[Plot|Plot]]| Tekenen| hier kleur ik net één pixel |
+| [[Poly|Poly]]| Tekenen| Ik teken een vééééélhoek ;-)|
+| [[Rect|Rect]]| Tekenen| Daarmee kan ik snel een vierhoek tekenen|
+| [[Stamp|Stamp]]| Tekenen| Ik kopieer die veelhoek verschillende keren|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Font|Font]]| Tekst | Welk lettertype kies ik |
+| [[Text|Text]] | Tekst | en wat schrijf ik dan op bord? |
+| [[Textwidth|Textwidth]] | Tekst| Hoe groot zou dat nu zijn...|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Clg|Clg]] | Grafisch Venster| maak alles terug leeg|
+| [[FastGraphics|FastGraphics]]| Grafisch Venster| wacht op refresh om iets aan te passen|
+| [[Graphheight|Graphheight]]| Grafisch Venster|hoe hoog is het grafisch venster |
+| [[Graphsize|Graphsize]]| Grafisch Venster| wat is de grootte van het grafisch venster?|
+| [[Graphvisible|Graphvisible]]| Grafisch Venster|Maak het grafisch venster (on)zichtbaar |
+| [[Graphwidth|Graphwidth]]| Grafisch Venster| Hoe breed is het grafisch venster?|
+| [[Refresh|Refresh]]| Grafisch Venster| Ververs het grafisch venster om nieuwe elementen te tonen|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Imgload|Imgload]]|Beelden | Laad een beeld op van een bestand en toon het in het grafisch venster|
+| [[Imgsave|Imgsave]]|Beelden | Bewaar het beeld van het grafisch venster|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[GetSlice|GetSlice]]|Schijfje | sla de vierhoek op|
+| [[PutSlice|PutSlice]]|Schijfje | teken de slice op het grafisch venster|
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Spritecollide|Spritecollide]]| Sprite| Zijn er slides tegen elkaar gebotst? |
+| [[Spritedim|Spritedim]]| Sprite | voorzie een aantal sprites in het geheugen|
+| [[Spriteh|Spriteh]]| Sprite | hoe hoog is de sprite?|
+| [[Spritehide|Spritehide]]| Sprite | verberg een sprite|
+| [[Spriteload|Spriteload]]| Sprite | laad een beeld op in een sprite|
+| [[Spritemove|Spritemove]]| Sprite | verschuif de sprite|
+| [[Spriteplace|Spriteplace]]| Sprite | geef de plaats weer van het midden van de sprite |
+| [[Spriteshow|Spriteshow]]| Sprite | toon de sprite|
+| [[Spriteslice|Spriteslice]]| Sprite | koîeer een rechthoekje in een slice|
+| [[Spritev|Spritev]]| Sprite | wordt de sprite getoond? |
+| [[Spritew|Spritew]]| Sprite |hoe breed is de sprite?|
+| [[Spritex|Spritex]]| Sprite |wat is de x coördinaat van het midden van de sprite? |
+| [[Spritey|Spritey]]| Sprite |wat is de y coördinaat van het midden van de sprite? |
+
+^Opdracht^Kategorie^Wat doet het^
+| [[Pixel|Pixel]]| Andere| welke is de kleur van die pixel?|
+
+
+
+
+
+
+
+
+----
+[[nl:start|Begin]] 

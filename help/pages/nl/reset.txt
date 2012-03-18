@@ -1,0 +1,33 @@
+===== Reset =====
+==== Formaat ====
+**reset**\\
+**reset()**\\
+**reset**(//filenumber//)
+==== Beschrijving ====
+Wist een open bestand. Alle informatie in het bestand is dan **verloren** !! \\ Wees dus voorzichtig als je dit gebruikt. Als je geen bestandsnummer ingeeft, dan neemt de functie bestandsnummer 0. 
+
+==== Voorbeeld ====
+<code basic4gl>
+print currentdir
+open (1,"Foo.txt")
+reset 1
+write (1,"Hello")
+write (1," Dit komt op dezelfde lijn na Hello")
+close 1
+</code>
+
+Telkens als je dit programma uitvoert, dan open je Foo.txt, maak je het leeg en zet je er telkens dezelfde inhoud in. 
+
+Dit is de inhoud van Foo.txt
+<code>
+Hello Dit komt op dezelfde lijn na Hello
+</code>
+
+Probeer nu eens de code verschillende keer na elkaar uit te voeren, maar neem de 'Reset 1' opdracht weg. Wat zie je?((dezelfde tekst komt zoveel malen terug als je het programma hebt uitgevoerd))
+
+==== Zie Ook ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]
+
+
+----
+[[readline|vorige]] | [[write_and_read|Lezen en schrijven]] | [[seek|volgende]]

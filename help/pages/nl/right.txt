@@ -1,0 +1,24 @@
+===== Right =====
+==== Formaat ====
+**right**( //string//, //aantal//)
+==== Beschrijving ====
+Met deze funcite ga je het rechter gedeelte van //string// selecteren en dat zoveel //aantal// karakters van rechts beginnend. 
+
+
+==== Zie ook====
+[[mid|Mid]], [[left|Left]]
+==== Voorbeeld ====
+<code basic4gl>
+print right("Hello iedereen", 3)
+</code>
+
+geeft 
+<code>
+een
+</code>
+
+==== Nieuw vanaf ==== 
+0.9.5b
+
+----
+[[replacex|vorige]] | [[stringcommand|Stringbewerkingen]] | [[string|volgende]]

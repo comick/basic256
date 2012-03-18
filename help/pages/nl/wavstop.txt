@@ -1,0 +1,17 @@
+===== WAVstop =====
+==== Formaat ====
+**wavstop** //bestandsnaam//\\
+==== Beschrijving ====
+Deze functie stopt het spelen van het WAV audio bestand .
+==== Zie Ook ====
+[[wavplay|WAVplay]] [[wavwait|WAVwait]]
+==== Voorbeeld ====
+<code basic4gl>
+wavstop
+</code>
+
+==== Nieuw vanaf ==== 
+0.9.4
+
+----
+[[wavplay|vorige]] | [[sound_commands|Geluid]] | [[wavwait|volgende]]

@@ -1,0 +1,26 @@
+===== Replace =====
+
+==== Formaat ====
+**replace** ( //hooiberg// , //oudestring// , //nieuwestring// )\\
+**replace** ( //hooiberg// ,//oudestring// , //nieuwestring//, //hoofdletterongevoelig//)
+
+==== Beschrijving ====
+Dankzij deze functie kan je in een //hooiber// string de //oudestring// vervangen door een //nieuwestring//. Je krijgt ook de kans om te zeggen dat er dan niet op de hoofd- of kleine letters moet gelet worden. 
+
+
+==== Voorbeeld ====
+<code basic4gl >
+a$ = "Hanse panse kevertje die klom eens op het hek."
+print Replace(a$,"e","o")
+</code>
+
+geeft dan 
+<code>
+Hanso panso kovortjo dio klom oons op hot hok.
+</code>
+
+==== Nieuw vanaf==== 
+0.9.6.55
+
+----
+[[md5|vorige]] | [[stringcommand|Stringbewerkingen]] | [[replacex|volgende]]

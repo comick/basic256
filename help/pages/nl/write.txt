@@ -1,0 +1,25 @@
+===== Write =====
+==== Formaat ====
+**write** //string//\\
+**write** ( //string// )\\
+**write** //filenumber//, //string//\\
+**write** ( //filenumber//, //string// )
+==== Beschrijving ====
+Schrijft //string// aan het einde van een open bestand toe. Als je het bestandsnummer (//filenumber//) niet meegeeft, dan wordt 0 genomen.
+==== Voorbeeld====
+<code basic4gl>
+print currentdir
+open (1,"Foo.txt")
+write (1,"Hello")
+write (1," Dit komt op dezelfde lijn na Hello")
+close 1
+</code>
+
+ Print currentdir gebruik ik om te weten waar ik een bestand open. Dit is de plaats waar Foo.txt zal worden geopend ( of weggeschreven) 
+ Verder zijn er 2 write opdrachten. In het Foo.txt bestand zie je echter alles mooi op een lijn. 
+ Ik voer een close uit om het bestand mooi te sluiten. De informatie wordt wel onmiddellijk in het bestand gezet, maar je bent nooit zeker he.
+==== Zie ook====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline| Readline]], [[reset| Reset]], [[writeline| Writeline]], [[exists| Exists]], [[seek| Seek]], [[size| Size]]
+
+----
+[[size|vorige]] | [[write_and_read|Lezen en schrijven]] | [[writeline|volgende]]

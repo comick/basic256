@@ -1,0 +1,31 @@
+====== String bewerkingen ======
+===== Waarom =====
+
+Als je met de computer iets met woorden wil doen, heeft de computer een aantal functies nodig om met de woorden en letters te leren spelen en werken. 
+
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+|[[Asc|Asc]]|Geef de ASCII waarde van een karakter | 
+|[[Chr|Chr]]|Geef het karakter van de ASCII waarde terug |
+| [[Decimal|Decimal]]| hoeveel cijfers na de komma wil je zien? |
+| [[Instr|Instr]]| Een naald in een hooiberg zoeken.... |
+| [[instrx|Instrx]]| Een speciale naald in een hooiberg zoeken....  |
+| [[count|Count]] | hoeveel keer vind je mijn naald? | 
+| [[countx|Countx]] | hoeveel keer vind je mijn //speciale// naald? | 
+| [[explode|Explode]] | een string mooi splitsen | 
+| [[explodex|Explodex]] | een sting mooi //speciaal// splitsen | 
+| [[implode|Implode]] | apparte array elementen in één string plakken |
+| [[Left|Left]]|het linkergedeelte van een string|
+| [[Length|Length]]| hoe lang is een string?|
+| [[Lower|Lower]]|vervangt hoodletters door kleine letters |
+| [[Mid|Mid]]| neemt een middelste deel uit een string|
+| [[MD5|MD5]]| Berekent een soort unieke onkraakbare code !!! Supergeheim! |
+| [[Replace|Replace]]| de ene sting wordt door een andere vervangen|
+| [[Replacex|Replacex]]|de ene sting wordt door een andere vervangen, 't zelfde als het vorige, maar moeilijker (=) |
+| [[Right|Right]]| als je enkel het rechste gedeelte van de string wil |
+| [[String|String]]| om getallen om te zetten in een string.|
+| [[Upper|Upper]]| ALLEMAAL HOODLETTERS.... |
+
+
+----
+[[nl:start|Begin]] 

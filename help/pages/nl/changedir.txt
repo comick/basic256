@@ -1,0 +1,33 @@
+===== Changedir =====
+
+==== Formaat ====
+**changedir** //uitdrukking//\\
+**changedir** ( //uitdrukking// )
+
+==== Beschrijving ====
+Met deze functie verandert de huidige 'werk' directory naar het pad zoals opgegeven in de //uitdrukking//.\\ 
+Voor alle systemen (Windows,Linux) geldt dat een forward slash  (/)  de verschillende folders van elkaar scheidt.
+
+changedir komt van het Engelse "Change Directory" //(verander van folder)//.
+
+==== Zie ook ====
+[[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]
+
+==== Voorbeeld====
+<code basic4gl>
+print currentdir ( ) //om huidige actieve directory te zien
+changedir "./basic"
+print currentdir ( ) // om de nieuwe actieve directory te zien
+</code>
+
+wordt dan 
+<code>
+/home/guest
+/home/guest/basic
+</code>
+==== Nieuw vanaf====
+0.9.6r
+
+
+----
+ [[write_and_read|Lezen en Schrijven]] | [[close|volgende]]

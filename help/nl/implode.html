@@ -1,0 +1,44 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>implode</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Implode </h1>
+<h2> Formaat </h2>
+<b>implode</b> ( <i>arrayvariabele</i> )<br/>
+<b>implode</b> ( <i>arrayvariabele</i> , <i>baken</i> )
+
+<h2> Beschrijving </h2>
+Voegt de elementen van een array (reeks) samen in één string. Je kan ook optioneel <i>baken</i> meegeven tussen de verschillende elementen. Deze functie doet dus het omgekeerde dan de <a href="explode.html">Explode</a> functie.
+
+<h2> Voorbeeld </h2>
+<pre>
+dim a$(1)
+dim b(1)
+a$ = Explode("Een twee drie wie niet weg is is gezien"," ")
+print implode(a$,"-")
+print implode(a$)
+b = Explode("1,2,3.33,4.44,5.55",",")
+print implode(b,", ")
+print implode(b)
+</pre>
+
+geeft dan
+<pre>
+Een-twee-drie-wie-niet-weg-is-is-gezien
+Eentweedriewienietwegisisgezien
+1, 2, 3.33, 4.44, 5.55
+123.334.445.55
+</pre>
+
+<h2> Versie </h2> 
+0.9.6.57
+
+
+<hr/>
+<a href="explodex.html">vorige</a> | <a href="stringcommand.html">Stringbewerkingen</a> | <a href="left.html">volgende</a>
+</body>
+</html>

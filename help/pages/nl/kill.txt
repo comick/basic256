@@ -1,0 +1,31 @@
+===== Kill =====
+==== Formaat ====
+kill ( //uitdrukking// )
+==== Beschrijving ====
+Deze functie verwijdert het bestand zoals in //uitdrukking// van het system .\\
+Indien het bestand niet bestaat, krijg je een foutmelding.
+
+==== Zie ook ====
+[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
+==== Voorbeeld ==== 
+<code basic4gl>
+file$="failed.wav"
+print currentdir ( )
+if  exists (file$) then 
+kill (file$)
+else 
+print "bestand niet gevonden, niets gewist"
+end if
+</code>
+
+geeft dan 
+<code>
+/home/guest/basic
+bestand niet gevonden, niets gewist
+</code>
+omdat failed.wav niet bestaat....
+==== Nieuw vanaf ==== 
+0.9.4
+
+----
+[[exists|vorige]] | [[write_and_read|Lezen en schrijven]] | [[open|volgende]]

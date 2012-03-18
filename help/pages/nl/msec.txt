@@ -1,0 +1,24 @@
+===== Msec =====
+==== Formaat ====
+**msec**\\
+**msec**()
+==== Beschrijving ====
+Geeft het aantal milliseconden aan sinds het huidig BASIC256 programma gewerkt heeft.
+
+==== Voorbeeld ====
+<code basic4gl>
+cls
+print "We starten nu...."
+pause 5
+print "dit programma wordt al " + msec + " milliseconden uitgevoerd."
+</code>
+
+==== Zie ook ====
+[[day|Day]], [[hour|Hour]], [[minute|Minute]], [[month|Month]], [[second|Second]], [[year|Year]]
+==== Nieuw Vanaf ==== 
+0.9.6.60
+
+
+
+----
+[[second|vorige]] | [[datehour|Datum en Uur]] 

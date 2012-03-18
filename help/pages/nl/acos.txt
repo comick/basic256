@@ -1,0 +1,21 @@
+===== Acos =====
+==== Formaat ====
+**acos** ( //uitdrukking// )
+==== Beschrijving ====
+Dit is een wiskundige formule, meer bepaald uit de [[http://nl.wikipedia.org/wiki/Goniometrie|Goniometrie]]\\ 
+
+De functie berekent de arccosinus van //uitdrukking//.  De hoek moet in radianen worden meegegeven (0 tot 2pi).\\ 
+de functie wordt ook af en toe als cos<sup>-1</sup> genoteerd. 
+
+Meer informatie over deze functie vind je op de wiki : [[http://nl.wikipedia.org/wiki/Arccosinus|acos]]
+==== Voorbeeld ====
+<code basci4gl>
+print acos(.1215)
+</code>
+
+
+==== Zie ook ====
+[[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]
+
+----
+[[abs|vorige]] | [[mathematical|Wiskundige Functies]] | [[asin|volgende]]

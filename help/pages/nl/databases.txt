@@ -1,0 +1,25 @@
+====== Databanken ======
+===== Waarom =====
+
+Als je een programma maakt waar je veel informatie in wil bewaren, dan zal je uiteindelijk meestal bij een (relationele) database terechtkomen. Dit is een ander programma die je toelaat om je informatie op de meest optimale manier te bewaren en te beheren. \\
+Je gebruikt een andere taal, SQL, om de informatie in je database of uit je database te halen. 
+
+Om je in te leiden in het gebruik van SQL en databases, werd vanaf 0.9.6y Basic-256 voorzien om met de SQLLite databases te kunnen werken. SQLLite is een open source versie die reeds goed ingeburgerd is en door tal van andere bedrijven gebruikt wordt.
+
+
+Meer informatie over database en SQLLite vind je op  [[http://sqlite.org|SQLite Home Page]] en [[http://en.wikipedia.org/wiki/SQL|SQL at Wikipedia]].
+
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+| [[DBClose|DBClose]]|Sluit de open database |
+| [[DBCloseSet|DBCloseSet]]|Sluit de recordset |
+| [[DBExecute|DBExecute]]| Voer de sql opdracht uit|
+| [[DBFloat|DBFloat]]|Geeft het resultaat als decimaal getal terug |
+| [[DBInt|DBInt]]| Geeft het resultaat als geheek getal terug|
+| [[DBOpen|DBOpen]]| Open of maak de database aan|
+| [[DBOpenSet|DBOpenSet]]|Voer de sql opdracht uit en maak de recordset aan |
+| [[DBRow|DBRow]]|ga naar de volgende rij in de recordset |
+| [[DBString|DBString]] |Geeft het resultaat terug als string |
+
+----
+[[nl:start|Begin]] 

@@ -1,0 +1,35 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>putslice</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> PutSlice </h1>
+<h2> Formaat </h2>
+<b>putslice</b> <i>x</i>, <i>y</i>, <i>slice$</i><br/>
+<b>putslice</b> <i>x</i>, <i>y</i>, <i>slice$</i>, <i>doorichtige kleur</i>
+
+<h2> Beschrijving </h2>
+Met deze functie toon je de tekening die je in een vorge stap in een slice string hebt gezet. Als je <i>transparent</i> meegeeft als kleur, dan worden die punten met die kleur ook niet getoond. 
+
+<h2> Voorbeeld </h2>
+<code basci4gl>
+clg
+a$= getslice(0,5,10,5)
+print a$
+putslice(10,10,a$)
+
+</pre>
+
+<h2> Zie Ook </h2>
+<a href="getslice.html">GetSlice</a>
+<h2> Nieuw vanaf </h2> 
+0.9.6b
+
+
+<hr/>
+<a href="getslice.html">vorige</a> | <a href="a_real_dali.html">Tekenen en kleuren</a> | <a href="spritecollide.html">volgende</a>
+</body>
+</html>

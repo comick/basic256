@@ -1,0 +1,19 @@
+===== Spritemove =====
+==== Formaat ====
+**spritemove** //spritenummer//, //dx//, //dy//\\
+**spritemove** ( //spritenummer//, //dx//, //dy// )
+==== Beschrijving ====
+De functie verschuift een sprite van zijn huidige positie met het opgegeven aantal pixels.\\
+De verschuiving blijft berpekt tot het huidie scherm.
+==== Voorbeeld ====
+<code basic4gl>
+uit te werken.
+</code>
+==== Zie Ook ====
+[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
+==== Nieuw vanaf ==== 
+0.9.6n
+
+
+----
+[[spriteload|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spriteplace|volgende]]

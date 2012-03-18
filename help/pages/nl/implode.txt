@@ -1,0 +1,34 @@
+===== Implode =====
+==== Formaat ====
+**implode** ( //arrayvariabele// )\\
+**implode** ( //arrayvariabele// , //baken// )
+
+==== Beschrijving ====
+Voegt de elementen van een array (reeks) samen in één string. Je kan ook optioneel //baken// meegeven tussen de verschillende elementen. Deze functie doet dus het omgekeerde dan de [[Explode|Explode]] functie.
+
+==== Voorbeeld ====
+<code basic4gl>
+dim a$(1)
+dim b(1)
+a$ = Explode("Een twee drie wie niet weg is is gezien"," ")
+print implode(a$,"-")
+print implode(a$)
+b = Explode("1,2,3.33,4.44,5.55",",")
+print implode(b,", ")
+print implode(b)
+</code>
+
+geeft dan
+<code>
+Een-twee-drie-wie-niet-weg-is-is-gezien
+Eentweedriewienietwegisisgezien
+1, 2, 3.33, 4.44, 5.55
+123.334.445.55
+</code>
+
+==== Versie ==== 
+0.9.6.57
+
+
+----
+[[explodex|vorige]] | [[stringcommand|Stringbewerkingen]] | [[left|volgende]]

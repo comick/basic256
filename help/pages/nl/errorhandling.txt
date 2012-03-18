@@ -1,0 +1,22 @@
+====== Foutafhandeling ======
+===== Waarom =====
+
+Het zijn jij en ik die de programma's maken voor de computer. We zijn wel slim, maar af en toe vergeten we iets of denken we dat iets niet kan of zal gebeuren.  Als we dus een foutje gemaakt hebben, dan zal de computer de fout ook nadoen. Hij kan immers niet denken, hij voert enkel uit wat we hem gevraagd hebben. 
+
+Als het grondig mis gaat, dan 'chrasht' ons programma. Dan geeft de computer ons een 'onvriendelijke' fout en stopt het programma. Dat is niet leuk. Zeker niet als je aan het spelen bent. 
+
+Daarom is het een goede gewoonte om ervoor te zorgen dat die fouten opgevangen worden. Je gaat er met andere woorden voor zorgen dat als het programma zich pijn doet, dat je er een plakkertje om gaat doen, en de computer dan zegt om 'flink' verder te doen. 
+
+Goede programmeurs nemen ook de tijd om de foutafhandeling correct te doen: een goede omschrijving en eventueel een rechtzetting alvorens de computer het programma verder doet lopen. 
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+|[[Lasterror|Lasterror]]| geeft laatste foutnummer terug| 
+| [[Lasterrorextra|Lasterrorextra]]| en doet daarbij nog ietsje meer informatie bij... | 
+| [[Lasterrorline|Lasterrorline]]| geeft het lijnnummer mee van het programma waar de fout zich voordeed. |
+| [[Lasterrormessage|Lasterrormessage]]| geeft de laatste foutboodschap weer |
+| [[Offerror|Offerror]]| zet het foutopvangen af|
+| [[Onerror|Onerror]]| zet het foutopvangen op|
+
+
+----
+[[nl:start|Begin]] 

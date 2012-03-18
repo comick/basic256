@@ -1,0 +1,22 @@
+===== onError =====
+
+==== Formaat ====
+**onerror** //label//
+
+==== Beschrijving ====
+Activeert de foutafhandeling. De subroutine bij etiket //label// wordt bij een fout in het programma uitgevoerd.  
+
+Met een [[gosubreturn|Return]] opdracht in de fout subroutine kan het programma daarna worden verdergezet.
+
+==== Voorbeeld ====
+
+Volg het voorbeeld van de [[nl:errorcodes|foutboodschappen lijst]]
+
+==== Zie Ook ====
+[[Errorcodes|Error Codes]], [[Lasterror|Lasterror]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Offerror|Offerror]], [[Onerror|Onerror]]
+
+==== Nieuw vanaf ==== 
+0.9.6z
+
+----
+[[offerror|vorige]] | [[errorhandling|Foutafhandeling]]

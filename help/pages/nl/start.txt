@@ -1,0 +1,68 @@
+
+
+Deze documentatie werd geschreven voor jonge lezers vanaf **10 jaar**. 
+Misschien vind je de informatie een beetje te licht, maar het is de bedoeling met BASIC-256 om een inleiding te hebben in de programmatie.
+
+==== Referentie voor de syntax van BASIC-256 0.9.6.32 ====
+  * **Programmasynax**://[[ProgramSyntax|Ik kan schrijven, maar hoé schrijf ik een programma?]]//
+  * **Numerieke constanten**://[[NumericConstants|getal constanten die niet veranderen?]]//
+  * **String Constanten**://[[StringConstants|Wat zijn die tekstconstanten?]]//
+  * **Variabelen**://[[Variables|Wat zijn variabelen?]]//
+  * **Tabellen**://[[Arrays|Wat is een tabel?]]//
+  * **Anonieme tabellen**://[[AnonymousArrays|als dingen automatisch worden aangemaakt]]//
+  * **Operatoren**://[[Operators|Bewerkingen, wat je kan doen met letters en cijfers.]]//
+  * **Foutcodes**: //[[Errorcodes|Lijst van de foutcodes van Basic256]]//
+ 
+==== Instructies en functies - Gegroepeerd ====
+  * **Programmacontrole**: //[[Programcontrol|Opdrachten die je programma aansturen]]//
+  * **Klavier en Tekst**: //[[keyboard|Hoe geef je iets in de computer en wat krijg je terug]]//
+  * **Datum en Uur**: //[[datehour|Spelen met de klok en de kalender]]// 
+  * **Foutbehandelingen**: //[[errorhandling|Oops, er is iets misgegaan. Niet erg, we lossen het wel op met deze commando's]]//
+  * **Bewerkingen op strings**: //[[stringcommand|woorden en stukjes snijden en terug aan elkaar plakken, en ander gereedschap om met strings te werken]]//
+  * **Geluid**: //[[sound_commands|Wat zei je weer, computer? Laat maar horen]]//
+  * **Lezen/Schrijven van bestanden**: //[[write_and_read|Vergeet niet wat je geleerd hebt, schrijf het weg!!]]//
+  * **Wiskundige Formules**: //[[mathematical|Alle zotte dingen die je met cijfers kan doen. Hier voelt de computer zich wel op zijn gemak]]// 
+  * **Muis**://[[mouse_interaction|Kom muisje, kom hier! Een kat en muis spel om je muis aan de praat te krijgen.]]//
+  * **Grafische functies**://[[a_real_dali|Puntje hier, puntje daar, lijn langs hier en cirkeltje aldaar]]//
+  * **Netwerk communicatie**://[[network|De eerste stappen naar buiten. Yep computer je bent niet alleen op de wereld!]]//
+  * **Tabellen**://[[arraycommands|Woaaw, echte 2D ??? Je zal wel zien]]//
+  * **Databases (SQLite)**://[[databases|Nu effe serieus. Database, wees klaar om heel wat te bewaren.]]//
+  * **Andere instructies en functies**://[[miscellaneous |Altijd moet er iets speciaals zijn, hier zijn ze dan ....]]//
+
+==== Instructies en functies - alfabetisch geordend ====
+  * [[abs]],[[acos]],[[asc]],[[asin]],[[atan]]
+  * [[ceil]],[[changedir]],[[chr]],[[circle]],[[clg]],[[clickb]],[[clickclear]],[[clickx]],[[clicky]],[[close]],[[cls]],[[color]],[[commandline]],[[comment]],[[cos]],[[count]],[[countx]],[[currentdir]]
+  * [[day]],[[dbclose]],[[dbcloseset]],[[dbexecute]],[[dbfloat]],[[dbint]],[[dbopen]],[[dbopenset]],[[dbrow]],[[dbstring]],[[decimal]],[[degrees]],[[dim]],[[dir]],[[dountil]]
+  * [[editvisible]],[[end]],[[eof]],[[errorcodes]],[[errorhandling]],[[exists]],[[exp]],[[explode]],[[explodex]]
+  * [[fastgraphics]],[[float]],[[floor]],[[font]],[[fornext]]
+  * [[getcolor]],[[getsetting]],[[getslice]],[[gosubreturn]],[[goto]],[[graphheight]],[[graphsize]],[[graphvisible]],[[graphwidth]]
+  * [[hour]]
+  * [[ifthen]],[[imgload]],[[imgsave]],[[implode]],[[implodex]],[[input]],[[instr]],[[instrx]],[[int]]
+  * [[key]],[[keyboard]],[[kill]]
+  * [[lasterror]],[[lasterrorextra]],[[lasterrorline]],[[lasterrormessage]],[[left]],[[length]],[[line]],[[log]],[[log10]],[[lower]]
+  * [[md5]],[[mid]],[[minute]],[[month]],[[mouseb]],[[mousex]],[[mousey]],[[msec]]
+  * [[netaddress]],[[netclose]],[[netconnect]],[[netdata]],[[netlisten]],[[netread]],[[network]],[[netwrite]]
+  * [[offerror]],[[onerror]],[[open]],[[ostype]],[[outputvisible]]
+  * [[pause]],[[pixel]],[[plot]],[[poly]],[[portin]],[[portout]],[[print]],[[putslice]]
+  * [[radians]],[[rand]],[[read]],[[readline]],[[rect]],[[redim]],[[refresh]],[[replace]],[[replacex]],[[reset]],[[rgb]],[[right]]
+  * [[say]],[[second]],[[seek]],[[setsettings]],[[sin]],[[singlepage]],[[size]],[[sound]]
+  * [[spritecollide]],[[spritedim]],[[spriteh]],[[spritehide]],[[spriteload]],[[spritemove]],[[spriteplace]],[[spriteshow]],[[spriteslice]],[[spritev]],[[spritew]],[[spritex]],[[spritey]],[[sqr]],[[stamp]],[[string]],[[system]]
+  * [[tan]],[[text]],[[textwidth]]
+  * [[upper]]
+  * [[volume]]
+  * [[wavplay]],[[wavstop]],[[wavwait]],[[whileendwhile]],[[write]],[[writeline]]
+  * [[year]]
+
+==== Andere documentatie ====
+  * [[systemrequirements|Minimale systeemvereisten]]
+  * [[techinformation|Technische informatie]]
+  * [[singlepage|Alle documentatie op één pagina]]
+
+==== Interessante links ====
+  *  [[http://basic256.org/index_en|BASIC256 hoofd website]]
+  *  [[http://www.basicbook.org/|interessant boek om te leren programmeren (in het engels)]]
+
+
+==== Moeilijke woorden ====
+   * [[glossary|Lijst van moeilijke woorden]]
+   * [[translations|Lijst vertalingen]]

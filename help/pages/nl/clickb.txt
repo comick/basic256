@@ -1,0 +1,51 @@
+===== Clickb =====
+
+==== Formaat ====
+
+**clickb**\\
+**clickb** ( )
+
+==== Beschrijving ====
+
+De functie laat weten welke knop de gebruiker het laatst aangeklikt heeft in het 'grafische venster'. En alleen daar dus!\\ Er wordt 0 teruggegeven als er niet werd geklikt. Indien verschillende knoppen samen werden ingedrukt,dan wordt de som van die knoppen gegeven.
+
+
+^Resultaten^^
+^Waarde^Welke muisknop^
+|0|Gen enkele|
+|1|Links|
+|2|Rechts|
+|4|Midden|
+
+==== Zie ook ====
+
+[[clickclear|Clickclear]], [[clickx|Clickx]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Voorbeeld ====
+
+<code basic4gl>
+# wis de vorige muiskliks weg
+clickclear
+# wacht tot de gebruiker de muis aanklikt
+print "Klik de muis in het grafisch venster"
+while clickb = 0
+  pause .01
+endwhile
+# Toon waar de gebruiker heeft geklikt
+print "U klikte op de volgende plaats in het grafisch venster (" + clickx + "," + clicky + ")"
+# Toon welke knop de gebruiker heeft geklikt
+if clickb=0 then knop$="geen"
+if clickb=1 then knop$="linkse"
+if clickb=2 then knop$="rechtste"
+if clickb=4 then knop$="middenste"
+ 
+print "U klikte op de " + knop$ + " knop."
+</code>
+
+Het lukt maar niet om iets 2 knoppen tegelijk aan te klikken. Lukt het u?
+==== Nieuwe vanaf ==== 
+
+0.9.4d
+
+----
+[[mouse_interaction|Muisbesturing]] | [[clickclear|volgende]]

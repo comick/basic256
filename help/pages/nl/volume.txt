@@ -1,0 +1,24 @@
+===== Volume =====
+==== Formaat ====
+**volume** //niveau//\\
+**volume** ( //niveau// )
+==== Beschrijving ====
+
+Pas het volume aan met het [[sound|Sound]] commando.  Volume //niveau// is een cijfer tussen 0 en 10.  Het staat normaal op 5.
+==== Zie ook ====
+[[sound|Sound]]
+
+==== Voorbeeld ==== 
+<code basic5gl>
+for vol = 1 to 9
+volume(vol)
+sound(100,100)
+next vol
+</code>
+
+maakt eenzelfde geluid geduren 1/10 seconde en telkens luider.
+==== Nieuw Vanaf ==== 
+0.9.5i
+
+----
+[[sound|vorige]] | [[sound_commands|Geluid]] | [[wavplay|volgende]]

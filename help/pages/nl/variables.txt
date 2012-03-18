@@ -1,0 +1,72 @@
+====== Variabelen ======
+
+===== Wat is een variabele ? =====
+Numerieke en String constanten kunnen niet veranderen. Ze hebben de waarde die we ze meegeven. Maar soms moet de computer iets onthouden om later terug te nemen. En computer onthoudt gegevens in het geheugen in benoemde lokaties. 
+
+Is de inhoud van zo'n lokatie veranderbaar dan heb je een variabele. 
+
+Een variable krijgt een naam. Die naam beslis je zelf. Daarna zeg je aan de computer wat er in de variabele zit. Dat kan zowel een numerieke waarde zijn als een string.
+
+===== Hoe schrijf je een variabele ? =====
+De naam van een variabele:
+  * moet beginnen met een letter 
+  * mag alleen uit letters, cijfers en het onderstrepingsteken bestaan (dus geen speciale tekens) 
+  * mag maximaal 255 karakters bevatten 
+  * mag niet gelijk zijn aan een sleutelwoord van BASIC
+  * is hoofdlettergevoelig
+  * een string variabele moet eindigen met een dollar teken oftewel: $
+
+Dit zijn **geldige** variabelen
+<code basic4gl>
+ Naam$
+ Naam123$
+ naam$
+ n12er
+</code>
+
+Dit zijn **slechte** variabelen
+<code basic4gl>
+ Naam  ( indien je de bedoeling hebt om er een naam in te zetten)
+ 123Naam$
+ if$  (dit is een sleutelwoord)
+ if  ( dit is een sleutelwoord)
+</code>
+
+Na de naam van de variabele zet je het gelijkteken =
+
+Daarna geef je de waarde mee die je aan je variabele wil geven.
+
+Je kan natuurlijk de waarde van de variabele verschillende keren weergeven. Dan neemt de computer wel de laatste waarde die je aan de variabele hebt meegegeven.
+
+meegeven van een waarde aan een variabele
+
+<code basic4gl>
+ Naam$="Jip en Janneke"
+</code>
+
+===== Hoe ziet het eruit? =====
+ 
+{{:nl:variables.png|}}
+
+=====Voorbeeldje =====
+ 
+In dit voorbeeldje gebruiken we 4 variabelen en geven we hen elk een waarde.
+Een variabele kan ook samengesteld worden door andere variabelen.
+Zoals je ziet is een variabele hoefdlettergevoelig. naam$ en Naam$ zijn niet dezelfde. 
+
+
+<code basic4gl>
+Naam$ = "Jan Peeters"
+naam$ = "Jip en Janneke"
+n12SEZsd$= 23
+n12SEZsd$= 100
+alle_namen$=Naam$ + " " + naam$
+
+Print Naam$
+Print 
+Print alle_namen$
+Print 
+Print n12SEZsd$
+</code>
+
+[[nl:stringconstants|vorige]]  | [[nl:start|Begin]] |  [[nl:arrays|volgende]] 

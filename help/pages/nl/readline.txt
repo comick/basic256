@@ -1,0 +1,61 @@
+===== Readline =====
+==== Formaat ====
+**readline**\\
+**readline**()\\
+**readline**(//bestandsnr//)
+==== Beschrijving ====
+Deze functie leest het bestand lijn per lijn uit. 
+
+Specifieer je geen bestandnummer dan gebruikt de functie bestandnr 0
+
+==== Voorbeeld ====
+<code basic4gl>((prorgamma gevonden in /home/.../basic/Examples/testing))  
+# testlineio.kbs - test readline, writeline, and eof
+# 2008-08-29 jmr
+
+open "foo.txt"
+reset
+for l = 1 to 8
+	writeline "Data file line " + l + "."
+next l
+
+
+l = 0
+donext:
+if eof then goto done
+l = l + 1
+a$ = read
+print "line " + l + "=" + a$
+goto donext
+
+done:
+print "total of " + l + " lines."
+close
+end
+</code>
+
+Dir programma opent eerst Foo.txt, maakt het leeg en schrijft er dan 8 regels in. VErvolgens wordt elke lijn uitgelezen als token in variable a$ en uitgeschreven op het scherm. Dit ziet er dan zo uit: 
+++++Resultaat|
+<code>
+line 1=Data file line 1.
+
+line 2=Data file line 2.
+
+line 3=Data file line 3.
+
+line 4=Data file line 4.
+
+line 5=Data file line 5.
+
+line 6=Data file line 6.
+
+line 7=Data file line 7.
+
+line 8=Data file line 8.
+
+total of 8 lines.
+
+</code>
+++++
+----
+[[read|vorige]] | [[write_and_read|Lezen en schrijven]] | [[reset|volgende]]

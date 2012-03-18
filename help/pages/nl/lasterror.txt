@@ -1,0 +1,21 @@
+===== LastError =====
+
+==== Formaat ====
+**lasterror**\\
+**lasterror** ( )
+
+==== Beschrijving ====
+Geeft het laatste foutnummer terug dat werd tegengekomen bij het uitvoeren van het programma.
+
+==== Voorbeeld ====
+
+Voorbeeld is terug te vinden op de [[nl:errorcodes|foutboodschappenpagina]]
+
+==== Zie ook ====
+[[Errorcodes|Error Codes]], [[Lasterrorextra|Lasterrorextra]], [[Lasterrorline|Lasterrorline]], [[Lasterrormessage|Lasterrormessage]], [[Offerror|Offerror]], [[Onerror|Onerror]]
+
+==== Nieuw vanaf ==== 
+0.9.6z
+
+----
+[[errorhandling|Foutafhandeling]] | [[lasterrorextra|volgende]]

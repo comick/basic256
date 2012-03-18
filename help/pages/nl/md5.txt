@@ -1,0 +1,28 @@
+===== MD5 =====
+==== Formaat ====
+**md5** ( //string// )
+==== Beschrijving ====
+Deze functie geeft een hexadecimale string weer met de [[http://nl.wikipedia.org/wiki/MD5|MD5]] hash van de opgegegeven //sting// . De functie is is afgeleid van RSA Data Security, Inc. MD5 Message-Digest Algorithm. Het zorgt ervoor dat je een onvervalsbare handtekening maakt. 
+
+Met de woorden van wikpideia te zeggen:
+//De 128-bit (16-byte) MD5-hashes worden meestal weergegeven als 32-cijferige hexadecimale getallen. Het volgende laat een 46-bytes ASCII-invoer en de bijbehorende MD5-hash zien:\\
+MD5("Pa's wijze lynx bezag vroom het fikse aquaduct") = b06c0444f37249a0a8f748d3b823ef2a\\
+Zelfs een kleine verandering in de tekst zal (naar grote waarschijnlijkheid) een compleet andere hash genereren, bijvoorbeeld het vervangen van P naar M:\\
+MD5("Ma's wijze lynx bezag vroom het fikse aquaduct") = de1c058b9a0d069dc93917eefd61f510\\ //
+==== Voorbeeld ====
+<code basic4gl>
+print MD5("Vaniets")
+print MD5("VanIets")
+</code>
+
+toont
+<code>
+68422a08c4d52fc4b5ff275f451e2724
+5c23aa3b894915ef2d4a39495005658d
+</code>
+==== New To Version ==== 
+0.9.6.37
+
+
+----
+[[mid|vorige]] | [[stringcommand|Stringbewerkingen]] | [[replace|volgende]]

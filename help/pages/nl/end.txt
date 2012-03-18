@@ -1,0 +1,27 @@
+===== End =====
+
+==== Formaat ====
+
+end
+
+==== Beschrijving ====
+
+Dez opdracht stop de uitvoering van het programma
+
+==== Voorbeeld ====
+
+<code basic4gl>
+print "Ik heb gedaan."
+end
+print "Of niet soms?"
+</code>
+
+zal het volgende tonen
+<code>
+Ik heb gedaan.
+</code>
+
+Zoals je ziet, wordt de volgende opdracht niet meer uitgevoerd.
+
+----
+[[dountil|vorige]] | [[nl:programcontrol|Programma Controle]] | [[gosubreturn|volgende]]

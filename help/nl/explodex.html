@@ -1,0 +1,67 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>explodex</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Explode </h1>
+
+<h2> Formaat </h2>
+stringarrayvariable$ = <b>explodex</b> ( <i>string</i> , <i>regex</i> )<br/>
+arrayvariable$ = <b>explodex</b> ( <i>string</i> , <i>regex</i> )
+
+<h2> Beschrijving</h2>
+Deze functie deelt de <i>string</i> in stukjes telkens een <i>regex</i> reguliere expressie wordt gevonden. Deze stukjes (substrings) worden in een apparte string of in een numerieke array bewaard dankzij de assignatie ( = ).<br/> De array wordt telkens geherdimensioneerd tot alle substrings erin verwerkt kunnen worden
+
+
+<h2> Voorbeeld</h2>
+<pre>
+# exploderegex <i>[,]*
+a$ = "Klein, klein, kleutertje, wat doe je in mijn tuin?"
+print a$
+w$ = explodex(a$,"[,]* ")
+for t = 0 to w$[?]-1
+   print "w$["+t+"]=" + w$[t]
+next t
+
+# explode  on regex <i>[Ee][Nn]</i>
+a$ = "1 en 2 EN 3 en 5 eN 99 EN 8.88 En 6.45"
+n = explodex(a$,"[Ee][Nn]")
+print a$
+for t = 0 to n[?]-1
+   print "n["+t+"]=" + n[t]
+next t
+
+</pre>
+
+geeft dan volgende resultaten
+<pre>
+Klein klein kleutertje, wat doe je in mijn tuin?
+w$[0]=Klein 
+w$[1]=klein 
+w$[2]=kleutertje
+w$[3]=wat 
+w$[4]=doe 
+w$[5]=je
+w$[6]=in
+w$[7]=mijn
+w$[8]=tuin?
+n[0]=1
+n[1]=2
+n[2]=3
+n[3]=5
+n[4]=99
+n[5]=8.88
+n[6]=6.45
+</pre>
+
+<h2> Nieuw vanaf </h2> 
+0.9.6.56
+
+
+<hr/>
+<a href="explode.html">vorige</a> | <a href="stringcommand.html">Stringbewerkingen</a> | <a href="implode.html">volgende</a>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>getslice</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> GetSlice </h1>
+<h2> Formaat </h2>
+getslice(<i>x</i>, <i>y</i>, <i>breedte</i>, <i>hoogte</i>)
+<h2> Beschrijving </h2>
+de functie geeft een string terug die de hexadecimale representatie is van een vierhoek, op basis van de parameters die opgegeven zijn.<br/>
+
+De string bestaat uit verschillende onderdelen:
+<ul>
+<li>Eerste 4 bytes voor de <i>breedte</i></li>
+<li>Volgende 4 bytes voor de <i>hoogte</i> </li>
+<li>6 bytes per pixel (breedte*hoogte*)</li>
+</ul>
+<h2> Voorbeeld </h2>
+<pre>
+print getslice(0,5,10,5)
+</pre>
+
+geeft dan 
+<pre>
+000a0005f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8
+</pre>
+<h2> Zie ook </h2>
+<a href="putslice.html">PutSlice</a>
+<h2> Nieuw vanaf </h2> 
+0.9.6b
+
+<hr/>
+<a href="imgsave.html">vorige</a> | <a href="a_real_dali.html">Tekenen en kleuren</a> | <a href="putslice.html">volgende</a>
+</body>
+</html>

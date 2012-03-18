@@ -1,0 +1,25 @@
+===== Left =====
+==== Formaat ====
+left( //string//, //lengte//)
+==== Beschrijving====
+De functie geeft //lengte// karakters van //string// terug, te beginnen van links.
+
+==== Zie ook ====
+[[mid|Mid]], [[right|Right]]
+==== Voorbeeld ====
+<code basic4gl>
+print left("Hello allemaal, blij dat jullie er zijn", 4)
+</code>
+
+tootn dan 
+<code>
+Hello
+</code>
+
+==== Nieuw vanaf ==== 
+0.9.5b
+
+
+----
+[[implode|vorige]] | [[stringcommand|Stringbewerkingen]] | [[length|volgende]]
+

@@ -1,0 +1,34 @@
+===== Day =====
+
+==== Formaat ====
+
+**day**\\
+**day** ( )
+
+==== Beschrijving ====
+
+Geeft de dag terug op basis van de datum van de computer (1-31).
+
+==== Zie ook ====
+
+[[hour|Hour]], [[minute|Minute]], [[month|Month]], [[Msec|Msec]], [[second|Second]], [[year|Year]]
+
+==== Voorbeeld ====
+
+<code basic4gl>
+print "Het is vandaag ";
+print  day + "/" + (month + 1) + "/" + year
+</code>
+
+geeft volgend resultaat|
+<code>
+Het is vandaag 29/01/2012
+</code>
+
+==== Nieuw vanaf ==== 
+
+0.9.4
+
+
+----
+ [[datehour|Datum en Uur]] | [[month|volgende]]

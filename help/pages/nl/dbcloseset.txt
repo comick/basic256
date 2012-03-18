@@ -1,0 +1,20 @@
+===== DBCloseSet =====
+
+==== Formaat ====
+**dbcloseset**\\
+**dbcloseset** ( )
+
+==== Beschrijving ====
+De functie sluit de recordset die via [[DBOpenSet|DBOpenSet]] geopend werd.
+
+==== Voorbeeld ====
+zie voorbeeld bij [[DBOpen|DBOpen]].
+
+==== Zie Ook ====
+[[DBClose|DBClose]], [[DBExecute|DBExecute]], [[DBFloat|DBFloat]], [[DBInt|DBInt]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+==== Nieuw Vanaf ==== 
+0.9.6y
+
+----
+[[dbclose|vorige]] | [[database|Databank]] | [[dbexecute|volgende]]

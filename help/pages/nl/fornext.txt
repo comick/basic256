@@ -1,0 +1,35 @@
+===== For / Next =====
+==== Formaat ====
+**for** //variabele// =  //uitdrukking1// **to** //uitdrukking2// [ **step** //uitdrukking3// ] \\
+//opracht(en)//\\
+**next** //variabele//
+
+==== Beschrijving ====
+===Tellergestuurde lussen===
+De FOR en NEXT opdrachten worden samen gebruikt om een of meerdere opdrachten verschillende keren na elkaar uit te voeren. 
+Wanneer de FOR opdracht voor het eerst wordt tegengekomen dan wordt de //variabele// naar de //uitdrukking1// gezet.\\
+Na elke NEXT opdracht, wordt //variabele// met 1 vermeerderd (standaard) , of door //uitdrukking3// indien de optionele opdracht STEP wordt gebruikt, tot de //variabele// groter of gelijk is aan //uitdrukking2// voor positieve stappen,of kleiner dan of gelijk aan //uitdrukking2// voor negateive stappen.
+
+In een lus wordt een uitvoeringsblok meermalen doorlopen. Iedere keer dat deze doorlopen wordt, wordt een iteratie genoemd. 
+
+==== Voorbeeld ====
+<code basic4gl>
+for lus = 1 to 4
+  print lus
+ next lus
+</code>
+
+geeft als resultaat
+<code>
+1
+2
+3
+4
+</code>
+
+==== Zie ook ====
+[[dountil|Do / Until]], [[whileendwhile|While / End While]]
+
+
+----
+[[goto|vorige]] | [[nl:programcontrol|Programma Controle]] | [[dountil|volgende]]

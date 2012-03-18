@@ -1,0 +1,25 @@
+===== Clickx =====
+
+==== Formaat ====
+
+**clickx**\\
+**clickx** ( )
+
+==== Beschrijving ====
+
+De functie geeft de x-coördinaat terug van de plaats waar u het laatst in het grafisch venster hebt geklikt. De x-coördinaat is de horizontale as van links naar rechts.
+
+==== Zie ook ====
+
+[[clickclear|Clickclear]], [[clickb|Clickb]], [[clicky|Clicky]], [[mouseb|Mouseb]], [[mousex|Mousex]], [[mousey|Mousey]]
+
+==== Voorbeeld ====
+
+Zie voorbeeld bij [[clickb|Clickb]].
+
+==== Nieuw vanaf ==== 
+
+0.9.4d
+
+----
+[[clickclear|vorige]] | [[mouse_interaction|Muisbesturing]] | [[clicky|volgende]]

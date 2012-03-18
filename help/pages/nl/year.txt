@@ -1,0 +1,25 @@
+===== Year =====
+==== Formaat ====
+**year**\\
+**year** ( )
+==== Beschrijving ====
+Geeft het jaartal terug van de huidige systeemdatum.
+==== Voorbeeld ====
+<code basic4gl>
+print "Het is vandaag ";
+print day + "/" +(month + 1) + "/" + year
+</code>
+
+toont dan
+<code>
+Het is vandaag 29/1/2012
+</code>
+==== Zie ook ====
+[[day|Day]], [[hour| Hour]], [[minute| Minute]], [[month| Month]], [[Msec|Msec]], [[second| Second]]
+==== Nieuw vanaf ==== 
+0.9.4
+
+
+
+----
+[[month|vorige]] | [[datehour|Datum en Uur]] | [[hour|volgende]]

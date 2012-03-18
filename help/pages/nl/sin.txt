@@ -1,0 +1,39 @@
+===== Sin =====
+==== Formaat ====
+**sin** ( //uitdrukking// )
+==== Beschrijving ====
+Dit is een wiskundige formule, meer bepaald uit de [[http://nl.wikipedia.org/wiki/Goniometrie|Goniometrie]]\\ 
+
+De functie berekent de sinus van //uitdrukking//.  De hoek moet in radianen worden meegegeven (0 tot 2pi).\\ 
+
+Meer informatie over deze functie vind je op de wiki : [[http://nl.wikipedia.org/wiki/Sunus|sin]]
+==== Voorbeeld ====
+<code basic4gl>
+clg
+color black
+# tekent de horizontale as
+line 0,150,300,150
+line 150,0,150,300
+# we starten hier
+color blue
+lastx = 0
+lasty = sin(0) * 50 + 150
+# teken nu de sinusoïdale
+for x = 0 to 300 step 5
+   angle = x / 300 * 2 * pi
+   y = sin(angle) * 50 + 150
+   line lastx, lasty,x, y
+   lastx = x
+   lasty = y
+next x
+</code>
+
+++++geeft dan :|
+{{:nl:sin.png|}}
+++++
+
+==== Zie ook ====
+[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[degrees|Degrees]], [[radians|Radians]], [[cos|Cos]], [[tan|Tan]]
+
+----
+[[rand|vorige]] | [[mathematical|Wiskundige Functies]] | [[sqr|volgende]]

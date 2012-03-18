@@ -1,0 +1,33 @@
+===== Rand =====
+==== Formaat ====
+**rand**\\
+**rand**()
+
+==== Beschrijft ====
+De functie geeft een **willekeurig** getal tussen **0** en **1**. Er is een uniforme verdeling van de waarden.
+==== Opmerking ====
+Om een willekeurig getal tussen 0 en 10 te krijgen, volstaat volgende combinatie:  int(rand * 10).
+
+==== Voorbeeld ====
+<code basic4gl>
+for teller= 1 to 10 
+eengetal = int(rand*100)
+print eengetal
+next teller
+</code>
+geeft bij deze test
+<code>
+77
+32
+19
+75
+88
+41
+43
+23
+98
+71
+</code>
+maar dit zou bij jou andere getallen moeten leveren.
+----
+[[radians|vorige]] | [[mathematical|Wiskundige Functies]] | [[sin|volgende]]

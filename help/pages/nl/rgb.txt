@@ -1,0 +1,24 @@
+===== Rgb =====
+==== Formaat ====
+**rgb**(//rood//, //groen//, //blauw// )
+==== Beschrijving ====
+De functie geeft de rgb waarde weer van de combinatie van roog, groen en blauwe componentwaarden. \\
+De waarden van de 3 componenten moeten tussen 0 en 255 liggen.
+
+==== Voorbeeld ====
+<code basic4gl>
+print rgb(0,100,255)
+</code>
+
+geeft dan 
+<code>
+-16751361 # dit is de kleurcode van lichtblauw.... 
+</code>
+==== Zie ook ====
+[[color|Color]], [[getcolor|GetColor]], [[pixel|Pixel]]
+==== Nieuw vanaf ==== 
+0.9.5m
+
+
+----
+[[color|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[getcolor|volgende]]

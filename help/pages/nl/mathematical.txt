@@ -1,0 +1,28 @@
+====== Wiskundige formules ======
+===== Waarom =====
+Je mag gerust zeggen dat je je computer ook als rekenmachine kan beschouwen, al zal de computer dit zelf niet zo leuk vinden. Hij kan echt zoveel meer.\\ Toch is het interessant om eens te kijken wat hij met wiskunde allemaal kan doen. Verschillende functie kunnen gebruikt worden om mooie grafische spullen mee te maken. 
+
+Het is best mogelijk dat je hier dingen zal lezen die je nog niet op school hebt geleerd. Dat hoeft je echt niet af te schrikken. Je kan gerust wachten met het gebruik van die functies tot je weet waar ze toe dienen.
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+| [[Abs|Abs]]| absolute waarde van een getal|
+| [[Acos|Acos]]|de boogcosinus ... |
+| [[Asin|Asin]]|de boogsinus ...|
+| [[Atan|Atan]]|de boogtangens ...|
+| [[Ceil|Ceil]]|afgerond naar boven |
+| [[Cos|Cos]]|de cosinus |  
+| [[Degrees|Degrees]]| Graden omzetting |
+| [[exp|Exp]]| Exponent van |
+| [[Float|Float]]| aantal cijfers na de komma|
+| [[Floor|Floor]]| afronden naar beneden|
+| [[Int|Int]]| een geheel getal...|
+| [[Log|Log]]| Natuurlijk Logaritme| 
+| [[Log10|Log10]]|Logaritmen met grondtal 10 |
+| [[Radians|Radians]]| Radianen|
+| [[Rand|Rand]]|een willekeurig getal | 
+| [[Sin|Sin]]| Sinus|
+| [[sqr|Sqr]]| Vierkantwsortel van |
+| [[Tan|Tan]]| Tangens van een hoek ?|
+
+----
+[[nl:start|Begin]] 

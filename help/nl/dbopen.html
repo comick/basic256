@@ -1,0 +1,70 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>dbopen</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> DBOpen </h1>
+
+<h2> Formaat </h2>
+<b>dbopen</b> <i>SQLiteFile</i><br/>
+<b>dbopen</b> ( <i>SQLiteFile</i> )
+
+<h2> Beschrijving </h2>
+De functie opent een SQLite database bestand.  Als het bestand niet bestaat, dan wordt het aangemaakt.
+
+<h2> Voorbeeld </h2>
+<pre>
+#database foo - maak de database aan, zet dat in de database - open dan een recordset en lees de data uit de tabel.
+
+# maak een nieuw bestand aan en open het
+dbopen "dbtest.sqlite3"
+
+# wis de oude tabel, vang de fout op indien de tabel niet bestaat. 
+onerror errortrap
+dbexecute "drop table foo;"
+offerror
+# create and populate
+dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "insert into foo values (1,'een',3.14);"
+dbexecute "insert into foo values (2,'twee',6.28);"
+dbexecute "insert into foo values (3,'drie',9.43);"
+
+# open een recordset en ga door alle rijen
+dbopenset "select * from foo order by words;"
+while dbrow()
+	print dbint(0) + dbstring(1) + dbfloat(2)
+end while
+dbcloseset
+
+# Sluit de boel maar
+dbclose
+end
+
+errortrap:
+# 't is goed, ga gewoon verder 
+return
+</pre>
+
+toont dan 
+<pre>
+1een3.14
+3drie9.43
+2twee6.28
+</pre>
+
+<h2> Zie ook </h2>
+<a href="dbclose.html">DBClose</a>, <a href="dbcloseset.html">DBCloseSet</a>, <a href="dbexecute.html">DBExecute</a>, <a href="dbfloat.html">DBFloat</a>, <a href="dbint.html">DBInt</a>, <a href="dbopenset.html">DBOpenSet</a>, <a href="dbrow.html">DBRow</a>, <a href="dbstring.html">DBString</a>
+
+<h2> Externe Links </h2>
+Meer informatie over database en SQLLite vind je op  <a href="../http/<i>sqlite.org.html">SQLite Home Page</a> en <a href="../http/</i>en.wikipedia.org/wiki/sql.html">SQL at Wikipedia</a>.
+
+<h2> Nieuw vanaf </h2> 
+0.9.6y
+
+<hr/>
+<a href="dbint.html">vorige</a> | <a href="database.html">Databank</a> | <a href="dbopenset.html">volgende</a>
+</body>
+</html>

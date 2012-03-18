@@ -1,0 +1,43 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>setsettings</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> SetSetting </h1>
+<h2> Formaat </h2>
+<b>setsetting</b> <i>programma_naam</i>, <i>sleutel</i>, <i>waarde</i><br/>
+<b>setsetting</b> ( <i>programma_naam</i>, <i>sleutel</i>, <i>waarde</i> )
+
+<h2> Beschrijving </h2>
+De functie schrijft de <i>waarde</i> weg in het systeemregister ( of analoge opslag). De <i>programma_naam</i> en de <i>sleutel</i> worden gebruikt om de informatie te categoriseren en om zeker te zijn dat de parameters niet per ongeluk door een ander programma worden overschreven. 
+
+De bewaarde informatie wordt dan beschikbaar voor andere basic-256 programma's en blijft voor een langere periode beschikbaar.
+
+Deze functie staat standaard af en kan in het basic-256 programma aangezet worden door een aanpassingen in Edit>Preferences.
+
+<h2> Zie ook </h2>
+
+<a href="getsetting.html">GetSetting</a>
+
+<h2> Voorbeeld </h2>
+
+<code basic4gl >
+setsetting "ditprogramma", "eensleutel", "de waarde"
+print getsetting("ditprogramma", "eensleutel")
+</pre>
+toont dan
+<pre>
+de waarde
+</pre>
+
+
+<h2> Nieuw vanaf </h2> 
+0.9.6.38
+
+<hr/>
+<a href="getsettings.html">vorige</a> | <a href="miscellaneous.html">Speciale Opdrachten</a> | <a href="portin.html">volgende</a>
+</body>
+</html>

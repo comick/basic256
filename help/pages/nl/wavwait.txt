@@ -1,0 +1,17 @@
+===== WAVwait =====
+==== Formaat ====
+**wavwait** //bestandsnaam//\\
+==== Beschrijving ====
+Wacht tot het WAV audio bestand volledig afgespeeld is .
+==== Zie Ook ====
+[[wavplay|WAVplay]] [[wavstop|WAVstop]]
+==== Voorbeeld ====
+<code basic4gl>
+wavwait
+</code>
+
+==== Nieuw vanaf ==== 
+0.9.4
+
+----
+[[wavstop|vorige]] | [[sound_commands|Geluid]]

@@ -1,0 +1,30 @@
+===== Sqr of Sqrt =====
+
+==== Formaat ====
+
+**sqr** ( //expression// )\\
+**sqrt** ( //expression// )
+
+==== Beschijving ====
+
+Geeft de [[http://nl.wikipedia.org/wiki/Vierkantswortel|viekantswortel]] terug van //expression//((dat een getal moet zijn))
+
+==== Voorbeeld ====
+
+<code basic4gl>
+print sqr(16)
+print sqrt(100)
+print sqr(2)
+</code>
+toont
+<code>
+4
+10
+1.414214
+</code>
+
+==== Nieuw vanaf ==== 
+0.9.6.51
+
+----
+[[sin|vorige]] | [[mathematical|Wiskundige Functies]] | [[tan|volgende]]

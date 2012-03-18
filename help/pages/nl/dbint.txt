@@ -1,0 +1,19 @@
+===== DBInt =====
+
+==== Formaat ====
+**dbint** ( //Kolomnummer// )
+
+==== Beschrijving ====
+De functie geeft een de waarde van //kolomnummer// van de open recordset terug als geheel getal.
+
+==== Voorbeeld ====
+Uitgewerkt voorbeeld vind je op de  [[DBOpen|DBOpen]] pagina.
+
+==== Zie ook ====
+[[DBClose|DBClose]], [[DBCloseSet|DBCloseSet]], [[DBExecute|DBExecute]], [[DBfloat|DBFloat]], [[DBOpen|DBOpen]], [[DBOpenSet|DBOpenSet]], [[DBRow|DBRow]], [[DBString|DBString]]
+
+
+==== Nieuw vanaf ==== 
+0.9.6y
+----
+[[dbfloat|vorige]] | [[database|Databank]] | [[dbopen|volgende]]

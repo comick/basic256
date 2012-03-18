@@ -1,0 +1,83 @@
+<html>
+<header>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>explode</title>
+<link type='text/css' rel='stylesheet' href='style.css'>
+</header>
+<body>
+<div style='float:right'><a href='index.html'>Index</a></div>
+<h1> Explode </h1>
+
+<h2> Formaat </h2>
+stringarrayvariabele$ = <b>explode</b> ( <i>string</i> , <i>afbakening</i> )<br/>
+stringarrayvariabele$ = <b>explode</b> ( <i>string</i> , <i>afbakening</i> , <i>hoofdletterongevoelig</i> )<br/>
+arrayvariabele$ = <b>explode</b> ( <i>string</i> , <i>afbakening</i> )<br/>
+arrayvariabele$ = <b>explode</b> ( <i>string</i> , <i>afbakening</i> , <i>hoofdletterongevoelig</i> )
+
+<h2> Beschrijving</h2>
+Deze functie deelt de <i>string</i> in stukjes telkens een <i>afbakening</i> wordt gevonden. Deze stukjes (substrings) worden in een apparte string of in een numerieke array bewaard dankzij de assignatie (=). De array wordt telkens geherdimensioneerd tot alle substrings erin verwerkt kunnen worden
+
+Je kan optioneel ook meegeven of je  <i>hoofdletterongevoelig</i>(true/false) wil werken om aan te geven dat je grote en kleine letters gelijkstelt.  
+
+
+<h2> Voorbeeld</h2>
+<pre>
+# explode op spaties
+a$ = "Klein klein kleutertje, wat doe je in mijn tuin"
+print a$
+w$ = explode(a$," ")
+for t = 0 to w$[?]-1
+   print "w$["+t+"]=" + w$[t]
+next t
+
+# explode op A of a
+a$ = "klj;lkjalkjAlkj;"
+print a$
+w$ = explode(a$,"A",true)
+for t = 0 to w$[?]-1
+   print "w$["+t+"]=" + w$[t]
+next t
+
+# explode nummmer op basis van de komma
+a$="1,2,3,77,foo,9.987,6.45"
+print a$
+n = explode(a$,",")
+for t = 0 to n[?]-1
+   print "n["+t+"]=" + n[t]
+next t
+</pre>
+
+geeft dan volgende resultaten
+<pre>
+Klein klein kleutertje, wat doe je in mijn tuin?
+w$[0]=Klein 
+w$[1]=klein 
+w$[2]=kleutertje,
+w$[3]=wat 
+w$[4]=doe 
+w$[5]=je
+w$[6]=in
+w$[7]=mijn
+w$[8]=tuin?
+klj;lkjalkjAlkj;
+w$[0]=klj;lkj
+w$[1]=lkj
+w$[2]=lkj;
+1,2,3,77,foo,9.987,6.45
+n[0]=1
+n[1]=2
+n[2]=3
+n[3]=77
+n[4]=0
+n[5]=9.987
+n[6]=6.45
+</pre>
+
+<h2> Nieuw vanaf </h2> 
+0.9.6.55
+
+
+<hr/>
+<a href="countx.html">vorige</a> | <a href="stringcommand.html">Stringbewerkingen</a> | <a href="explodex.html">volgende</a>
+</body>
+</html>

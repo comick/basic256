@@ -1,0 +1,39 @@
+===== Decimal =====
+
+==== Formaat ====
+
+**decimal** ( //uitdrukking// )\\
+**decimal** //uitdrukking//
+
+==== Beschrijving ====
+
+Deze functie bepaalt het maximum aantal cijfers na de komma die op het scherm worden getoond ( het aantal decimalen)\\
+//uitdrukking// is een waarde van 0 tot 16 .\\
+
+Opgelet :!: de berekeningen van de computer bljiven dezelfde precisie behouden, alleen het tonen op het scherm wordt aangepast. Dit is normaal 6 cijfers na de kommma. 
+
+
+==== Voorbeeld ====
+
+<code basic4gl>
+print 2/3
+decimal 10
+print 2/3
+decimal 15
+print 2/3</code>
+
+wordt dan
+<code>
+0.666667
+0.6666666667
+0.666666666666667
+</code>
+
+==== Zie ook ====
+[[print|Print]], [[string|String]]
+
+==== Nieuw vanaf ====
+0.9.6w
+
+----
+[[chr|vorige]] | [[stringcommand|Stringbewerkingen]] | [[instr|volgende]]

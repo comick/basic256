@@ -1,0 +1,25 @@
+===== PutSlice =====
+==== Formaat ====
+**putslice** //x//, //y//, //slice$//\\
+**putslice** //x//, //y//, //slice$//, //doorichtige kleur//
+
+==== Beschrijving ====
+Met deze functie toon je de tekening die je in een vorge stap in een slice string hebt gezet. Als je //transparent// meegeeft als kleur, dan worden die punten met die kleur ook niet getoond. 
+
+==== Voorbeeld ====
+<code basci4gl>
+clg
+a$= getslice(0,5,10,5)
+print a$
+putslice(10,10,a$)
+
+</code>
+
+==== Zie Ook ====
+[[getslice|GetSlice]]
+==== Nieuw vanaf ==== 
+0.9.6b
+
+
+----
+[[getslice|vorige]] | [[a_real_dali|Tekenen en kleuren]] | [[spritecollide|volgende]]

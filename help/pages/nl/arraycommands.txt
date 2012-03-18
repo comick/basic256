@@ -1,0 +1,11 @@
+====== Tabellen en arrays ======
+===== Waarom =====
+
+
+===== Welke opdrachten hebben we? =====
+^Opdracht^Wat doet het^
+|  [[Dim|Dim]]|  | 
+|  [[Redim|Redim]]|  | 
+
+----
+[[nl:start|Begin]] 

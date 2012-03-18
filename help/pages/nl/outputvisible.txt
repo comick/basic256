@@ -1,0 +1,25 @@
+===== OutputVisible =====
+
+==== Formaat ====
+**outputvisible** ( //boolean// )\\
+**outputvisible** //boolean//
+
+==== Beschrijving ====
+Deze opdracht geeft aan of het tekstvenster van de BASIC-256 IDE zichtbaar moet zijn of niet. 
+
+
+==== Voorbeeld ====
+<code Basic4gl>
+print "Dit zie je"
+outputvisible(false)
+print "Dit zie je niet meer...."
+</code>
+
+==== Zie ook ====
+[[editvisible|EditVisible]], [[graphvisible|GraphVisible]]
+
+==== Nieuw vanaf ==== 
+0.9.6.65
+
+---- 
+[[cls|vorige]] | [[keyboard|klavier en tekst]] 

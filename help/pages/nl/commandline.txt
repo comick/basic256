@@ -1,0 +1,16 @@
+===== Command Line Opties =====
+==== Beschrijving ====
+Als je Basic-256 uitvoert vanuit de command line (shell of cmd) dan kan je een aantal opties meegeven die de user interface (UI) veranderen en die de applicatie aanpassen. Dit zijn de opties:\\
+
+^Optie^Gebruik^
+|-l //taal optie//|Verander de taal van de Basic-256 applicatie. Talen die vandaag zijn voorzien: "de", "en_US", "es", "nl", and "ru_RU".|
+|-r|Laad een voer het programma uit dat meegeven wordt.|
+
+Je kan voor Basic-256 ook een programma meegeven in de command line, maar deze moet eindigen met __//.kbs//__. Het programma wordt dan in het editeer venster geladen en wordt met de //-r// opdracht ook onmiddellijk gestart.
+
+
+==== Nieuw vanaf ==== 
+0.9.6.67
+
+----
+[[editvisible|vorige]] | [[miscellaneous|Speciale Opdrachten]] | [[getsettings|volgende]]
