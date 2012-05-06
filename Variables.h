@@ -13,7 +13,7 @@
 #include "Stack.h"
 
 
-#define VARIABLE_MAXARRAYELEMENTS 100000
+#define VARIABLE_MAXARRAYELEMENTS 1048576
 
 struct array
 {
