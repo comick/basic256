@@ -47,6 +47,7 @@
 	#include <arpa/inet.h>
 	#include <net/if.h>
 	#include <ifaddrs.h>
+	#include <unistd.h>
 #endif
 
 #include <QString>

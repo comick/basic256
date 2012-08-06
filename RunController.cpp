@@ -46,6 +46,7 @@ using namespace std;
 	#include <fcntl.h>
 	#include <sys/ioctl.h>
 	#include <time.h>
+	#include <unistd.h>
 #endif
 
 #ifdef LINUX
