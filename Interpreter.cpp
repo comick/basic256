@@ -464,10 +464,29 @@ Interpreter::compileProgram(char *code)
 	int result = basicParse(code);
 	if (result < 0)
 	{
-		if(column==0) {
-			emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
-		} else {
-			emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
+		switch(result)
+		{
+			case -6:
+				emit(outputReady(tr("IF, DO, or UNTIL without matching closing statement ") + QString::number(linenumber) + ".\n"));
+				break;
+			case -5:
+				emit(outputReady(tr("UNTIL without matching DO on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case -4:
+				emit(outputReady(tr("END WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case -3:
+				emit(outputReady(tr("ELSE without matching IF on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case -2:
+				emit(outputReady(tr("END IF without matching IF on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			default:
+				if(column==0) {
+					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
+				} else {
+					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
+				}
 		}
 		emit(goToLine(linenumber));
 		return -1;

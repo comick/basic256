@@ -59,6 +59,7 @@ unsigned int maxbyteoffset = 0;
 // array to hold stack of if statement branch locations
 // that need to have final jump location added to them
 unsigned int iftable[IFTABLESIZE];
+unsigned int iftablesourceline[IFTABLESIZE];
 unsigned int numifs = 0;
 
 int
@@ -69,8 +70,19 @@ clearIfTable() {
 	int j;
 	for (j = 0; j < IFTABLESIZE; j++) {
 		iftable[j] = -1;
+		iftablesourceline[j] = -1;
 	}
 	numifs = 0;
+}
+
+int testIfOnTable() {
+	// return line number if there is an unfinished while.do.if.else
+	// or send back -1
+	if (numifs >=1 ) {
+		return iftablesourceline[0];
+	} else {
+		return -1;
+	}	
 }
 
 void
@@ -312,6 +324,7 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| whilestmt {
 		// push to iftable the byte location of the end of the last stmt (top of loop)
 		iftable[numifs] = lastLineOffset;
+		iftablesourceline[numifs] = linenumber;
 		numifs++;
 		lastLineOffset = byteOffset; 
 		addIntOp(OP_CURRLINE, linenumber);
@@ -320,6 +333,7 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| dostmt {
 		// push to iftable the byte location of the end of the last stmt (top of loop)
 		iftable[numifs] = lastLineOffset;
+		iftablesourceline[numifs] = linenumber;
 		numifs++;
 		lastLineOffset = byteOffset;
 		addIntOp(OP_CURRLINE, linenumber);
@@ -362,10 +376,14 @@ elsestmt: B256ELSE
 		numifs--;
 		temp = (unsigned int *) (byteCode + iftable[numifs]);
 		*temp = byteOffset; 
+		// now add the elsegoto jump to the iftable
+		iftable[numifs] = elsegototemp;
+		iftablesourceline[numifs] = linenumber;
+		numifs++;
+	} else {
+		errorcode = -3;
+		return;
 	}
-	// now add the elsegoto jump to the iftable
-	iftable[numifs] = elsegototemp;
-	numifs++;
 }
 ;
 
@@ -382,6 +400,9 @@ endifstmt: endifexpr
 		numifs--;
 		temp = (unsigned int *) (byteCode + iftable[numifs]);
 		*temp = byteOffset; 
+	} else {
+		errorcode = -2;
+		return;
 	}
 }
 ;
@@ -395,6 +416,7 @@ whilestmt: B256WHILE floatexpr
 	// it will be resolved in the endwhile statement, push the
 	// location of this location on the iftable
 	iftable[numifs] = addInt(0);
+	iftablesourceline[numifs] = linenumber;
 	numifs++;
 }
 ;
@@ -415,6 +437,9 @@ endwhilestmt: endwhileexpr
 		temp = (unsigned int *) (byteCode + iftable[numifs-2]);
 		*temp = byteOffset; 
 		numifs-=2;
+	} else {
+		errorcode = -4;
+		return;
 	}
 }
 ;
@@ -432,6 +457,9 @@ untilstmt: B256UNTIL floatexpr
 	if (numifs>0) {
 		addIntOp(OP_BRANCH, iftable[numifs-1]);
 		numifs--;
+	} else {
+		errorcode = -5;
+		return;
 	}
 }
 
@@ -552,6 +580,7 @@ ifexpr: B256IF floatexpr
 	// location of this location on the iftable
 	checkByteMem(sizeof(int));
 	iftable[numifs] = byteOffset;
+	iftablesourceline[numifs] = linenumber;
 	numifs++;
 	byteOffset += sizeof(int);
 	}

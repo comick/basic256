@@ -42,6 +42,7 @@ extern struct symbol symtable[];
 extern void clearSymbolTable();
 extern void clearLabelTable();
 extern void clearIfTable();
+extern int testIfOnTable();
 extern void newLineOffsets(int);
 
 extern int getSymbol(char *);
@@ -589,6 +590,11 @@ basicParse(char *code) {
 	errorcode = 0;
 
 	yyparse();
+
+	if (testIfOnTable() != -1) {
+		linenumber = testIfOnTable();
+		errorcode = -6;
+	}
 
 	return errorcode;
 }
