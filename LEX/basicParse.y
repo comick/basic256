@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../ByteCodes.h"
+#include "../CompileErrors.h"
 
 #define SYMTABLESIZE 2000
 #define IFTABLESIZE 1000
@@ -60,7 +61,14 @@ unsigned int maxbyteoffset = 0;
 // that need to have final jump location added to them
 unsigned int iftable[IFTABLESIZE];
 unsigned int iftablesourceline[IFTABLESIZE];
+unsigned int iftabletype[IFTABLESIZE];
 unsigned int numifs = 0;
+
+#define IFTABLETYPEIF 1
+#define IFTABLETYPEELSE 2
+#define IFTABLETYPEDO 3
+#define IFTABLETYPEWHILE 4
+#define IFTABLETYPEFOR 5
 
 int
 basicParse(char *);
@@ -79,7 +87,22 @@ int testIfOnTable() {
 	// return line number if there is an unfinished while.do.if.else
 	// or send back -1
 	if (numifs >=1 ) {
-		return iftablesourceline[0];
+		linenumber = iftablesourceline[numifs-1];
+		return linenumber;
+	} else {
+		return -1;
+	}	
+}
+
+int testIfOnTableError() {
+	// return Error number if there is an unfinished while.do.if.else
+	// or send back -1
+	if (numifs >=1 ) {
+		if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
+		if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
+		if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
+		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
+		if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
 	} else {
 		return -1;
 	}	
@@ -324,7 +347,8 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| whilestmt {
 		// push to iftable the byte location of the end of the last stmt (top of loop)
 		iftable[numifs] = lastLineOffset;
-		iftablesourceline[numifs] = linenumber;
+		iftablesourceline[numifs] = linenumber-1;
+		iftabletype[numifs] = IFTABLETYPEWHILE;
 		numifs++;
 		lastLineOffset = byteOffset; 
 		addIntOp(OP_CURRLINE, linenumber);
@@ -334,6 +358,7 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 		// push to iftable the byte location of the end of the last stmt (top of loop)
 		iftable[numifs] = lastLineOffset;
 		iftablesourceline[numifs] = linenumber;
+		iftabletype[numifs] = IFTABLETYPEDO;
 		numifs++;
 		lastLineOffset = byteOffset;
 		addIntOp(OP_CURRLINE, linenumber);
@@ -372,17 +397,24 @@ elsestmt: B256ELSE
 	elsegototemp = addInt(0);
 	// resolve the false jump on the if to the current location
 	if (numifs>0) {
-		unsigned int *temp = NULL;
-		numifs--;
-		temp = (unsigned int *) (byteCode + iftable[numifs]);
-		*temp = byteOffset; 
-		// now add the elsegoto jump to the iftable
-		iftable[numifs] = elsegototemp;
-		iftablesourceline[numifs] = linenumber;
-		numifs++;
+		if (iftabletype[numifs-1]==IFTABLETYPEIF) {
+			unsigned int *temp = NULL;
+			numifs--;
+			temp = (unsigned int *) (byteCode + iftable[numifs]);
+			*temp = byteOffset; 
+			// now add the elsegoto jump to the iftable
+			iftable[numifs] = elsegototemp;
+			iftablesourceline[numifs] = linenumber;
+			iftabletype[numifs] = IFTABLETYPEELSE;
+			numifs++;
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
 	} else {
-		errorcode = -3;
-		return;
+		errorcode = COMPERR_ELSE;
+		return -1;
 	}
 }
 ;
@@ -396,13 +428,19 @@ endifstmt: endifexpr
 	// in the bytecode array and then put the current bytecode address there
 	// - so we can jump over code
 	if (numifs>0) {
-		unsigned int *temp = NULL;
-		numifs--;
-		temp = (unsigned int *) (byteCode + iftable[numifs]);
-		*temp = byteOffset; 
+		if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
+			unsigned int *temp = NULL;
+			numifs--;
+			temp = (unsigned int *) (byteCode + iftable[numifs]);
+			*temp = byteOffset; 
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
 	} else {
-		errorcode = -2;
-		return;
+		errorcode = COMPERR_ENDIF;
+		return -1;
 	}
 }
 ;
@@ -416,7 +454,8 @@ whilestmt: B256WHILE floatexpr
 	// it will be resolved in the endwhile statement, push the
 	// location of this location on the iftable
 	iftable[numifs] = addInt(0);
-	iftablesourceline[numifs] = linenumber;
+	iftablesourceline[numifs] = linenumber-1;
+	iftabletype[numifs] = IFTABLETYPEWHILE;
 	numifs++;
 }
 ;
@@ -430,16 +469,22 @@ endwhilestmt: endwhileexpr
 	// location to jump to at the top of the loopthe , TOP-1 is the location
 	// the exit jump needs to be written back to jump point on WHILE
 	if (numifs>1) {
-		unsigned int *temp = NULL;
-		addIntOp(OP_PUSHINT, 0);	// false - always jump back to the beginning
-		addIntOp(OP_BRANCH, iftable[numifs-1]);
-		// resolve the false jump on the while to the current location
-		temp = (unsigned int *) (byteCode + iftable[numifs-2]);
-		*temp = byteOffset; 
-		numifs-=2;
+		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
+			unsigned int *temp = NULL;
+			addIntOp(OP_PUSHINT, 0);	// false - always jump back to the beginning
+			addIntOp(OP_BRANCH, iftable[numifs-1]);
+			// resolve the false jump on the while to the current location
+			temp = (unsigned int *) (byteCode + iftable[numifs-2]);
+			*temp = byteOffset; 
+			numifs-=2;
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
 	} else {
-		errorcode = -4;
-		return;
+		errorcode = COMPERR_ENDWHILE;
+		return -1;
 	}
 }
 ;
@@ -455,11 +500,17 @@ untilstmt: B256UNTIL floatexpr
 	// create temp
 	//if If false, go to to the corresponding do.
 	if (numifs>0) {
-		addIntOp(OP_BRANCH, iftable[numifs-1]);
-		numifs--;
+		if (iftabletype[numifs-1]==IFTABLETYPEDO) {
+			addIntOp(OP_BRANCH, iftable[numifs-1]);
+			numifs--;
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
 	} else {
-		errorcode = -5;
-		return;
+		errorcode = COMPERR_UNTIL;
+		return -1;
 	}
 }
 
@@ -581,6 +632,7 @@ ifexpr: B256IF floatexpr
 	checkByteMem(sizeof(int));
 	iftable[numifs] = byteOffset;
 	iftablesourceline[numifs] = linenumber;
+	iftabletype[numifs] = IFTABLETYPEIF;
 	numifs++;
 	byteOffset += sizeof(int);
 	}
@@ -611,16 +663,45 @@ stringassign: B256STRINGVAR '=' stringexpr { addIntOp(OP_STRINGASSIGN, $1); }
 
 forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 	{
-	addIntOp(OP_PUSHINT, 1); //step
-	addIntOp(OP_FOR, $2);
+		addIntOp(OP_PUSHINT, 1); //step
+		addIntOp(OP_FOR, $2);
+		// add to iftable to make sure it is not broken with an if
+		// do, while, else, and to report if it is
+		// next ed before end of program
+		iftable[numifs] = 0;
+		iftablesourceline[numifs] = linenumber-1;
+		iftabletype[numifs] = IFTABLETYPEFOR;
+		numifs++;
 	}
 	| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr
 	{
-	addIntOp(OP_FOR, $2);
+		addIntOp(OP_FOR, $2);
+		// add to iftable to make sure it is not broken with an if
+		// do, while, else, and to report if it is
+		// next ed before end of program
+		iftable[numifs] = 0;
+		iftablesourceline[numifs] = linenumber-1;
+		iftabletype[numifs] = IFTABLETYPEFOR;
+		numifs++;
 	}
 ;
 
-nextstmt: B256NEXT B256VARIABLE { addIntOp(OP_NEXT, $2); }
+nextstmt: B256NEXT B256VARIABLE
+	{
+		if (numifs>0) {
+			if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
+				addIntOp(OP_NEXT, $2);
+				numifs--;
+			} else {
+				errorcode = testIfOnTableError();
+				linenumber = testIfOnTable();
+				return -1;
+			}
+		} else {
+			errorcode = COMPERR_NEXT;
+			return -1;
+		}
+	}
 ;
 
 gotostmt: B256GOTO B256VARIABLE { addIntOp(OP_GOTO, $2); }
@@ -1140,7 +1221,7 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 
 int
 yyerror(const char *msg) {
-	errorcode = -1;
+	errorcode = COMPERR_SYNTAX;
 	if (yytext[0] == '\n') { linenumber--; } // error happened on previous line
 	return -1;
 }

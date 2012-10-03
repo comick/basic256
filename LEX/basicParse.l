@@ -19,6 +19,7 @@
 
 %{
 #include "basicParse.tab.h"
+#include "../CompileErrors.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -43,6 +44,7 @@ extern void clearSymbolTable();
 extern void clearLabelTable();
 extern void clearIfTable();
 extern int testIfOnTable();
+extern int testIfOnTableError();
 extern void newLineOffsets(int);
 
 extern int getSymbol(char *);
@@ -593,7 +595,7 @@ basicParse(char *code) {
 
 	if (testIfOnTable() != -1) {
 		linenumber = testIfOnTable();
-		errorcode = -6;
+		errorcode = testIfOnTableError();
 	}
 
 	return errorcode;
