@@ -62,6 +62,7 @@ using namespace std;
 
 #include "LEX/basicParse.tab.h"
 #include "ByteCodes.h"
+#include "CompileErrors.h"
 #include "Interpreter.h"
 #include "md5.h"
 #include "Settings.h"
@@ -466,20 +467,35 @@ Interpreter::compileProgram(char *code)
 	{
 		switch(result)
 		{
-			case -6:
-				emit(outputReady(tr("IF, DO, or UNTIL without matching closing statement ") + QString::number(linenumber) + ".\n"));
+			case COMPERR_FORNOEND:
+				emit(outputReady(tr("FOR without matching NEXT statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
-			case -5:
+			case COMPERR_WHILENOEND:
+				emit(outputReady(tr("WHILE without matching END WHILE statement on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_DONOEND:
+				emit(outputReady(tr("DO without matching UNTIL statement on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_ELSENOEND:
+				emit(outputReady(tr("ELSE without matching END IF statement on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_IFNOEND:
+				emit(outputReady(tr("IF without matching END IF or ELSE statement on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_UNTIL:
 				emit(outputReady(tr("UNTIL without matching DO on line ") + QString::number(linenumber) + ".\n"));
 				break;
-			case -4:
+			case COMPERR_ENDWHILE:
 				emit(outputReady(tr("END WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
 				break;
-			case -3:
+			case COMPERR_ELSE:
 				emit(outputReady(tr("ELSE without matching IF on line ") + QString::number(linenumber) + ".\n"));
 				break;
-			case -2:
+			case COMPERR_ENDIF:
 				emit(outputReady(tr("END IF without matching IF on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_NEXT:
+				emit(outputReady(tr("NEXT without matching FOR on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			default:
 				if(column==0) {
