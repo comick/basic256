@@ -79,6 +79,7 @@ clearIfTable() {
 	for (j = 0; j < IFTABLESIZE; j++) {
 		iftable[j] = -1;
 		iftablesourceline[j] = -1;
+		iftabletype[j] = -1;
 	}
 	numifs = 0;
 }
@@ -89,9 +90,8 @@ int testIfOnTable() {
 	if (numifs >=1 ) {
 		linenumber = iftablesourceline[numifs-1];
 		return linenumber;
-	} else {
-		return -1;
 	}	
+	return -1;
 }
 
 int testIfOnTableError() {
@@ -103,9 +103,8 @@ int testIfOnTableError() {
 		if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
-	} else {
-		return -1;
 	}	
+	return -1;
 }
 
 void
@@ -142,6 +141,15 @@ getSymbol(char *name) {
 			return i;
 	}
 	return -1;
+}
+
+int
+newIf(int offset, int sourceline, int type) {
+	iftable[numifs] = offset;
+	iftablesourceline[numifs] = sourceline;
+	iftabletype[numifs] = type;
+	numifs++;
+	return numifs - 1;
 }
 
 int
@@ -295,6 +303,7 @@ addStringOp(char op, char *data) {
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
+%token B256FUNCTION B256ENDFUNCTION
 
 
 %union
@@ -346,27 +355,39 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| endifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| whilestmt {
 		// push to iftable the byte location of the end of the last stmt (top of loop)
-		iftable[numifs] = lastLineOffset;
-		iftablesourceline[numifs] = linenumber-1;
-		iftabletype[numifs] = IFTABLETYPEWHILE;
-		numifs++;
+		newIf(lastLineOffset, linenumber-1, IFTABLETYPEWHILE);
 		lastLineOffset = byteOffset; 
 		addIntOp(OP_CURRLINE, linenumber);
 	}
 	| endwhilestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| dostmt {
 		// push to iftable the byte location of the end of the last stmt (top of loop)
-		iftable[numifs] = lastLineOffset;
-		iftablesourceline[numifs] = linenumber;
-		iftabletype[numifs] = IFTABLETYPEDO;
-		numifs++;
+		newIf(lastLineOffset, linenumber, IFTABLETYPEDO);
 		lastLineOffset = byteOffset;
 		addIntOp(OP_CURRLINE, linenumber);
 	}
 	| untilstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| functionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| endfunctionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+
 	| /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 ;
+
+functionstmt: B256FUNCTION B256VARIABLE '(' explist ')' {
+	}
+	|
+	B256FUNCTION B256VARIABLE '(' ')' {
+	}
+	|
+	B256FUNCTION B256STRINGVAR '(' explist ')' {
+	}
+	|
+	B256FUNCTION B256STRINGVAR '(' ')' {
+	}
+;
+
+endfunctionstmt: B256ENDFUNCTION | B256END B256FUNCTION {};
 
 compoundifstmt: ifexpr B256THEN compoundstmt
 	{
@@ -403,10 +424,7 @@ elsestmt: B256ELSE
 			temp = (unsigned int *) (byteCode + iftable[numifs]);
 			*temp = byteOffset; 
 			// now add the elsegoto jump to the iftable
-			iftable[numifs] = elsegototemp;
-			iftablesourceline[numifs] = linenumber;
-			iftabletype[numifs] = IFTABLETYPEELSE;
-			numifs++;
+			newIf(elsegototemp, linenumber, IFTABLETYPEELSE);
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -453,10 +471,7 @@ whilestmt: B256WHILE floatexpr
 	// after branch add a placeholder for the final end of the loop
 	// it will be resolved in the endwhile statement, push the
 	// location of this location on the iftable
-	iftable[numifs] = addInt(0);
-	iftablesourceline[numifs] = linenumber-1;
-	iftabletype[numifs] = IFTABLETYPEWHILE;
-	numifs++;
+	newIf(addInt(0), linenumber-1, IFTABLETYPEWHILE);
 }
 ;
 
@@ -630,10 +645,7 @@ ifexpr: B256IF floatexpr
 	// it will be resolved in the if/else/endif statement, push the
 	// location of this location on the iftable
 	checkByteMem(sizeof(int));
-	iftable[numifs] = byteOffset;
-	iftablesourceline[numifs] = linenumber;
-	iftabletype[numifs] = IFTABLETYPEIF;
-	numifs++;
+	newIf(byteOffset, linenumber, IFTABLETYPEIF);
 	byteOffset += sizeof(int);
 	}
 ;
@@ -668,10 +680,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		iftable[numifs] = 0;
-		iftablesourceline[numifs] = linenumber-1;
-		iftabletype[numifs] = IFTABLETYPEFOR;
-		numifs++;
+		newIf(0, linenumber-1, IFTABLETYPEFOR);
 	}
 	| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr
 	{
@@ -679,10 +688,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		iftable[numifs] = 0;
-		iftablesourceline[numifs] = linenumber-1;
-		iftabletype[numifs] = IFTABLETYPEFOR;
-		numifs++;
+		newIf(0, linenumber-1, IFTABLETYPEFOR);
 	}
 ;
 
@@ -970,6 +976,17 @@ floatlist: floatexpr { listlen = 1; }
 	| floatexpr ',' floatlist { listlen++; }
 ;
 
+stringlist: stringexpr { listlen = 1; }
+	| stringexpr ',' stringlist { listlen++; }
+;
+
+explist: floatexpr { listlen = 1; }
+	| stringexpr { listlen = 1; }
+	| explist ',' explist {listlen++;}
+;
+
+
+
 floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| floatexpr '+' floatexpr { addOp(OP_ADD); }
 	| floatexpr '-' floatexpr { addOp(OP_SUB); }
@@ -1008,6 +1025,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256STRINGVAR '[' ',' '?' ']' { addIntOp(OP_ALENY, $1); }
 	| B256VARIABLE '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
+	| B256VARIABLE '(' explist ')' { addIntOp(OP_PUSHINT, 0);}
 	| B256VARIABLE 
 	{
 		if ($1 < 0) {
@@ -1158,10 +1176,6 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 
 
 
-stringlist: stringexpr { listlen = 1; }
-	| stringexpr ',' stringlist { listlen++; }
-;
-
 stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| stringexpr '+' stringexpr { addOp(OP_CONCAT); }
 	| floatexpr '+' stringexpr { addOp(OP_CONCAT); }
@@ -1169,6 +1183,7 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256STRING { addStringOp(OP_PUSHSTRING, $1); }
 	| B256STRINGVAR '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
 	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
+	| B256STRINGVAR '(' explist ')' { addStringOp(OP_PUSHSTRING, ""); }
 	| B256STRINGVAR
 	{
 		if ($1 < 0) {

@@ -34,6 +34,7 @@ class Stack
   void push(double);
   void swap();
   void topto2();
+  int peekType();
   stackval *pop();
   int popint();
   double popfloat();

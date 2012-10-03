@@ -265,6 +265,8 @@ msec [Mm][Ss][Ee][Cc]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+endfunction [Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 %%
 
 {label} {
@@ -528,6 +530,10 @@ outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 "}"		{ count(); return '}'; }
 "["		{ count(); return '['; }
 "]"		{ count(); return ']'; }
+{function}	{ count(); return B256FUNCTION; }
+{endfunction}	{ count(); return B256ENDFUNCTION; }
+
+	
 {variable} {
 	int num;
 	count();
@@ -539,6 +545,7 @@ outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 	}
 	return B256VARIABLE;
 }
+
 {stringvar} {
 	int num;
 	count();

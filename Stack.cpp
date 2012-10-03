@@ -79,6 +79,11 @@ Stack::push(double d)
 	top->value.floatval = d;
 }
 
+int Stack::peekType()
+{
+	return top->type;
+}
+
 stackval *
 Stack::pop()
 {
