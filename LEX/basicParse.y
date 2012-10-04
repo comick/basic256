@@ -46,6 +46,7 @@ unsigned int listlen = 0;
 
 unsigned int functionDefSymbol = -1;	// if in a function definition
 					// what is the symbol number -1 = not in fundef
+int temp;	// use careffully as a temp		
 
 struct label
 {
@@ -72,6 +73,14 @@ unsigned int numifs = 0;
 #define IFTABLETYPEDO 3
 #define IFTABLETYPEWHILE 4
 #define IFTABLETYPEFOR 5
+
+// store the function variables here during a function definition
+unsigned int args[100];
+unsigned int argstype[100];
+unsigned int numargs = 0;
+
+#define ARGSTYPEINT 0
+#define ARGSTYPESTR 1
 
 int
 basicParse(char *);
@@ -377,54 +386,66 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 ;
 
-functionstmt: B256FUNCTION B256VARIABLE '(' explist ')' {
-		// $1 is the symbol for the function - add the start to the label table
+functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
+		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset;
-		lastLineOffset = byteOffset;
+		labeltable[$2] = byteOffset-1;
+		lastLineOffset = byteOffset-1;
 		addIntOp(OP_CURRLINE, linenumber);
 		// initialize return variable
 		addOp(OP_INCREASERECURSE);
 		addIntOp(OP_PUSHINT, 0);
 		addIntOp(OP_NUMASSIGN, $2);
+		{ int t;
+			for(t=0;t<numargs;t++) {
+				if (argstype[t]==ARGSTYPEINT) {
+					addIntOp(OP_NUMASSIGN, args[t]);
+				} else {
+					addIntOp(OP_STRINGASSIGN, args[t]);
+				}
+			}
+		}
+		numargs=0;	// clear the list for next function
 	}
 	|
-	B256FUNCTION B256VARIABLE '(' ')' {
-		// $1 is the symbol for the function - add the start to the label table
+	B256FUNCTION B256STRINGVAR functionvariablelist {
+		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset;
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-		// initialize return variable
-		addOp(OP_INCREASERECURSE);
-		addIntOp(OP_PUSHINT, 0);
-		addIntOp(OP_NUMASSIGN, $2);
-	}
-	|
-	B256FUNCTION B256STRINGVAR '(' explist ')' {
-		// $1 is the symbol for the function - add the start to the label table
-		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset;
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-		// initialize return variable
-		addOp(OP_INCREASERECURSE);
-		addStringOp(OP_PUSHSTRING, "");
-		addIntOp(OP_STRINGASSIGN, $2);
-	}
-	|
-	B256FUNCTION B256STRINGVAR '(' ')' {
-		// $1 is the symbol for the function - add the start to the label table
-		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset;
-		lastLineOffset = byteOffset;
+		labeltable[$2] = byteOffset-1;
+		lastLineOffset = byteOffset-1;
 		addIntOp(OP_CURRLINE, linenumber);
 		// initialize return variable
 		addOp(OP_INCREASERECURSE);
 		addStringOp(OP_PUSHSTRING, "");
 		addIntOp(OP_STRINGASSIGN, $2);
+		{ int t;
+			for(t=0;t<numargs;t++) {
+				if (argstype[t]==ARGSTYPEINT) {
+					addIntOp(OP_NUMASSIGN, args[t]);
+				} else {
+					addIntOp(OP_STRINGASSIGN, args[t]);
+				}
+			}
+		}
+		numargs=0;	// clear the list for next function
 	}
 ;
+
+functionvariablelist: '(' ')' | '(' functionvariables ')' {
+};
+
+
+functionvariables: B256VARIABLE {
+		args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
+		printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+	}
+	| B256STRINGVAR {
+		args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
+		printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+	}
+	| functionvariables ',' functionvariables {}
+;
+
 
 endfunctionstmt: B256ENDFUNCTION | B256END B256FUNCTION {
 		addIntOp(OP_PUSHVAR, functionDefSymbol);
@@ -1036,7 +1057,6 @@ explist: floatexpr { listlen = 1; }
 	| stringexpr { listlen = 1; }
 	| explist ',' explist {listlen++;}
 ;
-
 
 
 floatexpr: '(' floatexpr ')' { $$ = $2; }

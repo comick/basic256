@@ -1917,7 +1917,6 @@ Interpreter::execByteCode()
 			op++;
 			stackval *one = stack.pop();
 			stackval *two = stack.pop();
-			double oneval, twoval;
 			if (one->type == T_STRING || two->type == T_STRING || one->type == T_ARRAY || two->type == T_ARRAY || one->type == T_STRARRAY || two->type == T_STRARRAY || one->type == T_UNUSED || two->type == T_UNUSED)
 			{
 				errornum = ERROR_NONNUMERIC;
@@ -1925,31 +1924,38 @@ Interpreter::execByteCode()
 			} else {
 				if (one->type == two->type && one->type == T_INT)
 				{
+					int i1, i2;
+					i1 = one->value.intval;
+					i2 = two->value.intval;
+					stack.clean(one);
+					stack.clean(two);
+					//
 					switch (whichop)
 					{
 					case OP_ADD:
-						stack.push(one->value.intval + two->value.intval);
+						stack.push(i2 + i1);
 						break;
 					case OP_SUB:
-						stack.push(two->value.intval - one->value.intval);
+						stack.push(i2 - i1);
 						break;
 					case OP_MUL:
-						stack.push(two->value.intval * one->value.intval);
+						stack.push(i2 * i1);
 						break;
 					case OP_MOD:
-						stack.push(two->value.intval % one->value.intval);
+						stack.push(i2 % i1);
 						break;
 					case OP_DIV:
-						stack.push((double) two->value.intval / (double) one->value.intval);
+						stack.push((double) i2/ (double) i1);
 						break;
 					case OP_INTDIV:
-						stack.push(two->value.intval / one->value.intval);
+						stack.push(i2 / i1);
 						break;
 					case OP_EX:
-						stack.push(pow((double) two->value.intval, (double) one->value.intval));
+						stack.push(pow((double) i2, (double) i1));
 						break;
 					}
 				} else {
+					double oneval, twoval;
 					if (one->type == T_INT)
 						oneval = (double) one->value.intval;
 					else
@@ -1958,7 +1964,9 @@ Interpreter::execByteCode()
 						twoval = (double) two->value.intval;
 					else
 						twoval = two->value.floatval;
-
+					stack.clean(one);
+					stack.clean(two);
+					//
 					switch(whichop)
 					{
 					case OP_ADD:
@@ -1985,8 +1993,6 @@ Interpreter::execByteCode()
 					}
 				}
 			}	
-			stack.clean(one);
-			stack.clean(two);
 		}
 		break;
 
@@ -2072,12 +2078,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)==0)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)==0;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
 		}
 		break;
 
@@ -2085,12 +2089,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)!=0)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)!=0;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
 		}
 		break;
 
@@ -2098,12 +2100,11 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)==1)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)==1;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
+
 		}
 		break;
 
@@ -2111,12 +2112,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)!=1)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)!=1;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
 		}
 		break;
 
@@ -2124,12 +2123,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)==-1)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)==-1;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
 		}
 		break;
 
@@ -2137,12 +2134,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			POP2
-			if(compareTwoStackVal(one,two)!=-1)
-				stack.push(1);
-			else
-				stack.push(0);
+			int ans = compareTwoStackVal(one,two)!=-1;
 			stack.clean(one);
 			stack.clean(two);
+			stack.push(ans);
 		}
 		break;
 

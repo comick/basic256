@@ -88,7 +88,9 @@ stackval *
 Stack::pop()
 {
 	stackval *temp = top;
-	top--;
+	if (top!=bottom) {
+		top--;
+	}
 	return temp;
 }
 

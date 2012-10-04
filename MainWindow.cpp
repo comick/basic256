@@ -261,13 +261,13 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
 	stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
 	stopact->setEnabled(false);
-	//runmenu->addSeparator();
-	//QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled &Byte Code"));
+	runmenu->addSeparator();
+	QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled &Byte Code"));
 	QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
 	QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
 	QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
 	QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
-	//QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
+	QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
 	// Help menu
 	QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
