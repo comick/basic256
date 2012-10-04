@@ -44,6 +44,9 @@ unsigned int lastLineOffset = 0; // store the byte offset for the end of the las
 unsigned int oldByteOffset = 0;
 unsigned int listlen = 0;
 
+unsigned int functionDefSymbol = -1;	// if in a function definition
+					// what is the symbol number -1 = not in fundef
+
 struct label
 {
 	char *name;
@@ -375,19 +378,60 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 ;
 
 functionstmt: B256FUNCTION B256VARIABLE '(' explist ')' {
+		// $1 is the symbol for the function - add the start to the label table
+		functionDefSymbol = $2;
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+		// initialize return variable
+		addOp(OP_INCREASERECURSE);
+		addIntOp(OP_PUSHINT, 0);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	|
 	B256FUNCTION B256VARIABLE '(' ')' {
+		// $1 is the symbol for the function - add the start to the label table
+		functionDefSymbol = $2;
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+		// initialize return variable
+		addOp(OP_INCREASERECURSE);
+		addIntOp(OP_PUSHINT, 0);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	|
 	B256FUNCTION B256STRINGVAR '(' explist ')' {
+		// $1 is the symbol for the function - add the start to the label table
+		functionDefSymbol = $2;
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+		// initialize return variable
+		addOp(OP_INCREASERECURSE);
+		addStringOp(OP_PUSHSTRING, "");
+		addIntOp(OP_STRINGASSIGN, $2);
 	}
 	|
 	B256FUNCTION B256STRINGVAR '(' ')' {
+		// $1 is the symbol for the function - add the start to the label table
+		functionDefSymbol = $2;
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+		// initialize return variable
+		addOp(OP_INCREASERECURSE);
+		addStringOp(OP_PUSHSTRING, "");
+		addIntOp(OP_STRINGASSIGN, $2);
 	}
 ;
 
-endfunctionstmt: B256ENDFUNCTION | B256END B256FUNCTION {};
+endfunctionstmt: B256ENDFUNCTION | B256END B256FUNCTION {
+		addIntOp(OP_PUSHVAR, functionDefSymbol);
+		addOp(OP_DECREASERECURSE);
+		addOp(OP_RETURN);
+		functionDefSymbol = -1; 
+	};
 
 compoundifstmt: ifexpr B256THEN compoundstmt
 	{
@@ -722,7 +766,15 @@ offerrorstmt: B256OFFERROR { addExtendedOp(OP_EXTENDED_0,OP_OFFERROR); }
 onerrorstmt: B256ONERROR B256VARIABLE { addIntOp(OP_ONERROR, $2); }
 ;
 
-returnstmt: B256RETURN { addOp(OP_RETURN); }
+returnstmt: B256RETURN { 
+	if (functionDefSymbol!=-1) {
+		// if we are defining a function return pushes a variable value
+		addIntOp(OP_PUSHVAR, functionDefSymbol);
+		addOp(OP_DECREASERECURSE);
+		functionDefSymbol = -1; 
+	}
+	addOp(OP_RETURN);
+ }
 ;
 
 colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
@@ -1025,7 +1077,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256STRINGVAR '[' ',' '?' ']' { addIntOp(OP_ALENY, $1); }
 	| B256VARIABLE '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
-	| B256VARIABLE '(' explist ')' { addIntOp(OP_PUSHINT, 0);}
+	| B256VARIABLE '(' explist ')' { addIntOp(OP_GOSUB, $1); }
+	| B256VARIABLE '(' ')' { addIntOp(OP_GOSUB, $1); }
 	| B256VARIABLE 
 	{
 		if ($1 < 0) {
@@ -1183,7 +1236,8 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256STRING { addStringOp(OP_PUSHSTRING, $1); }
 	| B256STRINGVAR '[' floatexpr ']' { addIntOp(OP_DEREF, $1); }
 	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
-	| B256STRINGVAR '(' explist ')' { addStringOp(OP_PUSHSTRING, ""); }
+	| B256STRINGVAR '(' explist ')' { addIntOp(OP_GOSUB, $1); }
+	| B256STRINGVAR '(' ')' { addIntOp(OP_GOSUB, $1); }
 	| B256STRINGVAR
 	{
 		if ($1 < 0) {

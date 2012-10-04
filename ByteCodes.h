@@ -88,6 +88,9 @@
 #define OP_CLOSE		0x3b
 #define OP_RESET		0x3c
 
+#define OP_INCREASERECURSE	0x3e
+#define OP_DECREASERECURSE	0x3f
+
 #define OP_SOUND		0x40
 
 //Int argument ops

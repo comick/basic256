@@ -34,8 +34,28 @@ Variables::clear()
 		clearvariable((*i).second);
 		varmap.erase((*i).first);
 	}
+	recurselevel = 0;
 }
 
+void
+Variables::increaserecurse()
+{
+	lasterror = ERROR_NONE;
+	recurselevel++;
+	if (recurselevel>=MAX_RECURSE_LEVELS) {
+		recurselevel--;
+		lasterror = ERROR_NOSUCHVARIABLE;
+	}
+}
+
+void
+Variables::decreaserecurse()
+{
+	lasterror = ERROR_NONE;
+	if (recurselevel>0) {
+		recurselevel--;
+	}
+}
 
 void Variables::clearvariable(variable* v)
 {
@@ -66,8 +86,9 @@ void Variables::clearvariable(variable* v)
 variable* Variables::getvfromnum(int varnum, bool makenew) {
 	// get v from map else return NULL
 	// if makenew then make a new one if not exist
+	int levelvarnum = varnum*MAX_RECURSE_LEVELS+recurselevel;
 	variable *v;
-	std::map<int, variable*>::iterator i = varmap.find(varnum);
+	std::map<int, variable*>::iterator i = varmap.find(levelvarnum);
 	if(i==varmap.end()) {
 		if(makenew) {
 			v = new variable;
@@ -75,7 +96,7 @@ variable* Variables::getvfromnum(int varnum, bool makenew) {
 			v->value.floatval = 0;
 			v->value.string = NULL;
 			v->value.arr = NULL;
-			varmap.insert( std::pair<int, variable*> (varnum, v) );
+			varmap.insert( std::pair<int, variable*> (levelvarnum, v) );
 			//printf("lastvar=%i size=%i\n", varnum, varmap.size());
 		} else {
 			v = NULL;

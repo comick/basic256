@@ -3010,8 +3010,23 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_INCREASERECURSE:
+		// increase recursion level in variable hash
+		{
+			op++;
+			variables.increaserecurse();
+		}
+		break;
 
-		
+	case OP_DECREASERECURSE:
+		// decrease recursion level in variable hash
+		{
+			op++;
+			variables.decreaserecurse();
+		}
+		break;
+
+	
 	case OP_EXTENDED_0:
 		{
 			// extended op 0xe0xx - allow for an extra range of operations
