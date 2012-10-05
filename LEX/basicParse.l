@@ -267,6 +267,10 @@ graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 endfunction [Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
+subroutine [Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+endsubroutine [Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+call [Cc][Aa][Ll][Ll]
 %%
 
 {label} {
@@ -532,6 +536,10 @@ endfunction [Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 "]"		{ count(); return ']'; }
 {function}	{ count(); return B256FUNCTION; }
 {endfunction}	{ count(); return B256ENDFUNCTION; }
+{throwerror}	{ count(); return B256THROWERROR; }
+{subroutine}	{ count(); return B256SUBROUTINE; }
+{endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
+{call}		{ count(); return B256CALL; }
 
 	
 {variable} {
@@ -600,7 +608,7 @@ basicParse(char *code) {
 
 	yyparse();
 
-	if (testIfOnTable() != -1) {
+	if (testIfOnTable()!=-1 && errorcode==0) {
 		linenumber = testIfOnTable();
 		errorcode = testIfOnTableError();
 	}

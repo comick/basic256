@@ -288,10 +288,16 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_IMAGESAVETYPE:
 			errormessage = tr(ERROR_IMAGESAVETYPE_MESSAGE);
 			break;
+		case ERROR_ARGUMENTCOUNT:
+			errormessage = tr(ERROR_ARGUMENTCOUNT_MESSAGE);
+			break;
 		// put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
 			break;
+		default:
+			errormessage = tr(ERROR_USER_MESSAGE);
+			
 	}
 	return errormessage;
 }
@@ -467,6 +473,12 @@ Interpreter::compileProgram(char *code)
 	{
 		switch(result)
 		{
+			case COMPERR_ENDFUNCTION:
+				emit(outputReady(tr("END FUNCTION without matching FUNCTION on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_FUNCTIONNOEND:
+				emit(outputReady(tr("FUNCTION without matching END FUNCTION statement on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			case COMPERR_FORNOEND:
 				emit(outputReady(tr("FOR without matching NEXT statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
@@ -759,6 +771,7 @@ Interpreter::execByteCode()
 		}
 	}
 
+	//printf("%02x %d  -> ",*op, stack.height());stack.debug();
 
 	switch(*op)
 	{
@@ -4002,7 +4015,28 @@ Interpreter::execByteCode()
 			stack.topto2();
 		}
 		break;
+
+	case OP_ARGUMENTCOUNTTEST:
+		{
+			// Throw error if stack does not have enough values
+			// used to check if functions and subroutines have the proper number
+			// of datas on the stack to fill the parameters
+			op++;
+			int a = stack.popint();
+			if (stack.height()<a) errornum = ERROR_ARGUMENTCOUNT;
+			//printf("ac args=%i stack=%i\n",a,stack.height());
+		}
+		break;
 		
+	case OP_THROWERROR:
+		{
+			// Throw a user defined error number
+			op++;
+			int fn = stack.popint();
+			errornum = fn;
+		}
+		break;
+
 	default:
 		status = R_STOPPED;
 		return -1;

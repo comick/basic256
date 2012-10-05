@@ -44,6 +44,8 @@ class Stack
   char *tostring(stackval *);
   void clean(stackval *);
   void clear();
+  void debug();
+  int height();
 
   static const int defaultFToAMask = 6;
   int fToAMask;

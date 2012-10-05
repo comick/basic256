@@ -356,6 +356,18 @@ void BasicEdit::beautifyProgram()
 		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ww][Hh][Ii][Ll][Ee]$"))) {
 			// endwhile - come out of block
 			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\s"))) {
+			// function - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]$"))) {
+			// endfunction - come out of block
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\s"))) {
+			// function - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]$"))) {
+			// endfunction - come out of block
+			decreaseIndent = true;
 		} else if (line.contains(QRegExp("^[Dd][Oo]$"))) {
 			// do - indent next (block of code)
 			increaseIndent = true;

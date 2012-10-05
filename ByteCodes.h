@@ -221,9 +221,12 @@
 #define OP_EXTENDED_E		0xee
 #define OP_EXTENDED_F		0xef
 
-// stack manipulation
+// stack manipulation and special
 #define OP_STACKSWAP		0xf0
 #define OP_STACKTOPTO2		0xf1
+#define OP_ARGUMENTCOUNTTEST	0xf2
+#define OP_THROWERROR		0xff
+
 
 // extended opcodes (second byte)
 // first group e0xx

@@ -112,7 +112,10 @@
 #define ERROR_PERMISSION_MESSAGE "You do not have permission to use this statement/function."
 #define ERROR_IMAGESAVETYPE 47
 #define ERROR_IMAGESAVETYPE_MESSAGE "Invalid image save type."
-//
+#define ERROR_ARGUMENTCOUNT 48
+#define	ERROR_ARGUMENTCOUNT_MESSAGE "Number of arguments passed does not match FUNCTION/SUBROUTINE definition."
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
+//
+#define ERROR_USER_MESSAGE "User thrown error number."
 #endif

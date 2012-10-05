@@ -79,6 +79,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Aa][Ss][Cc]\\b"							// asc
 		<< "\\b[Aa][Ss][Ii][Nn]\\b"						// asin
 		<< "\\b[Aa][Tt][Aa][Nn]\\b"						// atan
+		<< "\\b[Cc][Aa][Ll][Ll]\\b"						// call
 		<< "\\b[Cc][Ee][Ii][Ll]\\b"						// ceil
 		<< "\\b[Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]\\b"				// changedir
 		<< "\\b[Cc][Hh][Rr]\\b"							// chr
@@ -93,8 +94,8 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Cc][Oo][Ll][Oo][Rr]\\b"						// color
 		<< "\\b[Cc][Oo][Ll][Oo][Uu][Rr]\\b"					// colour
 		<< "\\b[Cc][Oo][Ss]\\b"							// cos
-		<< "\\b[Cc][Oo][Uu][Nn][Tt]\\b"					// count
-		<< "\\b[Cc][Oo][Uu][Nn][Tt][Xx]\\b"			// countx
+		<< "\\b[Cc][Oo][Uu][Nn][Tt]\\b"						// count
+		<< "\\b[Cc][Oo][Uu][Nn][Tt][Xx]\\b"					// countx
 		<< "\\b[Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]\\b"			// currentdir
 		<< "\\b[Dd][Aa][Yy]\\b"							// day
 		<< "\\b[Dd][Bb][Cc][Ll][Oo][Ss][Ee]\\b"					// dbclose
@@ -114,17 +115,20 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"   		// editvisible
 		<< "\\b[Ee][Ll][Ss][Ee]\\b"						// else
 		<< "\\b[Ee][Nn][Dd]\\b"							// end
+		<< "\\b[Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"			// endfunction
 		<< "\\b[Ee][Nn][Dd][Ii][Ff]\\b"						// endif
+		<< "\\b[Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"		// endsubroutine
 		<< "\\b[Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]\\b"				// endwhile
 		<< "\\b[Ee][Oo][Ff]\\b"							// eof
 		<< "\\b[Ee][Xx][Ii][Ss][Tt][Ss]\\b"					// exists
 		<< "\\b[Ee][Xx][Pp]\\b"							// exp
-		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee]\\b"			// explode
-		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]\\b"	// explodex
+		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee]\\b"					// explode
+		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]\\b"				// explodex
 		<< "\\b[Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]\\b"		// fastgraphics
 		<< "\\b[Ff][Ll][Oo][Oo][Rr]\\b"						// floor
 		<< "\\b[Ff][Oo][Nn][Tt]\\b"						// font
 		<< "\\b[Ff][Oo][Rr]\\b"							// for
+		<< "\\b[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"				// function
 		<< "\\b[Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]\\b"				// getcolor
 		<< "\\b[Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]\\b"			// getsetting
 		<< "\\b[Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]\\b"				// getslice
@@ -224,6 +228,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ss][Qq][Rr][Tt]\\b"						// sqrt
 		<< "\\b[Ss][Tt][Aa][Mm][Pp]\\b"						// stamp
 		<< "\\b[Ss][Tt][Ee][Pp]\\b"						// step
+		<< "\\b[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"			// subroutine
 		<< "\\b[Ss][Yy][Ss][Tt][Ee][Mm]\\b"					// system
 		<< "\\b[Tt][Aa][Nn]\\b"							// tan
 		<< "\\b[Tt][Ee][Xx][Tt]\\b"						// text

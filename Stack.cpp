@@ -35,6 +35,28 @@ Stack::clear()
 }
 
 void
+Stack::debug()
+{
+	// display the contents of the stack
+	stackval *temp=top;
+	while (temp >= bottom)
+	{
+		if (temp->type == T_STRING) printf(">>S.%s",temp->value.string);
+		if (temp->type == T_INT) printf(">>I.%d",temp->value.intval);
+		if (temp->type == T_FLOAT) printf(">>F.%f",temp->value.floatval);
+		if (temp->type == T_UNUSED) printf(">>U.");
+		temp--;
+	}
+	printf("\n");
+}
+
+int Stack::height()
+{
+	// return the height of the stack in elements
+	return ((unsigned int) top - (unsigned int) bottom)/sizeof(stackval);
+}
+
+void
 Stack::checkLimit()
 {
 	while (top + 1 >= limit)

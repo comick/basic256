@@ -44,9 +44,8 @@ unsigned int lastLineOffset = 0; // store the byte offset for the end of the las
 unsigned int oldByteOffset = 0;
 unsigned int listlen = 0;
 
-unsigned int functionDefSymbol = -1;	// if in a function definition
-					// what is the symbol number -1 = not in fundef
-int temp;	// use careffully as a temp		
+int functionDefSymbol = -1;	// if in a function definition (what is the symbol number) -1 = not in fundef
+int subroutineDefSymbol = -1;	// if in a subroutine definition (what is the symbol number) -1 = not in fundef
 
 struct label
 {
@@ -66,18 +65,20 @@ unsigned int maxbyteoffset = 0;
 unsigned int iftable[IFTABLESIZE];
 unsigned int iftablesourceline[IFTABLESIZE];
 unsigned int iftabletype[IFTABLESIZE];
-unsigned int numifs = 0;
+int numifs = 0;
 
 #define IFTABLETYPEIF 1
 #define IFTABLETYPEELSE 2
 #define IFTABLETYPEDO 3
 #define IFTABLETYPEWHILE 4
 #define IFTABLETYPEFOR 5
+#define IFTABLETYPEFUNCTION 6
+
 
 // store the function variables here during a function definition
 unsigned int args[100];
 unsigned int argstype[100];
-unsigned int numargs = 0;
+int numargs = 0;
 
 #define ARGSTYPEINT 0
 #define ARGSTYPESTR 1
@@ -100,23 +101,23 @@ int testIfOnTable() {
 	// return line number if there is an unfinished while.do.if.else
 	// or send back -1
 	if (numifs >=1 ) {
-		linenumber = iftablesourceline[numifs-1];
-		return linenumber;
+		return iftablesourceline[numifs-1];
 	}	
 	return -1;
 }
 
 int testIfOnTableError() {
 	// return Error number if there is an unfinished while.do.if.else
-	// or send back -1
+	// or send back 0
 	if (numifs >=1 ) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
 		if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
+		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
 	}	
-	return -1;
+	return 0;
 }
 
 void
@@ -315,7 +316,7 @@ addStringOp(char op, char *data) {
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
-%token B256FUNCTION B256ENDFUNCTION
+%token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL
 
 
 %union
@@ -360,6 +361,7 @@ validline: label validstatement
 ;
 
 label: B256LABEL { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+;
 
 validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| ifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
@@ -382,6 +384,8 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 	| compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| functionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 	| endfunctionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| subroutinestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| endsubroutinestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 
 	| /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 ;
@@ -389,15 +393,20 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset-1;
-		lastLineOffset = byteOffset-1;
-		addIntOp(OP_CURRLINE, linenumber);
+		addOp(OP_END); 
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
 		// initialize return variable
-		addOp(OP_INCREASERECURSE);
 		addIntOp(OP_PUSHINT, 0);
 		addIntOp(OP_NUMASSIGN, $2);
-		{ int t;
-			for(t=0;t<numargs;t++) {
+		// check to see if there are enough values on the stack
+		addIntOp(OP_PUSHINT, numargs);
+		addOp(OP_ARGUMENTCOUNTTEST);
+		// add the assigns of the function arguments
+		addOp(OP_INCREASERECURSE);
+		{ 	int t;
+			for(t=numargs-1;t>=0;t--) {
 				if (argstype[t]==ARGSTYPEINT) {
 					addIntOp(OP_NUMASSIGN, args[t]);
 				} else {
@@ -411,15 +420,19 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 	B256FUNCTION B256STRINGVAR functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
-		labeltable[$2] = byteOffset-1;
-		lastLineOffset = byteOffset-1;
-		addIntOp(OP_CURRLINE, linenumber);
+		addOp(OP_END); 
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
 		// initialize return variable
-		addOp(OP_INCREASERECURSE);
 		addStringOp(OP_PUSHSTRING, "");
 		addIntOp(OP_STRINGASSIGN, $2);
-		{ int t;
-			for(t=0;t<numargs;t++) {
+		// check to see if there are enough values on the stack
+		addIntOp(OP_PUSHINT, numargs);
+		addOp(OP_ARGUMENTCOUNTTEST);
+		addOp(OP_INCREASERECURSE);
+		{ 	int t;
+			for(t=numargs-1;t>=0;t--) {
 				if (argstype[t]==ARGSTYPEINT) {
 					addIntOp(OP_NUMASSIGN, args[t]);
 				} else {
@@ -431,28 +444,88 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 	}
 ;
 
-functionvariablelist: '(' ')' | '(' functionvariables ')' {
-};
+subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
+		// $2 is the symbol for the subroutine - add the start to the label table
+		subroutineDefSymbol = $2;
+		addOp(OP_END); 
+		labeltable[$2] = byteOffset;
+		lastLineOffset = byteOffset;
+//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
+		// check to see if there are enough values on the stack
+		addIntOp(OP_PUSHINT, numargs);
+		addOp(OP_ARGUMENTCOUNTTEST);
+		// add the assigns of the function arguments
+		addOp(OP_INCREASERECURSE);
+		{ 	int t;
+			for(t=numargs-1;t>=0;t--) {
+				if (argstype[t]==ARGSTYPEINT) {
+					addIntOp(OP_NUMASSIGN, args[t]);
+				} else {
+					addIntOp(OP_STRINGASSIGN, args[t]);
+				}
+			}
+		}
+		numargs=0;	// clear the list for next function
+	}
+;
+
+functionvariablelist: '(' ')' | '(' functionvariables ')'
+;
 
 
 functionvariables: B256VARIABLE {
 		args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
-		printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
 	}
 	| B256STRINGVAR {
 		args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
-		printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
 	}
-	| functionvariables ',' functionvariables {}
+	| functionvariables ',' functionvariables
 ;
 
 
-endfunctionstmt: B256ENDFUNCTION | B256END B256FUNCTION {
-		addIntOp(OP_PUSHVAR, functionDefSymbol);
-		addOp(OP_DECREASERECURSE);
-		addOp(OP_RETURN);
-		functionDefSymbol = -1; 
-	};
+endfunctionexpr: B256ENDFUNCTION | B256END B256FUNCTION
+;
+
+endfunctionstmt: endfunctionexpr {
+//	if (numifs>0) {
+//		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+			addIntOp(OP_PUSHVAR, functionDefSymbol);
+			addOp(OP_DECREASERECURSE);
+			functionDefSymbol = -1; 
+			addOp(OP_RETURN);
+//		} else {
+//			errorcode = testIfOnTableError();
+//			linenumber = testIfOnTable();
+//			return -1;
+//		}
+//	} else {
+//		errorcode = COMPERR_ENDFUNCTION;
+//		return -1;
+//	}
+}
+;
+
+endsubroutineexpr: B256ENDSUBROUTINE | B256END B256SUBROUTINE;
+
+endsubroutinestmt: endsubroutineexpr {
+//	if (numifs>0) {
+//		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+			addOp(OP_DECREASERECURSE);
+			functionDefSymbol = -1; 
+			addOp(OP_RETURN);
+//		} else {
+//			errorcode = testIfOnTableError();
+//			linenumber = testIfOnTable();
+//			return -1;
+//		}
+//	} else {
+//		errorcode = COMPERR_ENDFUNCTION;
+//		return -1;
+//	}
+}
+;
 
 compoundifstmt: ifexpr B256THEN compoundstmt
 	{
@@ -599,6 +672,7 @@ compoundstmt: statement | compoundstmt ':' statement
 
 statement: gotostmt
 	| gosubstmt
+	| callstmt
 	| offerrorstmt
 	| onerrorstmt
 	| returnstmt
@@ -781,6 +855,11 @@ gotostmt: B256GOTO B256VARIABLE { addIntOp(OP_GOTO, $2); }
 gosubstmt: B256GOSUB B256VARIABLE { addIntOp(OP_GOSUB, $2); }
 ;
 
+callstmt: B256CALL B256VARIABLE  { addIntOp(OP_GOSUB, $2); }
+	| B256CALL B256VARIABLE '(' ')'  { addIntOp(OP_GOSUB, $2); }
+	| B256CALL B256VARIABLE '(' explist ')'  { addIntOp(OP_GOSUB, $2); }
+;
+
 offerrorstmt: B256OFFERROR { addExtendedOp(OP_EXTENDED_0,OP_OFFERROR); }
 ;
 
@@ -793,6 +872,11 @@ returnstmt: B256RETURN {
 		addIntOp(OP_PUSHVAR, functionDefSymbol);
 		addOp(OP_DECREASERECURSE);
 		functionDefSymbol = -1; 
+	}
+	if (subroutineDefSymbol!=-1) {
+		// if we are defining a rubroutine
+		addOp(OP_DECREASERECURSE);
+		subroutineDefSymbol = -1; 
 	}
 	addOp(OP_RETURN);
  }
