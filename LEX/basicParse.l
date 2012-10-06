@@ -271,6 +271,7 @@ throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 subroutine [Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endsubroutine [Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 call [Cc][Aa][Ll][Ll]
+global [Gg][Ll][Oo][Bb][Aa][Ll]
 %%
 
 {label} {
@@ -540,6 +541,7 @@ call [Cc][Aa][Ll][Ll]
 {subroutine}	{ count(); return B256SUBROUTINE; }
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
 {call}		{ count(); return B256CALL; }
+{global}	{ count(); return B256GLOBAL; }
 
 	
 {variable} {

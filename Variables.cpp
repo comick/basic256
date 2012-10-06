@@ -34,6 +34,7 @@ Variables::clear()
 		clearvariable((*i).second);
 		varmap.erase((*i).first);
 	}
+	globals.clear();
 	recurselevel = 0;
 }
 
@@ -86,8 +87,15 @@ void Variables::clearvariable(variable* v)
 variable* Variables::getvfromnum(int varnum, bool makenew) {
 	// get v from map else return NULL
 	// if makenew then make a new one if not exist
-	int levelvarnum = varnum*MAX_RECURSE_LEVELS+recurselevel;
 	variable *v;
+	int levelvarnum;
+	if (isglobal(varnum)) {
+		// global variables are at level zero
+		levelvarnum = varnum*MAX_RECURSE_LEVELS;
+	} else {
+		// non-global variables are at recurselevel
+		levelvarnum = varnum*MAX_RECURSE_LEVELS+recurselevel;
+	}
 	std::map<int, variable*>::iterator i = varmap.find(levelvarnum);
 	if(i==varmap.end()) {
 		if(makenew) {
@@ -474,5 +482,21 @@ char *Variables::array2dgetstring(int varnum, int x, int y)
 	return strdup("");
 }
 
+void Variables::makeglobal(int varnum)
+{
+	// make a variable global - if there is a value in a run level greater than 0 then
+	// that value will be lost to the program
+	// globals list are erased when variables are reset
+	globals[varnum] = true;
+}
 
+bool Variables::isglobal(int varnum)
+{
+	// return true if the variable is on the list of globals
+	std::map<int, bool>::iterator i = globals.find(varnum);
+	if(i!=globals.end()) {
+		return (*i).second;
+	}
+	return false;
+}
 

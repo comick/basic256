@@ -5,6 +5,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,14 +76,17 @@ class Variables
 		void array2dsetstring(int, int, int, char *);
 		char *arraygetstring(int, int);
 		char *array2dgetstring(int, int, int);
-
+		//
+		void makeglobal(int);
 
 
 	private:
 		int lasterror;
 		int recurselevel;
 		std::map<int, variable*> varmap;
+		std::map<int, bool> globals;
 		void clearvariable(variable*);
 		variable* getvfromnum(int, bool);
+		bool isglobal(int);
 
 };

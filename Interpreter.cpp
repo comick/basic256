@@ -473,11 +473,17 @@ Interpreter::compileProgram(char *code)
 	{
 		switch(result)
 		{
+			case COMPERR_GLOBALNOTHERE:
+				emit(outputReady(tr("You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_FUNCTIONNOTHERE:
+				emit(outputReady(tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			case COMPERR_ENDFUNCTION:
-				emit(outputReady(tr("END FUNCTION without matching FUNCTION on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONNOEND:
-				emit(outputReady(tr("FUNCTION without matching END FUNCTION statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FORNOEND:
 				emit(outputReady(tr("FOR without matching NEXT statement on line ") + QString::number(linenumber) + ".\n"));
@@ -1430,7 +1436,15 @@ Interpreter::execByteCode()
 		}
 		break;
 
-
+	case OP_GLOBAL:
+		{
+			// make a variable number a global variable
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			variables.makeglobal(*i);
+		}
+		break;
 
 	case OP_ARRAYASSIGN:
 		{

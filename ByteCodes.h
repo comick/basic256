@@ -117,6 +117,7 @@
 #define OP_EXPLODEXSTR		0x56
 #define OP_EXPLODEX		0x57
 #define OP_IMPLODE		0x58
+#define OP_GLOBAL		0x59
 
 
 //2 Int argument ops

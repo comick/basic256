@@ -132,6 +132,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]\\b"				// getcolor
 		<< "\\b[Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]\\b"			// getsetting
 		<< "\\b[Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]\\b"				// getslice
+		<< "\\b[Gg][Ll][Oo][Bb][Aa][Ll]\\b"					// global
 		<< "\\b[Gg][Oo][Ss][Uu][Bb]\\b"						// gosub
 		<< "\\b[Gg][Oo][Tt][Oo]\\b"						// goto
 		<< "\\b[Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]\\b"			// graphheignt
@@ -233,6 +234,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Tt][Aa][Nn]\\b"							// tan
 		<< "\\b[Tt][Ee][Xx][Tt]\\b"						// text
 		<< "\\b[Tt][Hh][Ee][Nn]\\b"						// then
+		<< "\\b[Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]\\b"			// throwerror
 		<< "\\b[Tt][Oo]\\b"							// to
 		<< "\\b[Ss][Tt][Rr][Ii][Nn][Gg]\\b"					// tostring
 		<< "\\b[Uu][Nn][Tt][Ii][Ll]\\b"						// until

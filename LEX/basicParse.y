@@ -62,6 +62,8 @@ unsigned int maxbyteoffset = 0;
 
 // array to hold stack of if statement branch locations
 // that need to have final jump location added to them
+// the iftable is also used by for, subroutine, and function to insure
+// that no if,do,while,... is nested incorrectly
 unsigned int iftable[IFTABLESIZE];
 unsigned int iftablesourceline[IFTABLESIZE];
 unsigned int iftabletype[IFTABLESIZE];
@@ -316,7 +318,7 @@ addStringOp(char op, char *data) {
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
-%token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL
+%token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL B256GLOBAL
 
 
 %union
@@ -391,12 +393,16 @@ validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLI
 ;
 
 functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
+		if (numifs>0) {
+			errorcode = COMPERR_FUNCTIONNOTHERE;
+			return -1;
+		}
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		addOp(OP_END); 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
+		newIf(0, linenumber, IFTABLETYPEFUNCTION);
 		// initialize return variable
 		addIntOp(OP_PUSHINT, 0);
 		addIntOp(OP_NUMASSIGN, $2);
@@ -418,12 +424,16 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 	}
 	|
 	B256FUNCTION B256STRINGVAR functionvariablelist {
+		if (numifs>0) {
+			errorcode = COMPERR_FUNCTIONNOTHERE;
+			return -1;
+		}
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		addOp(OP_END); 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
+		newIf(0, linenumber, IFTABLETYPEFUNCTION);
 		// initialize return variable
 		addStringOp(OP_PUSHSTRING, "");
 		addIntOp(OP_STRINGASSIGN, $2);
@@ -445,12 +455,16 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 ;
 
 subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
+		if (numifs>0) {
+			errorcode = COMPERR_FUNCTIONNOTHERE;
+			return -1;
+		}
 		// $2 is the symbol for the subroutine - add the start to the label table
 		subroutineDefSymbol = $2;
 		addOp(OP_END); 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-//		newIf(0, linenumber-1, IFTABLETYPEFUNCTION);
+		newIf(0, linenumber, IFTABLETYPEFUNCTION);
 		// check to see if there are enough values on the stack
 		addIntOp(OP_PUSHINT, numargs);
 		addOp(OP_ARGUMENTCOUNTTEST);
@@ -489,41 +503,43 @@ endfunctionexpr: B256ENDFUNCTION | B256END B256FUNCTION
 ;
 
 endfunctionstmt: endfunctionexpr {
-//	if (numifs>0) {
-//		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addIntOp(OP_PUSHVAR, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
 			functionDefSymbol = -1; 
 			addOp(OP_RETURN);
-//		} else {
-//			errorcode = testIfOnTableError();
-//			linenumber = testIfOnTable();
-//			return -1;
-//		}
-//	} else {
-//		errorcode = COMPERR_ENDFUNCTION;
-//		return -1;
-//	}
+			numifs--;
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_ENDFUNCTION;
+		return -1;
+	}
 }
 ;
 
 endsubroutineexpr: B256ENDSUBROUTINE | B256END B256SUBROUTINE;
 
 endsubroutinestmt: endsubroutineexpr {
-//	if (numifs>0) {
-//		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
 			functionDefSymbol = -1; 
 			addOp(OP_RETURN);
-//		} else {
-//			errorcode = testIfOnTableError();
-//			linenumber = testIfOnTable();
-//			return -1;
-//		}
-//	} else {
-//		errorcode = COMPERR_ENDFUNCTION;
-//		return -1;
-//	}
+			numifs--;
+		} else {
+			errorcode = testIfOnTableError();
+			linenumber = testIfOnTable();
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_ENDFUNCTION;
+		return -1;
+	}
 }
 ;
 
@@ -742,6 +758,8 @@ statement: gotostmt
 	| editvisiblestmt
 	| graphvisiblestmt
 	| outputvisiblestmt
+	| globalstmt
+	| throwerrorstmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(OP_DIM, $2); }
@@ -757,6 +775,9 @@ redimstmt: B256REDIM B256VARIABLE floatexpr { addIntOp(OP_PUSHINT, 1); addIntOp(
 ;
 
 pausestmt: B256PAUSE floatexpr { addOp(OP_PAUSE); }
+;
+
+throwerrorstmt: B256THROWERROR floatexpr { addOp(OP_THROWERROR); }
 ;
 
 clearstmt: B256CLS { addOp(OP_CLS); }
@@ -1121,6 +1142,21 @@ graphvisiblestmt: B256GRAPHVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_GR
 
 outputvisiblestmt: B256OUTPUTVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_OUTPUTVISIBLE); }
 ;
+
+globalstmt: B256GLOBAL functionvariables {
+	// create ops to make all of the variables listed globals
+	if (numifs>0) {
+		errorcode = COMPERR_GLOBALNOTHERE;
+		return -1;
+	}
+ 	int t;
+	for(t=numargs-1;t>=0;t--) {
+		addIntOp(OP_GLOBAL, args[t]);
+	}
+	numargs=0;	// clear the list for next function
+}
+;
+
 
 
 immediatestrlist: '{' stringlist '}'
