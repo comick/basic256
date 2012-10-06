@@ -208,6 +208,7 @@ addOp(char op) {
 
 void
 addExtendedOp(char extgroup, char extop) {
+	checkByteMem(sizeof(char)*2);
 	addOp(extgroup);
 	addOp(extop);
 }
@@ -221,8 +222,17 @@ addInt(int data) {
 	unsigned int holdOffset = byteOffset;
 	checkByteMem(sizeof(int));
 	temp = (int *) (byteCode + byteOffset);
+	*temp = data;
 	byteOffset += sizeof(int);
 	return holdOffset;
+}
+
+void
+addString(char *data) {
+	int len = strlen(data) + 1;
+	checkByteMem(len);
+	strncpy((char *) byteCode + byteOffset, data, len);
+	byteOffset += len;
 }
 
 void
@@ -264,16 +274,27 @@ addFloatOp(char op, double data) {
 
 void
 addStringOp(char op, char *data) {
-	double *temp = NULL;
-	int len = strlen(data) + 1;
-	checkByteMem(sizeof(char) + len);
-	byteCode[byteOffset] = op;
-	byteOffset++;
-
-	temp = (double *) (byteCode + byteOffset);
-	strncpy((char *) byteCode + byteOffset, data, len);
-	byteOffset += len;
+	addOp(op);
+	addString(data);
 }
+
+void dumpSymbolTable() {
+	// dump the symbol table at the end of the byte code
+	// length then strings with null terminators
+	int i=0;
+	addOp(OP_END);
+	addOp(0xff);
+	addOp(0xff);
+	addOp(0xff);
+	addOp(0xff);
+	addInt(numsyms);
+	while(symtable[i]) {
+		addString(symtable[i]);
+		i++;
+	}
+	return -1;
+}
+
 
 #ifdef __cplusplus
 }
@@ -528,7 +549,7 @@ endsubroutinestmt: endsubroutineexpr {
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
-			functionDefSymbol = -1; 
+			subroutineDefSymbol = -1; 
 			addOp(OP_RETURN);
 			numifs--;
 		} else {
@@ -892,12 +913,10 @@ returnstmt: B256RETURN {
 		// if we are defining a function return pushes a variable value
 		addIntOp(OP_PUSHVAR, functionDefSymbol);
 		addOp(OP_DECREASERECURSE);
-		functionDefSymbol = -1; 
 	}
 	if (subroutineDefSymbol!=-1) {
 		// if we are defining a rubroutine
 		addOp(OP_DECREASERECURSE);
-		subroutineDefSymbol = -1; 
 	}
 	addOp(OP_RETURN);
  }

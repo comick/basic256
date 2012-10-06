@@ -24,6 +24,10 @@ int Variables::error() {
 	return(lasterror);
 }
 
+int Variables::errorvarnum() {
+	return(lasterrorvar);
+}
+
 void
 Variables::clear()
 {
@@ -124,6 +128,7 @@ int Variables::type(int varnum)
 		return(v->type);
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(T_UNUSED);
 }
@@ -147,9 +152,11 @@ double Variables::getfloat(int varnum)
 			return(v->value.floatval);
 		} else {
 			lasterror = ERROR_NOSUCHVARIABLE;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -174,9 +181,11 @@ char *Variables::getstring(int varnum)
 			return(v->value.string);
 		} else {
 			lasterror = ERROR_NOSUCHVARIABLE;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return strdup("");
 }
@@ -215,9 +224,11 @@ void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
 			v->value.arr = a;
 		} else {
 			lasterror = ERROR_ARRAYSIZESMALL;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_ARRAYSIZELARGE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -256,9 +267,11 @@ void Variables::arraydimstring(int varnum, int xdim, int ydim, bool redim)
 			v->value.arr = a;
 		} else {
 			lasterror = ERROR_ARRAYSIZESMALL;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_ARRAYSIZELARGE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -273,9 +286,11 @@ int Variables::arraysize(int varnum)
 			return(v->value.arr->size);
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -291,9 +306,11 @@ int Variables::arraysizex(int varnum)
 			return(v->value.arr->xdim);
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -309,9 +326,11 @@ int Variables::arraysizey(int varnum)
 			return(v->value.arr->ydim);
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -326,12 +345,15 @@ void Variables::arraysetfloat(int varnum, int index, double value)
 				v->value.arr->data.fdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -345,12 +367,15 @@ void Variables::array2dsetfloat(int varnum, int x, int y, double value)
 				v->value.arr->data.fdata[x * v->value.arr->ydim + y] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -364,12 +389,15 @@ double Variables::arraygetfloat(int varnum, int index)
 				return(v->value.arr->data.fdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -384,12 +412,15 @@ double Variables::array2dgetfloat(int varnum, int x, int y)
 				return(v->value.arr->data.fdata[x * v->value.arr->ydim + y]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return(0);
 }
@@ -408,12 +439,15 @@ void Variables::arraysetstring(int varnum, int index, char *value)
 				v->value.arr->data.sdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTSTRINGARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -432,12 +466,15 @@ void Variables::array2dsetstring(int varnum, int x, int y, char *value)
 				v->value.arr->data.sdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTSTRINGARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 }
 
@@ -451,12 +488,15 @@ char *Variables::arraygetstring(int varnum, int index)
 				return(v->value.arr->data.sdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTSTRINGARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return strdup("");
 }
@@ -472,12 +512,15 @@ char *Variables::array2dgetstring(int varnum, int x, int y)
 				return(v->value.arr->data.sdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
+				lasterrorvar = varnum;
 			}
 		} else {
 			lasterror = ERROR_NOTSTRINGARRAY;
+			lasterrorvar = varnum;
 		}
 	} else {
 		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterrorvar = varnum;
 	}
 	return strdup("");
 }

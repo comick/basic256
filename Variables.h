@@ -53,6 +53,7 @@ class Variables
 		//
 		int type(int);
 		int error();
+		int errorvarnum();
 		//
 		void setfloat(int, double);
 		double getfloat(int);
@@ -82,6 +83,7 @@ class Variables
 
 	private:
 		int lasterror;
+		int lasterrorvar;
 		int recurselevel;
 		std::map<int, variable*> varmap;
 		std::map<int, bool> globals;
