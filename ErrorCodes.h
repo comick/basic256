@@ -37,17 +37,17 @@
 #define ERROR_FILERESET 9
 #define ERROR_FILERESET_MESSAGE "Unable to reset file"
 #define ERROR_ARRAYSIZELARGE 10
-#define ERROR_ARRAYSIZELARGE_MESSAGE "Array dimension too large"
+#define ERROR_ARRAYSIZELARGE_MESSAGE "Array %VARNAME% dimension too large"
 #define ERROR_ARRAYSIZESMALL 11
-#define ERROR_ARRAYSIZESMALL_MESSAGE "Array dimension too small"
+#define ERROR_ARRAYSIZESMALL_MESSAGE "Array %VARNAME% dimension too small"
 #define ERROR_NOSUCHVARIABLE 12
-#define ERROR_NOSUCHVARIABLE_MESSAGE "Unknown variable"
+#define ERROR_NOSUCHVARIABLE_MESSAGE "Unknown variable %VARNAME%"
 #define ERROR_NOTARRAY 13
-#define ERROR_NOTARRAY_MESSAGE "Not an array variable"
+#define ERROR_NOTARRAY_MESSAGE "Variable %VARNAME% is not an array"
 #define ERROR_NOTSTRINGARRAY 14
-#define ERROR_NOTSTRINGARRAY_MESSAGE "Not a string array variable"
+#define ERROR_NOTSTRINGARRAY_MESSAGE "Variable %VARNAME% is not a string array"
 #define ERROR_ARRAYINDEX 15
-#define ERROR_ARRAYINDEX_MESSAGE "Array index out of bounds"
+#define ERROR_ARRAYINDEX_MESSAGE "Array %VARNAME% index out of bounds"
 #define ERROR_STRNEGLEN 16
 #define ERROR_STRNEGLEN_MESSAGE "Substring length less that zero"
 #define ERROR_STRSTART 17

@@ -299,6 +299,9 @@ QString Interpreter::getErrorMessage(int e) {
 			errormessage = tr(ERROR_USER_MESSAGE);
 			
 	}
+	if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
+		errormessage.replace(QString("%VARNAME%"),QString(symtable[variables.errorvarnum()]),Qt::CaseInsensitive);
+	}
 	return errormessage;
 }
 
@@ -526,6 +529,8 @@ Interpreter::compileProgram(char *code)
 		return -1;
 	}
 
+	// this logic goes through the bytecode generated and puts the actual
+	// label address from labeltable into the bytecode
 	op = byteCode;
 	currentLine = 1;
 	while (op <= byteCode + byteOffset)
@@ -554,27 +559,42 @@ Interpreter::compileProgram(char *code)
 				return -1;
 			}
 		}
-		else if (*op < 0x40)  //no args
+		else if (*op >= OP_TYPEARGNONE && *op < OP_TYPEARGINT)
 		{
+			// op has no args - move to next byte
 			op += sizeof(unsigned char);
 		}
-		else if (*op < 0x60) //Int arg
+		else if (*op >= OP_TYPEARGINT && *op < OP_TYPEARG2INT)
 		{
+			//op has one Int arg
 			op += sizeof(unsigned char) + sizeof(int);
 		}
-		else if (*op < 0x70) //2 Int arg
+		else if (*op >= OP_TYPEARG2INT && *op < OP_TYPEARGFLOAT)
 		{
+			 // op has 2 Int arg
 			op += sizeof(unsigned char) + 2 * sizeof(int);
 		}
-		else if (*op < 0x80) //Float arg
+		else if (*op >= OP_TYPEARGFLOAT && *op < OP_TYPEARGSTRING)
 		{
+			// op has a single Float arg
 			op += sizeof(unsigned char) + sizeof(double);
 		}
-		else //String arg
+		else if (*op >= OP_TYPEARGSTRING && *op < OP_TYPEARGEXT)
 		{
+			// op has a single null terminated String arg
 			op += sizeof(unsigned char);
 			int len = strlen((char *) op) + 1;
 			op += len;
+		}
+		else if (*op == OP_EXTENDEDNONE)
+		{
+			// simple one byte op follows the extended
+			// op has no args - move to next byte
+			op += sizeof(unsigned char) * 2;
+		}
+		else
+		{
+			emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + ".\n"));
 		}
 	}
 
@@ -3049,9 +3069,10 @@ Interpreter::execByteCode()
 		break;
 
 	
-	case OP_EXTENDED_0:
+	case OP_EXTENDEDNONE:
 		{
-			// extended op 0xe0xx - allow for an extra range of operations
+			// extended none - allow for an extra range of operations
+			// ALL MUST BE ONE BYTE op codes in thiis group of extended ops
 			op++;
 			switch(*op) {
 				case OP_SPRITEDIM:

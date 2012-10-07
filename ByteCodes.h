@@ -18,219 +18,198 @@
 
 
 
-//No argument ops
-#define OP_END   		0x00
-#define OP_NOP   		0x01
-#define OP_RETURN		0x02
-#define OP_CONCAT		0x03
+//No argument ops GE OP_TYPEARGNONE and LT OP_TYPEARGINT
 
-#define OP_EQUAL 		0x04
-#define OP_NEQUAL		0x05
-#define OP_GT    		0x06
-#define OP_LT    		0x07
-#define OP_GTE   		0x08
-#define OP_LTE   		0x09
-#define OP_AND   		0x0a
-#define OP_NOT   		0x0b
-#define OP_OR    		0x0c
-#define OP_XOR   		0x0d
+#define OP_TYPEARGNONE		0x00
+#define OP_END   		OP_TYPEARGNONE + 0x00
+#define OP_NOP   		OP_TYPEARGNONE + 0x01
+#define OP_RETURN		OP_TYPEARGNONE + 0x02
+#define OP_CONCAT		OP_TYPEARGNONE + 0x03
+#define OP_EQUAL 		OP_TYPEARGNONE + 0x04
+#define OP_NEQUAL		OP_TYPEARGNONE + 0x05
+#define OP_GT    		OP_TYPEARGNONE + 0x06
+#define OP_LT    		OP_TYPEARGNONE + 0x07
+#define OP_GTE   		OP_TYPEARGNONE + 0x08
+#define OP_LTE   		OP_TYPEARGNONE + 0x09
+#define OP_AND   		OP_TYPEARGNONE + 0x0a
+#define OP_NOT   		OP_TYPEARGNONE + 0x0b
+#define OP_OR    		OP_TYPEARGNONE + 0x0c
+#define OP_XOR   		OP_TYPEARGNONE + 0x0d
+#define OP_INT   		OP_TYPEARGNONE + 0x0e
+#define OP_STRING		OP_TYPEARGNONE + 0x0f
+#define OP_ADD   		OP_TYPEARGNONE + 0x10
+#define OP_SUB   		OP_TYPEARGNONE + 0x11
+#define OP_MUL   		OP_TYPEARGNONE + 0x12
+#define OP_DIV   		OP_TYPEARGNONE + 0x13
+#define OP_EX	 		OP_TYPEARGNONE + 0x14
+#define OP_NEGATE		OP_TYPEARGNONE + 0x15
+#define OP_PRINT 		OP_TYPEARGNONE + 0x16
+#define OP_PRINTN		OP_TYPEARGNONE + 0x17
+#define OP_INPUT 		OP_TYPEARGNONE + 0x18
+#define OP_KEY   		OP_TYPEARGNONE + 0x19
+#define OP_PLOT  		OP_TYPEARGNONE + 0x1a
+#define OP_RECT  		OP_TYPEARGNONE + 0x1b
+#define OP_CIRCLE		OP_TYPEARGNONE + 0x1c
+#define OP_LINE  		OP_TYPEARGNONE + 0x1d
+#define OP_REFRESH		OP_TYPEARGNONE + 0x1e
+#define OP_FASTGRAPHICS		OP_TYPEARGNONE + 0x1f
+#define OP_CLS			OP_TYPEARGNONE + 0x20
+#define OP_CLG			OP_TYPEARGNONE + 0x21
+#define OP_GRAPHSIZE            OP_TYPEARGNONE + 0x22
+#define OP_GRAPHWIDTH		OP_TYPEARGNONE + 0x23
+#define OP_GRAPHHEIGHT		OP_TYPEARGNONE + 0x24
+#define OP_SIN			OP_TYPEARGNONE + 0x25
+#define OP_COS			OP_TYPEARGNONE + 0x26
+#define OP_TAN			OP_TYPEARGNONE + 0x27
+#define OP_RAND			OP_TYPEARGNONE + 0x28
+#define OP_CEIL			OP_TYPEARGNONE + 0x29
+#define OP_FLOOR		OP_TYPEARGNONE + 0x2a
+#define OP_ABS			OP_TYPEARGNONE + 0x2b
+#define OP_PAUSE		OP_TYPEARGNONE + 0x2c
+#define OP_POLY			OP_TYPEARGNONE + 0x2d
+#define OP_LENGTH		OP_TYPEARGNONE + 0x2e
+#define OP_MID			OP_TYPEARGNONE + 0x2f
+#define OP_INSTR		OP_TYPEARGNONE + 0x30
+#define OP_INSTR_S		OP_TYPEARGNONE + 0x31
+#define OP_INSTR_SC		OP_TYPEARGNONE + 0x32
+#define OP_INSTRX		OP_TYPEARGNONE + 0x33
+#define OP_INSTRX_S		OP_TYPEARGNONE + 0x34
+#define OP_OPEN			OP_TYPEARGNONE + 0x35
+#define OP_READ			OP_TYPEARGNONE + 0x36
+#define OP_WRITE		OP_TYPEARGNONE + 0x37
+#define OP_CLOSE		OP_TYPEARGNONE + 0x38
+#define OP_RESET		OP_TYPEARGNONE + 0x39
+#define OP_SOUND		OP_TYPEARGNONE + 0x3a
+#define OP_INCREASERECURSE	OP_TYPEARGNONE + 0x3b
+#define OP_DECREASERECURSE	OP_TYPEARGNONE + 0x3c
+#define OP_ASC			OP_TYPEARGNONE + 0x3d
+#define OP_CHR			OP_TYPEARGNONE + 0x3e
+#define OP_FLOAT		OP_TYPEARGNONE + 0x3f
+#define OP_READLINE		OP_TYPEARGNONE + 0x40
+#define OP_EOF			OP_TYPEARGNONE + 0x41
+#define OP_MOD			OP_TYPEARGNONE + 0x42
+#define OP_YEAR			OP_TYPEARGNONE + 0x43
+#define OP_MONTH		OP_TYPEARGNONE + 0x44
+#define OP_DAY			OP_TYPEARGNONE + 0x45
+#define OP_HOUR			OP_TYPEARGNONE + 0x46
+#define OP_MINUTE		OP_TYPEARGNONE + 0x47
+#define OP_SECOND		OP_TYPEARGNONE + 0x48
+#define OP_MOUSEX		OP_TYPEARGNONE + 0x49
+#define OP_MOUSEY		OP_TYPEARGNONE + 0x4a
+#define OP_MOUSEB		OP_TYPEARGNONE + 0x4b
+#define OP_CLICKCLEAR		OP_TYPEARGNONE + 0x4c
+#define OP_CLICKX		OP_TYPEARGNONE + 0x4d
+#define OP_CLICKY		OP_TYPEARGNONE + 0x4e
+#define OP_CLICKB		OP_TYPEARGNONE + 0x4f
+#define OP_SETCOLORRGB		OP_TYPEARGNONE + 0x50
+#define OP_TEXT			OP_TYPEARGNONE + 0x51
+#define OP_FONT			OP_TYPEARGNONE + 0x52
+#define OP_SAY			OP_TYPEARGNONE + 0x53
+#define OP_WAVPLAY		OP_TYPEARGNONE + 0x54
+#define OP_WAVSTOP		OP_TYPEARGNONE + 0x55
+#define OP_SEEK			OP_TYPEARGNONE + 0x56
+#define OP_SIZE			OP_TYPEARGNONE + 0x57
+#define OP_EXISTS		OP_TYPEARGNONE + 0x58
+#define OP_LEFT			OP_TYPEARGNONE + 0x59
+#define OP_RIGHT		OP_TYPEARGNONE + 0x5a
+#define OP_UPPER		OP_TYPEARGNONE + 0x5b
+#define OP_LOWER		OP_TYPEARGNONE + 0x5c
+#define OP_SYSTEM		OP_TYPEARGNONE + 0x5d
+#define OP_VOLUME		OP_TYPEARGNONE + 0x5e
+#define OP_SETCOLORINT		OP_TYPEARGNONE + 0x5f
+#define OP_RGB			OP_TYPEARGNONE + 0x60
+#define OP_PIXEL		OP_TYPEARGNONE + 0x61
+#define OP_GETCOLOR		OP_TYPEARGNONE + 0x62
+#define OP_ASIN			OP_TYPEARGNONE + 0x63
+#define OP_ACOS			OP_TYPEARGNONE + 0x64
+#define OP_ATAN			OP_TYPEARGNONE + 0x65
+#define OP_DEGREES		OP_TYPEARGNONE + 0x66
+#define OP_RADIANS		OP_TYPEARGNONE + 0x67
+#define OP_INTDIV 	       	OP_TYPEARGNONE + 0x68
+#define OP_LOG			OP_TYPEARGNONE + 0x69
+#define OP_LOGTEN 	       	OP_TYPEARGNONE + 0x6a
+#define OP_GETSLICE 	       	OP_TYPEARGNONE + 0x6b
+#define OP_PUTSLICE 	       	OP_TYPEARGNONE + 0x6c
+#define OP_PUTSLICEMASK		OP_TYPEARGNONE + 0x6d
+#define OP_IMGLOAD 	       	OP_TYPEARGNONE + 0x6e
+#define OP_IMGLOAD_S 	       	OP_TYPEARGNONE + 0x6f
+#define OP_IMGLOAD_SR 	       	OP_TYPEARGNONE + 0x70
+#define OP_SQR			OP_TYPEARGNONE + 0x71
+#define OP_EXP			OP_TYPEARGNONE + 0x72
+#define OP_STACKSWAP		OP_TYPEARGNONE + 0x73
+#define OP_STACKTOPTO2		OP_TYPEARGNONE + 0x74
+#define OP_ARGUMENTCOUNTTEST	OP_TYPEARGNONE + 0x75
+#define OP_THROWERROR		OP_TYPEARGNONE + 0x76
 
-#define OP_INT   		0x0e
-#define OP_STRING		0x0f
-
-#define OP_ADD   		0x10
-#define OP_SUB   		0x11
-#define OP_MUL   		0x12
-#define OP_DIV   		0x13
-#define OP_EX	 		0x14
-#define OP_NEGATE		0x15
-
-#define OP_PRINT 		0x16
-#define OP_PRINTN		0x17
-#define OP_INPUT 		0x18
-#define OP_KEY   		0x19
-
-#define OP_PLOT  		0x1a
-#define OP_RECT  		0x1b
-#define OP_CIRCLE		0x1c
-#define OP_LINE  		0x1d
-
-#define OP_REFRESH		0x1e
-#define OP_FASTGRAPHICS		0x1f
-#define OP_CLS			0x20
-#define OP_CLG			0x21
-#define OP_GRAPHSIZE            0x22
-#define OP_GRAPHWIDTH		0x23
-#define OP_GRAPHHEIGHT		0x24
-
-#define OP_SIN			0x28
-#define OP_COS			0x29
-#define OP_TAN			0x2a
-#define OP_RAND			0x2b
-#define OP_CEIL			0x2c
-#define OP_FLOOR		0x2d
-#define OP_ABS			0x2e
-
-#define OP_PAUSE		0x2f
-#define OP_POLY			0x30
-#define OP_LENGTH		0x31
-#define OP_MID			0x32
-#define OP_INSTR		0x33
-#define OP_INSTR_S		0x34
-#define OP_INSTR_SC		0x35
-#define OP_INSTRX		0x36
-#define OP_INSTRX_S		0x37
-
-
-#define OP_OPEN			0x38
-#define OP_READ			0x39
-#define OP_WRITE		0x3a
-#define OP_CLOSE		0x3b
-#define OP_RESET		0x3c
-
-#define OP_INCREASERECURSE	0x3e
-#define OP_DECREASERECURSE	0x3f
-
-#define OP_SOUND		0x40
-
-//Int argument ops
-#define OP_GOTO          	0x41
-#define OP_GOSUB         	0x42
-#define OP_BRANCH        	0x43
-#define OP_NUMASSIGN     	0x45
-#define OP_STRINGASSIGN  	0x46
-#define OP_ARRAYASSIGN   	0x47
-#define OP_STRARRAYASSIGN	0x48
-#define OP_PUSHVAR       	0x49
-#define OP_PUSHINT       	0x4a
-#define OP_DEREF         	0x4b
-#define OP_FOR           	0x4c
-#define OP_NEXT          	0x4d
-#define OP_CURRLINE      	0x4e
-#define OP_DIM           	0x4f
-#define OP_DIMSTR        	0x50
-#define OP_ONERROR         	0x51
-#define OP_EXPLODESTR		0x52
-#define OP_EXPLODESTR_C		0x53
-#define OP_EXPLODE		0x54
-#define OP_EXPLODE_C		0x55
-#define OP_EXPLODEXSTR		0x56
-#define OP_EXPLODEX		0x57
-#define OP_IMPLODE		0x58
-#define OP_GLOBAL		0x59
-
-
-//2 Int argument ops
-#define OP_ARRAYLISTASSIGN	0x60
-#define OP_STRARRAYLISTASSIGN	0x61
-
-//Float argument ops
-#define OP_PUSHFLOAT		0x70
-
-//String argument ops
-#define OP_PUSHSTRING		0x80
-
-// jmr
-#define OP_ASC			0x90
-#define OP_CHR			0x91
-#define OP_FLOAT		0x92
-#define OP_READLINE		0x93
-#define OP_WRITELINE		0x94
-#define OP_EOF			0x95
-#define OP_MOD			0x96
-#define OP_YEAR			0x97
-#define OP_MONTH		0x98
-#define OP_DAY			0x99
-#define OP_HOUR			0x9a
-#define OP_MINUTE		0x9b
-#define OP_SECOND		0x9c
-#define OP_SETCOLORRGB		0x9d
-#define OP_TEXT			0x9e
-#define OP_FONT			0x9f
-#define OP_SAY			0xa0
-#define OP_WAVPLAY		0xa1
-#define OP_WAVSTOP		0xa2
-#define OP_SEEK			0xa3
-#define OP_SIZE			0xa4
-#define OP_EXISTS		0xa5
-#define OP_STAMP		0xa6	// stamp with 4 numbers x,y,scale,rotation and an array
-#define OP_STAMP_LIST		0xa7	// stamp with x, y, and an immediate list
-#define OP_STAMP_S_LIST		0xa8	// stamp with x, y, scale and an immediate list
-#define OP_STAMP_SR_LIST	0xa9	// stamp with x, y, scale, and rotation and an immediate list
-#define OP_POLY_LIST		0xaa
-#define OP_MOUSEX		0xab
-#define OP_MOUSEY		0xac
-#define OP_MOUSEB		0xad
-#define OP_CLICKCLEAR		0xae
-#define OP_CLICKX		0xaf
-#define OP_CLICKY		0xb0
-#define OP_CLICKB		0xb1
-#define OP_LEFT			0xb2
-#define OP_RIGHT		0xb3
-#define OP_UPPER		0xb4
-#define OP_LOWER		0xb5
-#define OP_ARRAYASSIGN2D   	0xb8
-#define OP_STRARRAYASSIGN2D	0xb9
-#define OP_DEREF2D		0xba
-#define OP_SYSTEM		0xbb
-#define OP_VOLUME		0xbc
-#define OP_SOUND_ARRAY		0xbd
-#define OP_SOUND_LIST		0xbe
-#define OP_SETCOLORINT		0xbf
-#define OP_RGB			0xc0
-#define OP_PIXEL		0xc1
-#define OP_GETCOLOR		0xc2
-#define OP_ASIN			0xc3
-#define OP_ACOS			0xc4
-#define OP_ATAN			0xc5
-#define OP_DEGREES		0xc6
-#define OP_RADIANS		0xc7
-#define OP_REDIM          	0xc8
-#define OP_REDIMSTR        	0xc9
-#define OP_REDIM2D          	0xca
-#define OP_REDIMSTR2D        	0xcb
-#define OP_ALEN 	       	0xcd
-#define OP_ALENX 	       	0xce
-#define OP_ALENY 	       	0xcf
-#define OP_INTDIV 	       	0xd0
-#define OP_LOG			0xd1
-#define OP_LOGTEN 	       	0xd2
-#define OP_GETSLICE 	       	0xd3
-#define OP_PUTSLICE 	       	0xd4
-#define OP_PUTSLICEMASK		0xd5
-#define OP_IMGLOAD 	       	0xd6
-#define OP_IMGLOAD_S 	       	0xd7
-#define OP_IMGLOAD_SR 	       	0xd8
-#define OP_SQR			0xd9
-#define OP_EXP			0xda
-
-// extended codes
-#define OP_EXTENDED_0		0xe0
-#define OP_EXTENDED_1		0xe1
-#define OP_EXTENDED_2		0xe2
-#define OP_EXTENDED_3		0xe3
-#define OP_EXTENDED_4		0xe4
-#define OP_EXTENDED_5		0xe5
-#define OP_EXTENDED_6		0xe6
-#define OP_EXTENDED_7		0xe7
-#define OP_EXTENDED_8		0xe8
-#define OP_EXTENDED_9		0xe9
-#define OP_EXTENDED_A		0xea
-#define OP_EXTENDED_B		0xeb
-#define OP_EXTENDED_C		0xec
-#define OP_EXTENDED_D		0xed
-#define OP_EXTENDED_E		0xee
-#define OP_EXTENDED_F		0xef
-
-// stack manipulation and special
-#define OP_STACKSWAP		0xf0
-#define OP_STACKTOPTO2		0xf1
-#define OP_ARGUMENTCOUNTTEST	0xf2
-#define OP_THROWERROR		0xff
+//Int argument ops GE OP_TYPEARGINT and LT OP_TYPEARG2INT
+#define OP_TYPEARGINT		0x80
+#define OP_GOTO          	OP_TYPEARGINT + 0x01
+#define OP_GOSUB         	OP_TYPEARGINT + 0x02
+#define OP_BRANCH        	OP_TYPEARGINT + 0x03
+#define OP_NUMASSIGN     	OP_TYPEARGINT + 0x04
+#define OP_STRINGASSIGN  	OP_TYPEARGINT + 0x05
+#define OP_ARRAYASSIGN   	OP_TYPEARGINT + 0x06
+#define OP_STRARRAYASSIGN	OP_TYPEARGINT + 0x07
+#define OP_PUSHVAR       	OP_TYPEARGINT + 0x08
+#define OP_PUSHINT       	OP_TYPEARGINT + 0x09
+#define OP_DEREF         	OP_TYPEARGINT + 0x0a
+#define OP_FOR           	OP_TYPEARGINT + 0x0b
+#define OP_NEXT          	OP_TYPEARGINT + 0x0c
+#define OP_CURRLINE      	OP_TYPEARGINT + 0x0d
+#define OP_DIM           	OP_TYPEARGINT + 0x0e
+#define OP_DIMSTR        	OP_TYPEARGINT + 0x0f
+#define OP_ONERROR         	OP_TYPEARGINT + 0x10
+#define OP_EXPLODESTR		OP_TYPEARGINT + 0x11
+#define OP_EXPLODESTR_C		OP_TYPEARGINT + 0x12
+#define OP_EXPLODE		OP_TYPEARGINT + 0x13
+#define OP_EXPLODE_C		OP_TYPEARGINT + 0x14
+#define OP_EXPLODEXSTR		OP_TYPEARGINT + 0x15
+#define OP_EXPLODEX		OP_TYPEARGINT + 0x16
+#define OP_IMPLODE		OP_TYPEARGINT + 0x17
+#define OP_GLOBAL		OP_TYPEARGINT + 0x18
+#define OP_STAMP		OP_TYPEARGINT + 0x19	// stamp with 4 numbers x,y,scale,rotation and an array
+#define OP_STAMP_LIST		OP_TYPEARGINT + 0x1a	// stamp with x, y, and an immediate list
+#define OP_STAMP_S_LIST		OP_TYPEARGINT + 0x1b	// stamp with x, y, scale and an immediate list
+#define OP_STAMP_SR_LIST	OP_TYPEARGINT + 0x1c	// stamp with x, y, scale, and rotation and an immediate list
+#define OP_POLY_LIST		OP_TYPEARGINT + 0x1d
+#define OP_WRITELINE		OP_TYPEARGINT + 0x1e
+#define OP_ARRAYASSIGN2D   	OP_TYPEARGINT + 0x1f
+#define OP_STRARRAYASSIGN2D	OP_TYPEARGINT + 0x20
+#define OP_SOUND_ARRAY		OP_TYPEARGINT + 0x21
+#define OP_SOUND_LIST		OP_TYPEARGINT + 0x22
+#define OP_DEREF2D		OP_TYPEARGINT + 0x23
+#define OP_REDIM          	OP_TYPEARGINT + 0x24
+#define OP_REDIMSTR        	OP_TYPEARGINT + 0x25
+#define OP_REDIM2D          	OP_TYPEARGINT + 0x26
+#define OP_REDIMSTR2D        	OP_TYPEARGINT + 0x27
+#define OP_ALEN 	       	OP_TYPEARGINT + 0x28
+#define OP_ALENX 	       	OP_TYPEARGINT + 0x29
+#define OP_ALENY 	       	OP_TYPEARGINT + 0x2a
 
 
-// extended opcodes (second byte)
-// first group e0xx
+
+//2 Int argument ops GE OP_TYPEARG2INT and LT OP_TYPEARGFLOAT
+#define OP_TYPEARG2INT		0xc0
+#define OP_ARRAYLISTASSIGN	OP_TYPEARG2INT + 0x00
+#define OP_STRARRAYLISTASSIGN	OP_TYPEARG2INT + 0x01
+
+//Float argument ops GE OP_TYPEARGFLOAT and LT OP_TYPEARGSTRING
+#define OP_TYPEARGFLOAT		0xc7
+#define OP_PUSHFLOAT		OP_TYPEARGFLOAT + 0x00
+
+//String argument ops GE OP_TYPEARGSTRING and LT OP_TYPEARGEXT
+#define OP_TYPEARGSTRING	0xc9
+#define OP_PUSHSTRING		OP_TYPEARGSTRING + 0x00
+
+
+// extended codes ops GE OP_TYPEARGEXT
+#define OP_TYPEARGEXT		0xf0
+#define OP_EXTENDEDNONE		OP_TYPEARGEXT + 0x00		// simple ops with no arguments
+#define OP_EXTENDEDINT		OP_TYPEARGEXT + 0x01		// ops with one integer argument
+
+
+// extended opcodes (second byte) - NO ARGMENTS
+// first group OP_ENTENDED_NONE
 #define OP_SPRITEDIM 	       	0x00
 #define OP_SPRITELOAD 	       	0x01
 #define OP_SPRITESLICE 	       	0x02

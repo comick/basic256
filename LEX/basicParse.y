@@ -207,12 +207,11 @@ addOp(char op) {
 }
 
 void
-addExtendedOp(char extgroup, char extop) {
-	checkByteMem(sizeof(char)*2);
-	addOp(extgroup);
+addExtendedOp(char extop) {
+	// ad an extended op WITHOUT an argument
+	addOp(OP_EXTENDEDNONE);
 	addOp(extop);
 }
-
 
 unsigned int
 addInt(int data) {
@@ -230,7 +229,7 @@ addInt(int data) {
 void
 addString(char *data) {
 	int len = strlen(data) + 1;
-	checkByteMem(len);
+	checkByteMem(len+1);
 	strncpy((char *) byteCode + byteOffset, data, len);
 	byteOffset += len;
 }
@@ -276,23 +275,6 @@ void
 addStringOp(char op, char *data) {
 	addOp(op);
 	addString(data);
-}
-
-void dumpSymbolTable() {
-	// dump the symbol table at the end of the byte code
-	// length then strings with null terminators
-	int i=0;
-	addOp(OP_END);
-	addOp(0xff);
-	addOp(0xff);
-	addOp(0xff);
-	addOp(0xff);
-	addInt(numsyms);
-	while(symtable[i]) {
-		addString(symtable[i]);
-		i++;
-	}
-	return -1;
 }
 
 
@@ -902,7 +884,7 @@ callstmt: B256CALL B256VARIABLE  { addIntOp(OP_GOSUB, $2); }
 	| B256CALL B256VARIABLE '(' explist ')'  { addIntOp(OP_GOSUB, $2); }
 ;
 
-offerrorstmt: B256OFFERROR { addExtendedOp(OP_EXTENDED_0,OP_OFFERROR); }
+offerrorstmt: B256OFFERROR { addExtendedOp(OP_OFFERROR); }
 ;
 
 onerrorstmt: B256ONERROR B256VARIABLE { addIntOp(OP_ONERROR, $2); }
@@ -1046,8 +1028,8 @@ wavstopstmt: B256WAVSTOP { addOp(OP_WAVSTOP); }
 	| B256WAVSTOP '(' ')' { addOp(OP_WAVSTOP); }
 ;
 
-wavwaitstmt: B256WAVWAIT { addExtendedOp(OP_EXTENDED_0,OP_WAVWAIT); }
-	| B256WAVWAIT '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_WAVWAIT); }
+wavwaitstmt: B256WAVWAIT { addExtendedOp(OP_WAVWAIT); }
+	| B256WAVWAIT '(' ')' { addExtendedOp(OP_WAVWAIT); }
 ;
 
 putslicestmt: B256PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUTSLICE);  }
@@ -1063,103 +1045,103 @@ imgloadstmt: B256IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLO
 	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_SR); }
 ;
 
-spritedimstmt: B256SPRITEDIM floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITEDIM); } // parens added by single floatexpr
+spritedimstmt: B256SPRITEDIM floatexpr { addExtendedOp(OP_SPRITEDIM); } // parens added by single floatexpr
 ;
 
-spriteloadstmt: B256SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITELOAD);  }
-	| B256SPRITELOAD '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITELOAD); }
+spriteloadstmt: B256SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OP_SPRITELOAD);  }
+	| B256SPRITELOAD '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_SPRITELOAD); }
 ;
 
-spriteslicestmt: B256SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITESLICE);  }
-	| B256SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITESLICE); }
+spriteslicestmt: B256SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_SPRITESLICE);  }
+	| B256SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITESLICE); }
 ;
 
-spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITEPLACE);  }
-	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEPLACE); }
+spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_SPRITEPLACE);  }
+	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITEPLACE); }
 ;
 
-spritemovestmt: B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_EXTENDED_0,OP_SPRITEMOVE);  }
-	| B256SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEMOVE); }
+spritemovestmt: B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_SPRITEMOVE);  }
+	| B256SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITEMOVE); }
 ;
 
-spritehidestmt: B256SPRITEHIDE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITEHIDE); } // parens added by single floatexpr
+spritehidestmt: B256SPRITEHIDE floatexpr { addExtendedOp(OP_SPRITEHIDE); } // parens added by single floatexpr
 ;
 
-spriteshowstmt: B256SPRITESHOW floatexpr { addExtendedOp(OP_EXTENDED_0,OP_SPRITESHOW); } // parens added by single floatexpr
+spriteshowstmt: B256SPRITESHOW floatexpr { addExtendedOp(OP_SPRITESHOW); } // parens added by single floatexpr
 ;
 
 clickclearstmt: B256CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
 	| B256CLICKCLEAR '(' ')' { addOp(OP_CLICKCLEAR); }
 ;
 
-changedirstmt: B256CHANGEDIR stringexpr { addExtendedOp(OP_EXTENDED_0,OP_CHANGEDIR); }
+changedirstmt: B256CHANGEDIR stringexpr { addExtendedOp(OP_CHANGEDIR); }
 ;
 
-decimalstmt: B256DECIMAL floatexpr { addExtendedOp(OP_EXTENDED_0,OP_DECIMAL); }
+decimalstmt: B256DECIMAL floatexpr { addExtendedOp(OP_DECIMAL); }
 ;
 
-dbopenstmt: B256DBOPEN stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBOPEN); }
+dbopenstmt: B256DBOPEN stringexpr { addExtendedOp(OP_DBOPEN); }
 ;
 
-dbclosestmt: B256DBCLOSE { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSE); }
-	| B256DBCLOSE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSE); }
+dbclosestmt: B256DBCLOSE { addExtendedOp(OP_DBCLOSE); }
+	| B256DBCLOSE '(' ')' { addExtendedOp(OP_DBCLOSE); }
 ;
 
-dbexecutestmt: B256DBEXECUTE stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBEXECUTE); }
+dbexecutestmt: B256DBEXECUTE stringexpr { addExtendedOp(OP_DBEXECUTE); }
 ;
 
-dbopensetstmt: B256DBOPENSET stringexpr { addExtendedOp(OP_EXTENDED_0,OP_DBOPENSET); }
+dbopensetstmt: B256DBOPENSET stringexpr { addExtendedOp(OP_DBOPENSET); }
 ;
 
-dbclosesetstmt: B256DBCLOSESET { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSESET); }
-	| B256DBCLOSESET '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBCLOSESET); }
+dbclosesetstmt: B256DBCLOSESET { addExtendedOp(OP_DBCLOSESET); }
+	| B256DBCLOSESET '(' ')' { addExtendedOp(OP_DBCLOSESET); }
 ;
 
-netlistenstmt: B256NETLISTEN floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_EXTENDED_0,OP_NETLISTEN); }
-	| B256NETLISTEN '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETLISTEN); } 
-	| B256NETLISTEN floatexpr ',' floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETLISTEN); }
+netlistenstmt: B256NETLISTEN floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_NETLISTEN); }
+	| B256NETLISTEN '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_NETLISTEN); } 
+	| B256NETLISTEN floatexpr ',' floatexpr { addExtendedOp(OP_NETLISTEN); }
 ;
 
-netconnectstmt: B256NETCONNECT stringexpr ',' floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
-	| B256NETCONNECT '(' stringexpr ',' floatexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
-	| B256NETCONNECT floatexpr ',' stringexpr ',' floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
-	| B256NETCONNECT '(' floatexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETCONNECT); }
+netconnectstmt: B256NETCONNECT stringexpr ',' floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_NETCONNECT); }
+	| B256NETCONNECT '(' stringexpr ',' floatexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_NETCONNECT); }
+	| B256NETCONNECT floatexpr ',' stringexpr ',' floatexpr { addExtendedOp(OP_NETCONNECT); }
+	| B256NETCONNECT '(' floatexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_NETCONNECT); }
 ;
 
-netwritestmt: B256NETWRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_EXTENDED_0,OP_NETWRITE); }
-	| B256NETWRITE '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETWRITE); } 
-	| B256NETWRITE floatexpr ',' stringexpr { addExtendedOp(OP_EXTENDED_0,OP_NETWRITE); }
+netwritestmt: B256NETWRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_NETWRITE); }
+	| B256NETWRITE '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_NETWRITE); } 
+	| B256NETWRITE floatexpr ',' stringexpr { addExtendedOp(OP_NETWRITE); }
 ;
 
-netclosestmt: B256NETCLOSE { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
-	| B256NETCLOSE '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
-	| B256NETCLOSE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_NETCLOSE); }
+netclosestmt: B256NETCLOSE { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETCLOSE); }
+	| B256NETCLOSE '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETCLOSE); }
+	| B256NETCLOSE floatexpr { addExtendedOp(OP_NETCLOSE); }
 ;
 
-killstmt: B256KILL stringexpr { addExtendedOp(OP_EXTENDED_0,OP_KILL); }
-	| B256KILL '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_KILL); } 
+killstmt: B256KILL stringexpr { addExtendedOp(OP_KILL); }
+	| B256KILL '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_KILL); } 
 ;
 
-setsettingstmt: B256SETSETTING stringexpr ',' stringexpr ',' stringexpr { addExtendedOp(OP_EXTENDED_0,OP_SETSETTING); }
-	| B256SETSETTING '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SETSETTING); } 
+setsettingstmt: B256SETSETTING stringexpr ',' stringexpr ',' stringexpr { addExtendedOp(OP_SETSETTING); }
+	| B256SETSETTING '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_SETSETTING); } 
 ;
 
-portoutstmt: B256PORTOUT floatexpr ',' floatexpr { addExtendedOp(OP_EXTENDED_0,OP_PORTOUT); }
-	| B256PORTOUT '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_PORTOUT); } 
+portoutstmt: B256PORTOUT floatexpr ',' floatexpr { addExtendedOp(OP_PORTOUT); }
+	| B256PORTOUT '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_PORTOUT); } 
 ;
 
-imgsavestmt: B256IMGSAVE stringexpr  {addStringOp(OP_PUSHSTRING, "PNG"); addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); } 
-	| B256IMGSAVE '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); }
-	| B256IMGSAVE stringexpr ',' stringexpr { addExtendedOp(OP_EXTENDED_0,OP_IMGSAVE); }
+imgsavestmt: B256IMGSAVE stringexpr  {addStringOp(OP_PUSHSTRING, "PNG"); addExtendedOp(OP_IMGSAVE); } 
+	| B256IMGSAVE '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_IMGSAVE); }
+	| B256IMGSAVE stringexpr ',' stringexpr { addExtendedOp(OP_IMGSAVE); }
 ;
 
-editvisiblestmt: B256EDITVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_EDITVISIBLE); }
+editvisiblestmt: B256EDITVISIBLE floatexpr { addExtendedOp(OP_EDITVISIBLE); }
 ;
 
-graphvisiblestmt: B256GRAPHVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_GRAPHVISIBLE); }
+graphvisiblestmt: B256GRAPHVISIBLE floatexpr { addExtendedOp(OP_GRAPHVISIBLE); }
 ;
 
-outputvisiblestmt: B256OUTPUTVISIBLE floatexpr { addExtendedOp(OP_EXTENDED_0,OP_OUTPUTVISIBLE); }
+outputvisiblestmt: B256OUTPUTVISIBLE floatexpr { addExtendedOp(OP_OUTPUTVISIBLE); }
 ;
 
 globalstmt: B256GLOBAL functionvariables {
@@ -1206,9 +1188,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| floatexpr B256INTDIV floatexpr { addOp(OP_INTDIV); }
 	| floatexpr '/' floatexpr { addOp(OP_DIV); }
 	| floatexpr '^' floatexpr { addOp(OP_EX); }
-	| floatexpr B256BINARYOR floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYOR); }
-	| floatexpr B256BINARYAND floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYAND); }
-	| B256BINARYNOT floatexpr { addExtendedOp(OP_EXTENDED_0,OP_BINARYNOT); }
+	| floatexpr B256BINARYOR floatexpr { addExtendedOp(OP_BINARYOR); }
+	| floatexpr B256BINARYAND floatexpr { addExtendedOp(OP_BINARYAND); }
+	| B256BINARYNOT floatexpr { addExtendedOp(OP_BINARYNOT); }
 	| '-' floatexpr %prec B256UMINUS { addOp(OP_NEGATE); }
 	| floatexpr B256AND floatexpr {addOp(OP_AND); }
 	| floatexpr B256OR floatexpr { addOp(OP_OR); }
@@ -1359,31 +1341,31 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 	| B256GETCOLOR { addOp(OP_GETCOLOR); }
 	| B256GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
-	| B256SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITECOLLIDE); }
-	| B256SPRITEX '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEX); }
-	| B256SPRITEY '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEY); }
-	| B256SPRITEH '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEH); }
-	| B256SPRITEW '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEW); }
-	| B256SPRITEV '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_SPRITEV); }
-	| B256DBROW '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_DBROW); }
-	| B256DBINT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBINT); }
-	| B256DBFLOAT '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBFLOAT); }
-	| B256LASTERROR { addExtendedOp(OP_EXTENDED_0,OP_LASTERROR); }
-	| B256LASTERROR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERROR); }
-	| B256LASTERRORLINE { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
-	| B256LASTERRORLINE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORLINE); }
-	| B256NETDATA { addIntOp(OP_PUSHINT, 0); addExtendedOp( OP_EXTENDED_0,OP_NETDATA); }
-	| B256NETDATA '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETDATA); }
-	| B256NETDATA '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETDATA); }
-	| B256PORTIN '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_PORTIN); }
-	| B256COUNT '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNT); }
-	| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNT_C); }
-	| B256COUNTX '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_COUNTX); }
-	| B256OSTYPE { addExtendedOp(OP_EXTENDED_0,OP_OSTYPE); }
-	| B256OSTYPE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_OSTYPE); }
-	| B256MSEC { addExtendedOp(OP_EXTENDED_0,OP_MSEC); }
-	| B256MSEC '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_MSEC); }
-	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_TEXTWIDTH); }
+	| B256SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITECOLLIDE); }
+	| B256SPRITEX '(' floatexpr ')' { addExtendedOp(OP_SPRITEX); }
+	| B256SPRITEY '(' floatexpr ')' { addExtendedOp(OP_SPRITEY); }
+	| B256SPRITEH '(' floatexpr ')' { addExtendedOp(OP_SPRITEH); }
+	| B256SPRITEW '(' floatexpr ')' { addExtendedOp(OP_SPRITEW); }
+	| B256SPRITEV '(' floatexpr ')' { addExtendedOp(OP_SPRITEV); }
+	| B256DBROW '(' ')' { addExtendedOp(OP_DBROW); }
+	| B256DBINT '(' floatexpr ')' { addExtendedOp(OP_DBINT); }
+	| B256DBFLOAT '(' floatexpr ')' { addExtendedOp(OP_DBFLOAT); }
+	| B256LASTERROR { addExtendedOp(OP_LASTERROR); }
+	| B256LASTERROR '(' ')' { addExtendedOp(OP_LASTERROR); }
+	| B256LASTERRORLINE { addExtendedOp(OP_LASTERRORLINE); }
+	| B256LASTERRORLINE '(' ')' { addExtendedOp(OP_LASTERRORLINE); }
+	| B256NETDATA { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETDATA); }
+	| B256NETDATA '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETDATA); }
+	| B256NETDATA '(' floatexpr ')' { addExtendedOp(OP_NETDATA); }
+	| B256PORTIN '(' floatexpr ')' { addExtendedOp(OP_PORTIN); }
+	| B256COUNT '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_COUNT); }
+	| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_COUNT_C); }
+	| B256COUNTX '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_COUNTX); }
+	| B256OSTYPE { addExtendedOp(OP_OSTYPE); }
+	| B256OSTYPE '(' ')' { addExtendedOp(OP_OSTYPE); }
+	| B256MSEC { addExtendedOp(OP_MSEC); }
+	| B256MSEC '(' ')' { addExtendedOp(OP_MSEC); }
+	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_TEXTWIDTH); }
 ;
 
 
@@ -1419,25 +1401,25 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256READLINE { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
 	| B256READLINE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
 	| B256READLINE '(' floatexpr ')' { addOp(OP_READLINE); }
-	| B256CURRENTDIR { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
-	| B256CURRENTDIR '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_CURRENTDIR); }
-	| B256DBSTRING '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DBSTRING); }
-	| B256LASTERRORMESSAGE { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORMESSAGE); }
-	| B256LASTERRORMESSAGE '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERRORMESSAGE); }
-	| B256LASTERROREXTRA { addExtendedOp(OP_EXTENDED_0,OP_LASTERROREXTRA); }
-	| B256LASTERROREXTRA '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_LASTERROREXTRA); }
-	| B256NETREAD { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETREAD); }
-	| B256NETREAD '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_EXTENDED_0,OP_NETREAD); }
-	| B256NETREAD '(' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_NETREAD); }
-	| B256NETADDRESS { addExtendedOp(OP_EXTENDED_0,OP_NETADDRESS); }
-	| B256NETADDRESS '(' ')' { addExtendedOp(OP_EXTENDED_0,OP_NETADDRESS); }
-	| B256MD5 '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_MD5); }
-	| B256GETSETTING '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_GETSETTING); }
-	| B256DIR '(' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_DIR); }
-	| B256DIR '(' ')' { addStringOp(OP_PUSHSTRING, ""); addExtendedOp(OP_EXTENDED_0,OP_DIR); }
-	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACE); }
-	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACE_C); }
-	| B256REPLACEX '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_EXTENDED_0,OP_REPLACEX); }
+	| B256CURRENTDIR { addExtendedOp(OP_CURRENTDIR); }
+	| B256CURRENTDIR '(' ')' { addExtendedOp(OP_CURRENTDIR); }
+	| B256DBSTRING '(' floatexpr ')' { addExtendedOp(OP_DBSTRING); }
+	| B256LASTERRORMESSAGE { addExtendedOp(OP_LASTERRORMESSAGE); }
+	| B256LASTERRORMESSAGE '(' ')' { addExtendedOp(OP_LASTERRORMESSAGE); }
+	| B256LASTERROREXTRA { addExtendedOp(OP_LASTERROREXTRA); }
+	| B256LASTERROREXTRA '(' ')' { addExtendedOp(OP_LASTERROREXTRA); }
+	| B256NETREAD { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETREAD); }
+	| B256NETREAD '(' ')' { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETREAD); }
+	| B256NETREAD '(' floatexpr ')' { addExtendedOp(OP_NETREAD); }
+	| B256NETADDRESS { addExtendedOp(OP_NETADDRESS); }
+	| B256NETADDRESS '(' ')' { addExtendedOp(OP_NETADDRESS); }
+	| B256MD5 '(' stringexpr ')' { addExtendedOp(OP_MD5); }
+	| B256GETSETTING '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_GETSETTING); }
+	| B256DIR '(' stringexpr ')' { addExtendedOp(OP_DIR); }
+	| B256DIR '(' ')' { addStringOp(OP_PUSHSTRING, ""); addExtendedOp(OP_DIR); }
+	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_REPLACE); }
+	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_REPLACE_C); }
+	| B256REPLACEX '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_REPLACEX); }
 	| B256IMPLODE '(' B256STRINGVAR ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256STRINGVAR ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256VARIABLE ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }

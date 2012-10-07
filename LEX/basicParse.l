@@ -610,12 +610,12 @@ basicParse(char *code) {
 	errorcode = 0;
 
 	yyparse();
-	dumpSymbolTable();
 
 	if (testIfOnTable()!=-1 && errorcode==0) {
 		linenumber = testIfOnTable();
 		errorcode = testIfOnTableError();
 	}
+printf("return from basicparse %i\n",errorcode);
 
 	return errorcode;
 }
