@@ -615,7 +615,6 @@ basicParse(char *code) {
 		linenumber = testIfOnTable();
 		errorcode = testIfOnTableError();
 	}
-printf("return from basicparse %i\n",errorcode);
 
 	return errorcode;
 }
