@@ -476,6 +476,9 @@ Interpreter::compileProgram(char *code)
 	{
 		switch(result)
 		{
+			case COMPERR_FUNCTIONGOTO:
+				emit(outputReady(tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			case COMPERR_GLOBALNOTHERE:
 				emit(outputReady(tr("You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
 				break;

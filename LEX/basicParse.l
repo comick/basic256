@@ -55,6 +55,9 @@ extern int yyparse();
 extern int errorcode;
 extern int byteOffset;
 extern int lastLineOffset;
+extern int functionDefSymbol;
+extern int subroutineDefSymbol;
+
 int linenumber;
 int column;
 
@@ -608,6 +611,9 @@ basicParse(char *code) {
 	lastLineOffset = 0;
 	column = 0;
 	errorcode = 0;
+	functionDefSymbol = -1;
+	subroutineDefSymbol = -1;
+
 
 	yyparse();
 

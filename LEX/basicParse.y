@@ -365,7 +365,15 @@ validline: label validstatement
 	| validstatement
 ;
 
-label: B256LABEL { labeltable[$1] = byteOffset; lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+label: B256LABEL {
+	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+		errorcode = COMPERR_FUNCTIONGOTO;
+		return -1;
+	}
+	labeltable[$1] = byteOffset; 
+	lastLineOffset = byteOffset;
+	addIntOp(OP_CURRLINE, linenumber);
+}
 ;
 
 validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
@@ -873,10 +881,22 @@ nextstmt: B256NEXT B256VARIABLE
 	}
 ;
 
-gotostmt: B256GOTO B256VARIABLE { addIntOp(OP_GOTO, $2); }
+gotostmt: B256GOTO B256VARIABLE {
+	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+		errorcode = COMPERR_FUNCTIONGOTO;
+		return -1;
+	}
+	addIntOp(OP_GOTO, $2);
+}
 ;
 
-gosubstmt: B256GOSUB B256VARIABLE { addIntOp(OP_GOSUB, $2); }
+gosubstmt: B256GOSUB B256VARIABLE {
+	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+		errorcode = COMPERR_FUNCTIONGOTO;
+		return -1;
+	}
+	addIntOp(OP_GOSUB, $2);
+}
 ;
 
 callstmt: B256CALL B256VARIABLE  { addIntOp(OP_GOSUB, $2); }
