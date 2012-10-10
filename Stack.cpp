@@ -53,7 +53,7 @@ Stack::debug()
 int Stack::height()
 {
 	// return the height of the stack in elements
-	return ((unsigned int) top - (unsigned int) bottom)/sizeof(stackval);
+	return ((unsigned int) (top - bottom)/sizeof(stackval));
 }
 
 void
