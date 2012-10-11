@@ -53,7 +53,8 @@ Stack::debug()
 int Stack::height()
 {
 	// return the height of the stack in elements
-	return ((unsigned int) (top - bottom)/sizeof(stackval));
+	// magic of pointer math returns number of elements
+	return ((int) (top - bottom));
 }
 
 void
