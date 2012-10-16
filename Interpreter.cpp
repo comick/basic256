@@ -291,6 +291,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_ARGUMENTCOUNT:
 			errormessage = tr(ERROR_ARGUMENTCOUNT_MESSAGE);
 			break;
+		case ERROR_MAXRECURSE:
+			errormessage = tr(ERROR_MAXRECURSE_MESSAGE);
+			break;
 		// put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -3060,6 +3063,9 @@ Interpreter::execByteCode()
 		{
 			op++;
 			variables.increaserecurse();
+			if (variables.error()!=ERROR_NONE) {
+				errornum = variables.error();
+			}			
 		}
 		break;
 
@@ -3068,6 +3074,9 @@ Interpreter::execByteCode()
 		{
 			op++;
 			variables.decreaserecurse();
+			if (variables.error()!=ERROR_NONE) {
+				errornum = variables.error();
+			}
 		}
 		break;
 

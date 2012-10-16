@@ -19,6 +19,6 @@
 #ifndef __VERSION
 #define __VERSION
 
-#define VERSION "0.9.9.4 (2012-10-11)"
+#define VERSION "0.9.9.5 (2012-10-16)"
 
 #endif

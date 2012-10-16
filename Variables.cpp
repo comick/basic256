@@ -49,7 +49,7 @@ Variables::increaserecurse()
 	recurselevel++;
 	if (recurselevel>=MAX_RECURSE_LEVELS) {
 		recurselevel--;
-		lasterror = ERROR_NOSUCHVARIABLE;
+		lasterror = ERROR_MAXRECURSE;
 	}
 }
 
