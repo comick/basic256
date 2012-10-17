@@ -827,6 +827,9 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STR
 	| B256STRINGVAR '=' B256EXPLODE '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODESTR, $1);}
 	| B256STRINGVAR '=' B256EXPLODE '(' stringexpr ',' stringexpr ',' floatexpr ')' { addIntOp(OP_EXPLODESTR_C, $1); }
 	| B256STRINGVAR '=' B256EXPLODEX '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODEXSTR, $1);}
+	| B256STRINGVAR '[' floatexpr ']' '=' floatexpr { errorcode = COMPERR_ASSIGNN2S; if (yytext[0] == '\n') { linenumber--; }; return -1; }
+	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' floatexpr { errorcode = COMPERR_ASSIGNN2S; if (yytext[0] == '\n') { linenumber--; }; return -1; }
+	| B256STRINGVAR '=' immediatelist { errorcode = COMPERR_ASSIGNN2S; if (yytext[0] == '\n') { linenumber--; }; return -1; }
 ;
 
 arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASSIGN, $1); }
@@ -835,13 +838,19 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASS
 	| B256VARIABLE '=' B256EXPLODE '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODE, $1);}
 	| B256VARIABLE '=' B256EXPLODE '(' stringexpr ',' stringexpr ',' floatexpr ')' { addIntOp(OP_EXPLODE_C, $1); }
 	| B256VARIABLE '=' B256EXPLODEX '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODEX, $1);}
+	| B256VARIABLE '[' floatexpr ']' '=' stringexpr { errorcode = COMPERR_ASSIGNS2N; if (yytext[0] == '\n') { linenumber--; }; return -1; }
+	| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' stringexpr { errorcode = COMPERR_ASSIGNS2N; if (yytext[0] == '\n') { linenumber--; }; return -1;  }
+	| B256VARIABLE '=' immediatestrlist { errorcode = COMPERR_ASSIGNS2N; if (yytext[0] == '\n') { linenumber--; }; return -1; }
 ;
+
 
 
 numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
+	| B256VARIABLE '=' stringexpr { errorcode = COMPERR_ASSIGNS2N; if (yytext[0] == '\n') { linenumber--; }; return -1; }
 ;
 
 stringassign: B256STRINGVAR '=' stringexpr { addIntOp(OP_STRINGASSIGN, $1); }
+	| B256STRINGVAR '=' floatexpr { errorcode = COMPERR_ASSIGNN2S; if (yytext[0] == '\n') { linenumber--; }; return -1; }
 ;
 
 forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr

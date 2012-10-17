@@ -479,6 +479,12 @@ Interpreter::compileProgram(char *code)
 	{
 		switch(result)
 		{
+			case COMPERR_ASSIGNS2N:
+				emit(outputReady(tr("Error assigning a string to a numeric variable on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_ASSIGNN2S:
+				emit(outputReady(tr("Error assigning a number to a string variable on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			case COMPERR_FUNCTIONGOTO:
 				emit(outputReady(tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration on line ") + QString::number(linenumber) + ".\n"));
 				break;
