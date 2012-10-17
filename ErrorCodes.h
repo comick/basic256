@@ -116,6 +116,8 @@
 #define	ERROR_ARGUMENTCOUNT_MESSAGE "Number of arguments passed does not match FUNCTION/SUBROUTINE definition."
 #define ERROR_MAXRECURSE 49
 #define	ERROR_MAXRECURSE_MESSAGE "Maximum levels of recursion exceeded."
+#define ERROR_DIVZERO 50
+#define	ERROR_DIVZERO_MESSAGE "Division by zero."
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
 //

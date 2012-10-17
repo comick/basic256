@@ -294,6 +294,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_MAXRECURSE:
 			errormessage = tr(ERROR_MAXRECURSE_MESSAGE);
 			break;
+		case ERROR_DIVZERO:
+			errormessage = tr(ERROR_DIVZERO_MESSAGE);
+			break;
 		// put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -2001,13 +2004,25 @@ Interpreter::execByteCode()
 						stack.push(i2 * i1);
 						break;
 					case OP_MOD:
-						stack.push(i2 % i1);
+						if (i1==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push(i2 % i1);
+						}
 						break;
 					case OP_DIV:
-						stack.push((double) i2/ (double) i1);
+						if (i1==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push((double) i2/ (double) i1);
+						}
 						break;
 					case OP_INTDIV:
-						stack.push(i2 / i1);
+						if (i1==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push(i2 / i1);
+						}
 						break;
 					case OP_EX:
 						stack.push(pow((double) i2, (double) i1));
@@ -2038,13 +2053,25 @@ Interpreter::execByteCode()
 						stack.push(twoval * oneval);
 						break;
 					case OP_MOD:
-						stack.push((int) twoval % (int) oneval);
+						if ((int)oneval==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push((int) twoval % (int) oneval);
+						}
 						break;
 					case OP_DIV:
-						stack.push(twoval / oneval);
+						if (oneval==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push(twoval / oneval);
+						}
 						break;
 					case OP_INTDIV:
-						stack.push((int) twoval / (int) oneval);
+						if ((int)oneval==0) {
+							errornum = ERROR_DIVZERO;
+						} else {
+							stack.push((int) twoval / (int) oneval);
+						}
 						break;
 					case OP_EX:
 						stack.push(pow((double) twoval, (double) oneval));
