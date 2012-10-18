@@ -180,6 +180,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Ff][Ff][Ee][Rr][Rr][Oo][Rr]\\b"				// offerror
 		<< "\\b[Oo][Nn][Ee][Rr][Rr][Oo][Rr]\\b"					// onerror
 		<< "\\b[Oo][Pp][Ee][Nn]\\b"						// open
+		<< "\\b[Oo][Pp][Ee][Nn][Bb]\\b"						// openb
 		<< "\\b[Oo][Rr]\\b"							// or
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
@@ -195,6 +196,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Rr][Aa][Dd][Ii][Aa][Nn][Ss]\\b"					// radians
 		<< "\\b[Rr][Aa][Nn][Dd]\\b"						// rand
 		<< "\\b[Rr][Ee][Aa][Dd]\\b"						// read
+		<< "\\b[Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]\\b"				// readbyte
 		<< "\\b[Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]\\b"				// readline
 		<< "\\b[Rr][Ee][Cc][Tt]\\b"						// rect
 		<< "\\b[Rr][Ee][Dd][Ii][Mm]\b"						// redim
@@ -245,6 +247,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ww][Aa][Vv][Ww][Aa][Ii][Tt]\\b"					// wavwait
 		<< "\\b[Ww][Hh][Ii][Ll][Ee]\\b"						// while
 		<< "\\b[Ww][Rr][Ii][Tt][Ee]\\b"						// write
+		<< "\\b[Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]\\b"				// writebyte
 		<< "\\b[Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]\\b"				// writeline
 		<< "\\b[Xx][Oo][Rr]\\b"							// xor
 		<< "\\b[Yy][Ee][Aa][Rr]\\b"						// year

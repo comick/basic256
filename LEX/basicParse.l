@@ -97,6 +97,7 @@ to [Tt][Oo]
 next [Nn][Ee][Xx][Tt]
 step [Ss][Tt][Ee][Pp]
 open [Oo][Pp][Ee][Nn]
+openb [Oo][Pp][Ee][Nn][Bb]
 read [Rr][Ee][Aa][Dd]
 write [Ww][Rr][Ii][Tt][Ee]
 close [Cc][Ll][Oo][Ss][Ee]
@@ -550,6 +551,7 @@ writebyte [Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]
 {global}	{ count(); return B256GLOBAL; }
 {readbyte}	{ count(); return B256READBYTE; }
 {writebyte}	{ count(); return B256WRITEBYTE; }
+{openb}		{ count(); return B256OPENB; }
 
 	
 {variable} {

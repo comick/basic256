@@ -987,6 +987,7 @@ Interpreter::execByteCode()
 	case OP_OPEN:
 		{
 			op++;
+			int type = stack.popint();	// 0 text 1 binary
 			char *name = stack.popstring();
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
@@ -998,7 +999,7 @@ Interpreter::execByteCode()
 					stream[fn] = NULL;
 				}
 				stream[fn] = new QFile(QString::fromUtf8(name));
-				if (stream[fn] == NULL || !stream[fn]->open(QIODevice::ReadWrite | QIODevice::Text))
+				if (stream[fn] == NULL || !stream[fn]->open((type==0 ? QIODevice::ReadWrite | QIODevice::Text : QIODevice::ReadWrite)))
 				{
 					errornum = ERROR_FILEOPEN;
 				}

@@ -287,7 +287,7 @@ addStringOp(char op, char *data) {
 %token B256PRINT B256INPUT B256KEY 
 %token B256PIXEL B256RGB B256PLOT B256CIRCLE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
 %token B256IF B256THEN B256ELSE B256ENDIF B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT 
-%token B256OPEN B256READ B256WRITE B256CLOSE B256RESET
+%token B256OPEN B256OPENB B256READ B256WRITE B256CLOSE B256RESET
 %token B256GOTO B256GOSUB B256RETURN B256REM B256END B256SETCOLOR
 %token B256GTE B256LTE B256NE
 %token B256DIM B256REDIM B256NOP
@@ -1000,9 +1000,12 @@ stampstmt: B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE { ad
 	| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist { addIntOp(OP_STAMP_SR_LIST, listlen); listlen=0; }
 ;
 
-openstmt: B256OPEN stringexpr  { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_OPEN); }
-	| B256OPEN '(' floatexpr ',' stringexpr ')' { addOp(OP_OPEN); } 
-	| B256OPEN floatexpr ',' stringexpr { addOp(OP_OPEN); }
+openstmt: B256OPEN stringexpr  { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addIntOp(OP_PUSHINT, 0); addOp(OP_OPEN); }
+	| B256OPEN '(' floatexpr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_OPEN); } 
+	| B256OPEN floatexpr ',' stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_OPEN); }
+	| B256OPENB stringexpr  { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addIntOp(OP_PUSHINT, 1); addOp(OP_OPEN); }
+	| B256OPENB '(' floatexpr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 1); addOp(OP_OPEN); } 
+	| B256OPENB floatexpr ',' stringexpr { addIntOp(OP_PUSHINT, 1); addOp(OP_OPEN); }
 ;
 
 writestmt: B256WRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITE); }
