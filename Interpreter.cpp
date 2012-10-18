@@ -1084,6 +1084,24 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_READBYTE:
+		{
+			op++;
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				errornum = ERROR_FILENUMBER;
+				stack.push(0);
+			} else {
+				char c = ' ';
+				if (stream[fn]->getChar(&c)) {
+					stack.push((int) (unsigned char) c);
+				} else {
+					stack.push((int) -1);
+				}
+			}
+		}
+		break;
+
 	case OP_EOF:
 		{
 			//return true to eof if error is returned
@@ -1143,6 +1161,30 @@ Interpreter::execByteCode()
 			free(temp);
 		}
 		break;
+
+	case OP_WRITEBYTE:
+		{
+			op++;
+			int n = stack.popint();
+			int fn = stack.popint();
+			if (fn<0||fn>=NUMFILES) {
+				errornum = ERROR_FILENUMBER;
+			} else {
+				int error = 0;
+				if (stream[fn] == NULL)
+				{
+					errornum = ERROR_FILENOTOPEN;
+				} else {
+					error = stream[fn]->putChar((unsigned char) n);
+					if (error == -1)
+					{
+						errornum = ERROR_FILEWRITE;
+					}
+				}
+			}
+		}
+		break;
+
 
 
 	case OP_CLOSE:

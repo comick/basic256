@@ -276,6 +276,8 @@ subroutine [Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endsubroutine [Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 call [Cc][Aa][Ll][Ll]
 global [Gg][Ll][Oo][Bb][Aa][Ll]
+readbyte [Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]
+writebyte [Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]
 %%
 
 {label} {
@@ -546,6 +548,8 @@ global [Gg][Ll][Oo][Bb][Aa][Ll]
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
 {call}		{ count(); return B256CALL; }
 {global}	{ count(); return B256GLOBAL; }
+{readbyte}	{ count(); return B256READBYTE; }
+{writebyte}	{ count(); return B256WRITEBYTE; }
 
 	
 {variable} {

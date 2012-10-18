@@ -322,6 +322,7 @@ addStringOp(char op, char *data) {
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
 %token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL B256GLOBAL
+%token B256READBYTE B256WRITEBYTE
 
 
 %union
@@ -729,6 +730,7 @@ statement: gotostmt
 	| openstmt
 	| writestmt
 	| writelinestmt
+	| writebytestmt
 	| closestmt
 	| resetstmt
 	| killstmt
@@ -1011,6 +1013,11 @@ writestmt: B256WRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); 
 writelinestmt: B256WRITELINE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
 	| B256WRITELINE '(' floatexpr ',' stringexpr ')' { addOp(OP_WRITELINE); }
 	| B256WRITELINE floatexpr ',' stringexpr { addOp(OP_WRITELINE); }
+;
+
+writebytestmt: B256WRITEBYTE floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITEBYTE); }
+	| B256WRITEBYTE '(' floatexpr ','floatexpr ')' { addOp(OP_WRITEBYTE); }
+	| B256WRITEBYTE floatexpr ','floatexpr { addOp(OP_WRITEBYTE); }
 ;
 
 closestmt: B256CLOSE { addIntOp(OP_PUSHINT, 0); addOp(OP_CLOSE); }
@@ -1395,6 +1402,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256MSEC { addExtendedOp(OP_MSEC); }
 	| B256MSEC '(' ')' { addExtendedOp(OP_MSEC); }
 	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_TEXTWIDTH); }
+	| B256READBYTE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
+	| B256READBYTE '(' floatexpr ')' { addOp(OP_READBYTE); }
+
 ;
 
 
