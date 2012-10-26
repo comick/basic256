@@ -323,6 +323,7 @@ addStringOp(char op, char *data) {
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
 %token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL B256GLOBAL
 %token B256READBYTE B256WRITEBYTE
+%token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL
 
 
 %union
@@ -348,7 +349,7 @@ addStringOp(char op, char *data) {
 %left B256XOR 
 %left B256OR 
 %left B256AND 
-%nonassoc B256NOT
+%nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
 %left B256BINARYOR B256BINARYAND
 %left '-' '+'
@@ -848,11 +849,60 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr { addIntOp(OP_ARRAYASS
 
 
 numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
-	| B256VARIABLE '=' stringexpr { errorcode = COMPERR_ASSIGNS2N; if (yytext[0] == '\n') { linenumber--; }; return -1; }
+	| B256VARIABLE '=' stringexpr {
+		errorcode = COMPERR_ASSIGNS2N;
+		if (yytext[0] == '\n') { linenumber--; };
+		return -1;
+	}
+	| B256VARIABLE B256ADDEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$1);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256SUBEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256MULEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$1);
+		addOp(OP_MUL);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256DIVEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_DIV);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256ADD1 {
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256SUB1 {
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+
 ;
 
 stringassign: B256STRINGVAR '=' stringexpr { addIntOp(OP_STRINGASSIGN, $1); }
-	| B256STRINGVAR '=' floatexpr { errorcode = COMPERR_ASSIGNN2S; if (yytext[0] == '\n') { linenumber--; }; return -1; }
+	| B256STRINGVAR '=' floatexpr {
+		errorcode = COMPERR_ASSIGNN2S;
+		if (yytext[0] == '\n') { linenumber--; };
+		return -1;
+	}
+	| B256STRINGVAR B256ADDEQUAL stringexpr {
+		addIntOp(OP_PUSHVAR,$1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_CONCAT);
+		addIntOp(OP_STRINGASSIGN, $1);
+	}
 ;
 
 forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
@@ -1220,6 +1270,34 @@ explist: floatexpr { listlen = 1; }
 
 
 floatexpr: '(' floatexpr ')' { $$ = $2; }
+	| B256VARIABLE B256ADD1 {
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256VARIABLE B256SUB1 {
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHVAR,$1);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256ADD1 B256VARIABLE {
+		addIntOp(OP_PUSHVAR,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $2);
+		addIntOp(OP_PUSHVAR,$2);
+	}
+	| B256SUB1 B256VARIABLE {
+		addIntOp(OP_PUSHVAR,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $2);
+		addIntOp(OP_PUSHVAR,$2);
+	}
 	| floatexpr '+' floatexpr { addOp(OP_ADD); }
 	| floatexpr '-' floatexpr { addOp(OP_SUB); }
 	| floatexpr '*' floatexpr { addOp(OP_MUL); }
