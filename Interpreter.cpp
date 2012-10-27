@@ -483,61 +483,61 @@ Interpreter::compileProgram(char *code)
 		switch(result)
 		{
 			case COMPERR_ASSIGNS2N:
-				emit(outputReady(tr("Error assigning a string to a numeric variable on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ASSIGNS2N_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ASSIGNN2S:
-				emit(outputReady(tr("Error assigning a number to a string variable on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ASSIGNN2S_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONGOTO:
-				emit(outputReady(tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_FUNCTIONGOTO_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_GLOBALNOTHERE:
-				emit(outputReady(tr("You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_GLOBALNOTHERE_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONNOTHERE:
-				emit(outputReady(tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_FUNCTIONNOTHERE_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDFUNCTION:
-				emit(outputReady(tr("END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ENDFUNCTION_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONNOEND:
-				emit(outputReady(tr("FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_FUNCTIONNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FORNOEND:
-				emit(outputReady(tr("FOR without matching NEXT statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_FORNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_WHILENOEND:
-				emit(outputReady(tr("WHILE without matching END WHILE statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_WHILENOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_DONOEND:
-				emit(outputReady(tr("DO without matching UNTIL statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_DONOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ELSENOEND:
-				emit(outputReady(tr("ELSE without matching END IF statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ELSENOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_IFNOEND:
-				emit(outputReady(tr("IF without matching END IF or ELSE statement on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_IFNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_UNTIL:
-				emit(outputReady(tr("UNTIL without matching DO on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_UNTIL_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDWHILE:
-				emit(outputReady(tr("END WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ENDWHILE_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ELSE:
-				emit(outputReady(tr("ELSE without matching IF on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ELSE_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDIF:
-				emit(outputReady(tr("END IF without matching IF on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_ENDIF_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_NEXT:
-				emit(outputReady(tr("NEXT without matching FOR on line ") + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr(COMPERR_NEXT_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
 			default:
 				if(column==0) {
-					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
+					emit(outputReady(tr(COMPERR_SYNTAX_MESSAGE) + QString::number(linenumber) + tr(" around end of line.") + "\n"));
 				} else {
-					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
+					emit(outputReady(tr(COMPERR_SYNTAX_MESSAGE) + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
 				}
 		}
 		emit(goToLine(linenumber));

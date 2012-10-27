@@ -56,10 +56,10 @@ subroutine shuffle()
       x = zx
       y = zy
       r = int(rand*4)
-      if r = 0 and x > 0 then x = x - 1
-      if r = 1 and x < nx-1 then x = x + 1
-      if r = 2 and y > 0 then y = y - 1
-      if r = 3 and y < ny-1 then y = y + 1
+      if r = 0 and x > 0 then x--
+      if r = 1 and x < nx-1 then x++
+      if r = 2 and y > 0 then y--
+      if r = 3 and y < ny-1 then y++
       if x<>zx or y<> zy then
          board[zx, zy] = board[x, y]
          board[x, y] = 0
@@ -96,8 +96,8 @@ subroutine makemove(x,y)
    while zx <> x or zy <> y
       board[zx, zy] = board[zx+dx, zy+dy]
       board[zx+dx, zy+dy] = 0
-      zx = zx + dx
-      zy = zy + dy
+      zx += dx
+      zy += dy
    end while
 end subroutine
 
