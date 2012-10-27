@@ -4129,6 +4129,31 @@ Interpreter::execByteCode()
 			stack.swap();
 		}
 		break;
+
+	case OP_STACKSWAP2:
+		{
+			op++;
+			// swap the top two pairs of the stack
+			// 0, 1, 2, 3...  becomes 2,3, 0,1...
+			stack.swap2();
+		}
+		break;
+		
+	case OP_STACKDUP:
+		{
+			op++;
+			// duplicate top stack entry
+			stack.dup();
+		}
+		break;
+		
+	case OP_STACKDUP2:
+		{
+			op++;
+			// duplicate top 2 stack entries
+			stack.dup2();
+		}
+		break;
 		
 	case OP_STACKTOPTO2:
 		{

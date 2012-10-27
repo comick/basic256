@@ -128,8 +128,30 @@ Stack::clean(stackval *sv)
 	}
 }
 
-void 
-Stack::swap()
+void Stack::swap2()
+{
+	// swap top two pairs of elements
+	stackval temp;
+	stackval *one = top - 1;
+	stackval *two = top - 2;
+	stackval *three = top - 3;
+	
+	temp.type = two->type;
+	temp.value = two->value;
+	two->type = top->type;
+	two->value = top->value;
+	top->type = temp.type;
+	top->value = temp.value;
+
+	temp.type = three->type;
+	temp.value = three->value;
+	three->type = one->type;
+	three->value = one->value;
+	one->type = temp.type;
+	one->value = temp.value;
+}
+
+void Stack::swap()
 {
 	// swap top two elements
 	stackval temp;
@@ -166,6 +188,32 @@ Stack::topto2()
 
 	three->type = temp.type;
 	three->value = temp.value;
+}
+
+void Stack::dup() {
+	dup(0);
+}
+
+void Stack::dup2() {
+	dup(1);
+	dup(1);
+}
+
+void Stack::dup(int n) {
+	// internal duplicate entry 0-top n-ndown
+	stackval *orig = top - n;
+	if (orig->type==T_INT) {
+		push(orig->value.intval);
+	}
+	if (orig->type==T_FLOAT) {
+		push(orig->value.floatval);
+	}
+	if (orig->type==T_STRING) {
+		char *t;
+		t = (char *) malloc((strlen(orig->value.string)+1) * sizeof(char));
+		strcpy(t,orig->value.string);
+		push(t);
+	}
 }
 
 int 

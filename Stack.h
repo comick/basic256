@@ -33,7 +33,10 @@ class Stack
   void push(int);
   void push(double);
   void swap();
+  void swap2();
   void topto2();
+  void dup();
+  void dup2();
   int peekType();
   stackval *pop();
   int popint();
@@ -56,4 +59,5 @@ class Stack
   stackval *bottom;
   stackval *limit;
   void checkLimit();
+  void dup(int);
 };
