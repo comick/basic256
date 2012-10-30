@@ -118,6 +118,11 @@
 #define	ERROR_MAXRECURSE_MESSAGE "Maximum levels of recursion exceeded."
 #define ERROR_DIVZERO 50
 #define	ERROR_DIVZERO_MESSAGE "Division by zero."
+#define ERROR_BYREF 51
+#define	ERROR_BYREF_MESSAGE "Function/Subroutine expecting variable reference in call."
+#define ERROR_BYREFTYPE 52
+#define	ERROR_BYREFTYPE_MESSAGE "Function/Subroutine variable incorrect reference type in call."
+
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
 //

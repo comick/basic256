@@ -279,6 +279,7 @@ call [Cc][Aa][Ll][Ll]
 global [Gg][Ll][Oo][Bb][Aa][Ll]
 readbyte [Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]
 writebyte [Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]
+ref [Rr][Ee][Ff]
 %%
 
 {label} {
@@ -558,6 +559,7 @@ writebyte [Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]
 {readbyte}	{ count(); return B256READBYTE; }
 {writebyte}	{ count(); return B256WRITEBYTE; }
 {openb}		{ count(); return B256OPENB; }
+{ref}		{ count(); return B256REF; }
 
 	
 {variable} {

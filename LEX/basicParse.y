@@ -84,6 +84,8 @@ int numargs = 0;
 
 #define ARGSTYPEINT 0
 #define ARGSTYPESTR 1
+#define ARGSTYPEVARREF 2
+#define ARGSTYPEVARREFSTR 3
 
 int
 basicParse(char *);
@@ -323,7 +325,7 @@ addStringOp(char op, char *data) {
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
 %token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL B256GLOBAL
 %token B256READBYTE B256WRITEBYTE
-%token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL
+%token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL B256REF
 
 
 %union
@@ -426,11 +428,10 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
 			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) {
-					addIntOp(OP_NUMASSIGN, args[t]);
-				} else {
-					addIntOp(OP_STRINGASSIGN, args[t]);
-				}
+				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
 			}
 		}
 		numargs=0;	// clear the list for next function
@@ -456,11 +457,10 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
 			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) {
-					addIntOp(OP_NUMASSIGN, args[t]);
-				} else {
-					addIntOp(OP_STRINGASSIGN, args[t]);
-				}
+				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
 			}
 		}
 		numargs=0;	// clear the list for next function
@@ -485,11 +485,10 @@ subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
 			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) {
-					addIntOp(OP_NUMASSIGN, args[t]);
-				} else {
-					addIntOp(OP_STRINGASSIGN, args[t]);
-				}
+				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
 			}
 		}
 		numargs=0;	// clear the list for next function
@@ -506,6 +505,14 @@ functionvariables: B256VARIABLE {
 	}
 	| B256STRINGVAR {
 		args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
+		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+	}
+	| B256REF '(' B256VARIABLE ')' {
+		args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
+		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+	}
+	| B256REF '(' B256STRINGVAR ')' {
+		args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
 		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
 	}
 	| functionvariables ',' functionvariables
@@ -1760,6 +1767,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_TEXTWIDTH); }
 	| B256READBYTE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 	| B256READBYTE '(' floatexpr ')' { addOp(OP_READBYTE); }
+	| B256REF '(' B256VARIABLE ')' { addIntOp(OP_PUSHVARREF, $3); }
+	| B256REF '(' B256STRINGVAR ')' { addIntOp(OP_PUSHVARREFSTR, $3); }
 
 ;
 

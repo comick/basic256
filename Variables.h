@@ -55,6 +55,8 @@ class Variables
 		int error();
 		int errorvarnum();
 		//
+		void setvarref(int, int);
+		//
 		void setfloat(int, double);
 		double getfloat(int);
 		//

@@ -294,10 +294,16 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_MAXRECURSE:
 			errormessage = tr(ERROR_MAXRECURSE_MESSAGE);
 			break;
-		case ERROR_DIVZERO:
-			errormessage = tr(ERROR_DIVZERO_MESSAGE);
-			break;
-		// put new messages here
+        case ERROR_DIVZERO:
+            errormessage = tr(ERROR_DIVZERO_MESSAGE);
+            break;
+        case ERROR_BYREF:
+            errormessage = tr(ERROR_BYREF_MESSAGE);
+            break;
+        case ERROR_BYREFTYPE:
+            errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
+            break;
+        // put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
 			break;
@@ -1687,7 +1693,25 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_PUSHFLOAT:
+    case OP_PUSHVARREF:
+        {
+            op++;
+            int *i = (int *) op;
+            stack.pushvarref(*i);
+            op += sizeof(int);
+        }
+        break;
+
+    case OP_PUSHVARREFSTR:
+        {
+            op++;
+            int *i = (int *) op;
+            stack.pushvarrefstr(*i);
+            op += sizeof(int);
+        }
+        break;
+
+    case OP_PUSHFLOAT:
 		{
 			op++;
 			double *d = (double *) op;
@@ -3011,24 +3035,24 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_NUMASSIGN:
-		{
-			op++;
-			int *num = (int *) op;
-			op += sizeof(int);
-			double temp = stack.popfloat();
+    case OP_NUMASSIGN:
+        {
+            op++;
+            int *num = (int *) op;
+            op += sizeof(int);
+            double temp = stack.popfloat();
 
 
-			variables.setfloat(*num, temp);
+            variables.setfloat(*num, temp);
 
-			if(debugMode)
-			{
-				emit(varAssignment(QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1));
-			}
-		}
-		break;
+            if(debugMode)
+            {
+                emit(varAssignment(QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1));
+            }
+        }
+        break;
 
-	case OP_STRINGASSIGN:
+     case OP_STRINGASSIGN:
 		{
 			op++;
 			int *num = (int *) op;
@@ -3044,6 +3068,46 @@ Interpreter::execByteCode()
 			}
 		}
 		break;
+
+    case OP_VARREFASSIGN:
+        {
+        // assign a numeric variable reference
+        op++;
+        int *num = (int *) op;
+        op += sizeof(int);
+        int type = stack.peekType();
+        int value = stack.popint();
+        if (type==T_VARREF) {
+            variables.setvarref(*num, value);
+        } else {
+            if (type==T_VARREFSTR) {
+                errornum = ERROR_BYREFTYPE;
+            } else {
+                errornum = ERROR_BYREF;
+            }
+        }
+        }
+        break;
+
+    case OP_VARREFSTRASSIGN:
+        {
+        // assign a string variable reference
+        op++;
+        int *num = (int *) op;
+        op += sizeof(int);
+        int type = stack.peekType();
+        int value = stack.popint();
+        if (type==T_VARREFSTR) {
+            variables.setvarref(*num, value);
+        } else {
+            if (type==T_VARREF) {
+                errornum = ERROR_BYREFTYPE;
+            } else {
+                errornum = ERROR_BYREF;
+            }
+        }
+        }
+        break;
 
 	case OP_YEAR:
 	case OP_MONTH:

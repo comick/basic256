@@ -9,9 +9,8 @@
 #include <stdlib.h>
 
 
-enum b_type {T_INT, T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED};
-
-
+enum b_type {T_INT, T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
+// stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
 
 typedef struct
 {
@@ -31,6 +30,8 @@ class Stack
   ~Stack();
   void push(char *);
   void push(int);
+  void pushvarref(int);
+  void pushvarrefstr(int);
   void push(double);
   void swap();
   void swap2();

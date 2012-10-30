@@ -1,0 +1,49 @@
+# test of subroutine calls with variables apssed by reference
+# 2012-10-30 j.m.reneau
+
+a = 10
+b = 20
+dim c(10)
+c[3] = 30
+d$ = "am d"
+e$ = "am e"
+dim f$(10)
+f$[1] = "f sub one"
+
+print "before"
+print "a " + ref(a) + " " + a
+print "b " + ref(b) + " " + b
+print "c[3] " + ref(c) + " " + c[3]
+print "d$ " + ref(d$) + " " + d$
+print "e$ " + ref(e$) + " " + e$
+print "f$[1] " + ref(f$) + " " + f$[1]
+
+call foo(ref(a), b, ref(c), d$, ref(e$), ref(f$))
+
+print
+print "after"
+print "a " + ref(a) + " " + a
+print "b " + ref(b) + " " + b
+print "c[3] " + ref(c) + " " + c[3]
+print "d$ " + ref(d$) + " " + d$
+print "e$ " + ref(e$) + " " + e$
+print "f$[1] " + ref(f$) + " " + f$[1]
+end
+
+subroutine foo(ref(m), n, ref(o), p$, ref(q$), ref(r$))
+   m = 99
+   n = 88
+   o[3] = 77
+   p$ = "now p"
+   q$ = "now q"
+   r$[1] = "now r sub 1"
+   call bar(ref(m),ref(q$))
+end subroutine
+
+subroutine bar(ref(x), ref(y$))
+   # reference of a reference goes back to the original
+   x = 101
+   y$ = "now y"
+end subroutine
+
+

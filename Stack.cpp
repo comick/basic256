@@ -43,7 +43,9 @@ Stack::debug()
 	{
 		if (temp->type == T_STRING) printf(">>S.%s",temp->value.string);
 		if (temp->type == T_INT) printf(">>I.%d",temp->value.intval);
-		if (temp->type == T_FLOAT) printf(">>F.%f",temp->value.floatval);
+        if (temp->type == T_VARREF) printf(">>V.%d",temp->value.intval);
+        if (temp->type == T_VARREFSTR) printf(">>VS.%d",temp->value.intval);
+        if (temp->type == T_FLOAT) printf(">>F.%f",temp->value.floatval);
 		if (temp->type == T_UNUSED) printf(">>U.");
 		temp--;
 	}
@@ -91,6 +93,24 @@ Stack::push(int i)
 	top++;
 	top->type = T_INT;
 	top->value.intval = i;
+}
+
+void
+Stack::pushvarref(int i)
+{
+    checkLimit();
+    top++;
+    top->type = T_VARREF;
+    top->value.intval = i;
+}
+
+void
+Stack::pushvarrefstr(int i)
+{
+    checkLimit();
+    top++;
+    top->type = T_VARREFSTR;
+    top->value.intval = i;
 }
 
 void
@@ -205,7 +225,13 @@ void Stack::dup(int n) {
 	if (orig->type==T_INT) {
 		push(orig->value.intval);
 	}
-	if (orig->type==T_FLOAT) {
+    if (orig->type==T_VARREF) {
+        pushvarref(orig->value.intval);
+    }
+    if (orig->type==T_VARREFSTR) {
+        pushvarrefstr(orig->value.intval);
+    }
+    if (orig->type==T_FLOAT) {
 		push(orig->value.floatval);
 	}
 	if (orig->type==T_STRING) {
@@ -230,7 +256,7 @@ int
 Stack::toint(stackval *sv)
 {
 	int i=0;
-	if (sv->type == T_INT) {
+    if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
 		i = sv->value.intval;
 	}
 	else if (sv->type == T_FLOAT) {
@@ -260,7 +286,7 @@ Stack::tofloat(stackval *sv)
 	if (sv->type == T_FLOAT) {
 		f = sv->value.floatval;
 	}
-	else if (sv->type == T_INT)
+    else if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR)
 	{
 		f = (double) sv->value.intval;
 	}
@@ -290,7 +316,7 @@ Stack::tostring(stackval *sv)
 		sv->value.string = NULL;
 		sv->type = T_UNUSED;
 	}
-	else if (sv->type == T_INT)
+    else if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR)
 	{
 		char buffer[64];
 		sprintf(buffer, "%d", sv->value.intval);

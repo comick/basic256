@@ -190,6 +190,10 @@
 #define OP_ALEN 	       	OP_TYPEARGINT + 0x28
 #define OP_ALENX 	       	OP_TYPEARGINT + 0x29
 #define OP_ALENY 	       	OP_TYPEARGINT + 0x2a
+#define OP_PUSHVARREF       	OP_TYPEARGINT + 0x2b	// push a T_VARREF numeric variable reference on stack
+#define OP_PUSHVARREFSTR       	OP_TYPEARGINT + 0x2c	// push a T_VARREFSTR string variable reference on stack
+#define OP_VARREFASSIGN       	OP_TYPEARGINT + 0x2d
+#define OP_VARREFSTRASSIGN     	OP_TYPEARGINT + 0x2e
 
 
 

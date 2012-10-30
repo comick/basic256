@@ -4,8 +4,10 @@
 
 // manage storage of variables
 
-// variables are limited to the following types:
-// T_UNUSED, T_FLOAT, T_STRING, T_ARRAY, and T_STRARRAY
+// variables are limited to the following types (defined in Stack.h):
+// T_UNUSED, T_FLOAT, T_STRING, T_ARRAY, T_STRARRAY, and T_VARREF
+
+// T_VARREF is a variable number in the previous recursion level
 
 Variables::Variables()
 {
@@ -106,7 +108,7 @@ variable* Variables::getvfromnum(int varnum, bool makenew) {
 			v = new variable;
 			v->type = T_UNUSED;
 			v->value.floatval = 0;
-			v->value.string = NULL;
+            v->value.string = NULL;
 			v->value.arr = NULL;
 			varmap.insert( std::pair<int, variable*> (levelvarnum, v) );
 			//printf("lastvar=%i size=%i\n", varnum, varmap.size());
@@ -115,6 +117,13 @@ variable* Variables::getvfromnum(int varnum, bool makenew) {
 		}
 	} else {
 		v = (*i).second;
+		if (v->type==T_VARREF) {
+            if(recurselevel>0) {
+                recurselevel--;
+                v = getvfromnum((int) v->value.floatval, makenew);
+                recurselevel++;
+            }
+		}
 	}
 	return(v);
 }
@@ -136,11 +145,20 @@ int Variables::type(int varnum)
 
 void Variables::setfloat(int varnum, double value)
 {
-	lasterror = ERROR_NONE;
-	variable *v = getvfromnum(varnum,true);
-	clearvariable(v);
-	v->type = T_FLOAT;
-	v->value.floatval = value;
+    lasterror = ERROR_NONE;
+    variable *v = getvfromnum(varnum,true);
+    clearvariable(v);
+    v->type = T_FLOAT;
+    v->value.floatval = value;
+}
+
+void Variables::setvarref(int varnum, int value)
+{
+    lasterror = ERROR_NONE;
+    variable *v = getvfromnum(varnum,true);
+    clearvariable(v);
+    v->type = T_VARREF;
+    v->value.floatval = value;
 }
 
 double Variables::getfloat(int varnum)
