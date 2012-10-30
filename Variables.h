@@ -90,7 +90,7 @@ class Variables
 		std::map<int, variable*> varmap;
 		std::map<int, bool> globals;
 		void clearvariable(variable*);
-		variable* getvfromnum(int, bool);
+		variable* getvfromnum(int, bool, bool);
 		bool isglobal(int);
 
 };
