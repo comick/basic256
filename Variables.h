@@ -15,7 +15,7 @@
 
 
 #define VARIABLE_MAXARRAYELEMENTS 1048576
-#define MAX_RECURSE_LEVELS	1024
+#define MAX_RECURSE_LEVELS	1048576
 
 struct array
 {
@@ -87,10 +87,10 @@ class Variables
 		int lasterror;
 		int lasterrorvar;
 		int recurselevel;
-		std::map<int, variable*> varmap;
+		std::map<int, std::map<int,variable*> > varmap;
 		std::map<int, bool> globals;
 		void clearvariable(variable*);
-		variable* getvfromnum(int, bool, bool);
+		variable* getvfromnum(int, bool);
 		bool isglobal(int);
 
 };
