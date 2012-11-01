@@ -1774,6 +1774,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256MSEC { addExtendedOp(OP_MSEC); }
 	| B256MSEC '(' ')' { addExtendedOp(OP_MSEC); }
 	| B256TEXTWIDTH '(' stringexpr ')' { addExtendedOp(OP_TEXTWIDTH); }
+	| B256READBYTE { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 	| B256READBYTE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 	| B256READBYTE '(' floatexpr ')' { addOp(OP_READBYTE); }
 	| B256REF '(' B256VARIABLE ')' { addIntOp(OP_PUSHVARREF, $3); }
