@@ -199,7 +199,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]\\b"				// readbyte
 		<< "\\b[Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]\\b"				// readline
 		<< "\\b[Rr][Ee][Cc][Tt]\\b"						// rect
-		<< "\\b[Rr][Ee][Dd][Ii][Mm]\b"						// redim
+		<< "\\b[Rr][Ee][Dd][Ii][Mm]\\b"						// redim
 		<< "\\b[Rr][Ee][Ff][Rr][Ee][Ss][Hh]\\b"					// refresh
 		<< "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee]\\b"					// replace
 		<< "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]\\b"				// replacex

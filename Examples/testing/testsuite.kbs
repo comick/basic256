@@ -1,0 +1,181 @@
+#testsuite
+
+# test
+print "Numeric Assignment"
+a = 1 : call n("a=1",a,1)
+call n("a=1 during a++",a++,1)
+call n("a=2 after a++",a,2)
+call n("a = 3 after ++a",++a,3)
+a += 7 : call n("a=10 after a+=7",a,10)
+a -= 7 : call n("a=3 after a-=7",a,3)
+a *= 7 : call n("a=21 after a*=7",a,21)
+a /= 2 : call n("a=10.5 after a/=2",a,10.5)
+
+print "String Assignment"
+b$ = "string" : call s("b$ = 'string'", b$, "string")
+b$ = 2.75 : call s("b$ = 2.75", b$, "2.75")
+b$ += "." : call s("b$ = '2.75.' after b+='.'", b$, "2.75.")
+b$ += 9 : call s("b$ = '2.75.9' after b+=9", b$, "2.75.9")
+
+print "Numeric Operations"
+call n("1+2", 1+2, 3)
+call n("2+1", 2+1, 3)
+call n("1-2", 1-2, -1)
+call n("2-1", 2-1, 1)
+call n("1*2", 1*2, 2)
+call n("2*1", 2*1, 2)
+call n("10/4", 10/4, 2.5)
+call n("4/10", 4/10, 0.4)
+call n("5%3", 5%3, 2)
+call n("3%5", 3%5, 3)
+call n("10\4", 10\4, 2)
+call n("4\10", 4\10, 0)
+
+print "Order of Numeric Operations"
+call n("1+10/2", 1 + 10 / 2, 6)
+call n("(1+10)/2", (1+10) / 2, 5.5)
+call n("1-10*2", 1 - 10 * 2, -19)
+call n("(1-10)*2", (1-10) * 2, -18)
+
+print "Integer Comparison"
+call n("1=1", 1=1, true)
+call n("1=2", 1=2, false)
+call n("1<>1", 1<>1, false)
+call n("1<>2", 1<>2, true)
+call n("1>0", 1>0, true)
+call n("1>1", 1>1, false)
+call n("1>2", 1>2, false)
+call n("1>=0", 1>=0, true)
+call n("1>=1", 1>=1, true)
+call n("1>=2", 1>=2, false)
+call n("1<0", 1<0, false)
+call n("1<1", 1<1, false)
+call n("1<2", 1<2, true)
+call n("1<=0", 1<=0, false)
+call n("1<=1", 1<=1, true)
+call n("1<=2", 1<=2, true)
+
+print "Float Comparison"
+call n("1.34=1.34", 1.34=1.34, true)
+call n("1.34=3.56", 1.34=3.56, false)
+call n("1.34<>1.34", 1.34<>1.34, false)
+call n("1.34<>3.56", 1.34<>3.56, true)
+call n("1.34>0.78", 1.34>0.78, true)
+call n("1.34>1.34", 1.34>1.34, false)
+call n("1.34>3.56", 1.34>3.56, false)
+call n("1.34>=0.78", 1.34>=0.78, true)
+call n("1.34>=1.34", 1.34>=1.34, true)
+call n("1.34>=3.56", 1.34>=3.56, false)
+call n("1.34<0.78", 1.34<0.78, false)
+call n("1.34<1.34", 1.34<1.34, false)
+call n("1.34<3.56", 1.34<3.56, true)
+call n("1.34<=0.78", 1.34<=0.78, false)
+call n("1.34<=1.34", 1.34<=1.34, true)
+call n("1.34<=3.56", 1.34<=3.56, true)
+
+print "String Comparison"
+call n("'bb'='bb'", "bb"="bb", true)
+call n("'bb'='cc'", "bb"="cc", false)
+call n("'bb'<>'bb'", "bb"<>"bb", false)
+call n("'bb'<>'cc'", "bb"<>"cc", true)
+call n("'bb'>'aa'", "bb">"aa", true)
+call n("'bb'>'bb'", "bb">"bb", false)
+call n("'bb'>'cc'", "bb">"cc", false)
+call n("'bb'>='aa'", "bb">="aa", true)
+call n("'bb'>='bb'", "bb">="bb", true)
+call n("'bb'>='cc'", "bb">="cc", false)
+call n("'bb'<'aa'", "bb"<"aa", false)
+call n("'bb'<'bb'", "bb"<"bb", false)
+call n("'bb'<'cc'", "bb"<"cc", true)
+call n("'bb'<='aa'", "bb"<="aa", false)
+call n("'bb'<='bb'", "bb"<="bb", true)
+call n("'bb'<='cc'", "bb"<="cc", true)
+
+print "1D Numeric Array"
+dim c(10)
+c = {9,8,7,6,5,4,3,2,1,0}
+call n("c[1]=8 after immediate assign",c[1],8)
+call n("c[8]=1 after immediate assign",c[8],1)
+c[0] = c[0] + c[8] : call n("c[0] after c[0] = c[0] + c[8]", c[0], 10)
+c[0] += c[7] : call n("c[0] after c[0] += c[7]", c[0], 12)
+c[0] -= c[6] : call n("c[0] after c[0] -= c[6]", c[0], 9)
+c[1] *= c[2] : call n("c[1] after c[1] *= c[2]", c[1], 56)
+c[1] /= c[7] : call n("c[1] after c[1] /= c[7]", c[1], 28)
+redim c(20)
+call n("c[1]=28 after redim",c[1],28)
+call n("c[9]=0 after redim",c[9],0)
+
+print "Graphics"
+clg
+color blue
+rect 10,10,20,20
+call q("Blue rectangle")
+clg
+color red
+circle 30,30,10
+call q("red circle")
+clg
+for t = 1 to 10
+   color rand*256,rand*256,rand*256
+   circle rand*300,rand*300,rand*10+10
+next t
+call q("10 random circles")
+clg
+color black
+for t = 0 to 300 step 3
+   line 0,0,t,300
+   line 0,0,300,t
+next t
+call q("morie pattern")
+clg
+color black
+for x = 0 to 1 step .001
+y = (1 - x^2)^.5
+   plot 150-100*x, 150-100*y
+   plot 150-100*x, 150+100*y
+   plot 150+100*x, 150-100*y
+   plot 150+100*x, 150+100*y
+next x
+call q("circle using x^2+y^2=r^2")
+
+
+print "PASSED ALL TESTS."
+end
+
+subroutine q(message$)
+   print message$ + " [Press Y or N] ";
+   do
+      k$=upper(chr(key))
+      pause .1
+   until k$="Y" or  k$="N"
+   if k$="N" then
+      print "fail"
+      end
+   else
+      print "pass"
+   end if
+end subroutine
+
+subroutine n(message$,a,b)
+   # test that a and b are the same numerically
+   print "testing " + message$ + " (" + a + "," + b + ") ";
+   if a = b then
+      print "pass"
+   else
+      print "fail"
+      end
+   end if
+end subroutine
+
+subroutine s(message$,a$,b$)
+   # test that a$ and b$ are the same string
+   print "testing " + message$ + " ('" + a$ + "','" + b$ + "') ";
+   if a$ = b$ then
+      print "pass"
+   else
+      print "fail"
+      end
+   end if
+end subroutine
+
+
