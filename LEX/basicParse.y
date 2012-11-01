@@ -864,15 +864,8 @@ ifexpr: B256IF floatexpr
 	}
 ;
 
-strarrayassignerrors: B256STRINGVAR '[' floatexpr ']' '=' floatexpr
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' floatexpr
-	| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL floatexpr
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL floatexpr
-	| B256STRINGVAR '=' immediatelist
-;
-
-strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN, $1); }
-	| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL stringexpr {
+strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN, $1); }
+	| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL expr {
 		// a$[n] += s$
 		addOp(OP_STACKSWAP);
 		addOp(OP_STACKDUP);
@@ -882,8 +875,8 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STR
 		addOp(OP_CONCAT);
 		addIntOp(OP_STRARRAYASSIGN, $1);
 	}
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' stringexpr { addIntOp(OP_STRARRAYASSIGN2D, $1); }
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL stringexpr {
+	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN2D, $1); }
+	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL expr {
 		// a$[b,c] += s$
 		addOp(OP_STACKTOPTO2);
 		addOp(OP_STACKDUP2);
@@ -899,14 +892,9 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' stringexpr { addIntOp(OP_STR
 		addInt2Op(OP_STRARRAYLISTASSIGN, $1, listlen);
 		listlen = 0;
 	}
-	| B256STRINGVAR '=' B256EXPLODE '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODESTR, $1);}
-	| B256STRINGVAR '=' B256EXPLODE '(' stringexpr ',' stringexpr ',' floatexpr ')' { addIntOp(OP_EXPLODESTR_C, $1); }
-	| B256STRINGVAR '=' B256EXPLODEX '(' stringexpr ',' stringexpr ')' { addIntOp(OP_EXPLODEXSTR, $1);}
-	| strarrayassignerrors {
-		errorcode = COMPERR_ASSIGNN2S;
-		if (yytext[0] == '\n') { linenumber--; };
-		return -1;
-	}
+	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' { addIntOp(OP_EXPLODESTR, $1);}
+	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' { addIntOp(OP_EXPLODESTR_C, $1); }
+	| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' { addIntOp(OP_EXPLODEXSTR, $1);}
 ;
 
 arrayassignerrors: B256VARIABLE '[' floatexpr ']' '=' stringexpr
@@ -1045,13 +1033,13 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addInt2Op(OP_ARRAYLISTASSIGN, $1, listlen);
 		listlen = 0;
 	}
-	| B256VARIABLE '=' B256EXPLODE '(' stringexpr ',' stringexpr ')' {
+	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
 		addIntOp(OP_EXPLODE, $1);
 	}
-	| B256VARIABLE '=' B256EXPLODE '(' stringexpr ',' stringexpr ',' floatexpr ')' {
+	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
 		addIntOp(OP_EXPLODE_C, $1);
 	}
-	| B256VARIABLE '=' B256EXPLODEX '(' stringexpr ',' stringexpr ')' {
+	| B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
 		addIntOp(OP_EXPLODEX, $1);
 	}
 	| arrayassignerrors {
@@ -1426,8 +1414,8 @@ netclosestmt: B256NETCLOSE { addIntOp(OP_PUSHINT, 0); addExtendedOp(OP_NETCLOSE)
 killstmt: B256KILL stringexpr { addExtendedOp(OP_KILL); }
 ;
 
-setsettingstmt: B256SETSETTING stringexpr ',' stringexpr ',' stringexpr { addExtendedOp(OP_SETSETTING); }
-	| B256SETSETTING '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_SETSETTING); } 
+setsettingstmt: B256SETSETTING expr ',' expr ',' expr { addExtendedOp(OP_SETSETTING); }
+	| B256SETSETTING '(' expr ',' expr ',' expr ')' { addExtendedOp(OP_SETSETTING); } 
 ;
 
 portoutstmt: B256PORTOUT floatexpr ',' floatexpr { addExtendedOp(OP_PORTOUT); }
@@ -1650,17 +1638,15 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		addIntOp(OP_NUMASSIGN, $2);
 		addIntOp(OP_PUSHVAR,$2);
 	}
-	| B256TOINT '(' floatexpr ')' { addOp(OP_INT); }
-	| B256TOINT '(' stringexpr ')' { addOp(OP_INT); }
-	| B256TOFLOAT '(' floatexpr ')' { addOp(OP_FLOAT); }
-	| B256TOFLOAT '(' stringexpr ')' { addOp(OP_FLOAT); }
-	| B256LENGTH '(' stringexpr ')' { addOp(OP_LENGTH); }
-	| B256ASC '(' stringexpr ')' { addOp(OP_ASC); }
-	| B256INSTR '(' stringexpr ',' stringexpr ')' { addOp(OP_INSTR); }
-	| B256INSTR '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTR_S); }
-	| B256INSTR '(' stringexpr ',' stringexpr ',' floatexpr ',' floatexpr')' { addOp(OP_INSTR_SC); }
-	| B256INSTRX '(' stringexpr ',' stringexpr ')' { addOp(OP_INSTRX); }
-	| B256INSTRX '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTRX_S); }
+	| B256TOINT '(' expr ')' { addOp(OP_INT); }
+	| B256TOFLOAT '(' expr ')' { addOp(OP_FLOAT); }
+	| B256LENGTH '(' expr ')' { addOp(OP_LENGTH); }
+	| B256ASC '(' expr ')' { addOp(OP_ASC); }
+	| B256INSTR '(' expr ',' expr ')' { addOp(OP_INSTR); }
+	| B256INSTR '(' expr ',' expr ',' floatexpr ')' { addOp(OP_INSTR_S); }
+	| B256INSTR '(' expr ',' expr ',' floatexpr ',' floatexpr')' { addOp(OP_INSTR_SC); }
+	| B256INSTRX '(' expr ',' stringexpr ')' { addOp(OP_INSTRX); }
+	| B256INSTRX '(' expr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTRX_S); }
 	| B256CEIL '(' floatexpr ')' { addOp(OP_CEIL); }
 	| B256FLOOR '(' floatexpr ')' { addOp(OP_FLOOR); }
 	| B256SIN '(' floatexpr ')' { addOp(OP_SIN); }
@@ -1813,12 +1799,12 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 		}
 	}
 	| B256CHR '(' floatexpr ')' { addOp(OP_CHR); }
-	| B256TOSTRING '(' floatexpr ')' { addOp(OP_STRING); }
-	| B256UPPER '(' stringexpr ')' { addOp(OP_UPPER); }
-	| B256LOWER '(' stringexpr ')' { addOp(OP_LOWER); }
-	| B256MID '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
-	| B256LEFT '(' stringexpr ',' floatexpr ')' { addOp(OP_LEFT); }
-	| B256RIGHT '(' stringexpr ',' floatexpr ')' { addOp(OP_RIGHT); }
+	| B256TOSTRING '(' expr ')' { addOp(OP_STRING); }
+	| B256UPPER '(' expr ')' { addOp(OP_UPPER); }
+	| B256LOWER '(' expr ')' { addOp(OP_LOWER); }
+	| B256MID '(' expr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
+	| B256LEFT '(' expr ',' floatexpr ')' { addOp(OP_LEFT); }
+	| B256RIGHT '(' expr ',' floatexpr ')' { addOp(OP_RIGHT); }
 	| B256GETSLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_GETSLICE); }
 	| B256READ { addIntOp(OP_PUSHINT, 0); addOp(OP_READ); }
 	| B256READ '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READ); }
@@ -1839,12 +1825,12 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256NETADDRESS { addExtendedOp(OP_NETADDRESS); }
 	| B256NETADDRESS '(' ')' { addExtendedOp(OP_NETADDRESS); }
 	| B256MD5 '(' stringexpr ')' { addExtendedOp(OP_MD5); }
-	| B256GETSETTING '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_GETSETTING); }
+	| B256GETSETTING '(' expr ',' expr ')' { addExtendedOp(OP_GETSETTING); }
 	| B256DIR '(' stringexpr ')' { addExtendedOp(OP_DIR); }
 	| B256DIR '(' ')' { addStringOp(OP_PUSHSTRING, ""); addExtendedOp(OP_DIR); }
-	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_REPLACE); }
-	| B256REPLACE '(' stringexpr ',' stringexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_REPLACE_C); }
-	| B256REPLACEX '(' stringexpr ',' stringexpr ',' stringexpr ')' { addExtendedOp(OP_REPLACEX); }
+	| B256REPLACE '(' expr ',' expr ',' expr ')' { addExtendedOp(OP_REPLACE); }
+	| B256REPLACE '(' expr ',' expr ',' expr ',' floatexpr ')' { addExtendedOp(OP_REPLACE_C); }
+	| B256REPLACEX '(' expr ',' stringexpr ',' expr ')' { addExtendedOp(OP_REPLACEX); }
 	| B256IMPLODE '(' B256STRINGVAR ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256STRINGVAR ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256VARIABLE ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
