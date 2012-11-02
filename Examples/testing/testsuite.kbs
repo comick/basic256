@@ -186,8 +186,31 @@ call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
 ###################################################
 
 ###################################################
+print "Binary File"
 ###################################################
-
+b$ = "testsuite_binary.dat"
+print "new file"
+openb b$
+reset
+for t = 0 to 255
+   writebyte t
+next t
+close
+openb b$
+a = 0
+while not eof
+   a+= readbyte()
+end while
+call n("bindata sum", a, 32640)
+print "position to 10 and read"
+seek 10
+a=0
+while not eof
+   a+= readbyte()
+end while
+call n("bindata sum from 10", a, 32595)
+close
+kill b$
 ###################################################
 print "Database"
 ###################################################
@@ -254,9 +277,25 @@ y = (100- x^2)^.5
    plot 150+x, 150+y
 next x
 call q("circle using x^2+y^2=r^2")
+#
+clg
+color green
+redim c(1)
+c = {100, 100, 200, 200, 100, 200}
+poly c
+color orange
+poly {100, 100, 200, 200, 200, 100}
+call q("poly - orange and green square")
+#
+clg
+color red
+font "Times New Roman",18,50
+text 10,100,"This is Times New Roman"
+color darkgreen
+font "Tahoma",10,100
+text 10,200,"This is Tahoma!"
+call q("Font - Times and Tahoma")
 # need image load, stamp, and sprite tests
-# poly
-# text/font
 
 
 ###################################################
