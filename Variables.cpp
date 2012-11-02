@@ -103,7 +103,7 @@ void Variables::clearvariable(variable* v)
 		delete(v->value.arr);
 		v->value.arr = NULL;
 	}
-	v->type == T_UNUSED;
+    v->type = T_UNUSED;
 }
 
 variable* Variables::getvfromnum(int varnum, bool makenew) {

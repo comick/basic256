@@ -797,8 +797,8 @@ Interpreter::execByteCode()
 			return 0;
 		} else {
 			// no error handler defined - display message and die
-			emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
-			emit(goToLine(currentLine));
+            emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
+            emit(goToLine(currentLine));
 			return -1;
 		}
 	}
@@ -994,21 +994,40 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int type = stack.popint();	// 0 text 1 binary
-			char *name = stack.popstring();
+            char *name = stack.popstring();
 			int fn = stack.popint();
-			if (fn<0||fn>=NUMFILES) {
+
+            //mutex.lock();
+            //emit(outputReady(tr("OPEN type=") + QString::number(type) +  " file=" + QString::number(fn) + " " + name + "\n"));
+            //waitCond.wait(&mutex);
+            //mutex.unlock();
+
+            printf("type=%i fn=%i file=%s\n",type,fn,name);
+            if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
 			} else {
-				if (stream[fn] != NULL)
-				{
+                // close file number if open
+                if (stream[fn] != NULL) {
 					stream[fn]->close();
 					stream[fn] = NULL;
 				}
+                // create file stream
 				stream[fn] = new QFile(QString::fromUtf8(name));
-				if (stream[fn] == NULL || !stream[fn]->open((type==0 ? QIODevice::ReadWrite | QIODevice::Text : QIODevice::ReadWrite)))
-				{
-					errornum = ERROR_FILEOPEN;
-				}
+                if (stream[fn] == NULL) {
+                    errornum = ERROR_FILEOPEN;
+                } else {
+                    if (type==0) {
+                        // text file
+                        if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Text)) {
+                            errornum = ERROR_FILEOPEN;
+                        }
+                    } else {
+                        // binary file
+                        if (!stream[fn]->open(QIODevice::ReadWrite)) {
+                            errornum = ERROR_FILEOPEN;
+                        }
+                    }
+                }
 			}
 			free(name);
 		}

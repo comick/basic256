@@ -180,7 +180,27 @@ call nclose("sqr(2)=2^.5",sqr(2),2^.5)
 call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
 
 ###################################################
+print "Test Random"
 ###################################################
+clg
+fastgraphics
+min = rand
+max = rand
+tot = 0
+k = 100000
+for t = 1 to k
+   n = rand
+   if n < min then min = n
+   if n > max then max = n
+   tot = tot + n
+   plot n*300,t%300
+   if t%1000=0 then refresh
+next t
+tot = tot / k
+call n("rand min "+min+">= 0..", min >=0, true)
+call n("rand max "+max+"< 1", max < 1, true)
+call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
+
 
 ###################################################
 ###################################################
