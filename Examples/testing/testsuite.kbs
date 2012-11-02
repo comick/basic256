@@ -1,7 +1,11 @@
-#testsuite
+#testsuite Version 0
+# 2012-11-01
 
-# test
+# This program will test most of the basic256 language compiler and interperter
+
+###################################################
 print "Numeric Assignment"
+###################################################
 a = 1 : call n("a=1",a,1)
 call n("a=1 during a++",a++,1)
 call n("a=2 after a++",a,2)
@@ -11,13 +15,17 @@ a -= 7 : call n("a=3 after a-=7",a,3)
 a *= 7 : call n("a=21 after a*=7",a,21)
 a /= 2 : call n("a=10.5 after a/=2",a,10.5)
 
+###################################################
 print "String Assignment"
+###################################################
 b$ = "string" : call s("b$ = 'string'", b$, "string")
 b$ = 2.75 : call s("b$ = 2.75", b$, "2.75")
 b$ += "." : call s("b$ = '2.75.' after b+='.'", b$, "2.75.")
 b$ += 9 : call s("b$ = '2.75.9' after b+=9", b$, "2.75.9")
 
+###################################################
 print "Numeric Operations"
+###################################################
 call n("1+2", 1+2, 3)
 call n("2+1", 2+1, 3)
 call n("1-2", 1-2, -1)
@@ -31,13 +39,17 @@ call n("3%5", 3%5, 3)
 call n("10\4", 10\4, 2)
 call n("4\10", 4\10, 0)
 
+###################################################
 print "Order of Numeric Operations"
+###################################################
 call n("1+10/2", 1 + 10 / 2, 6)
 call n("(1+10)/2", (1+10) / 2, 5.5)
 call n("1-10*2", 1 - 10 * 2, -19)
 call n("(1-10)*2", (1-10) * 2, -18)
 
+###################################################
 print "Integer Comparison"
+###################################################
 call n("1=1", 1=1, true)
 call n("1=2", 1=2, false)
 call n("1<>1", 1<>1, false)
@@ -55,7 +67,9 @@ call n("1<=0", 1<=0, false)
 call n("1<=1", 1<=1, true)
 call n("1<=2", 1<=2, true)
 
+###################################################
 print "Float Comparison"
+###################################################
 call n("1.34=1.34", 1.34=1.34, true)
 call n("1.34=3.56", 1.34=3.56, false)
 call n("1.34<>1.34", 1.34<>1.34, false)
@@ -73,7 +87,9 @@ call n("1.34<=0.78", 1.34<=0.78, false)
 call n("1.34<=1.34", 1.34<=1.34, true)
 call n("1.34<=3.56", 1.34<=3.56, true)
 
+###################################################
 print "String Comparison"
+###################################################
 call n("'bb'='bb'", "bb"="bb", true)
 call n("'bb'='cc'", "bb"="cc", false)
 call n("'bb'<>'bb'", "bb"<>"bb", false)
@@ -91,7 +107,9 @@ call n("'bb'<='aa'", "bb"<="aa", false)
 call n("'bb'<='bb'", "bb"<="bb", true)
 call n("'bb'<='cc'", "bb"<="cc", true)
 
+###################################################
 print "1D Numeric Array"
+###################################################
 dim c(10)
 c = {9,8,7,6,5,4,3,2,1,0}
 call n("c[1]=8 after immediate assign",c[1],8)
@@ -105,44 +123,185 @@ redim c(20)
 call n("c[1]=28 after redim",c[1],28)
 call n("c[9]=0 after redim",c[9],0)
 
+
+###################################################
+print "Functions and Subroutines"
+###################################################
+global globala, globalb$
+globala = 99
+globalb$ = "globalb"
+call subone(1,"foo")
+call n("globala=100 after sub",globala,100)
+call s("globalb$='globalbfoo' after sub",globalb$,"globalbfoo")
+a = 9
+b$ = "hi"
+c = funone(7, ref(a), "junk", ref(b$))
+call n("return from funone",c,23)
+call n("a=27 return from funone",a,27)
+call s("b$='hihi' return from funone",b$,"hihi")
+
+###################################################
+print "Error Trapping"
+###################################################
+onerror errortrap
+print 8 / 0
+call n("trap div zero", lasterror, 50)
+throwerror -99
+call n("trap throw -99", lasterror, -99)
+offerror
+
+###################################################
+print "Math Functions"
+###################################################
+call n("abs(-9)", abs(-9), 9)
+call n("abs(5.4)", abs(5.4), 5.4)
+call nclose("acos(1)", acos(1), 0)
+call nclose("acos(0)", acos(0), pi/2)
+call nclose("asin(1)", asin(1), pi/2)
+call nclose("asin(0)", asin(0), 0)
+call nclose("atan(1)", atan(1), pi/4)
+call nclose("atab(0)", atan(0), 0)
+call n("ceil(9.1)", ceil(9.1), 10)
+call n("ceil(-5.4)", ceil(-5.4), -5)
+call nclose("cos(pi/2)", cos(pi/2), 0)
+call nclose("cos(0)", cos(0),1)
+call nclose("sin(pi/2)", sin(pi/2), 1)
+call nclose("sin(0)", sin(0), 0)
+call nclose("tan(pi/4)", tan(pi/4), 1)
+call nclose("tab(0)", tan(0), 0)
+call nclose("exp(1)", exp(1), 2.718282)
+call nclose("exp(log(10))", exp(log(10)), 10)
+call nclose("log10(100)", log10(100), 2)
+call nclose("radians(0)", radians(0), 0)
+call nclose("radians(180)", radians(180), pi)
+call nclose("degrees(0)", degrees(0), 0)
+call nclose("degrees(pi)", degrees(pi), 180)
+call nclose("sqr(2)=2^.5",sqr(2),2^.5)
+call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
+
+###################################################
+###################################################
+
+###################################################
+###################################################
+
+###################################################
+###################################################
+
+###################################################
+print "Database"
+###################################################
+dbopen "testsuite.db"
+dbexecute "drop table if exists t;"
+dbexecute "create table t (i integer primary key, d text);"
+dbexecute "insert into t (i,d) values (1,'one');"
+dbexecute "insert into t (i,d) values (2,'two');"
+dbopenset "select * from t order by d desc limit 1;"
+call n("drow() - get row", dbrow(), true)
+call n("dbint(0)=2", dbint(0), 2)
+call s("dbstring(1)='two''", dbstring(1), "two")
+dbcloseset
+dbclose
+kill "testsuite.db"
+
+###################################################
 print "Graphics"
+###################################################
 clg
 color blue
 rect 10,10,20,20
 call q("Blue rectangle")
+call n("is 20,20 blue",pixel(20,20), blue)
+#
 clg
 color red
 circle 30,30,10
 call q("red circle")
+call n("is current color red",getcolor, red)
+#
 clg
 for t = 1 to 10
    color rand*256,rand*256,rand*256
    circle rand*300,rand*300,rand*10+10
 next t
 call q("10 random circles")
+#
 clg
 color black
 for t = 0 to 300 step 3
    line 0,0,t,300
    line 0,0,300,t
 next t
-call q("morie pattern")
+call q("morie pattern std size")
+#
+graphsize 200,150
 clg
 color black
-for x = 0 to 1 step .001
-y = (1 - x^2)^.5
-   plot 150-100*x, 150-100*y
-   plot 150-100*x, 150+100*y
-   plot 150+100*x, 150-100*y
-   plot 150+100*x, 150+100*y
+for t = 0 to 1 step .01
+   line 0,0,t*graphwidth,graphheight
+   line 0,0,graphwidth,t*graphheight
+next t
+call q("morie pattern odd size")
+graphsize 300,300
+#
+clg
+color black
+for x = 0 to 10 step .1
+y = (100- x^2)^.5
+   plot 150-x, 150-y
+   plot 150-x, 150+y
+   plot 150+x, 150-y
+   plot 150+x, 150+y
 next x
 call q("circle using x^2+y^2=r^2")
+# need image load, stamp, and sprite tests
+# poly
+# text/font
 
 
+###################################################
+print "Sound"
+###################################################
+say "hello.": call q("say helo")
+say 3 + 7: call q("say ten")
+sound 440,500: call q("half second sound")
+sound {440,100,220,100,300,200} : call q("three sounds from list")
+# need wavplay
+
+
+###################################################
+###################################################
+###################################################
 print "PASSED ALL TESTS."
+###################################################
+###################################################
+###################################################
 end
 
+subroutine errortrap()
+# do nothing but return so I can see error
+end subroutine
+
+function funone(a, ref(b), c$, ref(d$))
+a *= 2
+funone = a + b
+c$ = funtwo$(ref(b), ref(d$))
+end function
+
+function funtwo$(ref(r), ref(s$))
+r *=3
+s$ += s$
+funtwo$ = "squiggy"
+end function
+
+subroutine subone(a, b$)
+# set globals
+globala += a
+globalb$ += b$
+end subroutine
+
 subroutine q(message$)
+# ask user to press y if test worked or n if it failed
    print message$ + " [Press Y or N] ";
    do
       k$=upper(chr(key))
@@ -157,9 +316,20 @@ subroutine q(message$)
 end subroutine
 
 subroutine n(message$,a,b)
-   # test that a and b are the same numerically
+   # test that a and b are the same numerically (EXACTLY)
    print "testing " + message$ + " (" + a + "," + b + ") ";
    if a = b then
+      print "pass"
+   else
+      print "fail"
+      end
+   end if
+end subroutine
+
+subroutine nclose(message$,a,b)
+   # test that a and b are the same numerically ALMOST
+   print "testing " + message$ + " (" + a + "," + b + ") ";
+   if abs(a - b) < .0001 then
       print "pass"
    else
       print "fail"
