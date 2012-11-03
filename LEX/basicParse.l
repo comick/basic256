@@ -163,7 +163,7 @@ hexinteger 0[xX][0-9a-fA-F]+
 octalinteger 0[oO][0-7]+
 binaryinteger 0[bB][01]+
 floatnum [0-9]*\.?[0-9]*
-string \"[^\"\n]*\"
+string (\"[^\"\n]*\")|(\'[^\'\n]*\')
 variable [a-zA-Z][a-zA-Z0-9_]*
 stringvar [a-zA-Z][a-zA-Z0-9_]*\$
 label ^[ \t]*{variable}:

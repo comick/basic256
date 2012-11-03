@@ -297,7 +297,7 @@ void EditSyntaxHighlighter::initQuotes()
   HighlightRule rule;
 
   m_quoteFmt.setForeground(Qt::darkRed);
-  rule.pattern = QRegExp("\"[^\"]*\"");
+  rule.pattern = QRegExp("(\"[^\"]*\")|(\'[^\']*\')");
   rule.format = m_quoteFmt;
   m_standardRules.append(rule);
 }

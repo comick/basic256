@@ -1,10 +1,18 @@
-#testsuite Version 0
-# 2012-11-01
+# testsuite for BASIC256 Version 0.9.9.14
 
 # This program will test most of the basic256 language compiler and interperter
 
+# Modification History
+# date...... programmer... description...
+# 2012-11-03 j.m.reneau    added strings, file io, '' strings
+
+
+# create arrays to use
+dim c$(10)
+dim c(10)
+
 ###################################################
-print "Numeric Assignment"
+call section("Numeric Assignment")
 ###################################################
 a = 1 : call n("a=1",a,1)
 call n("a=1 during a++",a++,1)
@@ -16,15 +24,63 @@ a *= 7 : call n("a=21 after a*=7",a,21)
 a /= 2 : call n("a=10.5 after a/=2",a,10.5)
 
 ###################################################
-print "String Assignment"
+call section("String Assignment")
 ###################################################
-b$ = "string" : call s("b$ = 'string'", b$, "string")
+b$ = "string" : call s('b$ = "string"', b$, "string")
+b$ = 'string' : call s("b$ = 'string'", b$, 'string')
 b$ = 2.75 : call s("b$ = 2.75", b$, "2.75")
 b$ += "." : call s("b$ = '2.75.' after b+='.'", b$, "2.75.")
 b$ += 9 : call s("b$ = '2.75.9' after b+=9", b$, "2.75.9")
 
 ###################################################
-print "Numeric Operations"
+call section("Strings")
+###################################################
+call n("asc('a')", asc("a"), 97)
+call n("chr(98)='b'", chr(98), "b")
+call n('count("Hello", "lo")', count("Hello", "lo"), 1)
+call n('count("Buffalo buffalo buffalo.","BUFFALO",true)', count("Buffalo buffalo buffalo.","BUFFALO",true), 3)
+decimal 0
+call s("2/3=1 decimal 0", string(2/3), "1")
+decimal 1
+call s("2/3=0.7 decimal 1", string(2/3), "0.7")
+decimal 2
+call s("2/3=0.67 decimal 2", string(2/3), "0.67")
+decimal 6
+c$ = Explode("How now brown cow"," ")
+call s("implode-", implode(c$,"-"), "How-now-brown-cow")
+call s("implode", implode(c$), "Hownowbrowncow")
+c = Explode("1,2,3.33,4.44,5.55",",")
+call s("implode, ", implode(c,", "), "1, 2, 3.33, 4.44, 5.55")
+call s("implode", implode(c), "123.334.445.55")
+call s("upper", upper('upper'), "UPPER")
+call s("lower", lower('LOWER'), "lower")
+call n('instr("Hello", "lo")',instr("Hello", "lo"),4)
+call n('instr("Hello", "xx")',instr("Hello", "xx"),0)
+call n('instr("101,222,333",",",5)',instr("101,222,333",",",5),8)
+call n('instrx("HeLLo", "[Ll]o")',instrx("HeLLo", "[Ll]o"),4)
+call n('instrx("Hello, Kitti","[Ii]",10)',instrx("Hello, Kitti","[Ii]",10),12)
+call s('left("Hello", 2)',left("Hello", 2),"He")
+call s('left("Hello", 999)',left("Hello", 999),"Hello")
+call s('left("Hello", 0)',left("Hello", 0),"")
+call s('right("Hello", 2)',right("Hello", 2),"lo")
+call s('right("Hello", 999)',right("Hello", 999),"Hello")
+call s('right("Hello", 0)',right("Hello", 0),"")
+call n('length("Hello")',length("Hello"),5)
+call n('length("")',length(""),0)
+call s('MD5("Something")',MD5("Something"),"73f9977556584a369800e775b48f3dbe")
+call s('MD5("something")',MD5("something"),"437b930db84b8079c2dd804a71936b5f")
+call s('mid("Hello", 2, 3)',mid("Hello", 2, 3),"ell")
+call s('mid("Hello", 2, 0)',mid("Hello", 2, 0),"")
+call s('mid("Hello", 2, 9999)',mid("Hello", 2, 9999),"ello")
+call s('replace("abababba","a","c")',replace("abababba","a","c"),"cbcbcbbc")
+call s('replace("abababba","q","c")',replace("abababba","q","c"),"abababba")
+call s('replace("abababba","ab","c")',replace("abababba","ab","c"),"cccba")
+b$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
+call s('Replacex(b$,"ye.*ow","blue")',Replacex(b$,"ye.*ow","blue"),"We all live in a blue submarine.")
+call s('Replacex(b$, "[wW]e", "Beatles")',Replacex(b$, "[wW]e", "Beatles"),"Beatles all live in a yellow submarine, yellow submarine, yellow submarine.")
+
+###################################################
+call section("Numeric Operations")
 ###################################################
 call n("1+2", 1+2, 3)
 call n("2+1", 2+1, 3)
@@ -40,7 +96,7 @@ call n("10\4", 10\4, 2)
 call n("4\10", 4\10, 0)
 
 ###################################################
-print "Order of Numeric Operations"
+call section("Order of Numeric Operations")
 ###################################################
 call n("1+10/2", 1 + 10 / 2, 6)
 call n("(1+10)/2", (1+10) / 2, 5.5)
@@ -48,7 +104,7 @@ call n("1-10*2", 1 - 10 * 2, -19)
 call n("(1-10)*2", (1-10) * 2, -18)
 
 ###################################################
-print "Integer Comparison"
+call section("Integer Comparison")
 ###################################################
 call n("1=1", 1=1, true)
 call n("1=2", 1=2, false)
@@ -68,7 +124,7 @@ call n("1<=1", 1<=1, true)
 call n("1<=2", 1<=2, true)
 
 ###################################################
-print "Float Comparison"
+call section("Float Comparison")
 ###################################################
 call n("1.34=1.34", 1.34=1.34, true)
 call n("1.34=3.56", 1.34=3.56, false)
@@ -88,7 +144,7 @@ call n("1.34<=1.34", 1.34<=1.34, true)
 call n("1.34<=3.56", 1.34<=3.56, true)
 
 ###################################################
-print "String Comparison"
+call section("String Comparison")
 ###################################################
 call n("'bb'='bb'", "bb"="bb", true)
 call n("'bb'='cc'", "bb"="cc", false)
@@ -108,9 +164,8 @@ call n("'bb'<='bb'", "bb"<="bb", true)
 call n("'bb'<='cc'", "bb"<="cc", true)
 
 ###################################################
-print "1D Numeric Array"
+call section("1D Numeric Array")
 ###################################################
-dim c(10)
 c = {9,8,7,6,5,4,3,2,1,0}
 call n("c[1]=8 after immediate assign",c[1],8)
 call n("c[8]=1 after immediate assign",c[8],1)
@@ -125,7 +180,7 @@ call n("c[9]=0 after redim",c[9],0)
 
 
 ###################################################
-print "Functions and Subroutines"
+call section("Functions and Subroutines")
 ###################################################
 global globala, globalb$
 globala = 99
@@ -141,7 +196,7 @@ call n("a=27 return from funone",a,27)
 call s("b$='hihi' return from funone",b$,"hihi")
 
 ###################################################
-print "Error Trapping"
+call section("Error Trapping")
 ###################################################
 onerror errortrap
 print 8 / 0
@@ -151,7 +206,7 @@ call n("trap throw -99", lasterror, -99)
 offerror
 
 ###################################################
-print "Math Functions"
+call section("Math Functions")
 ###################################################
 call n("abs(-9)", abs(-9), 9)
 call n("abs(5.4)", abs(5.4), 5.4)
@@ -179,34 +234,51 @@ call nclose("degrees(pi)", degrees(pi), 180)
 call nclose("sqr(2)=2^.5",sqr(2),2^.5)
 call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
 
+
 ###################################################
-print "Test Random"
+call section("File I/O")
 ###################################################
-clg
-fastgraphics
-min = rand
-max = rand
-tot = 0
-k = 100000
-for t = 1 to k
-   n = rand
-   if n < min then min = n
-   if n > max then max = n
-   tot = tot + n
-   plot n*300,t%300
-   if t%1000=0 then refresh
+b$ = "testsuite_file.txt"
+print "new file"
+open b$
+reset
+for t = 0 to 255
+   r = rand
+   if r<.20 then
+      writeline string(t)
+   else
+      if r<.40 then
+         write string(t) + chr(9)
+      else
+         write string(t) + " "
+      end if
+   end if
 next t
-tot = tot / k
-call n("rand min "+min+">= 0..", min >=0, true)
-call n("rand max "+max+"< 1", max < 1, true)
-call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
-
+close
+open b$
+a = 0
+while not eof
+   t$ = read
+   a += int(t$)
+end while
+call n("read data sum", a, 32640)
+close
+open b$
+a = 0
+while not eof
+   t$ = readline
+   t$ = replace(t$,chr(9)," ")
+   c$ = explodex(t$,"\t| ")
+   for t = 0 to c$[?]-1
+      a += int(c$[t])
+   next t
+end while
+call n("readline data sum", a, 32640)
+close
+kill b$
 
 ###################################################
-###################################################
-
-###################################################
-print "Binary File"
+call section("Binary File")
 ###################################################
 b$ = "testsuite_binary.dat"
 print "new file"
@@ -231,8 +303,9 @@ end while
 call n("bindata sum from 10", a, 32595)
 close
 kill b$
+
 ###################################################
-print "Database"
+call section("Database")
 ###################################################
 dbopen "testsuite.db"
 dbexecute "drop table if exists t;"
@@ -248,7 +321,7 @@ dbclose
 kill "testsuite.db"
 
 ###################################################
-print "Graphics"
+call section("Graphics")
 ###################################################
 clg
 color blue
@@ -290,7 +363,7 @@ graphsize 300,300
 clg
 color black
 for x = 0 to 10 step .1
-y = (100- x^2)^.5
+   y = (100- x^2)^.5
    plot 150-x, 150-y
    plot 150-x, 150+y
    plot 150+x, 150-y
@@ -319,13 +392,38 @@ call q("Font - Times and Tahoma")
 
 
 ###################################################
-print "Sound"
+call section("Sound")
 ###################################################
 say "hello.": call q("say helo")
 say 3 + 7: call q("say ten")
 sound 440,500: call q("half second sound")
 sound {440,100,220,100,300,200} : call q("three sounds from list")
 # need wavplay
+
+###################################################
+call section("Test Random and fastgraphics")
+###################################################
+clg
+fastgraphics
+min = rand
+max = rand
+tot = 0
+k = 100000
+for t = 1 to k
+   n = rand
+   if n < min then min = n
+   if n > max then max = n
+   tot = tot + n
+   plot n*300,t%300
+   if t%1000=0 then
+      refresh
+      color rand*256, rand*256, rand*256
+   end if
+next t
+tot = tot / k
+call n("rand min "+min+">= 0..", min >=0, true)
+call n("rand max "+max+"< 1", max < 1, true)
+call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
 
 
 ###################################################
@@ -338,29 +436,39 @@ print "PASSED ALL TESTS."
 end
 
 subroutine errortrap()
-# do nothing but return so I can see error
+   # do nothing but return so I can see error
 end subroutine
 
 function funone(a, ref(b), c$, ref(d$))
-a *= 2
-funone = a + b
-c$ = funtwo$(ref(b), ref(d$))
+   a *= 2
+   funone = a + b
+   c$ = funtwo$(ref(b), ref(d$))
 end function
 
 function funtwo$(ref(r), ref(s$))
-r *=3
-s$ += s$
-funtwo$ = "squiggy"
+   r *=3
+   s$ += s$
+   funtwo$ = "squiggy"
 end function
 
 subroutine subone(a, b$)
-# set globals
-globala += a
-globalb$ += b$
+   # set globals
+   globala += a
+   globalb$ += b$
+end subroutine
+
+###################################################
+## TEST SYSTEM FUNCTIONS
+###################################################
+
+subroutine section(sec$)
+   print "###########"
+   print sec$
+   print "###########"
 end subroutine
 
 subroutine q(message$)
-# ask user to press y if test worked or n if it failed
+   # ask user to press y if test worked or n if it failed
    print message$ + " [Press Y or N] ";
    do
       k$=upper(chr(key))

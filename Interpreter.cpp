@@ -1243,10 +1243,20 @@ Interpreter::execByteCode()
 				{
 					errornum = ERROR_FILENOTOPEN;
 				} else {	
-					stream[fn]->close();
-					if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
-					{
-						errornum = ERROR_FILERESET;
+					if (stream[fn]->isTextModeEnabled()) {
+						// text mode file 
+						stream[fn]->close();
+						if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+						{
+							errornum = ERROR_FILERESET;
+						}
+					} else {
+						// binary mode file 
+						stream[fn]->close();
+						if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate))
+						{
+							errornum = ERROR_FILERESET;
+						}
 					}
 				}
 			}

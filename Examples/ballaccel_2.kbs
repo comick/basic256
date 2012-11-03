@@ -26,17 +26,17 @@ do
   if x < 10 then xvel = -xvel : x = 10
   
   rem draw the ball
-  color darkblue
-  rect 0,0,300,300
   call drawBall(x,y,r)
-  refresh
 until xvel * xvel < 0.0001
 end
  
 subroutine drawBall(x,y,r)
+  color darkblue
+  rect 0,0,300,300
   color darkgray
   circle x, y, r
   color gray
   circle x, y, r - 2
+  refresh
 end subroutine
 

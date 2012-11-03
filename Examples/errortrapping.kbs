@@ -1,7 +1,7 @@
 # test error trapping
 onerror nicetrap
 print 1
-next haha
+print 99 / 0
 print 2
 open 999, "bogus.file"
 print "Runs Anyway"
@@ -9,7 +9,7 @@ print "Runs Anyway"
 # test error trapping off and fail at any error (default)
 offerror
 print 3
-next hoho
+print 101/0
 print "never get here"
 
 end
