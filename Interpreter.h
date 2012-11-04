@@ -69,6 +69,8 @@ typedef struct {
 	QImage *underimage;
 	double x;
 	double y;
+	double r;	// rotate
+	double s;	// scale
 	bool visible;
 	bool active;
 } sprite;

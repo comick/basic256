@@ -303,7 +303,7 @@ addStringOp(char op, char *data) {
 %token B256VOLUME
 %token B256GRAPHWIDTH B256GRAPHHEIGHT B256GETSLICE B256PUTSLICE B256IMGLOAD
 %token B256SPRITEDIM B256SPRITELOAD B256SPRITESLICE B256SPRITEMOVE B256SPRITEHIDE B256SPRITESHOW B256SPRITEPLACE
-%token B256SPRITECOLLIDE B256SPRITEX B256SPRITEY B256SPRITEH B256SPRITEW B256SPRITEV
+%token B256SPRITECOLLIDE B256SPRITEX B256SPRITEY B256SPRITEH B256SPRITEW B256SPRITEV B256SPRITER B256SPRITES
 %token B256WAVPLAY B256WAVSTOP B256WAVWAIT
 %token B256SIZE B256SEEK B256EXISTS
 %token B256BOOLTRUE B256BOOLFALSE
@@ -1349,12 +1349,56 @@ spriteslicestmt: B256SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' float
 	| B256SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITESLICE); }
 ;
 
-spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_SPRITEPLACE);  }
-	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITEPLACE); }
+spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEPLACE);
+	}
+	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEPLACE);
+	}
+	| B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addExtendedOp(OP_SPRITEPLACE);
+	}
+	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addExtendedOp(OP_SPRITEPLACE);
+	}
+	| B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+		addExtendedOp(OP_SPRITEPLACE);
+	}
+	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addExtendedOp(OP_SPRITEPLACE);
+	}
 ;
 
-spritemovestmt: B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OP_SPRITEMOVE);  }
-	| B256SPRITELOAD '(' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITEMOVE); }
+spritemovestmt: B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEMOVE);
+	}
+	| B256SPRITEMOVE '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEMOVE);
+	}
+	| B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEMOVE);
+	}
+	| B256SPRITEMOVE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// rotate
+		addExtendedOp(OP_SPRITEMOVE);
+	}
+	| B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {
+		addExtendedOp(OP_SPRITEMOVE);
+	}
+	| B256SPRITEMOVE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addExtendedOp(OP_SPRITEMOVE);
+	}
 ;
 
 spritehidestmt: B256SPRITEHIDE floatexpr { addExtendedOp(OP_SPRITEHIDE); } 
@@ -1755,6 +1799,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256SPRITEH '(' floatexpr ')' { addExtendedOp(OP_SPRITEH); }
 	| B256SPRITEW '(' floatexpr ')' { addExtendedOp(OP_SPRITEW); }
 	| B256SPRITEV '(' floatexpr ')' { addExtendedOp(OP_SPRITEV); }
+	| B256SPRITER '(' floatexpr ')' { addExtendedOp(OP_SPRITER); }
+	| B256SPRITES '(' floatexpr ')' { addExtendedOp(OP_SPRITES); }
 	| B256DBROW '(' ')' { addExtendedOp(OP_DBROW); }
 	| B256DBINT '(' floatexpr ')' { addExtendedOp(OP_DBINT); }
 	| B256DBFLOAT '(' floatexpr ')' { addExtendedOp(OP_DBFLOAT); }

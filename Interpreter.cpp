@@ -424,8 +424,8 @@ void Interpreter::spriteundraw(int n) {
 	i = nsprites-1;
 	while(i>=n) {
 		if (sprites[i].active && sprites[i].visible) {
-			x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
-			y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
+			x = (int) (sprites[i].x - (double) sprites[i].underimage->width()/2.0);
+			y = (int) (sprites[i].y - (double) sprites[i].underimage->height()/2.0);
 			ian.drawImage(x, y, *(sprites[i].underimage));
 		}
 		i--;
@@ -439,12 +439,23 @@ void Interpreter::spriteredraw(int n) {
 	i = n;
 	while(i<nsprites) {
 		if (sprites[i].active && sprites[i].visible) {
-			x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
-			y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
-			delete sprites[i].underimage;
-			sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 			QPainter ian(image);
-			ian.drawImage(x, y, *(sprites[i].image));
+			if (sprites[i].r==0 || sprites[i].s==1) {
+				x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
+				y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
+				delete sprites[i].underimage;
+				sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
+				ian.drawImage(x, y, *(sprites[i].image));
+			} else {
+				QImage rotated = sprites[i].image->copy();
+				QTransform transform = QTransform().translate(0,0).rotate(sprites[i].r * 360 / (2 * M_PI)).scale(sprites[i].s,sprites[i].s);;
+				rotated = rotated.transformed(transform);
+				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
+				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
+				delete sprites[i].underimage;
+				sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
+				ian.drawImage(x, y, rotated);
+			}
 			ian.end();
 		}
 		i++;
@@ -457,14 +468,14 @@ bool Interpreter::spritecollide(int n1, int n2) {
 	
 	if (n1==n2) return true;
 	
-	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()/2.0);
-	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()/2.0);;
-	right1 = left1 + sprites[n1].image->width();
-	right2 = left2 + sprites[n2].image->width();
-	top1 = (int) (sprites[n1].y - (double) sprites[n1].image->height()/2.0);
-	top2 = (int) (sprites[n2].y - (double) sprites[n2].image->height()/2.0);
-	bottom1 = top1 + sprites[n1].image->height();
-	bottom2 = top2 + sprites[n2].image->height();
+	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()*sprites[n1].s/2.0);
+	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()*sprites[n2].s/2.0);;
+	right1 = left1 + sprites[n1].image->width()*sprites[n1].s;
+	right2 = left2 + sprites[n2].image->width()*sprites[n2].s;
+	top1 = (int) (sprites[n1].y - (double) sprites[n1].image->height()*sprites[n1].s/2.0);
+	top2 = (int) (sprites[n2].y - (double) sprites[n2].image->height()*sprites[n2].s/2.0);
+	bottom1 = top1 + sprites[n1].image->height()*sprites[n1].s;
+	bottom2 = top2 + sprites[n2].image->height()*sprites[n2].s;
 
    if (bottom1<top2) return false;
    if (top1>bottom2) return false;
@@ -997,12 +1008,6 @@ Interpreter::execByteCode()
             char *name = stack.popstring();
 			int fn = stack.popint();
 
-            //mutex.lock();
-            //emit(outputReady(tr("OPEN type=") + QString::number(type) +  " file=" + QString::number(fn) + " " + name + "\n"));
-            //waitCond.wait(&mutex);
-            //mutex.unlock();
-
-            printf("type=%i fn=%i file=%s\n",type,fn,name);
             if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
 			} else {
@@ -2874,8 +2879,8 @@ Interpreter::execByteCode()
 				} else {
 					QPainter ian(image);
 					if (rotate != 0 || scale != 1) {
-						QMatrix mat = QMatrix().translate(0,0).rotate(rotate * 360 / (2 * M_PI)).scale(scale, scale);
-						i = i.transformed(mat);
+						QTransform transform = QTransform().translate(0,0).rotate(rotate * 360 / (2 * M_PI)).scale(scale, scale);
+						i = i.transformed(transform);
 					}
 					ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
 					ian.end();
@@ -3277,6 +3282,8 @@ Interpreter::execByteCode()
 								sprites[n].visible = false;
 								sprites[n].x = 0;
 								sprites[n].y = 0;
+								sprites[n].r = 0;
+								sprites[n].s = 1;
 							}
 						}
 					}
@@ -3347,6 +3354,8 @@ Interpreter::execByteCode()
 						unsigned char opcode = *op;
 						op++;
 						
+						double r = stack.popfloat();
+						double s = stack.popfloat();
 						double y = stack.popfloat();
 						double x = stack.popfloat();
 						int n = stack.popint();
@@ -3362,13 +3371,18 @@ Interpreter::execByteCode()
 								if (opcode==OP_SPRITEMOVE) {
 									x += sprites[n].x;
 									y += sprites[n].y;
+									s += sprites[n].s;
+									r += sprites[n].r;
 									if (x >= (int) graph->image->width()) x = (double) graph->image->width();
 									if (x < 0) x = 0;
 									if (y >= (int) graph->image->height()) y = (double) graph->image->height();
 									if (y < 0) y = 0;
+									if (s < 0) s = 0;
 								}
 								sprites[n].x = x;
 								sprites[n].y = y;
+								sprites[n].s = s;
+								sprites[n].r = r;
 								spriteredraw(n);
 							
 								if (!fastgraphics) waitForGraphics();
@@ -3427,6 +3441,8 @@ Interpreter::execByteCode()
 			case OP_SPRITEH:
 			case OP_SPRITEW:
 			case OP_SPRITEV:
+			case OP_SPRITER:
+			case OP_SPRITES:
 				{
 					
 					unsigned char opcode = *op;
@@ -3446,6 +3462,8 @@ Interpreter::execByteCode()
 							if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
 							if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
 							if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
+							if (opcode==OP_SPRITER) stack.push(sprites[n].r);
+							if (opcode==OP_SPRITER) stack.push(sprites[n].s);
 						}
 					}
 				}

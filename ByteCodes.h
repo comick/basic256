@@ -280,6 +280,9 @@
 #define OP_GRAPHVISIBLE		0x40
 #define OP_OUTPUTVISIBLE	0x41
 #define OP_TEXTWIDTH		0x42
+#define OP_SPRITER	       	0x43
+#define OP_SPRITES	       	0x44
+
 
 
 

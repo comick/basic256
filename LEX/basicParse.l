@@ -222,6 +222,8 @@ spritey [Ss][Pp][Rr][Ii][Tt][Ee][Yy]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
 spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
+spriter [Ss][Pp][Rr][Ii][Tt][Ee][Rr]
+sprites [Ss][Pp][Rr][Ii][Tt][Ee][Ss]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
 currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
 decimal [Dd][Ee][Cc][Ii][Mm][Aa][Ll]
@@ -458,6 +460,8 @@ ref [Rr][Ee][Ff]
 {spriteh}	{ count(); return B256SPRITEH; }
 {spritew}	{ count(); return B256SPRITEW; }
 {spritev}	{ count(); return B256SPRITEV; }
+{spriter}	{ count(); return B256SPRITER; }
+{sprites}	{ count(); return B256SPRITES; }
 {seek}		{ count(); return B256SEEK; }
 {size}		{ count(); return B256SIZE; }
 {exists}	{ count(); return B256EXISTS; }
