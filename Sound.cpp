@@ -20,7 +20,7 @@ Sound::~Sound()
 void Sound::playSounds(int notes, int* freqdur)
 {
 
-#ifdef WIN32
+#ifdef SOUND_WIN32
 	
 	// code uses Microsoft's waveOut process to create a wave on the default sound card
 	// if soundcard is unopenable then use the system speaker

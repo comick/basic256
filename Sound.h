@@ -20,7 +20,7 @@
 	#include <QEventLoop>
 #endif
 
-#ifdef WIN32
+#ifdef SOUND_WIN32
 	#include <windows.h> 
 	#include <mmsystem.h>
 #endif

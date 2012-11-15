@@ -29,6 +29,22 @@ win32 {
 				-lws2_32 \
 				-lwinmm
 
+	########
+        # Sound class - How Sound statement works
+        ########
+        # uncomment one of the options
+
+        # Sound - Option 0 - Microsoft built in 32 bit API
+	DEFINES 		+= SOUND_WIN32
+
+	# Sound - Option 1 - QT Mobility Multimedia AudioOut
+	#DEFINES 		+= SOUND_QMOBILITY
+	#QT			+= multimedia
+	#INCLUDEPATH		+= QtMultimediaKit
+	#INCLUDEPATH		+= QtMobility
+	#CONFIG			+= mobility
+	#MOBILITY		+= multimedia
+
 
 }
 
@@ -74,11 +90,11 @@ unix:!macx {
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
 	DEFINES 		+= SOUND_QMOBILITY
+	#QT			+= multimedia
 	INCLUDEPATH		+= /usr/include/QtMultimediaKit
 	INCLUDEPATH		+= /usr/include/QtMobility
-	#QT 			+= multimedia
 	CONFIG			+= mobility
-	MOBILITY		= multimedia
+	MOBILITY		+= multimedia
 
         ########
 	# rules for make install
