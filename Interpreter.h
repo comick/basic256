@@ -32,6 +32,7 @@
 #include "Stack.h"
 #include "Variables.h"
 #include "ErrorCodes.h"
+#include "Sound.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -161,7 +162,7 @@ class Interpreter : public QThread
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;			// used by dir function
   QTime runtimer;				// used by 
-
+  Sound sound;
 };
 
 

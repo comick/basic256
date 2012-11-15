@@ -36,16 +36,21 @@ unix:!macx {
 	## this is the LINUX (unix-non-mac)
 	DEFINES		+= LINUX
 	
+	########
+        # TTS control - How Say statement works
+        ########
+        # uncomment one of the options
+
 	## TTS Option 1 - ececute 'espak' command to speak 
 	#DEFINES		+= 	LINUX_ESPEAK_EXECUTE
 
 	## TTS Option 2 - use the espeak library
-	DEFINES		+= 	LINUX_ESPEAK
+	DEFINES			+= 	LINUX_ESPEAK
 	INCLUDEPATH		+=	/usr/include/espeak
 	LIBS			+=	-lespeak
 
 	## TTS Option 3 - use the flite library
-	#DEFINES			+= 	LINUX_FLITE
+	#DEFINES		+= 	LINUX_FLITE
 	#INCLUDEPATH		+=	/usr/include/flite
 	#LIBS			+=	-lflite_cmu_us_kal16
 	#LIBS			+=	-lflite
@@ -54,12 +59,30 @@ unix:!macx {
 	
 	LIBS			+=	-lm
 
-	## include libraries for SDL audio for wav and sound output
-	DEFINES 		+= USESDL
-	LIBS			+= -lSDL
-	LIBS			+= -lSDL_mixer
+	########
+        # Sound class - How Sound statement works
+        ########
+        # uncomment one of the options
 
-	## rules for make install
+        # Sound - Option 0 - /dev/dsp
+	#DEFINES 		+= SOUND_DSP
+
+        # Sound - Option 1 - SDL Mixer
+	#DEFINES 		+= SOUND_SDL
+	#LIBS			+= -lSDL
+	#LIBS			+= -lSDL_mixer
+
+	# Sound - Option 2 - QT Mobility Multimedia AudioOut
+	DEFINES 		+= SOUND_QMOBILITY
+	INCLUDEPATH		+= /usr/include/QtMultimediaKit
+	INCLUDEPATH		+= /usr/include/QtMobility
+	#QT 			+= multimedia
+	CONFIG			+= mobility
+	MOBILITY		= multimedia
+
+        ########
+	# rules for make install
+        ########
 	examplesDiceFiles.files = ./Examples/dice/*.kbs \
 				./Examples/dice/*.wav
 	examplesDiceFiles.path = /usr/share/basic256/Examples/dice
@@ -144,7 +167,7 @@ macx {
 	INCLUDEPATH		+=	/opt/local/include
 
 	## include libraries for SDL audio for wav and sound output
-	DEFINES 		+= USESDL
+	DEFINES 		+= SOUND_SDL
 	LIBS			+= -lSDL
 	LIBS			+= -lSDL_mixer
 
@@ -185,6 +208,7 @@ HEADERS			+=	PreferencesWin.h
 HEADERS			+=	FindWin.h
 HEADERS			+=	ReplaceWin.h
 HEADERS			+=	md5.h
+HEADERS			+=	Sound.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
@@ -210,4 +234,5 @@ SOURCES			+=	PreferencesWin.cpp
 SOURCES			+=	FindWin.cpp
 SOURCES			+=	ReplaceWin.cpp
 SOURCES			+=	md5.cpp
+SOURCES			+=	Sound.cpp
 

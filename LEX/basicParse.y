@@ -519,10 +519,7 @@ functionvariables: B256VARIABLE {
 ;
 
 
-endfunctionexpr: B256ENDFUNCTION | B256END B256FUNCTION
-;
-
-endfunctionstmt: endfunctionexpr {
+endfunctionstmt: B256ENDFUNCTION {
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addIntOp(OP_PUSHVAR, functionDefSymbol);
@@ -542,9 +539,7 @@ endfunctionstmt: endfunctionexpr {
 }
 ;
 
-endsubroutineexpr: B256ENDSUBROUTINE | B256END B256SUBROUTINE;
-
-endsubroutinestmt: endsubroutineexpr {
+endsubroutinestmt: B256ENDSUBROUTINE {
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
@@ -611,10 +606,8 @@ elsestmt: B256ELSE
 }
 ;
 
-endifexpr: B256ENDIF|
-	B256END B256IF;
 
-endifstmt: endifexpr
+endifstmt: B256ENDIF
 	{
 	// if there is an if branch or jump on the iftable stack get where it is
 	// in the bytecode array and then put the current bytecode address there
@@ -649,8 +642,7 @@ whilestmt: B256WHILE floatexpr
 }
 ;
 
-endwhileexpr: B256ENDWHILE|
-	B256END B256WHILE;
+endwhileexpr: B256ENDWHILE;
 
 endwhilestmt: endwhileexpr
 	{

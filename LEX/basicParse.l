@@ -81,9 +81,9 @@ return [Rr][Ee][Tt][Uu][Rr][Nn]
 if [Ii][Ff]
 then [Tt][Hh][Ee][Nn]
 else [Ee][Ll][Ss][Ee]
-endif [Ee][Nn][Dd][Ii][Ff]
+endif ([Ee][Nn][Dd][Ii][Ff])|([Ee][Nn][Dd][ \t]+[Ii][Ff])
 while [Ww][Hh][Ii][Ll][Ee]
-endwhile [Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]
+endwhile ([Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee])|([Ee][Nn][Dd][ \t]+[Ww][Hh][Ii][Ll][Ee])
 do [Dd][Oo]
 until [Uu][Nn][Tt][Ii][Ll]
 rem [Rr][Ee][Mm][ ].+$
@@ -273,10 +273,10 @@ editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
-endfunction [Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+endfunction ([Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn])|([Ee][Nn][Dd][ \t]+[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn])
 throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 subroutine [Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
-endsubroutine [Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+endsubroutine ([Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee])|([Ee][Nn][Dd][ \t]+[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee])
 call [Cc][Aa][Ll][Ll]
 global [Gg][Ll][Oo][Bb][Aa][Ll]
 readbyte [Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]

@@ -66,6 +66,7 @@ using namespace std;
 #include "Interpreter.h"
 #include "md5.h"
 #include "Settings.h"
+#include "Sound.h"
 
 QMutex keymutex;
 int currentKey;
@@ -1970,8 +1971,6 @@ Interpreter::execByteCode()
 			QString qstr = QString::fromUtf8(str);
 			QString qhay = QString::fromUtf8(hay);
 			
-			printf("start %i  length %i \n", start, qstr.length());
-			
 			int pos = 0;
 			if(start < 1) {
 				errornum = ERROR_STRSTART;
@@ -2337,7 +2336,7 @@ Interpreter::execByteCode()
 			freqdur = (int*) malloc(1 * sizeof(int));
 			freqdur[0] = frequency;
 			freqdur[1] = duration;
-			emit(playSounds(1 , freqdur));
+			sound.playSounds(1 , freqdur);
 		}
 		break;
 		
@@ -2361,8 +2360,7 @@ Interpreter::execByteCode()
 					freqdur[j] = (int) variables.arraygetfloat(*i, j);
 				}
 				
-				emit(playSounds(length / 2 , freqdur));
-
+				sound.playSounds(length / 2 , freqdur);
 			} 
 		}
 		break;
@@ -2382,7 +2380,7 @@ Interpreter::execByteCode()
 			{
 				freqdur[j] = stack.popint();
 			}
-			emit(playSounds(length / 2 , freqdur));
+			sound.playSounds(length / 2 , freqdur);
 		}
 		break;
 		
@@ -2394,7 +2392,7 @@ Interpreter::execByteCode()
 			int volume = stack.popint();
 			if (volume<0) volume = 0;
 			if (volume>10) volume = 10;
-			emit(setVolume(volume));
+			sound.setVolume(volume);
 		}
 		break;
 
