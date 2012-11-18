@@ -90,9 +90,7 @@ unix:!macx {
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
 	DEFINES 		+= SOUND_QMOBILITY
-	#QT			+= multimedia
-	INCLUDEPATH		+= /usr/include/QtMultimediaKit
-	INCLUDEPATH		+= /usr/include/QtMobility
+	QT			+= mobility
 	CONFIG			+= mobility
 	MOBILITY		+= multimedia
 

@@ -12,12 +12,14 @@
 	#include <SDL/SDL_mixer.h>
 	#define SDL_CHAN_WAV 1
 	#define SDL_CHAN_SOUND 2
+	#define SOUND_HALFWAVE 0x7f
 #endif
 
 #ifdef SOUND_QMOBILITY
 	#include <QAudioOutput>
 	#include <QBuffer>
 	#include <QEventLoop>
+	#define SOUND_HALFWAVE 0x7fff
 #endif
 
 #ifdef SOUND_WIN32

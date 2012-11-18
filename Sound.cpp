@@ -135,6 +135,10 @@ void Sound::playSounds(int notes, int* freqdur)
 #ifdef SOUND_SDL
 	Mix_Chunk c;
 
+	short s;
+	char *cs = (char *) &s;
+	double amplititude = tan((double) soundVolume / (double) 10) * (double) SOUND_HALFWAVE;  // (half wave height)
+
 	c.allocated = 1; // sdl needs to free chunk data
 	c.volume = (unsigned char) (tan((double) soundVolume / 10) * 0x7f);
 	
@@ -154,11 +158,9 @@ void Sound::playSounds(int notes, int* freqdur)
 			// lets build a sine wave
 			int length = MIX_DEFAULT_FREQUENCY * freqdur[tnotes*2+1] / 1000;
 			double wavebit = 2 * M_PI / ((double) MIX_DEFAULT_FREQUENCY / (double) freqdur[tnotes*2]);
-			short s;
-			char *cs = (char *) &s;
 			for(int i = 0; i < length; i++) {
 			
-				s = (short) (sin(wave) * 0x7fff);
+				s = (short) ( amplititude * sin(wave));
 				c.abuf[pos++] = cs[0];
 				c.abuf[pos++] = cs[1];
 				wave+=wavebit;
@@ -173,16 +175,19 @@ void Sound::playSounds(int notes, int* freqdur)
 #ifdef SOUND_QMOBILITY
 	// use the QT library Audio Output
 	// part of the QtMobility project
-	double amplititude = tan((double) soundVolume / (double) 10) * (double) 0x7f;  // (half wave height)
-	double wave = 0;	
+
+	short s;
+	char *cs = (char *) &s;
+
+	double amplititude = tan((double) soundVolume / (double) 10) * (double) SOUND_HALFWAVE;  // (half wave height)
+	double wave = 0;
 
  	// setup the audio format
 	QAudioFormat format;
- 	format.setFrequency(11025);
+ 	format.setFrequency(8000);
  	format.setChannels(1);
- 	format.setSampleSize(8);
+ 	format.setSampleSize(sizeof(short)*8);
  	format.setCodec("audio/pcm");
- 	format.setByteOrder(QAudioFormat::LittleEndian);
  	format.setSampleType(QAudioFormat::SignedInt);
 
 	// build sound into buffer
@@ -193,7 +198,8 @@ void Sound::playSounds(int notes, int* freqdur)
 		int length = format.sampleRate() * freqdur[tnotes*2+1] / 1000;
 		double wavebit = 2 * M_PI / ((double) format.sampleRate() / (double) freqdur[tnotes*2]);
 		for(int i = 0; i < length; i++) {
-			buffer.putChar((char) (amplititude * sin(wave)));
+			s = (short) (amplititude * sin(wave));
+			buffer.write(cs,sizeof(short));
 			wave+=wavebit;
 		}
 	}
