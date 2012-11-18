@@ -1322,12 +1322,42 @@ putslicestmt: B256PUTSLICE floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_PUT
 	| B256PUTSLICE floatexpr ',' floatexpr ',' stringexpr ',' floatexpr  {addOp(OP_PUTSLICEMASK);  }
 	| B256PUTSLICE '(' floatexpr ',' floatexpr ',' stringexpr  ',' floatexpr')' { addOp(OP_PUTSLICEMASK); };
 
-imgloadstmt: B256IMGLOAD floatexpr ',' floatexpr ',' stringexpr  {addOp(OP_IMGLOAD);  }
-	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD); }
-	| B256IMGLOAD floatexpr ',' floatexpr ',' floatexpr ',' stringexpr { addOp(OP_IMGLOAD_S); }
-	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_S); }
-	| B256IMGLOAD floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr { addOp(OP_IMGLOAD_SR); }
-	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_IMGLOAD_SR); }
+imgloadstmt: B256IMGLOAD floatexpr ',' floatexpr ',' stringexpr
+	{
+		addIntOp(OP_PUSHINT, 1); // scale
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT, 0); // rotate
+		addOp(OP_STACKSWAP);
+		addOp(OP_IMGLOAD);
+	}
+	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' stringexpr ')'
+	{
+		addIntOp(OP_PUSHINT, 1); // scale
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT, 0); // rotate
+		addOp(OP_STACKSWAP);
+		addOp(OP_IMGLOAD);
+	}
+	| B256IMGLOAD floatexpr ',' floatexpr ',' floatexpr ',' stringexpr
+	{
+		addIntOp(OP_PUSHINT, 0); // rotate
+		addOp(OP_STACKSWAP);
+		addOp(OP_IMGLOAD);
+	}
+	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')'
+	{
+		addIntOp(OP_PUSHINT, 0); // rotate
+		addOp(OP_STACKSWAP);
+		addOp(OP_IMGLOAD);
+	}
+	| B256IMGLOAD floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr
+	{
+		addOp(OP_IMGLOAD);
+	}
+	| B256IMGLOAD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')'
+	{
+		addOp(OP_IMGLOAD);
+	}
 ;
 
 spritedimstmt: B256SPRITEDIM floatexpr { addExtendedOp(OP_SPRITEDIM); } 

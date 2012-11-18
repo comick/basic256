@@ -2851,22 +2851,15 @@ Interpreter::execByteCode()
 		break;
 
 	case OP_IMGLOAD:
-	case OP_IMGLOAD_S:
-	case OP_IMGLOAD_SR:
 		{
-			// Image Load - with optional scale and rotate
-
-			double rotate=0;		// defaule rotation to 0 radians
-			double scale=1;			// default scale to full size (1x)
-			
-			unsigned char opcode = *op;
+			// Image Load - with scale and rotate
 			op++;
 			
 			// pop the filename to uncover the location and scale
 			char *file = stack.popstring();
 			
-			if (opcode==OP_IMGLOAD_SR) rotate = stack.popfloat();
-			if (opcode==OP_IMGLOAD_SR || opcode==OP_IMGLOAD_S) scale = stack.popfloat();
+			double rotate = stack.popfloat();
+			double scale = stack.popfloat();
 			double y = stack.popint();
 			double x = stack.popint();
 			
