@@ -14,8 +14,8 @@ var customImage
 var customImageHandle
 
 Function .onInit
-  StrCpy $VERSION "0.9.9.13"
-  StrCpy $VERSIONDATE "2012-11-01"
+  StrCpy $VERSION "0.9.9.17"
+  StrCpy $VERSIONDATE "2012-11-17"
 FunctionEnd
 
 Function customPage
@@ -89,6 +89,7 @@ Section "BASIC256"
   File c:\qtsdk\mingw\lib\InstallDriver.exe
   File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\phonon4.dll
   File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\QtCore4.dll
+  File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\QtMultimedia4.dll
   File C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin\QtGui4.dll
   File ChangeLog
   File CONTRIBUTORS

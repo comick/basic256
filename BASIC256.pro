@@ -35,15 +35,15 @@ win32 {
         # uncomment one of the options
 
         # Sound - Option 0 - Microsoft built in 32 bit API
-	DEFINES 		+= SOUND_WIN32
+	#DEFINES 		+= SOUND_WIN32
 
 	# Sound - Option 1 - QT Mobility Multimedia AudioOut
-	#DEFINES 		+= SOUND_QMOBILITY
-	#QT			+= multimedia
-	#INCLUDEPATH		+= QtMultimediaKit
-	#INCLUDEPATH		+= QtMobility
-	#CONFIG			+= mobility
-	#MOBILITY		+= multimedia
+	DEFINES 		+= SOUND_QMOBILITY
+	QT			+= multimedia
+	INCLUDEPATH		+= QtMultimediaKit
+	INCLUDEPATH		+= QtMobility
+	CONFIG			+= mobility
+	MOBILITY		+= multimedia
 
 
 }

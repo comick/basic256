@@ -449,7 +449,7 @@ void Interpreter::spriteredraw(int n) {
 				ian.drawImage(x, y, *(sprites[i].image));
 			} else {
 				QImage rotated = sprites[i].image->copy();
-				QTransform transform = QTransform().translate(0,0).rotate(sprites[i].r * 360 / (2 * M_PI)).scale(sprites[i].s,sprites[i].s);;
+				QTransform transform = QTransform().translate(0,0).rotateRadians(sprites[i].r).scale(sprites[i].s,sprites[i].s);;
 				rotated = rotated.transformed(transform);
 				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
 				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
@@ -2877,7 +2877,7 @@ Interpreter::execByteCode()
 				} else {
 					QPainter ian(image);
 					if (rotate != 0 || scale != 1) {
-						QTransform transform = QTransform().translate(0,0).rotate(rotate * 360 / (2 * M_PI)).scale(scale, scale);
+						QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
 						i = i.transformed(transform);
 					}
 					ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
