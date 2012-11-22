@@ -326,7 +326,7 @@ addStringOp(char op, char *data) {
 %token B256FUNCTION B256ENDFUNCTION B256THROWERROR B256SUBROUTINE B256ENDSUBROUTINE B256CALL B256GLOBAL
 %token B256READBYTE B256WRITEBYTE
 %token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL B256REF
-%token B256FREEDB B256FREEFILE B256FREENET
+%token B256FREEDB B256FREEFILE B256FREENET B256FREEDBSET
 
 
 %union
@@ -1482,26 +1482,47 @@ dbexecutestmt: B256DBEXECUTE stringexpr {
 dbopensetstmt: B256DBOPENSET stringexpr {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
 		addExtendedOp(OP_DBOPENSET);
 	}
 	| B256DBOPENSET floatexpr ',' stringexpr {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
 		addExtendedOp(OP_DBOPENSET);
 	}
 	| B256DBOPENSET '(' floatexpr ',' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBOPENSET);
+	}
+	| B256DBOPENSET floatexpr ',' floatexpr ',' stringexpr {
+		addExtendedOp(OP_DBOPENSET);
+	}
+	| B256DBOPENSET '(' floatexpr ',' floatexpr ',' stringexpr ')' {
 		addExtendedOp(OP_DBOPENSET);
 	}
 ;
 
 dbclosesetstmt: B256DBCLOSESET {
 		addIntOp(OP_PUSHINT,0);	// default db number
+		addIntOp(OP_PUSHINT,0);	// default dbset number
 		addExtendedOp(OP_DBCLOSESET);
 	}
 	| B256DBCLOSESET '(' ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
+		addIntOp(OP_PUSHINT,0);	// default dbset number
 		addExtendedOp(OP_DBCLOSESET);
 	}
 	| B256DBCLOSESET floatexpr {
-		 addExtendedOp(OP_DBCLOSESET);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addExtendedOp(OP_DBCLOSESET);
+	}
+	| B256DBCLOSESET '(' floatexpr ',' floatexpr ')' {
+		addExtendedOp(OP_DBCLOSESET);
+	}
+	| B256DBCLOSESET floatexpr ',' floatexpr {
+		addExtendedOp(OP_DBCLOSESET);
 	}
 ;
 
@@ -1874,26 +1895,44 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256SPRITES '(' floatexpr ')' { addExtendedOp(OP_SPRITES); }
 	| B256DBROW {
 		addIntOp(OP_PUSHINT,0);	// default db number
+		addIntOp(OP_PUSHINT,0);	// default dbset number
 		addExtendedOp(OP_DBROW);
 	}
 	| B256DBROW '(' ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
+		addIntOp(OP_PUSHINT,0);	// default dbset number
 		addExtendedOp(OP_DBROW);
 	}
 	| B256DBROW '(' floatexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addExtendedOp(OP_DBROW);
+	}
+	| B256DBROW '(' floatexpr ',' floatexpr')' {
 		addExtendedOp(OP_DBROW);
 	}
 	| B256DBINT '(' floatexpr ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
 		addExtendedOp(OP_DBINT); }
 	| B256DBINT '(' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBINT); }
+	| B256DBINT '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBINT); }
 	| B256DBFLOAT '(' floatexpr ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
 		addExtendedOp(OP_DBFLOAT); }
 	| B256DBFLOAT '(' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBFLOAT); }
+	| B256DBFLOAT '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBFLOAT); }
 	| B256LASTERROR { addExtendedOp(OP_LASTERROR); }
 	| B256LASTERROR '(' ')' { addExtendedOp(OP_LASTERROR); }
@@ -1918,6 +1957,7 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256REF '(' B256STRINGVAR ')' { addIntOp(OP_PUSHVARREFSTR, $3); }
 	| B256FREEDB { addExtendedOp(OP_FREEDB); }
 	| B256FREEDB '(' ')' { addExtendedOp(OP_FREEDB); }
+	| B256FREEDBSET '(' floatexpr ')' { addExtendedOp(OP_FREEDBSET); }
 	| B256FREEFILE { addExtendedOp(OP_FREEFILE); }
 	| B256FREEFILE '(' ')' { addExtendedOp(OP_FREEFILE); }
 	| B256FREENET { addExtendedOp(OP_FREENET); }
@@ -1961,8 +2001,14 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256DBSTRING '(' floatexpr ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
 		addExtendedOp(OP_DBSTRING); }
 	| B256DBSTRING '(' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBSTRING); }
+	| B256DBSTRING '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBSTRING); }
 	| B256LASTERRORMESSAGE { addExtendedOp(OP_LASTERRORMESSAGE); }
 	| B256LASTERRORMESSAGE '(' ')' { addExtendedOp(OP_LASTERRORMESSAGE); }

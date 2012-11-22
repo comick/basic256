@@ -130,6 +130,10 @@
 #define	ERROR_FREEDB_MESSAGE "There are no free database connections to allocate."
 #define ERROR_DBCONNNUMBER 56
 #define ERROR_DBCONNNUMBER_MESSAGE "Invalid Database Connection Number"
+#define ERROR_FREEDBSET 57
+#define	ERROR_FREEDBSET_MESSAGE "There are no free data sets io allocate for that database connection."
+#define ERROR_DBSETNUMBER 58
+#define ERROR_DBSETNUMBER_MESSAGE "Invalid data set number."
 
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."

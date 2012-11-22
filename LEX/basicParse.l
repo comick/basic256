@@ -72,8 +72,8 @@ void count();
 binaryinteger 0[bB][01]+
 blankline ^[ \t]*[\n]
 floatnum [0-9]*\.?[0-9]*
-hexinteger 0[xX][0-9a-fA-F]+
 integer [0-9]+
+hexinteger 0[xX][0-9a-fA-F]+
 nws [^ \t\n]+
 octalinteger 0[oO][0-7]+
 string (\"[^\"\n]*\")|(\'[^\'\n]*\')
@@ -144,6 +144,7 @@ floor [Ff][Ll][Oo][Oo][Rr]
 font [Ff][Oo][Nn][Tt]
 for [Ff][Oo][Rr]
 freedb [Ff][Rr][Ee][Ee][Dd][Bb]
+freedbset [Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
 freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
 freenet [Ff][Rr][Ee][Ee][Nn][Ee][Tt]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
@@ -321,10 +322,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	}
 	return B256LABEL;
 }
-{binaryinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
-{floatnum}	{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
-{hexinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
 {integer}	{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
+{floatnum}	{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
+{binaryinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
+{hexinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
 {octalinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
 {string}	{ int len; count(); len = strlen(yytext);
 			yylval.string = strdup(yytext + 1);
@@ -570,6 +571,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {openb}		{ count(); return B256OPENB; }
 {ref}		{ count(); return B256REF; }
 {freedb}	{ count(); return B256FREEDB; }
+{freedbset}	{ count(); return B256FREEDBSET; }
 {freefile}	{ count(); return B256FREEFILE; }
 {freenet}	{ count(); return B256FREENET; }
 

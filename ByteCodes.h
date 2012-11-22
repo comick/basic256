@@ -283,3 +283,4 @@
 #define OP_FREEFILE	       	0x3f
 #define OP_FREENET	       	0x40
 #define OP_FREEDB	       	0x41
+#define OP_FREEDBSET	       	0x42

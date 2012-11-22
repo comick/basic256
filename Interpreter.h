@@ -43,6 +43,7 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED}
 #define NUMFILES 8
 #define NUMSOCKETS 8
 #define NUMDBCONN 8
+#define NUMDBSET 8
 
 
 struct byteCodeData
@@ -154,7 +155,7 @@ class Interpreter : public QThread
   int nsprites;
   void closeDatabase(int);
   sqlite3 **dbconn;
-  sqlite3_stmt **dbset;
+  sqlite3_stmt ***dbset;
   int errornum;
   QString errormessage;
   int lasterrornum;
