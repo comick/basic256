@@ -275,12 +275,11 @@
 #define OP_OSTYPE		0x37
 #define OP_MSEC			0x38
 #define OP_EDITVISIBLE		0x39
-#define OP_GRAPHVISIBLE		0x40
-#define OP_OUTPUTVISIBLE	0x41
-#define OP_TEXTWIDTH		0x42
-#define OP_SPRITER	       	0x43
-#define OP_SPRITES	       	0x44
-
-
-
-
+#define OP_GRAPHVISIBLE		0x3a
+#define OP_OUTPUTVISIBLE	0x3b
+#define OP_TEXTWIDTH		0x3c
+#define OP_SPRITER	       	0x3d
+#define OP_SPRITES	       	0x3e
+#define OP_FREEFILE	       	0x3f
+#define OP_FREENET	       	0x40
+#define OP_FREEDB	       	0x41

@@ -7,6 +7,7 @@ dbopen "dbtest.sqlite3"
 onerror errortrap
 dbexecute "drop table foo;"
 offerror
+
 # create and populate
 dbexecute "create table foo (id integer, words text, value decimal);"
 dbexecute "insert into foo values (1,'one',3.14);"
@@ -16,7 +17,7 @@ dbexecute "insert into foo values (3,'three',9.43);"
 # open a recordset and loop through the rows of data
 dbopenset "select * from foo order by words;"
 while dbrow()
-	print dbint(0) + dbstring(1) + dbfloat(2)
+   print dbint(0) + dbstring(1) + dbfloat(2)
 end while
 dbcloseset
 
@@ -24,6 +25,7 @@ dbcloseset
 dbclose
 end
 
-errortrap:
-# accept error - display nothing - return to next statement
-return
+subroutine errortrap()
+   # display what happened - return to next statement
+   print "Error " + lasterror + " - " + lasterrormessage + " (" + lasterrorextra + ") happened on line " + lasterrorline
+end subroutine

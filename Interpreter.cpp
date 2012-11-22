@@ -304,6 +304,19 @@ QString Interpreter::getErrorMessage(int e) {
         case ERROR_BYREFTYPE:
             errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
             break;
+        case ERROR_FREEFILE:
+            errormessage = tr(ERROR_FREEFILE_MESSAGE);
+            break;
+        case ERROR_FREENET:
+            errormessage = tr(ERROR_FREENET_MESSAGE);
+            break;
+        case ERROR_FREEDB:
+            errormessage = tr(ERROR_FREEDB_MESSAGE);
+            break;
+        case ERROR_DBCONNNUMBER:
+            errormessage = tr(ERROR_DBCONNNUMBER_MESSAGE);
+            break;
+
         // put new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -320,7 +333,7 @@ QString Interpreter::getErrorMessage(int e) {
 
 int Interpreter::netSockClose(int fd)
 {
-	// tidy up a network socket and return -1 to assign to the
+	// tidy up a network socket and return NULL to assign to the
 	// fd variable to mark as closed as closed
 	// call  f = netSockClose(f);
 	if(fd>=0) {
@@ -662,10 +675,6 @@ Interpreter::initialize()
 	status = R_RUNNING;
 	once = true;
 	currentLine = 1;
-	stream = new QFile *[NUMFILES];
-	for (int t=0;t<NUMFILES;t++) {
-		stream[t] = NULL;
-	}
 	emit(mainWindowsResize(1, 300, 300));
 	image = graph->image;
 	fontfamily = QString("");
@@ -673,12 +682,23 @@ Interpreter::initialize()
 	fontweight = 0;
 	nsprites = 0;
 	stack.fToAMask = stack.defaultFToAMask;
-	dbconn = NULL;
-	dbset = NULL;
+	runtimer.start();
+	// initialize files to NULL (closed)
+	stream = new QFile *[NUMFILES];
+	for (int t=0;t<NUMFILES;t++) {
+		stream[t] = NULL;
+	}
+	// initialize network sockets to closed (-1)
 	for (int t=0;t<NUMSOCKETS;t++) {
 		netsockfd[t] = netSockClose(netsockfd[t]);
 	}
-	runtimer.start();
+	// initialize databse connections
+	dbconn = new sqlite3 *[NUMDBCONN];
+	dbset = new sqlite3_stmt *[NUMDBCONN];
+	for (int t=0;t<NUMDBCONN;t++) {
+		dbconn[t] = NULL;
+		dbset[t] = NULL;
+	}
 }
 
 
@@ -698,22 +718,37 @@ Interpreter::cleanup()
 		free(byteCode);
 		byteCode = NULL;
 	}
-	closeDatabase();
+	// close open files (set to NULL if closed)
+	for (int t=0;t<NUMFILES;t++) {
+		if (stream[t]) {
+			stream[t]->close();
+			stream[t] = NULL;
+		}
+	}
+	// close open network connections (set to -1 of closed)
+	for (int t=0;t<NUMSOCKETS;t++) {
+		if (netsockfd[t]) netsockfd[t] = netSockClose(netsockfd[t]);
+	}
+	// close open database connections and record sets
+	for (int t=0;t<NUMDBCONN;t++) {
+		closeDatabase(t);
+	}
+	//
 	if(directorypointer != NULL) {
 		closedir(directorypointer);
 		directorypointer = NULL;
 	}
 }
 
-void Interpreter::closeDatabase() {
+void Interpreter::closeDatabase(int n) {
 	// cleanup database
-	if (dbset) {
-		sqlite3_finalize(dbset);
-		dbset = NULL;
+	if (dbset[n]) {
+		sqlite3_finalize(dbset[n]);
+		dbset[n] = NULL;
 	}
-	if (dbconn) {
-		sqlite3_close(dbconn);
-		dbconn = NULL;
+	if (dbconn[n]) {
+		sqlite3_close(dbconn[n]);
+		dbconn[n] = NULL;
 	}
 }
 
@@ -749,7 +784,6 @@ Interpreter::run()
 	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
-	closeDatabase();
 	emit(runFinished());
 }
 
@@ -3505,18 +3539,15 @@ Interpreter::execByteCode()
 						op++;
 						// open database connection
 						char *file = stack.popstring();
-						// if a set is in progress or database open then close them first
-						if (dbset) {
-							sqlite3_finalize(dbset);
-							dbset = NULL;
-						}
-						if (dbconn) {
-							sqlite3_close(dbconn);
-							dbconn = NULL;
-						}
-						int error = sqlite3_open(file, &dbconn);
-						if (error) {
-							errornum = ERROR_DBOPEN;
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
+						} else {
+							closeDatabase(n);
+							int error = sqlite3_open(file, &dbconn[n]);
+							if (error) {
+								errornum = ERROR_DBOPEN;
+							}
 						}
 						free(file);
 					}
@@ -3525,7 +3556,12 @@ Interpreter::execByteCode()
 			case OP_DBCLOSE:
 					{
 						op++;
-						closeDatabase();
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
+						} else {
+							closeDatabase(n);
+						}
 					}
 					break;
 
@@ -3534,14 +3570,19 @@ Interpreter::execByteCode()
 						op++;
 						// execute a statement on the database
 						char *stmt = stack.popstring();
-						if(dbconn) {
-							int error = sqlite3_exec(dbconn, stmt, 0, 0, 0);
-							if (error != SQLITE_OK) {
-								errornum = ERROR_DBQUERY;
-								errormessage = sqlite3_errmsg(dbconn);
-							}
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
 						} else {
-							errornum = ERROR_DBNOTOPEN;
+							if(dbconn[n]) {
+								int error = sqlite3_exec(dbconn[n], stmt, 0, 0, 0);
+								if (error != SQLITE_OK) {
+									errornum = ERROR_DBQUERY;
+									errormessage = sqlite3_errmsg(dbconn[n]);
+								}
+							} else {
+								errornum = ERROR_DBNOTOPEN;
+							}
 						}
 						free(stmt);
 					}
@@ -3552,15 +3593,20 @@ Interpreter::execByteCode()
 						op++;
 						// open recordset
 						char *stmt = stack.popstring();
-						if(dbconn) {
-							int error = sqlite3_prepare_v2(dbconn, stmt, 1000, &dbset, NULL);
-							if (error != SQLITE_OK) {
-								errornum = ERROR_DBQUERY;
-								errormessage = sqlite3_errmsg(dbconn);
-								dbset = NULL;
-							}
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
 						} else {
-							errornum = ERROR_DBNOTOPEN;
+							if(dbconn[n]) {
+								int error = sqlite3_prepare_v2(dbconn[n], stmt, 1000, &dbset[n], NULL);
+								if (error != SQLITE_OK) {
+									errornum = ERROR_DBQUERY;
+									errormessage = sqlite3_errmsg(dbconn[n]);
+									dbset[n] = NULL;
+								}
+							} else {
+								errornum = ERROR_DBNOTOPEN;
+							}
 						}
 						free(stmt);
 					}
@@ -3569,9 +3615,14 @@ Interpreter::execByteCode()
 			case OP_DBCLOSESET:
 					{
 						op++;
-						if (dbset) {
-							sqlite3_finalize(dbset);
-							dbset = NULL;
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
+						} else {
+							if (dbset[n]) {
+								sqlite3_finalize(dbset[n]);
+								dbset[n] = NULL;
+							}
 						}
 					}
 					break;
@@ -3579,8 +3630,13 @@ Interpreter::execByteCode()
 			case OP_DBROW:
 					{
 						op++;
-						// return true if we move to a new row else false
-						stack.push((sqlite3_step(dbset) == SQLITE_ROW?1:0));
+						int n = stack.popint();
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
+						} else {
+							// return true if we move to a new row else false
+							stack.push((sqlite3_step(dbset[n]) == SQLITE_ROW?1:0));
+						}
 					}
 					break;
 
@@ -3591,26 +3647,31 @@ Interpreter::execByteCode()
 						unsigned char opcode = *op;
 						op++;
 						// get a column data (integer)
+						int col = stack.popint();
 						int n = stack.popint();
-						if (dbset) {
-							if (n < 0 || n >= sqlite3_column_count(dbset)) {
-								errornum = ERROR_DBCOLNO;
-							} else {
-								switch(opcode) {
-									case OP_DBINT:
-										stack.push(sqlite3_column_int(dbset, n));
-										break;
-									case OP_DBFLOAT:
-										stack.push(sqlite3_column_double(dbset, n));
-										break;
-									case OP_DBSTRING:
-										char* data = (char*)sqlite3_column_text(dbset, n);
-										stack.push(data);
-										break;
-								}
-							}
+						if (n<0||n>=NUMDBCONN) {
+							errornum = ERROR_DBCONNNUMBER;
 						} else {
-							errornum = ERROR_DBNOTSET;
+							if (dbset[n]) {
+								if (col < 0 || col >= sqlite3_column_count(dbset[n])) {
+									errornum = ERROR_DBCOLNO;
+								} else {
+									switch(opcode) {
+										case OP_DBINT:
+											stack.push(sqlite3_column_int(dbset[n], col));
+											break;
+										case OP_DBFLOAT:
+											stack.push(sqlite3_column_double(dbset[n], col));
+											break;
+										case OP_DBSTRING:
+											char* data = (char*)sqlite3_column_text(dbset[n], col);
+											stack.push(data);
+											break;
+									}
+								}
+							} else {
+								errornum = ERROR_DBNOTSET;
+							}
 						}
 					}
 					break;
@@ -4204,9 +4265,55 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_FREEFILE:
+				{
+					// return the next free file number - throw error if not free files
+					op++;
+					int f=-1;
+					for (int t=0;(t<NUMFILES)&&(f==-1);t++) {
+						if (!stream[t]) f = t;
+					}
+					if (f==-1) {
+						errornum = ERROR_FREEFILE;
+					} else {
+						stack.push(f);
+					}
+				}
+				break;
+
+			case OP_FREENET:
+				{
+					// return the next free network socket number - throw error if not free sockets
+					op++;
+					int f=-1;
+					for (int t=0;(t<NUMSOCKETS)&&(f==-1);t++) {
+						if (netsockfd[t]==-1) f = t;
+					}
+					if (f==-1) {
+						errornum = ERROR_FREENET;
+					} else {
+						stack.push(f);
+					}
+				}
+				break;
+
+			case OP_FREEDB:
+				{
+					// return the next free databsae number - throw error if none free
+					op++;
+					int f=-1;
+					for (int t=0;(t<NUMDBCONN)&&(f==-1);t++) {
+						if (!dbconn[t]) f = t;
+					}
+					if (f==-1) {
+						errornum = ERROR_FREEDB;
+					} else {
+						stack.push(f);
+					}
+				}
+				break;
 
 
-				
 
 
 

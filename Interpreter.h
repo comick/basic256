@@ -42,6 +42,8 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED}
 
 #define NUMFILES 8
 #define NUMSOCKETS 8
+#define NUMDBCONN 8
+
 
 struct byteCodeData
 {
@@ -150,9 +152,9 @@ class Interpreter : public QThread
   bool spritecollide(int, int);
   sprite *sprites;
   int nsprites;
-  void closeDatabase();
-  sqlite3 *dbconn;
-  sqlite3_stmt *dbset;
+  void closeDatabase(int);
+  sqlite3 **dbconn;
+  sqlite3_stmt **dbset;
   int errornum;
   QString errormessage;
   int lasterrornum;

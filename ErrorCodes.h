@@ -122,6 +122,14 @@
 #define	ERROR_BYREF_MESSAGE "Function/Subroutine expecting variable reference in call."
 #define ERROR_BYREFTYPE 52
 #define	ERROR_BYREFTYPE_MESSAGE "Function/Subroutine variable incorrect reference type in call."
+#define ERROR_FREEFILE 53
+#define	ERROR_FREEFILE_MESSAGE "There are no free file numbers to allocate."
+#define ERROR_FREENET 54
+#define	ERROR_FREENET_MESSAGE "There are no free network connections to allocate."
+#define ERROR_FREEDB 55
+#define	ERROR_FREEDB_MESSAGE "There are no free database connections to allocate."
+#define ERROR_DBCONNNUMBER 56
+#define ERROR_DBCONNNUMBER_MESSAGE "Invalid Database Connection Number"
 
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."

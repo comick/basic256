@@ -1,80 +1,118 @@
-#quotations - create a database of quotations
+# quotations - create a database of quotations
+# new and improved to use subrouttines and functions
 
 # create a new database file or open it or create it with a few good quotes
 dbfile$ = "quotations.sqlite3"
-e = exists(dbfile$)
-dbopen dbfile$
-if (not e) then gosub createtable
+e = exists(dbfile$)		# set e to true if database already exists
+dbopen dbfile$		# open the database - open databases are global to program
+if (not e) then
+   # if the database did not exist then create the tables and populate
+   call createquotetable()
+end if
 
-gosub getlastquote
-print "Database has " + lastquote + " quotes."
+print "Database has " + quotecount() + " quotes."
 
-menu:
-print "1 - view a random quote ** ";
-print "2 - list all quotes ** ";
-print "3 - add a quote ** ";
-print "0 - quit"
-input ">", choice
-
-if choice = 1 then gosub showquote
-if choice = 2 then gosub showall
-if choice = 3 then gosub addquote
-if choice <> 0 then goto menu
+# display a menu until the user chooses a zero
+do
+   print "1 - view a random quote "
+   print "2 - list all quotes"
+   print "3 - add a quote"
+   print "0 - quit";
+   input "  >", choice
+   
+   if choice = 1 then call showrandomquote()
+   if choice = 2 then call showallquotes()
+   if choice = 3 then call addnewquote()
+until choice = 0
 
 # wrap everything up
 print "Good bye."
 dbclose
 end
 
-showquote: ####
-quote = 1 + int(rand * lastquote)
-dbopenset "select author, saying from quotes where id = " + quote + ";"
-while dbrow()
-   print dbstring(1)
-   print " - " + dbstring(0)
-end while
-dbcloseset
-return
+subroutine showrandomquote()
+   # generate a random integer from 1 to the number of quotes
+   # and display that quotation
+   quote = 1 + int(rand * quotecount())
+   call showquote(quote)
+end subroutine
 
-showall: ####
-dbopenset "select id, author, saying from quotes order by id;"
-while dbrow()
-   print dbint(0) + " " + dbstring(2) + " (" + dbstring(1) + ")" 
-end while
-dbcloseset
-return
+subroutine showquote(n)
+   # given a quote number n - display a single quotation
+   dbopenset "select author, saying from quotes where ROWID = " + n + ";"
+   if dbrow() then
+      print dbstring(1)
+      print " - " + dbstring(0)
+   else
+      print "Quotation " + n + " is not on file."
+   end if
+   dbcloseset
+end subroutine
 
-addquote: ####
-input "Quote>", quote$
-input "Author>", author$
-if quote$ = "" or author$ = "" then
-   print "You must supply both a quote and an author to add."
-   return
-end if
-lastquote = lastquote + 1
-dbexecute "insert into quotes values (" + lastquote + ",'" + author$ + "','" + quote$ + "');"
-print "Quote " + lastquote + " added."
-return
+subroutine showallquotes()
+   # show all quotes in the table
+   dbopenset "select ROWID, author, saying from quotes order by ROWID;"
+   while dbrow()
+      print dbint(0) + " " + dbstring(2) + " (" + dbstring(1) + ")"
+   end while
+   dbcloseset
+end subroutine
 
-getlastquote: ######
-# find the last quote number and set the variable lastquote
-lastquote = 0
-dbopenset "select max(id) from quotes"
-while dbrow()
-   lastquote =  dbint(0)
-end while
-dbcloseset
-return
+subroutine addnewquote()
+   # ask the user to enter in a new quote
+   # do not allow
+   input "Quote>", quote$
+   input "Author>", author$
+   if quote$ = "" or author$ = "" then
+      print "You must supply both a quote and an author to add."
+   else
+      id = insertquote(author$, quote$)
+      print "Quote " + id + " added."
+   end if
+end subroutine
 
-createtable: ########
-dbexecute "create table quotes (id integer primary key, author text, saying text);"
-dbexecute "insert into quotes values (1,'Abraham Lincoln (1809 - 1865)','Most folks are about as happy as they make up their minds to be.');"
-dbexecute "insert into quotes values (2,'George Burns (1896 - 1996)','Happiness is having a large, loving, caring, close-knit family in another city.');"
-dbexecute "insert into quotes values (3,'Jean Houston','At the height of laughter, the universe is flung into a kaleidoscope of new possibilities.');"
-dbexecute "insert into quotes values (4,'Doug Larson', 'Home computers are being called upon to perform many new functions, including the consumption of homework formerly eaten by the dog.');"
-dbexecute "insert into quotes values (5, 'Isaac Asimov', 'I do not fear computers. I fear the lack of them.');"
-dbexecute "insert into quotes values (6, 'Pierre Gallois', 'If you put tomfoolery into a computer, nothing comes out of it but tomfoolery. But this tomfoolery, having passed through a very expensive machine, is somehow ennobled and no-one dares criticize it.');"
-dbexecute "insert into quotes values (7, 'Robert Orben', 'To err is human--and to blame it on a computer is even more so.');"
-dbexecute "insert into quotes values (8, 'Herm Albright (1876 - 1944)', 'A positive attitude may not solve all your problems, but it will annoy enough people to make it worth the effort.');"
-dbexecute "insert into quotes values (9, 'William James (1842 - 1910)', 'The greatest discovery of my generation is that a human being can alter his life by altering his attitudes of mind.');"
-return
+function quotecount()
+   # return the quotation count
+   quotecount = 0
+   dbopenset "select count(*) from quotes"
+   if dbrow() then
+      quotecount =  dbint(0)
+   else
+      quotecount =  dbint(0)
+   end if
+   dbcloseset
+end function
+
+subroutine createquotetable()
+   # create the quotes table a populate an initial group of quotations into it
+   # sqlite automatically creates a primary key column called ROWID and assigns a unique value
+   dbexecute "create table quotes (author text, saying text);"
+   id = insertquote('Abraham Lincoln (1809 - 1865)','Most folks are about as happy as they make up their minds to be.')
+   id = insertquote('George Burns (1896 - 1996)','Happiness is having a large, loving, caring, close-knit family in another city.')
+   id = insertquote('Jean Houston','At the height of laughter, the universe is flung into a kaleidoscope of new possibilities.')
+   id = insertquote('Doug Larson', 'Home computers are being called upon to perform many new functions, including the consumption of homework formerly eaten by the dog.')
+   id = insertquote( 'Isaac Asimov', 'I do not fear computers. I fear the lack of them.')
+   id = insertquote( 'Pierre Gallois', 'If you put tomfoolery into a computer, nothing comes out of it but tomfoolery. But this tomfoolery, having passed through a very expensive machine, is somehow ennobled and no-one dares criticize it.')
+   id = insertquote('Robert Orben', 'To err is human--and to blame it on a computer is even more so.')
+   id = insertquote('Herm Albright (1876 - 1944)', 'A positive attitude may not solve all your problems, but it will annoy enough people to make it worth the effort.')
+   id = insertquote('William James (1842 - 1910)', 'The greatest discovery of my generation is that a human being can alter his life by altering his attitudes of mind.')
+end subroutine
+
+function insertquote(author$, saying$)
+   # insert a single quotation into the database table
+   dbexecute "insert into quotes (author, saying) values (" + q$(author$) +", " + q$(saying$) + ");"
+   # now get the primary key (ROWID) that was assigned to the entry
+   dbopenset "select last_insert_rowid()"
+   if dbrow() then
+      insertquote =  dbint(0)
+   else
+      insertquote = -1
+   end if
+   dbcloseset
+end function
+
+function q$(a$)
+   # put single quites around a string after changing single quotes to two single quotes
+   # example: aa'bb is passed 'aa''bb' is returned
+   q$ = "'" + replace(a$,"'","''") + "'"
+end function
