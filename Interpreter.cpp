@@ -3700,29 +3700,25 @@ Interpreter::execByteCode()
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-								if (dbset[n][set]) {
-if (dbsetrow[n][set]) {
-									if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
-										errornum = ERROR_DBCOLNO;
+								if (!dbset[n][set]) {
+									errornum = ERROR_DBNOTSET;
+								} else {
+									if (!dbsetrow[n][set]) {
+										errornum = ERROR_DBNOTSETROW;
 									} else {
-										switch(opcode) {
-											case OP_DBINT:
+										if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
+											errornum = ERROR_DBCOLNO;
+										} else {
+											if (opcode == OP_DBINT) {
 												stack.push(sqlite3_column_int(dbset[n][set], col));
-												break;
-											case OP_DBFLOAT:
-												stack.push(sqlite3_column_double(dbset[n][set], col));
-												break;
-											case OP_DBSTRING:
-												char* data = (char*)sqlite3_column_text(dbset[n][set], col);
-												stack.push(data);
-												break;
+											} else if (opcode == OP_DBFLOAT ) {
+													stack.push(sqlite3_column_double(dbset[n][set], col));
+											} else if (opcode == OP_DBSTRING) {
+													char* data = (char*)sqlite3_column_text(dbset[n][set], col);
+													stack.push(data);
+											}
 										}
 									}
-								} else {
-									errornum = ERROR_DBNOTSETROW;
-								}
-								} else {
-									errornum = ERROR_DBNOTSET;
 								}
 							}
 						}

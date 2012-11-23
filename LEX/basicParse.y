@@ -1282,24 +1282,55 @@ resetstmt: B256RESET { addIntOp(OP_PUSHINT, 0); addOp(OP_RESET); }
 	| B256RESET floatexpr { addOp(OP_RESET); }
 ;
 
-seekstmt: B256SEEK floatexpr  {addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_SEEK); }
+seekstmt: B256SEEK floatexpr  {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SEEK);
+	}
 	| B256SEEK '(' floatexpr ',' floatexpr ')' { addOp(OP_SEEK); }
 	| B256SEEK floatexpr ',' floatexpr { addOp(OP_SEEK); }
 ;
 
-inputexpr: B256INPUT stringexpr { addOp(OP_PRINT);  addOp(OP_INPUT); }
+inputexpr: B256INPUT stringexpr {
+		addOp(OP_PRINT);
+		addOp(OP_INPUT);
+	}
 ;
 
 inputstmt: inputexpr ',' B256STRINGVAR { addIntOp(OP_STRINGASSIGN, $3); }
-	| inputexpr ',' B256STRINGVAR '[' floatexpr ']' { addOp(OP_STACKSWAP); addIntOp(OP_STRARRAYASSIGN, $3); }
+	| inputexpr ',' B256STRINGVAR '[' floatexpr ']' {
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_STRARRAYASSIGN, $3);
+	}
 	| inputexpr ',' B256VARIABLE { addIntOp(OP_NUMASSIGN, $3); }
-	| inputexpr ',' B256VARIABLE '[' floatexpr ']' { addOp(OP_STACKSWAP); addIntOp(OP_ARRAYASSIGN, $3); }
-	| B256INPUT B256STRINGVAR  { addOp(OP_INPUT); addIntOp(OP_STRINGASSIGN, $2); }
-	| B256INPUT B256STRINGVAR '[' floatexpr ']' { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN, $2); }
-	| B256INPUT B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addOp(OP_INPUT); addIntOp(OP_STRARRAYASSIGN2D, $2); }
-	| B256INPUT B256VARIABLE  { addOp(OP_INPUT); addIntOp(OP_NUMASSIGN, $2); }
-	| B256INPUT B256VARIABLE '[' floatexpr ']' { addOp(OP_INPUT); addIntOp(OP_ARRAYASSIGN, $2); }
-	| B256INPUT B256VARIABLE '[' floatexpr ',' floatexpr ']' { addOp(OP_INPUT); addIntOp(OP_ARRAYASSIGN2D, $2); }
+	| inputexpr ',' B256VARIABLE '[' floatexpr ']' {
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_ARRAYASSIGN, $3);
+	}
+	| B256INPUT B256STRINGVAR  {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRINGASSIGN, $2);
+	}
+	| B256INPUT B256STRINGVAR '[' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN, $2);
+	}
+	| B256INPUT B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN2D, $2);
+	}
+	| B256INPUT B256VARIABLE  {
+		addOp(OP_INPUT);
+		addIntOp(OP_NUMASSIGN, $2);
+	}
+	| B256INPUT B256VARIABLE '[' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_ARRAYASSIGN, $2);
+	}
+	| B256INPUT B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
+	}
 ;
 
 printstmt: B256PRINT { addStringOp(OP_PUSHSTRING, ""); addOp(OP_PRINTN); }
@@ -1526,18 +1557,34 @@ dbclosesetstmt: B256DBCLOSESET {
 	}
 ;
 
-netlistenstmt: B256NETLISTEN floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_NETLISTEN); }
+netlistenstmt: B256NETLISTEN floatexpr {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_NETLISTEN);
+	}
 	| B256NETLISTEN '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_NETLISTEN); } 
 	| B256NETLISTEN floatexpr ',' floatexpr { addExtendedOp(OP_NETLISTEN); }
 ;
 
-netconnectstmt: B256NETCONNECT stringexpr ',' floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_NETCONNECT); }
-	| B256NETCONNECT '(' stringexpr ',' floatexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKTOPTO2); addExtendedOp(OP_NETCONNECT); }
+netconnectstmt: B256NETCONNECT stringexpr ',' floatexpr {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKTOPTO2);
+		addExtendedOp(OP_NETCONNECT);
+	}
+	| B256NETCONNECT '(' stringexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKTOPTO2);
+		addExtendedOp(OP_NETCONNECT);
+	}
 	| B256NETCONNECT floatexpr ',' stringexpr ',' floatexpr { addExtendedOp(OP_NETCONNECT); }
 	| B256NETCONNECT '(' floatexpr ',' stringexpr ',' floatexpr ')' { addExtendedOp(OP_NETCONNECT); }
 ;
 
-netwritestmt: B256NETWRITE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addExtendedOp(OP_NETWRITE); }
+netwritestmt: B256NETWRITE stringexpr {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_NETWRITE);
+	}
 	| B256NETWRITE '(' floatexpr ',' stringexpr ')' { addExtendedOp(OP_NETWRITE); } 
 	| B256NETWRITE floatexpr ',' stringexpr { addExtendedOp(OP_NETWRITE); }
 ;
@@ -1558,7 +1605,10 @@ portoutstmt: B256PORTOUT floatexpr ',' floatexpr { addExtendedOp(OP_PORTOUT); }
 	| B256PORTOUT '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_PORTOUT); } 
 ;
 
-imgsavestmt: B256IMGSAVE stringexpr  {addStringOp(OP_PUSHSTRING, "PNG"); addExtendedOp(OP_IMGSAVE); } 
+imgsavestmt: B256IMGSAVE stringexpr  {
+		addStringOp(OP_PUSHSTRING, "PNG");
+		addExtendedOp(OP_IMGSAVE);
+	} 
 	| B256IMGSAVE '(' stringexpr ',' stringexpr ')' { addExtendedOp(OP_IMGSAVE); }
 	| B256IMGSAVE stringexpr ',' stringexpr { addExtendedOp(OP_IMGSAVE); }
 ;
@@ -1806,8 +1856,14 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256BOOLTRUE '(' ')' { addIntOp(OP_PUSHINT, 1); }
 	| B256BOOLFALSE { addIntOp(OP_PUSHINT, 0); }
 	| B256BOOLFALSE '(' ')' { addIntOp(OP_PUSHINT, 0); }
-	| B256BOOLEOF { addIntOp(OP_PUSHINT, 0); addOp(OP_EOF); }
-	| B256BOOLEOF '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_EOF); }
+	| B256BOOLEOF {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_EOF);
+	}
+	| B256BOOLEOF '(' ')' {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_EOF);
+	}
 	| B256BOOLEOF '(' floatexpr ')' { addOp(OP_EOF); }
 	| B256EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
 	| B256YEAR { addOp(OP_YEAR); }
@@ -1959,11 +2015,11 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256FREEDB '(' ')' { addExtendedOp(OP_FREEDB); }
 	| B256FREEDBSET {
 		addIntOp(OP_PUSHINT,0);	// default db number
-		addExtendedOp(OP_FREEDB);
+		addExtendedOp(OP_FREEDBSET);
 	}
 	| B256FREEDBSET '(' ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
-		addExtendedOp(OP_FREEDB);
+		addExtendedOp(OP_FREEDBSET);
 	}
 	| B256FREEDBSET '(' floatexpr ')' { addExtendedOp(OP_FREEDBSET); }
 	| B256FREEFILE { addExtendedOp(OP_FREEFILE); }
@@ -1982,8 +2038,7 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DEREF2D, $1); }
 	| B256STRINGVAR '(' explist ')' { addIntOp(OP_GOSUB, $1); }
 	| B256STRINGVAR '(' ')' { addIntOp(OP_GOSUB, $1); }
-	| B256STRINGVAR
-	{
+	| B256STRINGVAR {
 		if ($1 < 0) {
 			return -1;
 		} else {

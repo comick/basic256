@@ -1,14 +1,15 @@
 # quotations - create a database of quotations
-# new and improved to use subrouttines and functions
+# new and improved to use subroutines and functions
+# 2012-11-23 j.m.reneau
 
 # create a new database file or open it or create it with a few good quotes
 dbfile$ = "quotations.sqlite3"
 e = exists(dbfile$)		# set e to true if database already exists
-dbopen dbfile$		# open the database - open databases are global to program
-if (not e) then
-   # if the database did not exist then create the tables and populate
-   call createquotetable()
-end if
+# open the database - open databases are global to program
+# dboopen without a database number opens the database as 0
+dbopen dbfile$
+# if the database did not exist then create the tables and populate
+if (not e) then call createquotetable()
 
 print "Database has " + quotecount() + " quotes."
 
@@ -17,8 +18,7 @@ do
    print "1 - view a random quote "
    print "2 - list all quotes"
    print "3 - add a quote"
-   print "0 - quit";
-   input "  >", choice
+   input "0 - quit >", choice
    
    if choice = 1 then call showrandomquote()
    if choice = 2 then call showallquotes()
@@ -39,7 +39,8 @@ end subroutine
 
 subroutine showquote(n)
    # given a quote number n - display a single quotation
-   dbopenset "select author, saying from quotes where ROWID = " + n + ";"
+   stmt$ = "select author, saying from quotes where ROWID = " + n + ";"
+   dbopenset stmt$
    if dbrow() then
       print dbstring(1)
       print " - " + dbstring(0)
@@ -73,14 +74,14 @@ end subroutine
 
 function quotecount()
    # return the quotation count
+   # get an unused set number for database 0 for this operation
    quotecount = 0
-   dbopenset "select count(*) from quotes"
-   if dbrow() then
-      quotecount =  dbint(0)
-   else
-      quotecount =  dbint(0)
+   tempset = freedbset(0)
+   dbopenset 0, tempset, "select count(*) from quotes"
+   if dbrow(0, tempset) then
+      quotecount =  dbint(0, tempset, 0)
    end if
-   dbcloseset
+   dbcloseset 0,tempset
 end function
 
 subroutine createquotetable()
@@ -112,7 +113,7 @@ function insertquote(author$, saying$)
 end function
 
 function q$(a$)
-   # put single quites around a string after changing single quotes to two single quotes
+   # put single quotes around a string after changing single quotes to two single quotes
    # example: aa'bb is passed 'aa''bb' is returned
    q$ = "'" + replace(a$,"'","''") + "'"
 end function
