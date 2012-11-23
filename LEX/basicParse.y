@@ -1957,6 +1957,14 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256REF '(' B256STRINGVAR ')' { addIntOp(OP_PUSHVARREFSTR, $3); }
 	| B256FREEDB { addExtendedOp(OP_FREEDB); }
 	| B256FREEDB '(' ')' { addExtendedOp(OP_FREEDB); }
+	| B256FREEDBSET {
+		addIntOp(OP_PUSHINT,0);	// default db number
+		addExtendedOp(OP_FREEDB);
+	}
+	| B256FREEDBSET '(' ')' {
+		addIntOp(OP_PUSHINT,0);	// default db number
+		addExtendedOp(OP_FREEDB);
+	}
 	| B256FREEDBSET '(' floatexpr ')' { addExtendedOp(OP_FREEDBSET); }
 	| B256FREEFILE { addExtendedOp(OP_FREEFILE); }
 	| B256FREEFILE '(' ')' { addExtendedOp(OP_FREEFILE); }

@@ -156,6 +156,7 @@ class Interpreter : public QThread
   void closeDatabase(int);
   sqlite3 **dbconn;
   sqlite3_stmt ***dbset;
+  bool dbsetrow[NUMDBCONN][NUMDBSET];		// have we "stepped" into a row
   int errornum;
   QString errormessage;
   int lasterrornum;

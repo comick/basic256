@@ -295,33 +295,36 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_MAXRECURSE:
 			errormessage = tr(ERROR_MAXRECURSE_MESSAGE);
 			break;
-        case ERROR_DIVZERO:
-            errormessage = tr(ERROR_DIVZERO_MESSAGE);
-            break;
-        case ERROR_BYREF:
-            errormessage = tr(ERROR_BYREF_MESSAGE);
-            break;
-        case ERROR_BYREFTYPE:
-            errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
-            break;
-        case ERROR_FREEFILE:
-            errormessage = tr(ERROR_FREEFILE_MESSAGE);
-            break;
-        case ERROR_FREENET:
-            errormessage = tr(ERROR_FREENET_MESSAGE);
-            break;
-        case ERROR_FREEDB:
-            errormessage = tr(ERROR_FREEDB_MESSAGE);
-            break;
-        case ERROR_DBCONNNUMBER:
-            errormessage = tr(ERROR_DBCONNNUMBER_MESSAGE);
-            break;
-        case ERROR_FREEDBSET:
-            errormessage = tr(ERROR_FREEDBSET_MESSAGE);
-            break;
-        case ERROR_DBSETNUMBER:
-            errormessage = tr(ERROR_DBSETNUMBER_MESSAGE);
-            break;
+	        case ERROR_DIVZERO:
+			errormessage = tr(ERROR_DIVZERO_MESSAGE);
+            		break;
+		case ERROR_BYREF:
+			errormessage = tr(ERROR_BYREF_MESSAGE);
+			break;
+		case ERROR_BYREFTYPE:
+			errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
+            		break;
+		case ERROR_FREEFILE:
+			errormessage = tr(ERROR_FREEFILE_MESSAGE);
+			break;
+		case ERROR_FREENET:
+			errormessage = tr(ERROR_FREENET_MESSAGE);
+			break;
+		case ERROR_FREEDB:
+			errormessage = tr(ERROR_FREEDB_MESSAGE);
+			break;
+		case ERROR_DBCONNNUMBER:
+			errormessage = tr(ERROR_DBCONNNUMBER_MESSAGE);
+			break;
+		case ERROR_FREEDBSET:
+			errormessage = tr(ERROR_FREEDBSET_MESSAGE);
+			break;
+		case ERROR_DBSETNUMBER:
+			errormessage = tr(ERROR_DBSETNUMBER_MESSAGE);
+			break;
+		case ERROR_DBNOTSETROW:
+			errormessage = tr(ERROR_DBNOTSETROW_MESSAGE);
+			break;
 
         // put new messages here
 		case ERROR_NOTIMPLEMENTED:
@@ -434,7 +437,7 @@ Interpreter::~Interpreter() {
 }
 
 void Interpreter::clearsprites() {
-	// meed to implement to cleanup garbage
+	// need to implement to cleanup garbage
 }
 
 void Interpreter::spriteundraw(int n) {
@@ -706,6 +709,7 @@ Interpreter::initialize()
 		dbset[t] = new sqlite3_stmt *[NUMDBSET];
 		for (int u=0;u<NUMDBSET;u++) {
 			dbset[t][u] = NULL;
+			dbsetrow[t][u] = false;
 		}
 	}
 }
@@ -714,14 +718,15 @@ Interpreter::initialize()
 void
 Interpreter::cleanup()
 {
-	status = R_STOPPED;
-	//Clean up stack
+	// called by run() once the run is terminated
+	//
+	// Clean up stack
 	stack.clear();
-	//Clean up variables
+	// Clean up variables
 	variables.clear();
-	//Clean up sprites
+	// Clean up sprites
 	clearsprites();
-	//Clean up, for frames, etc.
+	// Clean up, for frames, etc.
 	if (byteCode)
 	{
 		free(byteCode);
@@ -755,6 +760,7 @@ void Interpreter::closeDatabase(int n) {
 		if (dbset[n][t]) {
 			sqlite3_finalize(dbset[n][t]);
 			dbset[n][t] = NULL;
+			dbsetrow[n][t] = false;
 		}
 	}
 	if (dbconn[n]) {
@@ -795,6 +801,7 @@ Interpreter::run()
 	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
+	cleanup(); // cleanup the variables, databases, files, stack and everything
 	emit(runFinished());
 }
 
@@ -3609,20 +3616,24 @@ Interpreter::execByteCode()
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-						if (set<0||set>=NUMDBSET) {
-							errornum = ERROR_DBSETNUMBER;
-						} else {
-							if(dbconn[n]) {
-								int error = sqlite3_prepare_v2(dbconn[n], stmt, 1000, &dbset[n][set], NULL);
-								if (error != SQLITE_OK) {
-									errornum = ERROR_DBQUERY;
-									errormessage = sqlite3_errmsg(dbconn[n]);
-									dbset[n] = NULL;
-								}
+							if (set<0||set>=NUMDBSET) {
+								errornum = ERROR_DBSETNUMBER;
 							} else {
-								errornum = ERROR_DBNOTOPEN;
+								if(dbconn[n]) {
+									if (dbset[n][set]) {
+										sqlite3_finalize(dbset[n][set]);
+										dbset[n][set] = NULL;
+									}
+									dbsetrow[n][set] = false;
+									int error = sqlite3_prepare_v2(dbconn[n], stmt, -1, &(dbset[n][set]), NULL);
+									if (error != SQLITE_OK) {
+										errornum = ERROR_DBQUERY;
+										errormessage = sqlite3_errmsg(dbconn[n]);
+									}
+								} else {
+									errornum = ERROR_DBNOTOPEN;
+								}
 							}
-						}
 						}
 						free(stmt);
 					}
@@ -3636,14 +3647,16 @@ Interpreter::execByteCode()
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-						if (set<0||set>=NUMDBSET) {
-							errornum = ERROR_DBSETNUMBER;
-						} else {
-							if (dbset[n]) {
-								sqlite3_finalize(dbset[n][set]);
-								dbset[n][set] = NULL;
+							if (set<0||set>=NUMDBSET) {
+								errornum = ERROR_DBSETNUMBER;
+							} else {
+								if (dbset[n][set]) {
+									sqlite3_finalize(dbset[n][set]);
+									dbset[n][set] = NULL;
+								} else {
+									errornum = ERROR_DBNOTSET;
+								}
 							}
-						}
 						}
 					}
 					break;
@@ -3656,12 +3669,17 @@ Interpreter::execByteCode()
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-						if (set<0||set>=NUMDBSET) {
-							errornum = ERROR_DBSETNUMBER;
-						} else {
-							// return true if we move to a new row else false
-							stack.push((sqlite3_step(dbset[n][set]) == SQLITE_ROW?1:0));
-						}
+							if (set<0||set>=NUMDBSET) {
+								errornum = ERROR_DBSETNUMBER;
+							} else {
+								if (dbset[n][set]) {
+									// return true if we move to a new row else false
+									dbsetrow[n][set] = true;
+									stack.push((sqlite3_step(dbset[n][set]) == SQLITE_ROW?1:0));
+								} else {
+									errornum = ERROR_DBNOTSET;
+								}
+							}
 						}
 					}
 					break;
@@ -3679,30 +3697,34 @@ Interpreter::execByteCode()
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-						if (set<0||set>=NUMDBSET) {
-							errornum = ERROR_DBSETNUMBER;
-						} else {
-							if (dbset[n]) {
-								if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
-									errornum = ERROR_DBCOLNO;
-								} else {
-									switch(opcode) {
-										case OP_DBINT:
-											stack.push(sqlite3_column_int(dbset[n][set], col));
-											break;
-										case OP_DBFLOAT:
-											stack.push(sqlite3_column_double(dbset[n][set], col));
-											break;
-										case OP_DBSTRING:
-											char* data = (char*)sqlite3_column_text(dbset[n][set], col);
-											stack.push(data);
-											break;
-									}
-								}
+							if (set<0||set>=NUMDBSET) {
+								errornum = ERROR_DBSETNUMBER;
 							} else {
-								errornum = ERROR_DBNOTSET;
+								if (dbset[n][set]) {
+if (dbsetrow[n][set]) {
+									if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
+										errornum = ERROR_DBCOLNO;
+									} else {
+										switch(opcode) {
+											case OP_DBINT:
+												stack.push(sqlite3_column_int(dbset[n][set], col));
+												break;
+											case OP_DBFLOAT:
+												stack.push(sqlite3_column_double(dbset[n][set], col));
+												break;
+											case OP_DBSTRING:
+												char* data = (char*)sqlite3_column_text(dbset[n][set], col);
+												stack.push(data);
+												break;
+										}
+									}
+								} else {
+									errornum = ERROR_DBNOTSETROW;
+								}
+								} else {
+									errornum = ERROR_DBNOTSET;
+								}
 							}
-						}
 						}
 					}
 					break;

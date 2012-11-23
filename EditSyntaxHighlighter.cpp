@@ -129,6 +129,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ff][Oo][Nn][Tt]\\b"						// font
 		<< "\\b[Ff][Oo][Rr]\\b"							// for
 		<< "\\b[Ff][Rr][Ee][Ee][Dd][Bb]\\b"					// freedb
+		<< "\\b[Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]\\b"				// freedbset
 		<< "\\b[Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]\\b"				// freefile
 		<< "\\b[Ff][Rr][Ee][Ee][Nn][Ee][Tt]\\b"					// freenet
 		<< "\\b[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"				// function

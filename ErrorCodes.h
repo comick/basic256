@@ -131,9 +131,11 @@
 #define ERROR_DBCONNNUMBER 56
 #define ERROR_DBCONNNUMBER_MESSAGE "Invalid Database Connection Number"
 #define ERROR_FREEDBSET 57
-#define	ERROR_FREEDBSET_MESSAGE "There are no free data sets io allocate for that database connection."
+#define	ERROR_FREEDBSET_MESSAGE "There are no free data sets to allocate for that database connection."
 #define ERROR_DBSETNUMBER 58
 #define ERROR_DBSETNUMBER_MESSAGE "Invalid data set number."
+#define ERROR_DBNOTSETROW 59
+#define ERROR_DBNOTSETROW_MESSAGE "You must advance the dataset using DBROW before you can read data from it."
 
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
