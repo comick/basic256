@@ -1,4 +1,4 @@
-# testsuite for BASIC256 Version 0.9.9.19
+# testsuite for BASIC256 Version 0.9.9.21
 
 # This program will test most of the basic256 language compiler and interperter
 
@@ -473,6 +473,7 @@ subroutine errortrap()
 end subroutine
 
 function funone(a, ref(b), c$, ref(d$))
+   # old way of returning (prev to 0.9.9.21)
    a *= 2
    funone = a + b
    c$ = funtwo$(ref(b), ref(d$))
@@ -481,7 +482,7 @@ end function
 function funtwo$(ref(r), ref(s$))
    r *=3
    s$ += s$
-   funtwo$ = "squiggy"
+   return "squiggy"
 end function
 
 subroutine subone(a, b$)
