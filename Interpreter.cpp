@@ -573,6 +573,12 @@ Interpreter::compileProgram(char *code)
 			case COMPERR_NEXT:
 				emit(outputReady(tr(COMPERR_NEXT_MESSAGE) + QString::number(linenumber) + ".\n"));
 				break;
+			case COMPERR_RETURNVALUE:
+				emit(outputReady(tr(COMPERR_RETURNVALUE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_RETURNTYPE:
+				emit(outputReady(tr(COMPERR_RETURNTYPE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				break;
 			default:
 				if(column==0) {
 					emit(outputReady(tr(COMPERR_SYNTAX_MESSAGE) + QString::number(linenumber) + tr(" around end of line.") + "\n"));
@@ -597,8 +603,7 @@ Interpreter::compileProgram(char *code)
 			currentLine = *i;
 			op += sizeof(int);
 		}
-
-		if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR)
+		else if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR)
 		{
 			op += sizeof(unsigned char);
 			int *i = (int *) op;
@@ -614,38 +619,43 @@ Interpreter::compileProgram(char *code)
 				return -1;
 			}
 		}
-		else if (*op >= OP_TYPEARGNONE && *op < OP_TYPEARGINT)
+		else if (*op < (unsigned char) OP_TYPEARGINT)
 		{
+			// in the group of OP_TYPEARGNONE
 			// op has no args - move to next byte
 			op += sizeof(unsigned char);
-		}
-		else if (*op >= OP_TYPEARGINT && *op < OP_TYPEARG2INT)
-		{
-			//op has one Int arg
-			op += sizeof(unsigned char) + sizeof(int);
-		}
-		else if (*op >= OP_TYPEARG2INT && *op < OP_TYPEARGFLOAT)
-		{
-			 // op has 2 Int arg
-			op += sizeof(unsigned char) + 2 * sizeof(int);
-		}
-		else if (*op >= OP_TYPEARGFLOAT && *op < OP_TYPEARGSTRING)
-		{
-			// op has a single Float arg
-			op += sizeof(unsigned char) + sizeof(double);
-		}
-		else if (*op >= OP_TYPEARGSTRING && *op < OP_TYPEARGEXT)
-		{
-			// op has a single null terminated String arg
-			op += sizeof(unsigned char);
-			int len = strlen((char *) op) + 1;
-			op += len;
 		}
 		else if (*op == OP_EXTENDEDNONE)
 		{
 			// simple one byte op follows the extended
 			// op has no args - move to next byte
 			op += sizeof(unsigned char) * 2;
+		}
+		else if (*op < (unsigned char) OP_TYPEARG2INT)
+		{
+			// in the group of OP_TYPEARGINT
+			//op has one Int arg
+			op += sizeof(unsigned char) + sizeof(int);
+		}
+		else if (*op < (unsigned char) OP_TYPEARGFLOAT)
+		{
+			// in the group of OP_TYPEARG2INT
+			// op has 2 Int arg
+			op += sizeof(unsigned char) + 2 * sizeof(int);
+		}
+		else if (*op < (unsigned char) OP_TYPEARGSTRING)
+		{
+			// in the group of OP_TYPEARGFLOAT
+			// op has a single Float arg
+			op += sizeof(unsigned char) + sizeof(double);
+		}
+		else if (*op < (unsigned char) OP_TYPEARGEXT)
+		{
+			// in the group of OP_TYPESTRING
+			// op has a single null terminated String arg
+			op += sizeof(unsigned char);
+			int len = strlen((char *) op) + 1;
+			op += len;
 		}
 		else
 		{

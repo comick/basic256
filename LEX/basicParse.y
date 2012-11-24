@@ -45,7 +45,12 @@ unsigned int oldByteOffset = 0;
 unsigned int listlen = 0;
 
 int functionDefSymbol = -1;	// if in a function definition (what is the symbol number) -1 = not in fundef
+int functionType;		// function return type (used in return)
 int subroutineDefSymbol = -1;	// if in a subroutine definition (what is the symbol number) -1 = not in fundef
+
+#define FUNCTIONTYPEFLOAT 0
+#define FUNCTIONTYPESTRING 1
+
 
 struct label
 {
@@ -415,6 +420,7 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		}
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
+		functionType = FUNCTIONTYPEFLOAT;
 		addOp(OP_END); 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
@@ -445,6 +451,7 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		}
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
+		functionType = FUNCTIONTYPESTRING;
 		addOp(OP_END); 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
@@ -1169,17 +1176,47 @@ onerrorstmt: B256ONERROR B256VARIABLE { addIntOp(OP_ONERROR, $2); }
 ;
 
 returnstmt: B256RETURN { 
-	if (functionDefSymbol!=-1) {
-		// if we are defining a function return pushes a variable value
-		addIntOp(OP_PUSHVAR, functionDefSymbol);
-		addOp(OP_DECREASERECURSE);
+		if (functionDefSymbol!=-1) {
+			// if we are defining a function return pushes a variable value
+			addIntOp(OP_PUSHVAR, functionDefSymbol);
+			addOp(OP_DECREASERECURSE);
+		}
+		if (subroutineDefSymbol!=-1) {
+			// if we are defining a subroutine
+			addOp(OP_DECREASERECURSE);
+		}
+		addOp(OP_RETURN);
 	}
-	if (subroutineDefSymbol!=-1) {
-		// if we are defining a subroutine
-		addOp(OP_DECREASERECURSE);
+	| B256RETURN floatexpr { 
+		if (functionDefSymbol!=-1) {
+			if (functionType==FUNCTIONTYPEFLOAT) {
+				// value on stack gets returned
+				addOp(OP_DECREASERECURSE);
+				addOp(OP_RETURN);
+			} else {
+				errorcode = COMPERR_RETURNTYPE;
+				return -1;
+			}
+		} else {
+			errorcode = COMPERR_RETURNVALUE;
+			return -1;
+		}
 	}
-	addOp(OP_RETURN);
- }
+	| B256RETURN stringexpr { 
+		if (functionDefSymbol!=-1) {
+			if (functionType==FUNCTIONTYPESTRING) {
+				// value on stack gets returned
+				addOp(OP_DECREASERECURSE);
+				addOp(OP_RETURN);
+			} else {
+				errorcode = COMPERR_RETURNTYPE;
+				return -1;
+			}
+		} else {
+			errorcode = COMPERR_RETURNVALUE;
+			return -1;
+		}
+	}
 ;
 
 colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }

@@ -54,5 +54,9 @@
 #define COMPERR_ASSIGNN2S_MESSAGE "Error assigning a number to a string variable on line "
 #define COMPERR_ASSIGNS2N	-18
 #define COMPERR_ASSIGNS2N_MESSAGE "Error assigning a string to a numeric variable on line "
+#define COMPERR_RETURNVALUE	-19
+#define COMPERR_RETURNVALUE_MESSAGE "RETURN with a value is only valid inside a FUNCTION on line "
+#define COMPERR_RETURNTYPE	-20
+#define COMPERR_RETURNTYPE_MESSAGE "RETURN value type is not the same as FUNCTION on line "
 
 
