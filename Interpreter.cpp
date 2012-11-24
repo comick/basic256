@@ -3695,15 +3695,24 @@ Interpreter::execByteCode()
 					break;
 
 			case OP_DBINT:
+			case OP_DBINTS:
 			case OP_DBFLOAT:
+			case OP_DBFLOATS:
 			case OP_DBSTRING:
+			case OP_DBSTRINGS:
 					{
 						unsigned char opcode = *op;
+						int col = -1, set, n;
+						char *colname = NULL;
 						op++;
 						// get a column data (integer)
-						int col = stack.popint();
-						int set = stack.popint();
-						int n = stack.popint();
+						if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBSTRINGS) {
+							colname = stack.popstring();
+						} else {
+							col = stack.popint();
+						}
+						set = stack.popint();
+						n = stack.popint();
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
@@ -3716,14 +3725,23 @@ Interpreter::execByteCode()
 									if (!dbsetrow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
+										if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBSTRINGS) {
+											// find the column number for name and save in col
+											for(int t=0;t<sqlite3_column_count(dbset[n][set])&&col==-1;t++) {
+												if (strcmp(colname,sqlite3_column_name(dbset[n][set],t))==0) {
+													col = t;
+												}
+											}
+											free(colname);
+										}
 										if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
 											errornum = ERROR_DBCOLNO;
 										} else {
-											if (opcode == OP_DBINT) {
+											if (opcode == OP_DBINT || opcode == OP_DBINTS) {
 												stack.push(sqlite3_column_int(dbset[n][set], col));
-											} else if (opcode == OP_DBFLOAT ) {
+											} else if (opcode == OP_DBFLOAT || opcode == OP_DBFLOATS) {
 													stack.push(sqlite3_column_double(dbset[n][set], col));
-											} else if (opcode == OP_DBSTRING) {
+											} else if (opcode == OP_DBSTRING || opcode == OP_DBSTRINGS) {
 													char* data = (char*)sqlite3_column_text(dbset[n][set], col);
 													stack.push(data);
 											}

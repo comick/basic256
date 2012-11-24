@@ -42,8 +42,8 @@ subroutine showquote(n)
    stmt$ = "select author, saying from quotes where ROWID = " + n + ";"
    dbopenset stmt$
    if dbrow() then
-      print dbstring(1)
-      print " - " + dbstring(0)
+      print dbstring("saying")
+      print " - " + dbstring("author")
    else
       print "Quotation " + n + " is not on file."
    end if
@@ -52,9 +52,9 @@ end subroutine
 
 subroutine showallquotes()
    # show all quotes in the table
-   dbopenset "select ROWID, author, saying from quotes order by ROWID;"
+   dbopenset "select rowid, author, saying from quotes order by rowid;"
    while dbrow()
-      print dbint(0) + " " + dbstring(2) + " (" + dbstring(1) + ")"
+      print dbint("rowid") + " " + dbstring("saying") + " (" + dbstring("author") + ")"
    end while
    dbcloseset
 end subroutine
@@ -77,9 +77,9 @@ function quotecount()
    # get an unused set number for database 0 for this operation
    quotecount = 0
    tempset = freedbset(0)
-   dbopenset 0, tempset, "select count(*) from quotes"
+   dbopenset 0, tempset, "select count(*) as k from quotes"
    if dbrow(0, tempset) then
-      quotecount =  dbint(0, tempset, 0)
+      quotecount =  dbint(0, tempset, "k")
    end if
    dbcloseset 0,tempset
 end function

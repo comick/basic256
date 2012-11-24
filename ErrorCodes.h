@@ -83,7 +83,7 @@
 #define ERROR_DBNOTOPEN 32
 #define ERROR_DBNOTOPEN_MESSAGE "Database must be opened first."
 #define ERROR_DBCOLNO 33
-#define ERROR_DBCOLNO_MESSAGE "Column number out of range."
+#define ERROR_DBCOLNO_MESSAGE "Column number out of range or column name not in data set."
 #define ERROR_DBNOTSET 34
 #define ERROR_DBNOTSET_MESSAGE "Record set must be opened first."
 #define ERROR_EXTOPBAD 35
@@ -135,7 +135,7 @@
 #define ERROR_DBSETNUMBER 58
 #define ERROR_DBSETNUMBER_MESSAGE "Invalid data set number."
 #define ERROR_DBNOTSETROW 59
-#define ERROR_DBNOTSETROW_MESSAGE "You must advance the dataset using DBROW before you can read data from it."
+#define ERROR_DBNOTSETROW_MESSAGE "You must advance the data set using DBROW before you can read data from it."
 
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."

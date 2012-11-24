@@ -284,3 +284,6 @@
 #define OP_FREENET	       	0x40
 #define OP_FREEDB	       	0x41
 #define OP_FREEDBSET	       	0x42
+#define OP_DBINTS		0x43
+#define OP_DBFLOATS		0x44
+#define OP_DBSTRINGS		0x45

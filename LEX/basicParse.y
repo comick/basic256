@@ -2015,6 +2015,18 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		addExtendedOp(OP_DBINT); }
 	| B256DBINT '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBINT); }
+	| B256DBINT '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default db number
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBINTS); }
+	| B256DBINT '(' floatexpr ',' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBINTS); }
+	| B256DBINT '(' floatexpr ',' floatexpr ',' stringexpr ')' {
+		addExtendedOp(OP_DBINTS); }
 	| B256DBFLOAT '(' floatexpr ')' {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
@@ -2027,6 +2039,18 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		addExtendedOp(OP_DBFLOAT); }
 	| B256DBFLOAT '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBFLOAT); }
+	| B256DBFLOAT '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default db number
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBFLOATS); }
+	| B256DBFLOAT '(' floatexpr ',' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBFLOATS); }
+	| B256DBFLOAT '(' floatexpr ',' floatexpr ',' stringexpr ')' {
+		addExtendedOp(OP_DBFLOATS); }
 	| B256LASTERROR { addExtendedOp(OP_LASTERROR); }
 	| B256LASTERROR '(' ')' { addExtendedOp(OP_LASTERROR); }
 	| B256LASTERRORLINE { addExtendedOp(OP_LASTERRORLINE); }
@@ -2110,6 +2134,18 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 		addExtendedOp(OP_DBSTRING); }
 	| B256DBSTRING '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addExtendedOp(OP_DBSTRING); }
+	| B256DBSTRING '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default db number
+		addOp(OP_STACKSWAP);
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBSTRINGS); }
+	| B256DBSTRING '(' floatexpr ',' stringexpr ')' {
+		addIntOp(OP_PUSHINT,0);	// default dbset number
+		addOp(OP_STACKSWAP);
+		addExtendedOp(OP_DBSTRINGS); }
+	| B256DBSTRING '(' floatexpr ',' floatexpr ',' stringexpr ')' {
+		addExtendedOp(OP_DBSTRINGS); }
 	| B256LASTERRORMESSAGE { addExtendedOp(OP_LASTERRORMESSAGE); }
 	| B256LASTERRORMESSAGE '(' ')' { addExtendedOp(OP_LASTERRORMESSAGE); }
 	| B256LASTERROREXTRA { addExtendedOp(OP_LASTERROREXTRA); }

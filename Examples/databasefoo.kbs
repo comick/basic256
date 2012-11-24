@@ -17,7 +17,7 @@ dbexecute "insert into foo values (3,'three',9.43);"
 # open a recordset and loop through the rows of data
 dbopenset "select * from foo order by words;"
 while dbrow()
-   print dbint(0) + dbstring(1) + dbfloat(2)
+   print dbint("id") + dbstring("words") + dbfloat("value")
 end while
 dbcloseset
 
