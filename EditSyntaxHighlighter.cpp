@@ -103,6 +103,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Dd][Bb][Ee][Xx][Ee][Cc][Uu][Tt][Ee]\\b"				// dbexecute
 		<< "\\b[Dd][Bb][Ff][Ll][Oo][Aa][Tt]\\b"					// dbfloat
 		<< "\\b[Dd][Bb][Ii][Nn][Tt]\\b"						// dbint
+		<< "\\b[Dd][Bb][Nn][Uu][Ll][Ll]\\b"					// dbnull
 		<< "\\b[Dd][Bb][Oo][Pp][Ee][Nn]\\b"					// dbopen
 		<< "\\b[Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]\\b"				// dbopenset
 		<< "\\b[Dd][Bb][Rr][Oo][Ww]\\b"						// dbrow
@@ -189,7 +190,6 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
-		<< "\\b[Pp][Ii]\\b"							// pi
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel
 		<< "\\b[Pp][Ll][Oo][Tt]\\b"						// plot
 		<< "\\b[Pp][Oo][Ll][Yy]\\b"						// poly
@@ -273,6 +273,7 @@ void EditSyntaxHighlighter::initColors()
   QStringList colorPatterns;
 
   colorPatterns
+		<< "\\b[Pp][Ii]\\b"						// pi
 		<< "\\b[Tt][Rr][Uu][Ee]\\b"					// true
 		<< "\\b[Ff][Aa][Ll][Ss][Ee]\\b"					// false
 		<< "\\b[Cc][Ll][Ee][Aa][Rr]\\b"					// clear

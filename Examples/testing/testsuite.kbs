@@ -1,13 +1,14 @@
-# testsuite for BASIC256 Version 0.9.9.21
+# testsuite for BASIC256 Version 0.9.9.23
 
 # This program will test most of the basic256 language compiler and interperter
 
 # Modification History
-# date...... programmer... description...
-# 2012-11-03 j.m.reneau    added strings, file io, '' strings
-# 2012-11-22 j.m.reneau    added freefile, freedb, freedbset, multiple db connections,
-#			and multiple db sets open on a single connection
-
+# date		programmer	description
+# 2012-11-03	j.m.reneau	added strings, file io, '' strings
+# 2012-11-22	j.m.reneau	added freefile, freedb, freedbset, multiple db connections,
+#				and multiple db sets open on a single connection
+# 2012-11-25	j.m.reneau	added dbnull and logic to test dbstring, dbint, dbfloat, and dbnull
+#				with column names and numbers
 
 # create arrays to use
 dim c$(10)
@@ -283,12 +284,12 @@ close
 kill b$
 # test freefile
 for t = 0 to 7
-call n("freefile", freefile, t)
-open freefile,"testsuite_"+t+".txt"
+   call n("freefile", freefile, t)
+   open freefile,"testsuite_"+t+".txt"
 next t
 for t = 0 to 7
-close t
-kill "testsuite_"+t+".txt"
+   close t
+   kill "testsuite_"+t+".txt"
 next t
 call n("freefile", freefile, 0)
 ###################################################
@@ -326,11 +327,25 @@ dbexecute "drop table if exists t;"
 dbexecute "create table t (i integer primary key, d text);"
 dbexecute "insert into t (i,d) values (1,'one');"
 dbexecute "insert into t (i,d) values (2,'two');"
+dbexecute "insert into t (i,d) values (3,NULL);"
 dbopenset "select * from t order by d desc limit 1;"
 call n("drow() - get row", dbrow(), true)
 call n("dbint(0)=2", dbint(0), 2)
 call s("dbstring(1)='two''", dbstring(1), "two")
+call n("dbint('i')=2", dbint('i'), 2)
+call s("dbstring('d')='two''", dbstring('d'), "two")
 dbcloseset
+#
+dbopenset "select * from t where i = 3;"
+call n("drow() - get row", dbrow(), true)
+call n("dbnull(0)=false", dbnull(0), false)
+call n("dbnull(1)=true'", dbnull(1), true)
+call n("dbnull('i')=false", dbnull('i'), false)
+call n("dbnull('d')=true", dbnull('d'), true)
+call s("dbstring(1)='''", dbstring(1), "")
+call s("dbstring('d')='''", dbstring('d'), "")
+dbcloseset
+#
 t = freedb
 dbopen t, "testsuite2.db"
 dbexecute t, "drop table if exists t;"

@@ -3698,6 +3698,8 @@ Interpreter::execByteCode()
 			case OP_DBINTS:
 			case OP_DBFLOAT:
 			case OP_DBFLOATS:
+			case OP_DBNULL:
+			case OP_DBNULLS:
 			case OP_DBSTRING:
 			case OP_DBSTRINGS:
 					{
@@ -3706,7 +3708,7 @@ Interpreter::execByteCode()
 						char *colname = NULL;
 						op++;
 						// get a column data (integer)
-						if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBSTRINGS) {
+						if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
 							colname = stack.popstring();
 						} else {
 							col = stack.popint();
@@ -3725,7 +3727,7 @@ Interpreter::execByteCode()
 									if (!dbsetrow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
-										if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBSTRINGS) {
+										if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
 											// find the column number for name and save in col
 											for(int t=0;t<sqlite3_column_count(dbset[n][set])&&col==-1;t++) {
 												if (strcmp(colname,sqlite3_column_name(dbset[n][set],t))==0) {
@@ -3737,13 +3739,23 @@ Interpreter::execByteCode()
 										if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
 											errornum = ERROR_DBCOLNO;
 										} else {
-											if (opcode == OP_DBINT || opcode == OP_DBINTS) {
-												stack.push(sqlite3_column_int(dbset[n][set], col));
-											} else if (opcode == OP_DBFLOAT || opcode == OP_DBFLOATS) {
+											switch(opcode) {
+												case OP_DBINT:
+												case OP_DBINTS:
+													stack.push(sqlite3_column_int(dbset[n][set], col));
+													break;
+												case OP_DBFLOAT:
+												case OP_DBFLOATS:
 													stack.push(sqlite3_column_double(dbset[n][set], col));
-											} else if (opcode == OP_DBSTRING || opcode == OP_DBSTRINGS) {
-													char* data = (char*)sqlite3_column_text(dbset[n][set], col);
-													stack.push(data);
+													break;
+												case OP_DBNULL:
+												case OP_DBNULLS:
+													stack.push((char*)sqlite3_column_text(dbset[n][set], col)==NULL);
+													break;
+												case OP_DBSTRING:
+												case OP_DBSTRINGS:
+													stack.push((char*)sqlite3_column_text(dbset[n][set], col));
+													break;
 											}
 										}
 									}

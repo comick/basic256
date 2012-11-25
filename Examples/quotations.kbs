@@ -1,6 +1,6 @@
 # quotations - create a database of quotations
 # new and improved to use subroutines and functions
-# 2012-11-23 j.m.reneau
+# 2012-11-25 j.m.reneau
 
 # create a new database file or open it or create it with a few good quotes
 dbfile$ = "quotations.sqlite3"
@@ -9,12 +9,14 @@ e = exists(dbfile$)		# set e to true if database already exists
 # dboopen without a database number opens the database as 0
 dbopen dbfile$
 # if the database did not exist then create the tables and populate
+# with initial set og quotaions
 if (not e) then call createquotetable()
 
 print "Database has " + quotecount() + " quotes."
 
 # display a menu until the user chooses a zero
 do
+   print
    print "1 - view a random quote "
    print "2 - list all quotes"
    print "3 - add a quote"
@@ -114,6 +116,5 @@ end function
 
 function q$(a$)
    # put single quotes around a string after changing single quotes to two single quotes
-   # example: aa'bb is passed 'aa''bb' is returned
    q$ = "'" + replace(a$,"'","''") + "'"
 end function

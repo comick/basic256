@@ -287,3 +287,5 @@
 #define OP_DBINTS		0x43
 #define OP_DBFLOATS		0x44
 #define OP_DBSTRINGS		0x45
+#define OP_DBNULL		0x46
+#define OP_DBNULLS		0x47

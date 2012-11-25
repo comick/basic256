@@ -119,6 +119,7 @@ dbcloseset [Dd][Bb][Cc][Ll][Oo][Ss][Ee][Ss][Ee][Tt]
 dbexecute [Dd][Bb][Ee][Xx][Ee][Cc][Uu][Tt][Ee]
 dbfloat [Dd][Bb][Ff][Ll][Oo][Aa][Tt]
 dbint [Dd][Bb][Ii][Nn][Tt]
+dbnull [Dd][Bb][Nn][Uu][Ll][Ll]
 dbopen [Dd][Bb][Oo][Pp][Ee][Nn]
 dbopenset [Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]
 dbrow [Dd][Bb][Rr][Oo][Ww]
@@ -492,6 +493,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {dbrow}		{ count(); return B256DBROW; }
 {dbint}		{ count(); return B256DBINT; }
 {dbfloat}	{ count(); return B256DBFLOAT; }
+{dbnull}	{ count(); return B256DBNULL; }
 {dbstring}	{ count(); return B256DBSTRING; }
 {onerror}	{ count(); return B256ONERROR; }
 {offerror}	{ count(); return B256OFFERROR; }

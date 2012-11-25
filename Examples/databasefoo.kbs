@@ -9,15 +9,15 @@ dbexecute "drop table foo;"
 offerror
 
 # create and populate
-dbexecute "create table foo (id integer, words text, value decimal);"
+dbexecute "create table foo (id integer primary key, words text, value decimal);"
 dbexecute "insert into foo values (1,'one',3.14);"
 dbexecute "insert into foo values (2,'two',6.28);"
-dbexecute "insert into foo values (3,'three',9.43);"
+dbexecute "insert into foo (words, value) values ('three',9.43);"
 
 # open a recordset and loop through the rows of data
 dbopenset "select * from foo order by words;"
 while dbrow()
-   print dbint("id") + dbstring("words") + dbfloat("value")
+   print dbint("id") +" " + dbstring("words") + " " + dbfloat("value")
 end while
 dbcloseset
 
