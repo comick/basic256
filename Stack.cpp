@@ -83,7 +83,13 @@ Stack::push(char *c)
 	checkLimit();
 	top++;
 	top->type = T_STRING;
-	top->value.string = strdup(c);
+	if (c==NULL) {
+		c = (char *) malloc(sizeof(char));
+		c[0] = 0x00;
+		top->value.string = c;
+	} else {
+		top->value.string = strdup(c);
+	}
 }
 
 void
