@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>en:variables [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-11-01T09:10:40-0700"/>
+<meta name="keywords" content="en,variables"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/en:variables&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:variables"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:variables"/>
+<link rel="canonical" href="./en_variables.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_variables.html" class="wikilink1" title="en:variables">variables</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>en:variables</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+                    
+<h2 class="sectionedit1" id="variables">Variables</h2>
+<div class="level2">
+
+<p>
+Variables that hold numeric values must begin with a letter, and may consist of any number of alpha-numeric characters.  They are case sensitive.  They may be used interchangeably with numeric constants.<br/>
+
+<br/>
+
+Variables that hold string values follow the same rules as numeric variables, but must end with a dollar sign ($).  They may be used interchangeably with string constants.
+<br/>
+
+When you assign a numeric value to a string variable or add a numeric value to a string (concatenate) the number will be automatically converted to a string before the operation is completed.  A string value may not be assigned directly to a numeric variable or array element without manually converting it&#039;s type using the <a href="./en_int.html" class="wikilink1" title="en:int">Int</a> or <a href="./en_float.html" class="wikilink1" title="en:float">Float</a> functions.  
+<br/>
+
+</p>
+<div class="table sectionedit2"><table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="4">Variable Assignment</th>
+	</tr>
+	<tr class="row1">
+		<th class="col0">Operator</th><th class="col1">Name</th><th class="col2">Example</th><th class="col3">Comments</th>
+	</tr>
+	<tr class="row2">
+		<td class="col0">=</td><td class="col1">Assign a Number to a Numeric Variable</td><td class="col2">a = 9</td><td class="col3"> </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">=</td><td class="col1">Assign a String to a String Variable</td><td class="col2">z$ = “Hola.”</td><td class="col3"> </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">=</td><td class="col1">Assign a Number to a String Variable</td><td class="col2">q$ = 9.9</td><td class="col3"> </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">+=</td><td class="col1">Add to Numeric Variable</td><td class="col2">a += 7</td><td class="col3">Same as a = a + 7 <sup>1</sup></td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">+=</td><td class="col1">Concatenate to String Variable</td><td class="col2">f$ += ”.”</td><td class="col3">Same as f$ = f$ + ”.”  <sup>1</sup></td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">-=</td><td class="col1">Subtract from Numeric Variable</td><td class="col2">a -= 9</td><td class="col3">Same as a = a - 9 <sup>1</sup></td>
+	</tr>
+	<tr class="row8">
+		<td class="col0">*=</td><td class="col1">Multiply Numeric Variable</td><td class="col2">a *= 2</td><td class="col3">Same as a = a * 2 <sup>1</sup></td>
+	</tr>
+	<tr class="row9">
+		<td class="col0">/=</td><td class="col1">Divide Numeric Variable</td><td class="col2">a /= 8</td><td class="col3">Same as a = a / 8 <sup>1</sup></td>
+	</tr>
+</table></div>
+
+<p>
+<br/>
+
+<sup>1</sup> added with version 0.9.9.10
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">en/variables.txt · Last modified: 2012/11/01 09:10 by admin</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="en_variables.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

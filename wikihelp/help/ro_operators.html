@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>ro:operators [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-04-29T02:51:04-0700"/>
+<meta name="keywords" content="ro,operators"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/ro:operators&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=ro"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=ro:operators"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=ro:operators"/>
+<link rel="canonical" href="./ro_operators.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./ro_start.html" class="wikilink1" title="ro:start">ro</a> » <span class="curid"><a href="./ro_operators.html" class="wikilink1" title="ro:operators">operators</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>ro:operators</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+                    
+<h2 class="sectionedit1" id="operatori">Operatori</h2>
+<div class="level2">
+
+<p>
+Operatorii +, -, *, / si ^ sunt folosite pentru a realiza adunarea, scaderea, inmultirea, impartirea si ridicarea la putere a numerelor intregi sau in virgula mobila. <br/>
+
+<br/>
+
+Operatorii  %, \, &amp;, |, si ~ sunt folositi pentru a calcula modulo, impartirea intreaga, functia SI pe biti, functia SAU pe biti si negarea pe biti a expresiilor intregi. Numerele in virgula mobila vor fi convertite la valoare intreaga inaintea operatiei.<br/>
+
+<br/>
+
+Operatorul =e folosit atat pentru atribuire de variabile cat si pentru testare de egalitate. Operatorul +poate fi folosit pentru a realiza concatenarea sirurilor de constante si de variabile. Operatorul : poate separa instructiunile multiple sacrise pe o singura linie. Operatorul ; suprima noua linie care este tiparita de instructiunea PRINT. Operatorul # este o scurtatura pentru comanda <a href="./ro_rem.html" class="wikilink2" title="ro:rem" rel="nofollow">Rem</a> si este interschimbabila cu ea.<br/>
+
+<br/>
+
+</p>
+<div class="table sectionedit2"><table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="3">Ordinea operatiilor</th>
+	</tr>
+	<tr class="row1">
+		<th class="col0">Nivel</th><th class="col1">Operatori</th><th class="col2">Categorie/Descriere</th>
+	</tr>
+	<tr class="row2">
+		<td class="col0">1</td><td class="col1">( )</td><td class="col2">Grupare</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">2</td><td class="col1">^</td><td class="col2">Exponent</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">3</td><td class="col1">- ~</td><td class="col2">Minus Unar si Negare la nivel de bit (NOT)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">4</td><td class="col1">* / \</td><td class="col2">Multiplicare si Impartire</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">5</td><td class="col1">%</td><td class="col2">Restul impartirii intregilor(Mod)</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">6</td><td class="col1">+ -</td><td class="col2">Adunare, Concatenare si Scadere</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0">7</td><td class="col1">&amp; |</td><td class="col2">Testare pe bit SI si SAU</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0">8</td><td class="col1">&lt; ⇐ &gt; &gt;= = &lt;&gt;</td><td class="col2">Comparare (Numeric sau Sir)</td>
+	</tr>
+	<tr class="row10">
+		<td class="col0">9</td><td class="col1">NOT</td><td class="col2">NOT Unar</td>
+	</tr>
+	<tr class="row11">
+		<td class="col0">10</td><td class="col1">AND</td><td class="col2">SI Logic</td>
+	</tr>
+	<tr class="row12">
+		<td class="col0">11</td><td class="col1">OR</td><td class="col2">SAU Logic</td>
+	</tr>
+	<tr class="row13">
+		<td class="col0">12</td><td class="col1">XOR</td><td class="col2">SAU-Exclusiv Logic</td>
+	</tr>
+</table></div>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">ro/operators.txt · Last modified: 2012/04/29 02:51 by andi</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="ro_operators.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

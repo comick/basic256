@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>nl:variables [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-01-29T14:47:04-0700"/>
+<meta name="keywords" content="nl,variables"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/nl:variables&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=nl"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=nl:variables"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=nl:variables"/>
+<link rel="canonical" href="./nl_variables.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./nl_start.html" class="wikilink1" title="nl:start">nl</a> » <span class="curid"><a href="./nl_variables.html" class="wikilink1" title="nl:variables">variables</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>nl:variables</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h1 class="sectionedit1" id="variabelen">Variabelen</h1>
+<div class="level1">
+
+</div>
+
+<h2 class="sectionedit2" id="wat_is_een_variabele">Wat is een variabele ?</h2>
+<div class="level2">
+
+<p>
+Numerieke en String constanten kunnen niet veranderen. Ze hebben de waarde die we ze meegeven. Maar soms moet de computer iets onthouden om later terug te nemen. En computer onthoudt gegevens in het geheugen in benoemde lokaties. 
+</p>
+
+<p>
+Is de inhoud van zo&#039;n lokatie veranderbaar dan heb je een variabele. 
+</p>
+
+<p>
+Een variable krijgt een naam. Die naam beslis je zelf. Daarna zeg je aan de computer wat er in de variabele zit. Dat kan zowel een numerieke waarde zijn als een string.
+</p>
+
+</div>
+
+<h2 class="sectionedit3" id="hoe_schrijf_je_een_variabele">Hoe schrijf je een variabele ?</h2>
+<div class="level2">
+
+<p>
+De naam van een variabele:
+</p>
+<ul>
+<li class="level1"><div class="li"> moet beginnen met een letter </div>
+</li>
+<li class="level1"><div class="li"> mag alleen uit letters, cijfers en het onderstrepingsteken bestaan (dus geen speciale tekens) </div>
+</li>
+<li class="level1"><div class="li"> mag maximaal 255 karakters bevatten </div>
+</li>
+<li class="level1"><div class="li"> mag niet gelijk zijn aan een sleutelwoord van BASIC</div>
+</li>
+<li class="level1"><div class="li"> is hoofdlettergevoelig</div>
+</li>
+<li class="level1"><div class="li"> een string variabele moet eindigen met een dollar teken oftewel: $</div>
+</li>
+</ul>
+
+<p>
+Dit zijn <strong>geldige</strong> variabelen
+</p>
+<pre class="code basic4gl"> Naam<span class="sy0">$</span>
+ Naam123<span class="sy0">$</span>
+ naam<span class="sy0">$</span>
+ n12er</pre>
+
+<p>
+Dit zijn <strong>slechte</strong> variabelen
+</p>
+<pre class="code basic4gl"> Naam  <span class="br0">&#40;</span> indien je de bedoeling hebt om er een naam in te zetten<span class="br0">&#41;</span>
+ 123Naam<span class="sy0">$</span>
+ <span class="kw3">if</span><span class="sy0">$</span>  <span class="br0">&#40;</span>dit is een sleutelwoord<span class="br0">&#41;</span>
+ <span class="kw3">if</span>  <span class="br0">&#40;</span> dit is een sleutelwoord<span class="br0">&#41;</span></pre>
+
+<p>
+Na de naam van de variabele zet je het gelijkteken =
+</p>
+
+<p>
+Daarna geef je de waarde mee die je aan je variabele wil geven.
+</p>
+
+<p>
+Je kan natuurlijk de waarde van de variabele verschillende keren weergeven. Dan neemt de computer wel de laatste waarde die je aan de variabele hebt meegegeven.
+</p>
+
+<p>
+meegeven van een waarde aan een variabele
+</p>
+<pre class="code basic4gl"> Naam<span class="sy0">$=</span><span class="st0">&quot;Jip en Janneke&quot;</span></pre>
+
+</div>
+
+<h2 class="sectionedit4" id="hoe_ziet_het_eruit">Hoe ziet het eruit?</h2>
+<div class="level2">
+
+<p>
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=nl_variables&amp;media=nl:variables.png" class="media" title="nl:variables.png"><img src="lib/exe/nl_variables.png" class="media" alt="" /></a>
+</p>
+
+</div>
+
+<h2 class="sectionedit5" id="voorbeeldje">Voorbeeldje</h2>
+<div class="level2">
+
+<p>
+In dit voorbeeldje gebruiken we 4 variabelen en geven we hen elk een waarde.
+Een variabele kan ook samengesteld worden door andere variabelen.
+Zoals je ziet is een variabele hoefdlettergevoelig. naam$ en Naam$ zijn niet dezelfde. 
+</p>
+<pre class="code basic4gl">Naam<span class="sy0">$</span> <span class="sy0">=</span> <span class="st0">&quot;Jan Peeters&quot;</span>
+naam<span class="sy0">$</span> <span class="sy0">=</span> <span class="st0">&quot;Jip en Janneke&quot;</span>
+n12SEZsd<span class="sy0">$=</span> <span class="nu0">23</span>
+n12SEZsd<span class="sy0">$=</span> <span class="nu0">100</span>
+alle_namen<span class="sy0">$=</span>Naam<span class="sy0">$</span> <span class="sy0">+</span> <span class="st0">&quot; &quot;</span> <span class="sy0">+</span> naam<span class="sy0">$</span>
+&nbsp;
+<span class="kw2">Print</span> Naam<span class="sy0">$</span>
+<span class="kw2">Print</span> 
+<span class="kw2">Print</span> alle_namen<span class="sy0">$</span>
+<span class="kw2">Print</span> 
+<span class="kw2">Print</span> n12SEZsd<span class="sy0">$</span></pre>
+
+<p>
+<a href="./nl_stringconstants.html" class="wikilink1" title="nl:stringconstants">vorige</a>  | <a href="./nl_start.html" class="wikilink1" title="nl:start">Begin</a> |  <a href="./nl_arrays.html" class="wikilink1" title="nl:arrays">volgende</a>
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">nl/variables.txt · Last modified: 2012/01/29 14:47 by tlesseliers</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="nl_variables.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

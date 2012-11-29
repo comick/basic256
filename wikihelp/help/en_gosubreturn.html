@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>en:gosubreturn [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-10-11T09:22:53-0700"/>
+<meta name="keywords" content="en,gosubreturn"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/en:gosubreturn&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:gosubreturn"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:gosubreturn"/>
+<link rel="canonical" href="./en_gosubreturn.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_gosubreturn.html" class="wikilink1" title="en:gosubreturn">gosubreturn</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>en:gosubreturn</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="gosub">Gosub</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+<strong>gosub</strong> <em>label</em><br/>
+
+<br/>
+
+label:<br/>
+
+<em>statement(s)</em><br/>
+
+<strong>return</strong>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Jumps to the specified label.  Upon encountering a <a href="./en_return.html" class="wikilink2" title="en:return" rel="nofollow">Return</a> statement the program will continue at the line following the Gosub.  Gosubs may call other gosubs but all variables are shared.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code">a$ = &quot;Hello&quot;
+gosub double
+print a$
+b = 3
+gosub triple
+print b
+end
+
+double:
+a$ = a$ + a$
+return
+
+triple:
+b = b * 3
+return</pre>
+
+<p>
+will display<br/>
+
+</p>
+<pre class="code">HelloHello
+9</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="see_also">See Also</h3>
+<div class="level3">
+
+<p>
+<a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="./en_return.html" class="wikilink2" title="en:return" rel="nofollow">Return</a>
+</p>
+
+</div>
+
+<h3 class="sectionedit6" id="notes">Notes</h3>
+<div class="level3">
+
+<p>
+As of version 0.9.9.2 <a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <span class="curid"><a href="./en_gosubreturn.html" class="wikilink1" title="en:gosubreturn">Gosub</a></span>, and labels can not be used in <a href="./en_function.html" class="wikilink1" title="en:function">Function</a> and <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a> definitions.
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">en/gosubreturn.txt · Last modified: 2012/10/11 09:22 by admin</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="en_gosubreturn.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>nl:operators [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-01-29T11:04:06-0700"/>
+<meta name="keywords" content="nl,operators"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/nl:operators&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=nl"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=nl:operators"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=nl:operators"/>
+<link rel="canonical" href="./nl_operators.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./nl_start.html" class="wikilink1" title="nl:start">nl</a> » <span class="curid"><a href="./nl_operators.html" class="wikilink1" title="nl:operators">operators</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>nl:operators</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h1 class="sectionedit1" id="operatoren">Operatoren</h1>
+<div class="level1">
+
+</div>
+
+<h2 class="sectionedit2" id="rekenkundige_operatoren">Rekenkundige operatoren</h2>
+<div class="level2">
+
+<p>
+De operatoren +, -, *, / en ^ worden gebruikt voor het optellen, aftrekken, vermenigvuldigen, delen, machtsverheffen van floating point-en integer getallen. Geldige operanden zijn numerieke constanten en / of numerieke variabelen. 
+</p>
+
+<p>
+De operatoren %, \, &amp;, |, en ~ worden gebruikt voor modulo, integer delingen, bitwise en bitwise of en bitsgewijze negatie (niet) van integer uitdrukkingen te berekenen. Floating point getallen worden omgezet naar een integer waarde voor de berekening. 
+</p>
+<ul>
+<li class="level1"><div class="li"> De operator = wordt gebruikt zowel voor toewijzing aan variabelen, en om te testen op gelijkheid. </div>
+</li>
+<li class="level1"><div class="li"> De operator + kan gebruikt worden om aaneenschakeling van elke combinatie van string constanten en string variabelen uit te voeren. </div>
+</li>
+<li class="level1"><div class="li"> De: operator kan meerdere statements op eenzelfde regel scheidnen. </div>
+</li>
+<li class="level1"><div class="li"> De; operator onderdrukt de nieuwe lijn die is afgedrukt vanuit een PRINT statement. </div>
+</li>
+<li class="level1"><div class="li"> De # operator is een sneltoets voor de Rem statement, en is uitwisselbaar met het. </div>
+</li>
+</ul>
+
+</div>
+
+<h2 class="sectionedit3" id="logische_operatoren">Logische operatoren</h2>
+<div class="level2">
+
+<p>
+Logische operatoren zijn gebaseerd op de Booleaanse algebra. Het resultaat van een booleaanse bewerking heeft slechts twee mogelijke resultaten: waar of onwaar. 
+</p>
+
+<p>
+In verschillende talen die in de wiskunde en informatica worden gebruikt, bestaan er verschillende aanduidingen (tekens) voor de booleaanse operatoren.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="not">NOT</h3>
+<div class="level3">
+
+<p>
+resultaat = <code>&#039;NOT</code>&#039; A
+</p>
+
+<p>
+Het resultaat is tegenovergesteld. “NOT A” is onwaar als “A” waar is en als “A” onwaar is, is “NOT A” waar. Dit is een unaire (unary) operator, dat wil zeggen, met slechts een parameter. Alle anderen in deze lijst zijn binaire (binary) operatoren.
+</p>
+<div class="table sectionedit5"><table class="inline">
+	<tr class="row0">
+		<th class="col0">A</th><th class="col1">R</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">0</td><td class="col1"><strong>1</strong></td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">1</td><td class="col1"><strong>0</strong></td>
+	</tr>
+</table></div>
+
+</div>
+
+<h3 class="sectionedit6" id="and">AND</h3>
+<div class="level3">
+
+<p>
+resultaat = A <code>&#039;AND</code>&#039; B
+</p>
+
+<p>
+Het resultaat is waar als zowel “A” als “B” waar zijn, in alle andere gevallen is het resultaat onwaar.
+</p>
+<div class="table sectionedit7"><table class="inline">
+	<tr class="row0">
+		<th class="col0">A</th><th class="col1">B</th><th class="col2">R</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">0</td><td class="col1">0</td><td class="col2"><strong>0</strong></td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">0</td><td class="col1">1</td><td class="col2"><strong>0</strong></td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">1</td><td class="col1">0</td><td class="col2"><strong>0</strong></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">1</td><td class="col1">1</td><td class="col2"><strong>1</strong></td>
+	</tr>
+</table></div>
+
+</div>
+
+<h3 class="sectionedit8" id="or">OR</h3>
+<div class="level3">
+
+<p>
+resultaat = A <code>&#039;OR</code>&#039; B
+</p>
+
+<p>
+Het resultaat is waar als “A” waar is of als “B” waar is of als beide waar zijn. Het resultaat is onwaar als zowel “A” als “B” onwaar zijn.
+</p>
+<div class="table sectionedit9"><table class="inline">
+	<tr class="row0">
+		<th class="col0">A</th><th class="col1">B</th><th class="col2">R</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">0</td><td class="col1">0</td><td class="col2"><strong>0</strong></td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">0</td><td class="col1">1</td><td class="col2"><strong>1</strong></td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">1</td><td class="col1">0</td><td class="col2"><strong>1</strong></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">1</td><td class="col1">1</td><td class="col2"><strong>1</strong></td>
+	</tr>
+</table></div>
+
+</div>
+
+<h3 class="sectionedit10" id="xor">XOR</h3>
+<div class="level3">
+
+<p>
+resultaat = A <code>&#039;XOR</code>&#039; B
+</p>
+
+<p>
+Het resultaat is waar als “A” waar is en “B” onwaar, of als “A” onwaar is en “B” waar. Als “A” en “B” beide waar zijn of beide onwaar zijn is het resultaat onwaar. Deze functie is equivalent aan (A AND NOT B) OR (B AND NOT A)
+</p>
+<div class="table sectionedit11"><table class="inline">
+	<tr class="row0">
+		<th class="col0">A</th><th class="col1">B</th><th class="col2">R</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">0</td><td class="col1">0</td><td class="col2"><strong>0</strong></td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">0</td><td class="col1">1</td><td class="col2"><strong>1</strong></td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">1</td><td class="col1">0</td><td class="col2"><strong>1</strong></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">1</td><td class="col1">1</td><td class="col2"><strong>0</strong></td>
+	</tr>
+</table></div>
+
+</div>
+
+<h2 class="sectionedit12" id="relationele_operatoren">Relationele operatoren</h2>
+<div class="level2">
+
+</div>
+
+<h2 class="sectionedit13" id="volgorde_van_operatoren">Volgorde van Operatoren</h2>
+<div class="level2">
+<div class="table sectionedit14"><table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="3">Volgorde van Operatoren</th>
+	</tr>
+	<tr class="row1">
+		<th class="col0">Volgorde</th><th class="col1">Operator</th><th class="col2">Kategorie/Beschrijving</th>
+	</tr>
+	<tr class="row2">
+		<td class="col0">1</td><td class="col1">( )</td><td class="col2">Groupering</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">2</td><td class="col1">^</td><td class="col2">Exponent</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">3</td><td class="col1">- ~</td><td class="col2">Unary Minus en Bitwise Negatie (NOT)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">4</td><td class="col1">* / \</td><td class="col2">Vermenigvuldiging and Deling</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">5</td><td class="col1">%</td><td class="col2"> Modulo </td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">6</td><td class="col1">+ -</td><td class="col2">Som, Samentrekking, and Verschil</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0">7</td><td class="col1">&amp; |</td><td class="col2">Bitwise EN of Bitwise OF</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0">8</td><td class="col1">&lt; ⇐ &gt; &gt;= = &lt;&gt;</td><td class="col2">Vergelijkingen</td>
+	</tr>
+	<tr class="row10">
+		<td class="col0">9</td><td class="col1">NOT</td><td class="col2">Unary Not</td>
+	</tr>
+	<tr class="row11">
+		<td class="col0">10</td><td class="col1">AND</td><td class="col2">Logische EN</td>
+	</tr>
+	<tr class="row12">
+		<td class="col0">11</td><td class="col1">OR</td><td class="col2">Logische OF</td>
+	</tr>
+	<tr class="row13">
+		<td class="col0">12</td><td class="col1">XOR</td><td class="col2">Logische Exclusive OF</td>
+	</tr>
+</table></div>
+
+<p>
+<a href="./nl_anonymousarrays.html" class="wikilink1" title="nl:anonymousarrays">vorige</a> | <a href="./nl_start.html" class="wikilink1" title="nl:start">Begin</a> | <a href="./nl_errorcodes.html" class="wikilink1" title="nl:errorcodes">volgende</a>
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">nl/operators.txt · Last modified: 2012/01/29 11:04 by tlesseliers</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="nl_operators.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>nl:databases [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-02-13T14:09:05-0700"/>
+<meta name="keywords" content="nl,databases"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/nl:databases&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=nl"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=nl:databases"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=nl:databases"/>
+<link rel="canonical" href="./nl_databases.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./nl_start.html" class="wikilink1" title="nl:start">nl</a> » <span class="curid"><a href="./nl_databases.html" class="wikilink1" title="nl:databases">databases</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>nl:databases</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h1 class="sectionedit1" id="databanken">Databanken</h1>
+<div class="level1">
+
+</div>
+
+<h2 class="sectionedit2" id="waarom">Waarom</h2>
+<div class="level2">
+
+<p>
+Als je een programma maakt waar je veel informatie in wil bewaren, dan zal je uiteindelijk meestal bij een (relationele) database terechtkomen. Dit is een ander programma die je toelaat om je informatie op de meest optimale manier te bewaren en te beheren. <br/>
+
+Je gebruikt een andere taal, <abbr title="Structured Query Language">SQL</abbr>, om de informatie in je database of uit je database te halen. 
+</p>
+
+<p>
+Om je in te leiden in het gebruik van <abbr title="Structured Query Language">SQL</abbr> en databases, werd vanaf 0.9.6y Basic-256 voorzien om met de SQLLite databases te kunnen werken. SQLLite is een open source versie die reeds goed ingeburgerd is en door tal van andere bedrijven gebruikt wordt.
+</p>
+
+<p>
+Meer informatie over database en SQLLite vind je op  <a href="http://sqlite.org" class="urlextern" title="http://sqlite.org"  rel="nofollow">SQLite Home Page</a> en <a href="http://en.wikipedia.org/wiki/SQL" class="urlextern" title="http://en.wikipedia.org/wiki/SQL"  rel="nofollow">SQL at Wikipedia</a>.
+</p>
+
+</div>
+
+<h2 class="sectionedit3" id="welke_opdrachten_hebben_we">Welke opdrachten hebben we?</h2>
+<div class="level2">
+<div class="table sectionedit4"><table class="inline">
+	<tr class="row0">
+		<th class="col0">Opdracht</th><th class="col1">Wat doet het</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> <a href="./nl_dbclose.html" class="wikilink1" title="nl:dbclose">DBClose</a></td><td class="col1">Sluit de open database </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <a href="./nl_dbcloseset.html" class="wikilink1" title="nl:dbcloseset">DBCloseSet</a></td><td class="col1">Sluit de recordset </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <a href="./nl_dbexecute.html" class="wikilink1" title="nl:dbexecute">DBExecute</a></td><td class="col1"> Voer de sql opdracht uit</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> <a href="./nl_dbfloat.html" class="wikilink1" title="nl:dbfloat">DBFloat</a></td><td class="col1">Geeft het resultaat als decimaal getal terug </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"> <a href="./nl_dbint.html" class="wikilink1" title="nl:dbint">DBInt</a></td><td class="col1"> Geeft het resultaat als geheek getal terug</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"> <a href="./nl_dbopen.html" class="wikilink1" title="nl:dbopen">DBOpen</a></td><td class="col1"> Open of maak de database aan</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"> <a href="./nl_dbopenset.html" class="wikilink1" title="nl:dbopenset">DBOpenSet</a></td><td class="col1">Voer de sql opdracht uit en maak de recordset aan </td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"> <a href="./nl_dbrow.html" class="wikilink1" title="nl:dbrow">DBRow</a></td><td class="col1">ga naar de volgende rij in de recordset </td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"> <a href="./nl_dbstring.html" class="wikilink1" title="nl:dbstring">DBString</a> </td><td class="col1">Geeft het resultaat terug als string </td>
+	</tr>
+</table></div>
+<hr />
+
+<p>
+<a href="./nl_start.html" class="wikilink1" title="nl:start">Begin</a>
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">nl/databases.txt · Last modified: 2012/02/13 14:09 by tlesseliers</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="nl_databases.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

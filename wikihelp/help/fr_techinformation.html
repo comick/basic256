@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>fr:techinformation [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="keywords" content="fr,techinformation"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/fr:techinformation&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:techinformation"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:techinformation"/>
+<link rel="canonical" href="./fr_techinformation.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a> » <span class="curid"><a href="./fr_techinformation.html" class="wikilink1" title="fr:techinformation">techinformation</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>fr:techinformation</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="developer_and_technical">Developer and Technical</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="overview">Overview</h3>
+<div class="level3">
+
+<p>
+BASIC-256 programs are first compiled to byte code using LEX and YACC, and then run by interpreting the byte code in a stack machine. Adding functions is a simple matter of adding a byte code, letting LEX and YACC know how to parse the syntax, and coding the appropriate instruction in the interpreter. If you&#039;ve never written a compiler or interpreter, the BASIC-256 internals would provide an excellent introduction to the basics of that.
+</p>
+
+<p>
+Please keep in mind that BASIC-256 is a teaching language for children (target ages 7-9), so we&#039;d like to stay away from advanced concepts as much as possible. While it would be fun to make BASIC-256 a powerful high-level language, there are already much better languages that exist to fill that need: Python, Scheme.
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="to_do">To do</h3>
+<div class="level3">
+<ol>
+<li class="level1"><div class="li"> Real-time error checking in the editor (parse each line just after it&#039;s typed)</div>
+</li>
+</ol>
+
+</div>
+
+<h3 class="sectionedit4" id="the_life_of_a_basic-256_program">The life of a BASIC-256 program</h3>
+<div class="level3">
+<ol>
+<li class="level1"><div class="li"> BASIC program parsed into tokens by LEX</div>
+</li>
+<li class="level1"><div class="li"> LEX feeds tokens to YACC</div>
+</li>
+<li class="level1"><div class="li"> YACC determines if line is valid syntax. If so, it adds the appropriate byte codes to the byte-coded program</div>
+</li>
+<li class="level1"><div class="li"> If no syntax errors occur, the C++ portion of the program interprets the byte code one instruction at a time, using a stack machine</div>
+</li>
+<li class="level1"><div class="li"> Run time errors halt program execution and display an error message on the screen</div>
+</li>
+</ol>
+
+</div>
+
+<h3 class="sectionedit5" id="graphical_output">Graphical Output</h3>
+<div class="level3">
+
+<p>
+All graphing functions are performed on a buffer, which is subsequently written to the screen immediately after each operation. This is intentionally inefficient. The “fast” way to do this would be to have a separate rendering thread that calls a display routine when it&#039;s done, or to do all the rendering in the display routine.
+</p>
+
+<p>
+This is an ideal illustration of concessions made in BASIC-256 to keep things simple. We&#039;re interested in kids being able to see their dots move across the screen without having to explain double-buffering and multi-threading. We also want to allow them to write games like Pong that test for collisions using basic geometric formulas and draw the ball and paddles in a single loop. The current approach allows for this.
+</p>
+
+<p>
+Note: To speed things up for children doing more advanced programs, the <a href="./fr_fastgraphics.html" class="wikilink1" title="fr:fastgraphics">FASTGRAPHICS</a> mode has been added. When in this mode, the display will only be updated when the BASIC program uses the <a href="./fr_refresh.html" class="wikilink1" title="fr:refresh">REFRESH</a> command. This allows kids to benefit from double-buffering without having to understand it completely.
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">fr/techinformation.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="fr_techinformation.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

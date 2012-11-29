@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>nl:ifthen [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-01-31T13:59:20-0700"/>
+<meta name="keywords" content="nl,ifthen"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/nl:ifthen&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=nl"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=nl:ifthen"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=nl:ifthen"/>
+<link rel="canonical" href="./nl_ifthen.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./nl_start.html" class="wikilink1" title="nl:start">nl</a> » <span class="curid"><a href="./nl_ifthen.html" class="wikilink1" title="nl:ifthen">ifthen</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>nl:ifthen</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="if_then">If / Then</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formaat">Formaat</h3>
+<div class="level3">
+
+<p>
+<strong>if</strong> <em>booleanuitrdukking</em> <strong>then</strong> <em>opdracht</em>
+</p>
+<hr />
+
+<p>
+<strong>if</strong> <em>booleanuitrdukking</em> <strong>then</strong><br/>
+
+<em>opdracht(en)</em><br/>
+
+<strong>end if</strong>
+</p>
+<hr />
+
+<p>
+<strong>if</strong> <em>booleanuitrdukking</em> <strong>then</strong><br/>
+
+<em>opdracht(en)</em><br/>
+
+<strong>else</strong><br/>
+
+<em>opdracht(en)</em><br/>
+
+<strong>end if</strong>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="beschrijving">Beschrijving</h3>
+<div class="level3">
+
+<p>
+IF statements kan je in 3 verschillende vormen gebuiken.
+</p>
+<ol>
+<li class="level1"><div class="li"> In eenzelfde lijn wordt <em>booleanuitdrukking</em> getest, en wanneer deze waar is dan wordt de opdracht na de <em>then</em> uitgevoerd, anders wordt de volgende opdracht meeteen uitgevoerd.<br/>
+</div>
+</li>
+<li class="level1"><div class="li"> Op verschillende lijnen waarbij in de eerste lijn de <em>booleanuitdrukking wordt getest, waarbij als deze waar is, de volgende lijnen met </em>opdracht(en)<em> wordt uitgevoerd, of in geval van false met de </em>opdracht(en)<em> tussen de </em>else<em>  en </em>end if<em> opdracht worden uitgevoerd, waarna gewoon verder wordt gedaan na de </em>end if<em> opdracht.<br/>
+
+  - Op verschillende lijnen waarbij in de eerste lijn de </em>booleanuitdrukking wordt getest, waarbij als deze waar is, de volgende lijnen met <em>opdracht(en)</em> wordt uitgevoerd, of in geval van false met de volgende opdracht na de <em>end if</em> opdracht wordt verdergegaan<br/>
+</div>
+</li>
+</ol>
+
+</div>
+
+<h3 class="sectionedit4" id="voorbeeld">Voorbeeld</h3>
+<div class="level3">
+<pre class="code basic4gl"><span class="kw2">print</span> <span class="st0">&quot;Raad de letter die ik in mijn geheugen heb&quot;</span>
+# Wacht tot de gebruiker een iets intypt
+again<span class="sy0">:</span>
+<span class="kw3">do</span>
+  a <span class="sy0">=</span> key
+  pause .01
+<span class="kw3">until</span> a <span class="sy0">&lt;&gt;</span> <span class="nu0">0</span>
+#
+<span class="kw3">if</span> chr<span class="br0">&#40;</span>a<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="st0">&quot;Z&quot;</span> <span class="kw3">then</span>
+   <span class="kw2">print</span> <span class="st0">&quot;Yep, je heb mijn letter geraden !!!!&quot;</span>
+<span class="kw3">else</span>
+   <span class="kw2">print</span> <span class="st0">&quot;Nope. Mis. Probeer nog eens&quot;</span>
+  <span class="kw3">goto</span> again
+<span class="kw3">end</span> <span class="kw3">if</span>
+#
+<span class="kw3">end</span></pre>
+
+</div>
+
+<h3 class="sectionedit5" id="vanaf_versie">Vanaf Versie</h3>
+<div class="level3">
+
+<p>
+0.9.4g
+</p>
+<hr />
+
+<p>
+<a href="./nl_gosubreturn.html" class="wikilink1" title="nl:gosubreturn">vorige</a> | <a href="./nl_programcontrol.html" class="wikilink1" title="nl:programcontrol">Programma Controle</a> | <a href="./nl_pause.html" class="wikilink1" title="nl:pause">volgende</a>
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">nl/ifthen.txt · Last modified: 2012/01/31 13:59 by tlesseliers</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="nl_ifthen.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

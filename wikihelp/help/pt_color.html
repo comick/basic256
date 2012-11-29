@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>pt:color [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2012-11-29T11:51:58-0700"/>
+<meta name="keywords" content="pt,color"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/pt:color&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:color"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:color"/>
+<link rel="canonical" href="./pt_color.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_color.html" class="wikilink1" title="pt:color">color</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>pt:color</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="color">Color</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formato">Formato</h3>
+<div class="level3">
+
+<p>
+<strong>color</strong> <em>colorname</em><br/>
+
+<strong>color</strong> ( <em>colorname</em> )<br/>
+
+<strong>color</strong> <em>red</em>, <em>blue</em>, <em>green</em><br/>
+
+<strong>color</strong> ( <em>red</em>, <em>blue</em>, <em>green</em> )<br/>
+
+<strong>color</strong> <em>rgb_value</em><br/>
+
+<strong>color</strong> ( <em>rgb_value</em> )<br/>
+
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="descricao">Descrição</h3>
+<div class="level3">
+
+<p>
+Estabelece como cor de desenho <em>colorname</em>; para RGB composto por <em>red</em>, <em>blue</em>, <em>green</em>; ou para valor RGB que pode ser obtido através dos componentes através da formula RGB = RED*(256^2) + GREEN*256 + BLUE
+</p>
+
+<p>
+Existe uma cor especial CLEAR com valor -1 (transparência).  Isto é particularmente importante para as sprites.<br/>
+
+</p>
+<div class="table sectionedit4"><table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="4">Cores  e equivalências no código RGB</th>
+	</tr>
+	<tr class="row1">
+		<th class="col0">Color Name</th><th class="col1" colspan="2">RGB Values</th><td class="col3"></td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">black</td><td class="col1">0, 0, 0</td><td class="col2"><span style="background-color: #000000">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">white</td><td class="col1">255, 255, 255</td><td class="col2"><span style="background-color: #FFFFFF">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">red</td><td class="col1">255, 0, 0</td><td class="col2"><span style="background-color: #FF0000">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">darkred</td><td class="col1">128, 0, 0</td><td class="col2"><span style="background-color: #800000">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">green</td><td class="col1">0, 255, 0</td><td class="col2"><span style="background-color: #00FF00">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">darkgreen</td><td class="col1">0, 128, 0</td><td class="col2"><span style="background-color: #008000">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row8">
+		<td class="col0">blue</td><td class="col1">0, 0, 255</td><td class="col2"><span style="background-color: #0000FF">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row9">
+		<td class="col0">darkblue</td><td class="col1">0, 0, 128</td><td class="col2"><span style="background-color: #000080">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row10">
+		<td class="col0">cyan</td><td class="col1">0, 255, 255</td><td class="col2"><span style="background-color: #00FFFF">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row11">
+		<td class="col0">darkcyan</td><td class="col1">0, 128, 128</td><td class="col2"><span style="background-color: #008080">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row12">
+		<td class="col0">purple</td><td class="col1">255, 0, 255</td><td class="col2"><span style="background-color: #FF00FF">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row13">
+		<td class="col0">darkpurple</td><td class="col1">128, 0, 128</td><td class="col2"><span style="background-color: #800080">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row14">
+		<td class="col0">yellow</td><td class="col1">255, 255, 0</td><td class="col2"><span style="background-color: #FFFF00">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row15">
+		<td class="col0">darkyellow</td><td class="col1">128, 128 ,0</td><td class="col2"><span style="background-color: #808000">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row16">
+		<td class="col0">orange</td><td class="col1">255, 102, 0</td><td class="col2"><span style="background-color: #FF6600">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row17">
+		<td class="col0">darkorange</td><td class="col1">176, 61 ,0</td><td class="col2"><span style="background-color: #B03D00">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row18">
+		<td class="col0">grey</td><td class="col1">164, 164 ,164</td><td class="col2"><span style="background-color: #A4A4A4">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row19">
+		<td class="col0">darkgrey</td><td class="col1">128, 128 ,128</td><td class="col2"><span style="background-color: #808080">        </span></td><td class="col3"></td>
+	</tr>
+	<tr class="row20">
+		<td class="col0">clear</td><td class="col1">-1</td><td class="col2"> </td><td class="col3"></td>
+	</tr>
+</table></div>
+
+</div>
+
+<h3 class="sectionedit5" id="ver_tambem">Ver também</h3>
+<div class="level3">
+
+<p>
+<a href="./pt_rgb.html" class="wikilink2" title="pt:rgb" rel="nofollow">Rgb</a>, <a href="./pt_getcolor.html" class="wikilink2" title="pt:getcolor" rel="nofollow">GetColor</a>
+</p>
+
+</div>
+
+<h3 class="sectionedit6" id="exemplo">Exemplo</h3>
+<div class="level3">
+<pre class="code">clg
+color rgb(128,128,128)
+rect 0,0,graphwidth, graphheight
+color red
+circle 100,100,50
+color 255,160,160
+circle 100,100,25</pre>
+
+<p>
+Will draw a grey rectangle with a red circle with a pink middle.<br/>
+
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=pt_color&amp;media=en:color.png" class="media" title="en:color.png"><img src="lib/exe/en_color.png" class="media" title="Color" alt="Color" /></a>
+</p>
+
+</div>
+
+<h3 class="sectionedit7" id="introduzido_na_versao">Introduzido na versão</h3>
+<div class="level3">
+
+<p>
+0.9.5m
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">pt/color.txt · Last modified: 2012/11/29 11:51 by m_santos</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="pt_color.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>
