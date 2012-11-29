@@ -69,12 +69,12 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	this->show();
 
 	docs->setSearchPaths(QStringList()
-		<< windowsPath+localecode.left(2)
-		<< linuxPath+localecode.left(2)
-		<< currentPath+localecode.left(2)
-		<< windowsPath+"en"
-		<< linuxPath+"en"
-		<< currentPath+"en");
+		<< windowsPath
+		<< linuxPath
+		<< currentPath);
+
+	//localecode.left(2)
+
 	docs->setSource(QUrl(indexfile));
 }
 

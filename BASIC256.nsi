@@ -124,50 +124,44 @@ SectionGroup "Off-line Help and Documentation"
   Section "Dutch (nl)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\nl*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\nl*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd
   Section "English (en)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\en*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\en*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd 
   Section "French (fr)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\fr*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\fr*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd
   Section "German (de)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\de*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\de*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd
   Section "Russian (ru)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\ru*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\ru*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd
   Section "Spanish (es)"
     SectionIn 1
     SetOutPath $INSTDIR\help
-    File /x ".svn" .\wikihelp\doc\start.html
-    File /x ".svn" .\wikihelp\doc\es*.*
-    SetOutPath $INSTDIR\help\lib
-    File /x ".svn" /r .\wikihelp\doc\lib
+    File /x ".svn" .\wikihelp\help\start.html
+    File /x ".svn" .\wikihelp\help\es*.*
+    File /r /x ".svn" .\wikihelp\help\lib
   SectionEnd
 SectionGroupEnd
 
