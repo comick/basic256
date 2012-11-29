@@ -30,7 +30,7 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	QString windowsPath = QApplication::applicationDirPath() + "/help/";
 	QString linuxPath = "/usr/share/basic256/help/";
 	QString currentPath = "./";
-	QString indexfile = "index.html";
+	QString indexfile = "start.html";
 
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);

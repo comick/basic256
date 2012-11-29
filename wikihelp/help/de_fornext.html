@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>de:fornext [BASIC 256 - Language Documentation]</title>
+    <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2011-03-29T11:56:09-0700"/>
+<meta name="keywords" content="de,fornext"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/de:fornext&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=de"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=de:fornext"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=de:fornext"/>
+<link rel="canonical" href="./de_fornext.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='de';var JSINFO = {"id":"de:fornext","namespace":"de"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="lib/exe/js1353871590"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+        <ul class="a11y skip">
+            <li><a href="./de_fornext.html#dokuwiki__content">skip to content</a></li>
+        </ul>
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+
+
+
+
+        
+        <!-- SITE TOOLS -->
+
+
+
+
+
+
+
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./de_start.html" class="wikilink1" title="de:start">de</a> » <span class="curid"><a href="./de_fornext.html" class="wikilink1" title="de:fornext">fornext</a></span></div>
+
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>de:fornext</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+                    <!-- TOC START -->
+<div id="dw__toc">
+<h3 class="toggle">Table of Contents</h3>
+<div>
+
+<ul class="toc">
+<li class="level2"><div class="li"><a href="./de_fornext.html#for_next">For/Next</a></div>
+<ul class="toc">
+<li class="level3"><div class="li"><a href="./de_fornext.html#format">Format</a></div></li>
+<li class="level3"><div class="li"><a href="./de_fornext.html#beschreibung">Beschreibung</a></div></li>
+<li class="level3"><div class="li"><a href="./de_fornext.html#beispiel">Beispiel</a></div></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<!-- TOC END -->
+
+<h2 class="sectionedit1" id="for_next">For/Next</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+for <em>Variable</em> = <em>Ausdruck1</em> to <em>Ausdruck2</em> [ step <em>Ausdruck3</em> ] &lt;br&gt;…&lt;br&gt; next <em>Variable</em>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="beschreibung">Beschreibung</h3>
+<div class="level3">
+
+<p>
+ Die Befehle FOR und NEXT werden zusammen benutzt, um einen Befehl oder eine Gruppe von Befehlen eine bestimmte Anzahl mal hintereinander auszuf&amp;uuml;hren. Beim Betreten der FOR-Schleife wird <em>Variable</em> auf das Ergebnis von <em>Ausdruck1</em> gesetzt. <br/>
+Nach jedem NEXT Kommando wird <em>Variable</em> entweder um 1 erh&amp;ouml;ht (Standard), oder, bei Benutzung des optionalen STEP Befehls, um den Wert von <em>Ausdruck3</em> erh&amp;ouml;ht. F&amp;uuml;r Werte von STEP gr&amp;ouml;&amp;szlig;er null wird die Schleife so oft durchlaufen, bis <em>Variable</em> gr&amp;ouml;&amp;szlig;er oder gleich <em>Ausdruck2</em> ist. Bei negativen STEP-Werten ist die Abbruchbedingung erreicht, wenn <em>Variable</em> kleiner oder gleich <em>Ausdruck2</em> ist
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="beispiel">Beispiel</h3>
+<div class="level3">
+
+<p>
+&#039; &#039; for i = 1 to 10&lt;br&gt;  print i&lt;br&gt;next i&#039; &#039;
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">de/fornext.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+
+
+
+
+
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="de_fornext.html">
+
+
+
+
+
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+
+
+</body>
+</html>
