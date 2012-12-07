@@ -1,7 +1,0 @@
-===== Anonymous Arrays =====
-An anonymous array is a set of numeric values or a set of string values, separated by commas, and enclosed in braces {}.  An anonymous array can be used in place of an array variable, or it can be used to assign to an array variable.
-==== Example ====
-<code>
-dim myarray(4)
-myarray = {1, 2, 3, 4}
-</code>

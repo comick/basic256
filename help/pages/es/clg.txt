@@ -1,5 +1,0 @@
-===== Clg =====
-==== Formato ====
-clg
-==== Descripción ====
-Borra el contenido de la ventana de gráficos.

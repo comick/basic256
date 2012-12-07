@@ -1,8 +1,0 @@
-===== Key =====
-==== Format ====
-key
-==== Beschreibung ====
-Liefert sofort den zur gerade gedr&uuml;ckten Taste geh&ouml;renden ganzzahligen Wert zur&uuml;ck. Wenn keine Taste gedr&uuml;ckt ist, wird der Wert 0 zur&uuml;ckgeliefert
-==== Note ====
-Dieses Programmst&uuml;ck \\<code>if key = 47 then print key</code> tut nicht das gew&uuml;nschte, denn der KEY-Befehl wird 2 Mal hintereinander aufgerufen, liefert im allgemeinen also 2 verschiedene Werte zur&uuml;ck. Richtig m&uuml;&szlig;te der Quelltext so aussehen: \\<code>a = key
-if a = 47 then print a</code>

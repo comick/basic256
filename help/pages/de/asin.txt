@@ -1,7 +1,0 @@
-===== Asin =====
-==== Format ====
-**asin** ( //expression// )
-==== Description ====
-Computes the arc-sine of //expression//.  Angles are expressed in radians (0 to 2pi).
-==== See Also ====
-[[acos|Acos]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]

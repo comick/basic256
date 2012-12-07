@@ -1,7 +1,0 @@
-===== Refresh =====
-==== Format ====
-**refresh**
-==== Description ====
-Updates the graphics output window to show all drawing since the previous refresh command.  Refresh only works in [[fastgraphics|Fastgraphics]] mode
-==== See Also ====
-[[fastgraphics|Fastgraphics]]

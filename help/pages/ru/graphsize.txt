@@ -1,9 +1,0 @@
-==== Graphsize ====
-=== Формат: ===
-**graphsize** x_expression, y_expression
-=== Описание: ===
-Изменяет размер окна для вывода графики и перерисовывает графический вывод приложения BASIC-256.
-=== Смотри также: ===
-[[graphheight|Graphheight]], [[graphwidth|Graphwidth]]
-=== Впервые в версии: ===
-0.9.3

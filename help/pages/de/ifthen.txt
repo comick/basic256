@@ -1,9 +1,0 @@
-===== If / Then =====
-==== Format ====
-if //LogischerAusdruck// then //Befehl//
-==== Beschreibung ====
-Wertet //Log. Ausdruck// aus. Wenn der Ausdruck **wahr** ist (true), dann wird //Befehl// ausgef&uuml;hrt. Wenn er **falsch** (false) ist, wird //Befehl// ignoriert und die Programmauf&uuml;hrung bei der n&auml;chsten Zeile fortgesetzt.
-==== Note ====
-Vergleichsoperatoren sind =,<>,<,>,<=,>=. Logische Verkn&uuml;pfungen sind mittels AND und OR m&ouml;glich.
-==== Beispiel ====
-' ' if a <> b then goto ende' '

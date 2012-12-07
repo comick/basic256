@@ -1,9 +1,0 @@
-===== Spritev =====
-==== Format ====
-**spritev** ( //spritenumber// )
-==== Description ====
-Returns true if the sprite is visible.
-==== See Also ====
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritex|Spritex]], [[spritey|Spritey]]
-==== New To Version ==== 
-0.9.6o

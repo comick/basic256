@@ -1,3 +1,0 @@
-===== String Constants =====
-
-String constants are zero or more characters enclosed by double quotation marks(").

@@ -1,8 +1,0 @@
-===== Arrays anónimos =====
-Un array anónimo es un conjunto de valores numéricos o de valores de cadena, separados por comas, y encerrados entre llaves {}. Un array anónimo puede usarse bien en lugar de una variable de array, o bien para asignar valores a una variable de array.
-
-==== Ejemplo ====
-<code>
-dim myarray(4)
-myarray = {1, 2, 3, 4}
-</code>

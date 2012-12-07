@@ -1,9 +1,0 @@
-==== Spriteshow ====
-=== Формат: ===
-**spriteshow** номер_спрайта
-=== Описание: ===
-Показывает скрытый (функцией [[spritehide|Spritehide]]) спрайт.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6n

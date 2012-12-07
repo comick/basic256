@@ -1,9 +1,0 @@
-==== Spritex ====
-=== Формат: ===
-**spritex**( номер_спрайта )
-=== Описание: ===
-Возвращает координату x центра загруженного спрайта.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6n

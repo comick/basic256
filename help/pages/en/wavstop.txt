@@ -1,9 +1,0 @@
-===== WAVstop =====
-==== Format ====
-**wavstop**
-==== Description ====
-Stop playing the current asynchronous (background) WAV audio file.
-==== See Also ====
-[[wavplay|WAVplay]] [[wavwait|WAVwait]]
-==== New To Version ==== 
-0.9.4

@@ -1,9 +1,0 @@
-==== Spriteplace ====
-=== Формат: ===
-**spriteplace** номер_спрайта, x, y
-=== Описание: ===
-Помещает центр спрайта в указанную позицию экрана. Также, как и в функции [[imgload|Imgload]] положение спрайта отсчитывается от его центра, а не от верхнего левого угла, как в большинстве графических функций.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6n

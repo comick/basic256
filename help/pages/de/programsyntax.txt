@@ -1,3 +1,0 @@
-===== Program Syntax =====
-
-BASIC-256 programs consist of a series of statements separated by newlines, which are executed in order.

@@ -1,9 +1,0 @@
-===== Exists =====
-==== Formato ====
-exists ( //expresión// )
-==== Descripción ====
-Devuelve un indicador binario (verdadero/falso) que señala si existe o no la ruta de archivo especificada en expresión. 
-==== Ver también ====
-[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
-==== Disponible desde la versión ==== 
-0.9.4

@@ -1,9 +1,0 @@
-==== Exists ====
-=== Формат: ===
-**exists**( выражение )
-=== Описание: ===
-Возвращает двоичный флаг (истина/ложь) в качестве признака существования файла, путь к которому определяет //выражение//.
-=== Смотри также: ===
-[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[kill|Kill]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]
-=== Впервые в версии: ===
-0.9.4

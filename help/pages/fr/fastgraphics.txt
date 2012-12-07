@@ -1,9 +1,0 @@
-===== FastGraphics =====
-==== Format ====
-fastgraphics
-==== Description ====
-Turns fastgraphics mode on, until the program is halted. Fastgraphics mode means that the graphics display is not updated until a REFRESH command is issued. It can be used to significantly speed up complex animations and eliminate flicker.
-==== Note ====
-When doing animation, it's recommended to do all of your drawing commands in subroutines and use a single REFRESH command after all drawing has been done for that frame.
-==== See Also ====
-[[refresh|Refresh]]

@@ -1,9 +1,0 @@
-===== Log =====
-==== Format ====
-log ( //expression// )
-==== Description ====
-Return the base //e// lograthim of //expression//.
-==== See Also ====
-[[log10|Log10]]
-==== New To Version ==== 
-0.9.5w

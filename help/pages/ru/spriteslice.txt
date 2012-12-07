@@ -1,9 +1,0 @@
-==== Spriteslice ====
-=== Формат: ===
-**spriteslice** номер_спрайта, x, y, ширина, высота
-=== Описание: ===
-Копирует прямоугольную область с левым верхним углом в точке x, y и заданными шириной и высотой и создает спрайт. Этот спрайт будет активным и перемещаемым, но не будет видимым, пока не будет выполнена команда [[spriteshow|Spriteshow]]. Рекомендуется выполнить команду [[clg|Clg]] перед рисованием и разрезанием спрайта. Все не закрашенные точки будут прозрачными при отображении спрайта на экране. Прозрачные точки можно также задать с помощью указания цвета CLEAR для рисования.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6o

@@ -1,7 +1,0 @@
-===== String =====
-==== Format ====
-string ( //Ausdruck// )
-==== Beschreibung ====
-Liefert die Zahl //Ausdruck// als Zeichenkette zur&uuml;ck.
-==== Beispiel ====
-' ' s$ = string(12*13)  rem s$ ist "156"' '

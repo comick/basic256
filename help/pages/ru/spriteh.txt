@@ -1,9 +1,0 @@
-==== Spriteh ====
-=== Формат: ===
-**spriteh**( номер_спрайта )
-=== Описание: ===
-Возвращает высоту загруженного спрайта в пикселях.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spritedim|Spritedim]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6n

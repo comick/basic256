@@ -1,7 +1,0 @@
-===== Pause =====
-==== Formato ====
-**pause** //segundos//\\
-**pause** (//segundos//)
-
-==== Descripción ====
-Detiene la ejecución durante el número de segundos especificado. El valor de //segundos// puede ser un valor decimal, por lo que es posible conseguir una precisión inferior al segundo. 

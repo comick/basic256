@@ -1,9 +1,0 @@
-===== Readline =====
-==== Format ====
-**readline**\\
-**readline**()\\
-**readline**(//filenumber//)
-==== Description ====
-Reads and returns an entire line from an open file.  If the file number is not specified file number zero (0) will be used.
-==== See Also ====
-[[close|Close]], [[eof|Eof]], [[open|Open]], [[read|Read]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

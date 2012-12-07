@@ -1,9 +1,0 @@
-===== Spritecollide =====
-==== Format ====
-**spritecollide** ( //sprite1//,  //sprite2//)
-==== Description ====
-Function returns true if the two sprites are colliding.  The Spritecollide function assumes that the sprites are bounded by a rectangle the size of the loaded image.  Collision is calculated by using these rectangles.  For round or oddly shaped sprites this function may over detect collision.
-==== See Also ====
-[[spritedim|Spritedim]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-==== New To Version ==== 
-0.9.6n

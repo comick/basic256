@@ -1,9 +1,0 @@
-===== Log10 =====
-==== Formato ====
-log10 ( //expresión// )
-==== Descripción ====
-Devuelve el logaritmo en base //10// de //expresión//.
-==== Ver también ====
-[[log|Log]]
-==== Disponible desde la versión ==== 
-0.9.5w

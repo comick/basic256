@@ -1,9 +1,0 @@
-===== Read =====
-==== Format ====
-**read**\\
-**read**()\\
-**read**(//filenumber//)
-==== Description ====
-Reads and returns a token from an open file.  A token is any string of characters that is separated by a space, tab, or newline character.  If the file number is not specified file number zero (0) will be used.
-==== See Also ====
-[[close|Close]], [[eof|Eof]], [[open|Open]], [[readline|Readline]], [[reset|Reset]], [[write|Write]], [[writeline|Writeline]], [[exists|Exists]], [[seek|Seek]], [[size|Size]]

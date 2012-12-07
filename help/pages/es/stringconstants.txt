@@ -1,3 +1,0 @@
-===== Constantes de cadena =====
-
-Las constantes de cadena consisten en cero o más caracteres encerrados entre comillas dobles (").

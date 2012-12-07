@@ -1,9 +1,0 @@
-==== Spritedim ====
-=== Формат: ===
-**spritedim** число_спрайтов
-=== Описание: ===
-Создает заготовку заданного числа спрайтов в памяти.Спрайты доступны из программы по номерам - от 0 до число_спрайтов-1.
-=== Смотри также: ===
-[[spritecollide|Spritecollide]], [[spriteh|Spriteh]], [[spritehide|Spritehide]], [[spriteload|Spriteload]], [[spritemove|Spritemove]], [[spriteplace|Spriteplace]], [[spriteshow|Spriteshow]], [[spriteslice|Spriteslice]], [[spritev|Spritev]], [[spritew|Spritew]], [[spritex|Spritex]], [[spritey|Spritey]]
-=== Впервые в версии: ===
-0.9.6n

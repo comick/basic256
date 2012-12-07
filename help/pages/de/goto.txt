@@ -1,9 +1,0 @@
-===== Goto =====
-==== Format ====
-goto //Sprungmarke//
-==== Beschreibung ====
-Springt zu //Sprungmarke//.
-==== Note ====
-Eine Sprungmarke wird mit //Bezeichner>:// erzeugt, z.B. **nochmal:**. Basic-Befehle sind als //Bezeichner// nicht zul&auml;ssig.
-==== Beispiel ====
-' ' goto nochmal' '

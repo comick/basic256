@@ -1,9 +1,0 @@
-===== Tableaux "anonymes" =====
-Un tableau anonyme est une série de valeurs numériques ou de chaînes de caractères, séparées par des virgules, et encadrées par des accolades {}. Un tableau anonyme peut ête utilisé à la place d'une variable d'un tableau ou pour assigner une variable d'un tableau.
-==== Exemple ====
-<code>
-dim myarray(4)
-myarray = {1, 2, 3, 4}
-</code>
-
-**PS : je ne suis pas sûr de la traduction de cette page. C'est ainsi que je l'ai compris, mais sans certitude.** 

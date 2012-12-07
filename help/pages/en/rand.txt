@@ -1,9 +1,0 @@
-===== Rand =====
-==== Format ====
-**rand**\\
-**rand**()
-
-==== Description ====
-Returns a random number between 0 and 1.  The distribution of the values is uniform.
-==== Note ====
-To produce random numbers between other values, simple multiply or add the appropriate numbers.  For example, to generate an integer between 0 and 10, use int(rand * 10).

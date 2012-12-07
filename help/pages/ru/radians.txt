@@ -1,8 +1,0 @@
-==== Radians ====
-=== Формат: ===
-**radians**( выражение )
-=== Описание: ===
-Преобразует угол из градусов в радианы.\\
-{{radians.png|Radians}}
-=== Смотри также: ===
-[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[sin|Sin]], [[tan|Tan]]

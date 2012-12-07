@@ -1,7 +1,0 @@
-===== Int =====
-==== Format ====
-int ( //Ausdruck// ) <br>int ( //Zeichenkettenausdruck// )
-==== Beschreibung ====
-Umwandlung in eine ganze Zahl (Integer). Int() schneidet die Dezimalstellen einer Flie&szlig;kommazahl ab oder wandelt eine Zeichenkette (String) in eine ganze Zahl um.
-==== Beispiel ====
-' ' c$ = "12" : i = int( c )' '

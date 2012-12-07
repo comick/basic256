@@ -1,9 +1,0 @@
-==== Readline ====
-=== Формат: ===
-**read****line**\\
-**read****line**()\\
-**read****line**( номер_файла )
-=== Описание: ===
-Читает и возвращает строку из открытого файла. Если //номер_файла// не указан, используется номер нуль (0).
-=== Смотри также: ===
-[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[exists|Exists]], [[kill|Kill]], [[open|Open]], [[read|Read]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]

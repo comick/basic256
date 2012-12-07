@@ -1,7 +1,0 @@
-===== Rand =====
-==== Format ====
-rand
-==== Beschreibung ====
-Liefert eine Zufallszahl zwischen 0 und 1 zur&uuml;ck. Die Werteverteilung ist gleichf&ouml;rmig.
-==== Note ====
-Um Zufallszahlem mit einem anderen Wertebereich zu erzeugen, k&ouml;nnen die notwendigen Zahlen zum RAND-Ergebnis addiert oder damit multipliziert werden. Um zum Beispiel eine ganzahlige Zufallszahl zwischen 0 und 10 (einschlie&szlig;lich) zu erzeugen, kann int(rand * 10) benutzt werden.

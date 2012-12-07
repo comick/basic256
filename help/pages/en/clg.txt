@@ -1,5 +1,0 @@
-===== Clg =====
-==== Format ====
-clg
-==== Description ====
-Clears the graphics output window.

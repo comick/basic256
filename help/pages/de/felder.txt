@@ -1,3 +1,0 @@
-====Felder====
-Felder werden mit dem DIM-Befehl definiert. Sie können numerische Daten oder Zeichenketten enthalten. Die einzelnen Elemente können Mittels des Indexes, der in eckige Klammern eingeschlossen ist, zugegriffen werden. Der Index des ersten Elementes hat die Nummer 0. Beispiel:
-<code>meinFeld[4]</code> greift auf das 5. Element von 'meinFeld' zu.

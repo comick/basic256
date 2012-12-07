@@ -1,5 +1,0 @@
-===== Gosub / Return =====
-==== Format ====
-gosub //Spungmarke// <br>...<br>return
-==== Beschreibung ====
-Springt zu Sprungmarke //Marke//. Beim n&auml;chsten auf //Marke// folgenden RETURN-Befehl wird die Programmausf&uuml;hrung in der unmittelbar auf das GOSUB folgenden Zeile fortgesetzt. GOSUB-Befehle k&ouml;nnen geschachtelt werden.

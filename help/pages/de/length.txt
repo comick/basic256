@@ -1,7 +1,0 @@
-===== Length =====
-==== Format ====
-length ( //Zeichenkette// )
-==== Beschreibung ====
-Liefert die Anzahl von Zeichen in //Zeichenkette// zur&uuml;ck.
-==== Beispiel ====
-' ' i = length( "Hallo" )  rem i ist 5' '

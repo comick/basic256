@@ -1,9 +1,0 @@
-==== Read ====
-=== Формат: ===
-**read**\\
-**read**()\\
-**read**( номер_файла )
-=== Описание: ===
-Читает и возвращает "токен" из открытого файла. Токен - это cтрока символов, разделенная пробелами или табуляцией или символом новая строка. Если //номер_файла// не указан, используется номер нуль (0).
-=== Смотри также: ===
-[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[exists|Exists]], [[kill|Kill]], [[open|Open]], [[readline|Readline]], [[reset|Reset]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]

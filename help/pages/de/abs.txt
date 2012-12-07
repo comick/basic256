@@ -1,9 +1,0 @@
-===== Abs =====
-==== Format ====
-**abs** ( //Ausdruck// )
-==== Beschreibung ====
-Gibt den absoluten Wert von //Ausdruck// zur&uuml;ck.
-==== Beispiel ====
-<code>
-c = abs(a-b)
-</code>

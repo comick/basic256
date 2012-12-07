@@ -1,9 +1,0 @@
-===== Print =====
-==== Formato ====
-**print** //expresión// [ ; ]
-
-==== Descripción ====
-Escribe un texto en el area de texto, añadiendo un salto de linea. Si se incluye el punto y coma opcional, no se incluye el salto de linea.
-
-==== Ver también ====
-[[decimal|Decimal]]

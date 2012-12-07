@@ -1,4 +1,0 @@
-===== Variables =====
-Variables that hold numeric values must begin with a letter, and may consist of any number of alpha-numeric characters.  They are case sensitive.  They may be used interchangeably with numeric constants.\\
-\\
-Variables that hold string values follow the same rules as numeric variables, but must end with a dollar sign ($).  They may be used interchangeably with string constants.

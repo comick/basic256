@@ -1,9 +1,0 @@
-===== WAVwait =====
-==== Format ====
-**wavplay**
-==== Description ====
-Wait for the currently playing WAV file to complete.
-==== See Also ====
-[[wavplay|WAVplay]] [[wavstop|WAVstop]]
-==== New To Version ==== 
-0.9.6t

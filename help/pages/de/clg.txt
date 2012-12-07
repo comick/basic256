@@ -1,5 +1,0 @@
-===== Clg =====
-==== Format ====
-clg
-==== Beschreibung ====
-L&ouml;scht den Inhalt des Grafikfensters.

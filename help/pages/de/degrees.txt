@@ -1,9 +1,0 @@
-===== Degrees =====
-==== Format ====
-**degrees** ( //expression// )
-==== Description ====
-{{ :en:radians.png|}}
-Converts an angle in radians to degrees.\\
-
-==== See Also ====
-[[acos|Acos]], [[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]

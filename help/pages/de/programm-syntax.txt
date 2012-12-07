@@ -1,2 +1,0 @@
-====Programm-Syntax====
-Ein Basic256-Programm besteht aus einer Folge von Anweisungen, die durch Zeilenumbrüche getrennt sind und die der Reihe nach ausgeführt werden.

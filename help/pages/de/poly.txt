@@ -1,7 +1,0 @@
-===== Poly =====
-==== Format ====
-poly //Feld//
-==== Beschreibung ====
-Zeichnet ein Polygon. Die Seiten des Polygons werden durch die Werte im Feld bestimmt, welche immer abwechselnd x-Werte und y-Werte sein sollten.
-==== Beispiel ====
-' ' dim a(6)<br> ...<br>poly a' '

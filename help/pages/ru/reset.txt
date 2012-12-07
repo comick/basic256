@@ -1,9 +1,0 @@
-==== Reset ====
-=== Формат: ===
-**reset**\\
-**reset**()\\
-**reset**( номер_файла )
-=== Описание: ===
-Очищает открытый файл. Все данные файла теряются. Если //номер_файла// не указан, используется номер нуль (0).
-=== Смотри также: ===
-[[changedir|Changedir]], [[close|Close]], [[currentdir|Currentdir]], [[eof|Eof]], [[exists|Exists]], [[kill|Kill]], [[open|Open]], [[read|Read]], [[readline|Readline]], [[seek|Seek]], [[size|Size]], [[write|Write]], [[writeline|Writeline]]

@@ -1,3 +1,0 @@
-====Variablen====
-Die Namen von Variablen, die numerische Werte speichern (numerische Variablen), müssen mit einem Buchstaben beginnen; danach können beliebig vielen alphanumerischen Zeichen folgen. Umlaute sind nicht erlaubt.
-Variablennamen für Zeichenketenvariablen folgen den gleichen Regeln wie numerische Variablen, sie müssen jedoch mit einem Dollar-Zeichen ($) enden.

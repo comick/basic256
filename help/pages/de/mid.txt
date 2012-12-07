@@ -1,7 +1,0 @@
-===== Mid =====
-==== Format ====
-mid ( //Zeichenkette//, //Startindex//, //L&auml;nge// )
-==== Beschreibung ====
-Gibt ein //L&auml;nge// Zeichen langes Teilst&uuml;ck der //Zeichenkette// zur&uuml;ck, startend bei//Startindex//.
-==== Beispiel ====
-' ' Die Zeile <code>print mid("Hello", 2, 3)</code> gibt im Textfenster <code>ell</code> aus.' '

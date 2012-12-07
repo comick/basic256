@@ -1,4 +1,0 @@
-====Numerische Konstanten====
-Numerische Konstanten sind natürliche Zahlenzeichen. 
-Ein optionales Minus-Zeichen kann vorangestellt werden, um negative Zahlen darzustellen. 
-Ein optionaler Dezimalpunkt, gefolgt von mehr Zahlen, kann folgen, um Fliesskommazahlen zu erhalten.

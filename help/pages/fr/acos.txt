@@ -1,7 +1,0 @@
-===== Acos =====
-==== Format ====
-**acos** ( //expression// )
-==== Description ====
-Calcule l'arc-cosinus d'expression. Les angles sont exprimés en radians (0 à 2 pi).
-==== Voir Aussi ====
-[[asin|Asin]], [[atan|Atan]], [[cos|Cos]], [[degrees|Degrees]], [[radians|Radians]], [[sin|Sin]], [[tan|Tan]]
