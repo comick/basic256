@@ -6,8 +6,8 @@
     <title>pt:function [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,follow"/>
-<meta name="date" content="1969-12-31T17:00:00-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-12-15T03:46:26-0700"/>
 <meta name="keywords" content="pt,function"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -16,6 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:function"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:function"/>
+<link rel="canonical" href="./pt_function.html"/>
 <link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -48,7 +49,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_function.html" class="wikilink2" title="pt:function" rel="nofollow">function</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_function.html" class="wikilink1" title="pt:function">function</a></span></div>
 
     
     
@@ -65,12 +66,93 @@
 
                 <div class="page group">
                                                             <!-- wikipage start -->
-                    
-<h1 class="sectionedit1" id="this_topic_does_not_exist_yet">This topic does not exist yet</h1>
-<div class="level1">
+
+<h2 class="sectionedit1" id="function">Function</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formato">Formato</h3>
+<div class="level3">
 
 <p>
-You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissions allow, you may create it by clicking on “Create this page”.
+<strong>function</strong> functionname ( <em>lista de variáveis</em> )<br/>
+
+<em>código</em><br/>
+
+<strong>end function</strong>
+</p>
+
+<p>
+<strong>function</strong> functionname$ ( <em>lista de variáveis</em> )<br/>
+
+<em>código</em><br/>
+
+<strong>end function</strong>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="descricao">Descrição</h3>
+<div class="level3">
+
+<p>
+Cria uma função que irá receber valores de entrada, processa-los e devolver um valor numérico ou alfanumérico de saída. Todas as variáveis​utilizadas para processamento na função serão locais para a função, isto é não efectam variveis com o mesmo nome fora da função.
+</p>
+
+<p>
+Em BASIC-256 a função devolve o valor de saída após a instrução RETURN ou após por chegar ao fim da função. Se não houver código na função esta devolve zero (0) no caso das variaveis numéricas ou (””) no caso das variaveis alfanuméricas.
+</p>
+
+<p>
+Variáveis de entrada (numéricas ou alfanuméricas) são, separadas por vírgula. Arrays e variáveis podem ser passados por referência usando <a href="./pt_ref.html" class="wikilink1" title="pt:ref">Ref</a>.
+</p>
+
+<p>
+Funções devem ser definidas na parte inferior do seu programa, e não pode ser definido dentro de outro bloco subrotina, ou estrutura de controle (<a href="./pt_ifthen.html" class="wikilink1" title="pt:ifthen">If/Then</a>, <a href="./pt_dountil.html" class="wikilink1" title="pt:dountil">Do/Until</a>).
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="exemplo">Exemplo</h3>
+<div class="level3">
+<pre class="code">print double$(&quot;Olá&quot;)
+print triple(3)
+end
+
+function double$(a$)
+   double$ = a$ + a$
+end function
+
+function triple(b)
+   triple = b * 3
+   return
+   triple = 9999	# este código não é executado pois existe um RETURN antes
+end function</pre>
+
+<p>
+Mostrará<br/>
+
+</p>
+<pre class="code">OláOlá
+9</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="ver_tambem">Ver também</h3>
+<div class="level3">
+
+<p>
+<a href="./pt_global.html" class="wikilink1" title="pt:global">Global</a>, <a href="./pt_ref.html" class="wikilink1" title="pt:ref">Ref</a>, <a href="./pt_return.html" class="wikilink1" title="pt:return">Return</a>, <a href="./pt_subroutine.html" class="wikilink1" title="pt:subroutine">Subroutine</a>
+</p>
+
+</div>
+
+<h3 class="sectionedit6" id="introduzido">Introduzido</h3>
+<div class="level3">
+
+<p>
+0.9.9.1
 </p>
 
 </div>
@@ -78,7 +160,7 @@ You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissio
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"></div>
+                <div class="docInfo">pt/function.txt · Last modified: 2012/12/15 03:46 by m_santos</div>
 
                             </div></div><!-- /content -->
 

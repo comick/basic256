@@ -6,8 +6,8 @@
     <title>pt:implode [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,follow"/>
-<meta name="date" content="1969-12-31T17:00:00-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-12-15T05:13:54-0700"/>
 <meta name="keywords" content="pt,implode"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -16,6 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:implode"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:implode"/>
+<link rel="canonical" href="./pt_implode.html"/>
 <link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -48,7 +49,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_implode.html" class="wikilink2" title="pt:implode" rel="nofollow">implode</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_implode.html" class="wikilink1" title="pt:implode">implode</a></span></div>
 
     
     
@@ -65,12 +66,58 @@
 
                 <div class="page group">
                                                             <!-- wikipage start -->
-                    
-<h1 class="sectionedit1" id="this_topic_does_not_exist_yet">This topic does not exist yet</h1>
-<div class="level1">
+
+<h2 class="sectionedit1" id="implode">Implode</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formato">Formato</h3>
+<div class="level3">
 
 <p>
-You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissions allow, you may create it by clicking on “Create this page”.
+<strong>implode</strong> ( <em>arrayvariable</em> )<br/>
+
+<strong>implode</strong> ( <em>arrayvariable</em> , <em>delimitador</em> )
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="descricao">Descrição</h3>
+<div class="level3">
+
+<p>
+Concatena os elementos de um array numa única cadeia alfanumérica.  Como opção pode-se colocar um <em>delimitadior</em> entre os elementos. Esta função faz o posto de <a href="./pt_explode.html" class="wikilink1" title="pt:explode">Explode</a> .
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="exemplo">Exemplo</h3>
+<div class="level3">
+<pre class="code">dim a$(1)
+dim b(1)
+a$ = Explode(&quot;How now brown cow&quot;,&quot; &quot;)
+print implode(a$,&quot;-&quot;)
+print implode(a$)
+b = Explode(&quot;1,2,3.33,4.44,5.55&quot;,&quot;,&quot;)
+print implode(b,&quot;, &quot;)
+print implode(b)</pre>
+
+<p>
+mostra
+</p>
+<pre class="code">How-now-brown-cow
+Hownowbrowncow
+1, 2, 3.33, 4.44, 5.55
+123.334.445.55</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="introduzido">Introduzido</h3>
+<div class="level3">
+
+<p>
+0.9.6.57
 </p>
 
 </div>
@@ -78,7 +125,7 @@ You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissio
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"></div>
+                <div class="docInfo">pt/implode.txt · Last modified: 2012/12/15 05:13 by m_santos</div>
 
                             </div></div><!-- /content -->
 

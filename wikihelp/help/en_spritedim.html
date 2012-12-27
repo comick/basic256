@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:12-0700"/>
+<meta name="date" content="2012-12-20T09:24:27-0700"/>
 <meta name="keywords" content="en,spritedim"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -92,7 +92,27 @@ Create <em>n</em> sprite placeholders in memory.  Sprites are accessed in your p
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code"># creates a sprite with number 0
+clg
+fastgraphics
+spritedim 1
+a$=&quot;Basic 256&quot;
+Text 0,0,a$
+spriteslice 0,0,0,textwidth (a$),20
+spriteshow 0
+
+# rotates and enlarges sprite
+for n=0 to 2*pi step .002
+clg
+spriteplace 0,150,150,n,n
+refresh
+next n</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="see_also">See Also</h3>
 <div class="level3">
 
 <p>
@@ -101,7 +121,7 @@ Create <em>n</em> sprite placeholders in memory.  Sprites are accessed in your p
 
 </div>
 
-<h3 class="sectionedit5" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
 <div class="level3">
 
 <p>
@@ -113,7 +133,7 @@ Create <em>n</em> sprite placeholders in memory.  Sprites are accessed in your p
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/spritedim.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">en/spritedim.txt · Last modified: 2012/12/20 09:24 by m_santos</div>
 
                             </div></div><!-- /content -->
 

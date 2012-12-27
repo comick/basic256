@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:11-0700"/>
+<meta name="date" content="2012-12-17T11:18:21-0700"/>
 <meta name="keywords" content="en,getslice"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -85,12 +85,31 @@ getslice(<em>x</em>, <em>y</em>, <em>width</em>, <em>height</em>)
 <div class="level3">
 
 <p>
-Return a string that contains a Hexadecimal representation of the rectangle defined by the parameters.  String is formatted as first 4 bytes - width, next 4 bytes - height, 6 bytes for each pixel (width * height).
+Return a string that contains a Hexadecimal (base 16) representation of the rectangle defined by the parameters.  String is formatted as first 4 bytes - width, next 4 bytes - height, 6 bytes for each pixel (width * height).
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code">color 16-1
+plot 1,1
+color 16^2-1
+plot 1,2
+color 16^3-1
+plot 2,1
+color 16^4-1
+plot 2,2
+print getslice(1, 1, 2, 2)</pre>
+
+<p>
+displays
+</p>
+<pre class="code">0002000200000f000fff0000ff00ffff</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="see_also">See Also</h3>
 <div class="level3">
 
 <p>
@@ -99,7 +118,7 @@ Return a string that contains a Hexadecimal representation of the rectangle defi
 
 </div>
 
-<h3 class="sectionedit5" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
 <div class="level3">
 
 <p>
@@ -111,7 +130,7 @@ Return a string that contains a Hexadecimal representation of the rectangle defi
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/getslice.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">en/getslice.txt · Last modified: 2012/12/17 11:18 by m_santos</div>
 
                             </div></div><!-- /content -->
 

@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-11-10T09:19:09-0700"/>
+<meta name="date" content="2012-12-20T01:32:25-0700"/>
 <meta name="keywords" content="en,ref"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,15 +76,15 @@
 <div class="level3">
 
 <p>
-subroutine subroutinename ( <em>variable, <strong>ref(</strong>variable<strong>)</strong></em> )<br/>
+subroutine subroutinename ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>
 
-call subroutinename ( <em>variable, ref(variable)</em> )<br/>
+call subroutinename ( <em> ref(variable),variable</em> )<br/>
 
 <br/>
 
-function functionname ( <em>variable, <strong>ref(</strong>variable<strong>)</strong></em> )<br/>
+function functionname ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>
 
-functionname ( <em>variable, ref(variable)</em> )<br/>
+functionname ( <em>ref(variable),variable</em> )<br/>
 
 </p>
 
@@ -105,13 +105,14 @@ The <strong>ref()</strong> declaration allows you to pass a reference to a varia
 <div class="level3">
 <pre class="code">dim a(10)
 call assignarray(ref(a),10)
-print totalarray(ref(a),10)
+print &quot;total=&quot;+totalarray(ref(a),10)
 end
 
 subroutine assignarray(ref(array), arraylen)
    # set array elements
    for t = 0 to arraylen-1
-      array[t] = t*t
+      array[t]= t*t
+    print array[t]
    next t
 end subroutine
 
@@ -126,7 +127,17 @@ end function</pre>
 displays<br/>
 
 </p>
-<pre class="code">285</pre>
+<pre class="code">0
+1
+4
+9
+16
+25
+36
+49
+64
+81
+total=285</pre>
 
 </div>
 
@@ -151,7 +162,7 @@ displays<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/ref.txt · Last modified: 2012/11/10 09:19 by admin</div>
+                <div class="docInfo">en/ref.txt · Last modified: 2012/12/20 01:32 by m_santos</div>
 
                             </div></div><!-- /content -->
 

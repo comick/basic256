@@ -6,8 +6,8 @@
     <title>pt:variables [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,follow"/>
-<meta name="date" content="1969-12-31T17:00:00-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-12-21T01:52:26-0700"/>
 <meta name="keywords" content="pt,variables"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -16,6 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:variables"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:variables"/>
+<link rel="canonical" href="./pt_variables.html"/>
 <link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -48,7 +49,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_variables.html" class="wikilink2" title="pt:variables" rel="nofollow">variables</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_variables.html" class="wikilink1" title="pt:variables">variables</a></span></div>
 
     
     
@@ -66,11 +67,54 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
                     
-<h1 class="sectionedit1" id="this_topic_does_not_exist_yet">This topic does not exist yet</h1>
-<div class="level1">
+<h2 class="sectionedit1" id="variaveis">Variáveis</h2>
+<div class="level2">
 
 <p>
-You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissions allow, you may create it by clicking on “Create this page”.
+Variáveis de valores numéricos devem começar com uma letra e podem consistir em qualquer número de caracteres alfa-numéricos (Exemplo x1,x2,x3,total,velocidade) .  <br/>
+Variáveis de cadeia de alfanumérica seguem as mesmas regras das variáveis numéricas, mas devem terminar com um sinal de cifrão (Exemplo nome1$, nome2$).  Pode ser usados permutavelmente com constantes alfanuméricas. <br/>
+Uma variável alfanumérica pode ser atribuída a um elemento de um array ou a uma variável numérica convertendo com as funções <a href="./pt_int.html" class="wikilink1" title="pt:int">Int</a> ou <a href="./pt_float.html" class="wikilink1" title="pt:float">float</a>.   <br/>
+
+</p>
+<div class="table sectionedit2"><table class="inline">
+	<tr class="row0">
+		<th class="col0" colspan="4">Atribuição de variaveis</th>
+	</tr>
+</table></div>
+<div class="table sectionedit3"><table class="inline">
+	<tr class="row0">
+		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">=</td><td class="col1">Atribuir um número a uma variavél numérica</td><td class="col2">a = 9</td><td class="col3"> </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">=</td><td class="col1">Atribuir uma cadeia alfanumérica a uma variavél alfanumérica</td><td class="col2">z$ = “Hola.”</td><td class="col3"> </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">=</td><td class="col1">Atribuir um número a uma variavél alfanumérica</td><td class="col2">q$ = 9.9</td><td class="col3"> </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">+=</td><td class="col1">Addicionar a uma variavél numérica</td><td class="col2">a += 7</td><td class="col3">Mesmo que a = a + 7 <sup>1</sup></td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">+=</td><td class="col1">Concatenar uma variavél alfanumérica</td><td class="col2">f$ += ”.”</td><td class="col3">Mesmo que f$ = f$ + ”.”  <sup>1</sup></td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">-=</td><td class="col1">Subtrair de uma variavél numérica</td><td class="col2">a -= 9</td><td class="col3">Mesmo que = a - 9 <sup>1</sup></td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">*=</td><td class="col1">Multiplicar uma variavél numérica</td><td class="col2">a *= 2</td><td class="col3">Mesmo que a = a * 2 <sup>1</sup></td>
+	</tr>
+	<tr class="row8">
+		<td class="col0">/=</td><td class="col1">Dividir uma variavél numérica</td><td class="col2">a /= 8</td><td class="col3">Mesmo que a = a / 8 <sup>1</sup></td>
+	</tr>
+</table></div>
+
+<p>
+<br/>
+
+<sup>1</sup> introduzidos na versão 0.9.9.10
 </p>
 
 </div>
@@ -78,7 +122,7 @@ You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissio
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"></div>
+                <div class="docInfo">pt/variables.txt · Last modified: 2012/12/21 01:52 by m_santos</div>
 
                             </div></div><!-- /content -->
 

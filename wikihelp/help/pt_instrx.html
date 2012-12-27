@@ -6,8 +6,8 @@
     <title>pt:instrx [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,follow"/>
-<meta name="date" content="1969-12-31T17:00:00-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2012-12-15T07:07:36-0700"/>
 <meta name="keywords" content="pt,instrx"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -16,6 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:instrx"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:instrx"/>
+<link rel="canonical" href="./pt_instrx.html"/>
 <link rel="stylesheet" type="text/css" href="lib/exe/css1353871590.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -48,7 +49,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_instrx.html" class="wikilink2" title="pt:instrx" rel="nofollow">instrx</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_instrx.html" class="wikilink1" title="pt:instrx">instrx</a></span></div>
 
     
     
@@ -65,12 +66,62 @@
 
                 <div class="page group">
                                                             <!-- wikipage start -->
-                    
-<h1 class="sectionedit1" id="this_topic_does_not_exist_yet">This topic does not exist yet</h1>
-<div class="level1">
+
+<h2 class="sectionedit1" id="instrx">Instrx</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formato">Formato</h3>
+<div class="level3">
 
 <p>
-You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissions allow, you may create it by clicking on “Create this page”.
+<strong>instrx</strong> ( <em>palheiro</em> , <em>agulha</em> )<br/>
+
+<strong>instrx</strong> ( <em>palheiro</em> , <em>agulha</em> , <em>início</em> )<br/>
+
+<strong>instrx</strong> ( <em>palheiro</em> , <em>agulha</em> , <em>início</em> , <em>caseinsensitive</em>)<br/>
+
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="descricao">Descrição</h3>
+<div class="level3">
+
+<p>
+Verifica se a sequência <em>agulha </em> está contido na cadeia alfanunérica <em> palheiro </em>. Se for, então esta função irá retornar a posição onde o primeiro caractere de <em> agulha </em> ocorre. Caso contrário, esta função irá retornar 0. Também pode especificar um local opcional de partida para a pesquisa para começar <em> início</em> e um valor booleano <em> CASEINSENSITIVE </em> para especificar que a pesquisa irá ignorar a distinção maiúsculas e minúsculas. É também possível ignorar a distinção apenas em casos particulares usando parentes rectos.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="nota">Nota</h3>
+<div class="level3">
+
+<p>
+Índices de cadeia alfanumérica começam em 1.
+</p>
+
+</div>
+
+<h3 class="sectionedit5" id="exemplo">Exemplo</h3>
+<div class="level3">
+<pre class="code">print instrx(&quot;HeLLo&quot;, &quot;[Ll]o&quot;)
+print instrx(&quot;Hello, Kitti&quot;,&quot;[Ii]&quot;,10)</pre>
+
+<p>
+will display
+</p>
+<pre class="code">4
+12</pre>
+
+</div>
+
+<h3 class="sectionedit6" id="introduzido">Introduzido</h3>
+<div class="level3">
+
+<p>
+0.9.6.55
 </p>
 
 </div>
@@ -78,7 +129,7 @@ You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissio
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"></div>
+                <div class="docInfo">pt/instrx.txt · Last modified: 2012/12/15 07:07 by m_santos</div>
 
                             </div></div><!-- /content -->
 
