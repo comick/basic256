@@ -4429,15 +4429,18 @@ Interpreter::execByteCode()
 				{
 					unsigned char opcode = *op;
 					op++;
-					double endval = stack.popfloat();
+					double angwval = stack.popfloat();
 					double startval = stack.popfloat();
 					int hval = stack.popint();
 					int wval = stack.popint();
 					int yval = stack.popint();
 					int xval = stack.popint();
 					
+					// degrees * 16
 					int s = (int) (startval * 360 * 16 / 2 / M_PI);
-					int e = (int) (endval * 360 * 16 / 2 / M_PI);
+					int aw = (int) (angwval * 360 * 16 / 2 / M_PI);
+					// transform to clockwise from 12'oclock
+					s = 1440-s-aw;
 
 					QPainter ian(image);
 					ian.setPen(pencolor);
@@ -4446,13 +4449,13 @@ Interpreter::execByteCode()
 						ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 					}
 					if(opcode==OP_ARC) {
-						ian.drawArc(xval, yval, wval, hval, s, e);
+						ian.drawArc(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OP_CHORD) {
-						ian.drawChord(xval, yval, wval, hval, s, e);
+						ian.drawChord(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OP_PIE) {
-						ian.drawPie(xval, yval, wval, hval, s, e);
+						ian.drawPie(xval, yval, wval, hval, s, aw);
 					}
 					
 					ian.end();
