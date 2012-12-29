@@ -4423,6 +4423,45 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_ARC:
+			case OP_CHORD:
+			case OP_PIE:
+				{
+					unsigned char opcode = *op;
+					op++;
+					double endval = stack.popfloat();
+					double startval = stack.popfloat();
+					int hval = stack.popint();
+					int wval = stack.popint();
+					int yval = stack.popint();
+					int xval = stack.popint();
+					
+					int s = (int) (startval * 360 * 16 / 2 / M_PI);
+					int e = (int) (endval * 360 * 16 / 2 / M_PI);
+
+					QPainter ian(image);
+					ian.setPen(pencolor);
+					ian.setBrush(pencolor);
+					if (pencolor==Qt::color0) {
+						ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+					}
+					if(opcode==OP_ARC) {
+						ian.drawArc(xval, yval, wval, hval, s, e);
+					}
+					if(opcode==OP_CHORD) {
+						ian.drawChord(xval, yval, wval, hval, s, e);
+					}
+					if(opcode==OP_PIE) {
+						ian.drawPie(xval, yval, wval, hval, s, e);
+					}
+					
+					ian.end();
+
+					if (!fastgraphics) waitForGraphics();
+				}
+				break;
+
+
 
 
 

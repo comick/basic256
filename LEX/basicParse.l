@@ -84,6 +84,7 @@ whitespace [ \t]+
 abs [Aa][Bb][Ss]
 acos [Aa][Cc][Oo][Ss]
 and [Aa][Nn][Dd]
+arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
@@ -95,6 +96,7 @@ booltrue [Tt][Rr][Uu][Ee]
 call [Cc][Aa][Ll][Ll]
 ceil [Cc][Ee][Ii][Ll]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
+chord [Cc][Hh][Oo][Rr][Dd]
 chr [Cc][Hh][Rr]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 clear [Cc][Ll][Ee][Aa][Rr]
@@ -209,6 +211,7 @@ ostype [Oo][Ss][Tt][Yy][Pp][Ee]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 pause [Pp][Aa][Uu][Ss][Ee]
 pi [Pp][Ii]
+pie [Pp][Ii][Ee]
 pixel [Pp][Ii][Xx][Ee][Ll]
 plot [Pp][Ll][Oo][Tt]
 poly [Pp][Oo][Ll][Yy]
@@ -576,7 +579,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {freedbset}	{ count(); return B256FREEDBSET; }
 {freefile}	{ count(); return B256FREEFILE; }
 {freenet}	{ count(); return B256FREENET; }
-
+{arc}		{ count(); return B256ARC; }
+{chord}		{ count(); return B256CHORD; }
+{pie}		{ count(); return B256PIE; }
 	
 {variable} {
 	int num;

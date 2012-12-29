@@ -76,12 +76,14 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Aa][Bb][Ss]\\b"							// abs
 		<< "\\b[Aa][Cc][Oo][Ss]\\b"						// acos
 		<< "\\b[Aa][Nn][Dd]\\b"							// and
+		<< "\\b[Aa][Rr][Cc]\\b"							// arc
 		<< "\\b[Aa][Ss][Cc]\\b"							// asc
 		<< "\\b[Aa][Ss][Ii][Nn]\\b"						// asin
 		<< "\\b[Aa][Tt][Aa][Nn]\\b"						// atan
 		<< "\\b[Cc][Aa][Ll][Ll]\\b"						// call
 		<< "\\b[Cc][Ee][Ii][Ll]\\b"						// ceil
 		<< "\\b[Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]\\b"				// changedir
+		<< "\\b[Cc][Hh][Oo][Rr][Dd]\\b"							// chord
 		<< "\\b[Cc][Hh][Rr]\\b"							// chr
 		<< "\\b[Cc][Ii][Rr][Cc][Ll][Ee]\\b"					// circle
 		<< "\\b[Cc][Ll][Ii][Cc][Kk][Bb]\\b"					// clickb
@@ -190,6 +192,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
+		<< "\\b[Pp][Ii][Ee]\\b"						// pie
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel
 		<< "\\b[Pp][Ll][Oo][Tt]\\b"						// plot
 		<< "\\b[Pp][Oo][Ll][Yy]\\b"						// poly

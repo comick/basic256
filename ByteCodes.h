@@ -289,3 +289,6 @@
 #define OP_DBSTRINGS		0x45
 #define OP_DBNULL		0x46
 #define OP_DBNULLS		0x47
+#define OP_ARC			0x48
+#define OP_CHORD		0x49
+#define OP_PIE			0x4a

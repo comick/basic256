@@ -332,6 +332,7 @@ addStringOp(char op, char *data) {
 %token B256READBYTE B256WRITEBYTE
 %token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL B256REF
 %token B256FREEDB B256FREEFILE B256FREENET B256FREEDBSET B256DBNULL
+%token B256ARC B256CHORD B256PIE
 
 
 %union
@@ -781,6 +782,9 @@ statement: gotostmt
 	| outputvisiblestmt
 	| globalstmt
 	| throwerrorstmt
+	| arcstmt
+	| chordstmt
+	| piestmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr {
@@ -1242,6 +1246,18 @@ linestmt: B256LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(O
 
 circlestmt: B256CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
 	| B256CIRCLE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_CIRCLE); }
+;
+
+arcstmt: B256ARC floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addExtendedOp(OP_ARC); }
+	| B256ARC '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_ARC); }
+;
+
+chordstmt: B256CHORD floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addExtendedOp(OP_CHORD); }
+	| B256CHORD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_CHORD); }
+;
+
+piestmt: B256PIE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addExtendedOp(OP_PIE); }
+	| B256PIE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OP_PIE); }
 ;
 
 rectstmt: B256RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
