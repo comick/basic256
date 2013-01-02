@@ -194,7 +194,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
-		<< "\\b[Pp][Ee][Nn][Ww][Ii][Dd][Hh][Tt]\\b"				// penwidth
+		<< "\\b[Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]\\b"				// penwidth
 		<< "\\b[Pp][Ii][Ee]\\b"						// pie
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel
 		<< "\\b[Pp][Ll][Oo][Tt]\\b"						// plot
