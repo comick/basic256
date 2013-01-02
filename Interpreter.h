@@ -166,7 +166,6 @@ class Interpreter : public QThread
   QString lasterrormessage;
   int lasterrorline;
   int onerroraddress;
-  int warningnum;
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;			// used by dir function
   QTime runtimer;				// used by 

@@ -101,7 +101,7 @@
 #define OP_CLICKX		OP_TYPEARGNONE + 0x4d
 #define OP_CLICKY		OP_TYPEARGNONE + 0x4e
 #define OP_CLICKB		OP_TYPEARGNONE + 0x4f
-#define OP_SETCOLORRGB		OP_TYPEARGNONE + 0x50
+//OP_TYPEARGNONE + 0x50 free
 #define OP_TEXT			OP_TYPEARGNONE + 0x51
 #define OP_FONT			OP_TYPEARGNONE + 0x52
 #define OP_SAY			OP_TYPEARGNONE + 0x53
@@ -134,15 +134,15 @@
 #define OP_IMGLOAD 	       	OP_TYPEARGNONE + 0x6e
 #define OP_SQR			OP_TYPEARGNONE + 0x6f
 #define OP_EXP			OP_TYPEARGNONE + 0x70
-#define OP_STACKSWAP		OP_TYPEARGNONE + 0x71
-#define OP_STACKTOPTO2		OP_TYPEARGNONE + 0x72
-#define OP_ARGUMENTCOUNTTEST	OP_TYPEARGNONE + 0x73
-#define OP_THROWERROR		OP_TYPEARGNONE + 0x74
-#define OP_READBYTE 	       	OP_TYPEARGNONE + 0x75
-#define OP_WRITEBYTE 	       	OP_TYPEARGNONE + 0x76
-#define OP_STACKDUP 	       	OP_TYPEARGNONE + 0x77
-#define OP_STACKDUP2 	       	OP_TYPEARGNONE + 0x78
-#define OP_STACKSWAP2 	       	OP_TYPEARGNONE + 0x79
+#define OP_ARGUMENTCOUNTTEST	OP_TYPEARGNONE + 0x71
+#define OP_THROWERROR		OP_TYPEARGNONE + 0x72
+#define OP_READBYTE 	       	OP_TYPEARGNONE + 0x73
+#define OP_WRITEBYTE 	       	OP_TYPEARGNONE + 0x74
+#define OP_STACKSWAP		OP_TYPEARGNONE + 0x7b
+#define OP_STACKTOPTO2		OP_TYPEARGNONE + 0x7c
+#define OP_STACKDUP 	       	OP_TYPEARGNONE + 0x7d
+#define OP_STACKDUP2 	       	OP_TYPEARGNONE + 0x7e
+#define OP_STACKSWAP2 	       	OP_TYPEARGNONE + 0x7f
 
 //Int argument ops GE OP_TYPEARGINT and LT OP_TYPEARG2INT
 #define OP_TYPEARGINT		0x80
@@ -217,82 +217,84 @@
 
 // extended opcodes (second byte) - NO ARGMENTS
 // first group OP_ENTENDED_NONE
-#define OP_SPRITEDIM 	       	0x00
-#define OP_SPRITELOAD 	       	0x01
-#define OP_SPRITESLICE 	       	0x02
-#define OP_SPRITEMOVE 	       	0x03
-#define OP_SPRITEHIDE 	       	0x04
-#define OP_SPRITESHOW 	       	0x05
-#define OP_SPRITECOLLIDE	0x06
-#define OP_SPRITEPLACE 	       	0x07
-#define OP_SPRITEX 	       	0x08
-#define OP_SPRITEY 	       	0x09
-#define OP_SPRITEH 	       	0x0a
-#define OP_SPRITEW 	       	0x0b
-#define OP_SPRITEV	       	0x0c
-#define OP_CHANGEDIR	       	0x0d
-#define OP_CURRENTDIR	       	0x0e
-#define OP_WAVWAIT		0x0f
-#define OP_DECIMAL		0x10
-#define OP_DBOPEN		0x11
-#define OP_DBCLOSE		0x12
-#define OP_DBEXECUTE		0x13
-#define OP_DBOPENSET		0x14
-#define OP_DBCLOSESET		0x15
-#define OP_DBROW		0x16
-#define OP_DBINT		0x17
-#define OP_DBFLOAT		0x18
-#define OP_DBSTRING		0x19
-#define OP_LASTERROR		0x1a
-#define OP_LASTERRORLINE	0x1b
-#define OP_LASTERRORMESSAGE	0x1c
-#define OP_LASTERROREXTRA	0x1d
-#define OP_OFFERROR		0x1e
-#define OP_NETLISTEN		0x1f
-#define OP_NETCONNECT		0x20
-#define OP_NETREAD		0x21
-#define OP_NETWRITE		0x22
-#define OP_NETCLOSE		0x23
-#define OP_NETDATA		0x24
-#define OP_NETADDRESS		0x25
-#define OP_KILL			0x26
-#define OP_MD5			0x27
-#define OP_SETSETTING		0x28
-#define OP_GETSETTING		0x29
-#define OP_PORTIN		0x2a
-#define OP_PORTOUT		0x2b
-#define OP_BINARYOR		0x2c
-#define OP_BINARYAND		0x2d
-#define OP_BINARYNOT		0x2e
-#define OP_IMGSAVE		0x2f
-#define OP_DIR			0x30
-#define OP_REPLACE		0x31
-#define OP_REPLACE_C		0x32
-#define OP_REPLACEX		0x33
-#define OP_COUNT		0x34
-#define OP_COUNT_C		0x35
-#define OP_COUNTX		0x36
-#define OP_OSTYPE		0x37
-#define OP_MSEC			0x38
-#define OP_EDITVISIBLE		0x39
-#define OP_GRAPHVISIBLE		0x3a
-#define OP_OUTPUTVISIBLE	0x3b
-#define OP_TEXTWIDTH		0x3c
-#define OP_SPRITER	       	0x3d
-#define OP_SPRITES	       	0x3e
-#define OP_FREEFILE	       	0x3f
-#define OP_FREENET	       	0x40
-#define OP_FREEDB	       	0x41
-#define OP_FREEDBSET	       	0x42
-#define OP_DBINTS		0x43
-#define OP_DBFLOATS		0x44
-#define OP_DBSTRINGS		0x45
-#define OP_DBNULL		0x46
-#define OP_DBNULLS		0x47
-#define OP_ARC			0x48
-#define OP_CHORD		0x49
-#define OP_PIE			0x4a
-#define OP_PENWIDTH			0x4b
-#define OP_GETPENWIDTH			0x4c
-#define OP_GETBRUSHCOLOR			0x4d
+#define OPX_SPRITEDIM 	       	0x00
+#define OPX_SPRITELOAD 	       	0x01
+#define OPX_SPRITESLICE 	       	0x02
+#define OPX_SPRITEMOVE 	       	0x03
+#define OPX_SPRITEHIDE 	       	0x04
+#define OPX_SPRITESHOW 	       	0x05
+#define OPX_SPRITECOLLIDE	0x06
+#define OPX_SPRITEPLACE 	       	0x07
+#define OPX_SPRITEX 	       	0x08
+#define OPX_SPRITEY 	       	0x09
+#define OPX_SPRITEH 	       	0x0a
+#define OPX_SPRITEW 	       	0x0b
+#define OPX_SPRITEV	       	0x0c
+#define OPX_CHANGEDIR	       	0x0d
+#define OPX_CURRENTDIR	       	0x0e
+#define OPX_WAVWAIT		0x0f
+#define OPX_DECIMAL		0x10
+#define OPX_DBOPEN		0x11
+#define OPX_DBCLOSE		0x12
+#define OPX_DBEXECUTE		0x13
+#define OPX_DBOPENSET		0x14
+#define OPX_DBCLOSESET		0x15
+#define OPX_DBROW		0x16
+#define OPX_DBINT		0x17
+#define OPX_DBFLOAT		0x18
+#define OPX_DBSTRING		0x19
+#define OPX_LASTERROR		0x1a
+#define OPX_LASTERRORLINE	0x1b
+#define OPX_LASTERRORMESSAGE	0x1c
+#define OPX_LASTERROREXTRA	0x1d
+#define OPX_OFFERROR		0x1e
+#define OPX_NETLISTEN		0x1f
+#define OPX_NETCONNECT		0x20
+#define OPX_NETREAD		0x21
+#define OPX_NETWRITE		0x22
+#define OPX_NETCLOSE		0x23
+#define OPX_NETDATA		0x24
+#define OPX_NETADDRESS		0x25
+#define OPX_KILL			0x26
+#define OPX_MD5			0x27
+#define OPX_SETSETTING		0x28
+#define OPX_GETSETTING		0x29
+#define OPX_PORTIN		0x2a
+#define OPX_PORTOUT		0x2b
+#define OPX_BINARYOR		0x2c
+#define OPX_BINARYAND		0x2d
+#define OPX_BINARYNOT		0x2e
+#define OPX_IMGSAVE		0x2f
+#define OPX_DIR			0x30
+#define OPX_REPLACE		0x31
+#define OPX_REPLACE_C		0x32
+#define OPX_REPLACEX		0x33
+#define OPX_COUNT		0x34
+#define OPX_COUNT_C		0x35
+#define OPX_COUNTX		0x36
+#define OPX_OSTYPE		0x37
+#define OPX_MSEC			0x38
+#define OPX_EDITVISIBLE		0x39
+#define OPX_GRAPHVISIBLE		0x3a
+#define OPX_OUTPUTVISIBLE	0x3b
+#define OPX_TEXTWIDTH		0x3c
+#define OPX_SPRITER	       	0x3d
+#define OPX_SPRITES	       	0x3e
+#define OPX_FREEFILE	       	0x3f
+#define OPX_FREENET	       	0x40
+#define OPX_FREEDB	       	0x41
+#define OPX_FREEDBSET	       	0x42
+#define OPX_DBINTS		0x43
+#define OPX_DBFLOATS		0x44
+#define OPX_DBSTRINGS		0x45
+#define OPX_DBNULL		0x46
+#define OPX_DBNULLS		0x47
+#define OPX_ARC			0x48
+#define OPX_CHORD		0x49
+#define OPX_PIE			0x4a
+#define OPX_PENWIDTH			0x4b
+#define OPX_GETPENWIDTH			0x4c
+#define OPX_GETBRUSHCOLOR			0x4d
+#define OPX_RUNTIMEWARNING	0x4e
+
 

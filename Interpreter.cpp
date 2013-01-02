@@ -831,7 +831,6 @@ Interpreter::run()
 	lasterrornum = ERROR_NONE;
     lasterrormessage = "";
 	lasterrorline = 0;
-	warningnum = WARNING_NONE;
 	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
@@ -899,12 +898,6 @@ Interpreter::execByteCode()
 			emit(goToLine(currentLine));
 			return -1;
 		}
-	}
-	
-	if (warningnum!=WARNING_NONE) {
-		emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(warningnum) + "\n"));
-		warningnum = WARNING_NONE;
-		return 0;
 	}
 	
 	while (*op == OP_CURRLINE)
@@ -2531,23 +2524,6 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_SETCOLORRGB:
-		{
-			op++;
-			int bval = stack.popint();
-			int gval = stack.popint();
-			int rval = stack.popint();
-			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
-			{
-				errornum = ERROR_RGB;
-			} else {
-				drawingpen.setColor(QColor(rval, gval, bval, 255));
-				drawingbrush.setColor(QColor(rval, gval, bval, 255));
-				warningnum = WARNING_DEPRECATED_FORM;
-			}
-		}
-		break;
-
 	case OP_SETCOLORINT:
 		{
 			op++;
@@ -3360,7 +3336,7 @@ Interpreter::execByteCode()
 			// ALL MUST BE ONE BYTE op codes in thiis group of extended ops
 			op++;
 			switch(*op) {
-				case OP_SPRITEDIM:
+				case OPX_SPRITEDIM:
 					{
 						int n = stack.popint();
 						op++;
@@ -3388,7 +3364,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OP_SPRITELOAD:
+				case OPX_SPRITELOAD:
 					{
 						op++;
 						
@@ -3417,7 +3393,7 @@ Interpreter::execByteCode()
 					}
 					break;
 					
-				case OP_SPRITESLICE:
+				case OPX_SPRITESLICE:
 					{
 						op++;
 						
@@ -3446,8 +3422,8 @@ Interpreter::execByteCode()
 					}
 					break;
 					
-				case OP_SPRITEMOVE:
-				case OP_SPRITEPLACE:
+				case OPX_SPRITEMOVE:
+				case OPX_SPRITEPLACE:
 					{
 						
 						unsigned char opcode = *op;
@@ -3467,7 +3443,7 @@ Interpreter::execByteCode()
 							} else {
 				
 								spriteundraw(n);
-								if (opcode==OP_SPRITEMOVE) {
+								if (opcode==OPX_SPRITEMOVE) {
 									x += sprites[n].x;
 									y += sprites[n].y;
 									s += sprites[n].s;
@@ -3490,8 +3466,8 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OP_SPRITEHIDE:
-				case OP_SPRITESHOW:
+				case OPX_SPRITEHIDE:
+				case OPX_SPRITESHOW:
 					{
 						
 						unsigned char opcode = *op;
@@ -3507,7 +3483,7 @@ Interpreter::execByteCode()
 							} else {
 						
 								spriteundraw(n);
-								sprites[n].visible = (opcode==OP_SPRITESHOW);
+								sprites[n].visible = (opcode==OPX_SPRITESHOW);
 								spriteredraw(n);
 						
 								if (!fastgraphics) waitForGraphics();
@@ -3516,7 +3492,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OP_SPRITECOLLIDE:
+				case OPX_SPRITECOLLIDE:
 					{
 						op++;
 						
@@ -3535,13 +3511,13 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_SPRITEX:
-			case OP_SPRITEY:
-			case OP_SPRITEH:
-			case OP_SPRITEW:
-			case OP_SPRITEV:
-			case OP_SPRITER:
-			case OP_SPRITES:
+			case OPX_SPRITEX:
+			case OPX_SPRITEY:
+			case OPX_SPRITEH:
+			case OPX_SPRITEW:
+			case OPX_SPRITEV:
+			case OPX_SPRITER:
+			case OPX_SPRITES:
 				{
 					
 					unsigned char opcode = *op;
@@ -3556,20 +3532,20 @@ Interpreter::execByteCode()
 							errornum = ERROR_SPRITENA;
 							stack.push(0);	
 						} else {
-							if (opcode==OP_SPRITEX) stack.push(sprites[n].x);
-							if (opcode==OP_SPRITEY) stack.push(sprites[n].y);
-							if (opcode==OP_SPRITEH) stack.push(sprites[n].image->height());
-							if (opcode==OP_SPRITEW) stack.push(sprites[n].image->width());
-							if (opcode==OP_SPRITEV) stack.push(sprites[n].visible?1:0);
-							if (opcode==OP_SPRITER) stack.push(sprites[n].r);
-							if (opcode==OP_SPRITER) stack.push(sprites[n].s);
+							if (opcode==OPX_SPRITEX) stack.push(sprites[n].x);
+							if (opcode==OPX_SPRITEY) stack.push(sprites[n].y);
+							if (opcode==OPX_SPRITEH) stack.push(sprites[n].image->height());
+							if (opcode==OPX_SPRITEW) stack.push(sprites[n].image->width());
+							if (opcode==OPX_SPRITEV) stack.push(sprites[n].visible?1:0);
+							if (opcode==OPX_SPRITER) stack.push(sprites[n].r);
+							if (opcode==OPX_SPRITER) stack.push(sprites[n].s);
 						}
 					}
 				}
 				break;
 
 			
-			case OP_CHANGEDIR:
+			case OPX_CHANGEDIR:
 					{
 						op++;
 						char *file = stack.popstring();
@@ -3580,21 +3556,21 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_CURRENTDIR:
+			case OPX_CURRENTDIR:
 				{
 					op++;
 					stack.push(QDir::currentPath().toUtf8().data());
 				}
 				break;
 				
-			case OP_WAVWAIT:
+			case OPX_WAVWAIT:
 				{
 					op++;
 					emit(waitWAV());
 				}
 				break;
 
-			case OP_DECIMAL:
+			case OPX_DECIMAL:
 					{
 						// set number of digits used in stack.popstring to
 						// specify max number of decimal places in float to string
@@ -3608,7 +3584,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBOPEN:
+			case OPX_DBOPEN:
 					{
 						op++;
 						// open database connection
@@ -3627,7 +3603,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBCLOSE:
+			case OPX_DBCLOSE:
 					{
 						op++;
 						int n = stack.popint();
@@ -3639,7 +3615,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBEXECUTE:
+			case OPX_DBEXECUTE:
 					{
 						op++;
 						// execute a statement on the database
@@ -3662,7 +3638,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBOPENSET:
+			case OPX_DBOPENSET:
 					{
 						op++;
 						// open recordset
@@ -3695,7 +3671,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBCLOSESET:
+			case OPX_DBCLOSESET:
 					{
 						op++;
 						int set = stack.popint();
@@ -3717,7 +3693,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBROW:
+			case OPX_DBROW:
 					{
 						op++;
 						int set = stack.popint();
@@ -3740,21 +3716,21 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_DBINT:
-			case OP_DBINTS:
-			case OP_DBFLOAT:
-			case OP_DBFLOATS:
-			case OP_DBNULL:
-			case OP_DBNULLS:
-			case OP_DBSTRING:
-			case OP_DBSTRINGS:
+			case OPX_DBINT:
+			case OPX_DBINTS:
+			case OPX_DBFLOAT:
+			case OPX_DBFLOATS:
+			case OPX_DBNULL:
+			case OPX_DBNULLS:
+			case OPX_DBSTRING:
+			case OPX_DBSTRINGS:
 					{
 						unsigned char opcode = *op;
 						int col = -1, set, n;
 						char *colname = NULL;
 						op++;
 						// get a column data (integer)
-						if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
+						if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
 							colname = stack.popstring();
 						} else {
 							col = stack.popint();
@@ -3773,7 +3749,7 @@ Interpreter::execByteCode()
 									if (!dbsetrow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
-										if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
+										if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
 											// find the column number for name and save in col
 											for(int t=0;t<sqlite3_column_count(dbset[n][set])&&col==-1;t++) {
 												if (strcmp(colname,sqlite3_column_name(dbset[n][set],t))==0) {
@@ -3786,20 +3762,20 @@ Interpreter::execByteCode()
 											errornum = ERROR_DBCOLNO;
 										} else {
 											switch(opcode) {
-												case OP_DBINT:
-												case OP_DBINTS:
+												case OPX_DBINT:
+												case OPX_DBINTS:
 													stack.push(sqlite3_column_int(dbset[n][set], col));
 													break;
-												case OP_DBFLOAT:
-												case OP_DBFLOATS:
+												case OPX_DBFLOAT:
+												case OPX_DBFLOATS:
 													stack.push(sqlite3_column_double(dbset[n][set], col));
 													break;
-												case OP_DBNULL:
-												case OP_DBNULLS:
+												case OPX_DBNULL:
+												case OPX_DBNULLS:
 													stack.push((char*)sqlite3_column_text(dbset[n][set], col)==NULL);
 													break;
-												case OP_DBSTRING:
-												case OP_DBSTRINGS:
+												case OPX_DBSTRING:
+												case OPX_DBSTRINGS:
 													stack.push((char*)sqlite3_column_text(dbset[n][set], col));
 													break;
 											}
@@ -3811,35 +3787,35 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OP_LASTERROR:
+			case OPX_LASTERROR:
 				{
 					op++;
 					stack.push(lasterrornum);
 				}
 				break;
 
-			case OP_LASTERRORLINE:
+			case OPX_LASTERRORLINE:
 				{
 					op++;
 					stack.push(lasterrorline);
 				}
 				break;
 
-			case OP_LASTERROREXTRA:
+			case OPX_LASTERROREXTRA:
 				{
 					op++;
 					stack.push(lasterrormessage.toUtf8().data());
 				}
 				break;
 
-			case OP_LASTERRORMESSAGE:
+			case OPX_LASTERRORMESSAGE:
 				{
 					op++;
 					stack.push(getErrorMessage(lasterrornum).toUtf8().data());
 				}
 				break;
 
-			case OP_OFFERROR:
+			case OPX_OFFERROR:
 				{
 					// turn off error trapping
 					op++;
@@ -3847,7 +3823,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETLISTEN:
+			case OPX_NETLISTEN:
 				{
 					op++;
 					int tempsockfd;
@@ -3899,7 +3875,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETCONNECT:
+			case OPX_NETCONNECT:
 				{
 					op++;
 
@@ -3948,7 +3924,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETREAD:
+			case OPX_NETREAD:
 				{
 					op++;
 					int MAXSIZE = 2048;
@@ -3977,7 +3953,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETWRITE:
+			case OPX_NETWRITE:
 				{
 					op++;
 					char* data = stack.popstring();
@@ -3999,7 +3975,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETCLOSE:
+			case OPX_NETCLOSE:
 				{
 					op++;
 					int fn = stack.popint();
@@ -4015,7 +3991,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETDATA:
+			case OPX_NETDATA:
 				{
 					op++;
 					// push 1 if there is data to read on network connection
@@ -4053,7 +4029,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_NETADDRESS:
+			case OPX_NETADDRESS:
 				{
 					op++;
 					// get first non "lo" ip4 address
@@ -4096,7 +4072,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_KILL:
+			case OPX_KILL:
 				{
 					op++;
 					char *name = stack.popstring();
@@ -4107,7 +4083,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_MD5:
+			case OPX_MD5:
 				{
 					op++;
 					char *stuff = stack.popstring();
@@ -4116,7 +4092,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_SETSETTING:
+			case OPX_SETSETTING:
 				{
 					op++;
 					char *stuff = stack.popstring();
@@ -4138,7 +4114,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_GETSETTING:
+			case OPX_GETSETTING:
 				{
 					op++;
 					char *key = stack.popstring();
@@ -4159,7 +4135,7 @@ Interpreter::execByteCode()
 				break;
 
 
-			case OP_PORTOUT:
+			case OPX_PORTOUT:
 				{
 					op++;
 					int data = stack.popint();
@@ -4181,7 +4157,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_PORTIN:
+			case OPX_PORTIN:
 				{
 					op++;
 					int data=0;
@@ -4204,7 +4180,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_BINARYOR:
+			case OPX_BINARYOR:
 				{
 					op++;
 					int a = stack.popint();
@@ -4213,7 +4189,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_BINARYAND:
+			case OPX_BINARYAND:
 				{
 					op++;
 					int a = stack.popint();
@@ -4222,7 +4198,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_BINARYNOT:
+			case OPX_BINARYNOT:
 				{
 					op++;
 					int a = stack.popint();
@@ -4230,7 +4206,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_IMGSAVE:
+			case OPX_IMGSAVE:
 				{
 					// Image Save - Save image
 					op++;
@@ -4248,7 +4224,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_DIR:
+			case OPX_DIR:
 				{
 					// Get next directory entry - id path send start a new folder else get next file name
 					// return "" if we have no names on list - skippimg . and ..
@@ -4280,16 +4256,16 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_REPLACE:
-			case OP_REPLACE_C:
-			case OP_REPLACEX:
+			case OPX_REPLACE:
+			case OPX_REPLACE_C:
+			case OPX_REPLACEX:
 				{
 					// unicode safe replace function
 					unsigned char opcode = *op;
 					op++;
 					
 					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-					if(opcode==OP_REPLACE_C) {
+					if(opcode==OPX_REPLACE_C) {
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
@@ -4301,7 +4277,7 @@ Interpreter::execByteCode()
 					QString qfrom = QString::fromUtf8(from);
 					QString qhaystack = QString::fromUtf8(haystack);
 			
-					if(opcode==OP_REPLACE || opcode==OP_REPLACE_C) {
+					if(opcode==OPX_REPLACE || opcode==OPX_REPLACE_C) {
 						stack.push(strdup(qhaystack.replace(qfrom, qto, casesens).toUtf8().data()));
 					} else {
 						stack.push(strdup(qhaystack.replace(QRegExp(qfrom), qto).toUtf8().data()));
@@ -4313,16 +4289,16 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_COUNT:
-			case OP_COUNT_C:
-			case OP_COUNTX:
+			case OPX_COUNT:
+			case OPX_COUNT_C:
+			case OPX_COUNTX:
 				{
 					// unicode safe count function
 					unsigned char opcode = *op;
 					op++;
 					
 					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-					if(opcode==OP_COUNT_C) {
+					if(opcode==OPX_COUNT_C) {
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
@@ -4332,7 +4308,7 @@ Interpreter::execByteCode()
 					QString qneedle = QString::fromUtf8(needle);
 					QString qhaystack = QString::fromUtf8(haystack);
 			
-					if(opcode==OP_COUNT || opcode==OP_COUNT_C) {
+					if(opcode==OPX_COUNT || opcode==OPX_COUNT_C) {
 						stack.push((int) (qhaystack.count(qneedle, casesens)));
 					} else {
 						stack.push((int) (qhaystack.count(QRegExp(qneedle))));
@@ -4343,7 +4319,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_OSTYPE:
+			case OPX_OSTYPE:
 				{
 					// Return type of OS this compile was for
 					op++;
@@ -4361,7 +4337,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_MSEC:
+			case OPX_MSEC:
 				{
 					// Return number of milliseconds the BASIC256 program has been running
 					op++;
@@ -4369,20 +4345,20 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_EDITVISIBLE:
-			case OP_GRAPHVISIBLE:
-			case OP_OUTPUTVISIBLE:
+			case OPX_EDITVISIBLE:
+			case OPX_GRAPHVISIBLE:
+			case OPX_OUTPUTVISIBLE:
 				{
 					unsigned char opcode = *op;
 					op++;
 					int show = stack.popint();
-					if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
-					if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
-					if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
+					if (opcode==OPX_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
+					if (opcode==OPX_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
+					if (opcode==OPX_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
 				}
 				break;
 
-			case OP_TEXTWIDTH:
+			case OPX_TEXTWIDTH:
 				{
 					// return the number of pixels the test string will require for diaplay
 					op++;
@@ -4400,7 +4376,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_FREEFILE:
+			case OPX_FREEFILE:
 				{
 					// return the next free file number - throw error if not free files
 					op++;
@@ -4416,7 +4392,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_FREENET:
+			case OPX_FREENET:
 				{
 					// return the next free network socket number - throw error if not free sockets
 					op++;
@@ -4432,7 +4408,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_FREEDB:
+			case OPX_FREEDB:
 				{
 					// return the next free databsae number - throw error if none free
 					op++;
@@ -4448,7 +4424,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_FREEDBSET:
+			case OPX_FREEDBSET:
 				{
 					// return the next free set for a database - throw error if none free
 					op++;
@@ -4469,9 +4445,9 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_ARC:
-			case OP_CHORD:
-			case OP_PIE:
+			case OPX_ARC:
+			case OPX_CHORD:
+			case OPX_PIE:
 				{
 					unsigned char opcode = *op;
 					op++;
@@ -4494,13 +4470,13 @@ Interpreter::execByteCode()
 					if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 						ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 					}
-					if(opcode==OP_ARC) {
+					if(opcode==OPX_ARC) {
 						ian.drawArc(xval, yval, wval, hval, s, aw);
 					}
-					if(opcode==OP_CHORD) {
+					if(opcode==OPX_CHORD) {
 						ian.drawChord(xval, yval, wval, hval, s, aw);
 					}
-					if(opcode==OP_PIE) {
+					if(opcode==OPX_PIE) {
 						ian.drawPie(xval, yval, wval, hval, s, aw);
 					}
 					
@@ -4510,7 +4486,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_PENWIDTH:
+			case OPX_PENWIDTH:
 				{
 					op++;
 					double a = stack.popfloat();
@@ -4522,14 +4498,14 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OP_GETPENWIDTH:
+			case OPX_GETPENWIDTH:
 				{
 					op++;
 					stack.push((double) (drawingpen.widthF()));
 				}
 				break;
 
-			case OP_GETBRUSHCOLOR:
+			case OPX_GETBRUSHCOLOR:
 				{
 					op++;
 					if (drawingbrush.color()==Qt::color0) {
@@ -4540,6 +4516,20 @@ Interpreter::execByteCode()
 				}
 				break;
 		
+			case OPX_RUNTIMEWARNING:
+				{
+					// display a runtime warning message
+					// added in yacc/bison for deprecated and other warnings
+					op++;
+					int w = stack.popint();
+					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
+						emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
+					}
+				}
+				break;
+
+
 
 
 

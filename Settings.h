@@ -60,6 +60,8 @@
 	#define SETTINGSALLOWSETTINGDEFAULT true
 	#define SETTINGSALLOWPORT "Allow/Port"
 	#define SETTINGSALLOWPORTDEFAULT true
+	#define SETTINGSALLOWWARNINGS "Allow/Warnings"
+	#define SETTINGSALLOWWARNINGSDEFAULT true
 
 	// store history of files as SaveHistory/0 ... SaveHistory/8 
 	#define SETTINGSGROUPHIST "SaveHistory"

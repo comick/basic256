@@ -61,6 +61,11 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	layout->addWidget(portcheckbox,r,2,1,2);
 	//
 	r++;
+	warningscheckbox = new QCheckBox(tr("Show runtime warning messages"),this);
+	warningscheckbox->setChecked(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool());
+	layout->addWidget(warningscheckbox,r,2,1,2);
+	//
+	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
 	savebutton = new QPushButton(tr("Save"), this);
@@ -93,6 +98,7 @@ void PreferencesWin::clickSaveButton() {
 	settings.setValue(SETTINGSALLOWSYSTEM, systemcheckbox->isChecked());
 	settings.setValue(SETTINGSALLOWSETTING, settingcheckbox->isChecked());
 	settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
+	settings.setValue(SETTINGSALLOWWARNINGS, warningscheckbox->isChecked());
 	//
 	QMessageBox msgBox;
 	msgBox.setText(tr("Preferences and settings have been saved."));

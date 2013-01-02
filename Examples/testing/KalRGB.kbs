@@ -25,7 +25,7 @@ goto draw
 end
 
 SETCOLOR:
-color int(rand*256), int(rand*256), int(rand*256)
+color rgb(int(rand*256), int(rand*256), int(rand*256))
 return
 
 

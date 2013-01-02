@@ -7,8 +7,9 @@
 # 2012-11-03	j.m.reneau	added strings, file io, '' strings
 # 2012-11-22	j.m.reneau	added freefile, freedb, freedbset, multiple db connections,
 #				and multiple db sets open on a single connection
-# 2012-11-25	j.m.reneau	added dbnull and logic to test dbstring, dbint, dbfloat, and dbnull
-#				with column names and numbers
+# 2012-11-25	j.m.reneau	added dbnull and logic to test dbstring,
+#				dbint, dbfloat, and dbnull with column names and numbers
+# 2013-01-02	j.m.reneau	added color with pen and fill and penwidth 
 
 # create arrays to use
 dim c$(10)
@@ -385,7 +386,7 @@ call n("is current color red",getcolor, red)
 #
 clg
 for t = 1 to 10
-   color rand*256,rand*256,rand*256
+   color rgb(rand*256,rand*256,rand*256), rgb(rand*256,rand*256,rand*256)
    circle rand*300,rand*300,rand*10+10
 next t
 call q("10 random circles")
@@ -420,13 +421,16 @@ next x
 call q("circle using x^2+y^2=r^2")
 #
 clg
-color green
+penwidth 10
+color green, blue
 redim c(1)
 c = {100, 100, 200, 200, 100, 200}
 poly c
-color orange
+penwidth 5
+color orange, black
 poly {100, 100, 200, 200, 200, 100}
-call q("poly - orange and green square")
+call q("poly - orange/black and green/blue triangles with different fill and pen")
+penwidth 0
 #
 clg
 color red
@@ -465,7 +469,7 @@ for t = 1 to k
    plot n*300,t%300
    if t%1000=0 then
       refresh
-      color rand*256, rand*256, rand*256
+      color rgb(rand*256, rand*256, rand*256)
    end if
 next t
 tot = tot / k

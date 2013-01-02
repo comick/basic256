@@ -54,6 +54,7 @@ private:
 	QCheckBox *systemcheckbox;
 	QCheckBox *settingcheckbox;
 	QCheckBox *portcheckbox;
+	QCheckBox *warningscheckbox;
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;
 
