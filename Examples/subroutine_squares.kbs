@@ -9,7 +9,7 @@ next n
 end
 
 subroutine randomsquare()
-   color rnd(256),rnd(256),rnd(256)
+   color rgb(rnd(256),rnd(256),rnd(256))
    hw = rnd(100)
    rect rnd(300-hw),rnd(300-hw),hw,hw
 end subroutine

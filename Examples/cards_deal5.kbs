@@ -27,7 +27,7 @@ gosub shuffledeck
 
 clg
 # draw poker table
-color 139,69,19
+color rgb(139,69,19)
 rect 0,0,300,300
 color darkgreen
 rect 10,10,280,280

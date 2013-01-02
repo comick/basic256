@@ -24,7 +24,7 @@ circle mousex, mousey, 2
 return
 
 randomline:
-color rand*256, rand*256, rand*256
+color rgb(rand*256, rand*256, rand*256)
 circle mousex, mousey, 2
 return
 
