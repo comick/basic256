@@ -292,3 +292,7 @@
 #define OP_ARC			0x48
 #define OP_CHORD		0x49
 #define OP_PIE			0x4a
+#define OP_PENWIDTH			0x4b
+#define OP_GETPENWIDTH			0x4c
+#define OP_GETBRUSHCOLOR			0x4d
+

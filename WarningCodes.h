@@ -15,10 +15,17 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+#ifndef WARNING_NONE
 
-#ifndef __VERSION
-#define __VERSION
-
-#define VERSION "0.9.9.26 (2013-01-02)"
-
+#define WARNING_NONE 0
+#define WARNING_DEPRECATED_FORM 1
+#define WARNING_DEPRECATED_FORM_MESSAGE "The used format of the statement has been deprecated.  It is recommended that you reauthor that statement."
+// Insert new warning messages here
+#define WARNING_NOTIMPLEMENTED 9999
+#define WARNING_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
+//
 #endif
+
+
+
+

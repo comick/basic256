@@ -151,7 +151,9 @@ freedbset [Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
 freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
 freenet [Ff][Rr][Ee][Ee][Nn][Ee][Tt]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+getbrushcolor [Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]
 getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
+getpenwidth [Gg][Ee][Tt][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 getslice [Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]
 global [Gg][Ll][Oo][Bb][Aa][Ll]
@@ -210,6 +212,7 @@ orange [Oo][Rr][Aa][Nn][Gg][Ee]
 ostype [Oo][Ss][Tt][Yy][Pp][Ee]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 pause [Pp][Aa][Uu][Ss][Ee]
+penwidth [Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 pi [Pp][Ii]
 pie [Pp][Ii][Ee]
 pixel [Pp][Ii][Xx][Ee][Ll]
@@ -582,6 +585,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {arc}		{ count(); return B256ARC; }
 {chord}		{ count(); return B256CHORD; }
 {pie}		{ count(); return B256PIE; }
+{penwidth}		{ count(); return B256PENWIDTH; }
+{getpenwidth}		{ count(); return B256GETPENWIDTH; }
+{getbrushcolor}		{ count(); return B256GETBRUSHCOLOR; }
 	
 {variable} {
 	int num;

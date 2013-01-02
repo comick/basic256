@@ -54,6 +54,8 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QColor>
+#include <QPen>
+#include <QBrush>
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
@@ -297,13 +299,13 @@ QString Interpreter::getErrorMessage(int e) {
 			break;
 	        case ERROR_DIVZERO:
 			errormessage = tr(ERROR_DIVZERO_MESSAGE);
-            		break;
+            break;
 		case ERROR_BYREF:
 			errormessage = tr(ERROR_BYREF_MESSAGE);
 			break;
 		case ERROR_BYREFTYPE:
 			errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
-            		break;
+            break;
 		case ERROR_FREEFILE:
 			errormessage = tr(ERROR_FREEFILE_MESSAGE);
 			break;
@@ -325,8 +327,13 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_DBNOTSETROW:
 			errormessage = tr(ERROR_DBNOTSETROW_MESSAGE);
 			break;
-
-        // put new messages here
+		case ERROR_PENWIDTH:
+			errormessage = tr(ERROR_PENWIDTH_MESSAGE);
+			break;
+		case ERROR_COLORNUMBER:
+			errormessage = tr(ERROR_COLORNUMBER_MESSAGE);
+			break;
+        // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
 			break;
@@ -338,6 +345,21 @@ QString Interpreter::getErrorMessage(int e) {
 		errormessage.replace(QString("%VARNAME%"),QString(symtable[variables.errorvarnum()]),Qt::CaseInsensitive);
 	}
 	return errormessage;
+}
+
+QString Interpreter::getWarningMessage(int e) {
+	QString message("");
+	switch(e) {
+		// warnings
+		case WARNING_DEPRECATED_FORM :
+			message = tr(WARNING_DEPRECATED_FORM_MESSAGE);
+			break;
+        // put WARNING new messages here
+		case WARNING_NOTIMPLEMENTED:
+			message = tr(WARNING_NOTIMPLEMENTED_MESSAGE);
+			break;
+	}
+	return message;
 }
 
 int Interpreter::netSockClose(int fd)
@@ -690,7 +712,8 @@ Interpreter::initialize()
 	callstack = NULL;
 	forstack = NULL;
 	fastgraphics = false;
-	pencolor = Qt::black;
+	drawingpen = QPen(Qt::black);
+	drawingbrush = QBrush(Qt::black, Qt::SolidPattern);
 	status = R_RUNNING;
 	once = true;
 	currentLine = 1;
@@ -806,8 +829,9 @@ Interpreter::run()
 	errornum = ERROR_NONE;
 	errormessage = "";
 	lasterrornum = ERROR_NONE;
-        lasterrormessage = "";
+    lasterrormessage = "";
 	lasterrorline = 0;
+	warningnum = WARNING_NONE;
 	onerroraddress = 0;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
@@ -871,10 +895,16 @@ Interpreter::execByteCode()
 			return 0;
 		} else {
 			// no error handler defined - display message and die
-            emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
-            emit(goToLine(currentLine));
+			emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
+			emit(goToLine(currentLine));
 			return -1;
 		}
+	}
+	
+	if (warningnum!=WARNING_NONE) {
+		emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(warningnum) + "\n"));
+		warningnum = WARNING_NONE;
+		return 0;
 	}
 	
 	while (*op == OP_CURRLINE)
@@ -2511,7 +2541,9 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_RGB;
 			} else {
-				pencolor = QColor(rval, gval, bval, 255);
+				drawingpen.setColor(QColor(rval, gval, bval, 255));
+				drawingbrush.setColor(QColor(rval, gval, bval, 255));
+				warningnum = WARNING_DEPRECATED_FORM;
 			}
 		}
 		break;
@@ -2519,11 +2551,28 @@ Interpreter::execByteCode()
 	case OP_SETCOLORINT:
 		{
 			op++;
-			int rgbval = stack.popint();
-			if (rgbval==-1) {
-				pencolor = Qt::color0;
+			int brushval = stack.popint();
+			int penval = stack.popint();
+			if (brushval < -1 || brushval > 16777215 || penval < -1 || penval > 16777215)
+			{
+				errornum = ERROR_COLORNUMBER;
 			} else {
-				pencolor = QColor::fromRgb((QRgb) rgbval);
+				if (penval==-1) {
+					drawingpen.setColor(Qt::color0);
+				} else {
+					drawingpen.setColor(QColor::fromRgb((QRgb) penval));
+				}
+				if (brushval==-1) {
+					if (penval==-1) {
+						// if pen is clear make brush clear so old behaviour works
+						drawingbrush.setColor(Qt::color0);
+					} else {
+						// if pen not clear make brush totally transparent instead of clear
+						drawingbrush.setColor(QColor(0, 0, 0, 0));
+					}
+				} else {
+					drawingbrush.setColor(QColor::fromRgb((QRgb) brushval));
+				}
 			}
 		}
 		break;
@@ -2538,7 +2587,7 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_RGB;
 			} else {
-				stack.push((int) qRgb(rval, gval, bval));
+				stack.push((int) rval*65536+gval*256+bval);
 			}
 		}
 		break;
@@ -2560,10 +2609,10 @@ Interpreter::execByteCode()
 	case OP_GETCOLOR:
 		{
 			op++;
-			if (pencolor==Qt::color0) {
+			if (drawingpen.color()==Qt::color0) {
 				stack.push(-1);
 			} else {
-				stack.push((int) (pencolor.rgb() % 0x1000000));
+				stack.push((int) (drawingpen.color().rgb() % 0x1000000));
 			}
 		}
 		break;
@@ -2649,9 +2698,9 @@ Interpreter::execByteCode()
 			int x0val = stack.popint();
 
 			QPainter ian(image);
-			ian.setPen(pencolor);
-			ian.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			ian.setPen(drawingpen);
+			ian.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 			if (x1val >= 0 && y1val >= 0)
@@ -2674,9 +2723,9 @@ Interpreter::execByteCode()
 			int x0val = stack.popint();
 
 			QPainter ian(image);
-			ian.setBrush(pencolor);
-			ian.setPen(pencolor);
-			if (pencolor==Qt::color0) {
+			ian.setBrush(drawingbrush);
+			ian.setPen(drawingpen);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 			if (x1val > 0 && y1val > 0)
@@ -2699,12 +2748,11 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			
 			QPainter poly(image);
-			poly.setPen(pencolor);
-			poly.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			poly.setPen(drawingpen);
+			poly.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
-
 			if (variables.type(*i) == T_ARRAY)
 			{
 				int pairs = variables.arraysize(*i) / 2;
@@ -2741,12 +2789,11 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			
 			QPainter poly(image);
-			poly.setPen(pencolor);
-			poly.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			poly.setPen(drawingpen);
+			poly.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
-
 			int pairs = *i / 2;
 			if (pairs < 3)
 			{
@@ -2785,12 +2832,11 @@ Interpreter::execByteCode()
 			int x = stack.popint();
 
 			QPainter poly(image);
-			poly.setPen(pencolor);
-			poly.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			poly.setPen(drawingpen);
+			poly.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
-
 			if (variables.type(*i) == T_ARRAY)
 			{
 				int pairs = variables.arraysize(*i) / 2;
@@ -2858,9 +2904,9 @@ Interpreter::execByteCode()
 			int x = stack.popint();
 			
 			QPainter poly(image);
-			poly.setPen(pencolor);
-			poly.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			poly.setPen(drawingpen);
+			poly.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 
@@ -2900,9 +2946,9 @@ Interpreter::execByteCode()
 			int xval = stack.popint();
 
 			QPainter ian(image);
-			ian.setPen(pencolor);
-			ian.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			ian.setPen(drawingpen);
+			ian.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 			ian.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
@@ -2952,9 +2998,9 @@ Interpreter::execByteCode()
 			int x0val = stack.popint();
 
 			QPainter ian(image);
-			ian.setPen(pencolor);
-			ian.setBrush(pencolor);
-			if (pencolor==Qt::color0) {
+			ian.setPen(drawingpen);
+			ian.setBrush(drawingbrush);
+			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 			}
 			if(!fontfamily.isEmpty()) {
@@ -3005,7 +3051,7 @@ Interpreter::execByteCode()
 			int twoval = stack.popint();
 
 			QPainter ian(image);
-			ian.setPen(pencolor);
+			ian.setPen(drawingpen);
 
 			ian.drawPoint(twoval, oneval);
 			ian.end();
@@ -4443,9 +4489,9 @@ Interpreter::execByteCode()
 					s = 1440-s-aw;
 
 					QPainter ian(image);
-					ian.setPen(pencolor);
-					ian.setBrush(pencolor);
-					if (pencolor==Qt::color0) {
+					ian.setPen(drawingpen);
+					ian.setBrush(drawingbrush);
+					if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
 						ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 					}
 					if(opcode==OP_ARC) {
@@ -4464,6 +4510,36 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OP_PENWIDTH:
+				{
+					op++;
+					double a = stack.popfloat();
+					if (a<0) {
+						errornum = ERROR_PENWIDTH;
+					} else {
+						drawingpen.setWidthF(a);
+					}
+				}
+				break;
+
+			case OP_GETPENWIDTH:
+				{
+					op++;
+					stack.push((double) (drawingpen.widthF()));
+				}
+				break;
+
+			case OP_GETBRUSHCOLOR:
+				{
+					op++;
+					if (drawingbrush.color()==Qt::color0) {
+						stack.push(-1);
+					} else {
+						stack.push((int) (drawingbrush.color().rgb() % 0x1000000));
+					}
+				}
+				break;
+		
 
 
 

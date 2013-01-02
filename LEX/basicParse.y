@@ -332,7 +332,7 @@ addStringOp(char op, char *data) {
 %token B256READBYTE B256WRITEBYTE
 %token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL B256REF
 %token B256FREEDB B256FREEFILE B256FREENET B256FREEDBSET B256DBNULL
-%token B256ARC B256CHORD B256PIE
+%token B256ARC B256CHORD B256PIE B256PENWIDTH B256GETPENWIDTH B256GETBRUSHCOLOR
 
 
 %union
@@ -785,6 +785,7 @@ statement: gotostmt
 	| arcstmt
 	| chordstmt
 	| piestmt
+	| penwidthstmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr {
@@ -1225,7 +1226,9 @@ returnstmt: B256RETURN {
 
 colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr { addOp(OP_SETCOLORRGB); }
 	| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_SETCOLORRGB); }
-	| B256SETCOLOR floatexpr { addOp(OP_SETCOLORINT); }
+	| B256SETCOLOR floatexpr { addOp(OP_STACKDUP); addOp(OP_SETCOLORINT); }
+	| B256SETCOLOR floatexpr ',' floatexpr  { addOp(OP_SETCOLORINT); }
+	| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  { addOp(OP_SETCOLORINT); }
 ;
 
 soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
@@ -1689,6 +1692,15 @@ globalstmt: B256GLOBAL functionvariables {
 }
 ;
 
+penwidthstmt: B256PENWIDTH floatexpr {
+		addExtendedOp(OP_PENWIDTH);
+	}
+;
+
+
+
+
+
 immediatestrlist: '{' stringlist '}'
 ;
 
@@ -1994,6 +2006,10 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
 	| B256GETCOLOR { addOp(OP_GETCOLOR); }
 	| B256GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
+	| B256GETBRUSHCOLOR { addExtendedOp(OP_GETBRUSHCOLOR); }
+	| B256GETBRUSHCOLOR '(' ')' { addExtendedOp(OP_GETBRUSHCOLOR); }
+	| B256GETPENWIDTH { addExtendedOp(OP_GETPENWIDTH); }
+	| B256GETPENWIDTH '(' ')' { addExtendedOp(OP_GETPENWIDTH); }
 	| B256SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addExtendedOp(OP_SPRITECOLLIDE); }
 	| B256SPRITEX '(' floatexpr ')' { addExtendedOp(OP_SPRITEX); }
 	| B256SPRITEY '(' floatexpr ')' { addExtendedOp(OP_SPRITEY); }

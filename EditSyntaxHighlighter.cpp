@@ -136,7 +136,9 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]\\b"				// freefile
 		<< "\\b[Ff][Rr][Ee][Ee][Nn][Ee][Tt]\\b"					// freenet
 		<< "\\b[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"				// function
+		<< "\\b[Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]\\b"				// getbrushcolor
 		<< "\\b[Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]\\b"				// getcolor
+		<< "\\b[Gg][Ee][Tt][Pp][Ee][Nn][Ww][Ii][Dd][Hh][Tt]\\b"				// getpenwidth
 		<< "\\b[Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]\\b"			// getsetting
 		<< "\\b[Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]\\b"				// getslice
 		<< "\\b[Gg][Ll][Oo][Bb][Aa][Ll]\\b"					// global
@@ -192,6 +194,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"					// ostype
 		<< "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
 		<< "\\b[Pp][Aa][Uu][Ss][Ee]\\b"						// pause
+		<< "\\b[Pp][Ee][Nn][Ww][Ii][Dd][Hh][Tt]\\b"				// penwidth
 		<< "\\b[Pp][Ii][Ee]\\b"						// pie
 		<< "\\b[Pp][Ii][Xx][Ee][Ll]\\b"						// pixel
 		<< "\\b[Pp][Ll][Oo][Tt]\\b"						// plot

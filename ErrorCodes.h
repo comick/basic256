@@ -136,9 +136,17 @@
 #define ERROR_DBSETNUMBER_MESSAGE "Invalid data set number."
 #define ERROR_DBNOTSETROW 59
 #define ERROR_DBNOTSETROW_MESSAGE "You must advance the data set using DBROW before you can read data from it."
-
+#define ERROR_PENWIDTH 60
+#define ERROR_PENWIDTH_MESSAGE "Drawing pen width must be a non-negative number."
+#define ERROR_COLORNUMBER 61
+#define ERROR_COLORNUMBER_MESSAGE "Color values must be in the range of -1 to 16,777,215."
+// Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
-//
 #define ERROR_USER_MESSAGE "User thrown error number."
+//
 #endif
+
+
+
+

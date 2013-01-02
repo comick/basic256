@@ -32,6 +32,7 @@
 #include "Stack.h"
 #include "Variables.h"
 #include "ErrorCodes.h"
+#include "WarningCodes.h"
 #include "Sound.h"
 
 #ifndef M_PI
@@ -128,6 +129,7 @@ class Interpreter : public QThread
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);
+  QString getWarningMessage(int);
   int netSockClose(int);
   QImage *image;
   BasicGraph *graph;
@@ -137,7 +139,8 @@ class Interpreter : public QThread
   unsigned char *op;
   frame *callstack;
   forframe *forstack;
-  QColor pencolor;
+  QPen drawingpen;
+  QBrush drawingbrush;
   run_status status;
   run_status oldstatus;
   bool fastgraphics;
@@ -163,6 +166,7 @@ class Interpreter : public QThread
   QString lasterrormessage;
   int lasterrorline;
   int onerroraddress;
+  int warningnum;
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;			// used by dir function
   QTime runtimer;				// used by 

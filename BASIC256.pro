@@ -151,6 +151,7 @@ HEADERS 		+= 	RunController.h
 HEADERS 		+= 	BasicOutput.h 
 HEADERS 		+= 	BasicGraph.h 
 HEADERS 		+= 	ErrorCodes.h 
+HEADERS 		+= 	WarningCodes.h 
 HEADERS 		+= 	GhostButton.h 
 HEADERS 		+= 	PauseButton.h 
 HEADERS 		+= 	DockWidget.h
