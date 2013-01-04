@@ -40,6 +40,7 @@ BasicGraph::BasicGraph(BasicOutput *o)
   resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
   output = o;
   setMinimumSize(gwidth, gheight);
+  gridlines = false;
 }
 
 void
@@ -53,7 +54,7 @@ BasicGraph::resize(int width, int height)
 	delete image;
 	imagedata = new uchar[sizeof(int) * width * height];
 	image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
-	image->fill(Qt::color0);
+	image->fill(QColor(0,0,0,0));
 	mouseX = 0;
 	mouseY = 0;
 	mouseB = 0;
@@ -67,10 +68,44 @@ BasicGraph::resize(int width, int height)
 void
 BasicGraph::paintEvent(QPaintEvent *)
 {
-  QPainter p2(this);
-  gtop = (height() - gheight) / 2;
-  gleft = (width() - gwidth) / 2;
-  p2.drawImage(gleft, gtop, *image);
+	unsigned int tx, ty;
+  
+	QPainter p2(this);
+	gtop = (height() - gheight) / 2;
+	gleft = (width() - gwidth) / 2;
+	
+	if (gridlines) {
+		p2.setPen(QColor(128,128,128,255));
+		for(tx=0; tx<gwidth; tx=tx+10) {
+			if (tx%100==0) {
+				p2.setPen(QColor(64,64,64,255));
+			} else {
+				p2.setPen(QColor(128,128,128,255));
+			}
+			p2.drawLine(tx+gleft, gtop, tx+gleft, gheight+gtop);
+		}
+
+		for(ty=0; ty<gheight; ty=ty+10) {
+			if (ty%100==0) {
+				p2.setPen(QColor(64,64,64,255));
+			} else {
+				p2.setPen(QColor(128,128,128,255));
+			}
+			p2.drawLine(gleft, ty+gtop, gwidth+gleft, ty+gtop);
+		}
+		
+		p2.setPen(QColor(64,64,64,255));
+		p2.setFont(QFont("Sans", 6, 100));
+		char buffer[64];
+		for(tx=0; tx<gwidth; tx=tx+100) {
+			for(ty=0; ty<gheight; ty=ty+100) {
+				sprintf(buffer, "%u,%u", tx, ty);
+				p2.drawText(gleft+tx+2, gtop+ty+(QFontMetrics(p2.font()).ascent())+1, buffer);
+			}
+		}
+	}
+	
+	p2.drawImage(gleft, gtop, *image);
 }
 
 
@@ -126,6 +161,12 @@ bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar)
 	m_usesMenu = true;
 
 	return true;	
+}
+
+void BasicGraph::slotGridLines(bool visible)
+{
+	gridlines = visible;
+	update();
 }
 
 void BasicGraph::slotCopy()

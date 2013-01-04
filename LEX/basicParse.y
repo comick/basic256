@@ -1227,6 +1227,7 @@ returnstmt: B256RETURN {
 ;
 
 colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
+		addIntOp(OP_PUSHINT, 255); 
 		addOp(OP_RGB);
 		addOp(OP_STACKDUP);
 		addOp(OP_SETCOLORINT);
@@ -1234,6 +1235,7 @@ colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
 		addExtendedOp(OPX_RUNTIMEWARNING);
 	}
 	| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT, 255); 
 		addOp(OP_RGB);
 		addOp(OP_STACKDUP);
 		addOp(OP_SETCOLORINT);
@@ -1553,11 +1555,11 @@ spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {
 		addExtendedOp(OPX_SPRITEPLACE);
 	}
 	| B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
-		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
 		addExtendedOp(OPX_SPRITEPLACE);
 	}
 	| B256SPRITEPLACE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT,1);	// scale
+		addIntOp(OP_PUSHINT,0);	// rotate
 		addExtendedOp(OPX_SPRITEPLACE);
 	}
 	| B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
@@ -1569,21 +1571,21 @@ spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {
 ;
 
 spritemovestmt: B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr  {
-		addIntOp(OP_PUSHINT,1);	// scale
-		addIntOp(OP_PUSHINT,0);	// rotate
+		addIntOp(OP_PUSHINT,0);	// scale (change in scale)
+		addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
 		addExtendedOp(OPX_SPRITEMOVE);
 	}
 	| B256SPRITEMOVE '(' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT,1);	// scale
-		addIntOp(OP_PUSHINT,0);	// rotate
+		addIntOp(OP_PUSHINT,0);	// scale (change in scale)
+		addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
 		addExtendedOp(OPX_SPRITEMOVE);
 	}
 	| B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {
-		addIntOp(OP_PUSHINT,0);	// rotate
+		addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
 		addExtendedOp(OPX_SPRITEMOVE);
 	}
 	| B256SPRITEMOVE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT,0);	// rotate
+		addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
 		addExtendedOp(OPX_SPRITEMOVE);
 	}
 	| B256SPRITEMOVE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {
@@ -2047,46 +2049,52 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256CLICKY '(' ')' { addOp(OP_CLICKY); }
 	| B256CLICKB { addOp(OP_CLICKB); }
 	| B256CLICKB '(' ')' { addOp(OP_CLICKB); }
-	| B256CLEAR { addIntOp(OP_PUSHINT, -1); }
-	| B256CLEAR '(' ')' { addIntOp(OP_PUSHINT, -1); }
-	| B256BLACK { addIntOp(OP_PUSHINT, 0x000000); }
-	| B256BLACK '(' ')' { addIntOp(OP_PUSHINT, 0x000000); }
-	| B256WHITE { addIntOp(OP_PUSHINT, 0xf8f8f8); }
-	| B256WHITE '(' ')' { addIntOp(OP_PUSHINT, 0xf8f8f8); }
-	| B256RED { addIntOp(OP_PUSHINT, 0xff0000); }
-	| B256RED '(' ')' { addIntOp(OP_PUSHINT, 0xff0000); }
-	| B256DARKRED { addIntOp(OP_PUSHINT, 0x800000); }
-	| B256DARKRED '(' ')' { addIntOp(OP_PUSHINT, 0x800000); }
-	| B256GREEN { addIntOp(OP_PUSHINT, 0x00ff00); }
-	| B256GREEN '(' ')' { addIntOp(OP_PUSHINT, 0x00ff00); }
-	| B256DARKGREEN { addIntOp(OP_PUSHINT, 0x008000); }
-	| B256DARKGREEN '(' ')' { addIntOp(OP_PUSHINT, 0x008000); }
-	| B256BLUE { addIntOp(OP_PUSHINT, 0x0000ff); }
-	| B256BLUE '(' ')' { addIntOp(OP_PUSHINT, 0x0000ff); }
-	| B256DARKBLUE { addIntOp(OP_PUSHINT, 0x000080); }
-	| B256DARKBLUE '(' ')' { addIntOp(OP_PUSHINT, 0x000080); }
-	| B256CYAN { addIntOp(OP_PUSHINT, 0x00ffff); }
-	| B256CYAN '(' ')' { addIntOp(OP_PUSHINT, 0x00ffff); }
-	| B256DARKCYAN { addIntOp(OP_PUSHINT, 0x008080); }
-	| B256DARKCYAN '(' ')' { addIntOp(OP_PUSHINT, 0x008080); }
-	| B256PURPLE { addIntOp(OP_PUSHINT, 0xff00ff); }
-	| B256PURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xff00ff); }
-	| B256DARKPURPLE { addIntOp(OP_PUSHINT, 0x800080); }
-	| B256DARKPURPLE '(' ')' { addIntOp(OP_PUSHINT, 0x800080); }
-	| B256YELLOW { addIntOp(OP_PUSHINT, 0xffff00); }
-	| B256YELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xffff00); }
-	| B256DARKYELLOW { addIntOp(OP_PUSHINT, 0x808000); }
-	| B256DARKYELLOW '(' ')' { addIntOp(OP_PUSHINT, 0x808000); }
-	| B256ORANGE { addIntOp(OP_PUSHINT, 0xff6600); }
-	| B256ORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xff6600); }
-	| B256DARKORANGE { addIntOp(OP_PUSHINT, 0xaa3300); }
-	| B256DARKORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xaa3300); }
-	| B256GREY { addIntOp(OP_PUSHINT, 0xa4a4a4); }
-	| B256GREY '(' ')' { addIntOp(OP_PUSHINT, 0xa4a4a4); }
-	| B256DARKGREY { addIntOp(OP_PUSHINT, 0x808080); }
-	| B256DARKGREY '(' ')' { addIntOp(OP_PUSHINT, 0x808080); }
+	| B256CLEAR { addIntOp(OP_PUSHINT, 0x00000000); }
+	| B256CLEAR '(' ')' { addIntOp(OP_PUSHINT, 0x00000000); }
+	| B256BLACK { addIntOp(OP_PUSHINT, 0xff000000); }
+	| B256BLACK '(' ')' { addIntOp(OP_PUSHINT, 0xff000000); }
+	| B256WHITE { addIntOp(OP_PUSHINT, 0xfff8f8f8); }
+	| B256WHITE '(' ')' { addIntOp(OP_PUSHINT, 0xfff8f8f8); }
+	| B256RED { addIntOp(OP_PUSHINT, 0xffff0000); }
+	| B256RED '(' ')' { addIntOp(OP_PUSHINT, 0xffff0000); }
+	| B256DARKRED { addIntOp(OP_PUSHINT, 0xff800000); }
+	| B256DARKRED '(' ')' { addIntOp(OP_PUSHINT, 0xff800000); }
+	| B256GREEN { addIntOp(OP_PUSHINT, 0xff00ff00); }
+	| B256GREEN '(' ')' { addIntOp(OP_PUSHINT, 0xff00ff00); }
+	| B256DARKGREEN { addIntOp(OP_PUSHINT, 0xff008000); }
+	| B256DARKGREEN '(' ')' { addIntOp(OP_PUSHINT, 0xff008000); }
+	| B256BLUE { addIntOp(OP_PUSHINT, 0xff0000ff); }
+	| B256BLUE '(' ')' { addIntOp(OP_PUSHINT, 0xff0000ff); }
+	| B256DARKBLUE { addIntOp(OP_PUSHINT, 0xff000080); }
+	| B256DARKBLUE '(' ')' { addIntOp(OP_PUSHINT, 0xff000080); }
+	| B256CYAN { addIntOp(OP_PUSHINT, 0xff00ffff); }
+	| B256CYAN '(' ')' { addIntOp(OP_PUSHINT, 0xff00ffff); }
+	| B256DARKCYAN { addIntOp(OP_PUSHINT, 0xff008080); }
+	| B256DARKCYAN '(' ')' { addIntOp(OP_PUSHINT, 0xff008080); }
+	| B256PURPLE { addIntOp(OP_PUSHINT, 0xffff00ff); }
+	| B256PURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xffff00ff); }
+	| B256DARKPURPLE { addIntOp(OP_PUSHINT, 0xff800080); }
+	| B256DARKPURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xff800080); }
+	| B256YELLOW { addIntOp(OP_PUSHINT, 0xffffff00); }
+	| B256YELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xffffff00); }
+	| B256DARKYELLOW { addIntOp(OP_PUSHINT, 0xff808000); }
+	| B256DARKYELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xff808000); }
+	| B256ORANGE { addIntOp(OP_PUSHINT, 0xffff6600); }
+	| B256ORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xffff6600); }
+	| B256DARKORANGE { addIntOp(OP_PUSHINT, 0xffaa3300); }
+	| B256DARKORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xffaa3300); }
+	| B256GREY { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
+	| B256GREY '(' ')' { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
+	| B256DARKGREY { addIntOp(OP_PUSHINT, 0xff808080); }
+	| B256DARKGREY '(' ')' { addIntOp(OP_PUSHINT, 0xff808080); }
 	| B256PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }
-	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RGB); }
+	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT, 255); 
+		addOp(OP_RGB);
+	}
+	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addOp(OP_RGB);
+	}
 	| B256GETCOLOR { addOp(OP_GETCOLOR); }
 	| B256GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
 	| B256GETBRUSHCOLOR { addExtendedOp(OPX_GETBRUSHCOLOR); }

@@ -50,6 +50,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
  
  public slots:
   void resize(int, int);
+  void slotGridLines(bool);
   void slotCopy();
   void slotPrint();
  
@@ -67,6 +68,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   unsigned int gheight;
   unsigned int gtop;	// position of image in basicgraph widget
   unsigned int gleft;
+  bool gridlines;		// show the grid lines or not
 
 };
 

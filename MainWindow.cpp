@@ -199,7 +199,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	textWinVisibleAct = viewmenu->addAction(QObject::tr("&Text Window"));
 	graphWinVisibleAct = viewmenu->addAction(QObject::tr("&Graphics Window"));
 	variableWinVisibleAct = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
-	editmenu->addSeparator();
 	editWinVisibleAct->setCheckable(true);
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
@@ -213,6 +212,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
 	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
+	// Graphics Grid Lines
+	viewmenu->addSeparator();
+	graphGridVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
+	graphGridVisibleAct->setCheckable(true);
+	graphGridVisibleAct->setChecked(false);
+	QObject::connect(graphGridVisibleAct, SIGNAL(toggled(bool)), goutput, SLOT(slotGridLines(bool)));
+
+	// view bars
+	viewmenu->addSeparator();
 	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("&Toolbars"));
 	QAction *maintbaract = viewtbars->addAction(QObject::tr("&Main"));
 	maintbaract->setCheckable(true);

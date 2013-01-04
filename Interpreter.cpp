@@ -2529,41 +2529,24 @@ Interpreter::execByteCode()
 			op++;
 			int brushval = stack.popint();
 			int penval = stack.popint();
-			if (brushval < -1 || brushval > 16777215 || penval < -1 || penval > 16777215)
-			{
-				errornum = ERROR_COLORNUMBER;
-			} else {
-				if (penval==-1) {
-					drawingpen.setColor(Qt::color0);
-				} else {
-					drawingpen.setColor(QColor::fromRgb((QRgb) penval));
-				}
-				if (brushval==-1) {
-					if (penval==-1) {
-						// if pen is clear make brush clear so old behaviour works
-						drawingbrush.setColor(Qt::color0);
-					} else {
-						// if pen not clear make brush totally transparent instead of clear
-						drawingbrush.setColor(QColor(0, 0, 0, 0));
-					}
-				} else {
-					drawingbrush.setColor(QColor::fromRgb((QRgb) brushval));
-				}
-			}
+
+			drawingpen.setColor(QColor::fromRgba((QRgb) penval));
+			drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
 		}
 		break;
 
 	case OP_RGB:
 		{
 			op++;
+			int aval = stack.popint();
 			int bval = stack.popint();
 			int gval = stack.popint();
 			int rval = stack.popint();
-			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255)
+			if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255)
 			{
 				errornum = ERROR_RGB;
 			} else {
-				stack.push((int) rval*65536+gval*256+bval);
+				stack.push((int) QColor(rval,gval,bval,aval).rgba());
 			}
 		}
 		break;
@@ -2574,29 +2557,21 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			if (rgb==Qt::color0) {
-				stack.push(-1);
-			} else {
-				stack.push((int) (rgb % 0x1000000));
-			}
+			stack.push((int) rgb);
 		}
 		break;
 		
 	case OP_GETCOLOR:
 		{
 			op++;
-			if (drawingpen.color()==Qt::color0) {
-				stack.push(-1);
-			} else {
-				stack.push((int) (drawingpen.color().rgb() % 0x1000000));
-			}
+			stack.push((int) drawingpen.color().rgba());
 		}
 		break;
 		
 	case OP_GETSLICE:
 		{
 			// slice format is 4 digit HEX width, 4 digit HEX height,
-			// and (w*h)*6 digit HEX RGB for each pixel of slice
+			// and (w*h)*8 digit HEX RGB for each pixel of slice
 			op++;
 			int h = stack.popint();
 			int w = stack.popint();
@@ -2610,7 +2585,7 @@ Interpreter::execByteCode()
 			for(th=0; th<h; th++) {
 				for(tw=0; tw<w; tw++) {
 					rgb = image->pixel(x+tw,y+th);
-					qs->append(QString::number(rgb%0x1000000,16).rightJustified(6,'0'));
+					qs->append(QString::number(rgb,16).rightJustified(8,'0'));
 				}
 			}
 			stack.push(qs->toUtf8().data());
@@ -2621,7 +2596,7 @@ Interpreter::execByteCode()
 	case OP_PUTSLICE:
 	case OP_PUTSLICEMASK:
 		{
-			int mask = 0x1000000;	// mask nothing will equal
+			QRgb mask = 0x00;	// default mask transparent - nothing gets masked
 			if (*op == OP_PUTSLICEMASK) mask = stack.popint();
 			char *txt = stack.popstring();
 			QString imagedata = QString::fromUtf8(txt);
@@ -2629,7 +2604,7 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			bool ok;
-			int rgb, lastrgb = 0x1000000;
+			QRgb rgb, lastrgb = 0x00;
 			int th, tw;
 			int offset = 0; // location in qstring to get next hex number
 
@@ -2641,10 +2616,11 @@ Interpreter::execByteCode()
 				if (ok) {
 
 					QPainter ian(image);
+					ian.setPen(lastrgb);
 					for(th=0; th<h && ok; th++) {
 						for(tw=0; tw<w && ok; tw++) {
-							rgb = imagedata.mid(offset, 6).toInt(&ok, 16);
-							offset+=6;
+							rgb = imagedata.mid(offset, 8).toUInt(&ok, 16);
+							offset+=8;
 							if (ok && rgb != mask) {
 								if (rgb!=lastrgb) {
 									ian.setPen(rgb);
@@ -2676,8 +2652,8 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (x1val >= 0 && y1val >= 0)
 			{
@@ -2701,8 +2677,8 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setBrush(drawingbrush);
 			ian.setPen(drawingpen);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (x1val > 0 && y1val > 0)
 			{
@@ -2726,8 +2702,8 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(drawingpen);
 			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				poly.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (variables.type(*i) == T_ARRAY)
 			{
@@ -2767,8 +2743,8 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(drawingpen);
 			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				poly.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			int pairs = *i / 2;
 			if (pairs < 3)
@@ -2810,8 +2786,8 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(drawingpen);
 			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				poly.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (variables.type(*i) == T_ARRAY)
 			{
@@ -2882,8 +2858,8 @@ Interpreter::execByteCode()
 			QPainter poly(image);
 			poly.setPen(drawingpen);
 			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				poly.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				poly.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 
 			int pairs = llist / 2;
@@ -2924,8 +2900,8 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			ian.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
 			ian.end();
@@ -2976,8 +2952,8 @@ Interpreter::execByteCode()
 			QPainter ian(image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
-			if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-				ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if(!fontfamily.isEmpty()) {
 				ian.setFont(QFont(fontfamily, fontpoint, fontweight));
@@ -3015,7 +2991,14 @@ Interpreter::execByteCode()
 	case OP_CLG:
 		{
 			op++;
-			image->fill(Qt::color0);
+			
+			QPainter ian(image);
+			ian.setPen(QColor(0,0,0,0));
+			ian.setBrush(QColor(0,0,0,0));
+			ian.setCompositionMode(QPainter::CompositionMode_Clear);
+			ian.drawRect(0, 0, graph->image->width(), graph->image->height());
+			ian.end();
+
 			if (!fastgraphics) waitForGraphics();
 		}
 		break;
@@ -3028,6 +3011,9 @@ Interpreter::execByteCode()
 
 			QPainter ian(image);
 			ian.setPen(drawingpen);
+			if (drawingpen.color()==QColor(0,0,0,0)) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+			}
 
 			ian.drawPoint(twoval, oneval);
 			ian.end();
@@ -3538,7 +3524,7 @@ Interpreter::execByteCode()
 							if (opcode==OPX_SPRITEW) stack.push(sprites[n].image->width());
 							if (opcode==OPX_SPRITEV) stack.push(sprites[n].visible?1:0);
 							if (opcode==OPX_SPRITER) stack.push(sprites[n].r);
-							if (opcode==OPX_SPRITER) stack.push(sprites[n].s);
+							if (opcode==OPX_SPRITES) stack.push(sprites[n].s);
 						}
 					}
 				}
@@ -4467,8 +4453,8 @@ Interpreter::execByteCode()
 					QPainter ian(image);
 					ian.setPen(drawingpen);
 					ian.setBrush(drawingbrush);
-					if (drawingpen.color()==Qt::color0 && drawingbrush.color()==Qt::color0 ) {
-						ian.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						ian.setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					if(opcode==OPX_ARC) {
 						ian.drawArc(xval, yval, wval, hval, s, aw);
@@ -4508,11 +4494,7 @@ Interpreter::execByteCode()
 			case OPX_GETBRUSHCOLOR:
 				{
 					op++;
-					if (drawingbrush.color()==Qt::color0) {
-						stack.push(-1);
-					} else {
-						stack.push((int) (drawingbrush.color().rgb() % 0x1000000));
-					}
+					stack.push((int) drawingbrush.color().rgba());
 				}
 				break;
 		

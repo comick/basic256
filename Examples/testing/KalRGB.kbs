@@ -1,32 +1,24 @@
-  rem Kalidescope
+rem Kalidescope
 
 cls
 print "Press Q to stop."
 clg
-screenx = 300
-screeny = 300
 maxsize = 100
 
 fastgraphics
 
-draw:
-x = int(rand * screenx)
-y = int(rand * screeny)
-z = int(rand * maxsize)	# size of box to draw on screen
-colornumber = int(rand * 18)
-gosub SETCOLOR
-rect x, y, z, z
-rect screenx - x - z, y, z, z		# draw mirror reflection on x axis
-rect x, screeny - y - z, z, z		# draw mirror reflection on y axis
-rect screenx - x - z, screeny - y - z, z, z	# draw mirror reflestion on both
-refresh
-if key = asc("Q") then end	# if user presses q then end
-goto draw
-end
-
-SETCOLOR:
-color rgb(int(rand*256), int(rand*256), int(rand*256))
-return
+while true
+   x = int(rand * graphwidth)
+   y = int(rand * graphheight)
+   z = int(rand * maxsize)	# size of box to draw on screen
+   color rgb(rand*256, rand*256, rand*256, rand*256) # random color and opacity
+   rect x, y, z, z
+   rect graphwidth - x - z, y, z, z		# draw mirror reflection on x axis
+   rect x, graphheight - y - z, z, z		# draw mirror reflection on y axis
+   rect graphwidth - x - z, graphheight - y - z, z, z	# draw mirror reflestion on both
+   refresh
+   if key = asc("Q") then end	# if user presses q then end
+end while
 
 
 

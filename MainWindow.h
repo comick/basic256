@@ -50,6 +50,7 @@ public:
 	QAction *editWinVisibleAct;
 	QAction *textWinVisibleAct;
 	QAction *graphWinVisibleAct;
+	QAction *graphGridVisibleAct;
   	BasicEdit * editor;
   	BasicOutput * output;
 	BasicGraph * goutput;
