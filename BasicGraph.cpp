@@ -54,7 +54,15 @@ BasicGraph::resize(int width, int height)
 	delete image;
 	imagedata = new uchar[sizeof(int) * width * height];
 	image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
-	image->fill(QColor(0,0,0,0));
+
+	// clear the new image
+    QPainter ian(image);
+	ian.setPen(QColor(0,0,0,0));
+	ian.setBrush(QColor(0,0,0,0));
+	ian.setCompositionMode(QPainter::CompositionMode_Clear);
+	ian.drawRect(0, 0, width, height);
+	ian.end();
+
 	mouseX = 0;
 	mouseY = 0;
 	mouseB = 0;

@@ -19,6 +19,8 @@
 #ifndef __BASICGRAPH_H
 #define __BASICGRAPH_H
 
+#include <stdio.h>
+
 #include <QWidget>
 #include <QPainter>
 #include <QKeyEvent>
