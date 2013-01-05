@@ -491,9 +491,8 @@ void Interpreter::spriteredraw(int n) {
 				sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 				ian.drawImage(x, y, *(sprites[i].image));
 			} else {
-				QImage rotated = sprites[i].image->copy();
 				QTransform transform = QTransform().translate(0,0).rotateRadians(sprites[i].r).scale(sprites[i].s,sprites[i].s);;
-				rotated = rotated.transformed(transform);
+				QImage rotated = sprites[i].image->transformed(transform);
 				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
 				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
 				sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
