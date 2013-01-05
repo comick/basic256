@@ -468,7 +468,7 @@ void Interpreter::spriteundraw(int n) {
 	QPainter ian(image);
 	i = nsprites-1;
 	while(i>=n) {
-		if (sprites[i].active && sprites[i].visible) {
+		if (sprites[i].active && sprites[i].visible && !sprites[i].underimage->isNull()) {
 			x = (int) (sprites[i].x - (double) sprites[i].underimage->width()/2.0);
 			y = (int) (sprites[i].y - (double) sprites[i].underimage->height()/2.0);
 			ian.drawImage(x, y, *(sprites[i].underimage));
@@ -485,10 +485,9 @@ void Interpreter::spriteredraw(int n) {
 	while(i<nsprites) {
 		if (sprites[i].active && sprites[i].visible) {
 			QPainter ian(image);
-			if (sprites[i].r==0 || sprites[i].s==1) {
+			if (sprites[i].r==0 && sprites[i].s==1) {
 				x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
 				y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
-				delete sprites[i].underimage;
 				sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 				ian.drawImage(x, y, *(sprites[i].image));
 			} else {
@@ -497,7 +496,6 @@ void Interpreter::spriteredraw(int n) {
 				rotated = rotated.transformed(transform);
 				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
 				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
-				delete sprites[i].underimage;
 				sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
 				ian.drawImage(x, y, rotated);
 			}
@@ -3362,12 +3360,10 @@ Interpreter::execByteCode()
 						} else {
 						
 							spriteundraw(n);
-							delete sprites[n].image;
 							sprites[n].image = 	new QImage(QString::fromUtf8(file));
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_IMAGEFILE;
 							} else {
-								delete sprites[n].underimage;
 								sprites[n].underimage = new QImage();
 								sprites[n].visible = false;
 								sprites[n].active = true;
@@ -3393,12 +3389,10 @@ Interpreter::execByteCode()
 							errornum = ERROR_SPRITENUMBER;
 						} else {
 							spriteundraw(n);
-							delete sprites[n].image;
 							sprites[n].image = new QImage(image->copy(x, y, w, h));
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_SPRITESLICE;
 							} else {
-								delete sprites[n].underimage;
 								sprites[n].underimage = new QImage();
 								sprites[n].visible = false;
 								sprites[n].active = true;
