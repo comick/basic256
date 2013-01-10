@@ -54,6 +54,7 @@ struct byteCodeData
 };
 
 
+// used by function calls, subroutine calls, and gosubs for return location
 struct frame {
   frame *next;
   unsigned char *returnAddr;
@@ -67,6 +68,7 @@ struct forframe {
   unsigned char *returnAddr;
   double endNum;
   double step;
+  int recurselevel;
 };
 
 typedef struct {

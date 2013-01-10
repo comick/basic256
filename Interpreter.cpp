@@ -1004,6 +1004,7 @@ Interpreter::execByteCode()
 			temp->next = forstack;
 			temp->prev = NULL;
 			temp->variable = *i;
+			temp->recurselevel = variables.getrecurse();
 
 			variables.setfloat(*i, startnum);
 
@@ -3303,8 +3304,16 @@ Interpreter::execByteCode()
 
 	case OP_DECREASERECURSE:
 		// decrease recursion level in variable hash
+		// and pop any unfinished for statements off of forstack
 		{
 			op++;
+			while (forstack&&forstack->recurselevel == variables.getrecurse()) {
+				forframe *temp = new forframe;
+				temp = forstack;
+				forstack = temp->next;
+				delete temp;
+			}
+
 			variables.decreaserecurse();
 			if (variables.error()!=ERROR_NONE) {
 				errornum = variables.error();

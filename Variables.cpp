@@ -59,6 +59,12 @@ Variables::increaserecurse()
 	}
 }
 
+int
+Variables::getrecurse()
+{
+	return	recurselevel;
+}
+
 void
 Variables::decreaserecurse()
 {

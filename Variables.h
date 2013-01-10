@@ -50,6 +50,7 @@ class Variables
 		void clear();
 		void increaserecurse();
 		void decreaserecurse();
+		int getrecurse();
 		//
 		int type(int);
 		int error();
