@@ -79,7 +79,6 @@ typedef struct {
 	double r;	// rotate
 	double s;	// scale
 	bool visible;
-	bool active;
 } sprite;
 
 class Interpreter : public QThread

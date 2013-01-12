@@ -459,7 +459,23 @@ Interpreter::~Interpreter() {
 }
 
 void Interpreter::clearsprites() {
-	// need to implement to cleanup garbage
+	// cleanup sprites - release images and deallocate the space
+	int i;
+	if (nsprites>0) {
+		for(i=0;i<nsprites;i++) {
+			if (sprites[i].image) {
+				delete sprites[i].image;
+				sprites[i].image = NULL;
+			}
+			if (sprites[i].underimage) {
+				delete sprites[i].underimage;
+				sprites[i].underimage = NULL;
+			}
+		}
+		free(sprites);
+		sprites = NULL;
+		nsprites = 0;
+	}
 }
 
 void Interpreter::spriteundraw(int n) {
@@ -468,7 +484,7 @@ void Interpreter::spriteundraw(int n) {
 	QPainter ian(image);
 	i = nsprites-1;
 	while(i>=n) {
-		if (sprites[i].active && sprites[i].visible && !sprites[i].underimage->isNull()) {
+		if (sprites[i].underimage && sprites[i].visible) {
 			x = (int) (sprites[i].x - (double) sprites[i].underimage->width()/2.0);
 			y = (int) (sprites[i].y - (double) sprites[i].underimage->height()/2.0);
 			ian.drawImage(x, y, *(sprites[i].underimage));
@@ -483,11 +499,15 @@ void Interpreter::spriteredraw(int n) {
 	// redraw all sprites n to nsprites-1
 	i = n;
 	while(i<nsprites) {
-		if (sprites[i].active && sprites[i].visible) {
+		if (sprites[i].image && sprites[i].visible) {
 			QPainter ian(image);
 			if (sprites[i].r==0 && sprites[i].s==1) {
 				x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
 				y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
+				if (sprites[i].underimage) {
+					delete sprites[i].underimage;
+					sprites[i].underimage = NULL;
+				}
 				sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 				ian.drawImage(x, y, *(sprites[i].image));
 			} else {
@@ -495,6 +515,10 @@ void Interpreter::spriteredraw(int n) {
 				QImage rotated = sprites[i].image->transformed(transform);
 				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
 				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
+				if (sprites[i].underimage) {
+					delete sprites[i].underimage;
+					sprites[i].underimage = NULL;
+				}
 				sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
 				ian.drawImage(x, y, rotated);
 			}
@@ -509,6 +533,8 @@ bool Interpreter::spritecollide(int n1, int n2) {
 	int top2, bottom2, left2, right2;
 	
 	if (n1==n2) return true;
+	
+	if (!sprites[n1].image || !sprites[n2].image) return false;
 	
 	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()*sprites[n1].s/2.0);
 	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()*sprites[n2].s/2.0);;
@@ -3333,19 +3359,15 @@ Interpreter::execByteCode()
 						int n = stack.popint();
 						op++;
 						// deallocate existing sprites
-						if (nsprites!=0) {
-							free(sprites);
-							nsprites = 0;
-						}
+						clearsprites();
 						// create new ones that are not visible, active, and are at origin
 						if (n > 0) {
 							sprites = (sprite*) malloc(sizeof(sprite) * n);
 							nsprites = n;
 							while (n>0) {
 								n--;
-								sprites[n].image = new QImage();
-								sprites[n].underimage = new QImage();
-								sprites[n].active = false;
+								sprites[n].image = NULL;
+								sprites[n].underimage = NULL;
 								sprites[n].visible = false;
 								sprites[n].x = 0;
 								sprites[n].y = 0;
@@ -3366,15 +3388,23 @@ Interpreter::execByteCode()
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
 						} else {
-						
 							spriteundraw(n);
-							sprites[n].image = 	new QImage(QString::fromUtf8(file));
+							if (sprites[n].image) {
+								// free previous image before replacing
+								delete sprites[n].image;
+								sprites[n].image = NULL;
+							}
+							sprites[n].image = new QImage(QString::fromUtf8(file));
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_IMAGEFILE;
+								sprites[n].image = NULL;							
 							} else {
-								sprites[n].underimage = new QImage();
+								if (sprites[n].underimage) {
+									// free previous underimage before replacing
+									delete sprites[n].underimage;
+									sprites[n].underimage = NULL;
+								}
 								sprites[n].visible = false;
-								sprites[n].active = true;
 							}
 							spriteredraw(n);
 						}
@@ -3397,13 +3427,22 @@ Interpreter::execByteCode()
 							errornum = ERROR_SPRITENUMBER;
 						} else {
 							spriteundraw(n);
+							if (sprites[n].image) {
+								// free previous image before replacing
+								delete sprites[n].image;
+								sprites[n].image = NULL;
+							}
 							sprites[n].image = new QImage(image->copy(x, y, w, h));
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_SPRITESLICE;
+								sprites[n].image = NULL;
 							} else {
-								sprites[n].underimage = new QImage();
+								if (sprites[n].underimage) {
+									// free previous underimage before replacing
+									delete sprites[n].underimage;
+									sprites[n].underimage = NULL;
+								}
 								sprites[n].visible = false;
-								sprites[n].active = true;
 							}
 							spriteredraw(n);
 						}
@@ -3426,7 +3465,7 @@ Interpreter::execByteCode()
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
 						} else {
-							if(!sprites[n].active) {
+							if(!sprites[n].image) {
 								errornum = ERROR_SPRITENA;
 							} else {
 				
@@ -3466,7 +3505,7 @@ Interpreter::execByteCode()
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
 						} else {
-							if(!sprites[n].active) {
+							if(!sprites[n].image) {
 								errornum = ERROR_SPRITENA;
 							} else {
 						
@@ -3490,7 +3529,7 @@ Interpreter::execByteCode()
 						if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
 						} else {
-							if(!sprites[n1].active || !sprites[n2].active) {
+							if(!sprites[n1].image || !sprites[n2].image) {
 								 errornum = ERROR_SPRITENA;
 							} else {
 								stack.push(spritecollide(n1, n2));
@@ -3516,7 +3555,7 @@ Interpreter::execByteCode()
 						errornum = ERROR_SPRITENUMBER;
 						stack.push(0);	
 					} else {
-						if(!sprites[n].active) {
+						if(!sprites[n].image) {
 							errornum = ERROR_SPRITENA;
 							stack.push(0);	
 						} else {
