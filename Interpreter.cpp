@@ -2807,12 +2807,6 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 
-			QPainter poly(image);
-			poly.setPen(drawingpen);
-			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				poly.setCompositionMode(QPainter::CompositionMode_Clear);
-			}
 			if (variables.type(*i) == T_ARRAY)
 			{
 				int pairs = variables.arraysize(*i) / 2;
@@ -2822,6 +2816,12 @@ Interpreter::execByteCode()
 				} else {
 	
 					if (scale>0) {
+						QPainter poly(image);
+						poly.setPen(drawingpen);
+						poly.setBrush(drawingbrush);
+						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+							poly.setCompositionMode(QPainter::CompositionMode_Clear);
+						}
 						QPointF *points = new QPointF[pairs];
 	
 						for (int j = 0; j < pairs; j++)
@@ -2842,7 +2842,6 @@ Interpreter::execByteCode()
 				}
 			} else {
 				errornum = ERROR_POLYARRAY;
-				poly.end();
 			}
 
 		}
