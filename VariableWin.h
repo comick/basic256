@@ -27,10 +27,9 @@ class VariableWin : public QDockWidget
   VariableWin(QWidget * parent);
   
  public slots:
-  void addVar(QString name, QString value, int arraylen);
+  void addVar(QString name, QString value, int arraylenx, int arrayleny);
   void clearTable();
   
  private:
   QTreeWidget *table;
-  unsigned int rows;
 };

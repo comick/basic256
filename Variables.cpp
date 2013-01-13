@@ -12,6 +12,7 @@
 Variables::Variables()
 {
 	lasterror = ERROR_NONE;
+	lasterrorvar = 0;
 	// initialize variable storage
 }
 
@@ -56,6 +57,7 @@ Variables::increaserecurse()
 	if (recurselevel>=MAX_RECURSE_LEVELS) {
 		recurselevel--;
 		lasterror = ERROR_MAXRECURSE;
+		lasterrorvar = 0;
 	}
 }
 

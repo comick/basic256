@@ -121,7 +121,7 @@ class Interpreter : public QThread
   void stopWAV();
   void goToLine(int);
   void highlightLine(int);
-  void varAssignment(QString name, QString value, int arraylen);
+  void varAssignment(QString name, QString value, int arraylenx, int arrayleny);
   void mainWindowsResize(int, int, int);
   void mainWindowsVisible(int, bool);
 
@@ -162,6 +162,7 @@ class Interpreter : public QThread
   sqlite3_stmt ***dbset;
   bool dbsetrow[NUMDBCONN][NUMDBSET];		// have we "stepped" into a row
   int errornum;
+  int errorvarnum;
   QString errormessage;
   int lasterrornum;
   QString lasterrormessage;
