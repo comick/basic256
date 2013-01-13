@@ -281,6 +281,7 @@ toint [Ii][Nn][Tt]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
+version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
 wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
@@ -588,6 +589,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {penwidth}		{ count(); return B256PENWIDTH; }
 {getpenwidth}		{ count(); return B256GETPENWIDTH; }
 {getbrushcolor}		{ count(); return B256GETBRUSHCOLOR; }
+{version}		{ count(); return B256VERSION; }
 	
 {variable} {
 	int num;

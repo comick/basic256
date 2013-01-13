@@ -253,6 +253,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ss][Tt][Rr][Ii][Nn][Gg]\\b"					// tostring
 		<< "\\b[Uu][Nn][Tt][Ii][Ll]\\b"						// until
 		<< "\\b[Uu][Pp][Pp][Ee][Rr]\\b"						// upper
+		<< "\\b[Vv][Ee][Rr][Ss][Ii][Oo][Nn]\\b"					// version
 		<< "\\b[Vv][Oo][Ll][Uu][Mm][Ee]\\b"					// volume
 		<< "\\b[Ww][Aa][Vv][Pp][Ll][Aa][Yy]\\b"					// wavplay
 		<< "\\b[Ww][Aa][Vv][Ss][Tt][Oo][Pp]\\b"					// wavstop
