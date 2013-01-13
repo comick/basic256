@@ -28,6 +28,9 @@ win32 {
 				-lsapi \
 				-lws2_32 \
 				-lwinmm
+				
+QMAKE_CXXFLAGS		+= 	-mstackrealign
+QMAKE_CXXFLAGS_RELEASE		+= 	-mstackrealign
 
 	########
         # Sound class - How Sound statement works
