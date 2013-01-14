@@ -1041,7 +1041,7 @@ Interpreter::execByteCode()
 
 			if(debugMode)
 			{
-				emit(varAssignment(QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
+				emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
 			}
 
 			temp->endNum = endnum;
@@ -1084,7 +1084,7 @@ Interpreter::execByteCode()
 
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
 				}
 
 				if (temp->step > 0 && val <= temp->endNum)
@@ -1454,9 +1454,9 @@ Interpreter::execByteCode()
 				if(debugMode)
 				{
 					if (ydim==1) {
-						emit(varAssignment(QString(symtable[*i]), NULL, xdim, -1));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, -1));
 					} else {
-						emit(varAssignment(QString(symtable[*i]), NULL, xdim, ydim));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, ydim));
 					}
 				}
 			} else {
@@ -1480,9 +1480,9 @@ Interpreter::execByteCode()
 				if(debugMode)
 				{
 					if (ydim==1) {
-						emit(varAssignment(QString(symtable[*i]), NULL, xdim, -1));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, -1));
 					} else {
-						emit(varAssignment(QString(symtable[*i]), NULL, xdim, ydim));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, ydim));
 					}
 				}
 			} else {
@@ -1533,7 +1533,7 @@ Interpreter::execByteCode()
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
 				}
 			} else {
 				errornum = variables.error();
@@ -1556,7 +1556,7 @@ Interpreter::execByteCode()
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.array2dgetstring(*i, xindex, yindex)), xindex, yindex));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.array2dgetstring(*i, xindex, yindex)), xindex, yindex));
 				}
 			} else {
 				errornum = variables.error();
@@ -1578,7 +1578,7 @@ Interpreter::execByteCode()
 			{
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), NULL, items, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, items, -1));
 				}
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
@@ -1588,7 +1588,7 @@ Interpreter::execByteCode()
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
 						{
-							emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
+							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
 						}
 					} else {
 						errornum = variables.error();
@@ -1641,7 +1641,7 @@ Interpreter::execByteCode()
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), NULL, list.size(), -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, list.size(), -1));
 				}
 					
 				for(int x=0; x<list.size(); x++) {
@@ -1649,7 +1649,7 @@ Interpreter::execByteCode()
 						variables.arraysetstring(*i, x, strdup(list.at(x).toUtf8().data()));
 						if (variables.error()==ERROR_NONE) {
 							if(debugMode) {
-								emit(varAssignment(QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, x)), x, -1));
+								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, x)), x, -1));
 							}
 						} else {
 							errornum = variables.error();
@@ -1659,7 +1659,7 @@ Interpreter::execByteCode()
 						variables.arraysetfloat(*i, x, list.at(x).toDouble(&ok));
 						if (variables.error()==ERROR_NONE) {
 							if(debugMode) {
-								emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, x)), x, -1));
+								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, x)), x, -1));
 							}
 						} else {
 							errornum = variables.error();
@@ -1734,7 +1734,7 @@ Interpreter::execByteCode()
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
 				}
 			} else {
 				errornum = variables.error();
@@ -1757,7 +1757,7 @@ Interpreter::execByteCode()
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(QString(symtable[*i]), QString::number(variables.array2dgetfloat(*i, xindex, yindex)), xindex, yindex));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.array2dgetfloat(*i, xindex, yindex)), xindex, yindex));
 				}
 			} else {
 				errornum = variables.error();
@@ -1778,7 +1778,7 @@ Interpreter::execByteCode()
 			if(errornum==ERROR_NONE) {
 				if(debugMode && errornum==ERROR_NONE)
 				{
-					emit(varAssignment(QString(symtable[*i]), NULL, items, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, items, -1));
 				}
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
@@ -1788,7 +1788,7 @@ Interpreter::execByteCode()
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
 						{
-							emit(varAssignment(QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
+							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
 						}
 					} else {
 						errornum = variables.error();
@@ -3236,7 +3236,7 @@ Interpreter::execByteCode()
 
             if(debugMode)
             {
-                emit(varAssignment(QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1, -1));
+                emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1, -1));
             }
         }
         break;
@@ -3253,7 +3253,7 @@ Interpreter::execByteCode()
 
 			if(debugMode)
 			{
-			  emit(varAssignment(QString(symtable[*num]), QString::fromUtf8(variables.getstring(*num)), -1, -1));
+			  emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), QString::fromUtf8(variables.getstring(*num)), -1, -1));
 			}
 		}
 		break;
@@ -3411,7 +3411,14 @@ Interpreter::execByteCode()
 				delete temp;
 			}
 
+			if(debugMode) {
+				// remove variables from variable window when we return back
+				emit(varAssignment(variables.getrecurse(),QString(""), QString(""), -1, -1));
+			}
+
 			variables.decreaserecurse();
+
+
 			if (variables.error()!=ERROR_NONE) {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();

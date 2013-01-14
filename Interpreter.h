@@ -121,7 +121,7 @@ class Interpreter : public QThread
   void stopWAV();
   void goToLine(int);
   void highlightLine(int);
-  void varAssignment(QString name, QString value, int arraylenx, int arrayleny);
+  void varAssignment(int recurse, QString name, QString value, int arraylenx, int arrayleny);
   void mainWindowsResize(int, int, int);
   void mainWindowsVisible(int, bool);
 

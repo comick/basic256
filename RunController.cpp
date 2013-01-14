@@ -113,7 +113,7 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 
 	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
-	QObject::connect(i, SIGNAL(varAssignment(QString, QString, int, int)), mainwin->vardock, SLOT(addVar(QString, QString, int, int)));
+	QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), mainwin->vardock, SLOT(addVar(int, QString, QString, int, int)));
 
 	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
 	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));

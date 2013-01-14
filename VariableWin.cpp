@@ -28,19 +28,22 @@ VariableWin::VariableWin (QWidget * parent)
 {
   table = new QTreeWidget(this);
   table->setColumnCount(2);
-  table->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
+  table->setHeaderLabels(QStringList() << tr("Level - Name") << tr("Value"));
   table->sortByColumn(0,Qt::AscendingOrder);
   table->setSortingEnabled(true);
   setWidget(table);
 }
 
 void
-VariableWin::addVar(QString name, QString value, int arraylenx, int arrayleny)
+VariableWin::addVar(int recurse, QString name, QString value, int arraylenx, int arrayleny)
 {
     // pass -1 for a normal variable
     // value is NULL for a new array
 	QTreeWidgetItem *rowItem;
 	bool newArrayFlag = (value==NULL);
+	
+if (name!="") {
+	name = QString::number(recurse) + " - " + name;
 		
 	// remove old entries when a variable becomes an array or not
 	if (arraylenx==-1||value==NULL) {
@@ -107,9 +110,16 @@ VariableWin::addVar(QString name, QString value, int arraylenx, int arrayleny)
 			}
 		}
 	}
-
+} else {
+	// when we return from a subroutine or function delete its variables
+	QList<QTreeWidgetItem *> items = table->findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+	for (int n=items.size()-1; n>=0; n--) {
+		delete items[n];
+	}
+}
 		
 }
+
 
 
 
