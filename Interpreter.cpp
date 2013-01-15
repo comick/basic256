@@ -2582,6 +2582,7 @@ Interpreter::execByteCode()
 			char *temp = stack.popstring();
 			emit(speakWords(QString::fromUtf8(temp)));
 			free(temp);
+			waitForGraphics();
 		}
 		break;
 
@@ -2897,12 +2898,14 @@ Interpreter::execByteCode()
 	
 						for (int j = 0; j < pairs; j++)
 						{
-							double scalex = scale * variables.arraygetfloat(*i, j*2);
-							double scaley = scale * variables.arraygetfloat(*i, j*2+1);
-							double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-							double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-							points[j].setX(rotx + x);
-							points[j].setY(roty + y);
+							double tx = scale * variables.arraygetfloat(*i, j*2);
+							double ty = scale * variables.arraygetfloat(*i, j*2+1);
+							if (rotate!=0) {
+								tx = cos(rotate) * tx - sin(rotate) * ty;
+								ty = cos(rotate) * ty + sin(rotate) * tx;
+							}
+							points[j].setX(tx + x);
+							points[j].setY(ty + y);
 						}
 						poly.drawPolygon(points, pairs);
 						poly.end();
@@ -2939,9 +2942,9 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			
 			// pop the immediate list to uncover the location and scale
-			int *list = (int *) calloc(llist, sizeof(int));
+			double *list = (double *) calloc(llist, sizeof(double));
 			for(int j = llist; j>0 ; j--) {
-				list[j-1] = stack.popint();
+				list[j-1] = stack.popfloat();
 			}
 			
 			if (opcode==OP_STAMP_SR_LIST) rotate = stack.popfloat();
@@ -2965,12 +2968,14 @@ Interpreter::execByteCode()
 					QPointF *points = new QPointF[pairs];
 					for (int j = 0; j < pairs; j++)
 					{
-						double scalex = scale * list[(j*2)];
-						double scaley = scale * list[(j*2)+1];
-						double rotx = cos(rotate) * scalex - sin(rotate) * scaley;
-						double roty = cos(rotate) * scaley + sin(rotate) * scalex;
-						points[j].setX(rotx + x);
-						points[j].setY(roty + y);
+						double tx = scale * list[(j*2)];
+						double ty = scale * list[(j*2)+1];
+						if (rotate!=0) {
+							tx = cos(rotate) * tx - sin(rotate) * ty;
+							ty = cos(rotate) * ty + sin(rotate) * tx;
+						}
+						points[j].setX(tx + x);
+						points[j].setY(ty + y);
 					}
 					poly.drawPolygon(points, pairs);
 	
