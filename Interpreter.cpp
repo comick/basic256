@@ -870,8 +870,10 @@ Interpreter::run()
 void
 Interpreter::receiveInput(QString text)
 {
-	inputString = text;
-	status = R_INPUTREADY;
+	if (status!=R_STOPPED) {
+		inputString = text;
+		status = R_INPUTREADY;
+	}
 }
 
 

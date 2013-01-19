@@ -377,7 +377,8 @@ RunController::stopRun()
 
 	stopWAV();
 
-	//need to fix waiting for input here.
+	output->setReadOnly(true);
+
 	mutex.lock();
 	waitInput.wakeAll();
 	waitCond.wakeAll();

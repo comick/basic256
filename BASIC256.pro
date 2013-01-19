@@ -87,15 +87,15 @@ unix:!macx {
 	#DEFINES 		+= SOUND_DSP
 
         # Sound - Option 1 - SDL Mixer
-	#DEFINES 		+= SOUND_SDL
-	#LIBS			+= -lSDL
-	#LIBS			+= -lSDL_mixer
+	DEFINES 		+= SOUND_SDL
+	LIBS			+= -lSDL
+	LIBS			+= -lSDL_mixer
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
-	DEFINES 		+= SOUND_QMOBILITY
-	QT			+= mobility
-	CONFIG			+= mobility
-	MOBILITY		+= multimedia
+	#DEFINES 		+= SOUND_QMOBILITY
+	#QT			+= mobility
+	#CONFIG			+= mobility
+	#MOBILITY		+= multimedia
 
         ########
 	# rules for make install
