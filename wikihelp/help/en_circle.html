@@ -6,8 +6,8 @@
     <title>en:circle [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,nofollow"/>
-<meta name="date" content="2012-12-29T10:57:27-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-01-02T14:39:30-0700"/>
 <meta name="keywords" content="en,circle"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -87,22 +87,30 @@
 <div class="level3">
 
 <p>
-Draws a circle centered at x,y with a radius r using the current color.
+Draws a circle centered at x,y with a radius r using the current pen and brush colors.
 </p>
 
 </div>
 
 <h3 class="sectionedit4" id="example">Example</h3>
 <div class="level3">
-<pre class="code">color blue
-rect 0,0,300,300
+<pre class="code">clg
+
 color red
-circle 100,100,50</pre>
+circle 75,75,50
+
+penwidth 5
+color orange, yellow
+circle 150,150,75
+
+penwidth 10
+color blue, clear
+circle 225,225,50</pre>
 
 <p>
 draws<br/>
 
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=en_circle&amp;media=en:cir.png" class="media" title="en:cir.png"><img src="lib/exe/en_cir.png" class="media" title="Circle" alt="Circle" /></a>
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=en_circle&amp;media=circle.png" class="media" title="circle.png"><img src="lib/exe/circle.png" class="media" title="Circle" alt="Circle" /></a>
 </p>
 
 </div>
@@ -115,7 +123,7 @@ draws<br/>
 <div class="level3">
 
 <p>
-<a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <span class="curid"><a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a></span>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>
+<a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <span class="curid"><a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a></span>, <a href="./en_getpenwidth.html" class="wikilink1" title="en:getpenwidth">GetPenWidth</a>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_penwidth.html" class="wikilink1" title="en:penwidth">PenWidth</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>
 </p>
 
 </div>
@@ -128,7 +136,7 @@ draws<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/circle.txt · Last modified: 2012/12/29 10:57 by admin</div>
+                <div class="docInfo">en/circle.txt · Last modified: 2013/01/02 14:39 by admin</div>
 
                             </div></div><!-- /content -->
 

@@ -6,8 +6,8 @@
     <title>en:rect [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,nofollow"/>
-<meta name="date" content="2012-12-29T10:24:08-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-01-02T14:34:14-0700"/>
 <meta name="keywords" content="en,rect"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -87,26 +87,29 @@
 <div class="level3">
 
 <p>
-Draws a solid <em>width</em> x <em>height</em> pixel rectangle using the current color.  The top left corner is located at <em>x</em>,<em>y</em>.
+Draws a <em>width</em> x <em>height</em> pixel rectangle using the current pen and brush colors.  The top left corner is located at <em>x</em>,<em>y</em>.
 </p>
 
 </div>
 
 <h3 class="sectionedit4" id="example">Example</h3>
 <div class="level3">
-<pre class="code">color white
-rect 0,0,300,300
+<pre class="code">clg
+
 color red
 rect 50,50,150,150
-color blue
+
+penwidth 10
+color blue, yellow
 rect 100,100,150,150
-color green
-rect 10,140,280,20</pre>
+
+color green, clear
+rect 10,130,280,40</pre>
 
 <p>
 draws<br/>
 
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=en_rect&amp;media=en:rect.png" class="media" title="en:rect.png"><img src="lib/exe/en_rect.png" class="media" alt="" /></a>
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=en_rect&amp;media=rect.png" class="media" title="rect.png"><img src="lib/exe/rect.png" class="media" alt="" /></a>
 </p>
 
 </div>
@@ -119,7 +122,7 @@ draws<br/>
 <div class="level3">
 
 <p>
-<a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <span class="curid"><a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a></span>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>
+<a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a>, <a href="./en_getpenwidth.html" class="wikilink1" title="en:getpenwidth">GetPenWidth</a>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_penwidth.html" class="wikilink1" title="en:penwidth">PenWidth</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <span class="curid"><a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a></span>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>
 </p>
 
 </div>
@@ -132,7 +135,7 @@ draws<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/rect.txt · Last modified: 2012/12/29 10:24 by admin</div>
+                <div class="docInfo">en/rect.txt · Last modified: 2013/01/02 14:34 by admin</div>
 
                             </div></div><!-- /content -->
 

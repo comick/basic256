@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:11-0700"/>
+<meta name="date" content="2013-01-04T14:40:06-0700"/>
 <meta name="keywords" content="en,getcolor"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -87,7 +87,7 @@ getcolor()
 <div class="level3">
 
 <p>
-Returns the RGB value of the current drawing color (last set by color statement). RGB is calculated by taking ((red * 256) + green * 256) + blue where red, green, and blue are between 0 and 255. If the drawing color has been set to CLEAR a -1 will be returned.
+Returns the ARGB value of the current drawing pen color (last set by color statement). ARGB is calculated by the formula ( (a * 256 + r) * 256 + b) * 256 + g where alpha, red, green, and blue are between 0 and 255. If the drawing color has been set to CLEAR a 0 will be returned.
 </p>
 
 </div>
@@ -103,21 +103,22 @@ Returns the RGB value of the current drawing color (last set by color statement)
 
 <h3 class="sectionedit5" id="example">Example</h3>
 <div class="level3">
-<pre class="code">color red
+<pre class="code">color red, blue
 print getcolor</pre>
 
 <p>
 will print
 </p>
-<pre class="code">16711680</pre>
+<pre class="code">-65536</pre>
 
 </div>
 
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="history">History</h3>
 <div class="level3">
 
 <p>
-0.9.5m
+0.9.5m - New to version
+0.9.9.28 - Changed to return ARGB value
 </p>
 
 </div>
@@ -125,7 +126,7 @@ will print
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/getcolor.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">en/getcolor.txt · Last modified: 2013/01/04 14:40 by admin</div>
 
                             </div></div><!-- /content -->
 

@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-19T07:37:11-0700"/>
+<meta name="date" content="2013-01-09T07:55:32-0700"/>
 <meta name="keywords" content="pt,redim"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -67,7 +67,7 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
 
-<h2 class="sectionedit1" id="readline">Readline</h2>
+<h2 class="sectionedit1" id="redim">Redim</h2>
 <div class="level2">
 
 </div>
@@ -76,11 +76,13 @@
 <div class="level3">
 
 <p>
-<strong>readline</strong><br/>
+<strong>redim</strong> <em>numericvariable</em>( <em>integer</em> )<br/>
 
-<strong>readline</strong>()<br/>
+<strong>redim</strong> <em>stringvariable$</em>( <em>integer</em> )<br/>
 
-<strong>readline</strong>(<em>filenumber</em>)
+<strong>redim</strong> <em>numericvariable</em>( <em>rows</em> , <em>columns</em> )<br/>
+
+<strong>redim</strong> <em>stringvariable$</em>( <em>rows</em> , <em>columns</em> )
 </p>
 
 </div>
@@ -89,16 +91,16 @@
 <div class="level3">
 
 <p>
-Lê e devolve uma linha de um ficheiro aberto. Se o número de ficheiro não for especificado então o zero (0) será assumido.
+Redimensiona um array previamente criado, preservando os dados. Se o array é ampliado, os novos elementos serão inicializados com zero ou cadeia alfanumérica vazia. Se uma matriz é reduzida em tamanho, os elementos cortados a partir da extremidade são perdidos.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="ver_tambem">Ver também</h3>
+<h3 class="sectionedit4" id="introduzido">Introduzido</h3>
 <div class="level3">
 
 <p>
-<a href="./pt_close.html" class="wikilink1" title="pt:close">Close</a>, <a href="./pt_eof.html" class="wikilink1" title="pt:eof">Eof</a>, <a href="./pt_open.html" class="wikilink1" title="pt:open">Open</a>, <a href="./pt_read.html" class="wikilink1" title="pt:read">Read</a>, <a href="./pt_reset.html" class="wikilink1" title="pt:reset">Reset</a>, <a href="./pt_write.html" class="wikilink1" title="pt:write">Write</a>, <a href="./pt_writeline.html" class="wikilink1" title="pt:writeline">Writeline</a>, <a href="./pt_exists.html" class="wikilink1" title="pt:exists">Exists</a>, <a href="./pt_seek.html" class="wikilink1" title="pt:seek">Seek</a>, <a href="./pt_size.html" class="wikilink1" title="pt:size">Size</a>
+0.9.5t
 </p>
 
 </div>
@@ -106,7 +108,7 @@ Lê e devolve uma linha de um ficheiro aberto. Se o número de ficheiro não for
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">pt/redim.txt · Last modified: 2012/12/19 07:37 by m_santos</div>
+                <div class="docInfo">pt/redim.txt · Last modified: 2013/01/09 07:55 by m_santos</div>
 
                             </div></div><!-- /content -->
 
