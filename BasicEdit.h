@@ -34,7 +34,7 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   BasicEdit(QMainWindow *);
   void loadFile(QString);
   void findString(QString, bool, bool);
-  void replaceString(QString, QString, bool, bool);
+  void replaceString(QString, QString, bool, bool, bool);
   bool codeChanged;
 
  public slots:

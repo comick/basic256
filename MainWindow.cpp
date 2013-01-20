@@ -27,6 +27,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QString>
+#include <QShortcut>
 #include <stdio.h>
 using namespace std;
 
@@ -160,6 +161,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
 	editmenu->addSeparator();
 	findact = editmenu->addAction(QObject::tr("&Find"));
+	findact->setShortcut(Qt::Key_F + Qt::CTRL);
+	QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
+	QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
 	replaceact = editmenu->addAction(QObject::tr("&Replace"));
 	editmenu->addSeparator();
 	beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
@@ -173,6 +177,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
 	QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
+	QObject::connect(findagain1, SIGNAL(activated()), rc, SLOT(findAgain())); 
+	QObject::connect(findagain2, SIGNAL(activated()), rc, SLOT(findAgain())); 
 	QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
 	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
@@ -430,7 +436,6 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 
 	// close any windows from the runcontroller
 	RunController *rc = (RunController *) rcvoidpointer;
-	if (rc->findwin) rc->findwin->close();
 	if (rc->replacewin) rc->replacewin->close();
 
 }

@@ -479,20 +479,32 @@ RunController::showPreferences()
 	}
 }
 
-void RunController::showFind()
-{
-     if (!findwin) findwin = new FindWin(te);
-     findwin->show();
-     findwin->raise();
-     findwin->activateWindow();
-}
-
 void RunController::showReplace()
 {
      if (!replacewin) replacewin = new ReplaceWin(te);
+     replacewin->setReplaceMode(true);
      replacewin->show();
      replacewin->raise();
      replacewin->activateWindow();
+}
+
+void RunController::showFind()
+{
+     if (!replacewin) replacewin = new ReplaceWin(te);
+     replacewin->setReplaceMode(false);
+     replacewin->show();
+     replacewin->raise();
+     replacewin->activateWindow();
+}
+
+void RunController::findAgain()
+{
+     if (!replacewin) replacewin = new ReplaceWin(te);
+     replacewin->setReplaceMode(false);
+     replacewin->show();
+     replacewin->raise();
+     replacewin->activateWindow();
+     replacewin->findAgain();
 }
 
 void

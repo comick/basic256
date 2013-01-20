@@ -23,6 +23,7 @@
 #include <QGridLayout>
 #include <QAction>
 #include <QMessageBox>
+#include <QShortcut>
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"
@@ -82,6 +83,7 @@ private:
 	QAction *pasteact;
 	QAction *selectallact;
 	QAction *findact;
+	QShortcut *findagain;
 	QAction *replaceact;
 	QAction *beautifyact;
 	QAction *prefact;

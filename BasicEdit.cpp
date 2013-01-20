@@ -411,10 +411,11 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens)
 	}
 }
 
-void BasicEdit::replaceString(QString from, QString to, bool casesens, bool doall)
+void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool doall)
 {
 	bool doone = true;
 	QTextDocument::FindFlags flag;
+	if (reverse) flag |= QTextDocument::FindBackward;
 	if (casesens) flag |= QTextDocument::FindCaseSensitively;
 	while (doone) {
 		if (from.compare(this->textCursor().selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))!=0) {

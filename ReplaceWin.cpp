@@ -29,11 +29,11 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 
 	// parent must be basicedit
 	be = (BasicEdit *) parent;
-
+	replaceMode = true;
+	
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	move(settings.value(SETTINGSFINDPOS, QPoint(200, 200)).toPoint());
-	setWindowTitle(tr("BASIC-256 Replace"));
+	move(settings.value(SETTINGSREPLACEPOS, QPoint(200, 200)).toPoint());
 
 	QGridLayout * layout = new QGridLayout();
 	int r=0;
@@ -53,6 +53,11 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 	layout->addWidget(toinput,r,2,1,3);
 	//
 	r++;
+	backcheckbox = new QCheckBox(tr("Search Backwards"),this);
+	backcheckbox->setChecked(settings.value(SETTINGSREPLACEBACK, SETTINGSREPLACEBACKDEFAULT).toBool());
+	layout->addWidget(backcheckbox,r,2,1,2);
+	//
+	r++;
 	casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
 	casecheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACECASEDEFAULT).toBool());
 	layout->addWidget(casecheckbox,r,2,1,3);
@@ -61,24 +66,49 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
 	layout->addWidget(cancelbutton,r,1,1,1);
-	replaceallbutton = new QPushButton(tr("Replace All"), this);
+	replaceallbutton = new QPushButton(tr("Replace &All"), this);
 	connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
 	layout->addWidget(replaceallbutton,r,2,1,1);
-	replacebutton = new QPushButton(tr("Replace"), this);
+	replacebutton = new QPushButton(tr("&Replace"), this);
 	connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
 	layout->addWidget(replacebutton,r,3,1,1);
-	findbutton = new QPushButton(tr("Find"), this);
+	findbutton = new QPushButton(tr("&Find"), this);
 	connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
 	layout->addWidget(findbutton,r,4,1,1);
+	//
+	QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
+	connect(findagain1, SIGNAL(activated()), this, SLOT (clickFindButton()));
+	QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
+	connect(findagain2, SIGNAL(activated()), this, SLOT (clickFindButton()));
 	//
 	this->setLayout(layout);
 	this->show();
 	changeFromInput(frominput->text());
+	
+	findbutton->setFocus();
+}
+
+void ReplaceWin::setReplaceMode(bool m) {
+	replaceMode = m;
+	tolabel->setEnabled(replaceMode);
+	tolabel->setVisible(replaceMode);
+	toinput->setEnabled(replaceMode);
+	toinput->setVisible(replaceMode);
+	replaceallbutton->setEnabled(replaceMode);
+	replaceallbutton->setVisible(replaceMode);
+	replacebutton->setEnabled(replaceMode);
+	replacebutton->setVisible(replaceMode);
+	if (replaceMode) {
+		setWindowTitle(tr("BASIC-256 Find/Replace"));
+	} else {
+		setWindowTitle(tr("BASIC-256 Find"));
+	}
+	findbutton->setFocus();
 }
 
 void ReplaceWin::changeFromInput(QString t) {
-		replacebutton->setEnabled((t.length() != 0) && (t.compare(be->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
-		replaceallbutton->setEnabled(t.length() != 0);
+		replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(be->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
+		replaceallbutton->setEnabled(replaceMode && t.length() != 0);
 		findbutton->setEnabled(t.length() != 0);
 }
 
@@ -86,21 +116,23 @@ void ReplaceWin::clickCancelButton() {
 	close();
 }
 
+void ReplaceWin::findAgain() {
+	be->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+	changeFromInput(frominput->text());
+}
+
 void ReplaceWin::clickFindButton() {
-	saveSettings();
-	be->findString(frominput->text(), false, casecheckbox->isChecked());
+	be->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
 	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceButton() {
-	saveSettings();
-	be->replaceString(frominput->text(), toinput->text(), casecheckbox->isChecked(), false);
+	be->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
 	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceAllButton() {
-	saveSettings();
-	be->replaceString(frominput->text(), toinput->text(), casecheckbox->isChecked(), true);
+	be->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {
@@ -111,7 +143,7 @@ void ReplaceWin::saveSettings() {
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	settings.setValue(SETTINGSREPLACEPOS, pos());
 	settings.setValue(SETTINGSREPLACEFROM, frominput->text());
-	settings.setValue(SETTINGSREPLACETO, toinput->text());
+	if (replaceMode) settings.setValue(SETTINGSREPLACETO, toinput->text());
 	settings.setValue(SETTINGSREPLACECASE, casecheckbox->isChecked());
 }
 

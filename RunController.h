@@ -66,8 +66,9 @@ class RunController : public QObject
   void stepThrough();
   void showDocumentation();
   void showPreferences();
-  void showFind();
   void showReplace();
+  void showFind();
+  void findAgain();
   void mainWindowsVisible(int, bool);
 
  private:

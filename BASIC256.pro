@@ -87,15 +87,15 @@ unix:!macx {
 	#DEFINES 		+= SOUND_DSP
 
         # Sound - Option 1 - SDL Mixer
-	DEFINES 		+= SOUND_SDL
-	LIBS			+= -lSDL
-	LIBS			+= -lSDL_mixer
+	#DEFINES 		+= SOUND_SDL
+	#LIBS			+= -lSDL
+	#LIBS			+= -lSDL_mixer
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
-	#DEFINES 		+= SOUND_QMOBILITY
-	#QT			+= mobility
-	#CONFIG			+= mobility
-	#MOBILITY		+= multimedia
+	DEFINES 		+= SOUND_QMOBILITY
+	QT			+= mobility
+	CONFIG			+= mobility
+	MOBILITY		+= multimedia
 
         ########
 	# rules for make install
@@ -169,7 +169,6 @@ HEADERS			+=	Version.h
 HEADERS			+=	EditSyntaxHighlighter.h
 HEADERS			+=	Stack.h
 HEADERS			+=	PreferencesWin.h
-HEADERS			+=	FindWin.h
 HEADERS			+=	ReplaceWin.h
 HEADERS			+=	md5.h
 HEADERS			+=	Sound.h
@@ -195,7 +194,6 @@ SOURCES			+=	DocumentationWin.cpp
 SOURCES			+=	EditSyntaxHighlighter.cpp
 SOURCES			+=	Stack.cpp
 SOURCES			+=	PreferencesWin.cpp
-SOURCES			+=	FindWin.cpp
 SOURCES			+=	ReplaceWin.cpp
 SOURCES			+=	md5.cpp
 SOURCES			+=	Sound.cpp

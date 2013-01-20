@@ -30,6 +30,7 @@
 #include <QAction>
 #include <QObject>
 #include <QIcon>
+#include <QShortcut>
 #include "BasicEdit.h"
 
 #ifndef REPLACEWINH
@@ -43,6 +44,8 @@ class ReplaceWin : public QDialog
 public:
 	ReplaceWin(QWidget *);
 	void closeEvent(QCloseEvent *);
+	void setReplaceMode(bool);
+	void findAgain();
 
 private slots:
 	void changeFromInput(QString);
@@ -58,11 +61,15 @@ private:
 	QLineEdit *frominput;
 	QLabel *tolabel;
 	QLineEdit *toinput;
+	QCheckBox *backcheckbox;
 	QCheckBox *casecheckbox;
 	QPushButton *cancelbutton;
 	QPushButton *findbutton;
+	QShortcut *findagain1;
+	QShortcut *findagain2;
 	QPushButton *replacebutton;
 	QPushButton *replaceallbutton;
+	bool replaceMode;
 
 };
 
