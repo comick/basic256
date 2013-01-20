@@ -88,7 +88,6 @@ RunController::RunController(MainWindow *mw)
 	goutput = mainwin->goutput;
 	statusbar = mainwin->statusBar();
 
-	findwin = NULL;
 	replacewin = NULL;
 
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
@@ -123,7 +122,6 @@ RunController::RunController(MainWindow *mw)
 
 RunController::~RunController()
 {
-	if(findwin!=NULL) findwin->close();
 	if(replacewin!=NULL) replacewin->close();
 	//printf("rcdestroy\n");
 }
