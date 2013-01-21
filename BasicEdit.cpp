@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <QTextCursor>
+#include <QTextBlock>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -85,20 +86,7 @@ void
 BasicEdit::cursorMove()
 {
 	QTextCursor t(textCursor());
-	// get current column
-	int col = t.position();
-	t.movePosition(QTextCursor::StartOfLine);
-	col = col - t.position() + 1;
-	t.movePosition(QTextCursor::StartOfBlock);
-	// get line
-	int line = 1;
-	while (t.movePosition(QTextCursor::PreviousBlock))
-	{
-		line++;
-	}
-	currentLine = line;
-	//
-	mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(currentLine) + tr(" Column: ") + QString::number(col));
+	mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(t.blockNumber()+1) + tr(" Column: ") + QString::number(t.positionInBlock()));
 }
 
 void
@@ -436,5 +424,15 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 	}
 }
 
-
-
+QString BasicEdit::getCurrentWord()
+{
+	// get the cursor and find the current word on this line
+	// anything but letters delimits
+	QString w;
+	QTextCursor t(textCursor());
+	QTextBlock b(t.block());
+	w = b.text();
+	w = w.left(w.indexOf(QRegExp("[^a-zA-Z0-9]"),t.positionInBlock()));
+	w = w.mid(w.lastIndexOf(QRegExp("[^a-zA-Z0-9]"))+1);
+	return w;
+}

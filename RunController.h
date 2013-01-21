@@ -37,6 +37,7 @@ class RunController : public QObject
   RunController(MainWindow *);
   ~RunController();
   ReplaceWin *replacewin;
+  DocumentationWin *docwin;
 
  signals:
   void debugStarted();
@@ -63,6 +64,7 @@ class RunController : public QObject
   void saveByteCode();
   void stepThrough();
   void showDocumentation();
+  void showContextDocumentation();
   void showPreferences();
   void showReplace();
   void showFind();

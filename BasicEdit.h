@@ -36,6 +36,7 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   void findString(QString, bool, bool);
   void replaceString(QString, QString, bool, bool, bool);
   bool codeChanged;
+  QString getCurrentWord();
 
  public slots:
   void newProgram();

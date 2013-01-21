@@ -6,18 +6,18 @@ TEMPLATE		=	app
 TARGET			=	BASIC256
 DEPENDPATH		+=	.
 INCLUDEPATH		+=	.
-QMAKE_CXXFLAGS		+= 	-g 
-CONFIG          	+= 	 qt debug_and_release
+QMAKE_CXXFLAGS	+= 	-g 
+CONFIG			+= 	 qt debug_and_release
 OBJECTS_DIR		=	tmp/obj
 MOC_DIR			=	tmp/moc
-QT			+=	webkit
+QT				+=	webkit
 RESOURCES		+=	resources/resource.qrc
-RC_FILE         =   resources/basic256.rc
+RC_FILE			=   resources/basic256.rc
 TRANSLATIONS	=	Translations/basic256_en_US.ts \
-		        	Translations/basic256_de.ts \
-		        	Translations/basic256_ru_RU.ts \
-		        	Translations/basic256_sp.ts \
-		        	Translations/basic256_nl.ts
+					Translations/basic256_de.ts \
+					Translations/basic256_ru_RU.ts \
+					Translations/basic256_sp.ts \
+					Translations/basic256_nl.ts
 LIBS			+= -lsqlite3
 
 win32 {

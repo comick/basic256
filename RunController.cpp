@@ -89,6 +89,7 @@ RunController::RunController(MainWindow *mw)
 	statusbar = mainwin->statusBar();
 
 	replacewin = NULL;
+	docwin = NULL;
 
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
 	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
@@ -123,6 +124,7 @@ RunController::RunController(MainWindow *mw)
 RunController::~RunController()
 {
 	if(replacewin!=NULL) replacewin->close();
+	if(docwin!=NULL) docwin->close();
 	//printf("rcdestroy\n");
 }
 
@@ -443,9 +445,21 @@ RunController::saveByteCode()
 void
 RunController::showDocumentation()
 {
-     DocumentationWin *docwin = new DocumentationWin(mainwin);
+     if (!docwin) docwin = new DocumentationWin(mainwin);
      docwin->show();
      docwin->raise();
+     docwin->go("");
+     docwin->activateWindow();
+}
+
+void
+RunController::showContextDocumentation()
+{
+     QString w = te->getCurrentWord();
+     if (!replacewin) docwin = new DocumentationWin(mainwin);
+     docwin->show();
+     docwin->raise();
+     docwin->go(w);
      docwin->activateWindow();
 }
 

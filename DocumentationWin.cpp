@@ -26,11 +26,8 @@ using namespace std;
 DocumentationWin::DocumentationWin (QWidget * parent)
 		:QDialog(parent)
 {
-	QString localecode = ((MainWindow *) parent)->localecode;
-	QString windowsPath = QApplication::applicationDirPath() + "/help/";
-	QString linuxPath = "/usr/share/basic256/help/";
-	QString currentPath = "./";
-	QString indexfile = "start.html";
+	localecode = ((MainWindow *) parent)->localecode;
+	indexfile = "start.html";
 
 	// position where it was last on screen
 	QSettings settings(SETTINGSORG, SETTINGSAPP);
@@ -69,14 +66,40 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	this->show();
 
 	docs->setSearchPaths(QStringList()
-		<< windowsPath
-		<< linuxPath
-		<< currentPath);
+		<<	QApplication::applicationDirPath() + "/help/"
+		<<	"/usr/share/basic256/help/"
+		<<	"./"
+		<<	QApplication::applicationDirPath() + "/../wikihelp/help/"
+		<<	QApplication::applicationDirPath() + "/wikihelp/help/"
+		 );
 
-	//localecode.left(2)
-
-	docs->setSource(QUrl(indexfile));
 }
+
+void DocumentationWin::go(QString word) {
+	
+	if (word == "") {
+		docs->setSource(QUrl(indexfile));
+		if(docs->toPlainText().length() == 0) {
+			QMessageBox msgBox;
+			msgBox.setText(tr("Off-line help does not appear to be installed.  Please use on-line help."));
+			msgBox.setStandardButtons(QMessageBox::Ok);
+			msgBox.setDefaultButton(QMessageBox::Ok);
+			msgBox.exec();
+		}
+	} else {
+		QString u = localecode.left(2) + "_" + word + ".html";
+		docs->setSource(QUrl(u.toLower()));
+		if(docs->toPlainText().length() == 0) {
+			go("");
+			QMessageBox msgBox;
+			msgBox.setText(tr("Contextual help for the word '") + word + tr("' is not available."));
+			msgBox.setStandardButtons(QMessageBox::Ok);
+			msgBox.setDefaultButton(QMessageBox::Ok);
+			msgBox.exec();
+		}
+	}
+}
+
 
 void DocumentationWin::resizeEvent(QResizeEvent *e) {
 	this->resize(size());

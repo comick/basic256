@@ -34,6 +34,7 @@ class DocumentationWin : public QDialog
 	DocumentationWin(QWidget * parent);
 	void resizeEvent(QResizeEvent *e);
 	void closeEvent(QCloseEvent *);
+	void go(QString);
 
   public slots:
 
@@ -41,6 +42,8 @@ class DocumentationWin : public QDialog
 	QVBoxLayout* layout;
 	QToolBar* toolbar;
 	QTextBrowser* docs;
+	QString indexfile;
+	QString localecode;
 };
 
 #endif

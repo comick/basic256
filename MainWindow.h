@@ -59,7 +59,6 @@ public:
 	BasicWidget * outputwgt;
 	BasicWidget * goutputwgt;
 	VariableWin * vardock;
-	DocumentationWin * docdock;
 	EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;

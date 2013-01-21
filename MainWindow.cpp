@@ -288,6 +288,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
 	docact->setShortcut(Qt::Key_F1);
 	QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
+	QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
+	QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showContextDocumentation())); 
 	QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
 	QObject::connect(onlinehact, SIGNAL(triggered()), this, SLOT(onlineHelp()));
 	helpmenu->addSeparator();
