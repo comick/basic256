@@ -371,8 +371,8 @@ addStringOp(char op, char *data) {
 
 %%
 
-program: validline '\n'
-	| validline '\n' program
+program: program '\n' validline
+	| validline
 ;
 
 validline: label validstatement
