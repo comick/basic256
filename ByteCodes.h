@@ -296,5 +296,7 @@
 #define OPX_GETPENWIDTH			0x4c
 #define OPX_GETBRUSHCOLOR			0x4d
 #define OPX_RUNTIMEWARNING	0x4e
+#define OPX_ALERT	0x4f
+
 
 

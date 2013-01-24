@@ -75,6 +75,7 @@ void EditSyntaxHighlighter::initKeywords()
   keywordPatterns
 		<< "\\b[Aa][Bb][Ss]\\b"							// abs
 		<< "\\b[Aa][Cc][Oo][Ss]\\b"						// acos
+		<< "\\b[Aa][Ll][Ee][Rr][Tt]\\b"						// alert
 		<< "\\b[Aa][Nn][Dd]\\b"							// and
 		<< "\\b[Aa][Rr][Cc]\\b"							// arc
 		<< "\\b[Aa][Ss][Cc]\\b"							// asc
@@ -128,6 +129,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee]\\b"					// explode
 		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]\\b"				// explodex
 		<< "\\b[Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]\\b"		// fastgraphics
+		<< "\\b[Ff][Ll][Oo][Aa][Tt]\\b"						// float
 		<< "\\b[Ff][Ll][Oo][Oo][Rr]\\b"						// floor
 		<< "\\b[Ff][Oo][Nn][Tt]\\b"						// font
 		<< "\\b[Ff][Oo][Rr]\\b"							// for
