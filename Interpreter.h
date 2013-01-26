@@ -97,6 +97,8 @@ class Interpreter : public QThread
   void cleanup();
   void run();
   bool debugMode;
+  QString returnString;		// return value from runcontroller emit
+  int returnInt;			// return value from runcontroller emit
 
  public slots:
   int execByteCode();
@@ -121,9 +123,12 @@ class Interpreter : public QThread
   void stopWAV();
   void goToLine(int);
   void highlightLine(int);
-  void varAssignment(int recurse, QString name, QString value, int arraylenx, int arrayleny);
+  void varAssignment(int, QString, QString, int, int);
   void mainWindowsResize(int, int, int);
   void mainWindowsVisible(int, bool);
+  void dialogAlert(QString);
+  void dialogConfirm(QString, int);
+  void dialogPrompt(QString, QString);
 
  private:
   int compareTwoStackVal(stackval *, stackval *);

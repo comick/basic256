@@ -45,6 +45,7 @@ class RunController : public QObject
   void runHalted();
   void runPaused();
   void runResumed();
+  void inputEntered(QString);
 
  public slots:
   void speakWords(QString);
@@ -70,7 +71,10 @@ class RunController : public QObject
   void showFind();
   void findAgain();
   void mainWindowsVisible(int, bool);
-
+  void dialogAlert(QString);
+  void dialogConfirm(QString, int);
+  void dialogPrompt(QString, QString);
+  
  private:
   Interpreter *i;
   BasicEdit *te;

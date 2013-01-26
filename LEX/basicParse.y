@@ -336,7 +336,7 @@ addStringOp(char op, char *data) {
 %token B256ADD1 B256SUB1 B256ADDEQUAL B256SUBEQUAL B256MULEQUAL B256DIVEQUAL B256REF
 %token B256FREEDB B256FREEFILE B256FREENET B256FREEDBSET B256DBNULL
 %token B256ARC B256CHORD B256PIE B256PENWIDTH B256GETPENWIDTH B256GETBRUSHCOLOR B256VERSION
-%token B256ALERT
+%token B256ALERT B256CONFIRM B256PROMPT
 
 %union
 {
@@ -789,6 +789,7 @@ statement: gotostmt
 	| chordstmt
 	| piestmt
 	| penwidthstmt
+	| alertstmt
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr {
@@ -1783,6 +1784,11 @@ penwidthstmt: B256PENWIDTH floatexpr {
 	}
 ;
 
+alertstmt: B256ALERT stringexpr {
+		addExtendedOp(OPX_ALERT);
+	}
+;
+
 
 
 
@@ -2237,6 +2243,13 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256FREENET '(' ')' { addExtendedOp(OPX_FREENET); }
 	| B256VERSION { addIntOp(OP_PUSHINT, VERSIONSIGNATURE); }
 	| B256VERSION '(' ')' { addIntOp(OP_PUSHINT, VERSIONSIGNATURE); }
+	| B256CONFIRM '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,-1);	// no default
+		addExtendedOp(OPX_CONFIRM);
+	}
+	| B256CONFIRM '(' stringexpr ',' floatexpr ')' {
+		addExtendedOp(OPX_CONFIRM);
+	}
 
 ;
 
@@ -2317,6 +2330,12 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	| B256IMPLODE '(' B256STRINGVAR ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256VARIABLE ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
 	| B256IMPLODE '(' B256VARIABLE ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
+	| B256PROMPT '(' stringexpr ')' {
+		addStringOp(OP_PUSHSTRING, "");	
+		addExtendedOp(OPX_PROMPT); }
+	| B256PROMPT '(' stringexpr ',' stringexpr ')' {
+		addExtendedOp(OPX_PROMPT); }
+	
 
 ;
 

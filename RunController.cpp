@@ -118,6 +118,9 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
 	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
 
+	QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
+	QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
+	QObject::connect(i, SIGNAL(dialogPrompt(QString, QString)), this, SLOT(dialogPrompt(QString, QString)));
 
 }
 
@@ -541,5 +544,54 @@ RunController::mainWindowsResize(int w, int width, int height)
 	mutex.unlock();
 }
 
+
+void
+RunController::dialogAlert(QString prompt)
+{
+	QMessageBox msgBox(mainwin);
+	msgBox.setText(prompt);
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setDefaultButton(QMessageBox::Ok);
+	msgBox.exec();
+	mutex.lock();
+	waitInput.wakeAll();
+	mutex.unlock();
+}
+
+void
+RunController::dialogConfirm(QString prompt, int dflt)
+{
+	QMessageBox msgBox(mainwin);
+	msgBox.setText(prompt);
+	msgBox.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+	if (dflt!=-1) {
+		if (dflt!=0) {
+			msgBox.setDefaultButton(QMessageBox::Yes);
+		} else {
+			msgBox.setDefaultButton(QMessageBox::No);
+		}
+	}
+	if (msgBox.exec()==QMessageBox::Yes) {
+		i->returnInt = 1;
+	} else {
+		i->returnInt = 0;
+	}
+	mutex.lock();
+	waitInput.wakeAll();
+	mutex.unlock();
+}
+
+void
+RunController::dialogPrompt(QString prompt, QString dflt)
+{
+	QInputDialog in(mainwin);
+	in.setLabelText(prompt);
+	in.setTextValue(dflt);
+	in.exec();
+	i->returnString = in.textValue();
+	mutex.lock();
+	waitInput.wakeAll();
+	mutex.unlock();
+}
 
 

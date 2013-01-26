@@ -110,6 +110,7 @@ close [Cc][Ll][Oo][Ss][Ee]
 cls [Cc][Ll][Ss]
 color [Cc][Oo][Ll][Oo][Rr]
 colour [Cc][Oo][Ll][Oo][Uu][Rr]
+confirm [Cc][Oo][Nn][Ff][Ii][Rr][Mm]
 cos [Cc][Oo][Ss]
 count [Cc][Oo][Uu][Nn][Tt]
 countx [Cc][Oo][Uu][Nn][Tt][Xx]
@@ -222,6 +223,7 @@ poly [Pp][Oo][Ll][Yy]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 print [Pp][Rr][Ii][Nn][Tt]
+prompt [Pp][Rr][Oo][Mm][Pp][Tt]
 purple [Pp][Uu][Rr][Pp][Ll][Ee]
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 radians [Rr][Aa][Dd][Ii][Aa][Nn][Ss]
@@ -370,6 +372,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {cls}		{ count(); return B256CLS; }
 {color}		{ count(); return B256SETCOLOR; }
 {colour}	{ count(); return B256SETCOLOR; }
+{confirm}	{ count(); return B256CONFIRM; }
 {cos}		{ count(); return B256COS; }
 {count}	{ count(); return B256COUNT; }
 {countx}	{ count(); return B256COUNTX; }
@@ -488,6 +491,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {portin}	{ count(); return B256PORTIN; }
 {portout}	{ count(); return B256PORTOUT; }
 {print}		{ count(); return B256PRINT; }
+{prompt}	{ count(); return B256PROMPT; }
 {purple}	{ count(); return B256PURPLE; }
 {putslice}	{ count(); return B256PUTSLICE; }
 {radians}	{ count(); return B256RADIANS; }

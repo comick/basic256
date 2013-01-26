@@ -4638,6 +4638,49 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OPX_ALERT:
+				{
+					op++;
+					char *temp = stack.popstring();
+					mutex.lock();
+					emit(dialogAlert(QString::fromUtf8(temp)));
+					waitInput.wait(&mutex);
+					mutex.unlock();
+					free(temp);
+					waitForGraphics();
+				}
+				break;
+
+			case OPX_CONFIRM:
+				{
+					op++;
+					int dflt = stack.popint();
+					char *temp = stack.popstring();
+					mutex.lock();
+					emit(dialogConfirm(QString::fromUtf8(temp),dflt));
+					waitInput.wait(&mutex);
+					mutex.unlock();
+					free(temp);
+					stack.push((int) returnInt);
+					waitForGraphics();
+				}
+				break;
+
+			case OPX_PROMPT:
+				{
+					op++;
+					char *dflt = stack.popstring();
+					char *msg = stack.popstring();
+					mutex.lock();
+					emit(dialogPrompt(QString::fromUtf8(msg),QString::fromUtf8(dflt)));
+					waitInput.wait(&mutex);
+					mutex.unlock();
+					free(msg);
+					free(dflt);
+					stack.push(returnString.toUtf8().data());
+					waitForGraphics();
+				}
+				break;
 
 
 

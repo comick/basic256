@@ -96,6 +96,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Cc][Ll][Ss]\\b"							// cls
 		<< "\\b[Cc][Oo][Ll][Oo][Rr]\\b"						// color
 		<< "\\b[Cc][Oo][Ll][Oo][Uu][Rr]\\b"					// colour
+		<< "\\b[Cc][Oo][Nn][Ff][Ii][Rr][Mm]\\b"					// confirm
 		<< "\\b[Cc][Oo][Ss]\\b"							// cos
 		<< "\\b[Cc][Oo][Uu][Nn][Tt]\\b"						// count
 		<< "\\b[Cc][Oo][Uu][Nn][Tt][Xx]\\b"					// countx
@@ -204,6 +205,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Pp][Oo][Rr][Tt][Ii][Nn]\\b"					// portin
 		<< "\\b[Pp][Oo][Rr][Tt][Oo][Uu][Tt]\\b"					// portout
 		<< "\\b[Pp][Rr][Ii][Nn][Tt]\\b"						// print
+		<< "\\b[Pp][Rr][Oo][Mm][Pp][Tt]\\b"						// prompt
 		<< "\\b[Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]\\b"				// putslice
 		<< "\\b[Rr][Aa][Dd][Ii][Aa][Nn][Ss]\\b"					// radians
 		<< "\\b[Rr][Aa][Nn][Dd]\\b"						// rand
