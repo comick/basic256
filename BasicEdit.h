@@ -21,13 +21,13 @@
 
 
 #include <QApplication>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QMainWindow>
 #include <QKeyEvent>
 
 #include "ViewWidgetIFace.h"
 
-class BasicEdit : public QTextEdit, public ViewWidgetIFace
+class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
@@ -37,6 +37,8 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   void replaceString(QString, QString, bool, bool, bool);
   bool codeChanged;
   QString getCurrentWord();
+  void lineNumberAreaPaintEvent(QPaintEvent *event);
+  int lineNumberAreaWidth();
 
  public slots:
   void newProgram();
@@ -65,6 +67,7 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
  
  protected:
   void keyPressEvent(QKeyEvent *);
+  void resizeEvent(QResizeEvent *event);
 
  private:
   QMainWindow *mainwin;
@@ -75,8 +78,13 @@ class BasicEdit : public QTextEdit, public ViewWidgetIFace
   QString filename;
   void changeFontSize(unsigned int);
   void addFileToRecentList(QString);
- void loadRecent(int);
+  void loadRecent(int);
+  QWidget *lineNumberArea;
 
+private slots:
+  void updateLineNumberAreaWidth(int newBlockCount);
+  void updateLineNumberArea(const QRect &, int);
+     
 };
 
 

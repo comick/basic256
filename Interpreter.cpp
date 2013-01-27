@@ -336,6 +336,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_ARRAYINDEXMISSING:
 			errormessage = tr(ERROR_ARRAYINDEXMISSING_MESSAGE);
 			break;
+		case ERROR_IMAGESCALE:
+			errormessage = tr(ERROR_IMAGESCALE_MESSAGE);
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -490,8 +493,8 @@ void Interpreter::spriteundraw(int n) {
 	i = nsprites-1;
 	while(i>=n) {
 		if (sprites[i].underimage && sprites[i].visible) {
-			x = (int) (sprites[i].x - (double) sprites[i].underimage->width()/2.0);
-			y = (int) (sprites[i].y - (double) sprites[i].underimage->height()/2.0);
+			x = sprites[i].x - (sprites[i].underimage->width()/2);
+			y = sprites[i].y - (sprites[i].underimage->height()/2);
 			ian.drawImage(x, y, *(sprites[i].underimage));
 		}
 		i--;
@@ -507,25 +510,29 @@ void Interpreter::spriteredraw(int n) {
 		if (sprites[i].image && sprites[i].visible) {
 			QPainter ian(image);
 			if (sprites[i].r==0 && sprites[i].s==1) {
-				x = (int) (sprites[i].x - (double) sprites[i].image->width()/2.0);
-				y = (int) (sprites[i].y - (double) sprites[i].image->height()/2.0);
 				if (sprites[i].underimage) {
 					delete sprites[i].underimage;
 					sprites[i].underimage = NULL;
 				}
-				sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
-				ian.drawImage(x, y, *(sprites[i].image));
+				if (sprites[i].image->width()>0 and sprites[i].image->height()>0) {
+					x = sprites[i].x - (sprites[i].image->width()/2);
+					y = sprites[i].y - (sprites[i].image->height()/2);
+					sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
+					ian.drawImage(x, y, *(sprites[i].image));
+				}
 			} else {
 				QTransform transform = QTransform().translate(0,0).rotateRadians(sprites[i].r).scale(sprites[i].s,sprites[i].s);;
 				QImage rotated = sprites[i].image->transformed(transform);
-				x = (int) (sprites[i].x - (double) rotated.width()/2.0);
-				y = (int) (sprites[i].y - (double) rotated.height()/2.0);
 				if (sprites[i].underimage) {
 					delete sprites[i].underimage;
 					sprites[i].underimage = NULL;
 				}
-				sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
-				ian.drawImage(x, y, rotated);
+				if (rotated.width()>0 and rotated.height()>0) {
+					x = sprites[i].x - (rotated.width()/2);
+					y = sprites[i].y - (rotated.height()/2);
+					sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
+					ian.drawImage(x, y, rotated);
+				}
 			}
 			ian.end();
 		}
@@ -2881,15 +2888,17 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 
-			if (variables.type(*i) == T_ARRAY)
-			{
+			if (variables.type(*i) != T_ARRAY) {
+				errornum = ERROR_POLYARRAY;
+			} else {
 				int pairs = variables.arraysize(*i) / 2;
 				if (pairs < 3)
 				{
 					errornum = ERROR_POLYPOINTS;
 				} else {
-	
-					if (scale>0) {
+					if (scale<0) {
+						errornum = ERROR_IMAGESCALE;
+					} else {
 						QPainter poly(image);
 						poly.setPen(drawingpen);
 						poly.setBrush(drawingbrush);
@@ -2916,8 +2925,6 @@ Interpreter::execByteCode()
 						delete points;
 					}
 				}
-			} else {
-				errornum = ERROR_POLYARRAY;
 			}
 
 		}
@@ -2954,19 +2961,21 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			
-			QPainter poly(image);
-			poly.setPen(drawingpen);
-			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				poly.setCompositionMode(QPainter::CompositionMode_Clear);
-			}
-
-			int pairs = llist / 2;
-			if (pairs < 3)
-			{
-				errornum = ERROR_POLYPOINTS;
+			if (scale<0) {
+				errornum = ERROR_IMAGESCALE;
 			} else {
-				if (scale>0) {
+				int pairs = llist / 2;
+				if (pairs < 3)
+				{
+					errornum = ERROR_POLYPOINTS;
+				} else {
+					QPainter poly(image);
+					poly.setPen(drawingpen);
+					poly.setBrush(drawingbrush);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						poly.setCompositionMode(QPainter::CompositionMode_Clear);
+					}
+
 					QPointF *points = new QPointF[pairs];
 					for (int j = 0; j < pairs; j++)
 					{
@@ -2980,9 +2989,9 @@ Interpreter::execByteCode()
 						points[j].setY(ty + y);
 					}
 					poly.drawPolygon(points, pairs);
-	
+
 					poly.end();
-					
+				
 					if (!fastgraphics) waitForGraphics();
 					delete points;
 				}
@@ -3024,7 +3033,9 @@ Interpreter::execByteCode()
 			double y = stack.popint();
 			double x = stack.popint();
 			
-			if (scale>0) {
+			if (scale<0) {
+				errornum = ERROR_IMAGESCALE;
+			} else {
 				QImage i(QString::fromUtf8(file));
 				if(i.isNull()) {
 					errornum = ERROR_IMAGEFILE;
@@ -3034,7 +3045,9 @@ Interpreter::execByteCode()
 						QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
 						i = i.transformed(transform);
 					}
-					ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+					if (i.width() != 0 && i.height() != 0) {
+						ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+					}
 					ian.end();
 					if (!fastgraphics) waitForGraphics();
 				}
@@ -3071,10 +3084,20 @@ Interpreter::execByteCode()
 	case OP_FONT:
 		{
 			op++;
-			fontweight = stack.popint();
-			fontpoint = stack.popint();
+			int weight = stack.popint();
+			int point = stack.popint();
 			char *family = stack.popstring();
-			fontfamily = QString::fromUtf8(family);
+			if (point<0) {
+				errornum = ERROR_FONTSIZE;
+			} else {
+				if (weight<0) {
+					errornum = ERROR_FONTWEIGHT;
+				} else {
+					fontpoint = point;
+					fontweight = weight;
+					fontfamily = QString::fromUtf8(family);
+				}
+			}
 			free(family);
 		}
 		break;
@@ -3551,29 +3574,33 @@ Interpreter::execByteCode()
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
 						} else {
-							if(!sprites[n].image) {
-								errornum = ERROR_SPRITENA;
+							if (s<0) {
+								errornum = ERROR_IMAGESCALE;
 							} else {
+								if(!sprites[n].image) {
+									errornum = ERROR_SPRITENA;
+								} else {
 				
-								spriteundraw(n);
-								if (opcode==OPX_SPRITEMOVE) {
-									x += sprites[n].x;
-									y += sprites[n].y;
-									s += sprites[n].s;
-									r += sprites[n].r;
-									if (x >= (int) graph->image->width()) x = (double) graph->image->width();
-									if (x < 0) x = 0;
-									if (y >= (int) graph->image->height()) y = (double) graph->image->height();
-									if (y < 0) y = 0;
-									if (s < 0) s = 0;
-								}
-								sprites[n].x = x;
-								sprites[n].y = y;
-								sprites[n].s = s;
-								sprites[n].r = r;
-								spriteredraw(n);
+									spriteundraw(n);
+									if (opcode==OPX_SPRITEMOVE) {
+										x += sprites[n].x;
+										y += sprites[n].y;
+										s += sprites[n].s;
+										r += sprites[n].r;
+										if (x >= (int) graph->image->width()) x = (double) graph->image->width();
+										if (x < 0) x = 0;
+										if (y >= (int) graph->image->height()) y = (double) graph->image->height();
+										if (y < 0) y = 0;
+										if (s < 0) s = 0;
+									}
+									sprites[n].x = x;
+									sprites[n].y = y;
+									sprites[n].s = s;
+									sprites[n].r = r;
+									spriteredraw(n);
 							
-								if (!fastgraphics) waitForGraphics();
+									if (!fastgraphics) waitForGraphics();
+								}
 							}
 						}
 					}

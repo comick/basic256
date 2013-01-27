@@ -148,53 +148,9 @@ else {
 
 # Input
 HEADERS 		+= 	LEX/basicParse.tab.h 
-HEADERS 		+= 	BasicEdit.h 
-HEADERS 		+= 	Interpreter.h 
-HEADERS 		+= 	RunController.h 
-HEADERS 		+= 	BasicOutput.h 
-HEADERS 		+= 	BasicGraph.h 
-HEADERS 		+= 	ErrorCodes.h 
-HEADERS 		+= 	WarningCodes.h 
-HEADERS 		+= 	GhostButton.h 
-HEADERS 		+= 	PauseButton.h 
-HEADERS 		+= 	DockWidget.h
-HEADERS			+=	BasicWidget.h
-HEADERS			+=	ToolBar.h
-HEADERS			+=	ViewWidgetIFace.h
-HEADERS			+=	MainWindow.h
-HEADERS			+=	Variables.h
-HEADERS			+=	VariableWin.h
-HEADERS			+=	DocumentationWin.h
-HEADERS			+=	Version.h
-HEADERS			+=	EditSyntaxHighlighter.h
-HEADERS			+=	Stack.h
-HEADERS			+=	PreferencesWin.h
-HEADERS			+=	ReplaceWin.h
-HEADERS			+=	md5.h
-HEADERS			+=	Sound.h
+HEADERS 		+= 	*.h
 
 SOURCES 		+= 	LEX/lex.yy.c 
 SOURCES 		+= 	LEX/basicParse.tab.c 
-SOURCES 		+= 	BasicEdit.cpp 
-SOURCES 		+= 	Interpreter.cpp 
-SOURCES 		+= 	RunController.cpp 
-SOURCES 		+= 	Main.cpp 
-SOURCES 		+= 	BasicOutput.cpp 
-SOURCES 		+= 	BasicGraph.cpp 
-SOURCES 		+= 	GhostButton.cpp 
-SOURCES 		+= 	PauseButton.cpp 
-SOURCES 		+= 	DockWidget.cpp
-SOURCES			+=	BasicWidget.cpp
-SOURCES			+=	ToolBar.cpp
-SOURCES			+=	ViewWidgetIFace.cpp
-SOURCES			+=	MainWindow.cpp
-SOURCES			+=	Variables.cpp
-SOURCES			+=	VariableWin.cpp
-SOURCES			+=	DocumentationWin.cpp
-SOURCES			+=	EditSyntaxHighlighter.cpp
-SOURCES			+=	Stack.cpp
-SOURCES			+=	PreferencesWin.cpp
-SOURCES			+=	ReplaceWin.cpp
-SOURCES			+=	md5.cpp
-SOURCES			+=	Sound.cpp
+SOURCES 		+= 	*.cpp
 

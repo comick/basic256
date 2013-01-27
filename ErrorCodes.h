@@ -142,6 +142,13 @@
 #define ERROR_COLORNUMBER_MESSAGE "Color values must be in the range of -1 to 16,777,215."
 #define ERROR_ARRAYINDEXMISSING 62
 #define ERROR_ARRAYINDEXMISSING_MESSAGE "Array variable %VARNAME% has no value without an index"
+#define ERROR_IMAGESCALE 63
+#define ERROR_IMAGESCALE_MESSAGE "Image scale must be greater than or equal to zero."
+#define ERROR_FONTSIZE 64
+#define ERROR_FONTSIZE_MESSAGE "Font size, in points, must be greater than or equal to zero."
+#define ERROR_FONTWEIGHT 65
+#define ERROR_FONTWEIGHT_MESSAGE "Font weight must be greater than or equal to zero."
+
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999
 #define ERROR_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
