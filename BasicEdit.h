@@ -84,7 +84,9 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void updateLineNumberArea(const QRect &, int);
-     
+  void highlightCurrentLine();
+
+   
 };
 
 
