@@ -52,8 +52,7 @@ BasicGraph::resize(int width, int height)
 	gwidth  = width;
 	gheight = height;
 	delete image;
-	imagedata = new uchar[sizeof(int) * width * height];
-	image = new QImage(imagedata, width, height, QImage::Format_ARGB32);
+	image = new QImage(width, height, QImage::Format_ARGB32);
 
 	// clear the new image
     QPainter ian(image);

@@ -96,8 +96,6 @@ void Variables::clearvariable(variable* v)
 		v->value.string = NULL;
 	}
 	else if (v->type == T_ARRAY && v->value.arr != NULL) {
-// disabled as reported 0.9.9.15 by valgrind as unneeded
-//		delete(v->value.arr->data.fdata);
 		delete(v->value.arr);
 		v->value.arr = NULL;
 	}
@@ -108,7 +106,8 @@ void Variables::clearvariable(variable* v)
 				v->value.arr->data.sdata[j] = NULL;
 			}
 		}
-		delete(v->value.arr->data.sdata);
+// disabled as reported 0.9.9.42 by valgrind as unneeded
+		//delete(v->value.arr->data.sdata);
 		delete(v->value.arr);
 		v->value.arr = NULL;
 	}

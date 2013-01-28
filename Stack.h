@@ -28,11 +28,11 @@ class Stack
  public:
   Stack();
   ~Stack();
-  void push(char *);
-  void push(int);
+  void pushstring(char *);
+  void pushint(int);
+  void pushfloat(double);
   void pushvarref(int);
   void pushvarrefstr(int);
-  void push(double);
   void swap();
   void swap2();
   void topto2();

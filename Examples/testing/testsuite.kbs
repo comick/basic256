@@ -538,12 +538,14 @@ refresh
 imgsave "testimgsave.png"
 pause .5
 clg
+refresh
 pause .5
 imgload graphwidth/2,graphheight /2,"testimgsave.png"
 call q("imgload - did the image wink out?")
 clg
 for t = 0 to 2* pi step .1
    imgload graphwidth/2,graphheight /2,t/2,t,"testimgsave.png"
+refresh
 next t
 call q("imgload - did the image spin out?")
 kill "testimgsave.png"

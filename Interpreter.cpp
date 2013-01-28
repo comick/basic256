@@ -900,7 +900,7 @@ Interpreter::execByteCode()
 {
 	if (status == R_INPUTREADY)
 	{
-		stack.push(inputString.toUtf8().data());
+		stack.pushstring(inputString.toUtf8().data());
 		status = R_RUNNING;
 		return 0;
 	}
@@ -1169,13 +1169,13 @@ Interpreter::execByteCode()
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 				char c = ' ';
 				if (stream[fn] == NULL)
 				{
 					errornum = ERROR_FILENOTOPEN;
-					stack.push(0);
+					stack.pushint(0);
 				} else {
 					int maxsize = 256;
 					char * strarray = (char *) malloc(maxsize);
@@ -1185,7 +1185,7 @@ Interpreter::execByteCode()
 					{
 						if (!stream[fn]->getChar(&c))
 						{
-							stack.push(strarray);
+							stack.pushstring(strarray);
 							free(strarray);
 							return 0;
 						}
@@ -1209,7 +1209,7 @@ Interpreter::execByteCode()
 						}
 					}
 					strarray[offset] = 0;
-					stack.push(strarray);
+					stack.pushstring(strarray);
 					free(strarray);
 				}
 			}
@@ -1223,17 +1223,16 @@ Interpreter::execByteCode()
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 
 				if (stream[fn] == NULL)
 				{
 					errornum = ERROR_FILENOTOPEN;
-					stack.push(0);
+					stack.pushint(0);
 				} else {
 					//read entire line
-					QByteArray l = stream[fn]->readLine();
-					stack.push(strdup(l.data()));
+					stack.pushstring(stream[fn]->readLine().data());
 				}
 			}
 		}
@@ -1245,13 +1244,13 @@ Interpreter::execByteCode()
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 				char c = ' ';
 				if (stream[fn]->getChar(&c)) {
-					stack.push((int) (unsigned char) c);
+					stack.pushint((int) (unsigned char) c);
 				} else {
-					stack.push((int) -1);
+					stack.pushint((int) -1);
 				}
 			}
 		}
@@ -1264,17 +1263,17 @@ Interpreter::execByteCode()
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
-				stack.push(1);
+				stack.pushint(1);
 			} else {
 				if (stream[fn] == NULL)
 				{
 					errornum = ERROR_FILENOTOPEN;
-					stack.push(1);
+					stack.pushint(1);
 				} else {
 					if (stream[fn]->atEnd()) {
-						stack.push(1);
+						stack.pushint(1);
 					} else {
-						stack.push(0);
+						stack.pushint(0);
 					}
 				}
 			}
@@ -1399,17 +1398,17 @@ Interpreter::execByteCode()
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 				int size = 0;
 				if (stream[fn] == NULL)
 				{
 					errornum = ERROR_FILENOTOPEN;
-					stack.push(0);
+					stack.pushint(0);
 				} else {
 					size = stream[fn]->size();
 				}
-				stack.push(size);
+				stack.pushint(size);
 			}
 		}
 		break;
@@ -1422,9 +1421,9 @@ Interpreter::execByteCode()
 			char *filename = stack.popstring();
 			if (QFile::exists(QString(filename)))
 			{
-				stack.push((int) 1);
+				stack.pushint(1);
 			} else {
-				stack.push((int) 0);
+				stack.pushint(0);
 			}
 			free(filename);
 		}
@@ -1513,18 +1512,19 @@ Interpreter::execByteCode()
 			
 			switch(opcode) {
 				case OP_ALEN:
-					stack.push(variables.arraysize(*i));
+					stack.pushint(variables.arraysize(*i));
 					break;
 				case OP_ALENX:
-					stack.push(variables.arraysizex(*i));
+					stack.pushint(variables.arraysizex(*i));
 					break;
 				case OP_ALENY:
-					stack.push(variables.arraysizey(*i));
+					stack.pushint(variables.arraysizey(*i));
 					break;
 			}
 			if (variables.error()!=ERROR_NONE) {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
+				stack.pushint(0);	// unknown
 			}
 		}
 		break;
@@ -1547,6 +1547,7 @@ Interpreter::execByteCode()
 			} else {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
+				free(val);
 			}			
 		}
 		break;
@@ -1570,6 +1571,7 @@ Interpreter::execByteCode()
 			} else {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
+				free(val);
 			}			
 		}
 		break;
@@ -1602,6 +1604,7 @@ Interpreter::execByteCode()
 					} else {
 						errornum = variables.error();
 						errorvarnum = variables.errorvarnum();
+						free(str);
 					}			
 				}
 			} else {
@@ -1705,8 +1708,10 @@ Interpreter::execByteCode()
 					if (variables.type(*i) == T_STRARRAY) {
 						stuff.append(QString::fromUtf8(variables.arraygetstring(*i, n)));
 					} else {
-						stack.push(variables.arraygetfloat(*i, n));
-						stuff.append(stack.popstring());
+						stack.pushfloat(variables.arraygetfloat(*i, n));
+						char *t = stack.popstring();
+						stuff.append(t);
+						free(t);
 					}
 				}
 			} else {
@@ -1714,7 +1719,7 @@ Interpreter::execByteCode()
 				errorvarnum = *i;
 			}
 
-			stack.push(strdup(stuff.toUtf8().data()));
+			stack.pushstring(stuff.toUtf8().data());
 		
 			free(delim);
 		}
@@ -1823,7 +1828,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.push(variables.arraygetstring(*i, index));
+				stack.pushstring(variables.arraygetstring(*i, index));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1831,7 +1836,7 @@ Interpreter::execByteCode()
 			}
 			else if (variables.type(*i) == T_ARRAY)
 			{
-				stack.push(variables.arraygetfloat(*i, index));
+				stack.pushfloat(variables.arraygetfloat(*i, index));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1841,7 +1846,7 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_NOTARRAY;
 				errorvarnum = *i;
-				stack.push(0);
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -1856,7 +1861,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.push(variables.array2dgetstring(*i, xindex, yindex));
+				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1864,7 +1869,7 @@ Interpreter::execByteCode()
 			}
 			else if (variables.type(*i) == T_ARRAY)
 			{
-				stack.push(variables.array2dgetfloat(*i, xindex, yindex));
+				stack.pushfloat(variables.array2dgetfloat(*i, xindex, yindex));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1874,7 +1879,7 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_NOTARRAY;
 				errorvarnum = *i;
-				stack.push(0);
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -1887,23 +1892,23 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRING)
 			{
-				stack.push(variables.getstring(*i));
+				stack.pushstring(variables.getstring(*i));
 			}
 			else if (variables.type(*i) == T_FLOAT)
 			{
-				stack.push(variables.getfloat(*i));
+				stack.pushfloat(variables.getfloat(*i));
 			}
 			else if (variables.type(*i) == T_ARRAY || variables.type(*i) == T_STRARRAY)
 			{
 				errornum = ERROR_ARRAYINDEXMISSING;
 				errorvarnum = *i;
-				stack.push(0);
+				stack.pushint(0);
 			}
 			else
 			{
 				errornum = ERROR_NOSUCHVARIABLE;
 				errorvarnum = *i;
-				stack.push(0);
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -1912,7 +1917,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int *i = (int *) op;
-			stack.push(*i);
+			stack.pushint(*i);
 			op += sizeof(int);
 		}
 		break;
@@ -1939,15 +1944,17 @@ Interpreter::execByteCode()
 		{
 			op++;
 			double *d = (double *) op;
-			stack.push(*d);
+			stack.pushfloat(*d);
 			op += sizeof(double);
 		}
 		break;
 
 	case OP_PUSHSTRING:
 		{
+			// push string from compiled bytecode
+			// no need to free because string is in compiled code
 			op++;
-			stack.push((char *) op);
+			stack.pushstring((char *) op);
 			op += strlen((char *) op) + 1;
 		}
 		break;
@@ -1957,7 +1964,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int val = stack.popint();
-			stack.push(val);
+			stack.pushint(val);
 		}
 		break;
 
@@ -1966,7 +1973,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			double val = stack.popfloat();
-			stack.push(val);
+			stack.pushfloat(val);
 		}
 		break;
 
@@ -1974,7 +1981,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			char *temp = stack.popstring();
-			stack.push(temp);
+			stack.pushstring(temp);
 			free(temp);
 		}
 		break;
@@ -1996,7 +2003,7 @@ Interpreter::execByteCode()
 				rx = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
 				r = ra/rx;
 			}
-			stack.push(r);
+			stack.pushfloat(r);
 		}
 		break;
 
@@ -2015,8 +2022,9 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 			QString qs = QString::fromUtf8(temp);
-			stack.push(qs.length());
+			stack.pushint(qs.length());
 			free(temp);
+			qs = QString::null;
 		}
 		break;
 
@@ -2034,26 +2042,25 @@ Interpreter::execByteCode()
 			if ((len < 0))
 			{
 				errornum = ERROR_STRNEGLEN;
-				stack.push(0);
-				free(temp);
+				stack.pushint(0);
 			} else {
 				if ((pos < 1))
 				{
 					errornum = ERROR_STRSTART;
-					stack.push(0);
-					free(temp);
+					stack.pushint(0);
 				} else {
 					if ((pos < 1) || (pos > (int) qtemp.length()))
 					{
 						errornum = ERROR_STREND;
-						stack.push(0);
-						free(temp);
+						stack.pushint(0);
 					} else {
-						stack.push(strdup(qtemp.mid(pos-1,len).toUtf8().data()));
-						free(temp);
+						stack.pushstring(qtemp.mid(pos-1,len).toUtf8().data());
 					}
 				}
 			}
+
+			free(temp);
+			qtemp = QString::null;
 		}
 		break;
 
@@ -2072,19 +2079,19 @@ Interpreter::execByteCode()
 			if (len < 0)
 			{
 				errornum = ERROR_STRNEGLEN;
-				free(temp);
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 				switch(opcode) {
 					case OP_LEFT:
-						stack.push(strdup(qtemp.left(len).toUtf8().data()));
+						stack.pushstring(qtemp.left(len).toUtf8().data());
 						break;
 					case OP_RIGHT:
-						stack.push(strdup(qtemp.right(len).toUtf8().data()));
+						stack.pushstring(qtemp.right(len).toUtf8().data());
 						break;
 				}
-				free(temp);
 			}
+			free(temp);
+			qtemp = QString::null;
 		}
 		break;
 
@@ -2103,8 +2110,10 @@ Interpreter::execByteCode()
 				qtemp = qtemp.toLower();
 			}
 
-			stack.push(strdup(qtemp.toUtf8().data()));
+			stack.pushstring(qtemp.toUtf8().data());
+
 			free(temp);
+			qtemp = QString::null;
 		}
 		break;
 
@@ -2114,8 +2123,9 @@ Interpreter::execByteCode()
 			op++;
 			char *str = stack.popstring();
 			QString qs = QString::fromUtf8(str);
-			stack.push((int) qs[0].unicode());
+			stack.pushint((int) qs[0].unicode());
 			free(str);
+			qs = QString::null;
 		}
 		break;
 
@@ -2129,7 +2139,8 @@ Interpreter::execByteCode()
 			temp[0] = (QChar) code;
 			temp[1] = (QChar) 0;
 			QString qs = QString(temp,1);
-			stack.push(strdup(qs.toUtf8().data()));
+			stack.pushstring(qs.toUtf8().data());
+			qs = QString::null;
 		}
 		break;
 
@@ -2174,10 +2185,12 @@ Interpreter::execByteCode()
 					}
 				}
 			}
-			stack.push(pos);
+			stack.pushint(pos);
 
 			free(str);
 			free(hay);
+			qstr = QString::null;
+			qhay = QString::null;
 		}
 		break;
 
@@ -2203,53 +2216,53 @@ Interpreter::execByteCode()
 			switch (whichop)
 			{
 			case OP_SIN:
-				stack.push(sin(val));
+				stack.pushfloat(sin(val));
 				break;
 			case OP_COS:
-				stack.push(cos(val));
+				stack.pushfloat(cos(val));
 				break;
 			case OP_TAN:
-				stack.push(tan(val));
+				stack.pushfloat(tan(val));
 				break;
 			case OP_ASIN:
-				stack.push(asin(val));
+				stack.pushfloat(asin(val));
 				break;
 			case OP_ACOS:
-				stack.push(acos(val));
+				stack.pushfloat(acos(val));
 				break;
 			case OP_ATAN:
-				stack.push(atan(val));
+				stack.pushfloat(atan(val));
 				break;
 			case OP_CEIL:
-				stack.push((int) ceil(val));
+				stack.pushint((int) ceil(val));
 				break;
 			case OP_FLOOR:
-				stack.push((int) floor(val));
+				stack.pushint((int) floor(val));
 				break;
 			case OP_ABS:
 				if (val < 0)
 				{
 					val = -val;
 				}
-				stack.push(val);
+				stack.pushfloat(val);
 				break;
 			case OP_DEGREES:
-				stack.push(val * 180 / M_PI);
+				stack.pushfloat(val * 180 / M_PI);
 				break;
 			case OP_RADIANS:
-				stack.push(val * M_PI / 180);
+				stack.pushfloat(val * M_PI / 180);
 				break;
 			case OP_LOG:
-				stack.push(log(val));
+				stack.pushfloat(log(val));
 				break;
 			case OP_LOGTEN:
-				stack.push(log10(val));
+				stack.pushfloat(log10(val));
 				break;
 			case OP_SQR:
-				stack.push(sqrt(val));
+				stack.pushfloat(sqrt(val));
 				break;
 			case OP_EXP:
-				stack.push(exp(val));
+				stack.pushfloat(exp(val));
 				break;
 			}
 		}
@@ -2271,7 +2284,7 @@ Interpreter::execByteCode()
 			if (one->type == T_STRING || two->type == T_STRING || one->type == T_ARRAY || two->type == T_ARRAY || one->type == T_STRARRAY || two->type == T_STRARRAY || one->type == T_UNUSED || two->type == T_UNUSED)
 			{
 				errornum = ERROR_NONNUMERIC;
-				stack.push(0);
+				stack.pushint(0);
 			} else {
 				if (one->type == two->type && one->type == T_INT)
 				{
@@ -2284,37 +2297,40 @@ Interpreter::execByteCode()
 					switch (whichop)
 					{
 					case OP_ADD:
-						stack.push(i2 + i1);
+						stack.pushint(i2 + i1);
 						break;
 					case OP_SUB:
-						stack.push(i2 - i1);
+						stack.pushint(i2 - i1);
 						break;
 					case OP_MUL:
-						stack.push(i2 * i1);
+						stack.pushint(i2 * i1);
 						break;
 					case OP_MOD:
 						if (i1==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push(i2 % i1);
+							stack.pushint(i2 % i1);
 						}
 						break;
 					case OP_DIV:
 						if (i1==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push((double) i2/ (double) i1);
+							stack.pushfloat((double) i2/ (double) i1);
 						}
 						break;
 					case OP_INTDIV:
 						if (i1==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push(i2 / i1);
+							stack.pushint(i2 / i1);
 						}
 						break;
 					case OP_EX:
-						stack.push(pow((double) i2, (double) i1));
+						stack.pushfloat(pow((double) i2, (double) i1));
 						break;
 					}
 				} else {
@@ -2333,37 +2349,40 @@ Interpreter::execByteCode()
 					switch(whichop)
 					{
 					case OP_ADD:
-						stack.push(twoval + oneval);
+						stack.pushfloat(twoval + oneval);
 						break;
 					case OP_SUB:
-						stack.push(twoval - oneval);
+						stack.pushfloat(twoval - oneval);
 						break;
 					case OP_MUL:
-						stack.push(twoval * oneval);
+						stack.pushfloat(twoval * oneval);
 						break;
 					case OP_MOD:
 						if ((int)oneval==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push((int) twoval % (int) oneval);
+							stack.pushfloat((int) twoval % (int) oneval);
 						}
 						break;
 					case OP_DIV:
 						if (oneval==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push(twoval / oneval);
+							stack.pushfloat(twoval / oneval);
 						}
 						break;
 					case OP_INTDIV:
 						if ((int)oneval==0) {
 							errornum = ERROR_DIVZERO;
+							stack.pushint(0);
 						} else {
-							stack.push((int) twoval / (int) oneval);
+							stack.pushfloat((int) twoval / (int) oneval);
 						}
 						break;
 					case OP_EX:
-						stack.push(pow((double) twoval, (double) oneval));
+						stack.pushfloat(pow((double) twoval, (double) oneval));
 						break;
 					}
 				}
@@ -2376,13 +2395,10 @@ Interpreter::execByteCode()
 			op++;
 			int one = stack.popint();
 			int two = stack.popint();
-			if (one && two)
-			{
-				stack.push(1);
-			}
-			else
-			{
-				stack.push(0);
+			if (one && two) {
+				stack.pushint(1);
+			} else {
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -2392,13 +2408,10 @@ Interpreter::execByteCode()
 			op++;
 			int one = stack.popint();
 			int two = stack.popint();
-			if (one || two)
-			{
-				stack.push(1);
-			}
-			else
-			{
-				stack.push(0);
+			if (one || two)	{
+				stack.pushint(1);
+			} else {
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -2408,13 +2421,10 @@ Interpreter::execByteCode()
 			op++;
 			int one = stack.popint();
 			int two = stack.popint();
-			if (!(one && two) && (one || two))
-			{
-				stack.push(1);
-			}
-			else
-			{
-				stack.push(0);
+			if (!(one && two) && (one || two)) {
+				stack.pushint(1);
+			} else {
+				stack.pushint(0);
 			}
 		}
 		break;
@@ -2423,13 +2433,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int temp = stack.popint();
-			if (temp)
-			{
-				stack.push(0);
-			}
-			else
-			{
-				stack.push(1);
+			if (temp) {
+				stack.pushint(0);
+			} else {
+				stack.pushint(1);
 			}
 		}
 		break;
@@ -2438,13 +2445,10 @@ Interpreter::execByteCode()
 		{
 			op++;
 			stackval *temp = stack.pop();
-			if (temp->type == T_INT)
-			{
-				stack.push(-temp->value.intval);
-			}
-			else
-			{
-				stack.push(-temp->value.floatval);
+			if (temp->type == T_INT) {
+				stack.pushint(-temp->value.intval);
+			} else {
+				stack.pushfloat(-temp->value.floatval);
 			}
 		}
 		break;
@@ -2456,7 +2460,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)==0;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 		}
 		break;
 
@@ -2467,7 +2471,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)!=0;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 		}
 		break;
 
@@ -2478,7 +2482,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)==1;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 
 		}
 		break;
@@ -2490,7 +2494,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)!=1;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 		}
 		break;
 
@@ -2501,7 +2505,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)==-1;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 		}
 		break;
 
@@ -2512,7 +2516,7 @@ Interpreter::execByteCode()
 			int ans = compareTwoStackVal(one,two)!=-1;
 			stack.clean(one);
 			stack.clean(two);
-			stack.push(ans);
+			stack.pushint(ans);
 		}
 		break;
 
@@ -2522,10 +2526,11 @@ Interpreter::execByteCode()
 			int duration = stack.popint();
 			int frequency = stack.popint();
 			int* freqdur;
-			freqdur = (int*) malloc(1 * sizeof(int));
+			freqdur = (int*) malloc(2 * sizeof(int));
 			freqdur[0] = frequency;
 			freqdur[1] = duration;
 			sound.playSounds(1 , freqdur);
+			free(freqdur);
 		}
 		break;
 		
@@ -2550,6 +2555,7 @@ Interpreter::execByteCode()
 				}
 				
 				sound.playSounds(length / 2 , freqdur);
+				free(freqdur);
 			} 
 		}
 		break;
@@ -2569,7 +2575,9 @@ Interpreter::execByteCode()
 			{
 				freqdur[j] = stack.popint();
 			}
+
 			sound.playSounds(length / 2 , freqdur);
+			free(freqdur);
 		}
 		break;
 		
@@ -2651,7 +2659,7 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_RGB;
 			} else {
-				stack.push((int) QColor(rval,gval,bval,aval).rgba());
+				stack.pushint((int) QColor(rval,gval,bval,aval).rgba());
 			}
 		}
 		break;
@@ -2662,14 +2670,14 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			stack.push((int) rgb);
+			stack.pushint((int) rgb);
 		}
 		break;
 		
 	case OP_GETCOLOR:
 		{
 			op++;
-			stack.push((int) drawingpen.color().rgba());
+			stack.pushint((int) drawingpen.color().rgba());
 		}
 		break;
 		
@@ -2693,7 +2701,7 @@ Interpreter::execByteCode()
 					qs->append(QString::number(rgb,16).rightJustified(8,'0'));
 				}
 			}
-			stack.push(qs->toUtf8().data());
+			stack.pushstring(qs->toUtf8().data());
 			delete qs;
 		}
 		break;
@@ -2804,14 +2812,9 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			
-			QPainter poly(image);
-			poly.setPen(drawingpen);
-			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				poly.setCompositionMode(QPainter::CompositionMode_Clear);
-			}
-			if (variables.type(*i) == T_ARRAY)
-			{
+			if (variables.type(*i) != T_ARRAY) {
+				errornum = ERROR_POLYARRAY;
+			} else {
 				int pairs = variables.arraysize(*i) / 2;
 				if (pairs < 3)
 				{
@@ -2825,14 +2828,18 @@ Interpreter::execByteCode()
 						points[j].setX(variables.arraygetfloat(*i, j*2));
 						points[j].setY(variables.arraygetfloat(*i, j*2+1));
 					}
+
+					QPainter poly(image);
+					poly.setPen(drawingpen);
+					poly.setBrush(drawingbrush);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						poly.setCompositionMode(QPainter::CompositionMode_Clear);
+					}
 					poly.drawPolygon(points, pairs);
 					poly.end();
 					if (!fastgraphics) waitForGraphics();
 					delete points;
 				}
-			} else {
-				errornum = ERROR_POLYARRAY;
-				poly.end();
 			}
 		}
 		break;
@@ -2845,12 +2852,6 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			
-			QPainter poly(image);
-			poly.setPen(drawingpen);
-			poly.setBrush(drawingbrush);
-			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				poly.setCompositionMode(QPainter::CompositionMode_Clear);
-			}
 			int pairs = *i / 2;
 			if (pairs < 3)
 			{
@@ -2863,6 +2864,13 @@ Interpreter::execByteCode()
 					int xpoint = stack.popint();
 					points[j].setX(xpoint);
 					points[j].setY(ypoint);
+				}
+				
+				QPainter poly(image);
+				poly.setPen(drawingpen);
+				poly.setBrush(drawingbrush);
+				if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+					poly.setCompositionMode(QPainter::CompositionMode_Clear);
 				}
 				poly.drawPolygon(points, pairs);
 				poly.end();
@@ -2899,14 +2907,7 @@ Interpreter::execByteCode()
 					if (scale<0) {
 						errornum = ERROR_IMAGESCALE;
 					} else {
-						QPainter poly(image);
-						poly.setPen(drawingpen);
-						poly.setBrush(drawingbrush);
-						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-							poly.setCompositionMode(QPainter::CompositionMode_Clear);
-						}
 						QPointF *points = new QPointF[pairs];
-	
 						for (int j = 0; j < pairs; j++)
 						{
 							double tx = scale * variables.arraygetfloat(*i, j*2);
@@ -2917,6 +2918,13 @@ Interpreter::execByteCode()
 							}
 							points[j].setX(tx + x);
 							points[j].setY(ty + y);
+						}
+
+						QPainter poly(image);
+						poly.setPen(drawingpen);
+						poly.setBrush(drawingbrush);
+						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+							poly.setCompositionMode(QPainter::CompositionMode_Clear);
 						}
 						poly.drawPolygon(points, pairs);
 						poly.end();
@@ -2969,12 +2977,6 @@ Interpreter::execByteCode()
 				{
 					errornum = ERROR_POLYPOINTS;
 				} else {
-					QPainter poly(image);
-					poly.setPen(drawingpen);
-					poly.setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-						poly.setCompositionMode(QPainter::CompositionMode_Clear);
-					}
 
 					QPointF *points = new QPointF[pairs];
 					for (int j = 0; j < pairs; j++)
@@ -2988,14 +2990,22 @@ Interpreter::execByteCode()
 						points[j].setX(tx + x);
 						points[j].setY(ty + y);
 					}
-					poly.drawPolygon(points, pairs);
 
+					QPainter poly(image);
+					poly.setPen(drawingpen);
+					poly.setBrush(drawingbrush);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						poly.setCompositionMode(QPainter::CompositionMode_Clear);
+					}
+					poly.drawPolygon(points, pairs);
 					poly.end();
 				
 					if (!fastgraphics) waitForGraphics();
 					delete points;
 				}
 			}
+			
+			free(list);
 		}
 		break;
 
@@ -3176,14 +3186,14 @@ Interpreter::execByteCode()
 	case OP_GRAPHWIDTH:
 		{
 			op++;
-			stack.push((int) graph->image->width());
+			stack.pushint((int) graph->image->width());
 		}
 		break;
 
 	case OP_GRAPHHEIGHT:
 		{
 			op++;
-			stack.push((int) graph->image->height());
+			stack.pushint((int) graph->image->height());
 		}
 		break;
 
@@ -3212,7 +3222,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			keymutex.lock();
-			stack.push(currentKey);
+			stack.pushint(currentKey);
 			currentKey = 0;
 			keymutex.unlock();
 		}
@@ -3248,7 +3258,8 @@ Interpreter::execByteCode()
 				strcpy(buffer, two);
 				strcat(buffer, one);
 			}
-			stack.push(buffer);
+			stack.pushstring(buffer);
+			free(buffer);
 			free(one);
 			free(two);
 		}
@@ -3260,7 +3271,6 @@ Interpreter::execByteCode()
             int *num = (int *) op;
             op += sizeof(int);
             double temp = stack.popfloat();
-
 
             variables.setfloat(*num, temp);
 
@@ -3344,22 +3354,22 @@ Interpreter::execByteCode()
 			switch (*op)
 			{
 			case OP_YEAR:
-				stack.push(timeinfo->tm_year + 1900);
+				stack.pushint(timeinfo->tm_year + 1900);
 				break;
 			case OP_MONTH:
-				stack.push(timeinfo->tm_mon);
+				stack.pushint(timeinfo->tm_mon);
 				break;
 			case OP_DAY:
-				stack.push(timeinfo->tm_mday);
+				stack.pushint(timeinfo->tm_mday);
 				break;
 			case OP_HOUR:
-				stack.push(timeinfo->tm_hour);
+				stack.pushint(timeinfo->tm_hour);
 				break;
 			case OP_MINUTE:
-				stack.push(timeinfo->tm_min);
+				stack.pushint(timeinfo->tm_min);
 				break;
 			case OP_SECOND:
-				stack.push(timeinfo->tm_sec);
+				stack.pushint(timeinfo->tm_sec);
 				break;
 			}
 			op++;
@@ -3369,21 +3379,21 @@ Interpreter::execByteCode()
 	case OP_MOUSEX:
 		{
 			op++;
-			stack.push((int) graph->mouseX);
+			stack.pushint((int) graph->mouseX);
 		}
 		break;
 
 	case OP_MOUSEY:
 		{
 			op++;
-			stack.push((int) graph->mouseY);
+			stack.pushint((int) graph->mouseY);
 		}
 		break;
 
 	case OP_MOUSEB:
 		{
 			op++;
-			stack.push((int) graph->mouseB);
+			stack.pushint((int) graph->mouseB);
 		}
 		break;
 
@@ -3399,21 +3409,21 @@ Interpreter::execByteCode()
 	case OP_CLICKX:
 		{
 			op++;
-			stack.push((int) graph->clickX);
+			stack.pushint((int) graph->clickX);
 		}
 		break;
 
 	case OP_CLICKY:
 		{
 			op++;
-			stack.push((int) graph->clickY);
+			stack.pushint((int) graph->clickY);
 		}
 		break;
 
 	case OP_CLICKB:
 		{
 			op++;
-			stack.push((int) graph->clickB);
+			stack.pushint((int) graph->clickB);
 		}
 		break;
 
@@ -3645,7 +3655,7 @@ Interpreter::execByteCode()
 							if(!sprites[n1].image || !sprites[n2].image) {
 								 errornum = ERROR_SPRITENA;
 							} else {
-								stack.push(spritecollide(n1, n2));
+								stack.pushint(spritecollide(n1, n2));
 							}
 						}
 					}
@@ -3666,19 +3676,19 @@ Interpreter::execByteCode()
 					
 					if(n < 0 || n >=nsprites) {
 						errornum = ERROR_SPRITENUMBER;
-						stack.push(0);	
+						stack.pushint(0);	
 					} else {
 						if(!sprites[n].image) {
 							errornum = ERROR_SPRITENA;
-							stack.push(0);	
+							stack.pushint(0);	
 						} else {
-							if (opcode==OPX_SPRITEX) stack.push(sprites[n].x);
-							if (opcode==OPX_SPRITEY) stack.push(sprites[n].y);
-							if (opcode==OPX_SPRITEH) stack.push(sprites[n].image->height());
-							if (opcode==OPX_SPRITEW) stack.push(sprites[n].image->width());
-							if (opcode==OPX_SPRITEV) stack.push(sprites[n].visible?1:0);
-							if (opcode==OPX_SPRITER) stack.push(sprites[n].r);
-							if (opcode==OPX_SPRITES) stack.push(sprites[n].s);
+							if (opcode==OPX_SPRITEX) stack.pushfloat(sprites[n].x);
+							if (opcode==OPX_SPRITEY) stack.pushfloat(sprites[n].y);
+							if (opcode==OPX_SPRITEH) stack.pushint(sprites[n].image->height());
+							if (opcode==OPX_SPRITEW) stack.pushint(sprites[n].image->width());
+							if (opcode==OPX_SPRITEV) stack.pushint(sprites[n].visible?1:0);
+							if (opcode==OPX_SPRITER) stack.pushfloat(sprites[n].r);
+							if (opcode==OPX_SPRITES) stack.pushfloat(sprites[n].s);
 						}
 					}
 				}
@@ -3699,7 +3709,7 @@ Interpreter::execByteCode()
 			case OPX_CURRENTDIR:
 				{
 					op++;
-					stack.push(QDir::currentPath().toUtf8().data());
+					stack.pushstring(QDir::currentPath().toUtf8().data());
 				}
 				break;
 				
@@ -3847,7 +3857,7 @@ Interpreter::execByteCode()
 								if (dbset[n][set]) {
 									// return true if we move to a new row else false
 									dbsetrow[n][set] = true;
-									stack.push((sqlite3_step(dbset[n][set]) == SQLITE_ROW?1:0));
+									stack.pushint((sqlite3_step(dbset[n][set]) == SQLITE_ROW?1:0));
 								} else {
 									errornum = ERROR_DBNOTSET;
 								}
@@ -3904,19 +3914,19 @@ Interpreter::execByteCode()
 											switch(opcode) {
 												case OPX_DBINT:
 												case OPX_DBINTS:
-													stack.push(sqlite3_column_int(dbset[n][set], col));
+													stack.pushint(sqlite3_column_int(dbset[n][set], col));
 													break;
 												case OPX_DBFLOAT:
 												case OPX_DBFLOATS:
-													stack.push(sqlite3_column_double(dbset[n][set], col));
+													stack.pushfloat(sqlite3_column_double(dbset[n][set], col));
 													break;
 												case OPX_DBNULL:
 												case OPX_DBNULLS:
-													stack.push((char*)sqlite3_column_text(dbset[n][set], col)==NULL);
+													stack.pushint((char*)sqlite3_column_text(dbset[n][set], col)==NULL);
 													break;
 												case OPX_DBSTRING:
 												case OPX_DBSTRINGS:
-													stack.push((char*)sqlite3_column_text(dbset[n][set], col));
+													stack.pushstring((char*)sqlite3_column_text(dbset[n][set], col));
 													break;
 											}
 										}
@@ -3930,28 +3940,28 @@ Interpreter::execByteCode()
 			case OPX_LASTERROR:
 				{
 					op++;
-					stack.push(lasterrornum);
+					stack.pushint(lasterrornum);
 				}
 				break;
 
 			case OPX_LASTERRORLINE:
 				{
 					op++;
-					stack.push(lasterrorline);
+					stack.pushint(lasterrorline);
 				}
 				break;
 
 			case OPX_LASTERROREXTRA:
 				{
 					op++;
-					stack.push(lasterrormessage.toUtf8().data());
+					stack.pushstring(lasterrormessage.toUtf8().data());
 				}
 				break;
 
 			case OPX_LASTERRORMESSAGE:
 				{
 					op++;
-					stack.push(getErrorMessage(lasterrornum).toUtf8().data());
+					stack.pushstring(getErrorMessage(lasterrornum).toUtf8().data());
 				}
 				break;
 
@@ -4074,22 +4084,24 @@ Interpreter::execByteCode()
 					int fn = stack.popint();
 					if (fn<0||fn>=NUMSOCKETS) {
 						errornum = ERROR_NETSOCKNUMBER;
-						stack.push(strdup(""));
+						stack.pushint(0);
 					} else {
 						if (netsockfd[fn] < 0) {
 							errornum = ERROR_NETNONE;
-							stack.push(strdup(""));
+							stack.pushint(0);
 						} else {
 							memset(strarray, 0, MAXSIZE);
 							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
 							if (n < 0) {
 								errornum = ERROR_NETREAD;
 								errormessage = strerror(errno);
+								stack.pushint(0);
+							} else {
+								stack.pushstring(strarray);
 							}
-							stack.push(strdup(strarray));
-							free(strarray);
 						}
 					}
+					free(strarray);
 				}
 				break;
 
@@ -4143,12 +4155,12 @@ Interpreter::execByteCode()
 						#ifdef WIN32
 						unsigned long n;
 						if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
-							stack.push(0);
+							stack.pushint(0);
 						} else {
 							if (n==0L) {
-								stack.push(0);
+								stack.pushint(0);
 							} else {
-								stack.push(1);
+								stack.pushint(1);
 							}
 						}
 						#else
@@ -4156,12 +4168,12 @@ Interpreter::execByteCode()
 						p[0].fd = netsockfd[fn];
 						p[0].events = POLLIN | POLLPRI;
 						if(poll(p, 1, 1)<0) {
-							stack.push(0);
+							stack.pushint(0);
 						} else {
 							if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
-								stack.push(1);
+								stack.pushint(1);
 							} else {
-								stack.push(0);
+								stack.pushint(0);
 							}
 						}
 						#endif
@@ -4181,7 +4193,7 @@ Interpreter::execByteCode()
 					gethostname( szHostname, sizeof( szHostname ));
 					pHostEnt = gethostbyname( szHostname );
 					memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
-					stack.push(strdup(inet_ntoa(sAddr.sin_addr)));
+					stack.pushstring(inet_ntoa(sAddr.sin_addr));
 					#else
 					bool good = false;
 					struct ifaddrs *myaddrs, *ifa;
@@ -4197,7 +4209,7 @@ Interpreter::execByteCode()
 								struct sockaddr_in *s4 = (struct sockaddr_in *)ifa->ifa_addr;
 								in_addr = &s4->sin_addr;
 								if (inet_ntop(ifa->ifa_addr->sa_family, in_addr, buf, sizeof(buf))) {
-									stack.push(strdup(buf));
+									stack.pushstring(buf);
 									good = true;
 								}
 							}
@@ -4206,7 +4218,7 @@ Interpreter::execByteCode()
 					}
 					if (!good) {
 						// on error give local loopback
-						stack.push(strdup("127.0.0.1"));
+						stack.pushstring((char *) "127.0.0.1");
 					}
 					#endif
 				}
@@ -4227,7 +4239,7 @@ Interpreter::execByteCode()
 				{
 					op++;
 					char *stuff = stack.popstring();
-					stack.push(MD5(stuff).hexdigest());
+					stack.pushstring(MD5(stuff).hexdigest());
 					free(stuff);
 				}
 				break;
@@ -4263,11 +4275,12 @@ Interpreter::execByteCode()
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
-						stack.push(strdup(settings.value(key, "").toString().toUtf8().data()));
+						stack.pushstring(settings.value(key, "").toString().toUtf8().data());
 						settings.endGroup();
 						settings.endGroup();
 					} else {
 						errornum = ERROR_PERMISSION;
+						stack.pushint(0);
 					}
 					free(key);
 					free(app);
@@ -4316,7 +4329,7 @@ Interpreter::execByteCode()
 					} else {
 						errornum = ERROR_PERMISSION;
 					}
-					stack.push(data);
+					stack.pushint(data);
 				}
 				break;
 
@@ -4325,7 +4338,7 @@ Interpreter::execByteCode()
 					op++;
 					int a = stack.popint();
 					int b = stack.popint();
-					stack.push(a|b);
+					stack.pushint(a|b);
 				}
 				break;
 
@@ -4334,7 +4347,7 @@ Interpreter::execByteCode()
 					op++;
 					int a = stack.popint();
 					int b = stack.popint();
-					stack.push(a&b);
+					stack.pushint(a&b);
 				}
 				break;
 
@@ -4342,7 +4355,7 @@ Interpreter::execByteCode()
 				{
 					op++;
 					int a = stack.popint();
-					stack.push(~a);
+					stack.pushint(~a);
 				}
 				break;
 
@@ -4351,7 +4364,7 @@ Interpreter::execByteCode()
 					// Image Save - Save image
 					op++;
 					char *type = stack.popstring();
-         				char *file = stack.popstring();
+         			char *file = stack.popstring();
 					QStringList validtypes;
 					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
 					if (validtypes.indexOf(QString(type))!=-1) {
@@ -4382,15 +4395,15 @@ Interpreter::execByteCode()
 						dirp = readdir(directorypointer);
 						while(dirp != NULL && dirp->d_name[0]=='.') dirp = readdir(directorypointer);
 						if (dirp) {
-							stack.push(strdup(dirp->d_name));
+							stack.pushstring(dirp->d_name);
 						} else {
-							stack.push(strdup(""));
+							stack.pushstring((char *) "");
 							closedir(directorypointer);
 							directorypointer = NULL;
 						}
 					} else {
 						errornum = ERROR_FOLDER;
-						stack.push(strdup(""));
+						stack.pushint(0);
 					}
 					free(folder);
 				}
@@ -4418,9 +4431,9 @@ Interpreter::execByteCode()
 					QString qhaystack = QString::fromUtf8(haystack);
 			
 					if(opcode==OPX_REPLACE || opcode==OPX_REPLACE_C) {
-						stack.push(strdup(qhaystack.replace(qfrom, qto, casesens).toUtf8().data()));
+						stack.pushstring(qhaystack.replace(qfrom, qto, casesens).toUtf8().data());
 					} else {
-						stack.push(strdup(qhaystack.replace(QRegExp(qfrom), qto).toUtf8().data()));
+						stack.pushstring(qhaystack.replace(QRegExp(qfrom), qto).toUtf8().data());
 					}
 
 					free(to);
@@ -4449,9 +4462,9 @@ Interpreter::execByteCode()
 					QString qhaystack = QString::fromUtf8(haystack);
 			
 					if(opcode==OPX_COUNT || opcode==OPX_COUNT_C) {
-						stack.push((int) (qhaystack.count(qneedle, casesens)));
+						stack.pushint((int) (qhaystack.count(qneedle, casesens)));
 					} else {
-						stack.push((int) (qhaystack.count(QRegExp(qneedle))));
+						stack.pushint((int) (qhaystack.count(QRegExp(qneedle))));
 					}
 
 					free(needle);
@@ -4473,7 +4486,7 @@ Interpreter::execByteCode()
 					#ifdef MACX
 						os = 2;
 					#endif
-					stack.push(os);
+					stack.pushint(os);
 				}
 				break;
 
@@ -4481,7 +4494,7 @@ Interpreter::execByteCode()
 				{
 					// Return number of milliseconds the BASIC256 program has been running
 					op++;
-					stack.push((int) (runtimer.elapsed()));
+					stack.pushint((int) (runtimer.elapsed()));
 				}
 				break;
 
@@ -4511,7 +4524,7 @@ Interpreter::execByteCode()
 					w = QFontMetrics(ian.font()).width(QString::fromUtf8(txt));
 					ian.end();
 					free(txt);
-					stack.push((int) (w));
+					stack.pushint((int) (w));
 
 				}
 				break;
@@ -4526,8 +4539,9 @@ Interpreter::execByteCode()
 					}
 					if (f==-1) {
 						errornum = ERROR_FREEFILE;
+						stack.pushint(0);
 					} else {
-						stack.push(f);
+						stack.pushint(f);
 					}
 				}
 				break;
@@ -4542,8 +4556,9 @@ Interpreter::execByteCode()
 					}
 					if (f==-1) {
 						errornum = ERROR_FREENET;
+						stack.pushint(0);
 					} else {
-						stack.push(f);
+						stack.pushint(f);
 					}
 				}
 				break;
@@ -4558,8 +4573,9 @@ Interpreter::execByteCode()
 					}
 					if (f==-1) {
 						errornum = ERROR_FREEDB;
+						stack.pushint(0);
 					} else {
-						stack.push(f);
+						stack.pushint(f);
 					}
 				}
 				break;
@@ -4572,14 +4588,16 @@ Interpreter::execByteCode()
 					int f=-1;
 					if (n<0||n>=NUMDBCONN) {
 						errornum = ERROR_DBCONNNUMBER;
+						stack.pushint(0);
 					} else {
 						for (int t=0;(t<NUMDBSET)&&(f==-1);t++) {
 							if (!dbset[n][t]) f = t;
 						}
 						if (f==-1) {
 							errornum = ERROR_FREEDBSET;
+							stack.pushint(0);
 						} else {
-							stack.push(f);
+							stack.pushint(f);
 						}
 					}
 				}
@@ -4641,14 +4659,14 @@ Interpreter::execByteCode()
 			case OPX_GETPENWIDTH:
 				{
 					op++;
-					stack.push((double) (drawingpen.widthF()));
+					stack.pushfloat((double) (drawingpen.widthF()));
 				}
 				break;
 
 			case OPX_GETBRUSHCOLOR:
 				{
 					op++;
-					stack.push((int) drawingbrush.color().rgba());
+					stack.pushint((int) drawingbrush.color().rgba());
 				}
 				break;
 		
@@ -4673,8 +4691,8 @@ Interpreter::execByteCode()
 					emit(dialogAlert(QString::fromUtf8(temp)));
 					waitInput.wait(&mutex);
 					mutex.unlock();
-					free(temp);
 					waitForGraphics();
+					free(temp);
 				}
 				break;
 
@@ -4687,9 +4705,9 @@ Interpreter::execByteCode()
 					emit(dialogConfirm(QString::fromUtf8(temp),dflt));
 					waitInput.wait(&mutex);
 					mutex.unlock();
-					free(temp);
-					stack.push((int) returnInt);
+					stack.pushint(returnInt);
 					waitForGraphics();
+					free(temp);
 				}
 				break;
 
@@ -4702,10 +4720,10 @@ Interpreter::execByteCode()
 					emit(dialogPrompt(QString::fromUtf8(msg),QString::fromUtf8(dflt)));
 					waitInput.wait(&mutex);
 					mutex.unlock();
+					stack.pushstring(returnString.toUtf8().data());
+					waitForGraphics();
 					free(msg);
 					free(dflt);
-					stack.push(returnString.toUtf8().data());
-					waitForGraphics();
 				}
 				break;
 

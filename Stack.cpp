@@ -78,8 +78,11 @@ Stack::checkLimit()
 }
 
 void
-Stack::push(char *c)
+Stack::pushstring(char *c)
 {
+	// dupplicate the string for the stack
+	// the calling point in the iterperter MUST free the resource
+	// passed or leaks WILL happen
 	checkLimit();
 	top++;
 	top->type = T_STRING;
@@ -93,7 +96,7 @@ Stack::push(char *c)
 }
 
 void
-Stack::push(int i)
+Stack::pushint(int i)
 {
 	checkLimit();
 	top++;
@@ -120,7 +123,7 @@ Stack::pushvarrefstr(int i)
 }
 
 void
-Stack::push(double d)
+Stack::pushfloat(double d)
 {
 	checkLimit();
 	top++;
@@ -229,7 +232,7 @@ void Stack::dup(int n) {
 	// internal duplicate entry 0-top n-ndown
 	stackval *orig = top - n;
 	if (orig->type==T_INT) {
-		push(orig->value.intval);
+		pushint(orig->value.intval);
 	}
     if (orig->type==T_VARREF) {
         pushvarref(orig->value.intval);
@@ -238,13 +241,10 @@ void Stack::dup(int n) {
         pushvarrefstr(orig->value.intval);
     }
     if (orig->type==T_FLOAT) {
-		push(orig->value.floatval);
+		pushfloat(orig->value.floatval);
 	}
 	if (orig->type==T_STRING) {
-		char *t;
-		t = (char *) malloc((strlen(orig->value.string)+1) * sizeof(char));
-		strcpy(t,orig->value.string);
-		push(t);
+		pushstring(orig->value.string);
 	}
 }
 
