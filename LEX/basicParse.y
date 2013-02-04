@@ -1232,7 +1232,7 @@ colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
 		addIntOp(OP_PUSHINT, 255); 
 		addOp(OP_RGB);
 		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLORINT);
+		addOp(OP_SETCOLOR);
 		addIntOp(OP_PUSHINT, WARNING_DEPRECATED_FORM); 
 		addExtendedOp(OPX_RUNTIMEWARNING);
 	}
@@ -1240,16 +1240,16 @@ colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
 		addIntOp(OP_PUSHINT, 255); 
 		addOp(OP_RGB);
 		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLORINT);
+		addOp(OP_SETCOLOR);
 		addIntOp(OP_PUSHINT, WARNING_DEPRECATED_FORM); 
 		addExtendedOp(OPX_RUNTIMEWARNING);
 	}
 	| B256SETCOLOR floatexpr {
 		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLORINT);
+		addOp(OP_SETCOLOR);
 	}
-	| B256SETCOLOR floatexpr ',' floatexpr  { addOp(OP_SETCOLORINT); }
-	| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  { addOp(OP_SETCOLORINT); }
+	| B256SETCOLOR floatexpr ',' floatexpr  { addOp(OP_SETCOLOR); }
+	| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  { addOp(OP_SETCOLOR); }
 ;
 
 soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
@@ -2056,44 +2056,44 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256CLICKY '(' ')' { addOp(OP_CLICKY); }
 	| B256CLICKB { addOp(OP_CLICKB); }
 	| B256CLICKB '(' ')' { addOp(OP_CLICKB); }
-	| B256CLEAR { addIntOp(OP_PUSHINT, 0x00000000); }
-	| B256CLEAR '(' ')' { addIntOp(OP_PUSHINT, 0x00000000); }
-	| B256BLACK { addIntOp(OP_PUSHINT, 0xff000000); }
-	| B256BLACK '(' ')' { addIntOp(OP_PUSHINT, 0xff000000); }
-	| B256WHITE { addIntOp(OP_PUSHINT, 0xfff8f8f8); }
-	| B256WHITE '(' ')' { addIntOp(OP_PUSHINT, 0xfff8f8f8); }
-	| B256RED { addIntOp(OP_PUSHINT, 0xffff0000); }
-	| B256RED '(' ')' { addIntOp(OP_PUSHINT, 0xffff0000); }
-	| B256DARKRED { addIntOp(OP_PUSHINT, 0xff800000); }
-	| B256DARKRED '(' ')' { addIntOp(OP_PUSHINT, 0xff800000); }
-	| B256GREEN { addIntOp(OP_PUSHINT, 0xff00ff00); }
-	| B256GREEN '(' ')' { addIntOp(OP_PUSHINT, 0xff00ff00); }
-	| B256DARKGREEN { addIntOp(OP_PUSHINT, 0xff008000); }
-	| B256DARKGREEN '(' ')' { addIntOp(OP_PUSHINT, 0xff008000); }
-	| B256BLUE { addIntOp(OP_PUSHINT, 0xff0000ff); }
-	| B256BLUE '(' ')' { addIntOp(OP_PUSHINT, 0xff0000ff); }
-	| B256DARKBLUE { addIntOp(OP_PUSHINT, 0xff000080); }
-	| B256DARKBLUE '(' ')' { addIntOp(OP_PUSHINT, 0xff000080); }
-	| B256CYAN { addIntOp(OP_PUSHINT, 0xff00ffff); }
-	| B256CYAN '(' ')' { addIntOp(OP_PUSHINT, 0xff00ffff); }
-	| B256DARKCYAN { addIntOp(OP_PUSHINT, 0xff008080); }
-	| B256DARKCYAN '(' ')' { addIntOp(OP_PUSHINT, 0xff008080); }
-	| B256PURPLE { addIntOp(OP_PUSHINT, 0xffff00ff); }
-	| B256PURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xffff00ff); }
-	| B256DARKPURPLE { addIntOp(OP_PUSHINT, 0xff800080); }
-	| B256DARKPURPLE '(' ')' { addIntOp(OP_PUSHINT, 0xff800080); }
-	| B256YELLOW { addIntOp(OP_PUSHINT, 0xffffff00); }
-	| B256YELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xffffff00); }
-	| B256DARKYELLOW { addIntOp(OP_PUSHINT, 0xff808000); }
-	| B256DARKYELLOW '(' ')' { addIntOp(OP_PUSHINT, 0xff808000); }
-	| B256ORANGE { addIntOp(OP_PUSHINT, 0xffff6600); }
-	| B256ORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xffff6600); }
-	| B256DARKORANGE { addIntOp(OP_PUSHINT, 0xffaa3300); }
-	| B256DARKORANGE '(' ')' { addIntOp(OP_PUSHINT, 0xffaa3300); }
-	| B256GREY { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
-	| B256GREY '(' ')' { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
-	| B256DARKGREY { addIntOp(OP_PUSHINT, 0xff808080); }
-	| B256DARKGREY '(' ')' { addIntOp(OP_PUSHINT, 0xff808080); }
+	| B256CLEAR { addFloatOp(OP_PUSHFLOAT, 0x00000000); }
+	| B256CLEAR '(' ')' { addFloatOp(OP_PUSHFLOAT, 0x00000000); }
+	| B256BLACK { addFloatOp(OP_PUSHFLOAT, 0xff000000); }
+	| B256BLACK '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff000000); }
+	| B256WHITE { addFloatOp(OP_PUSHFLOAT, 0xfff8f8f8); }
+	| B256WHITE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xfff8f8f8); }
+	| B256RED { addFloatOp(OP_PUSHFLOAT, 0xffff0000); }
+	| B256RED '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff0000); }
+	| B256DARKRED { addFloatOp(OP_PUSHFLOAT, 0xff800000); }
+	| B256DARKRED '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff800000); }
+	| B256GREEN { addFloatOp(OP_PUSHFLOAT, 0xff00ff00); }
+	| B256GREEN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff00ff00); }
+	| B256DARKGREEN { addFloatOp(OP_PUSHFLOAT, 0xff008000); }
+	| B256DARKGREEN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff008000); }
+	| B256BLUE { addFloatOp(OP_PUSHFLOAT, 0xff0000ff); }
+	| B256BLUE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff0000ff); }
+	| B256DARKBLUE { addFloatOp(OP_PUSHFLOAT, 0xff000080); }
+	| B256DARKBLUE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff000080); }
+	| B256CYAN { addFloatOp(OP_PUSHFLOAT, 0xff00ffff); }
+	| B256CYAN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff00ffff); }
+	| B256DARKCYAN { addFloatOp(OP_PUSHFLOAT, 0xff008080); }
+	| B256DARKCYAN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff008080); }
+	| B256PURPLE { addFloatOp(OP_PUSHFLOAT, 0xffff00ff); }
+	| B256PURPLE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff00ff); }
+	| B256DARKPURPLE { addFloatOp(OP_PUSHFLOAT, 0xff800080); }
+	| B256DARKPURPLE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff800080); }
+	| B256YELLOW { addFloatOp(OP_PUSHFLOAT, 0xffffff00); }
+	| B256YELLOW '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffffff00); }
+	| B256DARKYELLOW { addFloatOp(OP_PUSHFLOAT, 0xff808000); }
+	| B256DARKYELLOW '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff808000); }
+	| B256ORANGE { addFloatOp(OP_PUSHFLOAT, 0xffff6600); }
+	| B256ORANGE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff6600); }
+	| B256DARKORANGE { addFloatOp(OP_PUSHFLOAT, 0xffaa3300); }
+	| B256DARKORANGE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffaa3300); }
+	| B256GREY { addFloatOp(OP_PUSHFLOAT, 0xffa4a4a4); }
+	| B256GREY '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffa4a4a4); }
+	| B256DARKGREY { addFloatOp(OP_PUSHFLOAT, 0xff808080); }
+	| B256DARKGREY '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff808080); }
 	| B256PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }
 	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' {
 		addIntOp(OP_PUSHINT, 255); 

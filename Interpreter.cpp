@@ -105,9 +105,9 @@ int Interpreter::compareTwoStackVal(stackval *two, stackval *one)
 	// complex compare logic - compare two stack types with each other
 	// return 1 if one>two  0 if one==two or -1 if one<two
 	//
-	// one or both strings - [compare them as strings] strcmp
 	if (one->type == T_STRING || two->type == T_STRING)
 	{
+		// one or both strings - [compare them as strings] strcmp
 		char *sone, *stwo;
 		int i;
 		sone = stack.tostring(one);
@@ -116,20 +116,8 @@ int Interpreter::compareTwoStackVal(stackval *two, stackval *one)
 		free(sone);
 		free(stwo);
 		return i;
-	}
-	// both integers - compare as integers
-	if (one->type == T_INT && two->type == T_INT)
-	{
-		int ione, itwo;
-		ione = stack.toint(one);
-		itwo = stack.toint(two);
-		if (ione == itwo) return 0;
-		else if (ione < itwo) return -1;
-		else return 1;
-	}
-	// one or more floats - compare them as floats
-	if (one->type == T_FLOAT || two->type == T_FLOAT)
-	{
+	} else {
+		// anything else - compare them as floats
 		double fone, ftwo;
 		fone = stack.tofloat(one);
 		ftwo = stack.tofloat(two);
@@ -1962,9 +1950,12 @@ Interpreter::execByteCode()
 
 	case OP_INT:
 		{
+			// bigger integer safe (trim floating point off of a float)
 			op++;
-			int val = stack.popint();
-			stack.pushint(val);
+			double val = stack.popfloat();
+			double decpart;
+			val = modf(val, &decpart);
+			stack.pushfloat(val);
 		}
 		break;
 
@@ -2234,10 +2225,10 @@ Interpreter::execByteCode()
 				stack.pushfloat(atan(val));
 				break;
 			case OP_CEIL:
-				stack.pushint((int) ceil(val));
+				stack.pushint(ceil(val));
 				break;
 			case OP_FLOOR:
-				stack.pushint((int) floor(val));
+				stack.pushint(floor(val));
 				break;
 			case OP_ABS:
 				if (val < 0)
@@ -2279,114 +2270,49 @@ Interpreter::execByteCode()
 		{
 			unsigned char whichop = *op;
 			op++;
-			stackval *one = stack.pop();
-			stackval *two = stack.pop();
-			if (one->type == T_STRING || two->type == T_STRING || one->type == T_ARRAY || two->type == T_ARRAY || one->type == T_STRARRAY || two->type == T_STRARRAY || one->type == T_UNUSED || two->type == T_UNUSED)
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			//
+			switch(whichop)
 			{
-				errornum = ERROR_NONNUMERIC;
-				stack.pushint(0);
-			} else {
-				if (one->type == two->type && one->type == T_INT)
-				{
-					int i1, i2;
-					i1 = one->value.intval;
-					i2 = two->value.intval;
-					stack.clean(one);
-					stack.clean(two);
-					//
-					switch (whichop)
-					{
-					case OP_ADD:
-						stack.pushint(i2 + i1);
-						break;
-					case OP_SUB:
-						stack.pushint(i2 - i1);
-						break;
-					case OP_MUL:
-						stack.pushint(i2 * i1);
-						break;
-					case OP_MOD:
-						if (i1==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushint(i2 % i1);
-						}
-						break;
-					case OP_DIV:
-						if (i1==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushfloat((double) i2/ (double) i1);
-						}
-						break;
-					case OP_INTDIV:
-						if (i1==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushint(i2 / i1);
-						}
-						break;
-					case OP_EX:
-						stack.pushfloat(pow((double) i2, (double) i1));
-						break;
+				case OP_ADD:
+					stack.pushfloat(twoval + oneval);
+					break;
+				case OP_SUB:
+					stack.pushfloat(twoval - oneval);
+					break;
+				case OP_MUL:
+					stack.pushfloat(twoval * oneval);
+					break;
+				case OP_MOD:
+					if (oneval==0) {
+						errornum = ERROR_DIVZERO;
+						stack.pushint(0);
+					} else {
+						stack.pushfloat(fmod(twoval, oneval));
 					}
-				} else {
-					double oneval, twoval;
-					if (one->type == T_INT)
-						oneval = (double) one->value.intval;
-					else
-						oneval = one->value.floatval;
-					if (two->type == T_INT)
-						twoval = (double) two->value.intval;
-					else
-						twoval = two->value.floatval;
-					stack.clean(one);
-					stack.clean(two);
-					//
-					switch(whichop)
-					{
-					case OP_ADD:
-						stack.pushfloat(twoval + oneval);
-						break;
-					case OP_SUB:
-						stack.pushfloat(twoval - oneval);
-						break;
-					case OP_MUL:
-						stack.pushfloat(twoval * oneval);
-						break;
-					case OP_MOD:
-						if ((int)oneval==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushfloat((int) twoval % (int) oneval);
-						}
-						break;
-					case OP_DIV:
-						if (oneval==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushfloat(twoval / oneval);
-						}
-						break;
-					case OP_INTDIV:
-						if ((int)oneval==0) {
-							errornum = ERROR_DIVZERO;
-							stack.pushint(0);
-						} else {
-							stack.pushfloat((int) twoval / (int) oneval);
-						}
-						break;
-					case OP_EX:
-						stack.pushfloat(pow((double) twoval, (double) oneval));
-						break;
+					break;
+				case OP_DIV:
+					if (oneval==0) {
+						errornum = ERROR_DIVZERO;
+						stack.pushfloat(0.0);
+					} else {
+						stack.pushfloat(twoval / oneval);
 					}
-				}
-			}	
+					break;
+				case OP_INTDIV:
+					if (oneval==0) {
+						errornum = ERROR_DIVZERO;
+						stack.pushfloat(0.0);
+					} else {
+						double decpart;
+						stack.pushfloat(modf(twoval /oneval, &decpart));
+					}
+					break;
+				case OP_EX:
+					stack.pushfloat(pow(twoval, oneval));
+					break;
+			}
 		}
 		break;
 
@@ -2445,11 +2371,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			stackval *temp = stack.pop();
-			if (temp->type == T_INT) {
-				stack.pushint(-temp->value.intval);
-			} else {
-				stack.pushfloat(-temp->value.floatval);
-			}
+			stack.pushfloat(-temp->value.floatval);
 		}
 		break;
 
@@ -2637,11 +2559,11 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_SETCOLORINT:
+	case OP_SETCOLOR:
 		{
 			op++;
-			int brushval = stack.popint();
-			int penval = stack.popint();
+			unsigned int brushval = stack.popfloat();
+			unsigned int penval = stack.popfloat();
 
 			drawingpen.setColor(QColor::fromRgba((QRgb) penval));
 			drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
@@ -2659,7 +2581,7 @@ Interpreter::execByteCode()
 			{
 				errornum = ERROR_RGB;
 			} else {
-				stack.pushint((int) QColor(rval,gval,bval,aval).rgba());
+				stack.pushfloat( (unsigned int) QColor(rval,gval,bval,aval).rgba());
 			}
 		}
 		break;
@@ -2670,14 +2592,14 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 			QRgb rgb = (*image).pixel(x,y);
-			stack.pushint((int) rgb);
+			stack.pushfloat((unsigned int) rgb);
 		}
 		break;
 		
 	case OP_GETCOLOR:
 		{
 			op++;
-			stack.pushint((int) drawingpen.color().rgba());
+			stack.pushfloat((unsigned int) drawingpen.color().rgba());
 		}
 		break;
 		
@@ -4666,7 +4588,7 @@ Interpreter::execByteCode()
 			case OPX_GETBRUSHCOLOR:
 				{
 					op++;
-					stack.pushint((int) drawingbrush.color().rgba());
+					stack.pushfloat((unsigned int) drawingbrush.color().rgba());
 				}
 				break;
 		

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 
-enum b_type {T_INT, T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
+enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
 // stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
 
 typedef struct
@@ -17,7 +17,6 @@ typedef struct
   b_type type;
   union {
     char *string;
-    int intval;
     double floatval; 
   } value;
 } stackval;

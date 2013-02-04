@@ -42,9 +42,8 @@ Stack::debug()
 	while (temp >= bottom)
 	{
 		if (temp->type == T_STRING) printf(">>S.%s",temp->value.string);
-		if (temp->type == T_INT) printf(">>I.%d",temp->value.intval);
-        if (temp->type == T_VARREF) printf(">>V.%d",temp->value.intval);
-        if (temp->type == T_VARREFSTR) printf(">>VS.%d",temp->value.intval);
+        if (temp->type == T_VARREF) printf(">>V.%f",temp->value.floatval);
+        if (temp->type == T_VARREFSTR) printf(">>VS.%f",temp->value.floatval);
         if (temp->type == T_FLOAT) printf(">>F.%f",temp->value.floatval);
 		if (temp->type == T_UNUSED) printf(">>U.");
 		temp--;
@@ -100,8 +99,8 @@ Stack::pushint(int i)
 {
 	checkLimit();
 	top++;
-	top->type = T_INT;
-	top->value.intval = i;
+	top->type = T_FLOAT;
+	top->value.floatval = (double) i;
 }
 
 void
@@ -110,7 +109,7 @@ Stack::pushvarref(int i)
     checkLimit();
     top++;
     top->type = T_VARREF;
-    top->value.intval = i;
+    top->value.floatval = i;
 }
 
 void
@@ -119,7 +118,7 @@ Stack::pushvarrefstr(int i)
     checkLimit();
     top++;
     top->type = T_VARREFSTR;
-    top->value.intval = i;
+    top->value.floatval = i;
 }
 
 void
@@ -231,14 +230,11 @@ void Stack::dup2() {
 void Stack::dup(int n) {
 	// internal duplicate entry 0-top n-ndown
 	stackval *orig = top - n;
-	if (orig->type==T_INT) {
-		pushint(orig->value.intval);
-	}
     if (orig->type==T_VARREF) {
-        pushvarref(orig->value.intval);
+        pushvarref(orig->value.floatval);
     }
     if (orig->type==T_VARREFSTR) {
-        pushvarrefstr(orig->value.intval);
+        pushvarrefstr(orig->value.floatval);
     }
     if (orig->type==T_FLOAT) {
 		pushfloat(orig->value.floatval);
@@ -262,10 +258,7 @@ int
 Stack::toint(stackval *sv)
 {
 	int i=0;
-    if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
-		i = sv->value.intval;
-	}
-	else if (sv->type == T_FLOAT) {
+	if (sv->type == T_FLOAT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
 		i = (int) sv->value.floatval;
 	}
 	else if (sv->type == T_STRING)
@@ -289,12 +282,8 @@ double
 Stack::tofloat(stackval *sv)
 {
 	double f=0;
-	if (sv->type == T_FLOAT) {
+	if (sv->type == T_FLOAT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
 		f = sv->value.floatval;
-	}
-    else if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR)
-	{
-		f = (double) sv->value.intval;
 	}
 	else if (sv->type == T_STRING)
 	{
@@ -322,10 +311,10 @@ Stack::tostring(stackval *sv)
 		sv->value.string = NULL;
 		sv->type = T_UNUSED;
 	}
-    else if (sv->type == T_INT || sv->type == T_VARREF || sv->type == T_VARREFSTR)
+    else if (sv->type == T_VARREF || sv->type == T_VARREFSTR)
 	{
 		char buffer[64];
-		sprintf(buffer, "%d", sv->value.intval);
+		sprintf(buffer, "%f", sv->value.floatval);
 		s = strdup(buffer);
 	}
 	else if (sv->type == T_FLOAT)
