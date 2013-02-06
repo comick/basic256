@@ -1,4 +1,4 @@
-# testsuite for BASIC256 Version 0.9.9.23
+# testsuite for BASIC256
 
 # This program will test most of the basic256 language compiler and interperter
 
@@ -11,17 +11,21 @@
 #				dbint, dbfloat, and dbnull with column names and numbers
 # 2013-01-02	j.m.reneau	added color with pen and fill and penwidth
 # 2013-01-26	j.m.reneau	added alert/confirm, sprites, imgsave, and imgload
+# 2013-02-05         j.m.reneau               added radix conversion test
 
 
-if version < 90941 then
-   print "this program requires version 0.9.9.41 or better"
+if version < 90945 then
+   print "this program requires version 0.9.9.45 or better"
    end
 end if
 
 # create arrays to use
 dim c$(10)
 dim c(10)
+dim twod(10,10)
+dim twod$(10,10)
 
+goto go
 
 ###################################################
 call section("Numeric Assignment")
@@ -106,6 +110,8 @@ call n("5%3", 5%3, 2)
 call n("3%5", 3%5, 3)
 call n("10\4", 10\4, 2)
 call n("4\10", 4\10, 0)
+call n("5.5%2.5", 5.5%2.5, .5)
+call n("5.5\2.5", 5.5\2.5, 2)
 
 ###################################################
 call section("Order of Numeric Operations")
@@ -176,6 +182,16 @@ call n("'bb'<='bb'", "bb"<="bb", true)
 call n("'bb'<='cc'", "bb"<="cc", true)
 
 ###################################################
+call section("RADIX Conversion")
+###################################################
+call s("255 -> 11111111 bin", tobinary(255), "11111111")
+call n("11111111 bin -> 255", frombinary("11111111"), 255)
+call s("255 -> ff hex", tohex(255), "ff")
+call n("ff hex -> 255", fromhex("FF"), 255)
+call s("36 -> 10 (36)", toradix(36,36), "10")
+call n("22 (36) -> 74", fromradix("22",36), 74)
+
+###################################################
 call section("1D Numeric Array")
 ###################################################
 c = {9,8,7,6,5,4,3,2,1,0}
@@ -190,6 +206,33 @@ redim c(20)
 call n("c[1]=28 after redim",c[1],28)
 call n("c[9]=0 after redim",c[9],0)
 
+###################################################
+call section("2D Numeric Array")
+###################################################
+for t = 0 to twod[?,]-1
+   for u = 0 to twod[,?]-1
+      twod[t,u] = t*100+u
+   next u
+next t
+call n("twod[5,7]=507 after assign",twod[5,7],507)
+twod[5,7]+=7
+call n("twod[5,7] after twod[5,7]+=7",twod[5,7],514)
+twod[5,7]-=7
+call n("twod[5,7] after twod[5,7]-=7",twod[5,7],507)
+twod[5,7]*=7
+call n("twod[5,7] after twod[5,7]*=7",twod[5,7],3549)
+twod[5,7]/=7
+call n("twod[5,7] after twod[5,7]/=7",twod[5,7],507)
+twod[5,7]++
+call n("twod[5,7] after twod[5,7]++",twod[5,7],508)
+twod[5,7]--
+call n("twod[5,7] after twod[5,7]--",twod[5,7],507)
+for t = 0 to twod[?,]-1
+   for u = 0 to twod[,?]-1
+      call n("twod["+t+","+u+"] as originally assigned",twod[t,u],t*100+u)
+      twod[t,u] = t*100+u
+   next u
+next t
 
 ###################################################
 call section("Functions and Subroutines")
@@ -221,6 +264,7 @@ offerror
 call section("Math Functions")
 ###################################################
 call n("abs(-9)", abs(-9), 9)
+call n("abs(-9.8)", abs(-9.8), 9.8)
 call n("abs(5.4)", abs(5.4), 5.4)
 call nclose("acos(1)", acos(1), 0)
 call nclose("acos(0)", acos(0), pi/2)
@@ -245,7 +289,48 @@ call nclose("degrees(0)", degrees(0), 0)
 call nclose("degrees(pi)", degrees(pi), 180)
 call nclose("sqr(2)=2^.5",sqr(2),2^.5)
 call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
+call n("int(-9)", int(-9), -9)
+call n("int(-9.8)", int(-9.9), -9)
+call n("int(5.4)", int(5.4), 5)
+call n("int(0)", int(0), 0)
 
+###################################################
+call section("Input, Key, and Prompt")
+###################################################
+a$ = "foo"
+input "input the string 'abcd' ?", a$
+call s("input prompt $",a$,"abcd")
+print "input the string 'able' ?";
+input a$
+call s("input $",a$,"able")
+input "Press enter?", a$
+call s("input enter $",a$,"")
+a = 99
+input "input the number 99.99 ?", a
+call n("input prompt #",a,99.99)
+print "input the number -1.234 ?";
+input a
+call s("input #",a,-1.234)
+input "input the string 'abcd' ?", a
+call n("input prompt bad #",a,0)
+input "Press enter?", a
+call s("input enter #",a,0)
+print "Press the space bar"
+do
+a = key
+until a <> 0
+call n("key space",a,32)
+print "Press the shift key."
+do
+a = key
+until a <> 0
+call n("key shift",a,16777248)
+a$=prompt("Click OK to accept the default","abcd")
+call s("prompt dialog default",a$,"abcd")
+a$=prompt("Change the value and click cancel","abcd")
+call s("prompt dialog cancel default",a$,"abcd")
+a$=prompt("Change the value to 'able' and click OK")
+call s("prompt dialog",a$,"able")
 
 ###################################################
 call section("File I/O")
@@ -301,6 +386,7 @@ for t = 0 to 7
    kill "testsuite_"+t+".txt"
 next t
 call n("freefile", freefile, 0)
+
 ###################################################
 call section("Binary File")
 ###################################################
@@ -388,9 +474,9 @@ call n("is 20,20 blue",pixel(20,20), blue)
 #
 clg
 color red
+call n("is current color red",getcolor, red)
 circle 30,30,10
 call q("red circle")
-call n("is current color red",getcolor, red)
 #
 clg
 for t = 1 to 10
@@ -545,13 +631,28 @@ call q("imgload - did the image wink out?")
 clg
 for t = 0 to 2* pi step .1
    imgload graphwidth/2,graphheight /2,t/2,t,"testimgsave.png"
-refresh
+   refresh
 next t
 call q("imgload - did the image spin out?")
 kill "testimgsave.png"
 call n("delete temp imgsave image",exists("testimgsave.png"),false)
 
-
+go:
+###################################################
+call section("Poly and Stamp")
+###################################################
+clg
+penwidth 5
+color red, black
+poly {100,100,30,200,170,200}
+refresh
+call q("poly black triangle red border?")
+clg
+for t = 0 to 2 * pi step .1
+stamp 150,150,t / (2*pi),t,{0,0,-70,100,70,100}
+refresh
+next t
+call q("stamp growing and rotating black triangle red border?")
 
 ###################################################
 ###################################################

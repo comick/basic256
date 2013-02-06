@@ -152,6 +152,10 @@ freedb [Ff][Rr][Ee][Ee][Dd][Bb]
 freedbset [Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
 freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
 freenet [Ff][Rr][Ee][Ee][Nn][Ee][Tt]
+frombinary [Ff][Rr][Oo][Mm][Bb][Ii][Nn][Aa][Rr][Yy]
+fromhex [Ff][Rr][Oo][Mm][Hh][Ee][Xx]
+fromoctal [Ff][Rr][Oo][Mm][Oo][Cc][Tt][Aa][Ll]
+fromradix [Ff][Rr][Oo][Mm][Rr][Aa][Dd][Ii][Xx]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 getbrushcolor [Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]
 getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
@@ -279,8 +283,12 @@ textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
 then [Tt][Hh][Ee][Nn]
 throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 to [Tt][Oo]
+tobinary [Tt][Oo][Bb][Ii][Nn][Aa][Rr][Yy]
 tofloat [Ff][Ll][Oo][Aa][Tt]
+tohex [Tt][Oo][Hh][Ee][Xx]
 toint [Ii][Nn][Tt]
+tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
+toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
@@ -421,6 +429,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {freedbset}	{ count(); return B256FREEDBSET; }
 {freefile}	{ count(); return B256FREEFILE; }
 {freenet}	{ count(); return B256FREENET; }
+{frombinary}		{ count(); return B256FROMBINARY; }
+{fromhex}		{ count(); return B256FROMHEX; }
+{fromoctal}		{ count(); return B256FROMOCTAL; }
+{fromradix}		{ count(); return B256FROMRADIX; }
 {function}	{ count(); return B256FUNCTION; }
 {getbrushcolor}		{ count(); return B256GETBRUSHCOLOR; }
 {getcolor}	{ count(); return B256GETCOLOR; }
@@ -547,8 +559,12 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {then}		{ count(); return B256THEN; }
 {throwerror}	{ count(); return B256THROWERROR; }
 {to}		{ count(); return B256TO; }
+{tobinary}		{ count(); return B256TOBINARY; }
 {tofloat}	{ count(); return B256TOFLOAT; }
+{tohex}		{ count(); return B256TOHEX; }
 {toint}		{ count(); return B256TOINT; }
+{tooctal}		{ count(); return B256TOOCTAL; }
+{toradix}		{ count(); return B256TORADIX; }
 {tostring}	{ count(); return B256TOSTRING; }
 {until}		{ count(); return B256UNTIL; }
 {upper}		{ count(); return B256UPPER; }

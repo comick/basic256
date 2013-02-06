@@ -587,8 +587,11 @@ RunController::dialogPrompt(QString prompt, QString dflt)
 	QInputDialog in(mainwin);
 	in.setLabelText(prompt);
 	in.setTextValue(dflt);
-	in.exec();
-	i->returnString = in.textValue();
+	if (in.exec()==QDialog::Accepted) {
+		i->returnString = in.textValue();
+	} else {
+		i->returnString = dflt;
+	}
 	mutex.lock();
 	waitInput.wakeAll();
 	mutex.unlock();

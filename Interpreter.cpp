@@ -327,6 +327,18 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_IMAGESCALE:
 			errormessage = tr(ERROR_IMAGESCALE_MESSAGE);
 			break;
+		case ERROR_FONTSIZE:
+			errormessage = tr(ERROR_FONTSIZE_MESSAGE);
+			break;
+		case ERROR_FONTWEIGHT:
+			errormessage = tr(ERROR_FONTWEIGHT_MESSAGE);
+			break;
+		case ERROR_RADIXSTRING:
+			errormessage = tr(ERROR_RADIXSTRING_MESSAGE);
+			break;
+		case ERROR_RADIX:
+			errormessage = tr(ERROR_RADIX_MESSAGE);
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -1953,9 +1965,9 @@ Interpreter::execByteCode()
 			// bigger integer safe (trim floating point off of a float)
 			op++;
 			double val = stack.popfloat();
-			double decpart;
-			val = modf(val, &decpart);
-			stack.pushfloat(val);
+			double intpart;
+			val = modf(val, &intpart);
+			stack.pushfloat(intpart);
 		}
 		break;
 
@@ -2305,8 +2317,9 @@ Interpreter::execByteCode()
 						errornum = ERROR_DIVZERO;
 						stack.pushfloat(0.0);
 					} else {
-						double decpart;
-						stack.pushfloat(modf(twoval /oneval, &decpart));
+						double intpart;
+						modf(twoval /oneval, &intpart);
+						stack.pushfloat(intpart);
 					}
 					break;
 				case OP_EX:
@@ -2818,6 +2831,8 @@ Interpreter::execByteCode()
 			int y = stack.popint();
 			int x = stack.popint();
 
+			double tx, ty, savetx;		// used in scaling and rotating
+
 			if (variables.type(*i) != T_ARRAY) {
 				errornum = ERROR_POLYARRAY;
 			} else {
@@ -2832,11 +2847,12 @@ Interpreter::execByteCode()
 						QPointF *points = new QPointF[pairs];
 						for (int j = 0; j < pairs; j++)
 						{
-							double tx = scale * variables.arraygetfloat(*i, j*2);
-							double ty = scale * variables.arraygetfloat(*i, j*2+1);
+							tx = scale * variables.arraygetfloat(*i, j*2);
+							ty = scale * variables.arraygetfloat(*i, j*2+1);
 							if (rotate!=0) {
+								savetx = tx;
 								tx = cos(rotate) * tx - sin(rotate) * ty;
-								ty = cos(rotate) * ty + sin(rotate) * tx;
+								ty = cos(rotate) * ty + sin(rotate) * savetx;
 							}
 							points[j].setX(tx + x);
 							points[j].setY(ty + y);
@@ -2871,8 +2887,10 @@ Interpreter::execByteCode()
 			// i is a pointer to the length of the list
 			// pulling from stack so points are reversed 0=y, 1=x...  in list
 
-			double rotate=0;		// defaule rotation to 0 radians
+			double rotate=0;			// defaule rotation to 0 radians
 			double scale=1;			// default scale to full size (1x)
+			
+			double tx, ty, savetx;		// used in scaling and rotating
 			
 			unsigned char opcode = *op;
 			op++;
@@ -2903,11 +2921,12 @@ Interpreter::execByteCode()
 					QPointF *points = new QPointF[pairs];
 					for (int j = 0; j < pairs; j++)
 					{
-						double tx = scale * list[(j*2)];
-						double ty = scale * list[(j*2)+1];
+						tx = scale * list[(j*2)];
+						ty = scale * list[(j*2)+1];
 						if (rotate!=0) {
+							savetx = tx;
 							tx = cos(rotate) * tx - sin(rotate) * ty;
-							ty = cos(rotate) * ty + sin(rotate) * tx;
+							ty = cos(rotate) * ty + sin(rotate) * savetx;
 						}
 						points[j].setX(tx + x);
 						points[j].setY(ty + y);
@@ -4258,26 +4277,26 @@ Interpreter::execByteCode()
 			case OPX_BINARYOR:
 				{
 					op++;
-					int a = stack.popint();
-					int b = stack.popint();
-					stack.pushint(a|b);
+					unsigned long a = stack.popint();
+					unsigned long b = stack.popint();
+					stack.pushfloat(a|b);
 				}
 				break;
 
 			case OPX_BINARYAND:
 				{
 					op++;
-					int a = stack.popint();
-					int b = stack.popint();
-					stack.pushint(a&b);
+					unsigned long a = stack.popint();
+					unsigned long b = stack.popint();
+					stack.pushfloat(a&b);
 				}
 				break;
 
 			case OPX_BINARYNOT:
 				{
 					op++;
-					int a = stack.popint();
-					stack.pushint(~a);
+					unsigned long a = stack.popint();
+					stack.pushfloat(~a);
 				}
 				break;
 
@@ -4646,6 +4665,45 @@ Interpreter::execByteCode()
 					waitForGraphics();
 					free(msg);
 					free(dflt);
+				}
+				break;
+
+			case OPX_FROMRADIX:
+				{
+					op++;
+					bool ok;
+					unsigned long dec;
+					int base = stack.popint();
+					char *n = stack.popstring();
+					if (base>=2 && base <=36) {
+						dec = QString(n).toULong(&ok, base);
+						if (ok) {
+							stack.pushfloat(dec);
+						} else {
+							errornum = ERROR_RADIXSTRING;
+							stack.pushfloat(0);
+						}
+					} else {
+						errornum = ERROR_RADIX;
+						stack.pushfloat(0);
+					}
+				free(n);
+				}
+				break;
+
+			case OPX_TORADIX:
+				{
+					op++;
+					int base = stack.popint();
+					unsigned long n = stack.popfloat();
+					if (base>=2 && base <=36) {
+						QString out;
+						out.setNum(n, base);
+						stack.pushstring(out.toUtf8().data());
+					} else {
+						errornum = ERROR_RADIX;
+						stack.pushfloat(0);
+					}
 				}
 				break;
 

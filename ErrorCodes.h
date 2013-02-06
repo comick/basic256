@@ -148,6 +148,10 @@
 #define ERROR_FONTSIZE_MESSAGE "Font size, in points, must be greater than or equal to zero."
 #define ERROR_FONTWEIGHT 65
 #define ERROR_FONTWEIGHT_MESSAGE "Font weight must be greater than or equal to zero."
+#define ERROR_RADIXSTRING 66
+#define ERROR_RADIXSTRING_MESSAGE "Unable to convert radix string back to a decimal number."
+#define ERROR_RADIX 67
+#define ERROR_RADIX_MESSAGE "Radix conversion base muse be between 2 and 36."
 
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999

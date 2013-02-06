@@ -299,6 +299,8 @@
 #define OPX_ALERT	0x4f
 #define OPX_CONFIRM	0x50
 #define OPX_PROMPT	0x51
+#define OPX_FROMRADIX	0x52
+#define OPX_TORADIX	0x53
 
 
 

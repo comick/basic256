@@ -337,6 +337,8 @@ addStringOp(char op, char *data) {
 %token B256FREEDB B256FREEFILE B256FREENET B256FREEDBSET B256DBNULL
 %token B256ARC B256CHORD B256PIE B256PENWIDTH B256GETPENWIDTH B256GETBRUSHCOLOR B256VERSION
 %token B256ALERT B256CONFIRM B256PROMPT
+%token B256FROMBINARY B256FROMHEX B256FROMOCTAL B256FROMRADIX B256TOBINARY B256TOHEX B256TOOCTAL B256TORADIX
+
 
 %union
 {
@@ -2250,6 +2252,21 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256CONFIRM '(' stringexpr ',' floatexpr ')' {
 		addExtendedOp(OPX_CONFIRM);
 	}
+	| B256FROMBINARY '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,2);	// radix
+		addExtendedOp(OPX_FROMRADIX);
+	}
+	| B256FROMHEX '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,16);	// radix
+		addExtendedOp(OPX_FROMRADIX);
+	}
+	| B256FROMOCTAL '(' stringexpr ')' {
+		addIntOp(OP_PUSHINT,8);	// radix
+		addExtendedOp(OPX_FROMRADIX);
+	}
+	| B256FROMRADIX '(' stringexpr ',' floatexpr ')' {
+		addExtendedOp(OPX_FROMRADIX);
+	}
 
 ;
 
@@ -2335,7 +2352,22 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 		addExtendedOp(OPX_PROMPT); }
 	| B256PROMPT '(' stringexpr ',' stringexpr ')' {
 		addExtendedOp(OPX_PROMPT); }
-	
+	| B256TOBINARY '(' floatexpr ')' {
+		addIntOp(OP_PUSHINT,2);	// radix
+		addExtendedOp(OPX_TORADIX);
+	}
+	| B256TOHEX '(' floatexpr ')' {
+		addIntOp(OP_PUSHINT,16);	// radix
+		addExtendedOp(OPX_TORADIX);
+	}
+	| B256TOOCTAL '(' floatexpr ')' {
+		addIntOp(OP_PUSHINT,8);	// radix
+		addExtendedOp(OPX_TORADIX);
+	}
+	| B256TORADIX '(' floatexpr ',' floatexpr ')' {
+		addExtendedOp(OPX_TORADIX);
+	}
+
 
 ;
 
