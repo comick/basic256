@@ -112,7 +112,6 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]\\b"						// dbopenset
 		<< "\\b[Dd][Bb][Rr][Oo][Ww]\\b"										// dbrow
 		<< "\\b[Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]\\b"							// dbstring
-		<< "\\b[Dd][Ee][Cc][Ii][Mm][Aa][Ll]\\b"								// decimal
 		<< "\\b[Dd][Ee][Gg][Rr][Ee][Ee][Ss]\\b"								// degrees
 		<< "\\b[Dd][Ii][Mm]\\b"												// dim
 		<< "\\b[Dd][Ii][Rr]\\b"												// dir

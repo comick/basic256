@@ -100,34 +100,6 @@ extern "C" {
 	extern char *symtable[];
 }
 
-int Interpreter::compareTwoStackVal(stackval *two, stackval *one)
-{
-	// complex compare logic - compare two stack types with each other
-	// return 1 if one>two  0 if one==two or -1 if one<two
-	//
-	if (one->type == T_STRING || two->type == T_STRING)
-	{
-		// one or both strings - [compare them as strings] strcmp
-		char *sone, *stwo;
-		int i;
-		sone = stack.tostring(one);
-		stwo = stack.tostring(two);
-		i = strcmp(sone, stwo);
-		free(sone);
-		free(stwo);
-		return i;
-	} else {
-		// anything else - compare them as floats
-		double fone, ftwo;
-		fone = stack.tofloat(one);
-		ftwo = stack.tofloat(two);
-		if (fone == ftwo) return 0;
-		else if (fone < ftwo) return -1;
-		else return 1;
-	}
-	// default equal
-	return 0;
-}
 
 void Interpreter::printError(int e, QString message)
 {
@@ -222,8 +194,8 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_FOLDER:
 			errormessage = tr(ERROR_FOLDER_MESSAGE);
 			break;
-		case ERROR_DECIMALMASK:
-			errormessage = tr(ERROR_DECIMALMASK_MESSAGE);
+		case ERROR_INFINITY:
+			errormessage = tr(ERROR_INFINITY_MESSAGE);
 			break;
 		case ERROR_DBOPEN:
 			errormessage = tr(ERROR_DBOPEN_MESSAGE);
@@ -339,6 +311,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_RADIX:
 			errormessage = tr(ERROR_RADIX_MESSAGE);
 			break;
+		case ERROR_LOGRANGE:
+			errormessage = tr(ERROR_LOGRANGE_MESSAGE);
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -429,7 +404,6 @@ Interpreter::Interpreter(BasicGraph *bg)
 	graph = bg;
 	fastgraphics = false;
 	directorypointer=NULL;
-	stack.fToAMask = stack.defaultFToAMask;
 	status = R_STOPPED;
 	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
 	// on a windows box start winsock
@@ -758,7 +732,6 @@ Interpreter::initialize()
 	fontpoint = 0;
 	fontweight = 0;
 	nsprites = 0;
-	stack.fToAMask = stack.defaultFToAMask;
 	runtimer.start();
 	// initialize files to NULL (closed)
 	stream = new QFile *[NUMFILES];
@@ -2225,7 +2198,13 @@ Interpreter::execByteCode()
 				stack.pushfloat(cos(val));
 				break;
 			case OP_TAN:
-				stack.pushfloat(tan(val));
+				val = tan(val);
+				if (isinf(val)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(val);
+				}
 				break;
 			case OP_ASIN:
 				stack.pushfloat(asin(val));
@@ -2256,16 +2235,37 @@ Interpreter::execByteCode()
 				stack.pushfloat(val * M_PI / 180);
 				break;
 			case OP_LOG:
-				stack.pushfloat(log(val));
+				if (val<0) {
+					errornum = ERROR_LOGRANGE;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(log(val));
+				}
 				break;
 			case OP_LOGTEN:
-				stack.pushfloat(log10(val));
+				if (val<0) {
+					errornum = ERROR_LOGRANGE;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(log10(val));
+				}
 				break;
 			case OP_SQR:
-				stack.pushfloat(sqrt(val));
+				if (val<0) {
+					errornum = ERROR_LOGRANGE;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(sqrt(val));
+				}
 				break;
 			case OP_EXP:
-				stack.pushfloat(exp(val));
+				val = exp(val);
+				if (isinf(val)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(val);
+				}
 				break;
 			}
 		}
@@ -2273,62 +2273,126 @@ Interpreter::execByteCode()
 
 
 	case OP_ADD:
-	case OP_SUB:
-	case OP_MUL:
-	case OP_MOD:
-	case OP_DIV:
-	case OP_INTDIV:
-	case OP_EX:
 		{
-			unsigned char whichop = *op;
 			op++;
 			double oneval = stack.popfloat();
 			double twoval = stack.popfloat();
-			//
-			switch(whichop)
-			{
-				case OP_ADD:
-					stack.pushfloat(twoval + oneval);
-					break;
-				case OP_SUB:
-					stack.pushfloat(twoval - oneval);
-					break;
-				case OP_MUL:
-					stack.pushfloat(twoval * oneval);
-					break;
-				case OP_MOD:
-					if (oneval==0) {
-						errornum = ERROR_DIVZERO;
-						stack.pushint(0);
-					} else {
-						stack.pushfloat(fmod(twoval, oneval));
-					}
-					break;
-				case OP_DIV:
-					if (oneval==0) {
-						errornum = ERROR_DIVZERO;
-						stack.pushfloat(0.0);
-					} else {
-						stack.pushfloat(twoval / oneval);
-					}
-					break;
-				case OP_INTDIV:
-					if (oneval==0) {
-						errornum = ERROR_DIVZERO;
-						stack.pushfloat(0.0);
-					} else {
-						double intpart;
-						modf(twoval /oneval, &intpart);
-						stack.pushfloat(intpart);
-					}
-					break;
-				case OP_EX:
-					stack.pushfloat(pow(twoval, oneval));
-					break;
+			double ans = twoval + oneval;
+			if (isinf(ans)) {
+				errornum = ERROR_INFINITY;
+				stack.pushint(0);
+			} else {
+				stack.pushfloat(ans);
 			}
+			break;
 		}
-		break;
+		
+	case OP_SUB:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			double ans = twoval - oneval;
+			if (isinf(ans)) {
+				errornum = ERROR_INFINITY;
+				stack.pushint(0);
+			} else {
+				stack.pushfloat(ans);
+			}
+			break;
+		}
+		
+	case OP_MUL:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			double ans = twoval * oneval;
+			if (isinf(ans)) {
+				errornum = ERROR_INFINITY;
+				stack.pushint(0);
+			} else {
+				stack.pushfloat(ans);
+			}
+			break;
+		}
+		
+	case OP_MOD:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			if (oneval==0) {
+				errornum = ERROR_DIVZERO;
+				stack.pushint(0);
+			} else {
+				double ans = fmod(twoval, oneval);
+				if (isinf(ans)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(ans);
+				}
+			}
+			break;
+		}
+		
+	case OP_DIV:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			if (oneval==0) {
+				errornum = ERROR_DIVZERO;
+				stack.pushint(0);
+			} else {
+				double ans = twoval / oneval;
+				if (isinf(ans)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(ans);
+				}
+			}
+			break;
+		}
+		
+	case OP_INTDIV:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			if (oneval==0) {
+				errornum = ERROR_DIVZERO;
+				stack.pushint(0);
+			} else {
+				double intpart;
+				modf(twoval /oneval, &intpart);
+				if (isinf(intpart)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(intpart);
+				}
+			}
+			break;
+		}
 
+	case OP_EX:
+		{
+			op++;
+			double oneval = stack.popfloat();
+			double twoval = stack.popfloat();
+			double ans = pow(twoval, oneval);
+			if (isinf(ans)) {
+				errornum = ERROR_INFINITY;
+				stack.pushint(0);
+			} else {
+				stack.pushfloat(ans);
+			}
+			break;
+		}
+		
 	case OP_AND:
 		{
 			op++;
@@ -2383,18 +2447,15 @@ Interpreter::execByteCode()
 	case OP_NEGATE:
 		{
 			op++;
-			stackval *temp = stack.pop();
-			stack.pushfloat(-temp->value.floatval);
+			double n = stack.popfloat();
+			stack.pushfloat(n * -1);
 		}
 		break;
 
 	case OP_EQUAL:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)==0;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()==0;
 			stack.pushint(ans);
 		}
 		break;
@@ -2402,10 +2463,7 @@ Interpreter::execByteCode()
 	case OP_NEQUAL:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)!=0;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()!=0;
 			stack.pushint(ans);
 		}
 		break;
@@ -2413,10 +2471,7 @@ Interpreter::execByteCode()
 	case OP_GT:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)==1;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()==1;
 			stack.pushint(ans);
 
 		}
@@ -2425,10 +2480,7 @@ Interpreter::execByteCode()
 	case OP_LTE:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)!=1;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()!=1;
 			stack.pushint(ans);
 		}
 		break;
@@ -2436,10 +2488,7 @@ Interpreter::execByteCode()
 	case OP_LT:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)==-1;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()==-1;
 			stack.pushint(ans);
 		}
 		break;
@@ -2447,10 +2496,7 @@ Interpreter::execByteCode()
 	case OP_GTE:
 		{
 			op++;
-			POP2
-			int ans = compareTwoStackVal(one,two)!=-1;
-			stack.clean(one);
-			stack.clean(two);
+			int ans = stack.compareTopTwo()!=-1;
 			stack.pushint(ans);
 		}
 		break;
@@ -3660,20 +3706,6 @@ Interpreter::execByteCode()
 					emit(waitWAV());
 				}
 				break;
-
-			case OPX_DECIMAL:
-					{
-						// set number of digits used in stack.popstring to
-						// specify max number of decimal places in float to string
-						op++;
-						int n = stack.popint();
-						if(n<0 || n > 15) {
-							errornum = ERROR_DECIMALMASK;
-						} else {
-							stack.fToAMask = n;
-						}
-					}
-					break;
 
 			case OPX_DBOPEN:
 					{

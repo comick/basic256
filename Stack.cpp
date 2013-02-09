@@ -6,8 +6,7 @@ Stack::Stack()
 	top = bottom = (stackval *) malloc (sizeof(stackval) * initialSize);
 	limit = bottom + initialSize;
 	top->type = T_UNUSED;
-	top->value.floatval = 0;
-	fToAMask = defaultFToAMask;
+	top->floatval = 0;
 }
 
 Stack::~Stack()
@@ -21,17 +20,16 @@ Stack::clear()
 {
 	while (top > bottom)
 	{
-		if (top->type == T_STRING)
+		if (top->type == T_STRING && top->string)
 		{
-			free(top->value.string);
-			top->value.string = NULL;
+			free(top->string);
+			top->string = NULL;
 		}
 		top->type = T_UNUSED;
 		top--;
 	}
 	top->type = T_UNUSED;
-	top->value.floatval = 0;
-	fToAMask = defaultFToAMask;
+	top->floatval = 0;
 }
 
 void
@@ -41,10 +39,10 @@ Stack::debug()
 	stackval *temp=top;
 	while (temp >= bottom)
 	{
-		if (temp->type == T_STRING) printf(">>S.%s",temp->value.string);
-        if (temp->type == T_VARREF) printf(">>V.%f",temp->value.floatval);
-        if (temp->type == T_VARREFSTR) printf(">>VS.%f",temp->value.floatval);
-        if (temp->type == T_FLOAT) printf(">>F.%f",temp->value.floatval);
+		if (temp->type == T_STRING) printf(">>S.%s",temp->string);
+        if (temp->type == T_VARREF) printf(">>V.%f",temp->floatval);
+        if (temp->type == T_VARREFSTR) printf(">>VS.%f",temp->floatval);
+        if (temp->type == T_FLOAT) printf(">>F.%f",temp->floatval);
 		if (temp->type == T_UNUSED) printf(">>U.");
 		temp--;
 	}
@@ -88,9 +86,9 @@ Stack::pushstring(char *c)
 	if (c==NULL) {
 		c = (char *) malloc(sizeof(char));
 		c[0] = 0x00;
-		top->value.string = c;
+		top->string = c;
 	} else {
-		top->value.string = strdup(c);
+		top->string = strdup(c);
 	}
 }
 
@@ -100,7 +98,7 @@ Stack::pushint(int i)
 	checkLimit();
 	top++;
 	top->type = T_FLOAT;
-	top->value.floatval = (double) i;
+	top->floatval = (double) i;
 }
 
 void
@@ -109,7 +107,7 @@ Stack::pushvarref(int i)
     checkLimit();
     top++;
     top->type = T_VARREF;
-    top->value.floatval = i;
+    top->floatval = i;
 }
 
 void
@@ -118,7 +116,7 @@ Stack::pushvarrefstr(int i)
     checkLimit();
     top++;
     top->type = T_VARREFSTR;
-    top->value.floatval = i;
+    top->floatval = i;
 }
 
 void
@@ -127,7 +125,7 @@ Stack::pushfloat(double d)
 	checkLimit();
 	top++;
 	top->type = T_FLOAT;
-	top->value.floatval = d;
+	top->floatval = d;
 }
 
 int Stack::peekType()
@@ -145,17 +143,6 @@ Stack::pop()
 	return temp;
 }
 
-void
-Stack::clean(stackval *sv)
-{
-	if (sv->type == T_STRING && sv->value.string)
-	{
-		free(sv->value.string);
-		top->value.string = NULL;
-		sv->type = T_UNUSED;
-	}
-}
-
 void Stack::swap2()
 {
 	// swap top two pairs of elements
@@ -165,18 +152,24 @@ void Stack::swap2()
 	stackval *three = top - 3;
 	
 	temp.type = two->type;
-	temp.value = two->value;
+	temp.floatval = two->floatval;
+	temp.string = two->string;
 	two->type = top->type;
-	two->value = top->value;
+	two->floatval = top->floatval;
+	two->string = top->string;
 	top->type = temp.type;
-	top->value = temp.value;
+	top->floatval = temp.floatval;
+	top->string = temp.string;
 
 	temp.type = three->type;
-	temp.value = three->value;
+	temp.floatval = three->floatval;
+	temp.string = three->string;
 	three->type = one->type;
-	three->value = one->value;
+	three->floatval = one->floatval;
+	three->string = one->string;
 	one->type = temp.type;
-	one->value = temp.value;
+	one->floatval = temp.floatval;
+	one->string = temp.string;
 }
 
 void Stack::swap()
@@ -186,13 +179,16 @@ void Stack::swap()
 	stackval *two = top - 1;
 	
 	temp.type = two->type;
-	temp.value = two->value;
+	temp.floatval = two->floatval;
+	temp.string = two->string;
 	
 	two->type = top->type;
-	two->value = top->value;
+	two->floatval = top->floatval;
+	two->string = top->string;
 
 	top->type = temp.type;
-	top->value = temp.value;
+	top->floatval = temp.floatval;
+	top->string = temp.string;
 }
 
 void 
@@ -206,16 +202,20 @@ Stack::topto2()
 	stackval *three = top - 2;
 	
 	temp.type = top->type;
-	temp.value = top->value;
+	temp.floatval = top->floatval;
+	temp.string = top->string;
 	
 	top->type = two->type;
-	top->value = two->value;
+	top->floatval = two->floatval;
+	top->string = two->string;
 
 	two->type = three->type;
-	two->value = three->value;
+	two->floatval = three->floatval;
+	two->string = three->string;
 
 	three->type = temp.type;
-	three->value = temp.value;
+	three->floatval = temp.floatval;
+	three->string = temp.string;
 }
 
 void Stack::dup() {
@@ -231,16 +231,16 @@ void Stack::dup(int n) {
 	// internal duplicate entry 0-top n-ndown
 	stackval *orig = top - n;
     if (orig->type==T_VARREF) {
-        pushvarref(orig->value.floatval);
+        pushvarref(orig->floatval);
     }
     if (orig->type==T_VARREFSTR) {
-        pushvarrefstr(orig->value.floatval);
+        pushvarrefstr(orig->floatval);
     }
     if (orig->type==T_FLOAT) {
-		pushfloat(orig->value.floatval);
+		pushfloat(orig->floatval);
 	}
 	if (orig->type==T_STRING) {
-		pushstring(orig->value.string);
+		pushstring(orig->string);
 	}
 }
 
@@ -248,23 +248,17 @@ int
 Stack::popint()
 {
 	int i=0;
-	i = toint(top);
-	clean(top);
-	if (top > bottom) top--;
-	return i;
-}
-
-int 
-Stack::toint(stackval *sv)
-{
-	int i=0;
-	if (sv->type == T_FLOAT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
-		i = (int) sv->value.floatval;
+	if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
+		i = (int) top->floatval;
 	}
-	else if (sv->type == T_STRING)
+	else if (top->type == T_STRING)
 	{
-		i = (int) atoi(sv->value.string);
+		i = (int) atoi(top->string);
+		free(top->string);
+		top->string = NULL;
+		top->type = T_UNUSED;
 	}
+	if (top > bottom) top--;
 	return i;
 }
 
@@ -272,60 +266,87 @@ double
 Stack::popfloat()
 {
 	double f=0;
-	f = tofloat(top);
-	clean(top);
-	if (top > bottom) top--;
-	return f;
-}
-
-double 
-Stack::tofloat(stackval *sv)
-{
-	double f=0;
-	if (sv->type == T_FLOAT || sv->type == T_VARREF || sv->type == T_VARREFSTR) {
-		f = sv->value.floatval;
+	if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
+		f = top->floatval;
 	}
-	else if (sv->type == T_STRING)
+	else if (top->type == T_STRING)
 	{
-		f = (double) atof(sv->value.string);
+		f = (double) atof(top->string);
+		free(top->string);
+		top->string = NULL;
+		top->type = T_UNUSED;
 	}
+	if (top > bottom) top--;
 	return f;
 }
 
 char* 
 Stack::popstring()
 {
-	char *s=tostring(top);
+	char *s;
+	// don't forget to free() the string returned by this function when you are done with it
+	if (top->type == T_STRING) {
+		s = top->string;
+		top->string = NULL;
+		top->type = T_UNUSED;
+	}
+    else if (top->type == T_VARREF || top->type == T_VARREFSTR)
+	{
+		char buffer[64];
+		sprintf(buffer, "%.0f", top->floatval);
+		s = strdup(buffer);
+	}
+	else if (top->type == T_FLOAT)
+	{
+		char buffer[64];
+		double xp = log10(top->floatval*(top->floatval<0?-1:1));
+		if (xp<-6.0 || xp>10.0) {
+			sprintf(buffer, "%.10g", top->floatval);
+		} else {
+			int decimal = 12-xp;		// show up to 12 digits of precission
+			if (decimal>7) decimal=7;	// up to 7 decimal digits
+			sprintf(buffer, "%#.*f", decimal, top->floatval);
+			//strip trailing zeros and decimal point
+			while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
+			if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
+		}
+		s = strdup(buffer);
+	}
+
+
 	top->type = T_UNUSED;
 	if (top > bottom) top--;
 	return s;
 }
 
-char* 
-Stack::tostring(stackval *sv)
+int Stack::compareTopTwo()
 {
-	// don't forget to free() the string returned by this function when you are done with it
-	char *s=NULL;
-	if (sv->type == T_STRING) {
-		s = sv->value.string;
-		sv->value.string = NULL;
-		sv->type = T_UNUSED;
-	}
-    else if (sv->type == T_VARREF || sv->type == T_VARREFSTR)
+	// complex compare logic - compare two stack types with each other
+	// return 1 if one>two  0 if one==two or -1 if one<two
+	//
+	stackval *two = top;
+	stackval *one = top - 1;
+
+	if (one->type == T_STRING || two->type == T_STRING)
 	{
-		char buffer[64];
-		sprintf(buffer, "%f", sv->value.floatval);
-		s = strdup(buffer);
+		// one or both strings - [compare them as strings] strcmp
+		char *sone, *stwo;
+		int i;
+		stwo = popstring();
+		sone = popstring();
+		i = strcmp(sone, stwo);
+		free(sone);
+		free(stwo);
+		return i;
+	} else {
+		// anything else - compare them as floats
+		double fone, ftwo;
+		ftwo = popfloat();
+		fone = popfloat();
+		if (fone == ftwo) return 0;
+		else if (fone < ftwo) return -1;
+		else return 1;
 	}
-	else if (sv->type == T_FLOAT)
-	{
-		char buffer[64];
-		sprintf(buffer, "%#.*lf", fToAMask, sv->value.floatval);
-		// strip trailing zeros and decimal point
-		while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
-		if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
-		// return
-		s = strdup(buffer);
-	}
-	return s;
+	// default equal
+	return 0;
 }

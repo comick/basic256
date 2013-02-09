@@ -233,7 +233,7 @@
 #define OPX_CHANGEDIR	       	0x0d
 #define OPX_CURRENTDIR	       	0x0e
 #define OPX_WAVWAIT		0x0f
-#define OPX_DECIMAL		0x10
+// 0x10 unused
 #define OPX_DBOPEN		0x11
 #define OPX_DBCLOSE		0x12
 #define OPX_DBEXECUTE		0x13

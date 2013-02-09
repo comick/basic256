@@ -769,7 +769,6 @@ statement: gotostmt
 	| seekstmt
 	| clickclearstmt
 	| changedirstmt
-	| decimalstmt
 	| dbopenstmt
 	| dbclosestmt
 	| dbexecutestmt
@@ -1613,9 +1612,6 @@ clickclearstmt: B256CLICKCLEAR  {addOp(OP_CLICKCLEAR);  }
 changedirstmt: B256CHANGEDIR stringexpr { addExtendedOp(OPX_CHANGEDIR); }
 ;
 
-decimalstmt: B256DECIMAL floatexpr { addExtendedOp(OPX_DECIMAL); }
-;
-
 dbopenstmt: B256DBOPEN stringexpr {
 		addIntOp(OP_PUSHINT,0);	// default db number
 		addOp(OP_STACKSWAP);
@@ -2009,8 +2005,8 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256ABS '(' floatexpr ')' { addOp(OP_ABS); }
 	| B256RAND { addOp(OP_RAND); }
 	| B256RAND '(' ')' { addOp(OP_RAND); }
-	| B256PI { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
-	| B256PI '(' ')' { addFloatOp(OP_PUSHFLOAT, 3.14159265); }
+	| B256PI { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
+	| B256PI '(' ')' { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
 	| B256BOOLTRUE { addIntOp(OP_PUSHINT, 1); }
 	| B256BOOLTRUE '(' ')' { addIntOp(OP_PUSHINT, 1); }
 	| B256BOOLFALSE { addIntOp(OP_PUSHINT, 0); }

@@ -12,10 +12,11 @@
 # 2013-01-02	j.m.reneau	added color with pen and fill and penwidth
 # 2013-01-26	j.m.reneau	added alert/confirm, sprites, imgsave, and imgload
 # 2013-02-05         j.m.reneau               added radix conversion test
+# 2013-02-08         j.m.reneau               removed DECIMAL statement and added SCI notation
 
 
-if version < 90945 then
-   print "this program requires version 0.9.9.45 or better"
+if version < 90946 then
+   print "this program requires version 0.9.9.46 or better"
    end
 end if
 
@@ -53,13 +54,6 @@ call n("asc('a')", asc("a"), 97)
 call n("chr(98)='b'", chr(98), "b")
 call n('count("Hello", "lo")', count("Hello", "lo"), 1)
 call n('count("Buffalo buffalo buffalo.","BUFFALO",true)', count("Buffalo buffalo buffalo.","BUFFALO",true), 3)
-decimal 0
-call s("2/3=1 decimal 0", string(2/3), "1")
-decimal 1
-call s("2/3=0.7 decimal 1", string(2/3), "0.7")
-decimal 2
-call s("2/3=0.67 decimal 2", string(2/3), "0.67")
-decimal 6
 c$ = Explode("How now brown cow"," ")
 call s("implode-", implode(c$,"-"), "How-now-brown-cow")
 call s("implode", implode(c$), "Hownowbrowncow")

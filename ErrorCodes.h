@@ -74,8 +74,8 @@
 #define ERROR_SPRITESLICE_MESSAGE "Unable to slice image."
 #define ERROR_FOLDER 28
 #define ERROR_FOLDER_MESSAGE "Invalid directory name."
-#define ERROR_DECIMALMASK 29
-#define ERROR_DECIMALMASK_MESSAGE "Decimal mask must be in the range of 0 to 15."
+#define ERROR_INFINITY 29
+#define ERROR_INFINITY_MESSAGE "Operation returned infinity."
 #define ERROR_DBOPEN 30
 #define ERROR_DBOPEN_MESSAGE "Unable to open SQLITE database."
 #define ERROR_DBQUERY 31
@@ -152,6 +152,8 @@
 #define ERROR_RADIXSTRING_MESSAGE "Unable to convert radix string back to a decimal number."
 #define ERROR_RADIX 67
 #define ERROR_RADIX_MESSAGE "Radix conversion base muse be between 2 and 36."
+#define ERROR_LOGRANGE 68
+#define ERROR_LOGRANGE_MESSAGE "Unable to calculate the logarithm or root of a negative number."
 
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999

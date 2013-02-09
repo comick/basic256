@@ -7,6 +7,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <cmath>
+
 
 
 enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
@@ -15,10 +18,8 @@ enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF,
 typedef struct
 {
   b_type type;
-  union {
-    char *string;
-    double floatval; 
-  } value;
+  char *string;
+  double floatval; 
 } stackval;
 
 
@@ -38,22 +39,16 @@ class Stack
   void dup();
   void dup2();
   int peekType();
-  stackval *pop();
   int popint();
   double popfloat();
   char *popstring();
-  int toint(stackval *);
-  double tofloat(stackval *);
-  char *tostring(stackval *);
-  void clean(stackval *);
   void clear();
   void debug();
   int height();
-
-  static const int defaultFToAMask = 6;
-  int fToAMask;
+  int compareTopTwo();
 
  private:
+  stackval *pop();
   static const int initialSize = 64;
   stackval *top;
   stackval *bottom;
