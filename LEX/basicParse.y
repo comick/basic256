@@ -1437,39 +1437,52 @@ seekstmt: B256SEEK floatexpr  {
 
 inputexpr: B256INPUT stringexpr {
 		addOp(OP_PRINT);
-		addOp(OP_INPUT);
 	}
 ;
 
-inputstmt: inputexpr ',' B256STRINGVAR { addIntOp(OP_STRINGASSIGN, $3); }
-	| inputexpr ',' B256STRINGVAR '[' floatexpr ']' {
-		addOp(OP_STACKSWAP);
-		addIntOp(OP_STRARRAYASSIGN, $3);
-	}
-	| inputexpr ',' B256VARIABLE { addIntOp(OP_NUMASSIGN, $3); }
-	| inputexpr ',' B256VARIABLE '[' floatexpr ']' {
-		addOp(OP_STACKSWAP);
-		addIntOp(OP_ARRAYASSIGN, $3);
+inputstmt:	inputexpr ',' B256STRINGVAR {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRINGASSIGN, $3);
 	}
 	| B256INPUT B256STRINGVAR  {
 		addOp(OP_INPUT);
 		addIntOp(OP_STRINGASSIGN, $2);
 	}
-	| B256INPUT B256STRINGVAR '[' floatexpr ']' {
+	| inputexpr ',' B256VARIABLE {
 		addOp(OP_INPUT);
-		addIntOp(OP_STRARRAYASSIGN, $2);
-	}
-	| B256INPUT B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
-		addOp(OP_INPUT);
-		addIntOp(OP_STRARRAYASSIGN2D, $2);
+		addIntOp(OP_NUMASSIGN, $3);
 	}
 	| B256INPUT B256VARIABLE  {
 		addOp(OP_INPUT);
 		addIntOp(OP_NUMASSIGN, $2);
 	}
+	| inputexpr ',' B256STRINGVAR '[' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN, $3);
+	}
+	| B256INPUT B256STRINGVAR '[' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN, $2);
+	}
+	| inputexpr ',' B256VARIABLE '[' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_ARRAYASSIGN, $3);
+	}
 	| B256INPUT B256VARIABLE '[' floatexpr ']' {
 		addOp(OP_INPUT);
 		addIntOp(OP_ARRAYASSIGN, $2);
+	}
+	| inputexpr ',' B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN2D, $3);
+	}
+	| B256INPUT B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_STRARRAYASSIGN2D, $2);
+	}
+	| inputexpr ',' B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_INPUT);
+		addIntOp(OP_ARRAYASSIGN2D, $3);
 	}
 	| B256INPUT B256VARIABLE '[' floatexpr ',' floatexpr ']' {
 		addOp(OP_INPUT);
@@ -1477,9 +1490,16 @@ inputstmt: inputexpr ',' B256STRINGVAR { addIntOp(OP_STRINGASSIGN, $3); }
 	}
 ;
 
-printstmt: B256PRINT { addStringOp(OP_PUSHSTRING, ""); addOp(OP_PRINTN); }
-	| B256PRINT expr { addOp(OP_PRINTN); }
-	| B256PRINT expr ';' { addOp(OP_PRINT); }
+printstmt: B256PRINT {
+		addStringOp(OP_PUSHSTRING, "");
+		addOp(OP_PRINTN);
+	}
+	| B256PRINT expr {
+		addOp(OP_PRINTN);
+	}
+	| B256PRINT expr ';' {
+		addOp(OP_PRINT);
+	}
 ;
 
 wavplaystmt: B256WAVPLAY stringexpr {addOp(OP_WAVPLAY);  }
