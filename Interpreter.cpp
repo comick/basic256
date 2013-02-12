@@ -2589,7 +2589,11 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 
-			QSettings settings(SETTINGSORG, SETTINGSAPP);
+			#ifdef WIN32PORTABLE
+				QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+			#else
+				QSettings settings(SETTINGSORG, SETTINGSAPP);
+			#endif
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
 				mutex.lock();
 				emit(executeSystem(temp));
@@ -4223,7 +4227,11 @@ Interpreter::execByteCode()
 					char *stuff = stack.popstring();
 					char *key = stack.popstring();
 					char *app = stack.popstring();
-					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#ifdef WIN32PORTABLE
+						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+					#else
+						QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#endif
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
@@ -4244,7 +4252,11 @@ Interpreter::execByteCode()
 					op++;
 					char *key = stack.popstring();
 					char *app = stack.popstring();
-					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#ifdef WIN32PORTABLE
+						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+					#else
+						QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#endif
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
@@ -4266,14 +4278,22 @@ Interpreter::execByteCode()
 					op++;
 					int data = stack.popint();
 					int port = stack.popint();
-					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#ifdef WIN32PORTABLE
+						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+					#else
+						QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#endif
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
-							if (Out32==NULL) {
-								errornum = ERROR_NOTIMPLEMENTED;
-							} else {
-								Out32(port, data);
-							}
+							#ifdef WIN32PORTABLE
+									errornum = ERROR_NOTIMPLEMENTED;
+							# else
+								if (Out32==NULL) {
+									errornum = ERROR_NOTIMPLEMENTED;
+								} else {
+									Out32(port, data);
+								}
+							#endif
 						#else
 							errornum = ERROR_NOTIMPLEMENTED;
 						#endif
@@ -4288,14 +4308,22 @@ Interpreter::execByteCode()
 					op++;
 					int data=0;
 					int port = stack.popint();
-					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#ifdef WIN32PORTABLE
+						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+					#else
+						QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#endif
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
-							if (Inp32==NULL) {
-								errornum = ERROR_NOTIMPLEMENTED;
-							} else {
-								data = Inp32(port);
-							}
+							#ifdef WIN32PORTABLE
+									errornum = ERROR_NOTIMPLEMENTED;
+							# else
+								if (Inp32==NULL) {
+									errornum = ERROR_NOTIMPLEMENTED;
+								} else {
+									data = Inp32(port);
+								}
+							#endif
 						#else
 							errornum = ERROR_NOTIMPLEMENTED;
 						#endif
@@ -4649,7 +4677,11 @@ Interpreter::execByteCode()
 					// added in yacc/bison for deprecated and other warnings
 					op++;
 					int w = stack.popint();
-					QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#ifdef WIN32PORTABLE
+						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+					#else
+						QSettings settings(SETTINGSORG, SETTINGSAPP);
+					#endif
 					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
 						emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
 					}
