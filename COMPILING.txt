@@ -86,5 +86,18 @@ Release Build (Windows):
   make release 
   
   then run the NSIS script
+  
+Portable Build (Windows):
+  This process will populate the BASIC256Portable folder so that the "PortableApps Installer 3.x"
+  will be able to create the *.paf.exe file.
+  
+  BE SURE TO EDIT THE VERSION NUMBER IN trunk/BASIC256Portable/App/AppInfo/appinfo.ini
+  before building the PAF file.
+  
+  make clean
+  qmake BASIC256Portable.pro
+  make release 
+  
+      
 
 
