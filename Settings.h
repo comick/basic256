@@ -23,7 +23,7 @@
 	#define SETTINGSH
 	#define SETTINGSORG "BASIC-256 Consortium"
 	#define SETTINGSAPP "BASIC-256 IDE"
-	#define SETTINGSPORTABLEINI	"../BASIC256Settings.ini"
+	#define SETTINGSPORTABLEINI	"Data/settings/BASIC256_IDE.ini"
 
 	// main window
 	#define SETTINGSSIZE "Main/Size"

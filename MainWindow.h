@@ -97,7 +97,6 @@ private:
 	void *rcvoidpointer;		
 
 private slots:
-	void onlineHelp();
 	void updateRecent();
 	void about();
 };

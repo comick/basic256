@@ -3,11 +3,11 @@
 ######################################################################
 
 TEMPLATE					=	app
-TARGET						=	BASIC256Portable
+TARGET						=	BASIC256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
-CONFIG						+=	 qt debug_and_release
+CONFIG						+=	 qt release
 OBJECTS_DIR					=	portabletmp/obj
 MOC_DIR						=	portabletmp/moc
 QT							+=	webkit
@@ -20,11 +20,8 @@ TRANSLATIONS				=	Translations/basic256_en_US.ts \
 								Translations/basic256_nl.ts
 LIBS						+= -lsqlite3
 
-CONFIG(debug, debug|release) {
-    DESTDIR = portabledebug
-} else {
-    DESTDIR = portablerelease
-}
+DESTDIR = BASIC256Portable/App
+
 win32 {
 	# use SAPI for speech
 	DEFINES 				+=	WIN32
@@ -73,4 +70,18 @@ HEADERS 					+=	*.h
 SOURCES 					+=	LEX/lex.yy.c 
 SOURCES 					+=	LEX/basicParse.tab.c 
 SOURCES 					+=	*.cpp
+
+# copy files to the proper locaiton to the package
+DESTDIR_WIN = $${DESTDIR}
+DESTDIR_WIN ~= s,/,\\,g
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\BASIC256Portable.exe $$DESTDIR_WIN $$escape_expand(\n\t)
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon.ico $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon_16.png $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon_32.png $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\appinfo.ini $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
+QMAKE_POST_LINK += copy /y PortableAppsFiles\\BASIC256Portable.ini $$DESTDIR_WIN\\AppInfo\\Launcher $$escape_expand(\n\t)
+
+
+
+
 

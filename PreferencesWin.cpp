@@ -28,8 +28,11 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 		:QDialog(parent)
 {
 
-	// position where it was last on screen
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	//resize(settings.value(SETTINGSPREFSIZE, QSize(500, 500)).toSize());
 	move(settings.value(SETTINGSPREFPOS, QPoint(200, 200)).toPoint());
 	setWindowTitle(tr("BASIC-256 Preferences and Settings"));
@@ -55,10 +58,14 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	settingcheckbox->setChecked(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool());
 	layout->addWidget(settingcheckbox,r,2,1,2);
 	//
-	r++;
-	portcheckbox = new QCheckBox(tr("Allow PORTIN/PORTOUT statements"),this);
-	portcheckbox->setChecked(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool());
-	layout->addWidget(portcheckbox,r,2,1,2);
+	#ifdef WIN32
+		#ifndef WIN32PORTABLE
+			r++;
+			portcheckbox = new QCheckBox(tr("Allow PORTIN/PORTOUT statements"),this);
+			portcheckbox->setChecked(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool());
+			layout->addWidget(portcheckbox,r,2,1,2);
+		#endif
+	#endif
 	//
 	r++;
 	warningscheckbox = new QCheckBox(tr("Show runtime warning messages"),this);
@@ -83,7 +90,11 @@ void PreferencesWin::clickCancelButton() {
 }
 
 void PreferencesWin::clickSaveButton() {
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 
 	// if password has changed - digest and save
 	QString currentpw = settings.value(SETTINGSPREFPASSWORD, "").toString();
@@ -97,7 +108,11 @@ void PreferencesWin::clickSaveButton() {
 	//
 	settings.setValue(SETTINGSALLOWSYSTEM, systemcheckbox->isChecked());
 	settings.setValue(SETTINGSALLOWSETTING, settingcheckbox->isChecked());
-	settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
+	#ifdef WIN32
+		#ifndef WIN32PORTABLE
+			settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
+		#endif
+	#endif
 	settings.setValue(SETTINGSALLOWWARNINGS, warningscheckbox->isChecked());
 	//
 	QMessageBox msgBox;
@@ -111,7 +126,11 @@ void PreferencesWin::clickSaveButton() {
 
 void PreferencesWin::closeEvent(QCloseEvent *e) {
 	// save current screen posision
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	//settings.setValue(SETTINGSPREFSIZE, size());
 	settings.setValue(SETTINGSPREFPOS, pos());
 

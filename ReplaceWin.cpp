@@ -32,7 +32,11 @@ ReplaceWin::ReplaceWin (QWidget * parent)
 	replaceMode = true;
 	
 	// position where it was last on screen
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	move(settings.value(SETTINGSREPLACEPOS, QPoint(200, 200)).toPoint());
 
 	QGridLayout * layout = new QGridLayout();
@@ -140,7 +144,11 @@ void ReplaceWin::closeEvent(QCloseEvent *e) {
 }
 
 void ReplaceWin::saveSettings() {
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	settings.setValue(SETTINGSREPLACEPOS, pos());
 	settings.setValue(SETTINGSREPLACEFROM, frominput->text());
 	if (replaceMode) settings.setValue(SETTINGSREPLACETO, toinput->text());

@@ -1,4 +1,4 @@
-Compiling Instructions and Dependencies - 2012-03-16
+Compiling Instructions and Dependencies - 2013-02-15
 
 LINUX you will need:
 * g++
@@ -63,7 +63,7 @@ Build Windows MINGW, LINUX, and MACX (g++):
 
   open a command window (cmd)
   type "make clean" and hit enter
-  type "qmake" and hit enter - for MACX "qmake -spec macx-g++"
+  type "qmake BASIC256.pro" and hit enter - for MACX "qmake BASIC256.pro -spec macx-g++"
   type "make" and hit enter 
   
   You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
@@ -82,7 +82,7 @@ Release Build (Windows):
   Make sure the dll and library files are copied in the folders as above. 
   
   make clean
-  qmake -config release
+  qmake BASIC256.pro -config release
   make release 
   
   then run the NSIS script

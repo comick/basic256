@@ -66,6 +66,8 @@ class RunController : public QObject
   void stepThrough();
   void showDocumentation();
   void showContextDocumentation();
+  void showOnlineDocumentation();
+  void showOnlineContextDocumentation();
   void showPreferences();
   void showReplace();
   void showFind();

@@ -26,6 +26,7 @@
 #include <QInputDialog>
 #include <QFile>
 #include <QApplication>
+#include <QDesktopServices>
 using namespace std;
 
 #include "RunController.h"
@@ -448,29 +449,45 @@ RunController::saveByteCode()
 void
 RunController::showDocumentation()
 {
-     if (!docwin) docwin = new DocumentationWin(mainwin);
-     docwin->show();
-     docwin->raise();
-     docwin->go("");
-     docwin->activateWindow();
+	if (!docwin) docwin = new DocumentationWin(mainwin);
+	docwin->show();
+	docwin->raise();
+	docwin->go("");
+	docwin->activateWindow();
+}
+
+
+void RunController::showOnlineDocumentation()
+{
+	QDesktopServices::openUrl(QUrl("http://doc.basic256.org"));
 }
 
 void
 RunController::showContextDocumentation()
 {
-     QString w = te->getCurrentWord();
-     if (!replacewin) docwin = new DocumentationWin(mainwin);
-     docwin->show();
-     docwin->raise();
-     docwin->go(w);
-     docwin->activateWindow();
+	QString w = te->getCurrentWord();
+	if (!replacewin) docwin = new DocumentationWin(mainwin);
+	docwin->show();
+	docwin->raise();
+	docwin->go(w);
+	docwin->activateWindow();
+}
+
+void RunController::showOnlineContextDocumentation()
+{
+	QString w = te->getCurrentWord();
+	QDesktopServices::openUrl(QUrl("http://doc.basic256.org/doku.php?id=en:" + w));
 }
 
 void
 RunController::showPreferences()
 {
 	bool good = true;
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
 	if (prefpass.length()!=0) {
 		char * digest;

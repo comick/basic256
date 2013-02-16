@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include <QApplication>
-#include <QDesktopServices>
 #include <QGridLayout>
 #include <QMenuBar>
 #include <QStatusBar>
@@ -285,14 +284,24 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// Help menu
 	QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
-	QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
-	docact->setShortcut(Qt::Key_F1);
-	QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
-	QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
-	QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showContextDocumentation())); 
-	QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
-	QObject::connect(onlinehact, SIGNAL(triggered()), this, SLOT(onlineHelp()));
-	helpmenu->addSeparator();
+	#ifdef WIN32PORTABLE
+		// in portable mode make doc online and context help online
+		QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
+		onlinehact->setShortcut(Qt::Key_F1);
+		QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
+		QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
+		QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showOnlineContextDocumentation())); 
+	#else
+		// in installed mode make doc offline and online and context help offline
+		QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
+		docact->setShortcut(Qt::Key_F1);
+		QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
+		QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
+		QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showContextDocumentation())); 
+		QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
+		QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
+	#endif
+		helpmenu->addSeparator();
 	QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256"));
 	QObject::connect(aboutact, SIGNAL(triggered()), this, SLOT(about()));
 
@@ -332,7 +341,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	setContextMenuPolicy(Qt::NoContextMenu);
 
 	// position where it was last on screen
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
 	move(settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint());
 
@@ -344,15 +357,16 @@ MainWindow::~MainWindow()
 	((RunController *) rcvoidpointer)->~RunController();
 }
 
-void MainWindow::onlineHelp()
-{
-	QDesktopServices::openUrl(QUrl("http://doc.basic256.org"));
-}
-
 void MainWindow::about()
 {
-	QMessageBox::about(this, QObject::tr("About BASIC-256"),
-		QObject::tr("<h2>BASIC-256</h2>"
+	#ifdef WIN32PORTABLE
+		#define PORTABLE " Portable"
+	#else
+		#define PORTABLE ""
+	#endif
+		
+	QMessageBox::about(this, QObject::tr("About BASIC-256" PORTABLE),
+		QObject::tr("<h2>BASIC-256" PORTABLE "</h2>"
 		"version <b>" VERSION)+QObject::tr("</b>"
 		"<p>Copyright &copy; 2006-2010, The BASIC-256 Team</p>"
 		"<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>"
@@ -361,13 +375,18 @@ void MainWindow::about()
 		"with this program; if not, write to the Free Software Foundation, Inc., "
 		"51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>"));
 
+   #undef PORTABLE
 }
 
 void MainWindow::updateRecent()
 {
 	//update recent list on file menu
 	if (showRecentList) {
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
+		#ifdef WIN32PORTABLE
+			QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+		#else
+			QSettings settings(SETTINGSORG, SETTINGSAPP);
+		#endif
 		settings.beginGroup(SETTINGSGROUPHIST);
 		for (int i=0; i<9; i++) {
 			QString fn = settings.value(QString::number(i), "").toString();
@@ -432,7 +451,11 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	}
 
 	// save current screen posision
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#ifdef WIN32PORTABLE
+		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
+	#else
+		QSettings settings(SETTINGSORG, SETTINGSAPP);
+	#endif
 	settings.setValue(SETTINGSSIZE, size());
 	settings.setValue(SETTINGSPOS, pos());
 
