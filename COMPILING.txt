@@ -92,8 +92,12 @@ Portable Build (Windows):
   will be able to create the *.paf.exe file.
   
   BE SURE TO EDIT THE VERSION NUMBER IN trunk/BASIC256Portable/App/AppInfo/appinfo.ini
-  before building the PAF file.
+  before building the PAF file.  Be sure the following files are in the App folder:
+  libgcc_s_dw2-1.dll, mingwm10.dll, phonon4.dll, QtCore4.dll, QtGui4.dll, QtMultimedia4.dll,
+  QtWebKit4.dll, and sqlite3.dll
+
   
+  ** TO BUILD THE Portable BINARY **
   make clean
   qmake BASIC256Portable.pro
   make release 
