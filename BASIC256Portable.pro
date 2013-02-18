@@ -20,7 +20,7 @@ TRANSLATIONS				=	Translations/basic256_en_US.ts \
 								Translations/basic256_nl.ts
 LIBS						+= -lsqlite3
 
-DESTDIR = BASIC256Portable/App
+DESTDIR = BASIC256Portable/App/BASIC256
 
 win32 {
 	# use SAPI for speech
