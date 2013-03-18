@@ -59,7 +59,7 @@
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 using namespace std;
 
 #include "LEX/basicParse.tab.h"
@@ -2589,14 +2589,10 @@ Interpreter::execByteCode()
 			op++;
 			char *temp = stack.popstring();
 
-			#ifdef WIN32PORTABLE
-				QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-			#else
-				QSettings settings(SETTINGSORG, SETTINGSAPP);
-			#endif
+            SETTINGS;
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
 				mutex.lock();
-				emit(executeSystem(temp));
+                emit(executeSystem(temp));
 				waitCond.wait(&mutex);
 				mutex.unlock();
 			} else {
@@ -4227,11 +4223,7 @@ Interpreter::execByteCode()
 					char *stuff = stack.popstring();
 					char *key = stack.popstring();
 					char *app = stack.popstring();
-					#ifdef WIN32PORTABLE
-						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-					#else
-						QSettings settings(SETTINGSORG, SETTINGSAPP);
-					#endif
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
@@ -4252,11 +4244,7 @@ Interpreter::execByteCode()
 					op++;
 					char *key = stack.popstring();
 					char *app = stack.popstring();
-					#ifdef WIN32PORTABLE
-						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-					#else
-						QSettings settings(SETTINGSORG, SETTINGSAPP);
-					#endif
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
@@ -4278,11 +4266,7 @@ Interpreter::execByteCode()
 					op++;
 					int data = stack.popint();
 					int port = stack.popint();
-					#ifdef WIN32PORTABLE
-						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-					#else
-						QSettings settings(SETTINGSORG, SETTINGSAPP);
-					#endif
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
 							#ifdef WIN32PORTABLE
@@ -4308,11 +4292,7 @@ Interpreter::execByteCode()
 					op++;
 					int data=0;
 					int port = stack.popint();
-					#ifdef WIN32PORTABLE
-						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-					#else
-						QSettings settings(SETTINGSORG, SETTINGSAPP);
-					#endif
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
 							#ifdef WIN32PORTABLE
@@ -4677,11 +4657,7 @@ Interpreter::execByteCode()
 					// added in yacc/bison for deprecated and other warnings
 					op++;
 					int w = stack.popint();
-					#ifdef WIN32PORTABLE
-						QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-					#else
-						QSettings settings(SETTINGSORG, SETTINGSAPP);
-					#endif
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
 						emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
 					}

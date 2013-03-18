@@ -30,8 +30,8 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 	indexfile = "start.html";
 
 	// position where it was last on screen
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	resize(settings.value(SETTINGSDOCSIZE, QSize(700, 500)).toSize());
+    SETTINGS;
+    resize(settings.value(SETTINGSDOCSIZE, QSize(700, 500)).toSize());
 	move(settings.value(SETTINGSDOCPOS, QPoint(150, 150)).toPoint());
 
 	docs = new QTextBrowser( this );
@@ -106,7 +106,7 @@ void DocumentationWin::resizeEvent(QResizeEvent *e) {
 }
 
 void DocumentationWin::closeEvent(QCloseEvent *e) {
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+    SETTINGS;
 	settings.setValue(SETTINGSDOCSIZE, size());
 	settings.setValue(SETTINGSDOCPOS, pos());
 }

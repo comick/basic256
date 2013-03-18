@@ -28,9 +28,9 @@
 	// main window
 	#define SETTINGSSIZE "Main/Size"
 	#define SETTINGSPOS "Main/Pos"
-	#define SETTINGSFONTSIZE "Main/FontSize"
-	#define SETTINGSFONTSIZEDEFAULT 10
-	
+    #define SETTINGSFONT "Main/Font"
+    #define SETTINGSFONTDEFAULT "Courier,10,-1,5,50,0,0,0,0,0"
+
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"
@@ -64,6 +64,15 @@
 
 	// store user settings (setsetting/getsetting) in seperate group
 	#define SETTINGSGROUPUSER "UserSettings"
+
+
+    // You need an SETTINGS; statement when you are using settings in a function
+    // this defines a QSettings variable named "setings" for your use
+    #ifdef WIN32PORTABLE
+        #define SETTINGS QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat)
+    #else
+        #define SETTINGS QSettings settings(SETTINGSORG, SETTINGSAPP);
+    #endif
 
 
 #endif

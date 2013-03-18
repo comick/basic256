@@ -19,7 +19,7 @@
 #ifndef __BASICOUTPUT_H
 #define __BASICOUTPUT_H
 
-#include <QTextEdit>
+#include <QtWidgets/QTextEdit>
 #include <QKeyEvent>
 #include <QPaintEvent>
 
@@ -27,22 +27,18 @@
 
 class BasicOutput : public QTextEdit, public ViewWidgetIFace
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   BasicOutput();
   
   char *inputString;
   void inputStart();
-  
+
   virtual bool initActions(QMenu *, ToolBar *);
   
  public slots:
   void getInput();
-  void slotPrint(); 
-  void fontSmall(); 
-  void fontMedium(); 
-  void fontLarge(); 
-  void fontHuge(); 
+  void slotPrint();
  
  signals:
   void inputEntered(QString);

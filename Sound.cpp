@@ -184,8 +184,8 @@ void Sound::playSounds(int notes, int* freqdur)
 
  	// setup the audio format
 	QAudioFormat format;
- 	format.setFrequency(8000);
- 	format.setChannels(1);
+    format.setSampleRate(8000);
+    format.setChannelCount(1);
  	format.setSampleSize(sizeof(short)*8);
  	format.setCodec("audio/pcm");
  	format.setSampleType(QAudioFormat::SignedInt);

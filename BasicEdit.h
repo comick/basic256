@@ -20,16 +20,16 @@
 #define __BASICEDIT_H
 
 
-#include <QApplication>
-#include <QPlainTextEdit>
-#include <QMainWindow>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QMainWindow>
 #include <QKeyEvent>
 
 #include "ViewWidgetIFace.h"
 
 class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   BasicEdit(QMainWindow *);
   void loadFile(QString);
@@ -50,10 +50,6 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   void highlightLine(int);
   void slotPrint();
   void beautifyProgram();
-  void fontSmall();
-  void fontMedium();
-  void fontLarge();
-  void fontHuge();
   void loadRecent0();
   void loadRecent1();
   void loadRecent2();
@@ -76,7 +72,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   int startPos;
   int linePos;
   QString filename;
-  void changeFontSize(unsigned int);
+//  void changeFontSize(unsigned int);
   void addFileToRecentList(QString);
   void loadRecent(int);
   QWidget *lineNumberArea;

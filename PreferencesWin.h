@@ -17,17 +17,16 @@
 
 
 
-#include <QMessageBox>
-#include <QWidget>
-#include <QDialog>
-#include <QGridLayout>
-#include <QToolBar>
-#include <QLabel>
-#include <QLabel>
-#include <QLineEdit>
-#include <QCheckBox>
-#include <QPushButton>
-#include <QAction>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QAction>
 #include <QObject>
 #include <QIcon>
 
@@ -37,7 +36,7 @@
 
 class PreferencesWin : public QDialog
 {
-  Q_OBJECT;
+  Q_OBJECT
 
  public:
 	PreferencesWin(QWidget * parent);

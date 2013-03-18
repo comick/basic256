@@ -19,7 +19,7 @@
 
 using namespace std;
 
-#include <QHeaderView>
+#include <QtWidgets/QHeaderView>
 
 #include "VariableWin.h"
 

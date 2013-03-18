@@ -28,11 +28,7 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 		:QDialog(parent)
 {
 
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
+    SETTINGS;
 	//resize(settings.value(SETTINGSPREFSIZE, QSize(500, 500)).toSize());
 	move(settings.value(SETTINGSPREFPOS, QPoint(200, 200)).toPoint());
 	setWindowTitle(tr("BASIC-256 Preferences and Settings"));
@@ -90,12 +86,7 @@ void PreferencesWin::clickCancelButton() {
 }
 
 void PreferencesWin::clickSaveButton() {
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
-
+    SETTINGS;
 	// if password has changed - digest and save
 	QString currentpw = settings.value(SETTINGSPREFPASSWORD, "").toString();
 	if(QString::compare(currentpw,passwordinput->text())!=0) {
@@ -126,11 +117,7 @@ void PreferencesWin::clickSaveButton() {
 
 void PreferencesWin::closeEvent(QCloseEvent *e) {
 	// save current screen posision
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
+    SETTINGS;
 	//settings.setValue(SETTINGSPREFSIZE, size());
 	settings.setValue(SETTINGSPREFPOS, pos());
 

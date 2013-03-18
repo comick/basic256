@@ -17,11 +17,11 @@
 
 
 
-#include <QWidget>
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QTextBrowser>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QTextBrowser>
 
 #ifndef DOCUMENTATIONWINH
 
@@ -29,7 +29,7 @@
 
 class DocumentationWin : public QDialog
 {
-  Q_OBJECT;
+  Q_OBJECT
   public:
 	DocumentationWin(QWidget * parent);
 	void resizeEvent(QResizeEvent *e);

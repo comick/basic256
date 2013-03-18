@@ -21,11 +21,12 @@
 #include <iostream>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QInputDialog>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QFontDialog>
 #include <QFile>
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #include <QDesktopServices>
 using namespace std;
 
@@ -223,9 +224,7 @@ RunController::executeSystem(char* text)
 void RunController::playWAV(QString file)
 {
 #ifdef USEQSOUND
-	if(QSound::isAvailable()) {
-		wavsound.play(file);
-	}
+    wavsound.play(file);
 #endif
 #ifdef USESDL
 	Mix_HaltChannel(SDL_CHAN_WAV);
@@ -239,14 +238,12 @@ void RunController::playWAV(QString file)
 void RunController::waitWAV()
 {
 #ifdef USEQSOUND
-	if(QSound::isAvailable()) {
 		while(!wavsound.isFinished())
 #ifdef WIN32
 	Sleep(1);
 #else
 	usleep(1000);
 #endif
-	}
 #endif
 #ifdef USESDL
 	while(Mix_Playing(SDL_CHAN_WAV))
@@ -261,9 +258,7 @@ void RunController::waitWAV()
 void RunController::stopWAV()
 {
 #ifdef USEQSOUND
-	if(QSound::isAvailable()) {
-		wavsound.stop();
-	}
+    wavsound.stop();
 #endif
 #ifdef USESDL
 	Mix_HaltChannel(SDL_CHAN_WAV);
@@ -419,7 +414,7 @@ RunController::pauseResume()
 void
 RunController::saveByteCode()
 {
-	byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toAscii().data());
+    byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toUtf8().data());
 	if (bc == NULL)
 	{
 		return;
@@ -483,12 +478,8 @@ void
 RunController::showPreferences()
 {
 	bool good = true;
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
-	QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
+    SETTINGS;
+    QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
 	if (prefpass.length()!=0) {
 		char * digest;
 		QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Preferences and Settings"),
@@ -612,6 +603,18 @@ RunController::dialogPrompt(QString prompt, QString dflt)
 	mutex.lock();
 	waitInput.wakeAll();
 	mutex.unlock();
+}
+
+void RunController::dialogFontSelect()
+{
+    bool ok;
+    SETTINGS;
+    QFont newf = QFontDialog::getFont(&ok, te->font(), mainwin);
+    if (ok) {
+        settings.setValue(SETTINGSFONT, newf.toString());
+        te->setFont(newf);
+        output->setFont(newf);
+    }
 }
 
 

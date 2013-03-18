@@ -19,10 +19,10 @@
 
 #include <iostream>
 
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #include <QTranslator>
 #include <QLocale>
-#include <QStatusBar>
+#include <QtWidgets/QStatusBar>
 #include <QFileInfo>
 #include <locale.h>
 #if !defined(WIN32) || defined(__MINGW32__)

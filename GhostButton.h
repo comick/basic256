@@ -19,11 +19,11 @@
 #ifndef __GHOSTBUTTON
 #define __GHOSTBUTTON
  
-#include <QPushButton>
+#include <QtWidgets/QPushButton>
 
 class GhostButton : public QPushButton
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   GhostButton(QString);
 

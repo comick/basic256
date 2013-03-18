@@ -19,9 +19,9 @@
 #ifndef __RUNCONTROLLER_H
 #define __RUNCONTROLLER_H
  
-#include <QTextEdit>
-#include <QPushButton>
-#include <QStatusBar>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QStatusBar>
 
 #include "BasicEdit.h"
 #include "BasicOutput.h"
@@ -32,7 +32,7 @@
 
 class RunController : public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   RunController(MainWindow *);
   ~RunController();
@@ -76,7 +76,8 @@ class RunController : public QObject
   void dialogAlert(QString);
   void dialogConfirm(QString, int);
   void dialogPrompt(QString, QString);
-  
+  void dialogFontSelect();
+
  private:
   Interpreter *i;
   BasicEdit *te;

@@ -19,12 +19,12 @@
 #include <QPainter>
 #include <QTextCursor>
 #include <QMutex>
-#include <QAction>
-#include <QApplication>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
 #include <QClipboard>
-#include <QPrintDialog>
-#include <QPrinter>
-#include <QMessageBox>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrinter>
+#include <QtWidgets/QMessageBox>
 
 #include "Settings.h"
 #include "BasicOutput.h"
@@ -36,42 +36,8 @@ BasicOutput::BasicOutput( ) : QTextEdit ()
 {
   setFocusPolicy(Qt::StrongFocus);
   gettingInput = false;
-  QSettings settings(SETTINGSORG, SETTINGSAPP);
-  changeFontSize(settings.value(SETTINGSFONTSIZE, SETTINGSFONTSIZEDEFAULT).toInt());
-}
 
-
-void
-BasicOutput::fontSmall()
-{
-  changeFontSize(8);
 }
-void
-BasicOutput::fontMedium()
-{
-  changeFontSize(10);
-}
-void
-BasicOutput::fontLarge()
-{
-  changeFontSize(12);
-}
-void
-BasicOutput::fontHuge()
-{
-  changeFontSize(15);
-}
-
-void
-BasicOutput::changeFontSize(unsigned int pointSize)
-{
-  QFont f;
-  f.setFamily("Sans");
-  f.setFixedPitch(true);
-  f.setPointSize(pointSize);
-  setFont(f);
-}
-
 
 void
 BasicOutput::getInput()

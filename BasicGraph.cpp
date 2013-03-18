@@ -18,14 +18,14 @@
 
 
 #include <iostream>
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #include <QMutex>
-#include <QAction>
+#include <QtWidgets/QAction>
 #include <QPainter>
-#include <QPrinter>
-#include <QPrintDialog>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
 #include <QClipboard>
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 using namespace std;
 
 #include "BasicGraph.h"

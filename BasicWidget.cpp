@@ -15,7 +15,7 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-#include <QMenu>
+#include <QtWidgets/QMenu>
 
 #include "ToolBar.h"
 #include "ViewWidgetIFace.h"
@@ -85,7 +85,7 @@ void BasicWidget::slotShowToolBar(const bool vShow)
   if (NULL == m_toolBar)
     return;
 	
-  m_toolBar->setShown(vShow);
+  m_toolBar->setVisible(vShow);
 }
 
 bool BasicWidget::usesToolBar()

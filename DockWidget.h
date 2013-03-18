@@ -16,7 +16,7 @@
  **/
  
  
-#include <QDockWidget>
+#include <QtWidgets/QDockWidget>
  
 class DockWidget : public QDockWidget
 {

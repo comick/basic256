@@ -17,8 +17,8 @@
 
 
 
-#include <QDockWidget>
-#include <QTreeWidget>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QTreeWidget>
 
 class VariableWin : public QDockWidget
 {

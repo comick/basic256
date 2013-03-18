@@ -19,11 +19,11 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QGridLayout>
-#include <QAction>
-#include <QMessageBox>
-#include <QShortcut>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QShortcut>
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"
@@ -38,7 +38,7 @@
 
 class MainWindow : public QMainWindow
 {
-  	Q_OBJECT;
+    Q_OBJECT
 public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();

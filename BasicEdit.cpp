@@ -20,12 +20,13 @@
 #include <iostream>
 #include <QTextCursor>
 #include <QTextBlock>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QStatusBar>
-#include <QPrinter>
-#include <QPrintDialog>
-#include <QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStatusBar>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFontDialog>
 #include <QFlags>
 #include <QPainter>
 #include <QResizeEvent>
@@ -39,14 +40,9 @@ using namespace std;
 
 BasicEdit::BasicEdit(QMainWindow *mw) : QPlainTextEdit(mw)
 {
-	QFont f;
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
 	mainwin = mw;
-	f.setFamily("Sans");
-	f.setFixedPitch(true);
-	f.setPointSize(settings.value(SETTINGSFONTSIZE, SETTINGSFONTSIZEDEFAULT).toInt());
-	setFont(f);
-	currentMaxLine = 10;
+
+    currentMaxLine = 10;
 	currentLine = 1;
 	startPos = textCursor().position();
 	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
@@ -60,39 +56,6 @@ BasicEdit::BasicEdit(QMainWindow *mw) : QPlainTextEdit(mw)
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
-}
-
-void
-BasicEdit::fontSmall()
-{
-	changeFontSize(8);
-}
-void
-BasicEdit::fontMedium()
-{
-	changeFontSize(10);
-}
-void
-BasicEdit::fontLarge()
-{
-	changeFontSize(12);
-}
-void
-BasicEdit::fontHuge()
-{
-	changeFontSize(15);
-}
-
-void
-BasicEdit::changeFontSize(unsigned int pointSize)
-{
-	QFont f;
-	f.setFamily("Sans");
-	f.setFixedPitch(true);
-	f.setPointSize(pointSize);
-	setFont(f);
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
-	settings.setValue(SETTINGSFONTSIZE, pointSize);
 }
 
 void
@@ -203,7 +166,7 @@ BasicEdit::saveProgram()
 void BasicEdit::addFileToRecentList(QString fn) {
 	// keep list of recently open or saved files
 	// put file name at position 0 on list
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+    SETTINGS;
 	settings.beginGroup(SETTINGSGROUPHIST);
 	// if program is at top then do nothing
 	if (settings.value(QString::number(0), "").toString() != fn) {
@@ -258,7 +221,7 @@ void BasicEdit::loadRecent8() { loadRecent(8); }
 void
 BasicEdit::loadRecent(int i)
 {
-	QSettings settings(SETTINGSORG, SETTINGSAPP);
+    SETTINGS;
 	settings.beginGroup(SETTINGSGROUPHIST);
 	loadFile(settings.value(QString::number(i), "").toString());
 	settings.endGroup();

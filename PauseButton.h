@@ -23,7 +23,7 @@
 
 class PauseButton : public GhostButton
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   PauseButton(QString);
   bool pauseMode;

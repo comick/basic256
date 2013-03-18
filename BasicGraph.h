@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QPainter>
 #include <QKeyEvent>
 
@@ -33,7 +33,7 @@
 
 class BasicGraph : public QWidget, public ViewWidgetIFace
 {
-  Q_OBJECT;
+  Q_OBJECT
  public:
   BasicGraph(BasicOutput *);
   QImage *image;

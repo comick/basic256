@@ -19,14 +19,14 @@
 
 #include <iostream>
 
-#include <QApplication>
-#include <QGridLayout>
-#include <QMenuBar>
-#include <QStatusBar>
-#include <QDialog>
-#include <QLabel>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLabel>
 #include <QString>
-#include <QShortcut>
+#include <QtWidgets/QShortcut>
 #include <stdio.h>
 using namespace std;
 
@@ -217,9 +217,14 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
 	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
-	// Graphics Grid Lines
-	viewmenu->addSeparator();
-	graphGridVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
+    // Editor and Output font
+    viewmenu->addSeparator();
+    QAction *fontSelect = viewmenu->addAction(QObject::tr("&Font"));
+    QObject::connect(fontSelect, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
+
+    // Graphics Grid Lines
+    viewmenu->addSeparator();
+    graphGridVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
 	graphGridVisibleAct->setCheckable(true);
 	graphGridVisibleAct->setChecked(false);
 	QObject::connect(graphGridVisibleAct, SIGNAL(toggled(bool)), goutput, SLOT(slotGridLines(bool)));
@@ -247,19 +252,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		goutputwgt->slotShowToolBar(false);
 		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), goutputwgt, SLOT(slotShowToolBar(const bool)));
 	}
-	QMenu *fontsize = viewmenu->addMenu(QObject::tr("&Font Size"));
-	QAction *fontSmallAct = fontsize->addAction(QObject::tr("&Small"));
-	QAction *fontMediumAct = fontsize->addAction(QObject::tr("&Medium"));
-	QAction *fontLargeAct = fontsize->addAction(QObject::tr("&Large"));
-	QAction *fontHugeAct = fontsize->addAction(QObject::tr("&Huge"));
-	QObject::connect(fontSmallAct, SIGNAL(triggered()), editor, SLOT(fontSmall()));
-	QObject::connect(fontMediumAct, SIGNAL(triggered()), editor, SLOT(fontMedium()));
-	QObject::connect(fontLargeAct, SIGNAL(triggered()), editor, SLOT(fontLarge()));
-	QObject::connect(fontHugeAct, SIGNAL(triggered()), editor, SLOT(fontHuge()));
-	QObject::connect(fontSmallAct, SIGNAL(triggered()), output, SLOT(fontSmall()));
-	QObject::connect(fontMediumAct, SIGNAL(triggered()), output, SLOT(fontMedium()));
-	QObject::connect(fontLargeAct, SIGNAL(triggered()), output, SLOT(fontLarge()));
-	QObject::connect(fontHugeAct, SIGNAL(triggered()), output, SLOT(fontHuge()));
 
 	// Run menu
 	runmenu = menuBar()->addMenu(QObject::tr("&Run"));
@@ -341,13 +333,18 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	setContextMenuPolicy(Qt::NoContextMenu);
 
 	// position where it was last on screen
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
+    SETTINGS;
 	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
 	move(settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint());
+
+    // set initial font
+    QFont initialFont;
+    QString initialFontString = settings.value(SETTINGSFONT,SETTINGSFONTDEFAULT).toString();
+    if (initialFont.fromString(initialFontString)) {
+        editor->setFont(initialFont);
+        output->setFont(initialFont);
+    }
+
 
 }
 
@@ -382,11 +379,7 @@ void MainWindow::updateRecent()
 {
 	//update recent list on file menu
 	if (showRecentList) {
-		#ifdef WIN32PORTABLE
-			QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-		#else
-			QSettings settings(SETTINGSORG, SETTINGSAPP);
-		#endif
+        SETTINGS;
 		settings.beginGroup(SETTINGSGROUPHIST);
 		for (int i=0; i<9; i++) {
 			QString fn = settings.value(QString::number(i), "").toString();
@@ -451,11 +444,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	}
 
 	// save current screen posision
-	#ifdef WIN32PORTABLE
-		QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat);
-	#else
-		QSettings settings(SETTINGSORG, SETTINGSAPP);
-	#endif
+    SETTINGS;
 	settings.setValue(SETTINGSSIZE, size());
 	settings.setValue(SETTINGSPOS, pos());
 

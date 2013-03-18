@@ -41,7 +41,7 @@
 // modified fron the example at http://qt-project.org/doc/qt-4.8/widgets-codeeditor-codeeditor-cpp.html
 // 2013-01-27
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QPaintEvent>
 
 #include "BasicEdit.h"
