@@ -19,7 +19,11 @@
 #ifndef __VIEWWIDGETIFACE_H
 #define __VIEWWIDGETIFACE_H
 
-#include <QtWidgets/QMenu>
+#if QT_VERSION >= 0x05000000
+    #include <QtWidgets/QMenu>
+#else
+    #include <QMenu>
+#endif
 #include "ToolBar.h"
 
 class ViewWidgetIFace

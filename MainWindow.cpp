@@ -18,16 +18,27 @@
 
 
 #include <iostream>
-
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QLabel>
-#include <QString>
-#include <QtWidgets/QShortcut>
 #include <stdio.h>
+
+#include <QString>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QApplication>
+	#include <QtWidgets/QGridLayout>
+	#include <QtWidgets/QMenuBar>
+	#include <QtWidgets/QStatusBar>
+	#include <QtWidgets/QDialog>
+	#include <QtWidgets/QLabel>
+	#include <QtWidgets/QShortcut>
+#else
+	#include <QApplication>
+	#include <QGridLayout>
+	#include <QMenuBar>
+	#include <QStatusBar>
+	#include <QDialog>
+	#include <QLabel>
+	#include <QShortcut>
+#endif
+
 using namespace std;
 
 #include "RunController.h"

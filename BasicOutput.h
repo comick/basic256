@@ -19,9 +19,13 @@
 #ifndef __BASICOUTPUT_H
 #define __BASICOUTPUT_H
 
-#include <QtWidgets/QTextEdit>
 #include <QKeyEvent>
 #include <QPaintEvent>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QTextEdit>
+#else
+	#include <QTextEdit>
+#endif
 
 #include "ViewWidgetIFace.h"
 

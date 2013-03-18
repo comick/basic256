@@ -18,14 +18,25 @@
 
 
 #include <iostream>
-#include <QtWidgets/QApplication>
-#include <QMutex>
-#include <QtWidgets/QAction>
-#include <QPainter>
-#include <QtPrintSupport/QPrinter>
-#include <QtPrintSupport/QPrintDialog>
+
 #include <QClipboard>
-#include <QtWidgets/QMessageBox>
+#include <QMutex>
+#include <QPainter>
+
+#if QT_VERSION >= 0x05000000
+    #include <QtPrintSupport/QPrintDialog>
+    #include <QtPrintSupport/QPrinter>
+    #include <QtWidgets/QAction>
+    #include <QtWidgets/QApplication>
+    #include <QtWidgets/QMessageBox>
+#else
+    #include <QAction>
+    #include <QApplication>
+    #include <QMessageBox>
+    #include <QPrintDialog>
+    #include <QPrinter>
+#endif
+
 using namespace std;
 
 #include "BasicGraph.h"

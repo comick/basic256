@@ -15,20 +15,33 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QAction>
 #include <QObject>
 #include <QIcon>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QMessageBox>
+	#include <QtWidgets/QWidget>
+	#include <QtWidgets/QDialog>
+	#include <QtWidgets/QGridLayout>
+	#include <QtWidgets/QToolBar>
+	#include <QtWidgets/QLabel>
+	#include <QtWidgets/QLineEdit>
+	#include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QPushButton>
+	#include <QtWidgets/QAction>
+#else
+	#include <QMessageBox>
+	#include <QWidget>
+	#include <QDialog>
+	#include <QGridLayout>
+	#include <QToolBar>
+	#include <QLabel>
+	#include <QLineEdit>
+	#include <QCheckBox>
+	#include <QPushButton>
+	#include <QAction>
+#endif
+
+
 
 #ifndef PREFERENCESWINH
 

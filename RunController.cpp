@@ -15,19 +15,28 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-
 #include <math.h>
 #include <iostream>
+
+#include <QDesktopServices>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QtWidgets/QFileDialog>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QInputDialog>
-#include <QtWidgets/QFontDialog>
 #include <QFile>
-#include <QtWidgets/QApplication>
-#include <QDesktopServices>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QFileDialog>
+	#include <QtWidgets/QMessageBox>
+	#include <QtWidgets/QInputDialog>
+	#include <QtWidgets/QFontDialog>
+	#include <QtWidgets/QApplication>
+#else
+	#include <QFileDialog>
+	#include <QMessageBox>
+	#include <QInputDialog>
+	#include <QFontDialog>
+	#include <QApplication>
+#endif
+
+
 using namespace std;
 
 #include "RunController.h"

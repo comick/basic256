@@ -21,9 +21,14 @@
 
 #include <stdio.h>
 
-#include <QtWidgets/QWidget>
 #include <QPainter>
 #include <QKeyEvent>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QWidget>
+#else
+	#include <QWidget>
+#endif
+
 
 #include "ViewWidgetIFace.h"
 #include "BasicOutput.h"

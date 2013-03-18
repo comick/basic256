@@ -19,9 +19,15 @@
 #ifndef __RUNCONTROLLER_H
 #define __RUNCONTROLLER_H
  
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QTextEdit>
+	#include <QtWidgets/QPushButton>
+	#include <QtWidgets/QStatusBar>
+#else
+	#include <QTextEdit>
+	#include <QPushButton>
+	#include <QStatusBar>
+#endif
 
 #include "BasicEdit.h"
 #include "BasicOutput.h"

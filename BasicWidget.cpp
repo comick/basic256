@@ -15,7 +15,11 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-#include <QtWidgets/QMenu>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QMenu>
+#else
+	#include <QMenu>
+#endif
 
 #include "ToolBar.h"
 #include "ViewWidgetIFace.h"

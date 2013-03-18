@@ -19,7 +19,11 @@
 #ifndef __TOOLBAR_H
 #define __TOOLBAR_H
 
-#include <QtWidgets/QToolBar>
+#if QT_VERSION >= 0x05000000
+    #include <QtWidgets/QToolBar>
+#else
+    #include <QToolBar>
+#endif
 
 class ToolBar : public QToolBar
 {

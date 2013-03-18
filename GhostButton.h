@@ -19,7 +19,11 @@
 #ifndef __GHOSTBUTTON
 #define __GHOSTBUTTON
  
-#include <QtWidgets/QPushButton>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QPushButton>
+#else
+	#include <QPushButton>
+#endif
 
 class GhostButton : public QPushButton
 {

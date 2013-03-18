@@ -16,7 +16,11 @@
  **/
  
  
-#include <QtWidgets/QDockWidget>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QDockWidget>
+#else
+	#include <QDockWidget>
+#endif
  
 class DockWidget : public QDockWidget
 {

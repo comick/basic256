@@ -16,15 +16,25 @@
  **/
 
 #include <iostream>
+
 #include <QPainter>
 #include <QTextCursor>
 #include <QMutex>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
 #include <QClipboard>
-#include <QtPrintSupport/QPrintDialog>
-#include <QtPrintSupport/QPrinter>
-#include <QtWidgets/QMessageBox>
+
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QAction>
+	#include <QtWidgets/QApplication>
+	#include <QtWidgets/QMessageBox>
+	#include <QtPrintSupport/QPrintDialog>
+	#include <QtPrintSupport/QPrinter>
+#else
+	#include <QAction>
+	#include <QApplication>
+	#include <QMessageBox>
+	#include <QPrintDialog>
+	#include <QPrinter>
+#endif
 
 #include "Settings.h"
 #include "BasicOutput.h"

@@ -17,8 +17,14 @@
 
 
 
-#include <QtWidgets/QDockWidget>
-#include <QtWidgets/QTreeWidget>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QDockWidget>
+	#include <QtWidgets/QTreeWidget>
+#else
+	#include <QDockWidget>
+	#include <QTreeWidget>
+#endif
+
 
 class VariableWin : public QDockWidget
 {

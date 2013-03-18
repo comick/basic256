@@ -19,11 +19,17 @@
 
 #include <iostream>
 
-#include <QtWidgets/QApplication>
 #include <QTranslator>
 #include <QLocale>
-#include <QtWidgets/QStatusBar>
 #include <QFileInfo>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QApplication>
+	#include <QtWidgets/QStatusBar>
+#else
+	#include <QApplication>
+	#include <QStatusBar>
+#endif
+
 #include <locale.h>
 #if !defined(WIN32) || defined(__MINGW32__)
 #include <unistd.h>

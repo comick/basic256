@@ -17,11 +17,19 @@
 
 
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QTextBrowser>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QWidget>
+	#include <QtWidgets/QDialog>
+	#include <QtWidgets/QVBoxLayout>
+	#include <QtWidgets/QToolBar>
+	#include <QtWidgets/QTextBrowser>
+#else
+	#include <QWidget>
+	#include <QDialog>
+	#include <QVBoxLayout>
+	#include <QToolBar>
+	#include <QTextBrowser>
+#endif
 
 #ifndef DOCUMENTATIONWINH
 

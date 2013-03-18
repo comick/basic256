@@ -19,7 +19,11 @@
 
 using namespace std;
 
-#include <QtWidgets/QHeaderView>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QHeaderView>
+#else
+	#include <QHeaderView>
+#endif
 
 #include "VariableWin.h"
 

@@ -19,8 +19,13 @@
 #ifndef __BASICWIDGET_H
 #define __BASICWIDGET_H
 
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QVBoxLayout>
+	#include <QtWidgets/QWidget>
+#else
+	#include <QVBoxLayout>
+	#include <QWidget>
+#endif
 
 class QMenu;
 class ToolBar;

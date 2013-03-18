@@ -20,9 +20,15 @@
 #define __BASICEDIT_H
 
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QPlainTextEdit>
-#include <QtWidgets/QMainWindow>
+#if QT_VERSION >= 0x05000000
+    #include <QtWidgets/QApplication>
+    #include <QtWidgets/QPlainTextEdit>
+    #include <QtWidgets/QMainWindow>
+#else
+    #include <QApplication>
+    #include <QPlainTextEdit>
+    #include <QMainWindow>
+#endif
 #include <QKeyEvent>
 
 #include "ViewWidgetIFace.h"

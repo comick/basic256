@@ -59,7 +59,13 @@
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QtWidgets/QMessageBox>
+
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QMessageBox>
+#else
+	#include <QMessageBox>
+#endif
+
 using namespace std;
 
 #include "LEX/basicParse.tab.h"

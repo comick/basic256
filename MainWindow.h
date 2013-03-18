@@ -19,11 +19,20 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QShortcut>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QMainWindow>
+	#include <QtWidgets/QGridLayout>
+	#include <QtWidgets/QAction>
+	#include <QtWidgets/QMessageBox>
+	#include <QtWidgets/QShortcut>
+#else
+	#include <QMainWindow>
+	#include <QGridLayout>
+	#include <QAction>
+	#include <QMessageBox>
+	#include <QShortcut>
+#endif
+
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"

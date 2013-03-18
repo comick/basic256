@@ -41,8 +41,12 @@
 // modified fron the example at http://qt-project.org/doc/qt-4.8/widgets-codeeditor-codeeditor-cpp.html
 // 2013-01-27
 
-#include <QtWidgets/QWidget>
 #include <QPaintEvent>
+#if QT_VERSION >= 0x05000000
+	#include <QtWidgets/QWidget>
+#else
+	#include <QWidget>
+#endif
 
 #include "BasicEdit.h"
 #include "LineNumberArea.h"
