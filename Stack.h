@@ -10,7 +10,7 @@
 #include <math.h>
 #include <cmath>
 
-
+#include <QString>
 
 enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
 // stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
@@ -18,7 +18,7 @@ enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF,
 typedef struct
 {
   b_type type;
-  char *string;
+  QString string;
   double floatval; 
 } stackval;
 
@@ -28,7 +28,7 @@ class Stack
  public:
   Stack();
   ~Stack();
-  void pushstring(char *);
+  void pushstring(QString);
   void pushint(int);
   void pushfloat(double);
   void pushvarref(int);
@@ -41,7 +41,7 @@ class Stack
   int peekType();
   int popint();
   double popfloat();
-  char *popstring();
+  QString popstring();
   void clear();
   void debug();
   int height();
