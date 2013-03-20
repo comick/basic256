@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <QString>
-
 #include "ErrorCodes.h"
 #include "Stack.h"
 
@@ -27,7 +25,7 @@ struct array
   union
   {
     double *fdata;
-    QString *sdata;
+    char **sdata;
   } data;
 };
 
@@ -35,9 +33,11 @@ struct array
 struct variable
 {
   b_type type;
-  QString value_string;
-  double value_floatval; 
-  array *value_arr;
+  union {
+    char *string;
+    double floatval; 
+    array *arr;
+  } value;
 };
 
 
@@ -61,8 +61,8 @@ class Variables
 		void setfloat(int, double);
 		double getfloat(int);
 		//
-		void setstring(int, QString);
-		QString getstring(int);
+		void setstring(int, char *);
+		char *getstring(int);
 		//
 		void arraydimfloat(int, int, int, bool);
 		void arraydimstring(int, int, int, bool);
@@ -76,10 +76,10 @@ class Variables
 		double arraygetfloat(int, int);
 		double array2dgetfloat(int, int, int);
 		//
-		void arraysetstring(int, int, QString);
-		void array2dsetstring(int, int, int, QString);
-		QString arraygetstring(int, int);
-		QString array2dgetstring(int, int, int);
+		void arraysetstring(int, int, char *);
+		void array2dsetstring(int, int, int, char *);
+		char *arraygetstring(int, int);
+		char *array2dgetstring(int, int, int);
 		//
 		void makeglobal(int);
 

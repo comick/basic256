@@ -1,4 +1,5 @@
 #include "Stack.h"
+#include <string>
 
 Stack::Stack()
 {
@@ -19,12 +20,14 @@ Stack::clear()
 {
 	while (top > bottom)
 	{
-		top->string = NULL;
+		if (top->type == T_STRING && top->string)
+		{
+			free(top->string);
+			top->string = NULL;
+		}
 		top->type = T_UNUSED;
-		top->floatval = 0;
 		top--;
 	}
-	top->string = NULL;
 	top->type = T_UNUSED;
 	top->floatval = 0;
 }
@@ -36,7 +39,7 @@ Stack::debug()
 	stackval *temp=top;
 	while (temp >= bottom)
 	{
-		if (temp->type == T_STRING) printf(">>S.%s",temp->string.toUtf8().data());
+		if (temp->type == T_STRING) printf(">>S.%s",temp->string);
         if (temp->type == T_VARREF) printf(">>V.%f",temp->floatval);
         if (temp->type == T_VARREFSTR) printf(">>VS.%f",temp->floatval);
         if (temp->type == T_FLOAT) printf(">>F.%f",temp->floatval);
@@ -72,12 +75,21 @@ Stack::checkLimit()
 }
 
 void
-Stack::pushstring(QString c)
+Stack::pushstring(char *c)
 {
+	// dupplicate the string for the stack
+	// the calling point in the iterperter MUST free the resource
+	// passed or leaks WILL happen
 	checkLimit();
 	top++;
 	top->type = T_STRING;
-	top->string = c;
+	if (c==NULL) {
+		c = (char *) malloc(sizeof(char));
+		c[0] = 0x00;
+		top->string = c;
+	} else {
+		top->string = strdup(c);
+	}
 }
 
 void
@@ -241,8 +253,8 @@ Stack::popint()
 	}
 	else if (top->type == T_STRING)
 	{
-		bool ok;
-		i = top->string.toInt(&ok,10);
+		i = (int) atoi(top->string);
+		free(top->string);
 		top->string = NULL;
 		top->type = T_UNUSED;
 	}
@@ -259,8 +271,8 @@ Stack::popfloat()
 	}
 	else if (top->type == T_STRING)
 	{
-		bool ok;
-		f = top->string.toDouble(&ok);
+		f = (double) atof(top->string);
+		free(top->string);
 		top->string = NULL;
 		top->type = T_UNUSED;
 	}
@@ -271,29 +283,34 @@ Stack::popfloat()
 char* 
 Stack::popstring()
 {
-	QString s;
+	char *s;
 	// don't forget to free() the string returned by this function when you are done with it
 	if (top->type == T_STRING) {
 		s = top->string;
 		top->string = NULL;
+		top->type = T_UNUSED;
 	}
     else if (top->type == T_VARREF || top->type == T_VARREFSTR)
 	{
-		s.setNumber(top->floatval,"f",0);
+		char buffer[64];
+		sprintf(buffer, "%.0f", top->floatval);
+		s = strdup(buffer);
 	}
 	else if (top->type == T_FLOAT)
 	{
+		char buffer[64];
 		double xp = log10(top->floatval*(top->floatval<0?-1:1));
 		if (xp<-6.0 || xp>10.0) {
-			s.setNumber(top->floatval,"g",10);
+			sprintf(buffer, "%.10g", top->floatval);
 		} else {
 			int decimal = 12-xp;		// show up to 12 digits of precission
 			if (decimal>7) decimal=7;	// up to 7 decimal digits
-			s.setNumber(top->floatval,"f",decimal);
+			sprintf(buffer, "%#.*f", decimal, top->floatval);
 			//strip trailing zeros and decimal point
-			//while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
-			//if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
+			while(buffer[strlen(buffer)-1]=='0') buffer[strlen(buffer)-1] = 0x00;
+			if(buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1] = 0x00;
 		}
+		s = strdup(buffer);
 	}
 
 
@@ -313,11 +330,13 @@ int Stack::compareTopTwo()
 	if (one->type == T_STRING || two->type == T_STRING)
 	{
 		// one or both strings - [compare them as strings] strcmp
-		QString sone, stwo;
+		char *sone, *stwo;
 		int i;
 		stwo = popstring();
 		sone = popstring();
-		i = sone.compare(stwo);
+		i = strcmp(sone, stwo);
+		free(sone);
+		free(stwo);
 		return i;
 	} else {
 		// anything else - compare them as floats

@@ -91,21 +91,25 @@ void Variables::clearvariable(variable* v)
 {
 	// free a variable's current value to allow it to be reassigned
 	if (v->type == T_UNUSED) {
-	} else if (v->type == T_STRING && v->value_string != NULL) {
-		v->value_string = NULL;
+	} else if (v->type == T_STRING && v->value.string != NULL) {
+		free(v->value.string);
+		v->value.string = NULL;
 	}
-	else if (v->type == T_ARRAY && v->value_arr != NULL) {
-		delete(v->value_arr);
-		v->value_arr = NULL;
+	else if (v->type == T_ARRAY && v->value.arr != NULL) {
+		delete(v->value.arr);
+		v->value.arr = NULL;
 	}
-	else if (v->type == T_STRARRAY && v->value_arr != NULL)	{
-		for (int j = 0; j < v->value_arr->size; j++) {
-			if (v->value_arr->data.sdata[j]) {
-				v->value_arr->data.sdata[j] = NULL;
+	else if (v->type == T_STRARRAY && v->value.arr != NULL)	{
+		for (int j = 0; j < v->value.arr->size; j++) {
+			if (v->value.arr->data.sdata[j]) {
+				free(v->value.arr->data.sdata[j]);
+				v->value.arr->data.sdata[j] = NULL;
 			}
 		}
-		delete(v->value_arr);
-		v->value_arr = NULL;
+// disabled as reported 0.9.9.42 by valgrind as unneeded
+		//delete(v->value.arr->data.sdata);
+		delete(v->value.arr);
+		v->value.arr = NULL;
 	}
     v->type = T_UNUSED;
 }
@@ -123,16 +127,16 @@ variable* Variables::getvfromnum(int varnum, bool makenew) {
 		v = varmap[level][varnum];
 		if (v->type==T_VARREF && recurselevel>0) {
 	                recurselevel--;
-			v = getvfromnum((int) v->value_floatval, makenew);
+			v = getvfromnum((int) v->value.floatval, makenew);
         	        recurselevel++;
 		}
 	} else {
 		if(makenew) {
 			v = new variable;
 			v->type = T_UNUSED;
-			v->value_floatval = 0;
-			v->value_string = NULL;
-			v->value_arr = NULL;
+			v->value.floatval = 0;
+			v->value.string = NULL;
+			v->value.arr = NULL;
 			varmap[level][varnum] = v;
 			//printf("lastvar=%i size=%i\n", varnum, varmap.size());
 		} else {
@@ -163,7 +167,7 @@ void Variables::setfloat(int varnum, double value)
     variable *v = getvfromnum(varnum,true);
     clearvariable(v);
     v->type = T_FLOAT;
-    v->value_floatval = value;
+    v->value.floatval = value;
 }
 
 void Variables::setvarref(int varnum, int value)
@@ -172,7 +176,7 @@ void Variables::setvarref(int varnum, int value)
     variable *v = getvfromnum(varnum,true);
     clearvariable(v);
     v->type = T_VARREF;
-    v->value_floatval = value;
+    v->value.floatval = value;
 }
 
 double Variables::getfloat(int varnum)
@@ -181,7 +185,7 @@ double Variables::getfloat(int varnum)
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_FLOAT) {
-			return(v->value_floatval);
+			return(v->value.floatval);
 		} else {
 			lasterror = ERROR_NOSUCHVARIABLE;
 			lasterrorvar = varnum;
@@ -193,23 +197,24 @@ double Variables::getfloat(int varnum)
 	return(0);
 }
 
-void Variables::setstring(int varnum, QString value)
+void Variables::setstring(int varnum, char *value)
 {
+	// pass pointer - copied when put on stack so this is a good pointer
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,true);
 	clearvariable(v);
 	v->type = T_STRING;
-	v->value_string = value;
+	v->value.string = value;
 }
 
-QString Variables::getstring(int varnum)
+char *Variables::getstring(int varnum)
 {
 	// just return pointer - copied when put on stack so this is a good pointer
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_STRING) {
-			return(v->value_string);
+			return(v->value.string);
 		} else {
 			lasterror = ERROR_NOSUCHVARIABLE;
 			lasterrorvar = varnum;
@@ -218,7 +223,7 @@ QString Variables::getstring(int varnum)
 		lasterror = ERROR_NOSUCHVARIABLE;
 		lasterrorvar = varnum;
 	}
-	return null;
+	return strdup("");
 }
 
 void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
@@ -229,7 +234,7 @@ void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
 	// max number of elements to save on a redim
 	int redimsize = 0;
 	if(redim && v->type==T_ARRAY) {
-		redimsize = v->value_arr->size;	
+		redimsize = v->value.arr->size;	
 	}
 	
 	int size = xdim * ydim;
@@ -239,7 +244,7 @@ void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
 			double *d = new double[size];
 			for (int j = 0; j < size; j++) {
 				if(j < redimsize) {
-					d[j] = v->value_arr->data.fdata[j];						
+					d[j] = v->value.arr->data.fdata[j];						
 				} else {
 					d[j] = 0;
 				}
@@ -252,7 +257,7 @@ void Variables::arraydimfloat(int varnum, int xdim, int ydim, bool redim)
 			a->size = size;
 			a->xdim = xdim;
 			a->ydim = ydim;
-			v->value_arr = a;
+			v->value.arr = a;
 		} else {
 			lasterror = ERROR_ARRAYSIZESMALL;
 			lasterrorvar = varnum;
@@ -271,7 +276,7 @@ void Variables::arraydimstring(int varnum, int xdim, int ydim, bool redim)
 	// max number of elements to save on a redim
 	int redimsize = 0;
 	if(redim && v->type==T_STRARRAY) {
-		redimsize = v->value_arr->size;	
+		redimsize = v->value.arr->size;	
 	}
 	
 	int size = xdim * ydim;
@@ -281,9 +286,10 @@ void Variables::arraydimstring(int varnum, int xdim, int ydim, bool redim)
 			char **c = new char*[size];
 			for (int j = 0; j < size; j++) {
 				if(j < redimsize) {
-					c[j] = v->value_arr->data.sdata[j];						
+					c[j] = v->value.arr->data.sdata[j];						
+					v->value.arr->data.sdata[j]=NULL;	// so not free-d with moved to new array
 				} else {
-					c[j] = null;
+					c[j] = strdup("");
 				}
 			}
 
@@ -294,7 +300,7 @@ void Variables::arraydimstring(int varnum, int xdim, int ydim, bool redim)
 			a->size = size;
 			a->xdim = xdim;
 			a->ydim = ydim;
-			v->value_arr = a;
+			v->value.arr = a;
 		} else {
 			lasterror = ERROR_ARRAYSIZESMALL;
 			lasterrorvar = varnum;
@@ -313,7 +319,7 @@ int Variables::arraysize(int varnum)
 	if(v) {
 		if (v->type == T_ARRAY || v->type == T_STRARRAY)
 		{
-			return(v->value_arr->size);
+			return(v->value.arr->size);
 		} else {
 			lasterror = ERROR_NOTARRAY;
 			lasterrorvar = varnum;
@@ -333,7 +339,7 @@ int Variables::arraysizex(int varnum)
 	if(v) {
 		if (v->type == T_ARRAY || v->type == T_STRARRAY)
 		{
-			return(v->value_arr->xdim);
+			return(v->value.arr->xdim);
 		} else {
 			lasterror = ERROR_NOTARRAY;
 			lasterrorvar = varnum;
@@ -353,7 +359,7 @@ int Variables::arraysizey(int varnum)
 	if(v) {
 		if (v->type == T_ARRAY || v->type == T_STRARRAY)
 		{
-			return(v->value_arr->ydim);
+			return(v->value.arr->ydim);
 		} else {
 			lasterror = ERROR_NOTARRAY;
 			lasterrorvar = varnum;
@@ -371,8 +377,8 @@ void Variables::arraysetfloat(int varnum, int index, double value)
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_ARRAY) {
-			if(index >= 0 && index < v->value_arr->size) {
-				v->value_arr->data.fdata[index] = value;
+			if(index >= 0 && index < v->value.arr->size) {
+				v->value.arr->data.fdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -393,8 +399,8 @@ void Variables::array2dsetfloat(int varnum, int x, int y, double value)
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_ARRAY) {
-			if(x >= 0 && x < v->value_arr->xdim && y >= 0 && y < v->value_arr->ydim ) {
-				v->value_arr->data.fdata[x * v->value_arr->ydim + y] = value;
+			if(x >= 0 && x < v->value.arr->xdim && y >= 0 && y < v->value.arr->ydim ) {
+				v->value.arr->data.fdata[x * v->value.arr->ydim + y] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -415,8 +421,8 @@ double Variables::arraygetfloat(int varnum, int index)
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_ARRAY) {
-			if(index >= 0 && index < value_arr->size) {
-				return(v->value_arr->data.fdata[index]);
+			if(index >= 0 && index < v->value.arr->size) {
+				return(v->value.arr->data.fdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -438,8 +444,8 @@ double Variables::array2dgetfloat(int varnum, int x, int y)
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_ARRAY) {
-			if(x >= 0 && x < v->value_arr->xdim && y >= 0 && y < v->value_arr->ydim ) {
-				return(v->value_arr->data.fdata[x * v->value_arr->ydim + y]);
+			if(x >= 0 && x < v->value.arr->xdim && y >= 0 && y < v->value.arr->ydim ) {
+				return(v->value.arr->data.fdata[x * v->value.arr->ydim + y]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -455,18 +461,18 @@ double Variables::array2dgetfloat(int varnum, int x, int y)
 	return(0);
 }
 
-void Variables::arraysetstring(int varnum, int index, QString value)
+void Variables::arraysetstring(int varnum, int index, char *value)
 {
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_STRARRAY) {
-			if(index >= 0 && index < v->value_arr->size) {
-				if (v->value_arr->data.sdata[index])
+			if(index >= 0 && index < v->value.arr->size) {
+				if (v->value.arr->data.sdata[index])
 				{
-					free(v->value_arr->data.sdata[index]);
+					free(v->value.arr->data.sdata[index]);
 				}
-				v->value_arr->data.sdata[index] = value;
+				v->value.arr->data.sdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -481,19 +487,19 @@ void Variables::arraysetstring(int varnum, int index, QString value)
 	}
 }
 
-void Variables::array2dsetstring(int varnum, int x, int y, QString value)
+void Variables::array2dsetstring(int varnum, int x, int y, char *value)
 {
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_STRARRAY) {
-			if(x >= 0 && x < v->value_arr->xdim && y >= 0 && y < v->value_arr->ydim ) {
-				int index = x * v->value_arr->ydim + y;
-				if (v->value_arr->data.sdata[index])
+			if(x >= 0 && x < v->value.arr->xdim && y >= 0 && y < v->value.arr->ydim ) {
+				int index = x * v->value.arr->ydim + y;
+				if (v->value.arr->data.sdata[index])
 				{
-					free(v->value_arr->data.sdata[index]);
+					free(v->value.arr->data.sdata[index]);
 				}
-				v->value_arr->data.sdata[index] = value;
+				v->value.arr->data.sdata[index] = value;
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -508,14 +514,14 @@ void Variables::array2dsetstring(int varnum, int x, int y, QString value)
 	}
 }
 
-QString Variables::arraygetstring(int varnum, int index)
+char *Variables::arraygetstring(int varnum, int index)
 {
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_STRARRAY) {
-			if(index >= 0 && index < v->value_arr->size) {
-				return(v->value_arr->data.sdata[index]);
+			if(index >= 0 && index < v->value.arr->size) {
+				return(v->value.arr->data.sdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -528,18 +534,18 @@ QString Variables::arraygetstring(int varnum, int index)
 		lasterror = ERROR_NOSUCHVARIABLE;
 		lasterrorvar = varnum;
 	}
-	return null;
+	return strdup("");
 }
 
-QString Variables::array2dgetstring(int varnum, int x, int y)
+char *Variables::array2dgetstring(int varnum, int x, int y)
 {
 	lasterror = ERROR_NONE;
 	variable *v = getvfromnum(varnum,false);
 	if(v) {
 		if (v->type == T_STRARRAY) {
-			if(x >= 0 && x < v->value_arr->xdim && y >= 0 && y < v->value_arr->ydim ) {
-				int index = x * v->value_arr->ydim + y;
-				return(v->value_arr->data.sdata[index]);
+			if(x >= 0 && x < v->value.arr->xdim && y >= 0 && y < v->value.arr->ydim ) {
+				int index = x * v->value.arr->ydim + y;
+				return(v->value.arr->data.sdata[index]);
 			} else {
 				lasterror = ERROR_ARRAYINDEX;
 				lasterrorvar = varnum;
@@ -552,7 +558,7 @@ QString Variables::array2dgetstring(int varnum, int x, int y)
 		lasterror = ERROR_NOSUCHVARIABLE;
 		lasterrorvar = varnum;
 	}
-	return null;
+	return strdup("");
 }
 
 void Variables::makeglobal(int varnum)
