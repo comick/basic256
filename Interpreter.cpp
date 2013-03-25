@@ -1436,7 +1436,7 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			int ydim = stack.popint();
 			int xdim = stack.popint();
-			variables.arraydimfloat(*i, xdim, ydim, whichdim == OP_REDIM);
+			variables.arraydim(T_ARRAY, *i, xdim, ydim, whichdim == OP_REDIM);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
@@ -1462,7 +1462,7 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 			int ydim = stack.popint();
 			int xdim = stack.popint();
-			variables.arraydimstring(*i, xdim, ydim, whichdim == OP_REDIMSTR);
+			variables.arraydim(T_STRARRAY, *i, xdim, ydim, whichdim == OP_REDIMSTR);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
@@ -1514,19 +1514,21 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			char *val = stack.popstring(); // dont free if successful - assigning to a string variable
+			char *val = stack.popstring();
 			int index = stack.popint();
 
-			variables.arraysetstring(*i, index, val);
+			QString q = QString::fromUtf8(val);
+			free(val);
+			
+			variables.arraysetstring(*i, index, q);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, index), index, -1));
 				}
 			} else {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
-				free(val);
 			}			
 		}
 		break;
@@ -1537,15 +1539,18 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			char *val = stack.popstring(); // dont free - assigning to a string variable
+			char *val = stack.popstring(); 
 			int yindex = stack.popint();
 			int xindex = stack.popint();
 
-			variables.array2dsetstring(*i, xindex, yindex, val);
+			QString q = QString::fromUtf8(val);
+			free(val);
+
+			variables.array2dsetstring(*i, xindex, yindex, q);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.array2dgetstring(*i, xindex, yindex)), xindex, yindex));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.array2dgetstring(*i, xindex, yindex), xindex, yindex));
 				}
 			} else {
 				errornum = variables.error();
@@ -1562,7 +1567,7 @@ Interpreter::execByteCode()
 			int items = i[1];
 			op += 2 * sizeof(int);
 			
-			if (variables.arraysize(*i)!=items) variables.arraydimstring(*i, items, 1, false);
+			if (variables.arraysize(*i)!=items) variables.arraydim(T_STRARRAY, *i, items, 1, false);
 
 			if(errornum==ERROR_NONE)
 			{
@@ -1573,12 +1578,14 @@ Interpreter::execByteCode()
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 				{
-					char *str = stack.popstring(); // dont free we are assigning this to a variable
-					variables.arraysetstring(*i, index, str);
+					char *str = stack.popstring();
+					QString q = QString::fromUtf8(str);
+					free(str);
+					variables.arraysetstring(*i, index, q);
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
 						{
-							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, index)), index, -1));
+							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, index), index, -1));
 						}
 					} else {
 						errornum = variables.error();
@@ -1625,9 +1632,9 @@ Interpreter::execByteCode()
 			}
 			
 			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-				if (variables.arraysize(*i)!=list.size()) variables.arraydimstring(*i, list.size(), 1, false);
+				if (variables.arraysize(*i)!=list.size()) variables.arraydim(T_STRARRAY, *i, list.size(), 1, false);
 			} else {
-				if (variables.arraysize(*i)!=list.size()) variables.arraydimfloat(*i, list.size(), 1, false);
+				if (variables.arraysize(*i)!=list.size()) variables.arraydim(T_ARRAY, *i, list.size(), 1, false);
 			}
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
@@ -1637,10 +1644,10 @@ Interpreter::execByteCode()
 					
 				for(int x=0; x<list.size(); x++) {
 					if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-						variables.arraysetstring(*i, x, strdup(list.at(x).toUtf8().data()));
+						variables.arraysetstring(*i, x, list.at(x));
 						if (variables.error()==ERROR_NONE) {
 							if(debugMode) {
-								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::fromUtf8(variables.arraygetstring(*i, x)), x, -1));
+								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, x), x, -1));
 							}
 						} else {
 							errornum = variables.error();
@@ -1685,7 +1692,7 @@ Interpreter::execByteCode()
 				for(int n=0;n<kount;n++) {
 					if (n>0) stuff.append(qdelim);
 					if (variables.type(*i) == T_STRARRAY) {
-						stuff.append(QString::fromUtf8(variables.arraygetstring(*i, n)));
+						stuff.append(variables.arraygetstring(*i, n));
 					} else {
 						stack.pushfloat(variables.arraygetfloat(*i, n));
 						char *t = stack.popstring();
@@ -1767,7 +1774,7 @@ Interpreter::execByteCode()
 			int items = i[1];
 			op += 2 * sizeof(int);
 			
-			if (variables.arraysize(*i)!=items) variables.arraydimfloat(*i, items, 1, false);
+			if (variables.arraysize(*i)!=items) variables.arraydim(T_ARRAY, *i, items, 1, false);
 			if(errornum==ERROR_NONE) {
 				if(debugMode && errornum==ERROR_NONE)
 				{
@@ -1807,7 +1814,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.arraygetstring(*i, index));
+				stack.pushstring(variables.arraygetstring(*i, index).toUtf8().data());
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1840,7 +1847,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex));
+				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex).toUtf8().data());
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1871,7 +1878,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRING)
 			{
-				stack.pushstring(variables.getstring(*i));
+				stack.pushstring(variables.getstring(*i).toUtf8().data());
 			}
 			else if (variables.type(*i) == T_FLOAT)
 			{
@@ -3281,12 +3288,13 @@ Interpreter::execByteCode()
 			op += sizeof(int);
 
 			char *temp = stack.popstring();	// don't free - assigned to a variable
+			QString q = QString::fromUtf8(temp);
+			variables.setstring(*num, q);
+			free(temp);
 			
-			variables.setstring(*num, temp);
-
 			if(debugMode)
 			{
-			  emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), QString::fromUtf8(variables.getstring(*num)), -1, -1));
+			  emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), variables.getstring(*num), -1, -1));
 			}
 		}
 		break;

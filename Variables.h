@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <QString.h>
+
 #include "ErrorCodes.h"
 #include "Stack.h"
 
@@ -17,27 +19,26 @@
 #define VARIABLE_MAXARRAYELEMENTS 1048576
 #define MAX_RECURSE_LEVELS	1048576
 
+struct arraydata {
+  double floatval;
+  QString string;
+};
+  
 struct array
 {
   int xdim;
   int ydim;
   int size;
-  union
-  {
-    double *fdata;
-    char **sdata;
-  } data;
+  std::map<int,arraydata*> datamap;
 };
 
 
 struct variable
 {
   b_type type;
-  union {
-    char *string;
-    double floatval; 
-    array *arr;
-  } value;
+  QString string;
+  double floatval; 
+  array *arr;
 };
 
 
@@ -61,11 +62,10 @@ class Variables
 		void setfloat(int, double);
 		double getfloat(int);
 		//
-		void setstring(int, char *);
-		char *getstring(int);
+		void setstring(int, QString);
+		QString getstring(int);
 		//
-		void arraydimfloat(int, int, int, bool);
-		void arraydimstring(int, int, int, bool);
+		void arraydim(b_type, int, int, int, bool);
 		//
 		int arraysize(int);
 		int arraysizex(int);
@@ -76,10 +76,10 @@ class Variables
 		double arraygetfloat(int, int);
 		double array2dgetfloat(int, int, int);
 		//
-		void arraysetstring(int, int, char *);
-		void array2dsetstring(int, int, int, char *);
-		char *arraygetstring(int, int);
-		char *array2dgetstring(int, int, int);
+		void arraysetstring(int, int, QString);
+		void array2dsetstring(int, int, int, QString);
+		QString arraygetstring(int, int);
+		QString array2dgetstring(int, int, int);
 		//
 		void makeglobal(int);
 
@@ -91,7 +91,8 @@ class Variables
 		std::map<int, std::map<int,variable*> > varmap;
 		std::map<int, bool> globals;
 		void clearvariable(variable*);
-		variable* getvfromnum(int, bool);
+		variable* getv(int, bool);
+		arraydata* getarraydata(variable*, int);
 		bool isglobal(int);
 
 };
