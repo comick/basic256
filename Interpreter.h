@@ -131,7 +131,7 @@ class Interpreter : public QThread
   void dialogPrompt(QString, QString);
 
  private:
-  int compareTwoStackVal(stackval *, stackval *);
+  int compareTwostackdata(stackdata *, stackdata *);
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);

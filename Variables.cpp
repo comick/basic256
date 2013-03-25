@@ -232,13 +232,12 @@ void Variables::arraydim(b_type type, int varnum, int xdim, int ydim, bool redim
 		if (size >= 1) {
 			v->type = type;
 			if (!redim || !v->arr) {
-				// if array data is dim or redim without a dim then create
+				// if array data is dim or redim without a dim then create a new one (clear the old)
 				v->arr = new array;
 			}
 			v->arr->size = size;
 			v->arr->xdim = xdim;
 			v->arr->ydim = ydim;
-			// do we need to clear datamap on dim if it exists??
 		} else {
 			lasterror = ERROR_ARRAYSIZESMALL;
 			lasterrorvar = varnum;

@@ -92,8 +92,6 @@ extern QWaitCondition waitInput;
 //	}
 //#endif
 
-#define POP2  stackval *one = stack.pop(); stackval *two = stack.pop(); 
-
 extern "C" {
 	extern int basicParse(char *);
 	extern int labeltable[];
@@ -879,7 +877,7 @@ Interpreter::execByteCode()
 {
 	if (status == R_INPUTREADY)
 	{
-		stack.pushstring(inputString.toUtf8().data());
+		stack.pushstring(inputString);
 		status = R_RUNNING;
 		return 0;
 	}
@@ -1108,7 +1106,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int type = stack.popint();	// 0 text 1 binary
-            char *name = stack.popstring();
+            QString name = stack.popstring();
 			int fn = stack.popint();
 
             if (fn<0||fn>=NUMFILES) {
@@ -1120,7 +1118,7 @@ Interpreter::execByteCode()
 					stream[fn] = NULL;
 				}
                 // create file stream
-				stream[fn] = new QFile(QString::fromUtf8(name));
+				stream[fn] = new QFile(name);
                 if (stream[fn] == NULL) {
                     errornum = ERROR_FILEOPEN;
                 } else {
@@ -1137,7 +1135,6 @@ Interpreter::execByteCode()
                     }
                 }
 			}
-			free(name);
 		}
 		break;
 
@@ -1164,7 +1161,7 @@ Interpreter::execByteCode()
 					{
 						if (!stream[fn]->getChar(&c))
 						{
-							stack.pushstring(strarray);
+							stack.pushstring(QString::fromUtf8(strarray));
 							free(strarray);
 							return 0;
 						}
@@ -1188,7 +1185,7 @@ Interpreter::execByteCode()
 						}
 					}
 					strarray[offset] = 0;
-					stack.pushstring(strarray);
+					stack.pushstring(QString::fromUtf8(strarray));
 					free(strarray);
 				}
 			}
@@ -1211,7 +1208,7 @@ Interpreter::execByteCode()
 					stack.pushint(0);
 				} else {
 					//read entire line
-					stack.pushstring(stream[fn]->readLine().data());
+					stack.pushstring(stream[fn]->readLine());
 				}
 			}
 		}
@@ -1265,7 +1262,7 @@ Interpreter::execByteCode()
 		{
 			unsigned char whichop = *op;
 			op++;
-			char *temp = stack.popstring();
+			QString temp = stack.popstring();
 			int fn = stack.popint();
 			if (fn<0||fn>=NUMFILES) {
 				errornum = ERROR_FILENUMBER;
@@ -1278,10 +1275,10 @@ Interpreter::execByteCode()
 					quint64 oldPos = stream[fn]->pos();
 					stream[fn]->flush();
 					stream[fn]->seek(stream[fn]->size());
-					error = stream[fn]->write(temp, strlen(temp));
+					error = stream[fn]->write(temp.toUtf8().data());
 					if (whichop == OP_WRITELINE)
 					{
-						error = stream[fn]->write("\n", 1);
+						error = stream[fn]->putChar('\n');
 					}
 					stream[fn]->seek(oldPos);
 					stream[fn]->flush();
@@ -1291,7 +1288,6 @@ Interpreter::execByteCode()
 					errornum = ERROR_FILEWRITE;
 				}
 			}
-			free(temp);
 		}
 		break;
 
@@ -1397,14 +1393,13 @@ Interpreter::execByteCode()
 			// push a 1 if file exists else zero
 			op++;
 
-			char *filename = stack.popstring();
-			if (QFile::exists(QString(filename)))
+			QString filename = stack.popstring();
+			if (QFile::exists(filename))
 			{
 				stack.pushint(1);
 			} else {
 				stack.pushint(0);
 			}
-			free(filename);
 		}
 		break;
 
@@ -1514,13 +1509,10 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			char *val = stack.popstring();
+			QString val = stack.popstring();
 			int index = stack.popint();
 
-			QString q = QString::fromUtf8(val);
-			free(val);
-			
-			variables.arraysetstring(*i, index, q);
+			variables.arraysetstring(*i, index, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
@@ -1539,14 +1531,11 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 
-			char *val = stack.popstring(); 
+			QString val = stack.popstring(); 
 			int yindex = stack.popint();
 			int xindex = stack.popint();
 
-			QString q = QString::fromUtf8(val);
-			free(val);
-
-			variables.array2dsetstring(*i, xindex, yindex, q);
+			variables.array2dsetstring(*i, xindex, yindex, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
@@ -1555,7 +1544,6 @@ Interpreter::execByteCode()
 			} else {
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
-				free(val);
 			}			
 		}
 		break;
@@ -1578,9 +1566,7 @@ Interpreter::execByteCode()
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 				{
-					char *str = stack.popstring();
-					QString q = QString::fromUtf8(str);
-					free(str);
+					QString q = stack.popstring();
 					variables.arraysetstring(*i, index, q);
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
@@ -1590,7 +1576,6 @@ Interpreter::execByteCode()
 					} else {
 						errornum = variables.error();
 						errorvarnum = variables.errorvarnum();
-						free(str);
 					}			
 				}
 			} else {
@@ -1619,10 +1604,8 @@ Interpreter::execByteCode()
 				if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 			}
 	
-			char *needle = stack.popstring();
-			char *haystack = stack.popstring();
-			QString qneedle = QString::fromUtf8(needle);
-			QString qhaystack = QString::fromUtf8(haystack);
+			QString qneedle = stack.popstring();
+			QString qhaystack = stack.popstring();
 					
 			QStringList list;
 			if(opcode==OP_EXPLODE || opcode==OP_EXPLODE_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODESTR_C) {
@@ -1669,8 +1652,6 @@ Interpreter::execByteCode()
 				errornum = variables.error();
 				errorvarnum = variables.errorvarnum();
 			}
-			free(needle);
-			free(haystack);
 		}
 		break;
 
@@ -1681,8 +1662,7 @@ Interpreter::execByteCode()
 			int *i = (int *) op;
 			op += sizeof(int);
 			
-			char *delim = stack.popstring();
-			QString qdelim = QString::fromUtf8(delim);
+			QString qdelim = stack.popstring();
 
 			QString stuff = "";
 
@@ -1695,19 +1675,14 @@ Interpreter::execByteCode()
 						stuff.append(variables.arraygetstring(*i, n));
 					} else {
 						stack.pushfloat(variables.arraygetfloat(*i, n));
-						char *t = stack.popstring();
-						stuff.append(t);
-						free(t);
+						stuff.append(stack.popstring());
 					}
 				}
 			} else {
 				errornum = ERROR_NOTARRAY;
 				errorvarnum = *i;
 			}
-
-			stack.pushstring(stuff.toUtf8().data());
-		
-			free(delim);
+			stack.pushstring(stuff);
 		}
 		break;
 
@@ -1814,7 +1789,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.arraygetstring(*i, index).toUtf8().data());
+				stack.pushstring(variables.arraygetstring(*i, index));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1847,7 +1822,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex).toUtf8().data());
+				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -1878,7 +1853,7 @@ Interpreter::execByteCode()
 
 			if (variables.type(*i) == T_STRING)
 			{
-				stack.pushstring(variables.getstring(*i).toUtf8().data());
+				stack.pushstring(variables.getstring(*i));
 			}
 			else if (variables.type(*i) == T_FLOAT)
 			{
@@ -1940,8 +1915,9 @@ Interpreter::execByteCode()
 			// push string from compiled bytecode
 			// no need to free because string is in compiled code
 			op++;
-			stack.pushstring((char *) op);
-			op += strlen((char *) op) + 1;
+			int len = strlen((char *) op) + 1;
+			stack.pushstring(QString::fromUtf8((char *) op));
+			op += len;
 		}
 		break;
 
@@ -1969,9 +1945,7 @@ Interpreter::execByteCode()
 	case OP_STRING:
 		{
 			op++;
-			char *temp = stack.popstring();
-			stack.pushstring(temp);
-			free(temp);
+			stack.pushstring(stack.popstring());
 		}
 		break;
 
@@ -2007,13 +1981,9 @@ Interpreter::execByteCode()
 
 	case OP_LENGTH:
 		{
-			// unicode length - convert utf8 to unicode and return length
+			// unicode length
 			op++;
-			char *temp = stack.popstring();
-			QString qs = QString::fromUtf8(temp);
-			stack.pushint(qs.length());
-			free(temp);
-			qs = QString::null;
+			stack.pushint(stack.popstring().length());
 		}
 		break;
 
@@ -2024,10 +1994,8 @@ Interpreter::execByteCode()
 			op++;
 			int len = stack.popint();
 			int pos = stack.popint();
-			char *temp = stack.popstring();
+			QString qtemp = stack.popstring();
 
-			QString qtemp = QString::fromUtf8(temp);
-			
 			if ((len < 0))
 			{
 				errornum = ERROR_STRNEGLEN;
@@ -2043,13 +2011,10 @@ Interpreter::execByteCode()
 						errornum = ERROR_STREND;
 						stack.pushint(0);
 					} else {
-						stack.pushstring(qtemp.mid(pos-1,len).toUtf8().data());
+						stack.pushstring(qtemp.mid(pos-1,len));
 					}
 				}
 			}
-
-			free(temp);
-			qtemp = QString::null;
 		}
 		break;
 
@@ -2061,9 +2026,7 @@ Interpreter::execByteCode()
 			unsigned char opcode = *op;
 			op++;
 			int len = stack.popint();
-			char *temp = stack.popstring();
-			
-			QString qtemp = QString::fromUtf8(temp);
+			QString qtemp = stack.popstring();
 			
 			if (len < 0)
 			{
@@ -2072,37 +2035,28 @@ Interpreter::execByteCode()
 			} else {
 				switch(opcode) {
 					case OP_LEFT:
-						stack.pushstring(qtemp.left(len).toUtf8().data());
+						stack.pushstring(qtemp.left(len));
 						break;
 					case OP_RIGHT:
-						stack.pushstring(qtemp.right(len).toUtf8().data());
+						stack.pushstring(qtemp.right(len));
 						break;
 				}
 			}
-			free(temp);
-			qtemp = QString::null;
 		}
 		break;
 
 
 	case OP_UPPER:
+		{
+			op++;
+			stack.pushstring(stack.popstring().toUpper());
+		}
+		break;
+
 	case OP_LOWER:
 		{
-			unsigned char opcode = *op;
 			op++;
-			char *temp = stack.popstring();
-
-			QString qtemp = QString::fromUtf8(temp);
-			if(opcode==OP_UPPER) {
-				qtemp = qtemp.toUpper();
-			} else {
-				qtemp = qtemp.toLower();
-			}
-
-			stack.pushstring(qtemp.toUtf8().data());
-
-			free(temp);
-			qtemp = QString::null;
+			stack.pushstring(stack.popstring().toLower());
 		}
 		break;
 
@@ -2110,11 +2064,8 @@ Interpreter::execByteCode()
 		{
 			// unicode character sequence - return 16 bit number representing character
 			op++;
-			char *str = stack.popstring();
-			QString qs = QString::fromUtf8(str);
+			QString qs = stack.popstring();
 			stack.pushint((int) qs[0].unicode());
-			free(str);
-			qs = QString::null;
 		}
 		break;
 
@@ -2128,7 +2079,7 @@ Interpreter::execByteCode()
 			temp[0] = (QChar) code;
 			temp[1] = (QChar) 0;
 			QString qs = QString(temp,1);
-			stack.pushstring(qs.toUtf8().data());
+			stack.pushstring(qs);
 			qs = QString::null;
 		}
 		break;
@@ -2154,12 +2105,9 @@ Interpreter::execByteCode()
 				start = stack.popfloat();
 			}
 			
-			char *str = stack.popstring();
-			char *hay = stack.popstring();
+			QString qstr = stack.popstring();
+			QString qhay = stack.popstring();
 
-			QString qstr = QString::fromUtf8(str);
-			QString qhay = QString::fromUtf8(hay);
-			
 			int pos = 0;
 			if(start < 1) {
 				errornum = ERROR_STRSTART;
@@ -2175,11 +2123,6 @@ Interpreter::execByteCode()
 				}
 			}
 			stack.pushint(pos);
-
-			free(str);
-			free(hay);
-			qstr = QString::null;
-			qhay = QString::null;
 		}
 		break;
 
@@ -2590,9 +2533,7 @@ Interpreter::execByteCode()
 	case OP_SAY:
 		{
 			op++;
-			char *temp = stack.popstring();
-			emit(speakWords(QString::fromUtf8(temp)));
-			free(temp);
+			emit(speakWords(stack.popstring()));
 			waitForGraphics();
 		}
 		break;
@@ -2600,27 +2541,24 @@ Interpreter::execByteCode()
 	case OP_SYSTEM:
 		{
 			op++;
-			char *temp = stack.popstring();
+			QString temp = stack.popstring();
 
             SETTINGS;
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
 				mutex.lock();
-                emit(executeSystem(temp));
+                emit(executeSystem(temp.toUtf8().data()));
 				waitCond.wait(&mutex);
 				mutex.unlock();
 			} else {
 				errornum = ERROR_PERMISSION;
 			}
-			free(temp);
 		}
 		break;
 
 	case OP_WAVPLAY:
 		{
 			op++;
-			char *file = stack.popstring();
-			emit(playWAV(QString::fromUtf8(file)));
-			free(file);
+			emit(playWAV(stack.popstring()));
 		}
 		break;
 
@@ -2684,19 +2622,18 @@ Interpreter::execByteCode()
 			int w = stack.popint();
 			int y = stack.popint();
 			int x = stack.popint();
-			QString *qs = new QString();
+			QString qs;
 			QRgb rgb;
 			int tw, th;
-			qs->append(QString::number(w,16).rightJustified(4,'0'));
-			qs->append(QString::number(h,16).rightJustified(4,'0'));
+			qs.append(QString::number(w,16).rightJustified(4,'0'));
+			qs.append(QString::number(h,16).rightJustified(4,'0'));
 			for(th=0; th<h; th++) {
 				for(tw=0; tw<w; tw++) {
 					rgb = image->pixel(x+tw,y+th);
-					qs->append(QString::number(rgb,16).rightJustified(8,'0'));
+					qs.append(QString::number(rgb,16).rightJustified(8,'0'));
 				}
 			}
-			stack.pushstring(qs->toUtf8().data());
-			delete qs;
+			stack.pushstring(qs);
 		}
 		break;
 		
@@ -2705,9 +2642,7 @@ Interpreter::execByteCode()
 		{
 			QRgb mask = 0x00;	// default mask transparent - nothing gets masked
 			if (*op == OP_PUTSLICEMASK) mask = stack.popint();
-			char *txt = stack.popstring();
-			QString imagedata = QString::fromUtf8(txt);
-			free(txt);
+			QString imagedata = stack.popstring();
 			int y = stack.popint();
 			int x = stack.popint();
 			bool ok;
@@ -3036,7 +2971,7 @@ Interpreter::execByteCode()
 			op++;
 			
 			// pop the filename to uncover the location and scale
-			char *file = stack.popstring();
+			QString file = stack.popstring();
 			
 			double rotate = stack.popfloat();
 			double scale = stack.popfloat();
@@ -3046,7 +2981,7 @@ Interpreter::execByteCode()
 			if (scale<0) {
 				errornum = ERROR_IMAGESCALE;
 			} else {
-				QImage i(QString::fromUtf8(file));
+				QImage i(file);
 				if(i.isNull()) {
 					errornum = ERROR_IMAGEFILE;
 				} else {
@@ -3062,14 +2997,13 @@ Interpreter::execByteCode()
 					if (!fastgraphics) waitForGraphics();
 				}
 			}
-			free(file);
 		}
 		break;
 
 	case OP_TEXT:
 		{
 			op++;
-			char *txt = stack.popstring();
+			QString txt = stack.popstring();
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
@@ -3082,9 +3016,8 @@ Interpreter::execByteCode()
 			if(!fontfamily.isEmpty()) {
 				ian.setFont(QFont(fontfamily, fontpoint, fontweight));
 			}
-			ian.drawText(x0val, y0val+(QFontMetrics(ian.font()).ascent()), QString::fromUtf8(txt));
+			ian.drawText(x0val, y0val+(QFontMetrics(ian.font()).ascent()), txt);
 			ian.end();
-			free(txt);
 
 			if (!fastgraphics) waitForGraphics();
 		}
@@ -3096,7 +3029,7 @@ Interpreter::execByteCode()
 			op++;
 			int weight = stack.popint();
 			int point = stack.popint();
-			char *family = stack.popstring();
+			QString family = stack.popstring();
 			if (point<0) {
 				errornum = ERROR_FONTSIZE;
 			} else {
@@ -3105,10 +3038,9 @@ Interpreter::execByteCode()
 				} else {
 					fontpoint = point;
 					fontweight = weight;
-					fontfamily = QString::fromUtf8(family);
+					fontfamily = family;
 				}
 			}
-			free(family);
 		}
 		break;
 
@@ -3231,9 +3163,7 @@ Interpreter::execByteCode()
 	case OP_PRINT:
 	case OP_PRINTN:
 		{
-			char *temp = stack.popstring();
-			QString p = QString::fromUtf8(temp);
-			free(temp);
+			QString p = stack.popstring();
 			if (*op == OP_PRINTN)
 			{
 				p += "\n";
@@ -3249,19 +3179,9 @@ Interpreter::execByteCode()
 	case OP_CONCAT:
 		{
 			op++;
-			char *one = stack.popstring();
-			char *two = stack.popstring();
-			int len = strlen(one) + strlen(two) + 1;
-			char *buffer = (char *) malloc(len);
-			if (buffer)
-			{
-				strcpy(buffer, two);
-				strcat(buffer, one);
-			}
-			stack.pushstring(buffer);
-			free(buffer);
-			free(one);
-			free(two);
+			QString one = stack.popstring();
+			QString two = stack.popstring();
+			stack.pushstring(two + one);
 		}
 		break;
 
@@ -3287,10 +3207,8 @@ Interpreter::execByteCode()
 			int *num = (int *) op;
 			op += sizeof(int);
 
-			char *temp = stack.popstring();	// don't free - assigned to a variable
-			QString q = QString::fromUtf8(temp);
+			QString q = stack.popstring();
 			variables.setstring(*num, q);
-			free(temp);
 			
 			if(debugMode)
 			{
@@ -3502,7 +3420,7 @@ Interpreter::execByteCode()
 					{
 						op++;
 						
-						char *file = stack.popstring();
+						QString file = stack.popstring();
 						int n = stack.popint();
 						
 						if(n < 0 || n >=nsprites) {
@@ -3514,7 +3432,7 @@ Interpreter::execByteCode()
 								delete sprites[n].image;
 								sprites[n].image = NULL;
 							}
-							sprites[n].image = new QImage(QString::fromUtf8(file));
+							sprites[n].image = new QImage(file);
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_IMAGEFILE;
 								sprites[n].image = NULL;							
@@ -3528,8 +3446,6 @@ Interpreter::execByteCode()
 							}
 							spriteredraw(n);
 						}
-			
-						free(file);
 					}
 					break;
 					
@@ -3699,18 +3615,17 @@ Interpreter::execByteCode()
 			case OPX_CHANGEDIR:
 					{
 						op++;
-						char *file = stack.popstring();
-						if(!QDir::setCurrent(QString::fromUtf8(file))) {
+						QString file = stack.popstring();
+						if(!QDir::setCurrent(file)) {
 							errornum = ERROR_FOLDER;
 						}
-						free(file);
 					}
 					break;
 
 			case OPX_CURRENTDIR:
 				{
 					op++;
-					stack.pushstring(QDir::currentPath().toUtf8().data());
+					stack.pushstring(QDir::currentPath());
 				}
 				break;
 				
@@ -3725,18 +3640,17 @@ Interpreter::execByteCode()
 					{
 						op++;
 						// open database connection
-						char *file = stack.popstring();
+						QString file = stack.popstring();
 						int n = stack.popint();
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-							int error = sqlite3_open(file, &dbconn[n]);
+							int error = sqlite3_open(file.toUtf8().data(), &dbconn[n]);
 							if (error) {
 								errornum = ERROR_DBOPEN;
 							}
 						}
-						free(file);
 					}
 					break;
 
@@ -3756,13 +3670,13 @@ Interpreter::execByteCode()
 					{
 						op++;
 						// execute a statement on the database
-						char *stmt = stack.popstring();
+						QString stmt = stack.popstring();
 						int n = stack.popint();
 						if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if(dbconn[n]) {
-								int error = sqlite3_exec(dbconn[n], stmt, 0, 0, 0);
+								int error = sqlite3_exec(dbconn[n], stmt.toUtf8().data(), 0, 0, 0);
 								if (error != SQLITE_OK) {
 									errornum = ERROR_DBQUERY;
 									errormessage = sqlite3_errmsg(dbconn[n]);
@@ -3771,7 +3685,6 @@ Interpreter::execByteCode()
 								errornum = ERROR_DBNOTOPEN;
 							}
 						}
-						free(stmt);
 					}
 					break;
 
@@ -3779,7 +3692,7 @@ Interpreter::execByteCode()
 					{
 						op++;
 						// open recordset
-						char *stmt = stack.popstring();
+						QString stmt = stack.popstring();
 						int set = stack.popint();
 						int n = stack.popint();
 						if (n<0||n>=NUMDBCONN) {
@@ -3794,7 +3707,7 @@ Interpreter::execByteCode()
 										dbset[n][set] = NULL;
 									}
 									dbsetrow[n][set] = false;
-									int error = sqlite3_prepare_v2(dbconn[n], stmt, -1, &(dbset[n][set]), NULL);
+									int error = sqlite3_prepare_v2(dbconn[n], stmt.toUtf8().data(), -1, &(dbset[n][set]), NULL);
 									if (error != SQLITE_OK) {
 										errornum = ERROR_DBQUERY;
 										errormessage = sqlite3_errmsg(dbconn[n]);
@@ -3804,7 +3717,6 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-						free(stmt);
 					}
 					break;
 
@@ -3864,7 +3776,7 @@ Interpreter::execByteCode()
 					{
 						unsigned char opcode = *op;
 						int col = -1, set, n;
-						char *colname = NULL;
+						QString colname;
 						op++;
 						// get a column data (integer)
 						if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
@@ -3889,11 +3801,10 @@ Interpreter::execByteCode()
 										if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
 											// find the column number for name and save in col
 											for(int t=0;t<sqlite3_column_count(dbset[n][set])&&col==-1;t++) {
-												if (strcmp(colname,sqlite3_column_name(dbset[n][set],t))==0) {
+												if (strcmp(colname.toUtf8().data(),sqlite3_column_name(dbset[n][set],t))==0) {
 													col = t;
 												}
 											}
-											free(colname);
 										}
 										if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
 											errornum = ERROR_DBCOLNO;
@@ -3913,7 +3824,7 @@ Interpreter::execByteCode()
 													break;
 												case OPX_DBSTRING:
 												case OPX_DBSTRINGS:
-													stack.pushstring((char*)sqlite3_column_text(dbset[n][set], col));
+													stack.pushstring(QString::fromUtf8((char*)sqlite3_column_text(dbset[n][set], col)));
 													break;
 											}
 										}
@@ -3941,14 +3852,14 @@ Interpreter::execByteCode()
 			case OPX_LASTERROREXTRA:
 				{
 					op++;
-					stack.pushstring(lasterrormessage.toUtf8().data());
+					stack.pushstring(lasterrormessage);
 				}
 				break;
 
 			case OPX_LASTERRORMESSAGE:
 				{
 					op++;
-					stack.pushstring(getErrorMessage(lasterrornum).toUtf8().data());
+					stack.pushstring(getErrorMessage(lasterrornum));
 				}
 				break;
 
@@ -4020,11 +3931,9 @@ Interpreter::execByteCode()
 					struct hostent *server;
 
 					int port = stack.popint();
-					char* address = stack.popstring();
+					QString address = stack.popstring();
 					int fn = stack.popint();
-					
-					
-					
+						
 					if (fn<0||fn>=NUMSOCKETS) {
 						errornum = ERROR_NETSOCKNUMBER;
 					} else {
@@ -4039,7 +3948,7 @@ Interpreter::execByteCode()
 							errormessage = strerror(errno);
 						} else {
 
-							server = gethostbyname(address);
+							server = gethostbyname(address.toUtf8().data());
 							if (server == NULL) {
 								errornum = ERROR_NETHOST;
 								errormessage = strerror(errno);
@@ -4057,7 +3966,6 @@ Interpreter::execByteCode()
 							}
 						}
 					}
-					free(address);
 				}
 				break;
 
@@ -4084,7 +3992,7 @@ Interpreter::execByteCode()
 								errormessage = strerror(errno);
 								stack.pushint(0);
 							} else {
-								stack.pushstring(strarray);
+								stack.pushstring(QString::fromUtf8(strarray));
 							}
 						}
 					}
@@ -4095,7 +4003,7 @@ Interpreter::execByteCode()
 			case OPX_NETWRITE:
 				{
 					op++;
-					char* data = stack.popstring();
+					QString data = stack.popstring();
 					int fn = stack.popint();
 					if (fn<0||fn>=NUMSOCKETS) {
 						errornum = ERROR_NETSOCKNUMBER;
@@ -4103,14 +4011,13 @@ Interpreter::execByteCode()
 						if (netsockfd[fn]<0) {
 							errornum = ERROR_NETNONE;
 						} else {
-							int n = send(netsockfd[fn],data,strlen(data),0);
+							int n = send(netsockfd[fn],data.toUtf8().data(),data.length(),0);
 							if (n < 0) {
 								errornum = ERROR_NETWRITE;
 								errormessage = strerror(errno);
 							}
 						}
 					}
-					free(data);
 				}
 				break;
 
@@ -4180,7 +4087,7 @@ Interpreter::execByteCode()
 					gethostname( szHostname, sizeof( szHostname ));
 					pHostEnt = gethostbyname( szHostname );
 					memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
-					stack.pushstring(inet_ntoa(sAddr.sin_addr));
+					stack.pushstring(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
 					#else
 					bool good = false;
 					struct ifaddrs *myaddrs, *ifa;
@@ -4196,7 +4103,7 @@ Interpreter::execByteCode()
 								struct sockaddr_in *s4 = (struct sockaddr_in *)ifa->ifa_addr;
 								in_addr = &s4->sin_addr;
 								if (inet_ntop(ifa->ifa_addr->sa_family, in_addr, buf, sizeof(buf))) {
-									stack.pushstring(buf);
+									stack.pushstring(QString::fromUtf8(buf));
 									good = true;
 								}
 							}
@@ -4205,7 +4112,7 @@ Interpreter::execByteCode()
 					}
 					if (!good) {
 						// on error give local loopback
-						stack.pushstring((char *) "127.0.0.1");
+						stack.pushstring(QString("127.0.0.1"));
 					}
 					#endif
 				}
@@ -4214,29 +4121,27 @@ Interpreter::execByteCode()
 			case OPX_KILL:
 				{
 					op++;
-					char *name = stack.popstring();
-					if(!QFile::remove(QString::fromUtf8(name))) {
+					QString name = stack.popstring();
+					if(!QFile::remove(name)) {
 						errornum = ERROR_FILEOPEN;
 					}
-					free(name);
 				}
 				break;
 
 			case OPX_MD5:
 				{
 					op++;
-					char *stuff = stack.popstring();
-					stack.pushstring(MD5(stuff).hexdigest());
-					free(stuff);
+					QString stuff = stack.popstring();
+					stack.pushstring(MD5(stuff.toUtf8().data()).hexdigest());
 				}
 				break;
 
 			case OPX_SETSETTING:
 				{
 					op++;
-					char *stuff = stack.popstring();
-					char *key = stack.popstring();
-					char *app = stack.popstring();
+					QString stuff = stack.popstring();
+					QString key = stack.popstring();
+					QString app = stack.popstring();
                     SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
@@ -4247,30 +4152,25 @@ Interpreter::execByteCode()
 					} else {
 						errornum = ERROR_PERMISSION;
 					}
-					free(stuff);
-					free(key);
-					free(app);
 				}
 				break;
 
 			case OPX_GETSETTING:
 				{
 					op++;
-					char *key = stack.popstring();
-					char *app = stack.popstring();
+					QString key = stack.popstring();
+					QString app = stack.popstring();
                     SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
-						stack.pushstring(settings.value(key, "").toString().toUtf8().data());
+						stack.pushstring(settings.value(key, "").toString());
 						settings.endGroup();
 						settings.endGroup();
 					} else {
 						errornum = ERROR_PERMISSION;
 						stack.pushint(0);
 					}
-					free(key);
-					free(app);
 				}
 				break;
 
@@ -4358,17 +4258,15 @@ Interpreter::execByteCode()
 				{
 					// Image Save - Save image
 					op++;
-					char *type = stack.popstring();
-         			char *file = stack.popstring();
+					QString type = stack.popstring();
+         			QString file = stack.popstring();
 					QStringList validtypes;
 					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
-					if (validtypes.indexOf(QString(type))!=-1) {
-         					image->save(QString::fromUtf8(file), type);
+					if (validtypes.indexOf(type)!=-1) {
+         					image->save(file, type.toUtf8().data());
 					} else {
 						errornum = ERROR_IMAGESAVETYPE;
 					}
-					free(file);
-					free(type);
 				}
 				break;
 
@@ -4377,22 +4275,22 @@ Interpreter::execByteCode()
 					// Get next directory entry - id path send start a new folder else get next file name
 					// return "" if we have no names on list - skippimg . and ..
 					op++;
-					char *folder = stack.popstring();
-					if (strlen(folder)>0) {
+					QString folder = stack.popstring();
+					if (folder.length()>0) {
 						if(directorypointer != NULL) {
 							closedir(directorypointer);
 							directorypointer = NULL;
 						}
-						directorypointer = opendir( folder );
+						directorypointer = opendir( folder.toUtf8().data() );
 					}
 					if (directorypointer != NULL) {
 						struct dirent *dirp;
 						dirp = readdir(directorypointer);
 						while(dirp != NULL && dirp->d_name[0]=='.') dirp = readdir(directorypointer);
 						if (dirp) {
-							stack.pushstring(dirp->d_name);
+							stack.pushstring(QString::fromUtf8(dirp->d_name));
 						} else {
-							stack.pushstring((char *) "");
+							stack.pushstring(QString(""));
 							closedir(directorypointer);
 							directorypointer = NULL;
 						}
@@ -4400,7 +4298,6 @@ Interpreter::execByteCode()
 						errornum = ERROR_FOLDER;
 						stack.pushint(0);
 					}
-					free(folder);
 				}
 				break;
 
@@ -4417,23 +4314,15 @@ Interpreter::execByteCode()
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
-					char *to = stack.popstring();
-					char *from = stack.popstring();
-					char *haystack = stack.popstring();
+					QString qto = stack.popstring();
+					QString qfrom = stack.popstring();
+					QString qhaystack = stack.popstring();
 
-					QString qto = QString::fromUtf8(to);
-					QString qfrom = QString::fromUtf8(from);
-					QString qhaystack = QString::fromUtf8(haystack);
-			
 					if(opcode==OPX_REPLACE || opcode==OPX_REPLACE_C) {
-						stack.pushstring(qhaystack.replace(qfrom, qto, casesens).toUtf8().data());
+						stack.pushstring(qhaystack.replace(qfrom, qto, casesens));
 					} else {
-						stack.pushstring(qhaystack.replace(QRegExp(qfrom), qto).toUtf8().data());
+						stack.pushstring(qhaystack.replace(QRegExp(qfrom), qto));
 					}
-
-					free(to);
-					free(from);
-					free(haystack);
 				}
 				break;
 
@@ -4450,20 +4339,14 @@ Interpreter::execByteCode()
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
-					char *needle = stack.popstring();
-					char *haystack = stack.popstring();
-
-					QString qneedle = QString::fromUtf8(needle);
-					QString qhaystack = QString::fromUtf8(haystack);
+					QString qneedle = stack.popstring();
+					QString qhaystack = stack.popstring();
 			
 					if(opcode==OPX_COUNT || opcode==OPX_COUNT_C) {
 						stack.pushint((int) (qhaystack.count(qneedle, casesens)));
 					} else {
 						stack.pushint((int) (qhaystack.count(QRegExp(qneedle))));
 					}
-
-					free(needle);
-					free(haystack);
 				}
 				break;
 
@@ -4510,17 +4393,15 @@ Interpreter::execByteCode()
 				{
 					// return the number of pixels the test string will require for diaplay
 					op++;
-					char *txt = stack.popstring();
+					QString txt = stack.popstring();
 					int w = 0;
 					QPainter ian(image);
 					if(!fontfamily.isEmpty()) {
 						ian.setFont(QFont(fontfamily, fontpoint, fontweight));
 					}
-					w = QFontMetrics(ian.font()).width(QString::fromUtf8(txt));
+					w = QFontMetrics(ian.font()).width(txt);
 					ian.end();
-					free(txt);
 					stack.pushint((int) (w));
-
 				}
 				break;
 
@@ -4681,13 +4562,12 @@ Interpreter::execByteCode()
 			case OPX_ALERT:
 				{
 					op++;
-					char *temp = stack.popstring();
+					QString temp = stack.popstring();
 					mutex.lock();
-					emit(dialogAlert(QString::fromUtf8(temp)));
+					emit(dialogAlert(temp));
 					waitInput.wait(&mutex);
 					mutex.unlock();
 					waitForGraphics();
-					free(temp);
 				}
 				break;
 
@@ -4695,30 +4575,27 @@ Interpreter::execByteCode()
 				{
 					op++;
 					int dflt = stack.popint();
-					char *temp = stack.popstring();
+					QString temp = stack.popstring();
 					mutex.lock();
-					emit(dialogConfirm(QString::fromUtf8(temp),dflt));
+					emit(dialogConfirm(temp,dflt));
 					waitInput.wait(&mutex);
 					mutex.unlock();
 					stack.pushint(returnInt);
 					waitForGraphics();
-					free(temp);
 				}
 				break;
 
 			case OPX_PROMPT:
 				{
 					op++;
-					char *dflt = stack.popstring();
-					char *msg = stack.popstring();
+					QString dflt = stack.popstring();
+					QString msg = stack.popstring();
 					mutex.lock();
-					emit(dialogPrompt(QString::fromUtf8(msg),QString::fromUtf8(dflt)));
+					emit(dialogPrompt(msg,dflt));
 					waitInput.wait(&mutex);
 					mutex.unlock();
-					stack.pushstring(returnString.toUtf8().data());
+					stack.pushstring(returnString);
 					waitForGraphics();
-					free(msg);
-					free(dflt);
 				}
 				break;
 
@@ -4728,9 +4605,9 @@ Interpreter::execByteCode()
 					bool ok;
 					unsigned long dec;
 					int base = stack.popint();
-					char *n = stack.popstring();
+					QString n = stack.popstring();
 					if (base>=2 && base <=36) {
-						dec = QString(n).toULong(&ok, base);
+						dec = n.toULong(&ok, base);
 						if (ok) {
 							stack.pushfloat(dec);
 						} else {
@@ -4741,7 +4618,6 @@ Interpreter::execByteCode()
 						errornum = ERROR_RADIX;
 						stack.pushfloat(0);
 					}
-				free(n);
 				}
 				break;
 
@@ -4753,7 +4629,7 @@ Interpreter::execByteCode()
 					if (base>=2 && base <=36) {
 						QString out;
 						out.setNum(n, base);
-						stack.pushstring(out.toUtf8().data());
+						stack.pushstring(out);
 					} else {
 						errornum = ERROR_RADIX;
 						stack.pushfloat(0);

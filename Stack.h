@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,17 +11,18 @@
 #include <math.h>
 #include <cmath>
 
+#include <QString>
 
 
 enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
 // stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
 
-typedef struct
+struct stackdata
 {
   b_type type;
-  char *string;
+  QString string;
   double floatval; 
-} stackval;
+};
 
 
 class Stack
@@ -28,7 +30,7 @@ class Stack
  public:
   Stack();
   ~Stack();
-  void pushstring(char *);
+  void pushstring(QString);
   void pushint(int);
   void pushfloat(double);
   void pushvarref(int);
@@ -41,18 +43,13 @@ class Stack
   int peekType();
   int popint();
   double popfloat();
-  char *popstring();
+  QString popstring();
   void clear();
   void debug();
   int height();
   int compareTopTwo();
 
  private:
-  stackval *pop();
-  static const int initialSize = 64;
-  stackval *top;
-  stackval *bottom;
-  stackval *limit;
-  void checkLimit();
-  void dup(int);
+  std::stack<stackdata*> stackstack;
+
 };
