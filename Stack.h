@@ -24,7 +24,6 @@ struct stackdata
   double floatval; 
 };
 
-
 class Stack
 {
  public:

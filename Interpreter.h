@@ -46,6 +46,8 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED}
 #define NUMDBCONN 8
 #define NUMDBSET 8
 
+#define STRINGMAXLEN 16777216
+
 
 struct byteCodeData
 {

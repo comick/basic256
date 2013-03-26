@@ -318,6 +318,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_LOGRANGE:
 			errormessage = tr(ERROR_LOGRANGE_MESSAGE);
 			break;
+		case ERROR_STRINGMAXLEN:
+			errormessage = tr(ERROR_STRINGMAXLEN_MESSAGE);
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
@@ -2622,18 +2625,23 @@ Interpreter::execByteCode()
 			int w = stack.popint();
 			int y = stack.popint();
 			int x = stack.popint();
-			QString qs;
-			QRgb rgb;
-			int tw, th;
-			qs.append(QString::number(w,16).rightJustified(4,'0'));
-			qs.append(QString::number(h,16).rightJustified(4,'0'));
-			for(th=0; th<h; th++) {
-				for(tw=0; tw<w; tw++) {
-					rgb = image->pixel(x+tw,y+th);
-					qs.append(QString::number(rgb,16).rightJustified(8,'0'));
+			if (h*w > (STRINGMAXLEN -8)/8) {
+				errornum = ERROR_STRINGMAXLEN;
+				stack.pushint(0);
+			} else {
+				QString qs;
+				QRgb rgb;
+				int tw, th;
+				qs.append(QString::number(w,16).rightJustified(4,'0'));
+				qs.append(QString::number(h,16).rightJustified(4,'0'));
+				for(th=0; th<h; th++) {
+					for(tw=0; tw<w; tw++) {
+						rgb = image->pixel(x+tw,y+th);
+						qs.append(QString::number(rgb,16).rightJustified(8,'0'));
+					}
 				}
+				stack.pushstring(qs);
 			}
-			stack.pushstring(qs);
 		}
 		break;
 		
@@ -3181,7 +3189,13 @@ Interpreter::execByteCode()
 			op++;
 			QString one = stack.popstring();
 			QString two = stack.popstring();
-			stack.pushstring(two + one);
+			unsigned int l = one.length() + two.length();
+			if (l<=STRINGMAXLEN) {
+				stack.pushstring(two + one);
+			} else {
+				errornum = ERROR_STRINGMAXLEN;
+				stack.pushint(0);
+			}
 		}
 		break;
 

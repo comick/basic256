@@ -92,7 +92,7 @@ void Variables::clearvariable(variable* v)
 	// free a variable's current value to allow it to be reassigned
 	if (v->type == T_ARRAY)	{
 		delete(v->arr);
-	}
+    }
     v->type = T_UNUSED;
 }
 

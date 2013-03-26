@@ -154,6 +154,8 @@
 #define ERROR_RADIX_MESSAGE "Radix conversion base muse be between 2 and 36."
 #define ERROR_LOGRANGE 68
 #define ERROR_LOGRANGE_MESSAGE "Unable to calculate the logarithm or root of a negative number."
+#define ERROR_STRINGMAXLEN 69
+#define ERROR_STRINGMAXLEN_MESSAGE "String exceeds maximum length of 16,777,216 characters."
 
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999
