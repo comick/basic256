@@ -76,14 +76,14 @@ using namespace std;
 #include "Settings.h"
 #include "Sound.h"
 
-QMutex keymutex;
+QMutex *keymutex;
 int currentKey;
 
-extern QMutex mutex;
-extern QMutex debugmutex;
-extern QWaitCondition waitCond;
-extern QWaitCondition waitDebugCond;
-extern QWaitCondition waitInput;
+extern QMutex *mutex;
+extern QMutex *debugmutex;
+extern QWaitCondition *waitCond;
+extern QWaitCondition *waitDebugCond;
+extern QWaitCondition *waitInput;
 
 //#ifdef WIN32
 //	extern "C" { 
@@ -102,6 +102,50 @@ extern "C" {
 	extern unsigned int byteOffset;
 	extern unsigned int maxbyteoffset;
 	extern char *symtable[];
+}
+
+Interpreter::Interpreter(BasicGraph *bg)
+{
+	keymutex = new QMutex(QMutex::NonRecursive);
+	image = bg->image;
+	graph = bg;
+	fastgraphics = false;
+	directorypointer=NULL;
+	status = R_STOPPED;
+	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
+	// on a windows box start winsock
+	#ifdef WIN32
+		//
+		// initialize the winsock network library
+		WSAData wsaData;
+		int nCode;
+		if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+			emit(outputReady(tr("ERROR - Unable to initialize Winsock library.\n")));
+		}
+		//
+		// initialize the inpout32 dll
+		inpout32dll  = LoadLibrary(L"inpout32.dll");
+		if (inpout32dll==NULL) {
+			emit(outputReady(tr("ERROR - Unable to find inpout32.dll - direct port I/O disabled.\n")));
+		} else {
+			Inp32 = (InpOut32InpType) GetProcAddress(inpout32dll, "Inp32");
+			if (Inp32==NULL) {
+				emit(outputReady(tr("ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.\n")));
+			}
+			Out32 = (InpOut32OutType) GetProcAddress(inpout32dll, "Out32");
+			if (Inp32==NULL) {
+				emit(outputReady(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
+			}
+		}
+	#endif
+}
+
+Interpreter::~Interpreter() {
+	delete keymutex;
+	// on a windows box stop winsock
+	#ifdef WIN32
+		WSACleanup();
+	#endif
 }
 
 
@@ -404,48 +448,6 @@ Interpreter::isStopped()
 	return false;
 }
 
-
-Interpreter::Interpreter(BasicGraph *bg)
-{
-	image = bg->image;
-	graph = bg;
-	fastgraphics = false;
-	directorypointer=NULL;
-	status = R_STOPPED;
-	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
-	// on a windows box start winsock
-	#ifdef WIN32
-		//
-		// initialize the winsock network library
-		WSAData wsaData;
-		int nCode;
-		if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-			emit(outputReady(tr("ERROR - Unable to initialize Winsock library.\n")));
-		}
-		//
-		// initialize the inpout32 dll
-		inpout32dll  = LoadLibrary(L"inpout32.dll");
-		if (inpout32dll==NULL) {
-			emit(outputReady(tr("ERROR - Unable to find inpout32.dll - direct port I/O disabled.\n")));
-		} else {
-			Inp32 = (InpOut32InpType) GetProcAddress(inpout32dll, "Inp32");
-			if (Inp32==NULL) {
-				emit(outputReady(tr("ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.\n")));
-			}
-			Out32 = (InpOut32OutType) GetProcAddress(inpout32dll, "Out32");
-			if (Inp32==NULL) {
-				emit(outputReady(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
-			}
-		}
-	#endif
-}
-
-Interpreter::~Interpreter() {
-	// on a windows box stop winsock
-	#ifdef WIN32
-		WSACleanup();
-	#endif
-}
 
 void Interpreter::clearsprites() {
 	// cleanup sprites - release images and deallocate the space
@@ -868,10 +870,10 @@ void
 Interpreter::waitForGraphics()
 {
 	// wait for graphics operation to complete
-	mutex.lock();
+	mutex->lock();
 	emit(goutputReady());
-	waitCond.wait(&mutex);
-	mutex.unlock();
+	waitCond->wait(mutex);
+	mutex->unlock();
 }
 
 
@@ -926,9 +928,9 @@ Interpreter::execByteCode()
 		if (debugMode && *op != OP_CURRLINE)
 		{
 			emit(highlightLine(currentLine));
-			debugmutex.lock();
-			waitDebugCond.wait(&debugmutex);
-			debugmutex.unlock();
+			debugmutex->lock();
+			waitDebugCond->wait(debugmutex);
+			debugmutex->unlock();
 		}
 	}
 
@@ -2548,10 +2550,10 @@ Interpreter::execByteCode()
 
             SETTINGS;
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
-				mutex.lock();
+				mutex->lock();
                 emit(executeSystem(temp.toUtf8().data()));
-				waitCond.wait(&mutex);
-				mutex.unlock();
+				waitCond->wait(mutex);
+				mutex->unlock();
 			} else {
 				errornum = ERROR_PERMISSION;
 			}
@@ -3055,10 +3057,10 @@ Interpreter::execByteCode()
 	case OP_CLS:
 		{
 			op++;
-			mutex.lock();
+			mutex->lock();
 			emit(clearText());
-			waitCond.wait(&mutex);
-			mutex.unlock();
+			waitCond->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
@@ -3114,10 +3116,10 @@ Interpreter::execByteCode()
 			if (twoval>0) width = twoval;
 			if (width > 0 && height > 0)
 			{
-				mutex.lock();
+				mutex->lock();
 				emit(mainWindowsResize(1, width, height));
-				waitCond.wait(&mutex);
-				mutex.unlock();
+				waitCond->wait(mutex);
+				mutex->unlock();
 			}
 			image = graph->image;
 		}
@@ -3140,10 +3142,10 @@ Interpreter::execByteCode()
 	case OP_REFRESH:
 		{
 			op++;
-			mutex.lock();
+			mutex->lock();
 			emit(goutputReady());
-			waitCond.wait(&mutex);
-			mutex.unlock();
+			waitCond->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
@@ -3151,20 +3153,20 @@ Interpreter::execByteCode()
 		{
 			op++;
 			status = R_INPUT;
-			mutex.lock();
+			mutex->lock();
 			emit(inputNeeded());
-			waitInput.wait(&mutex);
-			mutex.unlock();
+			waitInput->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
 	case OP_KEY:
 		{
 			op++;
-			keymutex.lock();
+			keymutex->lock();
 			stack.pushint(currentKey);
 			currentKey = 0;
-			keymutex.unlock();
+			keymutex->unlock();
 		}
 		break;
 
@@ -3176,10 +3178,10 @@ Interpreter::execByteCode()
 			{
 				p += "\n";
 			}
-			mutex.lock();
+			mutex->lock();
 			emit(outputReady(p));
-			waitCond.wait(&mutex);
-			mutex.unlock();
+			waitCond->wait(mutex);
+			mutex->unlock();
 			op++;
 		}
 		break;
@@ -4577,10 +4579,10 @@ Interpreter::execByteCode()
 				{
 					op++;
 					QString temp = stack.popstring();
-					mutex.lock();
+					mutex->lock();
 					emit(dialogAlert(temp));
-					waitInput.wait(&mutex);
-					mutex.unlock();
+					waitInput->wait(mutex);
+					mutex->unlock();
 					waitForGraphics();
 				}
 				break;
@@ -4590,10 +4592,10 @@ Interpreter::execByteCode()
 					op++;
 					int dflt = stack.popint();
 					QString temp = stack.popstring();
-					mutex.lock();
+					mutex->lock();
 					emit(dialogConfirm(temp,dflt));
-					waitInput.wait(&mutex);
-					mutex.unlock();
+					waitInput->wait(mutex);
+					mutex->unlock();
 					stack.pushint(returnInt);
 					waitForGraphics();
 				}
@@ -4604,10 +4606,10 @@ Interpreter::execByteCode()
 					op++;
 					QString dflt = stack.popstring();
 					QString msg = stack.popstring();
-					mutex.lock();
+					mutex->lock();
 					emit(dialogPrompt(msg,dflt));
-					waitInput.wait(&mutex);
-					mutex.unlock();
+					waitInput->wait(mutex);
+					mutex->unlock();
 					stack.pushstring(returnString);
 					waitForGraphics();
 				}

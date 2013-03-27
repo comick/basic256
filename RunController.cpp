@@ -83,11 +83,11 @@ using namespace std;
 	}
 #endif
 
-QMutex mutex;
-QMutex debugmutex;
-QWaitCondition waitCond;
-QWaitCondition waitDebugCond;
-QWaitCondition waitInput;
+QMutex* mutex;
+QMutex* debugmutex;
+QWaitCondition* waitCond;
+QWaitCondition* waitDebugCond;
+QWaitCondition* waitInput;
 
 RunController::RunController(MainWindow *mw)
 {
@@ -98,6 +98,12 @@ RunController::RunController(MainWindow *mw)
 	output = mainwin->output;
 	goutput = mainwin->goutput;
 	statusbar = mainwin->statusBar();
+
+	mutex = new QMutex(QMutex::NonRecursive);
+	debugmutex = new QMutex(QMutex::NonRecursive);
+	waitCond = new QWaitCondition();
+	waitDebugCond = new QWaitCondition();
+	waitInput = new QWaitCondition();
 
 	replacewin = NULL;
 	docwin = NULL;
@@ -143,6 +149,12 @@ RunController::~RunController()
 {
 	if(replacewin!=NULL) replacewin->close();
 	if(docwin!=NULL) docwin->close();
+
+	delete mutex;
+	delete debugmutex;
+	delete waitCond;
+	delete waitDebugCond;
+	delete waitInput;
 
 	#ifdef USEQSOUND
 		delete wavsound;
@@ -232,10 +244,10 @@ void
 RunController::executeSystem(char* text)
 {
 	//fprintf(stderr,"system b4 %s\n", text);
-	mutex.lock();
+	mutex->lock();
 	system(text);
-	waitCond.wakeAll();
-	mutex.unlock();
+	waitCond->wakeAll();
+	mutex->unlock();
 	//fprintf(stderr,"system af %s\n", text);
 }
 
@@ -323,7 +335,7 @@ RunController::startRun()
 			return;
 		}
 		i->initialize();
-		output->clear();
+		outputClear();
 		statusbar->showMessage(tr("Running"));
 		goutput->setFocus();
 		i->start();
@@ -341,45 +353,45 @@ void
 RunController::inputFilter(QString text)
 {
 	goutput->setFocus();
-	mutex.lock();
-	waitInput.wakeAll();
-	mutex.unlock();
+	mutex->lock();
+	waitInput->wakeAll();
+	mutex->unlock();
 }
 
 void
 RunController::outputClear()
 {
-	mutex.lock();
+	mutex->lock();
 	output->clear();
-	waitCond.wakeAll();
-	mutex.unlock();
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 void
 RunController::outputFilter(QString text)
 {
-	mutex.lock();
+	mutex->lock();
 	output->insertPlainText(text);
 	output->ensureCursorVisible();
-	waitCond.wakeAll();
-	mutex.unlock();
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 void
 RunController::goutputFilter()
 {
-	mutex.lock();
+	mutex->lock();
 	goutput->repaint();
-	waitCond.wakeAll();
-	mutex.unlock();
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 void
 RunController::stepThrough()
 {
-	debugmutex.lock();
-	waitDebugCond.wakeAll();
-	debugmutex.unlock();
+	debugmutex->lock();
+	waitDebugCond->wakeAll();
+	debugmutex->unlock();
 }
 
 void
@@ -396,15 +408,15 @@ RunController::stopRun()
 
 	output->setReadOnly(true);
 
-	mutex.lock();
-	waitInput.wakeAll();
-	waitCond.wakeAll();
-	mutex.unlock();
+	mutex->lock();
+	waitInput->wakeAll();
+	waitCond->wakeAll();
+	mutex->unlock();
 
-	debugmutex.lock();
+	debugmutex->lock();
 	i->debugMode = false;
-	waitDebugCond.wakeAll();
-	debugmutex.unlock();
+	waitDebugCond->wakeAll();
+	debugmutex->unlock();
 
 	emit(runHalted());
 }
@@ -561,13 +573,13 @@ void
 RunController::mainWindowsResize(int w, int width, int height)
 {
 	// only resize graphics window now - may add other windows later
-	mutex.lock();
+	mutex->lock();
 	if (w==1) {
 		goutput->resize(width, height);
 		goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
 	}
-	waitCond.wakeAll();
-	mutex.unlock();
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 
@@ -579,9 +591,9 @@ RunController::dialogAlert(QString prompt)
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setDefaultButton(QMessageBox::Ok);
 	msgBox.exec();
-	mutex.lock();
-	waitInput.wakeAll();
-	mutex.unlock();
+	mutex->lock();
+	waitInput->wakeAll();
+	mutex->unlock();
 }
 
 void
@@ -602,9 +614,9 @@ RunController::dialogConfirm(QString prompt, int dflt)
 	} else {
 		i->returnInt = 0;
 	}
-	mutex.lock();
-	waitInput.wakeAll();
-	mutex.unlock();
+	mutex->lock();
+	waitInput->wakeAll();
+	mutex->unlock();
 }
 
 void
@@ -618,9 +630,9 @@ RunController::dialogPrompt(QString prompt, QString dflt)
 	} else {
 		i->returnString = dflt;
 	}
-	mutex.lock();
-	waitInput.wakeAll();
-	mutex.unlock();
+	mutex->lock();
+	waitInput->wakeAll();
+	mutex->unlock();
 }
 
 void RunController::dialogFontSelect()
