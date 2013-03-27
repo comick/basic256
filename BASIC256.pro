@@ -1,3 +1,5 @@
+QT_VERSION=$$[QT_VERSION]
+
 TEMPLATE					=	app
 TARGET						=	BASIC256
 DEPENDPATH					+=	.
@@ -8,8 +10,12 @@ OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
 QT						+=	webkit
 QT						+=	gui
-QT						+=	widgets
-QT						+=	printsupport
+
+contains( QT_VERSION, "^5.*" ) {
+	QT						+=	widgets
+	QT						+=	printsupport
+}
+
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc
 TRANSLATIONS				=	Translations/basic256_en_US.ts \

@@ -68,7 +68,7 @@ using namespace std;
 
 #ifdef USEQSOUND
 	#include <QSound>
-	QSound wavsound(QString(""));
+	QSound *wavsound;
 #endif
 
 #ifdef LINUX_ESPEAK
@@ -101,6 +101,10 @@ RunController::RunController(MainWindow *mw)
 
 	replacewin = NULL;
 	docwin = NULL;
+	
+	#ifdef USEQSOUND
+		wavsound = new QSound(QString(""));
+	#endif
 
 	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
 	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
@@ -139,6 +143,11 @@ RunController::~RunController()
 {
 	if(replacewin!=NULL) replacewin->close();
 	if(docwin!=NULL) docwin->close();
+
+	#ifdef USEQSOUND
+		delete wavsound;
+	#endif
+
 	//printf("rcdestroy\n");
 }
 
@@ -233,7 +242,7 @@ RunController::executeSystem(char* text)
 void RunController::playWAV(QString file)
 {
 #ifdef USEQSOUND
-    wavsound.play(file);
+    wavsound->play(file);
 #endif
 #ifdef USESDL
 	Mix_HaltChannel(SDL_CHAN_WAV);
@@ -247,7 +256,7 @@ void RunController::playWAV(QString file)
 void RunController::waitWAV()
 {
 #ifdef USEQSOUND
-		while(!wavsound.isFinished())
+		while(!wavsound->isFinished())
 #ifdef WIN32
 	Sleep(1);
 #else
@@ -267,7 +276,7 @@ void RunController::waitWAV()
 void RunController::stopWAV()
 {
 #ifdef USEQSOUND
-    wavsound.stop();
+    wavsound->stop();
 #endif
 #ifdef USESDL
 	Mix_HaltChannel(SDL_CHAN_WAV);
