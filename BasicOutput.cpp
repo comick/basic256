@@ -45,8 +45,14 @@ extern int currentKey;
 BasicOutput::BasicOutput( ) : QTextEdit () 
 {
   setFocusPolicy(Qt::StrongFocus);
+  setAcceptRichText(false);
   gettingInput = false;
 
+}
+
+BasicOutput::~BasicOutput( ) 
+{
+  // destructor for basic output
 }
 
 void

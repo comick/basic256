@@ -34,6 +34,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   Q_OBJECT
  public:
   BasicOutput();
+  ~BasicOutput();
   
   char *inputString;
   void inputStart();
