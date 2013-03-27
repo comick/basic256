@@ -76,14 +76,14 @@ using namespace std;
 #include "Settings.h"
 #include "Sound.h"
 
-QMutex *keymutex;
-int currentKey;
-
 extern QMutex *mutex;
 extern QMutex *debugmutex;
+extern QMutex *keymutex;
 extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
 extern QWaitCondition *waitInput;
+
+extern int currentKey;
 
 //#ifdef WIN32
 //	extern "C" { 
@@ -106,7 +106,6 @@ extern "C" {
 
 Interpreter::Interpreter(BasicGraph *bg)
 {
-	keymutex = new QMutex(QMutex::NonRecursive);
 	image = bg->image;
 	graph = bg;
 	fastgraphics = false;
@@ -141,7 +140,6 @@ Interpreter::Interpreter(BasicGraph *bg)
 }
 
 Interpreter::~Interpreter() {
-	delete keymutex;
 	// on a windows box stop winsock
 	#ifdef WIN32
 		WSACleanup();

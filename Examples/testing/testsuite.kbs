@@ -352,11 +352,21 @@ call n("input prompt bad #",a,0)
 input "Press enter?", a
 call s("input enter #",a,0)
 print "Press the space bar"
+# debounce
+do
+a = key
+until a = 0
+# get key
 do
 a = key
 until a <> 0
 call n("key space",a,32)
 print "Press the shift key."
+# debounce
+do
+a = key
+until a = 0
+# get key
 do
 a = key
 until a <> 0

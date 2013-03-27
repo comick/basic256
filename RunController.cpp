@@ -83,11 +83,12 @@ using namespace std;
 	}
 #endif
 
-QMutex* mutex;
-QMutex* debugmutex;
-QWaitCondition* waitCond;
-QWaitCondition* waitDebugCond;
-QWaitCondition* waitInput;
+extern QMutex* mutex;
+extern QMutex* debugmutex;
+extern QMutex* keymutex;
+extern QWaitCondition* waitCond;
+extern QWaitCondition* waitDebugCond;
+extern QWaitCondition* waitInput;
 
 RunController::RunController(MainWindow *mw)
 {
@@ -98,12 +99,6 @@ RunController::RunController(MainWindow *mw)
 	output = mainwin->output;
 	goutput = mainwin->goutput;
 	statusbar = mainwin->statusBar();
-
-	mutex = new QMutex(QMutex::NonRecursive);
-	debugmutex = new QMutex(QMutex::NonRecursive);
-	waitCond = new QWaitCondition();
-	waitDebugCond = new QWaitCondition();
-	waitInput = new QWaitCondition();
 
 	replacewin = NULL;
 	docwin = NULL;
@@ -149,12 +144,6 @@ RunController::~RunController()
 {
 	if(replacewin!=NULL) replacewin->close();
 	if(docwin!=NULL) docwin->close();
-
-	delete mutex;
-	delete debugmutex;
-	delete waitCond;
-	delete waitDebugCond;
-	delete waitInput;
 
 	#ifdef USEQSOUND
 		delete wavsound;

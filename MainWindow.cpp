@@ -21,6 +21,9 @@
 #include <stdio.h>
 
 #include <QString>
+#include <QMutex>
+#include <QWaitCondition>
+
 #if QT_VERSION >= 0x05000000
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QGridLayout>
@@ -48,9 +51,29 @@ using namespace std;
 #include "Settings.h"
 #include "Version.h"
 
+// global mutexes and timers
+QMutex* mutex;
+QMutex* debugmutex;
+QMutex* keymutex;
+QWaitCondition* waitCond;
+QWaitCondition* waitDebugCond;
+QWaitCondition* waitInput;
+
+// other variables that objects use "extern"
+int currentKey;	// last non input key press.
+
+
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		:	QMainWindow(parent, f)
 {
+
+	// create the global mutexes and waits
+	mutex = new QMutex(QMutex::NonRecursive);
+	debugmutex = new QMutex(QMutex::NonRecursive);
+	keymutex = new QMutex(QMutex::NonRecursive);
+	waitCond = new QWaitCondition();
+	waitDebugCond = new QWaitCondition();
+	waitInput = new QWaitCondition();
 
 	setWindowIcon(QIcon(":/images/basic256.png"));
 
