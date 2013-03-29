@@ -40,7 +40,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
 {
   Q_OBJECT
  public:
-  BasicGraph(BasicOutput *);
+  BasicGraph();
   QImage *image;
   bool initActions(QMenu *, ToolBar *);
   // used to store current location of mouse
@@ -70,7 +70,6 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   
  private:
   uchar *imagedata;
-  BasicOutput *output;
   unsigned int gwidth;
   unsigned int gheight;
   unsigned int gtop;	// position of image in basicgraph widget

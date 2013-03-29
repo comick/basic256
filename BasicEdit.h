@@ -31,13 +31,14 @@
 #endif
 #include <QKeyEvent>
 
+#include "MainWindow.h"
 #include "ViewWidgetIFace.h"
 
 class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 {
   Q_OBJECT
  public:
-  BasicEdit(QMainWindow *);
+  BasicEdit();
   void loadFile(QString);
   void findString(QString, bool, bool);
   void replaceString(QString, QString, bool, bool, bool);
@@ -66,6 +67,9 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   void loadRecent7();
   void loadRecent8();
 
+signals:
+	void changeStatusBar(QString);
+	void changeWindowTitle(QString);
  
  protected:
   void keyPressEvent(QKeyEvent *);

@@ -87,7 +87,7 @@ class Interpreter : public QThread
 {
   Q_OBJECT;
  public:
-  Interpreter(BasicGraph *);
+  Interpreter();
   ~Interpreter();
   int compileProgram(char *);
   void initialize();
@@ -139,8 +139,6 @@ class Interpreter : public QThread
   QString getErrorMessage(int);
   QString getWarningMessage(int);
   int netSockClose(int);
-  QImage *image;
-  BasicGraph *graph;
   Variables variables;
   Stack stack;
   QFile **stream;

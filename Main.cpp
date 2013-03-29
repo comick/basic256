@@ -35,7 +35,13 @@
 #include <unistd.h>
 #endif 
 
+#include "MainWindow.h"
+#include "BasicEdit.h"
+
 using namespace std;
+
+extern MainWindow * mainwin;
+extern BasicEdit * editwin;
 
 #include "MainWindow.h"
 
@@ -90,11 +96,9 @@ int main(int argc, char *argv[])
 	#endif
 	qapp.installTranslator(&kbTranslator);
 
-	MainWindow *mainwin = new MainWindow();
+	mainwin = new MainWindow();
 
 	mainwin->setObjectName( "mainwin" );
-	//mainwin->setWindowState(mainwin->windowState() & Qt::WindowMaximized);
-	//mainwin->resize(800,600);
 	mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
 	mainwin->statusBar()->showMessage(QObject::tr("Ready."));
 	mainwin->localecode = localecode;
@@ -108,7 +112,7 @@ int main(int argc, char *argv[])
 			if (s.endsWith(".kbs")) {
 				QFileInfo fi(s);
 				if (fi.exists()) {
-					mainwin->editor->loadFile(fi.absoluteFilePath());
+					editwin->loadFile(fi.absoluteFilePath());
 				}
 			}
 		}
@@ -120,7 +124,7 @@ int main(int argc, char *argv[])
 			if (s.endsWith(".kbs")) {
 				QFileInfo fi(s);
 				if (fi.exists()) {
-					mainwin->editor->loadFile(fi.absoluteFilePath());
+					editwin->loadFile(fi.absoluteFilePath());
 				}
 			}
 		}

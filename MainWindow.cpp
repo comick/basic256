@@ -59,6 +59,13 @@ QWaitCondition* waitCond;
 QWaitCondition* waitDebugCond;
 QWaitCondition* waitInput;
 
+// the three main components of the UI (define globally)
+MainWindow * mainwin;
+BasicEdit * editwin;
+BasicOutput * outwin;
+BasicGraph * graphwin;
+VariableWin * varwin;
+
 // other variables that objects use "extern"
 int currentKey;	// last non input key press.
 
@@ -66,6 +73,8 @@ int currentKey;	// last non input key press.
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		:	QMainWindow(parent, f)
 {
+
+	mainwin = this;
 
 	// create the global mutexes and waits
 	mutex = new QMutex(QMutex::NonRecursive);
@@ -80,33 +89,49 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QWidget * centerWidget = new QWidget();
 	centerWidget->setObjectName( "centerWidget" );
 
-	editor = new BasicEdit(this);
-	editor->setObjectName( "editor" );
+	editwin = new BasicEdit();
+	editwin->setObjectName( "editor" );
+	editwinwgt = new BasicWidget();
+	editwinwgt->setViewWidget(editwin);
+   	connect(editwin, SIGNAL(changeStatusBar(QString)), this, SLOT(updateStatusBar(QString)));
+   	connect(editwin, SIGNAL(changeWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
+	
+	outwin = new BasicOutput();
+	outwin->setObjectName( "output" );
+	outwin->setReadOnly(true);
+	outwinwgt = new BasicWidget(QObject::tr("Text Output"));
+	outwinwgt->setViewWidget(outwin);
+	DockWidget * outdock = new DockWidget();
+	outdock->setObjectName( "tdock" );
+	outdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	outdock->setWidget(outwinwgt);
+	outdock->setWindowTitle(QObject::tr("Text Output"));
 
-	output = new BasicOutput();
-	output->setObjectName( "output" );
-	output->setReadOnly(true);
+	graphwin = new BasicGraph();
+	graphwin->setObjectName( "goutput" );
+	graphwinwgt = new BasicWidget(QObject::tr("Graphics Output"));
+	graphwinwgt->setViewWidget(graphwin);
+	DockWidget * graphdock = new DockWidget();
+	graphdock->setObjectName( "graphdock" );
+	graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	graphdock->setWidget(graphwinwgt);
+	graphdock->setWindowTitle(QObject::tr("Graphics Output"));
 
-	goutput = new BasicGraph(output);
-	goutput->setObjectName( "goutput" );
 
-	DockWidget * gdock = new DockWidget(this);
-	gdock->setObjectName( "gdock" );
-	DockWidget * tdock = new DockWidget(this);
-	tdock->setObjectName( "tdock" );
+	varwin = new VariableWin();
+	varwinwgt = new BasicWidget(QObject::tr("Variable Watch"));
+	varwinwgt->setViewWidget(varwin);
+	DockWidget * vardock = new DockWidget();
+	vardock->setObjectName( "vardock" );
+	vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	vardock->setWidget(varwinwgt);
+	vardock->setWindowTitle(QObject::tr("Variable Watch"));
+	vardock->setVisible(false);
+	vardock->setFloating(true);
 
-	vardock = new VariableWin(this);
-
-	editorwgt = new BasicWidget();
-	editorwgt->setViewWidget(editor);
-	outputwgt = new BasicWidget(QObject::tr("Text Output"));
-	outputwgt->setViewWidget(output);
-	goutputwgt = new BasicWidget(QObject::tr("Graphics Output"));
-	goutputwgt->setViewWidget(goutput);
-
-	RunController *rc = new RunController(this);
+	RunController *rc = new RunController();
 	rcvoidpointer = rc;
-	editsyntax = new EditSyntaxHighlighter(editor->document());
+	editsyntax = new EditSyntaxHighlighter(editwin->document());
 
 	// Main window toolbar
 	QToolBar *maintbar = new QToolBar();
@@ -150,34 +175,34 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	//
 	showRecentList = true;
 	QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
-	QObject::connect(newact, SIGNAL(triggered()), editor, SLOT(newProgram()));
-	QObject::connect(openact, SIGNAL(triggered()), editor, SLOT(loadProgram()));
-	QObject::connect(saveact, SIGNAL(triggered()), editor, SLOT(saveProgram()));
-	//QObject::connect(editor, SIGNAL(textChanged()), saveact, SLOT(setEnabled()));
+	QObject::connect(newact, SIGNAL(triggered()), editwin, SLOT(newProgram()));
+	QObject::connect(openact, SIGNAL(triggered()), editwin, SLOT(loadProgram()));
+	QObject::connect(saveact, SIGNAL(triggered()), editwin, SLOT(saveProgram()));
+	//QObject::connect(editwin, SIGNAL(textChanged()), saveact, SLOT(setEnabled()));
 	//saveact->setEnabled(false);
-	QObject::connect(saveasact, SIGNAL(triggered()), editor, SLOT(saveAsProgram()));
-	QObject::connect(printact, SIGNAL(triggered()), editor, SLOT(slotPrint()));
-	QObject::connect(recentact[0], SIGNAL(triggered()), editor, SLOT(loadRecent0()));
-	QObject::connect(recentact[1], SIGNAL(triggered()), editor, SLOT(loadRecent1()));
-	QObject::connect(recentact[2], SIGNAL(triggered()), editor, SLOT(loadRecent2()));
-	QObject::connect(recentact[3], SIGNAL(triggered()), editor, SLOT(loadRecent3()));
-	QObject::connect(recentact[4], SIGNAL(triggered()), editor, SLOT(loadRecent4()));
-	QObject::connect(recentact[5], SIGNAL(triggered()), editor, SLOT(loadRecent5()));
-	QObject::connect(recentact[6], SIGNAL(triggered()), editor, SLOT(loadRecent6()));
-	QObject::connect(recentact[7], SIGNAL(triggered()), editor, SLOT(loadRecent7()));
-	QObject::connect(recentact[8], SIGNAL(triggered()), editor, SLOT(loadRecent8()));
+	QObject::connect(saveasact, SIGNAL(triggered()), editwin, SLOT(saveAsProgram()));
+	QObject::connect(printact, SIGNAL(triggered()), editwin, SLOT(slotPrint()));
+	QObject::connect(recentact[0], SIGNAL(triggered()), editwin, SLOT(loadRecent0()));
+	QObject::connect(recentact[1], SIGNAL(triggered()), editwin, SLOT(loadRecent1()));
+	QObject::connect(recentact[2], SIGNAL(triggered()), editwin, SLOT(loadRecent2()));
+	QObject::connect(recentact[3], SIGNAL(triggered()), editwin, SLOT(loadRecent3()));
+	QObject::connect(recentact[4], SIGNAL(triggered()), editwin, SLOT(loadRecent4()));
+	QObject::connect(recentact[5], SIGNAL(triggered()), editwin, SLOT(loadRecent5()));
+	QObject::connect(recentact[6], SIGNAL(triggered()), editwin, SLOT(loadRecent6()));
+	QObject::connect(recentact[7], SIGNAL(triggered()), editwin, SLOT(loadRecent7()));
+	QObject::connect(recentact[8], SIGNAL(triggered()), editwin, SLOT(loadRecent8()));
 	QObject::connect(exitact, SIGNAL(triggered()), this, SLOT(close()));
 
 	// Edit menu
 	editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
 	undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
-	QObject::connect(editor, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
-	QObject::connect(undoact, SIGNAL(triggered()), editor, SLOT(undo()));
+	QObject::connect(editwin, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
+	QObject::connect(undoact, SIGNAL(triggered()), editwin, SLOT(undo()));
 	undoact->setShortcut(Qt::Key_U + Qt::CTRL);
 	undoact->setEnabled(false);
 	redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
-	QObject::connect(editor, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
-	QObject::connect(redoact, SIGNAL(triggered()), editor, SLOT(redo()));
+	QObject::connect(editwin, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
+	QObject::connect(redoact, SIGNAL(triggered()), editwin, SLOT(redo()));
 	redoact->setShortcut(Qt::Key_R + Qt::CTRL);
 	redoact->setEnabled(false);
 	editmenu->addSeparator();
@@ -203,33 +228,33 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	editmenu->addSeparator();
 	prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
 	//
-	QObject::connect(cutact, SIGNAL(triggered()), editor, SLOT(cut()));
-	QObject::connect(editor, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
-	QObject::connect(copyact, SIGNAL(triggered()), editor, SLOT(copy()));
-	QObject::connect(editor, SIGNAL(copyAvailable(bool)), copyact, SLOT(setEnabled(bool)));
-	QObject::connect(pasteact, SIGNAL(triggered()), editor, SLOT(paste()));
-	QObject::connect(selectallact, SIGNAL(triggered()), editor, SLOT(selectAll()));
+	QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
+	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
+	QObject::connect(copyact, SIGNAL(triggered()), editwin, SLOT(copy()));
+	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), copyact, SLOT(setEnabled(bool)));
+	QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
+	QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
 	QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
 	QObject::connect(findagain1, SIGNAL(activated()), rc, SLOT(findAgain())); 
 	QObject::connect(findagain2, SIGNAL(activated()), rc, SLOT(findAgain())); 
 	QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
-	QObject::connect(beautifyact, SIGNAL(triggered()), editor, SLOT(beautifyProgram()));
+	QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
 
 	bool extraSepAdded = false;
-	if (outputwgt->usesMenu())
+	if (outwinwgt->usesMenu())
 	{
 		editmenu->addSeparator();
 		extraSepAdded = true;
-		editmenu->addMenu(outputwgt->getMenu());
+		editmenu->addMenu(outwinwgt->getMenu());
 	}
-	if (goutputwgt->usesMenu())
+	if (graphwinwgt->usesMenu())
 	{
 		if (!extraSepAdded)
 		{
 			editmenu->addSeparator();
 		}
-		editmenu->addMenu(goutputwgt->getMenu());
+		editmenu->addMenu(graphwinwgt->getMenu());
 	}
 
 	// View menuBar
@@ -246,9 +271,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	textWinVisibleAct->setChecked(true);
 	graphWinVisibleAct->setChecked(true);
 	variableWinVisibleAct->setChecked(false);
-	QObject::connect(editWinVisibleAct, SIGNAL(toggled(bool)), editorwgt, SLOT(setVisible(bool)));
-	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), tdock, SLOT(setVisible(bool)));
-	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), gdock, SLOT(setVisible(bool)));
+	QObject::connect(editWinVisibleAct, SIGNAL(toggled(bool)), editwinwgt, SLOT(setVisible(bool)));
+	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), outdock, SLOT(setVisible(bool)));
+	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), graphdock, SLOT(setVisible(bool)));
 	QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
     // Editor and Output font
@@ -261,7 +286,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     graphGridVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
 	graphGridVisibleAct->setCheckable(true);
 	graphGridVisibleAct->setChecked(false);
-	QObject::connect(graphGridVisibleAct, SIGNAL(toggled(bool)), goutput, SLOT(slotGridLines(bool)));
+	QObject::connect(graphGridVisibleAct, SIGNAL(toggled(bool)), graphwin, SLOT(slotGridLines(bool)));
 
 	// view bars
 	viewmenu->addSeparator();
@@ -270,21 +295,21 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	maintbaract->setCheckable(true);
 	maintbaract->setChecked(true);
 	QObject::connect(maintbaract, SIGNAL(toggled(bool)), maintbar, SLOT(setVisible(bool)));
-	if (outputwgt->usesToolBar())
+	if (outwinwgt->usesToolBar())
 	{
 		QAction *texttbaract = viewtbars->addAction(QObject::tr("&Text Output"));
 		texttbaract->setCheckable(true);
 		texttbaract->setChecked(false);
-		outputwgt->slotShowToolBar(false);
-		QObject::connect(texttbaract, SIGNAL(toggled(bool)), outputwgt, SLOT(slotShowToolBar(const bool)));
+		outwinwgt->slotShowToolBar(false);
+		QObject::connect(texttbaract, SIGNAL(toggled(bool)), outwinwgt, SLOT(slotShowToolBar(const bool)));
 	}
-	if (goutputwgt->usesToolBar())
+	if (graphwinwgt->usesToolBar())
 	{
 		QAction *graphtbaract = viewtbars->addAction(QObject::tr("&Graphics Output"));
 		graphtbaract->setCheckable(true);
 		graphtbaract->setChecked(false);
-		goutputwgt->slotShowToolBar(false);
-		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), goutputwgt, SLOT(slotShowToolBar(const bool)));
+		graphwinwgt->slotShowToolBar(false);
+		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), graphwinwgt, SLOT(slotShowToolBar(const bool)));
 	}
 
 	// Run menu
@@ -348,21 +373,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	maintbar->addAction(copyact);
 	maintbar->addAction(pasteact);
 
-	gdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	gdock->setWidget(goutputwgt);
-	gdock->setWindowTitle(QObject::tr("Graphics Output"));
-
-	tdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	tdock->setWidget(outputwgt);
-	tdock->setWindowTitle(QObject::tr("Text Output"));
-
-	vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	vardock->setVisible(false);
-	vardock->setFloating(true);
-
-	setCentralWidget(editorwgt);
-	addDockWidget(Qt::RightDockWidgetArea, tdock);
-	addDockWidget(Qt::RightDockWidgetArea, gdock);
+	setCentralWidget(editwinwgt);
+	addDockWidget(Qt::RightDockWidgetArea, outdock);
+	addDockWidget(Qt::RightDockWidgetArea, graphdock);
 	addDockWidget(Qt::LeftDockWidgetArea, vardock);
 	setContextMenuPolicy(Qt::NoContextMenu);
 
@@ -375,8 +388,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QFont initialFont;
     QString initialFontString = settings.value(SETTINGSFONT,SETTINGSFONTDEFAULT).toString();
     if (initialFont.fromString(initialFontString)) {
-        editor->setFont(initialFont);
-        output->setFont(initialFont);
+        editwin->setFont(initialFont);
+        outwin->setFont(initialFont);
     }
 
 
@@ -463,7 +476,7 @@ void MainWindow::loadAndGoMode()
 void MainWindow::closeEvent(QCloseEvent *e) {
 	// quit the application but ask if there are unsaved changes in buffer
 	bool doquit = true;
-	if (editor->codeChanged) {
+	if (editwin->codeChanged) {
 		QMessageBox msgBox;
 		msgBox.setText(tr("Program modifications have not been saved."));
 		msgBox.setInformativeText(tr("Do you want to discard your changes?"));
@@ -487,3 +500,12 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	if (rc->replacewin) rc->replacewin->close();
 
 }
+
+void MainWindow::updateStatusBar(QString status) {
+	statusBar()->showMessage(status);
+}
+	
+void MainWindow::updateWindowTitle(QString title) {
+	setWindowTitle(title);
+}
+	

@@ -85,12 +85,7 @@ extern QWaitCondition *waitInput;
 
 extern int currentKey;
 
-//#ifdef WIN32
-//	extern "C" { 
-//		unsigned char Inp32(short int);
-//		void Out32(short int, unsigned char);
-//	}
-//#endif
+extern BasicGraph *graphwin;
 
 extern "C" {
 	extern int basicParse(char *);
@@ -104,10 +99,8 @@ extern "C" {
 	extern char *symtable[];
 }
 
-Interpreter::Interpreter(BasicGraph *bg)
+Interpreter::Interpreter()
 {
-	image = bg->image;
-	graph = bg;
 	fastgraphics = false;
 	directorypointer=NULL;
 	status = R_STOPPED;
@@ -470,7 +463,7 @@ void Interpreter::clearsprites() {
 void Interpreter::spriteundraw(int n) {
 	// undraw all visible sprites >= n
 	int x, y, i;
-	QPainter ian(image);
+	QPainter ian(graphwin->image);
 	i = nsprites-1;
 	while(i>=n) {
 		if (sprites[i].underimage && sprites[i].visible) {
@@ -489,7 +482,7 @@ void Interpreter::spriteredraw(int n) {
 	i = n;
 	while(i<nsprites) {
 		if (sprites[i].image && sprites[i].visible) {
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			if (sprites[i].r==0 && sprites[i].s==1) {
 				if (sprites[i].underimage) {
 					delete sprites[i].underimage;
@@ -498,7 +491,7 @@ void Interpreter::spriteredraw(int n) {
 				if (sprites[i].image->width()>0 and sprites[i].image->height()>0) {
 					x = sprites[i].x - (sprites[i].image->width()/2);
 					y = sprites[i].y - (sprites[i].image->height()/2);
-					sprites[i].underimage = new QImage(image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
+					sprites[i].underimage = new QImage(graphwin->image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
 					ian.drawImage(x, y, *(sprites[i].image));
 				}
 			} else {
@@ -511,7 +504,7 @@ void Interpreter::spriteredraw(int n) {
 				if (rotated.width()>0 and rotated.height()>0) {
 					x = sprites[i].x - (rotated.width()/2);
 					y = sprites[i].y - (rotated.height()/2);
-					sprites[i].underimage = new QImage(image->copy(x, y, rotated.width(), rotated.height()));
+					sprites[i].underimage = new QImage(graphwin->image->copy(x, y, rotated.width(), rotated.height()));
 					ian.drawImage(x, y, rotated);
 				}
 			}
@@ -734,7 +727,6 @@ Interpreter::initialize()
 	once = true;
 	currentLine = 1;
 	emit(mainWindowsResize(1, 300, 300));
-	image = graph->image;
 	fontfamily = QString("");
 	fontpoint = 0;
 	fontweight = 0;
@@ -2604,7 +2596,7 @@ Interpreter::execByteCode()
 			op++;
 			int y = stack.popint();
 			int x = stack.popint();
-			QRgb rgb = (*image).pixel(x,y);
+			QRgb rgb = graphwin->image->pixel(x,y);
 			stack.pushfloat((unsigned int) rgb);
 		}
 		break;
@@ -2636,7 +2628,7 @@ Interpreter::execByteCode()
 				qs.append(QString::number(h,16).rightJustified(4,'0'));
 				for(th=0; th<h; th++) {
 					for(tw=0; tw<w; tw++) {
-						rgb = image->pixel(x+tw,y+th);
+						rgb = graphwin->image->pixel(x+tw,y+th);
 						qs.append(QString::number(rgb,16).rightJustified(8,'0'));
 					}
 				}
@@ -2665,7 +2657,7 @@ Interpreter::execByteCode()
 				offset+=4;
 				if (ok) {
 
-					QPainter ian(image);
+					QPainter ian(graphwin->image);
 					ian.setPen(lastrgb);
 					for(th=0; th<h && ok; th++) {
 						for(tw=0; tw<w && ok; tw++) {
@@ -2699,7 +2691,7 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2724,7 +2716,7 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setBrush(drawingbrush);
 			ian.setPen(drawingpen);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2766,7 +2758,7 @@ Interpreter::execByteCode()
 						points[j].setY(variables.arraygetfloat(*i, j*2+1));
 					}
 
-					QPainter poly(image);
+					QPainter poly(graphwin->image);
 					poly.setPen(drawingpen);
 					poly.setBrush(drawingbrush);
 					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2803,7 +2795,7 @@ Interpreter::execByteCode()
 					points[j].setY(ypoint);
 				}
 				
-				QPainter poly(image);
+				QPainter poly(graphwin->image);
 				poly.setPen(drawingpen);
 				poly.setBrush(drawingbrush);
 				if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2860,7 +2852,7 @@ Interpreter::execByteCode()
 							points[j].setY(ty + y);
 						}
 
-						QPainter poly(image);
+						QPainter poly(graphwin->image);
 						poly.setPen(drawingpen);
 						poly.setBrush(drawingbrush);
 						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2934,7 +2926,7 @@ Interpreter::execByteCode()
 						points[j].setY(ty + y);
 					}
 
-					QPainter poly(image);
+					QPainter poly(graphwin->image);
 					poly.setPen(drawingpen);
 					poly.setBrush(drawingbrush);
 					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2960,7 +2952,7 @@ Interpreter::execByteCode()
 			int yval = stack.popint();
 			int xval = stack.popint();
 
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -2993,7 +2985,7 @@ Interpreter::execByteCode()
 				if(i.isNull()) {
 					errornum = ERROR_IMAGEFILE;
 				} else {
-					QPainter ian(image);
+					QPainter ian(graphwin->image);
 					if (rotate != 0 || scale != 1) {
 						QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
 						i = i.transformed(transform);
@@ -3015,7 +3007,7 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setPen(drawingpen);
 			ian.setBrush(drawingbrush);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
@@ -3066,11 +3058,11 @@ Interpreter::execByteCode()
 		{
 			op++;
 			
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setPen(QColor(0,0,0,0));
 			ian.setBrush(QColor(0,0,0,0));
 			ian.setCompositionMode(QPainter::CompositionMode_Clear);
-			ian.drawRect(0, 0, graph->image->width(), graph->image->height());
+			ian.drawRect(0, 0, graphwin->image->width(), graphwin->image->height());
 			ian.end();
 
 			if (!fastgraphics) waitForGraphics();
@@ -3083,7 +3075,7 @@ Interpreter::execByteCode()
 			int oneval = stack.popint();
 			int twoval = stack.popint();
 
-			QPainter ian(image);
+			QPainter ian(graphwin->image);
 			ian.setPen(drawingpen);
 			if (drawingpen.color()==QColor(0,0,0,0)) {
 				ian.setCompositionMode(QPainter::CompositionMode_Clear);
@@ -3119,21 +3111,20 @@ Interpreter::execByteCode()
 				waitCond->wait(mutex);
 				mutex->unlock();
 			}
-			image = graph->image;
 		}
 		break;
 
 	case OP_GRAPHWIDTH:
 		{
 			op++;
-			stack.pushint((int) graph->image->width());
+			stack.pushint((int) graphwin->image->width());
 		}
 		break;
 
 	case OP_GRAPHHEIGHT:
 		{
 			op++;
-			stack.pushint((int) graph->image->height());
+			stack.pushint((int) graphwin->image->height());
 		}
 		break;
 
@@ -3312,51 +3303,51 @@ Interpreter::execByteCode()
 	case OP_MOUSEX:
 		{
 			op++;
-			stack.pushint((int) graph->mouseX);
+			stack.pushint((int) graphwin->mouseX);
 		}
 		break;
 
 	case OP_MOUSEY:
 		{
 			op++;
-			stack.pushint((int) graph->mouseY);
+			stack.pushint((int) graphwin->mouseY);
 		}
 		break;
 
 	case OP_MOUSEB:
 		{
 			op++;
-			stack.pushint((int) graph->mouseB);
+			stack.pushint((int) graphwin->mouseB);
 		}
 		break;
 
 	case OP_CLICKCLEAR:
 		{
 			op++;
-			graph->clickX = 0;
-			graph->clickY = 0;
-			graph->clickB = 0;
+			graphwin->clickX = 0;
+			graphwin->clickY = 0;
+			graphwin->clickB = 0;
 		}
 		break;
 
 	case OP_CLICKX:
 		{
 			op++;
-			stack.pushint((int) graph->clickX);
+			stack.pushint((int) graphwin->clickX);
 		}
 		break;
 
 	case OP_CLICKY:
 		{
 			op++;
-			stack.pushint((int) graph->clickY);
+			stack.pushint((int) graphwin->clickY);
 		}
 		break;
 
 	case OP_CLICKB:
 		{
 			op++;
-			stack.pushint((int) graph->clickB);
+			stack.pushint((int) graphwin->clickB);
 		}
 		break;
 
@@ -3482,7 +3473,7 @@ Interpreter::execByteCode()
 								delete sprites[n].image;
 								sprites[n].image = NULL;
 							}
-							sprites[n].image = new QImage(image->copy(x, y, w, h));
+							sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h));
 							if(sprites[n].image->isNull()) {
 								errornum = ERROR_SPRITESLICE;
 								sprites[n].image = NULL;
@@ -3528,9 +3519,9 @@ Interpreter::execByteCode()
 										y += sprites[n].y;
 										s += sprites[n].s;
 										r += sprites[n].r;
-										if (x >= (int) graph->image->width()) x = (double) graph->image->width();
+										if (x >= (int) graphwin->image->width()) x = (double) graphwin->image->width();
 										if (x < 0) x = 0;
-										if (y >= (int) graph->image->height()) y = (double) graph->image->height();
+										if (y >= (int) graphwin->image->height()) y = (double) graphwin->image->height();
 										if (y < 0) y = 0;
 										if (s < 0) s = 0;
 									}
@@ -4277,7 +4268,7 @@ Interpreter::execByteCode()
 					QStringList validtypes;
 					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
 					if (validtypes.indexOf(type)!=-1) {
-         					image->save(file, type.toUtf8().data());
+         					graphwin->image->save(file, type.toUtf8().data());
 					} else {
 						errornum = ERROR_IMAGESAVETYPE;
 					}
@@ -4409,7 +4400,7 @@ Interpreter::execByteCode()
 					op++;
 					QString txt = stack.popstring();
 					int w = 0;
-					QPainter ian(image);
+					QPainter ian(graphwin->image);
 					if(!fontfamily.isEmpty()) {
 						ian.setFont(QFont(fontfamily, fontpoint, fontweight));
 					}
@@ -4512,7 +4503,7 @@ Interpreter::execByteCode()
 					// transform to clockwise from 12'oclock
 					s = 1440-s-aw;
 
-					QPainter ian(image);
+					QPainter ian(graphwin->image);
 					ian.setPen(drawingpen);
 					ian.setBrush(drawingbrush);
 					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {

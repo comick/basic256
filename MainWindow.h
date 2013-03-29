@@ -61,16 +61,18 @@ public:
 	QAction *textWinVisibleAct;
 	QAction *graphWinVisibleAct;
 	QAction *graphGridVisibleAct;
-  	BasicEdit * editor;
-  	BasicOutput * output;
-	BasicGraph * goutput;
-	BasicWidget * editorwgt;
-	BasicWidget * outputwgt;
-	BasicWidget * goutputwgt;
-	VariableWin * vardock;
+	BasicWidget * editwinwgt;
+	BasicWidget * outwinwgt;
+	BasicWidget * graphwinwgt;
+	BasicWidget * varwinwgt;
+
 	EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;
+
+public slots:
+  void updateStatusBar(QString);
+  void updateWindowTitle(QString);
 
 private:
 	QMenu * filemenu;

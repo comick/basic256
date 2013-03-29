@@ -25,17 +25,17 @@
 	#include <QTreeWidget>
 #endif
 
+#include "ViewWidgetIFace.h"
 
-class VariableWin : public QDockWidget
+class VariableWin : public QTreeWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
-  VariableWin(QWidget * parent);
-  
+  VariableWin();
+    
  public slots:
   void addVar(int recurse, QString name, QString value, int arraylenx, int arrayleny);
-  void clearTable();
   
  private:
-  QTreeWidget *table;
+
 };

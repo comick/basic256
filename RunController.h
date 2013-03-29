@@ -40,7 +40,7 @@ class RunController : public QObject
 {
   Q_OBJECT
  public:
-  RunController(MainWindow *);
+  RunController();
   ~RunController();
   ReplaceWin *replacewin;
   DocumentationWin *docwin;
@@ -86,16 +86,9 @@ class RunController : public QObject
 
  private:
   Interpreter *i;
-  BasicEdit *te;
-  BasicOutput *output;
-  BasicGraph *goutput;
-  QStatusBar *statusbar;
   bool paused;
   run_status oldStatus;
   QString bytefilename;
-  MainWindow *mainwin;
-
-
 };
 
 

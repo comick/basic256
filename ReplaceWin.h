@@ -56,7 +56,7 @@ class ReplaceWin : public QDialog
   Q_OBJECT
 
 public:
-	ReplaceWin(QWidget *);
+	ReplaceWin();
 	void closeEvent(QCloseEvent *);
 	void setReplaceMode(bool);
 	void findAgain();
@@ -69,7 +69,6 @@ private slots:
 	void clickReplaceAllButton();
   
 private:
-	BasicEdit * be;
 	void saveSettings();
 	QLabel *fromlabel;
 	QLineEdit *frominput;

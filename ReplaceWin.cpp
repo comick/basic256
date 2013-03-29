@@ -24,11 +24,11 @@ using namespace std;
 #include "MainWindow.h"
 #include "md5.h"
 
-ReplaceWin::ReplaceWin (QWidget * parent)
+extern BasicEdit * editwin;
+
+ReplaceWin::ReplaceWin ()
 {
 
-	// parent must be basicedit
-	be = (BasicEdit *) parent;
 	replaceMode = true;
 	
 	// position where it was last on screen
@@ -107,7 +107,7 @@ void ReplaceWin::setReplaceMode(bool m) {
 }
 
 void ReplaceWin::changeFromInput(QString t) {
-		replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(be->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
+		replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(editwin->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
 		replaceallbutton->setEnabled(replaceMode && t.length() != 0);
 		findbutton->setEnabled(t.length() != 0);
 }
@@ -117,22 +117,22 @@ void ReplaceWin::clickCancelButton() {
 }
 
 void ReplaceWin::findAgain() {
-	be->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+	editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
 	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickFindButton() {
-	be->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+	editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
 	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceButton() {
-	be->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
+	editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
 	changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceAllButton() {
-	be->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
+	editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {

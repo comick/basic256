@@ -40,16 +40,14 @@
 using namespace std;
 
 #include "BasicGraph.h"
-#include "MainWindow.h"
 
 extern QMutex *keymutex;
 extern int currentKey;
 
-BasicGraph::BasicGraph(BasicOutput *o)
+BasicGraph::BasicGraph()
 {
   image = NULL;
   resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
-  output = o;
   setMinimumSize(gwidth, gheight);
   gridlines = false;
 }

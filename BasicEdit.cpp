@@ -43,13 +43,15 @@
 #endif
 using namespace std;
 
+#include "MainWindow.h"
 #include "BasicEdit.h"
 #include "LineNumberArea.h"
 #include "Settings.h"
 
-BasicEdit::BasicEdit(QMainWindow *mw) : QPlainTextEdit(mw)
+extern MainWindow * mainwin;
+
+BasicEdit::BasicEdit()
 {
-	mainwin = mw;
 
     currentMaxLine = 10;
 	currentLine = 1;
@@ -62,7 +64,7 @@ BasicEdit::BasicEdit(QMainWindow *mw) : QPlainTextEdit(mw)
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-
+    
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 }
@@ -71,7 +73,8 @@ void
 BasicEdit::cursorMove()
 {
 	QTextCursor t(textCursor());
-	mainwin->statusBar()->showMessage(tr("Line: ") + QString::number(t.blockNumber()+1) + tr(" Column: ") + QString::number(t.positionInBlock()));
+	emit(changeStatusBar(("Line: ") + QString::number(t.blockNumber()+1)
+		+ tr(" Column: ") + QString::number(t.positionInBlock())));
 }
 
 void
@@ -127,7 +130,7 @@ BasicEdit::newProgram()
 	if (donew)
 	{
 		clear();
-		mainwin->setWindowTitle(tr("Untitled - BASIC-256"));
+		emit(changeWindowTitle(tr("Untitled - BASIC-256")));
 		filename = "";
 		codeChanged = false;
 	}
@@ -164,7 +167,7 @@ BasicEdit::saveProgram()
 			f.write(this->document()->toPlainText().toUtf8());
 			f.close();
 			QFileInfo fi(f);
-			mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
+			emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
 			QDir::setCurrent(fi.absolutePath());
 			codeChanged = false;
 			addFileToRecentList(filename);
@@ -251,6 +254,7 @@ BasicEdit::loadFile(QString s)
 			doload = (msgBox.exec() == QMessageBox::Yes);
 		}
 		if (doload) {
+			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 			QFile f(s);
 			f.open(QIODevice::ReadOnly);
 			QByteArray ba = f.readAll();
@@ -258,10 +262,11 @@ BasicEdit::loadFile(QString s)
 			f.close();
 			filename = s;
 			QFileInfo fi(f);
-			mainwin->setWindowTitle(fi.fileName() + tr(" - BASIC-256"));
+			emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
 			QDir::setCurrent(fi.absolutePath());
 			codeChanged = false;
 			addFileToRecentList(s);
+			QApplication::restoreOverrideCursor();
 		}
 	}
 
@@ -279,7 +284,9 @@ void BasicEdit::slotPrint()
 	{
 		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
 		{
+			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 			document->print(&printer);
+			QApplication::restoreOverrideCursor();
 		}
 		else
 		{
@@ -299,6 +306,7 @@ void BasicEdit::beautifyProgram()
 	bool indentThisLine = true;
 	bool increaseIndent = false;
 	bool decreaseIndent = false;
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	program = this->document()->toPlainText();
 	lines = program.split(QRegExp("\\n"));
 	for (int i = 0; i < lines.size(); i++) {
@@ -368,6 +376,7 @@ void BasicEdit::beautifyProgram()
 	}
 	this->setPlainText(lines.join("\n"));
 	codeChanged = true;
+	QApplication::restoreOverrideCursor();
 }
 
 void BasicEdit::findString(QString s, bool reverse, bool casesens)

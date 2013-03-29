@@ -90,15 +90,18 @@ extern QWaitCondition* waitCond;
 extern QWaitCondition* waitDebugCond;
 extern QWaitCondition* waitInput;
 
-RunController::RunController(MainWindow *mw)
+extern MainWindow * mainwin;
+extern BasicEdit * editwin;
+extern BasicOutput * outwin;
+extern BasicGraph * graphwin;
+extern VariableWin * varwin;
+
+
+
+RunController::RunController()
 {
-	mainwin = mw;
-	//i = new Interpreter(mainwin->goutput->image, mainwin->goutput->imask);
-	i = new Interpreter(mainwin->goutput);
-	te = mainwin->editor;
-	output = mainwin->output;
-	goutput = mainwin->goutput;
-	statusbar = mainwin->statusBar();
+	//i = new Interpreter(mainwin->graphwin->image, mainwin->graphwin->imask);
+	i = new Interpreter();
 
 	replacewin = NULL;
 	docwin = NULL;
@@ -116,11 +119,11 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(this, SIGNAL(runResumed()), i, SLOT(pauseResume()));
 	QObject::connect(this, SIGNAL(runHalted()), i, SLOT(stop()));
 
-	QObject::connect(i, SIGNAL(inputNeeded()), output, SLOT(getInput()));
-	QObject::connect(output, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
-	QObject::connect(output, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
+	QObject::connect(i, SIGNAL(inputNeeded()), outwin, SLOT(getInput()));
+	QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
+	QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
 
-	QObject::connect(i, SIGNAL(goToLine(int)), te, SLOT(goToLine(int)));
+	QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
 
 	QObject::connect(i, SIGNAL(executeSystem(char*)), this, SLOT(executeSystem(char*)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
@@ -128,8 +131,8 @@ RunController::RunController(MainWindow *mw)
 	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
 	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 
-	QObject::connect(i, SIGNAL(highlightLine(int)), te, SLOT(highlightLine(int)));
-	QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), mainwin->vardock, SLOT(addVar(int, QString, QString, int, int)));
+	QObject::connect(i, SIGNAL(highlightLine(int)), editwin, SLOT(highlightLine(int)));
+	QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), varwin, SLOT(addVar(int, QString, QString, int, int)));
 
 	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
 	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
@@ -161,24 +164,27 @@ RunController::speakWords(QString text)
 	// use microsoft sapi with the default voice
 	ISpVoice * pVoice = NULL;
 
-    if (FAILED(::CoInitialize(NULL))) return;
-
-    HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
-    if( SUCCEEDED( hr ) )
-    {
-		// convert qchar* wo wchar*
-		WCHAR *wutext = new WCHAR[text.length() + 1];
-		for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
-		wutext[text.length()] = 0;
+    if (FAILED(::CoInitialize(NULL))) {
+		fprintf(stderr, "RunController::speakWords - Unable to CoInitialize SAPI.\n");
+	} else {
+		HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
+		if( SUCCEEDED( hr ) )
+		{
+			// convert qchar* wo wchar*
+			WCHAR *wutext = new WCHAR[text.length() + 1];
+			for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
+			wutext[text.length()] = 0;
 		
-        hr = pVoice->Speak(wutext, 0, NULL);
-        pVoice->Release();
-        pVoice = NULL;
+			hr = pVoice->Speak(wutext, 0, NULL);
+			pVoice->Release();
+			pVoice = NULL;
 		
-		delete wutext;	// send to gc - just in case
-    }
-
-    ::CoUninitialize();
+			delete wutext;	// send to gc - just in case
+		} else {
+			fprintf(stderr, "RunController::speakWords - Unable to create SAPI instance.\n");
+		}
+		::CoUninitialize();
+	}
 #endif
 #ifdef LINUX_ESPEAK
 	//QMessageBox::information( 0, "BASIC-256", QString("ESpeak"));
@@ -289,7 +295,7 @@ RunController::startDebug()
 {
 	if (i->isStopped())
 	{
-		int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
+		int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
 		if (result < 0)
 		{
 			i->debugMode = false;
@@ -298,11 +304,11 @@ RunController::startDebug()
 		}
 		i->initialize();
 		i->debugMode = true;
-		output->clear();
-		statusbar->showMessage(tr("Running"));
-		goutput->setFocus();
+		outwin->clear();
+		mainwin->statusBar()->showMessage(tr("Running"));
+		graphwin->setFocus();
 		i->start();
-		mainwin->vardock->clearTable();
+		varwin->clear();
 		mainwin->runact->setEnabled(false);
 		mainwin->debugact->setEnabled(false);
 		mainwin->stepact->setEnabled(true);
@@ -316,7 +322,7 @@ RunController::startRun()
 {
 	if (i->isStopped())
 	{
-		int result = i->compileProgram((te->toPlainText() + "\n").toUtf8().data());
+		int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
 		i->debugMode = false;
 		if (result < 0)
 		{
@@ -325,10 +331,10 @@ RunController::startRun()
 		}
 		i->initialize();
 		outputClear();
-		statusbar->showMessage(tr("Running"));
-		goutput->setFocus();
+		mainwin->statusBar()->showMessage(tr("Running"));
+		graphwin->setFocus();
 		i->start();
-		mainwin->vardock->clearTable();
+		varwin->clear();
 		mainwin->runact->setEnabled(false);
 		mainwin->debugact->setEnabled(false);
 		mainwin->stepact->setEnabled(false);
@@ -341,7 +347,7 @@ RunController::startRun()
 void
 RunController::inputFilter(QString text)
 {
-	goutput->setFocus();
+	graphwin->setFocus();
 	mutex->lock();
 	waitInput->wakeAll();
 	mutex->unlock();
@@ -351,7 +357,7 @@ void
 RunController::outputClear()
 {
 	mutex->lock();
-	output->clear();
+	outwin->clear();
 	waitCond->wakeAll();
 	mutex->unlock();
 }
@@ -360,8 +366,8 @@ void
 RunController::outputFilter(QString text)
 {
 	mutex->lock();
-	output->insertPlainText(text);
-	output->ensureCursorVisible();
+	outwin->insertPlainText(text);
+	outwin->ensureCursorVisible();
 	waitCond->wakeAll();
 	mutex->unlock();
 }
@@ -370,7 +376,7 @@ void
 RunController::goutputFilter()
 {
 	mutex->lock();
-	goutput->repaint();
+	graphwin->repaint();
 	waitCond->wakeAll();
 	mutex->unlock();
 }
@@ -386,7 +392,7 @@ RunController::stepThrough()
 void
 RunController::stopRun()
 {
-	statusbar->showMessage(tr("Ready."));
+	mainwin->statusBar()->showMessage(tr("Ready."));
 
 	mainwin->runact->setEnabled(true);
 	mainwin->debugact->setEnabled(true);
@@ -395,7 +401,7 @@ RunController::stopRun()
 
 	stopWAV();
 
-	output->setReadOnly(true);
+	outwin->setReadOnly(true);
 
 	mutex->lock();
 	waitInput->wakeAll();
@@ -416,13 +422,13 @@ RunController::pauseResume()
 {
 	if (paused)
 	{
-		statusbar->showMessage(tr("Running"));
+		mainwin->statusBar()->showMessage(tr("Running"));
 		paused = false;
 		emit(runResumed());
 	}
 	else
 	{
-		statusbar->showMessage(tr("Paused"));
+		mainwin->statusBar()->showMessage(tr("Paused"));
 		paused = true;
 		emit(runPaused());
 	}
@@ -433,7 +439,7 @@ RunController::pauseResume()
 void
 RunController::saveByteCode()
 {
-    byteCodeData *bc = i->getByteCode((te->toPlainText() + "\n").toUtf8().data());
+    byteCodeData *bc = i->getByteCode((editwin->toPlainText() + "\n").toUtf8().data());
 	if (bc == NULL)
 	{
 		return;
@@ -479,7 +485,7 @@ void RunController::showOnlineDocumentation()
 void
 RunController::showContextDocumentation()
 {
-	QString w = te->getCurrentWord();
+	QString w = editwin->getCurrentWord();
 	if (!replacewin) docwin = new DocumentationWin(mainwin);
 	docwin->show();
 	docwin->raise();
@@ -489,7 +495,7 @@ RunController::showContextDocumentation()
 
 void RunController::showOnlineContextDocumentation()
 {
-	QString w = te->getCurrentWord();
+	QString w = editwin->getCurrentWord();
 	QDesktopServices::openUrl(QUrl("http://doc.basic256.org/doku.php?id=en:" + w));
 }
 
@@ -523,7 +529,7 @@ RunController::showPreferences()
 
 void RunController::showReplace()
 {
-     if (!replacewin) replacewin = new ReplaceWin(te);
+     if (!replacewin) replacewin = new ReplaceWin();
      replacewin->setReplaceMode(true);
      replacewin->show();
      replacewin->raise();
@@ -532,7 +538,7 @@ void RunController::showReplace()
 
 void RunController::showFind()
 {
-     if (!replacewin) replacewin = new ReplaceWin(te);
+     if (!replacewin) replacewin = new ReplaceWin();
      replacewin->setReplaceMode(false);
      replacewin->show();
      replacewin->raise();
@@ -541,7 +547,7 @@ void RunController::showFind()
 
 void RunController::findAgain()
 {
-     if (!replacewin) replacewin = new ReplaceWin(te);
+     if (!replacewin) replacewin = new ReplaceWin();
      replacewin->setReplaceMode(false);
      replacewin->show();
      replacewin->raise();
@@ -552,7 +558,6 @@ void RunController::findAgain()
 void
 RunController::mainWindowsVisible(int w, bool v)
 {
-	//printf("mwv %i %i\n",w,v);
 	if (w==0) mainwin->editWinVisibleAct->setChecked(v);
 	if (w==1) mainwin->graphWinVisibleAct->setChecked(v);
 	if (w==2) mainwin->textWinVisibleAct->setChecked(v);
@@ -564,8 +569,8 @@ RunController::mainWindowsResize(int w, int width, int height)
 	// only resize graphics window now - may add other windows later
 	mutex->lock();
 	if (w==1) {
-		goutput->resize(width, height);
-		goutput->setMinimumSize(goutput->image->width(), goutput->image->height());
+		graphwin->resize(width, height);
+		graphwin->setMinimumSize(graphwin->image->width(), graphwin->image->height());
 	}
 	waitCond->wakeAll();
 	mutex->unlock();
@@ -628,11 +633,11 @@ void RunController::dialogFontSelect()
 {
     bool ok;
     SETTINGS;
-    QFont newf = QFontDialog::getFont(&ok, te->font(), mainwin);
+    QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin);
     if (ok) {
         settings.setValue(SETTINGSFONT, newf.toString());
-        te->setFont(newf);
-        output->setFont(newf);
+        editwin->setFont(newf);
+        outwin->setFont(newf);
     }
 }
 

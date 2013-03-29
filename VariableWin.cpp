@@ -25,17 +25,17 @@ using namespace std;
 	#include <QHeaderView>
 #endif
 
-#include "VariableWin.h"
+//#include "VariableWin.h"
+#include "MainWindow.h"
 
-VariableWin::VariableWin (QWidget * parent) 
-  :QDockWidget(QString(tr("Variable Watch")), parent)
+extern MainWindow * mainwin;
+
+VariableWin::VariableWin () 
 {
-  table = new QTreeWidget(this);
-  table->setColumnCount(2);
-  table->setHeaderLabels(QStringList() << tr("Level - Name") << tr("Value"));
-  table->sortByColumn(0,Qt::AscendingOrder);
-  table->setSortingEnabled(true);
-  setWidget(table);
+  setColumnCount(2);
+  setHeaderLabels(QStringList() << tr("Level - Name") << tr("Value"));
+  sortByColumn(0,Qt::AscendingOrder);
+  setSortingEnabled(true);
 }
 
 void
@@ -52,7 +52,7 @@ if (name!="") {
 	// remove old entries when a variable becomes an array or not
 	if (arraylenx==-1||value==NULL) {
 		// delete everything begining with name[
-		QList<QTreeWidgetItem *> items = table->findItems(name + "[", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+		QList<QTreeWidgetItem *> items = findItems(name + "[", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
 		for (int n=items.size()-1; n>=0; n--) {
 			delete items[n];
 		}
@@ -78,7 +78,7 @@ if (name!="") {
 	}
 	
 	// see if element is on the list and change value or add
-	QList<QTreeWidgetItem *> list = table->findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
+	QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
 	
 	if (list.size() > 0) {
 		// get existing element
@@ -87,7 +87,7 @@ if (name!="") {
 		// add new element
 		rowItem = new QTreeWidgetItem();
 		rowItem->setText(0, name);
-		table->addTopLevelItem(rowItem);
+		addTopLevelItem(rowItem);
 	}
     rowItem->setText(1, value);
 
@@ -116,19 +116,10 @@ if (name!="") {
 	}
 } else {
 	// when we return from a subroutine or function delete its variables
-	QList<QTreeWidgetItem *> items = table->findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+	QList<QTreeWidgetItem *> items = findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
 	for (int n=items.size()-1; n>=0; n--) {
 		delete items[n];
 	}
 }
 		
-}
-
-
-
-
-void
-VariableWin::clearTable()
-{
-	table->clear();
 }
