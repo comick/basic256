@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>graphicsimagejkeyevortex [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-02-05T11:49:00-0700"/>
+<meta name="keywords" content="graphicsimagejkeyevortex"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/graphicsimagejkeyevortex&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns="/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=graphicsimagejkeyevortex"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=graphicsimagejkeyevortex"/>
+<link rel="canonical" href="./graphicsimagejkeyevortex.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <span class="curid"><a href="./graphicsimagejkeyevortex.html" class="wikilink1" title="graphicsimagejkeyevortex">graphicsimagejkeyevortex</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>graphicsimagejkeyevortex</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+                    
+<p>
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=graphicsimagejkeyevortex&amp;media=en:kahn_joel_eye_in_vortex.png" class="media" title="en:kahn_joel_eye_in_vortex.png"><img src="lib/exe/en_kahn_joel_eye_in_vortex.png" class="media" alt="" width="200" /></a>
+Eye in Vortex by Joel Kahn (June 2010)<br/>
+
+Modified 2013-02 for version 0.9.9.45 and later
+</p>
+<pre class="code"># Contributed by Joel Kahn
+cls
+clg
+l=700
+w=500
+graphsize l,w
+dim f(8)
+f[0]=0
+f[1]=0
+f[2]=17
+f[3]=0
+f[4]=17
+f[5]=1
+f[6]=0
+f[7]=1
+m1=1
+m2=2
+x1=l/2
+y1=w/2
+x2=x1+1
+y2=y1+1
+qq1=0.99999
+q1=1.34
+qq2=0.99998
+q2=1.33
+vv1=0.011
+v1=0.0
+vv2=0.012
+v2=-0.1
+s1=1.411
+s2=1.412
+c1=0.0
+c2=2.0^24.0
+for d=1 to 25000
+   m1=m1+1/m1
+   x1=x1+s1*cos(m1)
+   y1=y1+sin(m1)
+   c1=c1+6.01
+   q1=q1*qq1
+   v1=v1+vv1
+   color rgb(c1\256\256%256, c1\256%256, c1%256) 
+   stamp x1,y1,q1,v1,f
+   m2=m2+1/m2
+   x2=x2+s2*cos(m2)
+   y2=y2+sin(m2)
+   c2=c2-6.02
+   q2=q2*qq2
+   v2=v2+vv2
+   color rgb(c2\256\256%256, c2\256%256, c2%256) 
+   stamp x2,y2,q2,v2,f
+next d</pre>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">graphicsimagejkeyevortex.txt · Last modified: 2013/02/05 11:49 by admin</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="graphicsimagejkeyevortex.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

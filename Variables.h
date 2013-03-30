@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <QString.h>
+#include <QString>
 
 #include "ErrorCodes.h"
 #include "Stack.h"

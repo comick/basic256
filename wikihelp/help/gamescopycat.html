@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+    <title>gamescopycat [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-01-07T20:44:07-0700"/>
+<meta name="keywords" content="gamescopycat"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/gamescopycat&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns="/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=gamescopycat"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=gamescopycat"/>
+<link rel="canonical" href="./gamescopycat.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top"
+        class="dokuwiki site mode_show  ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <span class="curid"><a href="./gamescopycat.html" class="wikilink1" title="gamescopycat">gamescopycat</a></span></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>gamescopycat</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+                    <div class="table sectionedit1"><table class="inline">
+	<tr class="row0">
+		<td class="col0"><a href="http://doc.basic256.org/lib/exe/detail.php?id=gamescopycat&amp;media=gamescopycat.png" class="media" title="gamescopycat.png"><img src="lib/exe/gamescopycat.png" class="media" alt="" /></a></td><td class="col1">Repeat after the computer.  Longer and longer patterns of lights and sounds will test your short term memory.  Choose more color slices to make the game more difficult.</td>
+	</tr>
+</table></div>
+<pre class="code">#CopyCat - A follow along memory game
+# 2013-01-07 j.m.reneau
+# requires BASIC256 0.9.9.25 or later
+
+pies = 5
+dim lightcolors(1)
+lightcolors = {red, blue, green, yellow, purple, cyan, orange}
+dim darkcolors(1)
+darkcolors = {darkred, darkblue, darkgreen, darkyellow, darkpurple, darkcyan, darkorange}
+global pies, lightcolors, darkcolors
+
+fastgraphics
+dim game(100)
+
+print &quot;CopyCat&quot;
+print &quot;See how long of a pattern you can remember.  Click on the correct pie wedge when it is your turn.&quot;
+
+do
+   input &quot;How many pie slices (3-7)?&quot;, pies
+until pies &gt;=3 and pies &lt;= 7
+
+# generate the game
+for t = 0 to game[?]-1
+   game[t] = int(rand*pies)
+next t
+
+round = 0
+gameon = true
+while gameon
+   # show the pattern
+   round++
+   print &quot;Round &quot; + round
+   for t = 0 to round -1
+      call showslice(100,300,game[t])
+   next t
+   #
+   # get the user to give it back
+   print &quot;  Play it back.&quot;
+   for t = 0 to round -1
+      g = getclick(3000,game[t])
+      if g = -1 then
+         # made a mistake - die
+         gameon = false
+         t = round
+      end if
+   next t
+end while
+print &quot;You completed &quot; + round + &quot; rounds.&quot;
+end
+
+subroutine showslice(waittime, soundtime, slice)
+   pause waittime/1000
+   call drawgame(slice)
+   call playsound(slice, soundtime)
+   call drawgame(-1)
+end subroutine
+
+function getclick(timeout, slicetoclick)
+   # get the click before the timeout
+   start = msec
+   while msec&lt;start+timeout and mouseb = 0
+      pause .01
+   end while
+   if msec&gt;=start+timeout then
+      call drawgame(slicetoclick)
+      call playdie()
+      return -1
+   else
+      slice = -1
+      for t = 0 to pies-1
+         if pixel(mousex, mousey) = darkcolors[t] then slice = t
+      next t
+      if slice &lt;&gt; slicetoclick then
+         call drawgame(slicetoclick)
+         call playdie()
+         return -1
+      else
+         call drawgame(slice)
+         call playsound(slice, 250)
+         while mouseb &lt;&gt; 0
+            pause .01
+         end while
+         call drawgame(-1)
+         return slice
+      end if
+   end if
+end function
+
+subroutine playdie()
+   sound 100,500
+   say &quot;you loose.&quot;
+end subroutine
+
+subroutine playsound(s, d)
+   sound 200+s*50,d
+end subroutine
+
+subroutine drawgame(sliceon)
+   # set slice number by passing its number (-1) nothing is on
+   clg
+   penwidth 1
+   w = 2*pi/pies
+   for t = 0 to pies-1
+      if t = sliceon then
+         color black,lightcolors[t]
+      else
+         color black,darkcolors[t]
+      end if
+      pie 0,0,300,300,t*w,w
+   next t
+   refresh
+end subroutine</pre>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo">gamescopycat.txt · Last modified: 2013/01/07 20:44 by admin</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+<form class="button" method="get" action="gamescopycat.html">
+
+</form>
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>
