@@ -73,7 +73,7 @@ void
 BasicEdit::cursorMove()
 {
 	QTextCursor t(textCursor());
-	emit(changeStatusBar(("Line: ") + QString::number(t.blockNumber()+1)
+	emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
 		+ tr(" Column: ") + QString::number(t.positionInBlock())));
 }
 

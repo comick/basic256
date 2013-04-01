@@ -19,10 +19,8 @@
 
 #define WARNING_NONE 0
 #define WARNING_DEPRECATED_FORM 1
-#define WARNING_DEPRECATED_FORM_MESSAGE "The used format of the statement has been deprecated.  It is recommended that you reauthor that statement."
 // Insert new warning messages here
 #define WARNING_NOTIMPLEMENTED 9999
-#define WARNING_NOTIMPLEMENTED_MESSAGE "Feature not implemented in this environment."
 //
 #endif
 

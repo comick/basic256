@@ -1,386 +1,839 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="de">
-<defaultcodec></defaultcodec>
+<!DOCTYPE TS>
+<TS version="2.0" language="de">
 <context>
     <name>BasicEdit</name>
     <message>
-        <location filename="../BasicEdit.cpp" line="90"/>
+        <location filename="../BasicEdit.cpp" line="76"/>
         <source>Line: </source>
-        <translation>Zeile: </translation>
+        <translation type="unfinished">Zeile: </translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="137"/>
+        <location filename="../BasicEdit.cpp" line="124"/>
         <source>New Program?</source>
         <translation>Neues Programm?</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="138"/>
+        <location filename="../BasicEdit.cpp" line="125"/>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
         <translation>Willst Du wirklich den aktuellen Programmtext löschen und ein neues Programm beginnen?</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="138"/>
         <source>Yes</source>
         <translation type="obsolete">Ja</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="138"/>
         <source>Cancel</source>
         <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="146"/>
+        <location filename="../BasicEdit.cpp" line="77"/>
+        <source> Column: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicEdit.cpp" line="133"/>
         <source>Untitled - BASIC-256</source>
         <translation>Unbennant - BASIC-256</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="192"/>
+        <location filename="../BasicEdit.cpp" line="145"/>
+        <location filename="../BasicEdit.cpp" line="207"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="192"/>
+        <location filename="../BasicEdit.cpp" line="145"/>
+        <location filename="../BasicEdit.cpp" line="207"/>
         <source>BASIC-256 File </source>
         <translation>BASIC-256 Datei </translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="204"/>
+        <location filename="../BasicEdit.cpp" line="145"/>
+        <location filename="../BasicEdit.cpp" line="207"/>
+        <location filename="../BasicEdit.cpp" line="219"/>
         <source>Any File </source>
         <translation>Alle Dateien </translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="172"/>
+        <location filename="../BasicEdit.cpp" line="159"/>
         <source>The file </source>
         <translation>Die Datei</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="172"/>
+        <location filename="../BasicEdit.cpp" line="159"/>
+        <source> already exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicEdit.cpp" line="160"/>
+        <source>Do you want to overwrite?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicEdit.cpp" line="251"/>
+        <source>Do you want to discard your changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicEdit.cpp" line="389"/>
+        <source>String not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicEdit.cpp" line="406"/>
+        <source>Replace completed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> exists on file.</source>
-        <translation>existiert in Datei.</translation>
+        <translation type="obsolete">existiert in Datei.</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="173"/>
         <source>Do you want wish to overwrite?</source>
-        <translation>Möchten Sie überschreiben (löschen)?</translation>
+        <translation type="obsolete">Möchten Sie überschreiben (löschen)?</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="230"/>
+        <location filename="../BasicEdit.cpp" line="170"/>
+        <location filename="../BasicEdit.cpp" line="265"/>
         <source> - BASIC-256</source>
         <translation> - BASIC-256</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="204"/>
+        <location filename="../BasicEdit.cpp" line="219"/>
         <source>Open a file</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="204"/>
+        <location filename="../BasicEdit.cpp" line="219"/>
         <source>BASIC-256 file </source>
         <translation>BASIC-256 Datei </translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="216"/>
+        <location filename="../BasicEdit.cpp" line="250"/>
         <source>Program modifications have not been saved.</source>
         <translation>Programm-Änderungen wurden nicht gespeichert.</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="217"/>
         <source>Do you want wish to discard your changes?</source>
-        <translation>Sollen die Änderungen verworfen werden?</translation>
+        <translation type="obsolete">Sollen die Änderungen verworfen werden?</translation>
     </message>
 </context>
 <context>
     <name>DocumentationWin</name>
     <message>
-        <location filename="../DocumentationWin.cpp" line="39"/>
         <source>Help Navigation</source>
-        <translation>Navitationshilfe</translation>
+        <translation type="obsolete">Navitationshilfe</translation>
     </message>
     <message>
-        <location filename="../DocumentationWin.cpp" line="44"/>
         <source>Search:</source>
-        <translation>Suchen:</translation>
+        <translation type="obsolete">Suchen:</translation>
+    </message>
+    <message>
+        <source>Search Forward</source>
+        <translation type="obsolete">Vorwärts suchen</translation>
+    </message>
+    <message>
+        <source>Search Backward</source>
+        <translation type="obsolete">Rückwärts suchen</translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="40"/>
+        <source>&amp;Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="45"/>
+        <source>&amp;Forward</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="50"/>
-        <source>Search Forward</source>
-        <translation>Vorwärts suchen</translation>
+        <source>&amp;Home</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DocumentationWin.cpp" line="52"/>
-        <source>Search Backward</source>
-        <translation>Rückwärts suchen</translation>
+        <location filename="../DocumentationWin.cpp" line="56"/>
+        <source>&amp;Exit</source>
+        <translation type="unfinished">&amp;Beenden</translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="84"/>
+        <source>Off-line help does not appear to be installed.  Please use on-line help.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="95"/>
+        <source>Contextual help for the word &apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="95"/>
+        <source>&apos; is not available.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Interpreter</name>
     <message>
-        <location filename="../Interpreter.cpp" line="103"/>
+        <location filename="../Interpreter.cpp" line="145"/>
         <source>ERROR on line </source>
         <translation>FEHLER in Zeile </translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="213"/>
+        <location filename="../Interpreter.cpp" line="615"/>
+        <location filename="../Interpreter.cpp" line="617"/>
         <source>Syntax error on line </source>
-        <translation>Syntax-Fehler in Zeile </translation>
+        <translation type="unfinished">Syntax-Fehler in Zeile </translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="211"/>
+        <location filename="../Interpreter.cpp" line="115"/>
+        <source>ERROR - Unable to initialize Winsock library.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="121"/>
+        <source>ERROR - Unable to find inpout32.dll - direct port I/O disabled.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="125"/>
+        <source>ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="129"/>
+        <source>ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="165"/>
+        <source>Invalid File Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="171"/>
+        <source>File not open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="180"/>
+        <source>Array %VARNAME% dimension too large</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="183"/>
+        <source>Array %VARNAME% dimension too small</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="186"/>
+        <source>Unknown variable %VARNAME%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="189"/>
+        <source>Variable %VARNAME% is not an array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="192"/>
+        <source>Variable %VARNAME% is not a string array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="195"/>
+        <source>Array %VARNAME% index out of bounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="198"/>
+        <source>Substring length less that zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="201"/>
+        <source>Starting position less than zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="207"/>
+        <source>Non-numeric value in numeric expression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="216"/>
+        <source>Argument not an array for poly()/stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="219"/>
+        <source>Not enough points in array for poly()/stamp()</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="225"/>
+        <source>Sprite number out of range.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="228"/>
+        <source>Sprite has not been assigned.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="231"/>
+        <source>Unable to slice image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="234"/>
+        <source>Invalid directory name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="237"/>
+        <source>Operation returned infinity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="240"/>
+        <source>Unable to open SQLITE database.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="243"/>
+        <source>Database query error (message follows).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="246"/>
+        <source>Database must be opened first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="249"/>
+        <source>Column number out of range or column name not in data set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="252"/>
+        <source>Record set must be opened first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="255"/>
+        <source>Invalid Extended Op-code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="258"/>
+        <source>Error opening network socket.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="261"/>
+        <source>Error finding network host.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="264"/>
+        <source>Unable to connect to network host.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="267"/>
+        <source>Unable to read from network connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="270"/>
+        <source>Network connection has not been opened.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="273"/>
+        <source>Unable to write to network connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="276"/>
+        <source>Unable to set network socket options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="279"/>
+        <source>Unable to bind network socket.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="282"/>
+        <source>Unable to accept network connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="285"/>
+        <source>Invalid Socket Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="288"/>
+        <source>You do not have permission to use this statement/function.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="291"/>
+        <source>Invalid image save type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="294"/>
+        <source>Number of arguments passed does not match FUNCTION/SUBROUTINE definition.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="297"/>
+        <source>Maximum levels of recursion exceeded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="300"/>
+        <source>Division by zero.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="303"/>
+        <source>Function/Subroutine expecting variable reference in call.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="306"/>
+        <source>Function/Subroutine variable incorrect reference type in call.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="309"/>
+        <source>There are no free file numbers to allocate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="312"/>
+        <source>There are no free network connections to allocate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="315"/>
+        <source>There are no free database connections to allocate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="318"/>
+        <source>Invalid Database Connection Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="321"/>
+        <source>There are no free data sets to allocate for that database connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="324"/>
+        <source>Invalid data set number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="327"/>
+        <source>You must advance the data set using DBROW before you can read data from it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="330"/>
+        <source>Drawing pen width must be a non-negative number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="333"/>
+        <source>Color values must be in the range of -1 to 16,777,215.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="336"/>
+        <source>Array variable %VARNAME% has no value without an index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="339"/>
+        <source>Image scale must be greater than or equal to zero.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="342"/>
+        <source>Font size, in points, must be greater than or equal to zero.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="345"/>
+        <source>Font weight must be greater than or equal to zero.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="348"/>
+        <source>Unable to convert radix string back to a decimal number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="351"/>
+        <source>Radix conversion base muse be between 2 and 36.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="354"/>
+        <source>Unable to calculate the logarithm or root of a negative number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="357"/>
+        <source>String exceeds maximum length of 16,777,216 characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="361"/>
+        <location filename="../Interpreter.cpp" line="384"/>
+        <source>Feature not implemented in this environment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="364"/>
+        <source>User thrown error number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="380"/>
+        <source>The used format of the statement has been deprecated.  It is recommended that you reauthor that statement.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="557"/>
+        <source>Error assigning a string to a numeric variable on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="560"/>
+        <source>Error assigning a number to a string variable on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="563"/>
+        <source>You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="566"/>
+        <source>You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="569"/>
+        <source>You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="572"/>
+        <source>END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="575"/>
+        <source>FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="578"/>
+        <source>FOR without matching NEXT statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="581"/>
+        <source>WHILE without matching END WHILE statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="584"/>
+        <source>DO without matching UNTIL statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="587"/>
+        <source>ELSE without matching END IF statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="590"/>
+        <source>IF without matching END IF or ELSE statement on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="593"/>
+        <source>UNTIL without matching DO on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="596"/>
+        <source>END WHILE without matching WHILE on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="599"/>
+        <source>ELSE without matching IF on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="602"/>
+        <source>END IF without matching IF on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="605"/>
+        <source>NEXT without matching FOR on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="608"/>
+        <source>RETURN with a value is only valid inside a FUNCTION on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="611"/>
+        <source>RETURN value type is not the same as FUNCTION on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="615"/>
         <source> around end of line.</source>
         <translation> am Ende der Zeile.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="213"/>
+        <location filename="../Interpreter.cpp" line="617"/>
         <source> around column </source>
         <translation> bei Spalte </translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="243"/>
+        <location filename="../Interpreter.cpp" line="693"/>
+        <source>Error in bytecode during label referencing at line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="153"/>
         <source>No such label</source>
-        <translation>Marke nicht gefunden</translation>
+        <translation type="unfinished">Marke nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="510"/>
+        <location filename="../Interpreter.cpp" line="156"/>
         <source>Illegal FOR -- start number &gt; end number</source>
-        <translation>Ungültige FOR Anweisung: Start-Nummer ist grösser als End-Nummer</translation>
+        <translation type="unfinished">Ungültige FOR Anweisung: Start-Nummer ist grösser als End-Nummer</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="515"/>
+        <location filename="../Interpreter.cpp" line="159"/>
         <source>Illegal FOR -- start number &lt; end number</source>
-        <translation>Ungültige FOR Anweisung: Start-Nummer ist kleiner als End-Nummer</translation>
+        <translation type="unfinished">Ungültige FOR Anweisung: Start-Nummer ist kleiner als End-Nummer</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="535"/>
+        <location filename="../Interpreter.cpp" line="162"/>
         <source>Next without FOR</source>
-        <translation>NEXT ohne FOR</translation>
+        <translation type="unfinished">NEXT ohne FOR</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="768"/>
         <source>Can&apos;t size -- no open file.</source>
-        <translation>Kann Grösse nicht bestimmen, keine offene Datei.</translation>
+        <translation type="obsolete">Kann Grösse nicht bestimmen, keine offene Datei.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="799"/>
         <source>seek() called when no file is open</source>
-        <translation>seek() aufgerufen ohne geöffnete Datei</translation>
+        <translation type="obsolete">seek() aufgerufen ohne geöffnete Datei</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="827"/>
         <source>Array dimension too large</source>
-        <translation>Feld zu groß</translation>
+        <translation type="obsolete">Feld zu groß</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1452"/>
         <source>Illegal argument</source>
-        <translation>Ungültiges Argument</translation>
+        <translation type="obsolete">Ungültiges Argument</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1993"/>
+        <location filename="../Interpreter.cpp" line="210"/>
         <source>RGB Color values must be in the range of 0 to 255.</source>
-        <translation>RGB Farbwerte müssen zwischen 0 und 255 sein.</translation>
+        <translation type="unfinished">RGB Farbwerte müssen zwischen 0 und 255 sein.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2082"/>
+        <location filename="../Interpreter.cpp" line="213"/>
         <source>String input to putbit incorrect.</source>
-        <translation>Zeichenketten-Eingabe für putbit ungültig.</translation>
+        <translation type="unfinished">Zeichenketten-Eingabe für putbit ungültig.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2168"/>
         <source>Argument not an array for poly()</source>
-        <translation>Argument für poly() ist kein Array</translation>
+        <translation type="obsolete">Argument für poly() ist kein Array</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2192"/>
         <source>Not enough points in immediate list for poly()</source>
-        <translation>Nicht ausreichend Punkte in Argumentenliste für poly()</translation>
+        <translation type="obsolete">Nicht ausreichend Punkte in Argumentenliste für poly()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2235"/>
         <source>Not enough points in array for stamp()</source>
-        <translation>Nicht ausreichend Punkte im Array für stamp()</translation>
+        <translation type="obsolete">Nicht ausreichend Punkte im Array für stamp()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2259"/>
         <source>Argument not an array for stamp()</source>
-        <translation>Argument ist kein Array für stamp()</translation>
+        <translation type="obsolete">Argument ist kein Array für stamp()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2310"/>
         <source>Not enough points in immediate list for stamp()</source>
-        <translation>Nicht ausreichend Punkte in Argumentenliste für stamp()</translation>
+        <translation type="obsolete">Nicht ausreichend Punkte in Argumentenliste für stamp()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2375"/>
+        <location filename="../Interpreter.cpp" line="222"/>
         <source>Unable to load image file.</source>
-        <translation>Nicht möglich, Bild Datei zu laden.</translation>
+        <translation type="unfinished">Nicht möglich, Bild Datei zu laden.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2375"/>
         <source>Cannot assign non-string to string array</source>
         <translation type="obsolete">Kann ein Nicht-Zeichenkettenfeld nicht einem Zeichenkettenfeld zuweisen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1234"/>
         <source>Array index out of bounds</source>
-        <translation>Feldindex außerhalb des gültigen Bereiches</translation>
+        <translation type="obsolete">Feldindex außerhalb des gültigen Bereiches</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1229"/>
         <source>Cannot access non-array variable</source>
-        <translation>Zugriff auf die Nicht-Feldvariable unmöglich</translation>
+        <translation type="obsolete">Zugriff auf die Nicht-Feldvariable unmöglich</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Unknown variable</source>
-        <translation>Unbekannte Variable</translation>
+        <translation type="obsolete">Unbekannte Variable</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to int()</source>
         <translation type="obsolete">Illegales Argument für Befehl int()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to string()</source>
         <translation type="obsolete">Illegales Argument für Befehl string()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to sin()</source>
         <translation type="obsolete">Illegales Argument für Befehl sin()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to cos()</source>
         <translation type="obsolete">Illegales Argument für Befehl cos()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to tan()</source>
         <translation type="obsolete">Illegales Argument für Befehl tan()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to ceil()</source>
         <translation type="obsolete">Illegales Argument für Befehl ceil()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to floor()</source>
         <translation type="obsolete">Illegales Argument für Befehl floor()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1261"/>
         <source>Illegal argument to abs()</source>
         <translation type="obsolete">Illegales Argument für Befehl abs()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1622"/>
         <source>String in numeric expression</source>
-        <translation>Verwendung einer Zeichenkette in einem numerischen Ausdruck</translation>
+        <translation type="obsolete">Verwendung einer Zeichenkette in einem numerischen Ausdruck</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1622"/>
         <source>Cannot compare strings with &gt; or &lt;=</source>
         <translation type="obsolete">Kann Zeichenketten nicht mittels &gt; oder &lt;= vergleichen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1622"/>
         <source>Cannot compare strings with &lt; or &gt;=</source>
         <translation type="obsolete">Kann Zeichenketten nicht mittels &lt; oder &gt;= vergleichen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="593"/>
+        <location filename="../Interpreter.cpp" line="168"/>
         <source>Unable to open file</source>
-        <translation>Kann Datei nicht öffnen</translation>
+        <translation type="unfinished">Kann Datei nicht öffnen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="593"/>
         <source>Illegal argument to open()</source>
         <translation type="obsolete">Illegales Argument für Befehl open()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="680"/>
         <source>Can&apos;t read -- no open file.</source>
-        <translation>Lesen nicht möglich - im Moment ist keine Datei geöffnet.</translation>
+        <translation type="obsolete">Lesen nicht möglich - im Moment ist keine Datei geöffnet.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="718"/>
+        <location filename="../Interpreter.cpp" line="174"/>
         <source>Unable to write to file</source>
-        <translation>Kann nicht in Datei schreiben</translation>
+        <translation type="unfinished">Kann nicht in Datei schreiben</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="718"/>
         <source>Illegal argument to write()</source>
         <translation type="obsolete">Illegales Argument für Befehl write()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="718"/>
         <source>Illegal argument to length()</source>
         <translation type="obsolete">Illegales Argument für Befehl length()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="2150"/>
         <source>Not enough points in array for poly()</source>
-        <translation>Nicht genug Punkte im Feld für den poly()-Befehl </translation>
+        <translation type="obsolete">Nicht genug Punkte im Feld für den poly()-Befehl </translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="745"/>
         <source>reset() called when no file is open</source>
-        <translation>reset() aufgerufen ohne dass eine Datei geöffnet ist</translation>
+        <translation type="obsolete">reset() aufgerufen ohne dass eine Datei geöffnet ist</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="754"/>
+        <location filename="../Interpreter.cpp" line="177"/>
         <source>Unable to reset file</source>
-        <translation>Kann Datei nicht zurücksetzen (reset() nicht möglich)</translation>
+        <translation type="unfinished">Kann Datei nicht zurücksetzen (reset() nicht möglich)</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1048"/>
         <source>Not a string array variable</source>
-        <translation>Keine Zeichenketten-Array Variable</translation>
+        <translation type="obsolete">Keine Zeichenketten-Array Variable</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1165"/>
         <source>Not an array variable</source>
-        <translation>Keine Array Variable</translation>
+        <translation type="obsolete">Keine Array Variable</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1165"/>
         <source>Illegal argument to mid()</source>
         <translation type="obsolete">Illegales Argument für Befehl mid()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1406"/>
+        <location filename="../Interpreter.cpp" line="204"/>
         <source>String not long enough for given starting character</source>
-        <translation>Zeichenkette nicht lang genug für das gegebenen Anfangs-Zeichen</translation>
+        <translation type="unfinished">Zeichenkette nicht lang genug für das gegebenen Anfangs-Zeichen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1406"/>
         <source>Illegal argument to instr()</source>
         <translation type="obsolete">Illegales Argument für instr()</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1406"/>
         <source>Sound must have a frequency and duration.</source>
         <translation type="obsolete">Sound benötigt eine Frequenz und eine Dauer.</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1170"/>
         <source>Array dimension too small</source>
-        <translation>Zu kleine Feld-Dimension</translation>
+        <translation type="obsolete">Zu kleine Feld-Dimension</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1170"/>
         <source>Array not defined</source>
         <translation type="obsolete">Feld nicht definiert</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1170"/>
         <source>Can not assign numeric value to array variable</source>
         <translation type="obsolete">Kann einem Feld keinen numerischen Wert zuweisen</translation>
     </message>
     <message>
-        <location filename="../Interpreter.cpp" line="1170"/>
         <source>Can not assign string value to array variable</source>
         <translation type="obsolete">Kann einem Feld keinen Zeichenkettenwert zuweisen</translation>
     </message>
@@ -388,425 +841,609 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../MainWindow.cpp" line="283"/>
+        <location filename="../MainWindow.cpp" line="481"/>
         <source>Program modifications have not been saved.</source>
         <translation>Programmänderungen wurden nicht gespeichert.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
+        <location filename="../MainWindow.cpp" line="482"/>
+        <source>Do you want to discard your changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Do you want wish to discard your changes?</source>
-        <translation>Sollen die Änderungen verworfen werden?</translation>
+        <translation type="obsolete">Sollen die Änderungen verworfen werden?</translation>
+    </message>
+</context>
+<context>
+    <name>PreferencesWin</name>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="34"/>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="39"/>
+        <source>Preferences and Settings Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="48"/>
+        <source>Allow SYSTEM statement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="53"/>
+        <source>Allow GETSETTING/SETSETTING statements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="60"/>
+        <source>Allow PORTIN/PORTOUT statements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="67"/>
+        <source>Show runtime warning messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="72"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="74"/>
+        <source>Save</source>
+        <translation type="unfinished">Speichern</translation>
+    </message>
+    <message>
+        <location filename="../PreferencesWin.cpp" line="110"/>
+        <source>Preferences and settings have been saved.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Run</source>
         <translation type="obsolete">Ausführen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Stop</source>
         <translation type="obsolete">Stopp</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Step</source>
         <translation type="obsolete">Schritt</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>File</source>
         <translation type="obsolete">Datei</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>New</source>
         <translation type="obsolete">Neu</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Open</source>
         <translation type="obsolete">Öffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Save</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Save As</source>
         <translation type="obsolete">Speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Exit</source>
         <translation type="obsolete">Beenden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Edit</source>
         <translation type="obsolete">Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="284"/>
         <source>Cut</source>
         <translation type="obsolete">Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="125"/>
+        <location filename="../BasicGraph.cpp" line="167"/>
+        <location filename="../BasicOutput.cpp" line="117"/>
         <source>Copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
+        <location filename="../BasicOutput.cpp" line="118"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
         <source>Select All</source>
         <translation type="obsolete">Alles auswählen</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
         <source>Debug</source>
         <translation type="obsolete">Debuggen</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
         <source>Save Compiled Byte Code</source>
         <translation type="obsolete">Übersetzten Bytecode speichern</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
         <source>About</source>
         <translation type="obsolete">Über</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="126"/>
+        <location filename="../MainWindow.cpp" line="412"/>
         <source>About BASIC-256</source>
-        <translation type="obsolete">Über BASIC-256</translation>
+        <translation type="unfinished">Über BASIC-256</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="259"/>
+        <location filename="../MainWindow.cpp" line="112"/>
+        <location filename="../MainWindow.cpp" line="118"/>
         <source>Graphics Output</source>
         <translation>Grafikfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="93"/>
+        <location filename="../MainWindow.cpp" line="122"/>
+        <location filename="../MainWindow.cpp" line="128"/>
+        <source>Variable Watch</source>
+        <translation type="unfinished">Variablen-Beobachtung</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="141"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="94"/>
+        <location filename="../MainWindow.cpp" line="142"/>
         <source>&amp;New</source>
         <translation>&amp;Neu</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="96"/>
+        <location filename="../MainWindow.cpp" line="144"/>
         <source>&amp;Open</source>
         <translation>Ö&amp;ffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="98"/>
+        <location filename="../MainWindow.cpp" line="146"/>
         <source>&amp;Save</source>
         <translation>&amp;Speichern</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="100"/>
+        <location filename="../MainWindow.cpp" line="148"/>
         <source>Save &amp;As</source>
         <translation>Speichern &amp;als</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="103"/>
+        <location filename="../MainWindow.cpp" line="151"/>
         <source>&amp;Print</source>
         <translation>&amp;Drucken</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="106"/>
+        <location filename="../MainWindow.cpp" line="173"/>
         <source>&amp;Exit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="117"/>
+        <location filename="../MainWindow.cpp" line="197"/>
         <source>&amp;Edit</source>
         <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="118"/>
+        <location filename="../MainWindow.cpp" line="198"/>
         <source>&amp;Undo</source>
         <translation>&amp;Rückgängig</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="121"/>
+        <location filename="../MainWindow.cpp" line="203"/>
         <source>&amp;Redo</source>
         <translation>&amp;Wiederherstellen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="125"/>
+        <location filename="../MainWindow.cpp" line="209"/>
         <source>Cu&amp;t</source>
         <translation>&amp;Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="127"/>
+        <location filename="../MainWindow.cpp" line="212"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopieren</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="129"/>
+        <location filename="../MainWindow.cpp" line="215"/>
         <source>&amp;Paste</source>
         <translation>&amp;Einfügen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="132"/>
+        <location filename="../MainWindow.cpp" line="218"/>
         <source>Select &amp;All</source>
         <translation>&amp;Alles auswählen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="135"/>
+        <location filename="../MainWindow.cpp" line="221"/>
+        <source>&amp;Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="225"/>
+        <source>&amp;Replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="227"/>
         <source>&amp;Beautify</source>
         <translation>Quellcode &amp;formattieren</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="160"/>
+        <location filename="../MainWindow.cpp" line="229"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="261"/>
         <source>&amp;View</source>
         <translation>&amp;Ansicht</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="161"/>
+        <location filename="../MainWindow.cpp" line="262"/>
+        <source>&amp;Edit Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="263"/>
         <source>&amp;Text Window</source>
         <translation>&amp;Textfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="162"/>
+        <location filename="../MainWindow.cpp" line="264"/>
         <source>&amp;Graphics Window</source>
         <translation>&amp;Grafikfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="163"/>
+        <location filename="../MainWindow.cpp" line="265"/>
         <source>&amp;Variable Watch Window</source>
         <translation>&amp;Variablen-Beobachtung</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="174"/>
+        <location filename="../MainWindow.cpp" line="281"/>
+        <source>&amp;Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="286"/>
+        <source>Graphics Window Grid &amp;Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="293"/>
         <source>&amp;Toolbars</source>
         <translation>&amp;Werkzeugleisten</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="175"/>
+        <location filename="../MainWindow.cpp" line="294"/>
         <source>&amp;Main</source>
         <translation>&amp;Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="181"/>
+        <location filename="../MainWindow.cpp" line="300"/>
         <source>&amp;Text Output</source>
         <translation>&amp;Textfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="189"/>
+        <location filename="../MainWindow.cpp" line="308"/>
         <source>&amp;Graphics Output</source>
         <translation>&amp;Grafikfenster</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="195"/>
+        <location filename="../MainWindow.cpp" line="407"/>
+        <source> Portable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="413"/>
+        <source>&lt;h2&gt;BASIC-256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="414"/>
+        <source>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&amp;Font Size</source>
-        <translation>&amp;Schriftgrösse</translation>
+        <translation type="obsolete">&amp;Schriftgrösse</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="196"/>
         <source>&amp;Small</source>
-        <translation>&amp;Klein</translation>
+        <translation type="obsolete">&amp;Klein</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="197"/>
         <source>&amp;Medium</source>
-        <translation>&amp;Mittel</translation>
+        <translation type="obsolete">&amp;Mittel</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="198"/>
         <source>&amp;Large</source>
-        <translation>&amp;Groß</translation>
+        <translation type="obsolete">&amp;Groß</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="199"/>
         <source>&amp;Huge</source>
-        <translation>&amp;Sehr groß</translation>
+        <translation type="obsolete">&amp;Sehr groß</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="211"/>
+        <location filename="../MainWindow.cpp" line="316"/>
+        <location filename="../MainWindow.cpp" line="317"/>
         <source>&amp;Run</source>
         <translation>&amp;Ausführen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="213"/>
+        <location filename="../MainWindow.cpp" line="320"/>
         <source>&amp;Debug</source>
         <translation>&amp;Debuggen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="215"/>
+        <location filename="../MainWindow.cpp" line="322"/>
         <source>S&amp;tep</source>
         <translation>&amp;Einzelschritt</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="218"/>
+        <location filename="../MainWindow.cpp" line="325"/>
         <source>&amp;Stop</source>
         <translation>&amp;Stopp</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="222"/>
         <source>Save Compiled &amp;Byte Code</source>
-        <translation>&amp;Speichern des kompilierten Bytecodes</translation>
+        <translation type="obsolete">&amp;Speichern des kompilierten Bytecodes</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="231"/>
+        <location filename="../MainWindow.cpp" line="337"/>
+        <location filename="../MainWindow.cpp" line="347"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="234"/>
+        <location filename="../MainWindow.cpp" line="340"/>
+        <location filename="../MainWindow.cpp" line="352"/>
+        <source>&amp;Online help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="356"/>
         <source>&amp;About BASIC-256</source>
         <translation>Ü&amp;ber BASIC-256</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="262"/>
+        <location filename="../MainWindow.cpp" line="102"/>
+        <location filename="../MainWindow.cpp" line="108"/>
         <source>Text Output</source>
         <translation>Textfenster</translation>
     </message>
     <message>
-        <location filename="../Main.cpp" line="83"/>
+        <location filename="../Main.cpp" line="103"/>
         <source>Ready.</source>
         <translation>Fertig.</translation>
     </message>
     <message>
-        <location filename="../Main.cpp" line="82"/>
+        <location filename="../Main.cpp" line="102"/>
         <source>Untitled - BASIC-256</source>
         <translation>Unbennant - BASIC-256</translation>
     </message>
     <message>
-        <location filename="../BasicEdit.cpp" line="244"/>
+        <location filename="../BasicEdit.cpp" line="281"/>
         <source>Print Code</source>
         <translation>Quelltext drucken</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="127"/>
+        <location filename="../BasicGraph.cpp" line="168"/>
+        <location filename="../BasicOutput.cpp" line="119"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="148"/>
+        <location filename="../BasicOutput.cpp" line="140"/>
         <source>Print Text Output</source>
         <translation>Textfenster-Inhalt drucken</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="145"/>
+        <location filename="../BasicGraph.cpp" line="198"/>
         <source>Print Graphics Output</source>
         <translation>Grafikfenster-Inhalt drucken</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="145"/>
         <source>View</source>
         <translation type="obsolete">Ansicht</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="145"/>
         <source>Toolbars</source>
         <translation type="obsolete">Werkzeugleisten</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="145"/>
         <source>Main</source>
         <translation type="obsolete">Hauptfenster</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
+        <location filename="../BasicEdit.cpp" line="293"/>
+        <location filename="../BasicGraph.cpp" line="214"/>
+        <location filename="../BasicOutput.cpp" line="150"/>
         <source>Print Error</source>
         <translation>Fehler beim Drucken</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
+        <location filename="../BasicEdit.cpp" line="293"/>
+        <location filename="../BasicGraph.cpp" line="214"/>
+        <location filename="../BasicOutput.cpp" line="150"/>
         <source>Unable to carry out printing.
 Please check your printer settings.</source>
         <translation>Kann nicht drucken.
 Bitte die Drucker-Einstellungen überprüfen.</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
         <source>Text Window</source>
         <translation type="obsolete">Textfenster</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
         <source>Graphics Window</source>
         <translation type="obsolete">Grafikfenster</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
         <source>Variable Watch Window</source>
         <translation type="obsolete">Variablenfenster</translation>
     </message>
     <message>
-        <location filename="../BasicOutput.cpp" line="158"/>
-        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;                                         &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;<byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; <byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/><byte value="x9"/>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; <byte value="x9"/>&lt;p&gt;Copyright &amp;copy; 2006, Das BASIC-256 Team&lt;/p&gt;<byte value="x9"/>&lt;p&gt;Bitte besuchen Sie unsere Webseite  http://kidbasic.sourceforge.net.&lt;br&gt; Dort finden Sie Anleitungen und Dokumentation.&lt;/p&gt;&lt;p&gt;Bitte beachten Sie die CONTRIBUTORS-Datei für eine Liste der Entwickler&lt;br&gt;und Übersetzer dieses Projektes.&lt;/p&gt;<byte value="x9"/>&lt;p&gt;&lt;i&gt;Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem&lt;br&gt; <byte value="x9"/> Programm erhalten haben. Falls nicht, schreiben Sie an die Free Software&lt;br&gt; <byte value="x9"/>Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA.&lt;/i&gt;&lt;/p&gt; </translation>
+        <source>&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; 					&lt;p&gt;Copyright &amp;copy; 2006, The BASIC-256 Team&lt;/p&gt;                                         &lt;p&gt;Please visit our web site at http://kidbasic.sourceforge.net for tutorials and documentation.&lt;/p&gt; 					&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;				        &lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along&lt;br&gt; 					with this program; if not, write to the Free Software Foundation, Inc.,&lt;br&gt; 					51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="obsolete">&lt;h2 align=&apos;center&apos;&gt;BASIC-256 -- Version 0.9.2&lt;/h2&gt; 	&lt;p&gt;Copyright &amp;copy; 2006, Das BASIC-256 Team&lt;/p&gt;	&lt;p&gt;Bitte besuchen Sie unsere Webseite  http://kidbasic.sourceforge.net.&lt;br&gt; Dort finden Sie Anleitungen und Dokumentation.&lt;/p&gt;&lt;p&gt;Bitte beachten Sie die CONTRIBUTORS-Datei für eine Liste der Entwickler&lt;br&gt;und Übersetzer dieses Projektes.&lt;/p&gt;	&lt;p&gt;&lt;i&gt;Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem&lt;br&gt; 	 Programm erhalten haben. Falls nicht, schreiben Sie an die Free Software&lt;br&gt; 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA.&lt;/i&gt;&lt;/p&gt; </translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="65"/>
+        <source>BASIC-256 Reference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="906"/>
+        <source>ERROR on line </source>
+        <translation type="unfinished">FEHLER in Zeile </translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="4562"/>
+        <source>WARNING on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ReplaceWin</name>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="41"/>
+        <source>From:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="49"/>
+        <source>To:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="56"/>
+        <source>Search Backwards</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="61"/>
+        <source>Case Sensitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="66"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="69"/>
+        <source>Replace &amp;All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="72"/>
+        <source>&amp;Replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="75"/>
+        <source>&amp;Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="102"/>
+        <source>BASIC-256 Find/Replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ReplaceWin.cpp" line="104"/>
+        <source>BASIC-256 Find</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>RunController</name>
     <message>
-        <location filename="../RunController.cpp" line="458"/>
+        <location filename="../RunController.cpp" line="308"/>
+        <location filename="../RunController.cpp" line="334"/>
+        <location filename="../RunController.cpp" line="425"/>
         <source>Running</source>
         <translation>Wird ausgeführt</translation>
     </message>
     <message>
-        <location filename="../RunController.cpp" line="429"/>
+        <location filename="../RunController.cpp" line="395"/>
         <source>Ready.</source>
         <translation>Fertig.</translation>
     </message>
     <message>
-        <location filename="../RunController.cpp" line="464"/>
+        <location filename="../RunController.cpp" line="431"/>
         <source>Paused</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../RunController.cpp" line="483"/>
+        <location filename="../RunController.cpp" line="450"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../RunController.cpp" line="483"/>
+        <location filename="../RunController.cpp" line="450"/>
         <source>BASIC-256 Compiled File </source>
         <translation>BASIC-256 kompilierte Datei </translation>
     </message>
     <message>
-        <location filename="../RunController.cpp" line="483"/>
+        <location filename="../RunController.cpp" line="450"/>
         <source>Any File </source>
         <translation>Alle Dateien </translation>
+    </message>
+    <message>
+        <location filename="../RunController.cpp" line="510"/>
+        <source>BASIC-256 Preferences and Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RunController.cpp" line="511"/>
+        <source>Password:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VariableWin</name>
     <message>
-        <location filename="../VariableWin.cpp" line="27"/>
         <source>Variable Watch</source>
-        <translation>Variablen-Beobachtung</translation>
+        <translation type="obsolete">Variablen-Beobachtung</translation>
     </message>
     <message>
-        <location filename="../VariableWin.cpp" line="32"/>
         <source>Name</source>
-        <translation>Name</translation>
+        <translation type="obsolete">Name</translation>
     </message>
     <message>
-        <location filename="../VariableWin.cpp" line="32"/>
+        <location filename="../VariableWin.cpp" line="36"/>
         <source>Value</source>
         <translation>Wert</translation>
     </message>
     <message>
-        <location filename="../VariableWin.cpp" line="49"/>
+        <location filename="../VariableWin.cpp" line="36"/>
+        <source>Level - Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../VariableWin.cpp" line="73"/>
         <source>&lt;array </source>
         <translation>&lt;Feld </translation>
+    </message>
+    <message>
+        <location filename="../VariableWin.cpp" line="102"/>
+        <source>&lt;unassigned&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../VariableWin.cpp" line="111"/>
+        <source>&lt;&gt;unassigned&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es_ES">
+<TS version="2.0" language="fr_FR">
 <context>
     <name>BasicEdit</name>
     <message>
         <location filename="../BasicEdit.cpp" line="76"/>
         <source>Line: </source>
-        <translation>Linea:</translation>
+        <translation>Ligne : </translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="77"/>
         <source> Column: </source>
-        <translation>Columna:</translation>
+        <translation>Colonne : </translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="124"/>
         <source>New Program?</source>
-        <translation>¿Programa nuevo?</translation>
+        <translation>Nouveau programme ?</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="125"/>
         <source>Are you sure you want to completely clear this program and start a new one?</source>
-        <translation>¿Estás seguro de que quieres quitar este programa e iniciar uno nuevo?</translation>
+        <translation>Êtes-vous sûr de vouloir effacer complètement ce programme pour en commencer un nouveau ?</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="133"/>
         <source>Untitled - BASIC-256</source>
-        <translation>Sin título -BASIC-256</translation>
+        <translation>Sans Nom - BASIC-256</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="145"/>
         <location filename="../BasicEdit.cpp" line="207"/>
         <source>Save file as</source>
-        <translation>Guardar archivo como</translation>
+        <translation>Enregistrer le fichier sous</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="145"/>
         <location filename="../BasicEdit.cpp" line="207"/>
         <source>BASIC-256 File </source>
-        <translation>Archivo de BASIC-256</translation>
+        <translation>Fichier BASIC-256</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="145"/>
         <location filename="../BasicEdit.cpp" line="207"/>
         <location filename="../BasicEdit.cpp" line="219"/>
         <source>Any File </source>
-        <translation>Todos los archivos</translation>
+        <translation>Tout fichier</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="159"/>
         <source>The file </source>
-        <translation>El archivo</translation>
+        <translation>Le fichier </translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="159"/>
         <source> already exists.</source>
-        <translation>ya existe.</translation>
+        <translation> existe déjà.</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="160"/>
         <source>Do you want to overwrite?</source>
-        <translation>¿ Quieres sobreescribirlo?</translation>
+        <translation>Voulez-vous l&apos;écraser ?</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="170"/>
@@ -71,32 +71,32 @@
     <message>
         <location filename="../BasicEdit.cpp" line="219"/>
         <source>Open a file</source>
-        <translation>Abrir un archivo</translation>
+        <translation>Ouvrir un fichier</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="219"/>
         <source>BASIC-256 file </source>
-        <translation>Archivo BASIC-256</translation>
+        <translation>Fichier BASIC-256</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="250"/>
         <source>Program modifications have not been saved.</source>
-        <translation>Las modificaciones del programa no han sido guardadas.</translation>
+        <translation>Les modifications du programme n&apos;ont pas été enregistrées</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="251"/>
         <source>Do you want to discard your changes?</source>
-        <translation>¿Quieres descartar los cambios?</translation>
+        <translation>Voulez-vous abandonner les changements ?</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="389"/>
         <source>String not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chaîne non trouvée.</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="406"/>
         <source>Replace completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Remplacement terminé.</translation>
     </message>
 </context>
 <context>
@@ -104,37 +104,37 @@
     <message>
         <location filename="../DocumentationWin.cpp" line="40"/>
         <source>&amp;Back</source>
-        <translation>&amp;Atrás</translation>
+        <translation>&amp;Reculer</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="45"/>
         <source>&amp;Forward</source>
-        <translation>A&amp;delante</translation>
+        <translation>&amp;Avancer</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="50"/>
         <source>&amp;Home</source>
-        <translation>&amp;Inicio</translation>
+        <translation>&amp;Début</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="56"/>
         <source>&amp;Exit</source>
-        <translation>&amp;Salir</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="84"/>
         <source>Off-line help does not appear to be installed.  Please use on-line help.</source>
-        <translation type="unfinished"></translation>
+        <translation>La documentation hors-ligne n&apos;a pas l&apos;air d&apos;être installée. Consultez l&apos;aide en ligne s&apos;il vous plaît.</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="95"/>
         <source>Contextual help for the word &apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Aide contextuel du mot &apos;</translation>
     </message>
     <message>
         <location filename="../DocumentationWin.cpp" line="95"/>
         <source>&apos; is not available.</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos; n&apos;est pas disponible</translation>
     </message>
 </context>
 <context>
@@ -142,38 +142,31 @@
     <message>
         <location filename="../Interpreter.cpp" line="145"/>
         <source>ERROR on line </source>
-        <translation>ERROR en linea</translation>
+        <translation>ERREUR à la ligne </translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="115"/>
         <source>ERROR - Unable to initialize Winsock library.
 </source>
-        <translation>ERROR - No es posible inicializar la biblioteca Winsock.
-</translation>
-    </message>
-    <message>
-        <location filename="../Interpreter.cpp" line="615"/>
-        <location filename="../Interpreter.cpp" line="617"/>
-        <source>Syntax error on line </source>
-        <translation type="unfinished">Error de sintaxis en la linea </translation>
+        <translation>ERREUR - Impossible d&apos;initialiser la librairie Winsock</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="121"/>
         <source>ERROR - Unable to find inpout32.dll - direct port I/O disabled.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>ERREUR - Impossible de trouver inpout32.dll - E/S directes désactivées</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="125"/>
         <source>ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>ERREUR - Impossible de trouver Inp32 dans inpout32.dll - E/S directes désactivées</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="129"/>
         <source>ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>ERREUR - Impossible de trouver Out32 dans inpout32.dll - E/S directes désactivées</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="153"/>
@@ -634,17 +627,27 @@
     <message>
         <location filename="../Interpreter.cpp" line="615"/>
         <source> around end of line.</source>
-        <translation>en la parte final de la linea.</translation>
+        <translation> vers la fin de la ligne.</translation>
+    </message>
+    <message>
+        <location filename="../Interpreter.cpp" line="615"/>
+        <location filename="../Interpreter.cpp" line="617"/>
+        <source>Syntax error on line </source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="617"/>
         <source> around column </source>
-        <translation>en torno a la columna </translation>
+        <translation> vers la colonne </translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="693"/>
         <source>Error in bytecode during label referencing at line </source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur dans un bytecode pendant le référencement d&apos;un label à la ligne </translation>
+    </message>
+    <message>
+        <source>WARNING on line </source>
+        <translation type="obsolete">AVERTISSEMENT à la ligne </translation>
     </message>
 </context>
 <context>
@@ -652,12 +655,12 @@
     <message>
         <location filename="../MainWindow.cpp" line="481"/>
         <source>Program modifications have not been saved.</source>
-        <translation>Las modificaciones del programa no han sido guardadas.</translation>
+        <translation>Les modifications du programme n&apos;ont pas été enregistrées.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="482"/>
         <source>Do you want to discard your changes?</source>
-        <translation>¿Quieres descartar los cambios?</translation>
+        <translation>Êtes-vous prêt à perdre vos modifications ?</translation>
     </message>
 </context>
 <context>
@@ -665,47 +668,47 @@
     <message>
         <location filename="../PreferencesWin.cpp" line="34"/>
         <source>BASIC-256 Preferences and Settings</source>
-        <translation>Preferencias y configuración de BASIC-256</translation>
+        <translation>Réglages et Préférences BASIC-256</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="39"/>
         <source>Preferences and Settings Password:</source>
-        <translation>Contraseña para preferencias y configuración:</translation>
+        <translation>Mot de passe Réglages et Préférences</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="48"/>
         <source>Allow SYSTEM statement</source>
-        <translation>Permitir la instrucción SYSTEM</translation>
+        <translation>Autoriser les déclarations SYSTEM</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="53"/>
         <source>Allow GETSETTING/SETSETTING statements</source>
-        <translation>Permitir las instrucciones GETSETTING/SETSETTING</translation>
+        <translation>Autoriser les déclarations GETSETTING/SETSETTING</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="60"/>
         <source>Allow PORTIN/PORTOUT statements</source>
-        <translation>Permitir las instrucciones PORTIN/PORTOUT</translation>
+        <translation>Autoriser les déclarations PORTIN/PORTOUT</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="67"/>
         <source>Show runtime warning messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les avertissements à l&apos;exécution</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="72"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="74"/>
         <source>Save</source>
-        <translation>Guardar</translation>
+        <translation>Enregistrer</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="110"/>
         <source>Preferences and settings have been saved.</source>
-        <translation>Las preferencias y configuraciones han sido guardadas.</translation>
+        <translation>Les Préférences et Réglages ont été enregistrées.</translation>
     </message>
 </context>
 <context>
@@ -713,14 +716,14 @@
     <message>
         <location filename="../BasicEdit.cpp" line="281"/>
         <source>Print Code</source>
-        <translation>Código de impresión</translation>
+        <translation>Imprimer le code</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="293"/>
         <location filename="../BasicGraph.cpp" line="214"/>
         <location filename="../BasicOutput.cpp" line="150"/>
         <source>Print Error</source>
-        <translation>Error de impresión</translation>
+        <translation>Erreur d&apos;impression</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="293"/>
@@ -728,178 +731,182 @@
         <location filename="../BasicOutput.cpp" line="150"/>
         <source>Unable to carry out printing.
 Please check your printer settings.</source>
-        <translation>NO es posible imprimir.
-Por favor, comprueba la configuración de la impresora.</translation>
+        <translation>Impossible d&apos;imprimer. Vérifiez les options d&apos;impression.</translation>
     </message>
     <message>
         <location filename="../BasicGraph.cpp" line="167"/>
         <location filename="../BasicOutput.cpp" line="117"/>
         <source>Copy</source>
-        <translation>Copiar</translation>
+        <translation>Copier</translation>
     </message>
     <message>
         <location filename="../BasicGraph.cpp" line="168"/>
         <location filename="../BasicOutput.cpp" line="119"/>
         <source>Print</source>
-        <translation>Imprimir</translation>
+        <translation>Imprimer</translation>
     </message>
     <message>
         <location filename="../BasicGraph.cpp" line="198"/>
         <source>Print Graphics Output</source>
-        <translation>Imprimir el area de gráficos</translation>
+        <translation>Imprimer la sortie graphique</translation>
     </message>
     <message>
         <location filename="../BasicOutput.cpp" line="118"/>
         <source>Paste</source>
-        <translation>Pegar</translation>
+        <translation>Coller</translation>
     </message>
     <message>
         <location filename="../BasicOutput.cpp" line="140"/>
         <source>Print Text Output</source>
-        <translation>Imprimir el area de texto</translation>
+        <translation>Imprimer la sortie texte</translation>
+    </message>
+    <message>
+        <location filename="../DocumentationWin.cpp" line="65"/>
+        <source>BASIC-256 Reference</source>
+        <translation>Référence BASIC-256</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="102"/>
         <source>Untitled - BASIC-256</source>
-        <translation>Sin título -BASIC-256</translation>
+        <translation>Sans Nom - BASIC-256</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="103"/>
         <source>Ready.</source>
-        <translation>Listo.</translation>
+        <translation>Prêt.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="102"/>
         <location filename="../MainWindow.cpp" line="108"/>
         <source>Text Output</source>
-        <translation>Area de texto</translation>
+        <translation>Sortie texte</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="112"/>
         <location filename="../MainWindow.cpp" line="118"/>
         <source>Graphics Output</source>
-        <translation>Area de gráficos</translation>
+        <translation>Sortie graphique</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="122"/>
         <location filename="../MainWindow.cpp" line="128"/>
         <source>Variable Watch</source>
-        <translation type="unfinished">Inspección de variables</translation>
+        <translation type="unfinished">Suivi de variables</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="141"/>
         <source>&amp;File</source>
-        <translation>&amp;Archivo</translation>
+        <translation>&amp;Fichier</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="142"/>
         <source>&amp;New</source>
-        <translation>&amp;Nuevo</translation>
+        <translation>&amp;Nouveau</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="144"/>
         <source>&amp;Open</source>
-        <translation>Ab&amp;rir</translation>
+        <translation>&amp;Ouvrir</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="146"/>
         <source>&amp;Save</source>
-        <translation>&amp;Guardar</translation>
+        <translation>&amp;Enregistrer</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="148"/>
         <source>Save &amp;As</source>
-        <translation>G&amp;uardar como</translation>
+        <translation>Enregistrer &amp;sous</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="151"/>
         <source>&amp;Print</source>
-        <translation>&amp;Imprimir</translation>
+        <translation>&amp;Imprimer</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="173"/>
         <source>&amp;Exit</source>
-        <translation>&amp;Salir</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="197"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Editar</translation>
+        <translation>&amp;Édition</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="198"/>
         <source>&amp;Undo</source>
-        <translation>&amp;Deshacer</translation>
+        <translation>&amp;Annuler</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="203"/>
         <source>&amp;Redo</source>
-        <translation>R&amp;estaurar</translation>
+        <translation>Ré&amp;tablir</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="209"/>
         <source>Cu&amp;t</source>
-        <translation>Co&amp;rtar</translation>
+        <translation>&amp;Couper</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="212"/>
         <source>&amp;Copy</source>
-        <translation>C&amp;opiar</translation>
+        <translation>C&amp;opier</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="215"/>
         <source>&amp;Paste</source>
-        <translation>&amp;Pegar</translation>
+        <translation>Co&amp;ller</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="218"/>
         <source>Select &amp;All</source>
-        <translation>Seleccionar &amp;todo</translation>
+        <translation>Tout &amp;sélectionner</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="221"/>
         <source>&amp;Find</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rechercher</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="225"/>
         <source>&amp;Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>Rem&amp;placer</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="227"/>
         <source>&amp;Beautify</source>
-        <translation>Em&amp;bellecer</translation>
+        <translation>&amp;Mettre en forme</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="229"/>
         <source>Preferences</source>
-        <translation>Preferencias</translation>
+        <translation>Pré&amp;férences</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="261"/>
         <source>&amp;View</source>
-        <translation>&amp;Ver</translation>
+        <translation>&amp;Affichage</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="262"/>
         <source>&amp;Edit Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Éditeur de code</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="263"/>
         <source>&amp;Text Window</source>
-        <translation>Ventana de &amp;texto</translation>
+        <translation>Sortie &amp;texte</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="264"/>
         <source>&amp;Graphics Window</source>
-        <translation>Ventana de &amp;gráficos</translation>
+        <translation>Sortie &amp;graphique</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="265"/>
         <source>&amp;Variable Watch Window</source>
-        <translation>Ventana de &amp;inspección de variables</translation>
+        <translation>&amp;Suivi de variables</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="281"/>
@@ -909,27 +916,27 @@ Por favor, comprueba la configuración de la impresora.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="286"/>
         <source>Graphics Window Grid &amp;Lines</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Quadrillage de la fenêtre graphique</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="293"/>
         <source>&amp;Toolbars</source>
-        <translation>&amp;Barras de Herramientas</translation>
+        <translation>&amp;Barres d&apos;outils</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="294"/>
         <source>&amp;Main</source>
-        <translation>&amp;Principal</translation>
+        <translation>&amp;Principale</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="300"/>
         <source>&amp;Text Output</source>
-        <translation>Ventana de &amp;texto</translation>
+        <translation>Sortie &amp;texte</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="308"/>
         <source>&amp;Graphics Output</source>
-        <translation>Ventana de &amp;gráficos</translation>
+        <translation>Sortie &amp;graphique</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="413"/>
@@ -938,15 +945,15 @@ Por favor, comprueba la configuración de la impresora.</translation>
     </message>
     <message>
         <source>&amp;Font Size</source>
-        <translation type="obsolete">&amp;Tamaño de fuente</translation>
+        <translation type="obsolete">Taille des &amp;caractères</translation>
     </message>
     <message>
         <source>&amp;Small</source>
-        <translation type="obsolete">&amp;Pequeña</translation>
+        <translation type="obsolete">&amp;Petite</translation>
     </message>
     <message>
         <source>&amp;Medium</source>
-        <translation type="obsolete">&amp;Mediana</translation>
+        <translation type="obsolete">&amp;Moyenne</translation>
     </message>
     <message>
         <source>&amp;Large</source>
@@ -954,23 +961,23 @@ Por favor, comprueba la configuración de la impresora.</translation>
     </message>
     <message>
         <source>&amp;Huge</source>
-        <translation type="obsolete">&amp;Enorme</translation>
+        <translation type="obsolete">Gé&amp;ante</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="316"/>
         <location filename="../MainWindow.cpp" line="317"/>
         <source>&amp;Run</source>
-        <translation>Eje&amp;cutar</translation>
+        <translation>E&amp;xécuter</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="320"/>
         <source>&amp;Debug</source>
-        <translation>&amp;Depurar</translation>
+        <translation>&amp;Déboguer</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="322"/>
         <source>S&amp;tep</source>
-        <translation>&amp;Paso</translation>
+        <translation>&amp;Pas à pas</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="325"/>
@@ -981,13 +988,18 @@ Por favor, comprueba la configuración de la impresora.</translation>
         <location filename="../MainWindow.cpp" line="337"/>
         <location filename="../MainWindow.cpp" line="347"/>
         <source>&amp;Help</source>
-        <translation>A&amp;yuda</translation>
+        <translation>&amp;Aide</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="340"/>
         <location filename="../MainWindow.cpp" line="352"/>
         <source>&amp;Online help</source>
-        <translation>Ayuda &amp;Online</translation>
+        <translation>Aide en &amp;ligne</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="356"/>
+        <source>&amp;About BASIC-256</source>
+        <translation>À &amp;propos de BASIC-256</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="407"/>
@@ -997,7 +1009,7 @@ Por favor, comprueba la configuración de la impresora.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="412"/>
         <source>About BASIC-256</source>
-        <translation>Acerca de BASIC-256</translation>
+        <translation>À propos de BASIC-256</translation>
     </message>
     <message>
         <source>&lt;h2&gt;BASIC-256&lt;/h2&gt;version &lt;b&gt;</source>
@@ -1006,27 +1018,17 @@ Por favor, comprueba la configuración de la impresora.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="414"/>
         <source>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Visita nuestro sitio web en &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; donde encontrarás tutoriales y documentación.&lt;/p&gt;&lt;p&gt;En el archivo CONTRIBUTORS  puedes ver la lista de desarrolladores y traductores de este proyecto.&lt;/p&gt;&lt;p&gt;&lt;i&gt;Deberías haber recibido una copia de la licencia GNU General Public License con este programa; si no es así, escribe a la  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../MainWindow.cpp" line="356"/>
-        <source>&amp;About BASIC-256</source>
-        <translation>A&amp;cerca de BASIC-256</translation>
-    </message>
-    <message>
-        <location filename="../DocumentationWin.cpp" line="65"/>
-        <source>BASIC-256 Reference</source>
-        <translation>Referencia de BASIC-256</translation>
+        <translation>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, L&apos;équipe BASIC-256&lt;/p&gt;&lt;p&gt;Visitez notre site web à l&apos;adresse &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; pour les tutoriels et la documentation.&lt;/p&gt;&lt;p&gt;Merci de consulter le fichier CONTRIBUTORS pour obtenir la liste des développeurs et traducteurs de ce projet.&lt;/p&gt;&lt;p&gt;&lt;i&gt;Vous devriez avoir reçu une copie de la GNU General Public License avec ce programme ; sinon, écrivez à la Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="906"/>
         <source>ERROR on line </source>
-        <translation type="unfinished">ERROR en linea</translation>
+        <translation type="unfinished">ERREUR à la ligne </translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="4562"/>
         <source>WARNING on line </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AVERTISSEMENT à la ligne </translation>
     </message>
 </context>
 <context>
@@ -1034,52 +1036,52 @@ Por favor, comprueba la configuración de la impresora.</translation>
     <message>
         <location filename="../ReplaceWin.cpp" line="41"/>
         <source>From:</source>
-        <translation type="unfinished"></translation>
+        <translation>Remplacer :</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="49"/>
         <source>To:</source>
-        <translation type="unfinished"></translation>
+        <translation>Par :</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="56"/>
         <source>Search Backwards</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechercher en arrière</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="61"/>
         <source>Case Sensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Respecter la casse</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="66"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancelar</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="69"/>
         <source>Replace &amp;All</source>
-        <translation type="unfinished"></translation>
+        <translation>Remplacer &amp;tout</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="72"/>
         <source>&amp;Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Remplacer</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="75"/>
         <source>&amp;Find</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rechercher</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="102"/>
         <source>BASIC-256 Find/Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>BASIC-256 Rechercher/Remplacer</translation>
     </message>
     <message>
         <location filename="../ReplaceWin.cpp" line="104"/>
         <source>BASIC-256 Find</source>
-        <translation type="unfinished"></translation>
+        <translation>BASIC-256 Rechercher</translation>
     </message>
 </context>
 <context>
@@ -1089,78 +1091,74 @@ Por favor, comprueba la configuración de la impresora.</translation>
         <location filename="../RunController.cpp" line="334"/>
         <location filename="../RunController.cpp" line="425"/>
         <source>Running</source>
-        <translation>Ejecutando</translation>
+        <translation>Exécution en cours</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="395"/>
         <source>Ready.</source>
-        <translation>Listo.</translation>
+        <translation>Prêt.</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="431"/>
         <source>Paused</source>
-        <translation>Pausa</translation>
+        <translation>En pause</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="450"/>
         <source>Save file as</source>
-        <translation>Guardar archivo como</translation>
+        <translation>Enregistrer le fichier sous</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="450"/>
         <source>BASIC-256 Compiled File </source>
-        <translation>Archivo compilado de BASIC-256</translation>
+        <translation>Fichier BASIC-256 compilé </translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="450"/>
         <source>Any File </source>
-        <translation>Todos los archivos</translation>
+        <translation>Tout fichier</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="510"/>
         <source>BASIC-256 Preferences and Settings</source>
-        <translation>Preferencias y configuración de BASIC-256</translation>
+        <translation>Préférences et Réglages BASIC-256</translation>
     </message>
     <message>
         <location filename="../RunController.cpp" line="511"/>
         <source>Password:</source>
-        <translation>Contraseña:</translation>
+        <translation>Mot de passe :</translation>
     </message>
 </context>
 <context>
     <name>VariableWin</name>
     <message>
         <source>Variable Watch</source>
-        <translation type="obsolete">Inspección de variables</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="obsolete">Nombre</translation>
-    </message>
-    <message>
-        <location filename="../VariableWin.cpp" line="36"/>
-        <source>Value</source>
-        <translation>Valor</translation>
+        <translation type="obsolete">Suivi de variables</translation>
     </message>
     <message>
         <location filename="../VariableWin.cpp" line="36"/>
         <source>Level - Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Niveau - Nom</translation>
+    </message>
+    <message>
+        <location filename="../VariableWin.cpp" line="36"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
     </message>
     <message>
         <location filename="../VariableWin.cpp" line="73"/>
         <source>&lt;array </source>
-        <translation>&lt;array</translation>
+        <translation>&lt;tableau </translation>
     </message>
     <message>
         <location filename="../VariableWin.cpp" line="102"/>
         <source>&lt;unassigned&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;non définie&gt;</translation>
     </message>
     <message>
         <location filename="../VariableWin.cpp" line="111"/>
         <source>&lt;&gt;unassigned&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;&gt;non définie&gt;</translation>
     </message>
 </context>
 </TS>

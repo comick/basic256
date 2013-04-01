@@ -404,14 +404,14 @@ MainWindow::~MainWindow()
 void MainWindow::about()
 {
 	#ifdef WIN32PORTABLE
-		#define PORTABLE " Portable"
+		#define PORTABLE QObject::tr(" Portable")
 	#else
 		#define PORTABLE ""
 	#endif
 		
-	QMessageBox::about(this, QObject::tr("About BASIC-256" PORTABLE),
+	QMessageBox::about(this, QObject::tr("About BASIC-256") +  PORTABLE,
 		QObject::tr("<h2>BASIC-256" PORTABLE "</h2>"
-		"version <b>" VERSION)+QObject::tr("</b>"
+		"version <b>" VERSION "</b> - built with QT <b>") + QT_VERSION_STR +QObject::tr("</b>"
 		"<p>Copyright &copy; 2006-2010, The BASIC-256 Team</p>"
 		"<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>"
 		"<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>"

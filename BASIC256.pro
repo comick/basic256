@@ -21,7 +21,8 @@ RC_FILE						=	resources/basic256.rc
 TRANSLATIONS				=	Translations/basic256_en_US.ts \
 								Translations/basic256_de.ts \
 								Translations/basic256_ru_RU.ts \
-								Translations/basic256_sp.ts \
+								Translations/basic256_es.ts \
+								Translations/basic256_fr.ts \
 								Translations/basic256_nl.ts
 LIBS						+= -lsqlite3
 

@@ -1,4 +1,4 @@
-The basic256 project uses the QTranslator system for imternationalization.
+The basic256 project uses the QTranslator system for internationalization.
 
 The XML files .ts are created by the lupdate utility in QT.  In trunk run
 

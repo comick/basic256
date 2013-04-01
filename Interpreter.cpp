@@ -150,218 +150,218 @@ QString Interpreter::getErrorMessage(int e) {
 	QString errormessage("");
 	switch(e) {
 		case ERROR_NOSUCHLABEL:
-			errormessage = tr(ERROR_NOSUCHLABEL_MESSAGE);
+			errormessage = tr("No such label");
 			break;
 		case ERROR_FOR1:
-			errormessage = tr(ERROR_FOR1_MESSAGE);
+			errormessage = tr("Illegal FOR -- start number > end number");
 			break;
 		case ERROR_FOR2 :
-			errormessage = tr(ERROR_FOR2_MESSAGE);
+			errormessage = tr("Illegal FOR -- start number < end number");
 			break;
 		case ERROR_NEXTNOFOR:
-			errormessage = tr(ERROR_NEXTNOFOR_MESSAGE);
+			errormessage = tr("Next without FOR");
 			break;
 		case ERROR_FILENUMBER:
-			errormessage = tr(ERROR_FILENUMBER_MESSAGE);
+			errormessage = tr("Invalid File Number");
 			break;
 		case ERROR_FILEOPEN:
-			errormessage = tr(ERROR_FILEOPEN_MESSAGE);
+			errormessage = tr("Unable to open file");
 			break;
 		case ERROR_FILENOTOPEN:
-			errormessage = tr(ERROR_FILENOTOPEN_MESSAGE);
+			errormessage = tr("File not open.");
 			break;
 		case ERROR_FILEWRITE:
-			errormessage = tr(ERROR_FILEWRITE_MESSAGE);
+			errormessage = tr("Unable to write to file");
 			break;
 		case ERROR_FILERESET:
-			errormessage = tr(ERROR_FILERESET_MESSAGE);
+			errormessage = tr("Unable to reset file");
 			break;
 		case ERROR_ARRAYSIZELARGE:
-			errormessage = tr(ERROR_ARRAYSIZELARGE_MESSAGE);
+			errormessage = tr("Array %VARNAME% dimension too large");
 			break;
 		case ERROR_ARRAYSIZESMALL:
-			errormessage = tr(ERROR_ARRAYSIZESMALL_MESSAGE);
+			errormessage = tr("Array %VARNAME% dimension too small");
 			break;
 		case ERROR_NOSUCHVARIABLE:
-			errormessage = tr(ERROR_NOSUCHVARIABLE_MESSAGE);
+			errormessage = tr("Unknown variable %VARNAME%");
 			break;
 		case ERROR_NOTARRAY:
-			errormessage = tr(ERROR_NOTARRAY_MESSAGE);
+			errormessage = tr("Variable %VARNAME% is not an array");
 			break;
 		case ERROR_NOTSTRINGARRAY:
-			errormessage = tr(ERROR_NOTSTRINGARRAY_MESSAGE);
+			errormessage = tr("Variable %VARNAME% is not a string array");
 			break;
 		case ERROR_ARRAYINDEX:
-			errormessage = tr(ERROR_ARRAYINDEX_MESSAGE);
+			errormessage = tr("Array %VARNAME% index out of bounds");
 			break;
 		case ERROR_STRNEGLEN:
-			errormessage = tr(ERROR_STRNEGLEN_MESSAGE);
+			errormessage = tr("Substring length less that zero");
 			break;
 		case ERROR_STRSTART:
-			errormessage = tr(ERROR_STRSTART_MESSAGE);
+			errormessage = tr("Starting position less than zero");
 			break;
 		case ERROR_STREND:
-			errormessage = tr(ERROR_STREND_MESSAGE);
+			errormessage = tr("String not long enough for given starting character");
 			break;
 		case ERROR_NONNUMERIC:
-			errormessage = tr(ERROR_NONNUMERIC_MESSAGE);
+			errormessage = tr("Non-numeric value in numeric expression");
 			break;
 		case ERROR_RGB:
-			errormessage = tr(ERROR_RGB_MESSAGE);
+			errormessage = tr("RGB Color values must be in the range of 0 to 255.");
 			break;
 		case ERROR_PUTBITFORMAT:
-			errormessage = tr(ERROR_PUTBITFORMAT_MESSAGE);
+			errormessage = tr("String input to putbit incorrect.");
 			break;
 		case ERROR_POLYARRAY:
-			errormessage = tr(ERROR_POLYARRAY_MESSAGE);
+			errormessage = tr("Argument not an array for poly()/stamp()");
 			break;
 		case ERROR_POLYPOINTS:
-			errormessage = tr(ERROR_POLYPOINTS_MESSAGE);
+			errormessage = tr("Not enough points in array for poly()/stamp()");
 			break;
 		case ERROR_IMAGEFILE:
-			errormessage = tr(ERROR_IMAGEFILE_MESSAGE);
+			errormessage = tr("Unable to load image file.");
 			break;
 		case ERROR_SPRITENUMBER:
-			errormessage = tr(ERROR_SPRITENUMBER_MESSAGE);
+			errormessage = tr("Sprite number out of range.");
 			break;
 		case ERROR_SPRITENA:
-			errormessage = tr(ERROR_SPRITENA_MESSAGE);
+			errormessage = tr("Sprite has not been assigned.");
 			break;
 		case ERROR_SPRITESLICE:
-			errormessage = tr(ERROR_SPRITESLICE_MESSAGE);
+			errormessage = tr("Unable to slice image.");
 			break;
 		case ERROR_FOLDER:
-			errormessage = tr(ERROR_FOLDER_MESSAGE);
+			errormessage = tr("Invalid directory name.");
 			break;
 		case ERROR_INFINITY:
-			errormessage = tr(ERROR_INFINITY_MESSAGE);
+			errormessage = tr("Operation returned infinity.");
 			break;
 		case ERROR_DBOPEN:
-			errormessage = tr(ERROR_DBOPEN_MESSAGE);
+			errormessage = tr("Unable to open SQLITE database.");
 			break;
 		case ERROR_DBQUERY:
-			errormessage = tr(ERROR_DBQUERY_MESSAGE);
+			errormessage = tr("Database query error (message follows).");
 			break;
 		case ERROR_DBNOTOPEN:
-			errormessage = tr(ERROR_DBNOTOPEN_MESSAGE);
+			errormessage = tr("Database must be opened first.");
 			break;
 		case ERROR_DBCOLNO:
-			errormessage = tr(ERROR_DBCOLNO_MESSAGE);
+			errormessage = tr("Column number out of range or column name not in data set.");
 			break;
 		case ERROR_DBNOTSET:
-			errormessage = tr(ERROR_DBNOTSET_MESSAGE);
+			errormessage = tr("Record set must be opened first.");
 			break;
 		case ERROR_EXTOPBAD:
-			errormessage = tr(ERROR_EXTOPBAD_MESSAGE);
+			errormessage = tr("Invalid Extended Op-code.");
 			break;
 		case ERROR_NETSOCK:
-			errormessage = tr(ERROR_NETSOCK_MESSAGE);
+			errormessage = tr("Error opening network socket.");
 			break;
 		case ERROR_NETHOST:
-			errormessage = tr(ERROR_NETHOST_MESSAGE);
+			errormessage = tr("Error finding network host.");
 			break;
 		case ERROR_NETCONN:
-			errormessage = tr(ERROR_NETCONN_MESSAGE);
+			errormessage = tr("Unable to connect to network host.");
 			break;
 		case ERROR_NETREAD:
-			errormessage = tr(ERROR_NETREAD_MESSAGE);
+			errormessage = tr("Unable to read from network connection.");
 			break;
 		case ERROR_NETNONE:
-			errormessage = tr(ERROR_NETNONE_MESSAGE);
+			errormessage = tr("Network connection has not been opened.");
 			break;
 		case ERROR_NETWRITE:
-			errormessage = tr(ERROR_NETWRITE_MESSAGE);
+			errormessage = tr("Unable to write to network connection.");
 			break;
 		case ERROR_NETSOCKOPT:
-			errormessage = tr(ERROR_NETSOCKOPT_MESSAGE);
+			errormessage = tr("Unable to set network socket options.");
 			break;
 		case ERROR_NETBIND:
-			errormessage = tr(ERROR_NETBIND_MESSAGE);
+			errormessage = tr("Unable to bind network socket.");
 			break;
 		case ERROR_NETACCEPT:
-			errormessage = tr(ERROR_NETACCEPT_MESSAGE);
+			errormessage = tr("Unable to accept network connection.");
 			break;
 		case ERROR_NETSOCKNUMBER:
-			errormessage = tr(ERROR_NETSOCKNUMBER_MESSAGE);
+			errormessage = tr("Invalid Socket Number");
 			break;
 		case ERROR_PERMISSION:
-			errormessage = tr(ERROR_PERMISSION_MESSAGE);
+			errormessage = tr("You do not have permission to use this statement/function.");
 			break;
 		case ERROR_IMAGESAVETYPE:
-			errormessage = tr(ERROR_IMAGESAVETYPE_MESSAGE);
+			errormessage = tr("Invalid image save type.");
 			break;
 		case ERROR_ARGUMENTCOUNT:
-			errormessage = tr(ERROR_ARGUMENTCOUNT_MESSAGE);
+			errormessage = tr("Number of arguments passed does not match FUNCTION/SUBROUTINE definition.");
 			break;
 		case ERROR_MAXRECURSE:
-			errormessage = tr(ERROR_MAXRECURSE_MESSAGE);
+			errormessage = tr("Maximum levels of recursion exceeded.");
 			break;
 	        case ERROR_DIVZERO:
-			errormessage = tr(ERROR_DIVZERO_MESSAGE);
+			errormessage = tr("Division by zero.");
             break;
 		case ERROR_BYREF:
-			errormessage = tr(ERROR_BYREF_MESSAGE);
+			errormessage = tr("Function/Subroutine expecting variable reference in call.");
 			break;
 		case ERROR_BYREFTYPE:
-			errormessage = tr(ERROR_BYREFTYPE_MESSAGE);
+			errormessage = tr("Function/Subroutine variable incorrect reference type in call.");
             break;
 		case ERROR_FREEFILE:
-			errormessage = tr(ERROR_FREEFILE_MESSAGE);
+			errormessage = tr("There are no free file numbers to allocate.");
 			break;
 		case ERROR_FREENET:
-			errormessage = tr(ERROR_FREENET_MESSAGE);
+			errormessage = tr("There are no free network connections to allocate.");
 			break;
 		case ERROR_FREEDB:
-			errormessage = tr(ERROR_FREEDB_MESSAGE);
+			errormessage = tr("There are no free database connections to allocate.");
 			break;
 		case ERROR_DBCONNNUMBER:
-			errormessage = tr(ERROR_DBCONNNUMBER_MESSAGE);
+			errormessage = tr("Invalid Database Connection Number");
 			break;
 		case ERROR_FREEDBSET:
-			errormessage = tr(ERROR_FREEDBSET_MESSAGE);
+			errormessage = tr("There are no free data sets to allocate for that database connection.");
 			break;
 		case ERROR_DBSETNUMBER:
-			errormessage = tr(ERROR_DBSETNUMBER_MESSAGE);
+			errormessage = tr("Invalid data set number.");
 			break;
 		case ERROR_DBNOTSETROW:
-			errormessage = tr(ERROR_DBNOTSETROW_MESSAGE);
+			errormessage = tr("You must advance the data set using DBROW before you can read data from it.");
 			break;
 		case ERROR_PENWIDTH:
-			errormessage = tr(ERROR_PENWIDTH_MESSAGE);
+			errormessage = tr("Drawing pen width must be a non-negative number.");
 			break;
 		case ERROR_COLORNUMBER:
-			errormessage = tr(ERROR_COLORNUMBER_MESSAGE);
+			errormessage = tr("Color values must be in the range of -1 to 16,777,215.");
 			break;
 		case ERROR_ARRAYINDEXMISSING:
-			errormessage = tr(ERROR_ARRAYINDEXMISSING_MESSAGE);
+			errormessage = tr("Array variable %VARNAME% has no value without an index");
 			break;
 		case ERROR_IMAGESCALE:
-			errormessage = tr(ERROR_IMAGESCALE_MESSAGE);
+			errormessage = tr("Image scale must be greater than or equal to zero.");
 			break;
 		case ERROR_FONTSIZE:
-			errormessage = tr(ERROR_FONTSIZE_MESSAGE);
+			errormessage = tr("Font size, in points, must be greater than or equal to zero.");
 			break;
 		case ERROR_FONTWEIGHT:
-			errormessage = tr(ERROR_FONTWEIGHT_MESSAGE);
+			errormessage = tr("Font weight must be greater than or equal to zero.");
 			break;
 		case ERROR_RADIXSTRING:
-			errormessage = tr(ERROR_RADIXSTRING_MESSAGE);
+			errormessage = tr("Unable to convert radix string back to a decimal number.");
 			break;
 		case ERROR_RADIX:
-			errormessage = tr(ERROR_RADIX_MESSAGE);
+			errormessage = tr("Radix conversion base muse be between 2 and 36.");
 			break;
 		case ERROR_LOGRANGE:
-			errormessage = tr(ERROR_LOGRANGE_MESSAGE);
+			errormessage = tr("Unable to calculate the logarithm or root of a negative number.");
 			break;
 		case ERROR_STRINGMAXLEN:
-			errormessage = tr(ERROR_STRINGMAXLEN_MESSAGE);
+			errormessage = tr("String exceeds maximum length of 16,777,216 characters.");
 			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
-			errormessage = tr(ERROR_NOTIMPLEMENTED_MESSAGE);
+			errormessage = tr("Feature not implemented in this environment.");
 			break;
 		default:
-			errormessage = tr(ERROR_USER_MESSAGE);
+			errormessage = tr("User thrown error number.");
 			
 	}
 	if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
@@ -377,11 +377,11 @@ QString Interpreter::getWarningMessage(int e) {
 	switch(e) {
 		// warnings
 		case WARNING_DEPRECATED_FORM :
-			message = tr(WARNING_DEPRECATED_FORM_MESSAGE);
+			message = tr("The used format of the statement has been deprecated.  It is recommended that you reauthor that statement.");
 			break;
         // put WARNING new messages here
 		case WARNING_NOTIMPLEMENTED:
-			message = tr(WARNING_NOTIMPLEMENTED_MESSAGE);
+			message = tr("Feature not implemented in this environment.");
 			break;
 	}
 	return message;
@@ -554,67 +554,67 @@ Interpreter::compileProgram(char *code)
 		switch(result)
 		{
 			case COMPERR_ASSIGNS2N:
-				emit(outputReady(tr(COMPERR_ASSIGNS2N_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("Error assigning a string to a numeric variable on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ASSIGNN2S:
-				emit(outputReady(tr(COMPERR_ASSIGNN2S_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("Error assigning a number to a string variable on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONGOTO:
-				emit(outputReady(tr(COMPERR_FUNCTIONGOTO_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_GLOBALNOTHERE:
-				emit(outputReady(tr(COMPERR_GLOBALNOTHERE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONNOTHERE:
-				emit(outputReady(tr(COMPERR_FUNCTIONNOTHERE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDFUNCTION:
-				emit(outputReady(tr(COMPERR_ENDFUNCTION_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FUNCTIONNOEND:
-				emit(outputReady(tr(COMPERR_FUNCTIONNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_FORNOEND:
-				emit(outputReady(tr(COMPERR_FORNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("FOR without matching NEXT statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_WHILENOEND:
-				emit(outputReady(tr(COMPERR_WHILENOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("WHILE without matching END WHILE statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_DONOEND:
-				emit(outputReady(tr(COMPERR_DONOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("DO without matching UNTIL statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ELSENOEND:
-				emit(outputReady(tr(COMPERR_ELSENOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("ELSE without matching END IF statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_IFNOEND:
-				emit(outputReady(tr(COMPERR_IFNOEND_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("IF without matching END IF or ELSE statement on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_UNTIL:
-				emit(outputReady(tr(COMPERR_UNTIL_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("UNTIL without matching DO on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDWHILE:
-				emit(outputReady(tr(COMPERR_ENDWHILE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("END WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ELSE:
-				emit(outputReady(tr(COMPERR_ELSE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("ELSE without matching IF on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_ENDIF:
-				emit(outputReady(tr(COMPERR_ENDIF_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("END IF without matching IF on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_NEXT:
-				emit(outputReady(tr(COMPERR_NEXT_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("NEXT without matching FOR on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_RETURNVALUE:
-				emit(outputReady(tr(COMPERR_RETURNVALUE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("RETURN with a value is only valid inside a FUNCTION on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			case COMPERR_RETURNTYPE:
-				emit(outputReady(tr(COMPERR_RETURNTYPE_MESSAGE) + QString::number(linenumber) + ".\n"));
+				emit(outputReady(tr("RETURN value type is not the same as FUNCTION on line ") + QString::number(linenumber) + ".\n"));
 				break;
 			default:
 				if(column==0) {
-					emit(outputReady(tr(COMPERR_SYNTAX_MESSAGE) + QString::number(linenumber) + tr(" around end of line.") + "\n"));
+					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
 				} else {
-					emit(outputReady(tr(COMPERR_SYNTAX_MESSAGE) + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
+					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around column ") + QString::number(column) + ".\n"));
 				}
 		}
 		emit(goToLine(linenumber));
@@ -903,7 +903,7 @@ Interpreter::execByteCode()
 			return 0;
 		} else {
 			// no error handler defined - display message and die
-			emit(outputReady(tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
+			emit(outputReady(QObject::tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
 			emit(goToLine(currentLine));
 			return -1;
 		}
@@ -4559,7 +4559,7 @@ Interpreter::execByteCode()
 					int w = stack.popint();
                     SETTINGS;
 					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
-						emit(outputReady(tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
+						emit(outputReady(QObject::tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
 					}
 				}
 				break;
