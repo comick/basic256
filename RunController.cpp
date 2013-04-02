@@ -357,7 +357,8 @@ void
 RunController::outputClear()
 {
 	mutex->lock();
-	outwin->clear();
+	//outwin->clear();
+	outwin->setPlainText("");
 	waitCond->wakeAll();
 	mutex->unlock();
 }
