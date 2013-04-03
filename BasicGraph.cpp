@@ -41,7 +41,7 @@ using namespace std;
 
 #include "BasicGraph.h"
 
-extern QMutex *keymutex;
+extern QMutex *mutex;
 extern int currentKey;
 
 BasicGraph::BasicGraph()
@@ -130,9 +130,9 @@ BasicGraph::keyPressEvent(QKeyEvent *e)
 {
   e->accept();
   
-  keymutex->lock();
+  mutex->lock();
   currentKey = e->key();
-  keymutex->unlock();
+  mutex->unlock();
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {

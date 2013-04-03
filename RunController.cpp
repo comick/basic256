@@ -85,10 +85,8 @@ using namespace std;
 
 extern QMutex* mutex;
 extern QMutex* debugmutex;
-extern QMutex* keymutex;
 extern QWaitCondition* waitCond;
 extern QWaitCondition* waitDebugCond;
-extern QWaitCondition* waitInput;
 
 extern MainWindow * mainwin;
 extern BasicEdit * editwin;
@@ -100,7 +98,6 @@ extern VariableWin * varwin;
 
 RunController::RunController()
 {
-	//i = new Interpreter(mainwin->graphwin->image, mainwin->graphwin->imask);
 	i = new Interpreter();
 
 	replacewin = NULL;
@@ -159,80 +156,84 @@ RunController::~RunController()
 void
 RunController::speakWords(QString text)
 {
-#ifdef WIN32
+	mutex->lock();
+	#ifdef WIN32
 
-	// use microsoft sapi with the default voice
-	ISpVoice * pVoice = NULL;
+		// use microsoft sapi with the default voice
+		ISpVoice * pVoice = NULL;
 
-    if (FAILED(::CoInitialize(NULL))) {
-		fprintf(stderr, "RunController::speakWords - Unable to CoInitialize SAPI.\n");
-	} else {
-		HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
-		if( SUCCEEDED( hr ) )
-		{
-			// convert qchar* wo wchar*
-			WCHAR *wutext = new WCHAR[text.length() + 1];
-			for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
-			wutext[text.length()] = 0;
-		
-			hr = pVoice->Speak(wutext, 0, NULL);
-			pVoice->Release();
-			pVoice = NULL;
-		
-			delete wutext;	// send to gc - just in case
+		if (FAILED(::CoInitialize(NULL))) {
+			fprintf(stderr, "RunController::speakWords - Unable to CoInitialize SAPI.\n");
 		} else {
-			fprintf(stderr, "RunController::speakWords - Unable to create SAPI instance.\n");
+			HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
+			if( SUCCEEDED( hr ) )
+			{
+				// convert qchar* wo wchar*
+				WCHAR *wutext = new WCHAR[text.length() + 1];
+				for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
+				wutext[text.length()] = 0;
+		
+				hr = pVoice->Speak(wutext, 0, NULL);
+				pVoice->Release();
+				pVoice = NULL;
+			
+				delete wutext;	// send to gc - just in case
+			} else {
+				fprintf(stderr, "RunController::speakWords - Unable to create SAPI instance.\n");
+			}
+			::CoUninitialize();
 		}
-		::CoUninitialize();
-	}
-#endif
-#ifdef LINUX_ESPEAK
-	//QMessageBox::information( 0, "BASIC-256", QString("ESpeak"));
+	#endif
+	#ifdef LINUX_ESPEAK
+		//QMessageBox::information( 0, "BASIC-256", QString("ESpeak"));
     
-	// espeak tts library
-	char *data_path = NULL;   // use default path for espeak-data
-	int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+		// espeak tts library
+		char *data_path = NULL;   // use default path for espeak-data
+		int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
+	
+		int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,data_path,0);
+			if (samplerate!=-1) {
+			espeak_SetVoiceByName("default");
+			int size=text.length()+1;	// buffer length
+			espeak_ERROR err = espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+			if (err!=EE_OK) {
+				fprintf(stderr,"espeak synth error %i\n", err);
+			}
+			espeak_Synchronize();		// wait to finish
+			espeak_Terminate();		// clean up
 
-	int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,data_path,0);
-       	if (samplerate!=-1) {
-		espeak_SetVoiceByName("default");
-		int size=text.length()+1;	// buffer length
-		espeak_ERROR err = espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-		if (err!=EE_OK) {
-			fprintf(stderr,"espeak synth error %i\n", err);
+		} else {
+			fprintf(stderr,"Unable to initialize espeak\n");
 		}
-		espeak_Synchronize();		// wait to finish
-		espeak_Terminate();		// clean up
+	#endif
+	#ifdef LINUX_FLITE
+		// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
+		cst_voice *v;
+		flite_init();
+		v = register_cmu_us_kal();
+		int length = flite_text_to_speech(text.toLatin1(),v,"play");
+		// wait for finish
+		//clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
+		//while (clock() < endwait) {}
 
-	} else {
-		fprintf(stderr,"Unable to initialize espeak\n");
-	}
-#endif
-#ifdef LINUX_FLITE
-	// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
-	cst_voice *v;
-	flite_init();
-	v = register_cmu_us_kal();
-	int length = flite_text_to_speech(text.toLatin1(),v,"play");
-	// wait for finish
-	//clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
-  	//while (clock() < endwait) {}
+	#endif
+	#ifdef LINUX_ESPEAK_EXECUTE
+		// easy espeak implementation when all else fails
+		text.replace("\""," quote ");
+		text.prepend("espeak \"");
+		text.append("\"");
+		executeSystem(text.toLatin1().data());
+	#endif
+	#ifdef MACX_SAY
+		// easy macosX implementation - call the command line say statement
+		text.replace("\""," quote ");
+		text.prepend("say \"");
+		text.append("\"");
+		executeSystem(text.toLatin1().data());
+	#endif
+	waitCond->wakeAll();
+	mutex->unlock();
 
-#endif
-#ifdef LINUX_ESPEAK_EXECUTE
-	// easy espeak implementation when all else fails
-	text.replace("\""," quote ");
-	text.prepend("espeak \"");
-	text.append("\"");
-	executeSystem(text.toLatin1().data());
-#endif
-#ifdef MACX_SAY
-	// easy macosX implementation - call the command line say statement
-	text.replace("\""," quote ");
-	text.prepend("say \"");
-	text.append("\"");
-	executeSystem(text.toLatin1().data());
-#endif
 }
 
 void
@@ -248,46 +249,55 @@ RunController::executeSystem(char* text)
 
 void RunController::playWAV(QString file)
 {
-#ifdef USEQSOUND
-    wavsound->play(file);
-#endif
-#ifdef USESDL
-	Mix_HaltChannel(SDL_CHAN_WAV);
-	Mix_Chunk *music;
+	mutex->lock();
+	#ifdef USEQSOUND
+		wavsound->play(file);
+	#endif
+	#ifdef USESDL
+		Mix_HaltChannel(SDL_CHAN_WAV);
+		Mix_Chunk *music;
     	music = Mix_LoadWAV((char *) file.toUtf8().data());
     	Mix_PlayChannel(SDL_CHAN_WAV,music,0);
-#endif
+	#endif
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 
 void RunController::waitWAV()
 {
-#ifdef USEQSOUND
+	mutex->lock();
+	#ifdef USEQSOUND
 		while(!wavsound->isFinished())
-#ifdef WIN32
-	Sleep(1);
-#else
-	usleep(1000);
-#endif
-#endif
-#ifdef USESDL
-	while(Mix_Playing(SDL_CHAN_WAV))
-#ifdef WIN32
-	Sleep(1);
-#else
-	usleep(1000);
-#endif
-#endif
+		#ifdef WIN32
+			Sleep(1);
+		#else
+			usleep(1000);
+		#endif
+	#endif
+	#ifdef USESDL
+		while(Mix_Playing(SDL_CHAN_WAV))
+		#ifdef WIN32
+			Sleep(1);
+		#else
+			usleep(1000);
+		#endif
+	#endif
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 void RunController::stopWAV()
 {
-#ifdef USEQSOUND
-    wavsound->stop();
-#endif
-#ifdef USESDL
-	Mix_HaltChannel(SDL_CHAN_WAV);
-#endif
+	mutex->lock();
+	#ifdef USEQSOUND
+		wavsound->stop();
+	#endif
+	#ifdef USESDL
+		Mix_HaltChannel(SDL_CHAN_WAV);
+	#endif
+	waitCond->wakeAll();
+	mutex->unlock();
 }
 
 void
@@ -304,7 +314,7 @@ RunController::startDebug()
 		}
 		i->initialize();
 		i->debugMode = true;
-		outwin->clear();
+		outputClear();
 		mainwin->statusBar()->showMessage(tr("Running"));
 		graphwin->setFocus();
 		i->start();
@@ -349,7 +359,7 @@ RunController::inputFilter(QString text)
 {
 	graphwin->setFocus();
 	mutex->lock();
-	waitInput->wakeAll();
+	waitCond->wakeAll();
 	mutex->unlock();
 }
 
@@ -357,8 +367,7 @@ void
 RunController::outputClear()
 {
 	mutex->lock();
-	//outwin->clear();
-	outwin->setPlainText("");
+	outwin->clear();
 	waitCond->wakeAll();
 	mutex->unlock();
 }
@@ -402,10 +411,8 @@ RunController::stopRun()
 
 	stopWAV();
 
-	outwin->setReadOnly(true);
-
 	mutex->lock();
-	waitInput->wakeAll();
+	outwin->setReadOnly(true);
 	waitCond->wakeAll();
 	mutex->unlock();
 
@@ -585,9 +592,10 @@ RunController::dialogAlert(QString prompt)
 	msgBox.setText(prompt);
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setDefaultButton(QMessageBox::Ok);
-	msgBox.exec();
+	// actualy show alert (take exclusive control)
 	mutex->lock();
-	waitInput->wakeAll();
+	msgBox.exec();
+	waitCond->wakeAll();
 	mutex->unlock();
 }
 
@@ -604,13 +612,14 @@ RunController::dialogConfirm(QString prompt, int dflt)
 			msgBox.setDefaultButton(QMessageBox::No);
 		}
 	}
+	// actualy show confirm (take exclusive control)
+	mutex->lock();
 	if (msgBox.exec()==QMessageBox::Yes) {
 		i->returnInt = 1;
 	} else {
 		i->returnInt = 0;
 	}
-	mutex->lock();
-	waitInput->wakeAll();
+	waitCond->wakeAll();
 	mutex->unlock();
 }
 
@@ -620,13 +629,14 @@ RunController::dialogPrompt(QString prompt, QString dflt)
 	QInputDialog in(mainwin);
 	in.setLabelText(prompt);
 	in.setTextValue(dflt);
+	// actualy show prompt (take exclusive control)
+	mutex->lock();
 	if (in.exec()==QDialog::Accepted) {
 		i->returnString = in.textValue();
 	} else {
 		i->returnString = dflt;
 	}
-	mutex->lock();
-	waitInput->wakeAll();
+	waitCond->wakeAll();
 	mutex->unlock();
 }
 
@@ -637,8 +647,12 @@ void RunController::dialogFontSelect()
     QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin);
     if (ok) {
         settings.setValue(SETTINGSFONT, newf.toString());
+
+		mutex->lock();
         editwin->setFont(newf);
         outwin->setFont(newf);
+		waitCond->wakeAll();
+		mutex->unlock();
     }
 }
 

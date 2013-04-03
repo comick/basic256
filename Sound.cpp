@@ -1,5 +1,6 @@
 #include "Sound.h"
 
+
 Sound::Sound()
 {
 	soundVolume = 5;	// set default sound volume to 1/2

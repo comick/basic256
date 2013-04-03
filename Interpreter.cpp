@@ -78,10 +78,8 @@ using namespace std;
 
 extern QMutex *mutex;
 extern QMutex *debugmutex;
-extern QMutex *keymutex;
 extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
-extern QWaitCondition *waitInput;
 
 extern int currentKey;
 
@@ -2528,8 +2526,10 @@ Interpreter::execByteCode()
 	case OP_SAY:
 		{
 			op++;
-			emit(speakWords(stack.popstring()));
-			waitForGraphics();
+			mutex->lock();
+ 			emit(speakWords(stack.popstring()));
+			waitCond->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
@@ -2553,14 +2553,20 @@ Interpreter::execByteCode()
 	case OP_WAVPLAY:
 		{
 			op++;
+			mutex->lock();
 			emit(playWAV(stack.popstring()));
+			waitCond->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
 	case OP_WAVSTOP:
 		{
 			op++;
+			mutex->lock();
 			emit(stopWAV());
+			waitCond->wait(mutex);
+			mutex->unlock();
 		}
 		break;
 
@@ -3144,7 +3150,7 @@ Interpreter::execByteCode()
 			status = R_INPUT;
 			mutex->lock();
 			emit(inputNeeded());
-			waitInput->wait(mutex);
+			waitCond->wait(mutex);
 			mutex->unlock();
 		}
 		break;
@@ -3152,10 +3158,10 @@ Interpreter::execByteCode()
 	case OP_KEY:
 		{
 			op++;
-			keymutex->lock();
+			mutex->lock();
 			stack.pushint(currentKey);
 			currentKey = 0;
-			keymutex->unlock();
+			mutex->unlock();
 		}
 		break;
 
@@ -3637,7 +3643,10 @@ Interpreter::execByteCode()
 			case OPX_WAVWAIT:
 				{
 					op++;
+					mutex->lock();
 					emit(waitWAV());
+					waitCond->wait(mutex);
+					mutex->unlock();
 				}
 				break;
 
@@ -4570,7 +4579,7 @@ Interpreter::execByteCode()
 					QString temp = stack.popstring();
 					mutex->lock();
 					emit(dialogAlert(temp));
-					waitInput->wait(mutex);
+					waitCond->wait(mutex);
 					mutex->unlock();
 					waitForGraphics();
 				}
@@ -4583,7 +4592,7 @@ Interpreter::execByteCode()
 					QString temp = stack.popstring();
 					mutex->lock();
 					emit(dialogConfirm(temp,dflt));
-					waitInput->wait(mutex);
+					waitCond->wait(mutex);
 					mutex->unlock();
 					stack.pushint(returnInt);
 					waitForGraphics();
@@ -4597,7 +4606,7 @@ Interpreter::execByteCode()
 					QString msg = stack.popstring();
 					mutex->lock();
 					emit(dialogPrompt(msg,dflt));
-					waitInput->wait(mutex);
+					waitCond->wait(mutex);
 					mutex->unlock();
 					stack.pushstring(returnString);
 					waitForGraphics();

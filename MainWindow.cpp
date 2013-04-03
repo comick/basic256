@@ -54,10 +54,9 @@ using namespace std;
 // global mutexes and timers
 QMutex* mutex;
 QMutex* debugmutex;
-QMutex* keymutex;
 QWaitCondition* waitCond;
 QWaitCondition* waitDebugCond;
-QWaitCondition* waitInput;
+
 
 // the three main components of the UI (define globally)
 MainWindow * mainwin;
@@ -79,10 +78,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	// create the global mutexes and waits
 	mutex = new QMutex(QMutex::NonRecursive);
 	debugmutex = new QMutex(QMutex::NonRecursive);
-	keymutex = new QMutex(QMutex::NonRecursive);
 	waitCond = new QWaitCondition();
 	waitDebugCond = new QWaitCondition();
-	waitInput = new QWaitCondition();
 
 	setWindowIcon(QIcon(":/images/basic256.png"));
 
@@ -106,6 +103,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	outdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	outdock->setWidget(outwinwgt);
 	outdock->setWindowTitle(QObject::tr("Text Output"));
+   	connect(editwin, SIGNAL(changeWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
 
 	graphwin = new BasicGraph();
 	graphwin->setObjectName( "goutput" );
@@ -507,4 +505,6 @@ void MainWindow::updateStatusBar(QString status) {
 void MainWindow::updateWindowTitle(QString title) {
 	setWindowTitle(title);
 }
+
+
 	
