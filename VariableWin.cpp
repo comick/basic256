@@ -39,87 +39,86 @@ VariableWin::VariableWin ()
 }
 
 void
-VariableWin::addVar(int recurse, QString name, QString value, int arraylenx, int arrayleny)
+VariableWin::varAssignment(int recurse, QString name, QString value, int arraylenx, int arrayleny)
 {
     // pass -1 for a normal variable
     // value is NULL for a new array
 	QTreeWidgetItem *rowItem;
 	bool newArrayFlag = (value==NULL);
 	
-if (name!="") {
-	name = QString::number(recurse) + " - " + name;
-		
-	// remove old entries when a variable becomes an array or not
-	if (arraylenx==-1||value==NULL) {
-		// delete everything begining with name[
-		QList<QTreeWidgetItem *> items = findItems(name + "[", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
-		for (int n=items.size()-1; n>=0; n--) {
-			delete items[n];
-		}
-	}
-
-	// fix the name for an array element of the dim of a new array
-	if (!newArrayFlag && arraylenx > -1)
-	{
-		// if we are acessing an array element then change name to full []
-		name = name + "[" + QString::number(arraylenx);
-		if (arrayleny > -1) {
-			name = name + "," + QString::number(arrayleny);
-		}
-		name = name + "]";
-	}
-	else if (newArrayFlag)
-	{
-		value = tr("<array ") + QString::number(arraylenx);
-		if (arrayleny > -1) {
-			value = value + "," + QString::number(arrayleny);
-		}
-		value = value + ">";
-	}
-	
-	// see if element is on the list and change value or add
-	QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-	
-	if (list.size() > 0) {
-		// get existing element
-		rowItem = list[0];
-	} else {
-		// add new element
-		rowItem = new QTreeWidgetItem();
-		rowItem->setText(0, name);
-		addTopLevelItem(rowItem);
-	}
-    rowItem->setText(1, value);
-
-	// add place holders for the array elements as children for a new array
-    if (newArrayFlag)
-	{
-		if (arrayleny == -1) {
-			// 1d array
-			for(int x=0; x<arraylenx; x++) {
-				QTreeWidgetItem *childItem = new QTreeWidgetItem();
-				childItem->setText(0, name + "[" + QString::number(x) + "]");
-				childItem->setText(1, tr("<unassigned>"));
-				rowItem->addChild(childItem);
+	if (name!="") {
+		name = QString::number(recurse) + " - " + name;
+			
+		// remove old entries when a variable becomes an array or not
+		if (arraylenx==-1||value==NULL) {
+			// delete everything begining with name[
+			QList<QTreeWidgetItem *> items = findItems(name + "[", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+			for (int n=items.size()-1; n>=0; n--) {
+				delete items[n];
 			}
+		}
+
+		// fix the name for an array element of the dim of a new array
+		if (!newArrayFlag && arraylenx > -1)
+		{
+			// if we are acessing an array element then change name to full []
+			name = name + "[" + QString::number(arraylenx);
+			if (arrayleny > -1) {
+				name = name + "," + QString::number(arrayleny);
+			}
+			name = name + "]";
+		}
+		else if (newArrayFlag)
+		{
+			value = tr("<array ") + QString::number(arraylenx);
+			if (arrayleny > -1) {
+				value = value + "," + QString::number(arrayleny);
+			}
+			value = value + ">";
+		}
+		
+		// see if element is on the list and change value or add
+		QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
+		
+		if (list.size() > 0) {
+			// get existing element
+			rowItem = list[0];
 		} else {
-			// 2d array
-			for(int x=0; x<arraylenx; x++) {
-				for(int y=0; y<arrayleny; y++) {
+			// add new element
+			rowItem = new QTreeWidgetItem();
+			rowItem->setText(0, name);
+			addTopLevelItem(rowItem);
+		}
+		rowItem->setText(1, value);
+
+		// add place holders for the array elements as children for a new array
+		if (newArrayFlag)
+		{
+			if (arrayleny == -1) {
+				// 1d array
+				for(int x=0; x<arraylenx; x++) {
 					QTreeWidgetItem *childItem = new QTreeWidgetItem();
-					childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
-					childItem->setText(1, tr("<>unassigned>"));
+					childItem->setText(0, name + "[" + QString::number(x) + "]");
+					childItem->setText(1, tr("<unassigned>"));
 					rowItem->addChild(childItem);
+				}
+			} else {
+				// 2d array
+				for(int x=0; x<arraylenx; x++) {
+					for(int y=0; y<arrayleny; y++) {
+						QTreeWidgetItem *childItem = new QTreeWidgetItem();
+						childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
+						childItem->setText(1, tr("<>unassigned>"));
+						rowItem->addChild(childItem);
+					}
 				}
 			}
 		}
-	}
-} else {
-	// when we return from a subroutine or function delete its variables
-	QList<QTreeWidgetItem *> items = findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
-	for (int n=items.size()-1; n>=0; n--) {
-		delete items[n];
-	}
-}
-		
+	} else {
+		// when we return from a subroutine or function delete its variables
+		QList<QTreeWidgetItem *> items = findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+		for (int n=items.size()-1; n>=0; n--) {
+			delete items[n];
+		}
+	}	
 }

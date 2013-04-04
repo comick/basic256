@@ -41,6 +41,7 @@
 #include "VariableWin.h"
 #include "DocumentationWin.h"
 #include "PreferencesWin.h"
+#include "RunController.h"
 #include "EditSyntaxHighlighter.h"
 #include "Settings.h"
 
@@ -66,6 +67,7 @@ public:
 	BasicWidget * graphwinwgt;
 	BasicWidget * varwinwgt;
 
+	RunController *rc;
 	EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;
@@ -105,7 +107,7 @@ private:
 
 	// void pointer to the run controller
 	// can't specify type because of circular reference
-	void *rcvoidpointer;		
+	//void *rcvoidpointer;		
 
 private slots:
 	void updateRecent();

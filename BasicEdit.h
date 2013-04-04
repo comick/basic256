@@ -31,7 +31,6 @@
 #endif
 #include <QKeyEvent>
 
-#include "MainWindow.h"
 #include "ViewWidgetIFace.h"
 
 class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace

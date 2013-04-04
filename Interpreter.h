@@ -104,17 +104,18 @@ class Interpreter : public QThread
 
  public slots:
   int execByteCode();
-  void pauseResume();
-  void stop();
-  void receiveInput(QString);
+  void runPaused();
+  void runResumed();
+  void runHalted();
+  void inputEntered(QString);
 
  signals:
   void fastGraphics();
-  void runFinished();
+  void stopRun();
   void goutputReady();
   void outputReady(QString);
-  void inputNeeded();
-  void clearText();
+  void getInput();
+  void outputClear();
   void getKey();
   void playSounds(int, int*);
   void setVolume(int);

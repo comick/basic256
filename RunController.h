@@ -32,8 +32,8 @@
 #include "BasicEdit.h"
 #include "BasicOutput.h"
 #include "BasicGraph.h"
+#include "DocumentationWin.h"
 #include "Interpreter.h"
-#include "MainWindow.h"
 #include "ReplaceWin.h"
 
 class RunController : public QObject
@@ -51,18 +51,17 @@ class RunController : public QObject
   void runHalted();
   void runPaused();
   void runResumed();
-  void inputEntered(QString);
-
+ 
  public slots:
   void speakWords(QString);
   void executeSystem(char*);
   void playWAV(QString);
   void stopWAV();
   void waitWAV();
-  void inputFilter(QString text);
-  void outputFilter(QString text);
+  void inputEntered(QString text);
+  void outputReady(QString text);
   void outputClear();
-  void goutputFilter();
+  void goutputReady();
   void mainWindowsResize(int, int, int);
   void startDebug();
   void startRun();

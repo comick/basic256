@@ -41,6 +41,7 @@ using namespace std;
 
 #include "RunController.h"
 #include "MainWindow.h"
+#include "DocumentationWin.h"
 #include "Settings.h"
 #include "md5.h"
 
@@ -107,36 +108,36 @@ RunController::RunController()
 		wavsound = new QSound(QString(""));
 	#endif
 
-	QObject::connect(i, SIGNAL(runFinished()), this, SLOT(stopRun()));
-	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputFilter()));
-	QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputFilter(QString)));
-	QObject::connect(i, SIGNAL(clearText()), this, SLOT(outputClear()));
-
-	QObject::connect(this, SIGNAL(runPaused()), i, SLOT(pauseResume()));
-	QObject::connect(this, SIGNAL(runResumed()), i, SLOT(pauseResume()));
-	QObject::connect(this, SIGNAL(runHalted()), i, SLOT(stop()));
-
-	QObject::connect(i, SIGNAL(inputNeeded()), outwin, SLOT(getInput()));
-	QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputFilter(QString)));
-	QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(receiveInput(QString)));
-
+	//signals for the Interperter (i)
 	QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
-
-	QObject::connect(i, SIGNAL(executeSystem(char*)), this, SLOT(executeSystem(char*)));
-	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
-	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
-	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
-	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
-
 	QObject::connect(i, SIGNAL(highlightLine(int)), editwin, SLOT(highlightLine(int)));
-	QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), varwin, SLOT(addVar(int, QString, QString, int, int)));
-
-	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
-	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
-
+	
+	QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
 	QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
 	QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
 	QObject::connect(i, SIGNAL(dialogPrompt(QString, QString)), this, SLOT(dialogPrompt(QString, QString)));
+	QObject::connect(i, SIGNAL(executeSystem(char*)), this, SLOT(executeSystem(char*)));
+	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputReady()));
+	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
+	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
+	QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
+	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
+	QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
+	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
+	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
+	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
+	
+	QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
+
+	QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), varwin, SLOT(varAssignment(int, QString, QString, int, int)));
+
+	QObject::connect(this, SIGNAL(runPaused()), i, SLOT(runPaused()));
+	QObject::connect(this, SIGNAL(runResumed()), i, SLOT(runResumed()));
+	QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
+
+	QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputEntered(QString)));
+	QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(inputEntered(QString)));
+
 
 }
 
@@ -148,7 +149,8 @@ RunController::~RunController()
 	#ifdef USEQSOUND
 		delete wavsound;
 	#endif
-
+	delete i;
+	
 	//printf("rcdestroy\n");
 }
 
@@ -355,7 +357,7 @@ RunController::startRun()
 
 
 void
-RunController::inputFilter(QString text)
+RunController::inputEntered(QString text)
 {
 	graphwin->setFocus();
 	mutex->lock();
@@ -373,7 +375,7 @@ RunController::outputClear()
 }
 
 void
-RunController::outputFilter(QString text)
+RunController::outputReady(QString text)
 {
 	mutex->lock();
 	outwin->insertPlainText(text);
@@ -383,7 +385,7 @@ RunController::outputFilter(QString text)
 }
 
 void
-RunController::goutputFilter()
+RunController::goutputReady()
 {
 	mutex->lock();
 	graphwin->repaint();

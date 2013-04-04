@@ -808,7 +808,7 @@ void Interpreter::closeDatabase(int n) {
 }
 
 void
-Interpreter::pauseResume()
+Interpreter::runPaused()
 {
 	if (status == R_PAUSED)
 	{
@@ -822,7 +822,13 @@ Interpreter::pauseResume()
 }
 
 void
-Interpreter::stop()
+Interpreter::runResumed()
+{
+	runPaused();
+}
+
+void
+Interpreter::runHalted()
 {
 	status = R_STOPPED;
 }
@@ -840,12 +846,12 @@ Interpreter::run()
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
 	cleanup(); // cleanup the variables, databases, files, stack and everything
-	emit(runFinished());
+	emit(stopRun());
 }
 
 
 void
-Interpreter::receiveInput(QString text)
+Interpreter::inputEntered(QString text)
 {
 	if (status!=R_STOPPED) {
 		inputString = text;
@@ -3054,7 +3060,7 @@ Interpreter::execByteCode()
 		{
 			op++;
 			mutex->lock();
-			emit(clearText());
+			emit(outputClear());
 			waitCond->wait(mutex);
 			mutex->unlock();
 		}
@@ -3149,7 +3155,7 @@ Interpreter::execByteCode()
 			op++;
 			status = R_INPUT;
 			mutex->lock();
-			emit(inputNeeded());
+			emit(getInput());
 			waitCond->wait(mutex);
 			mutex->unlock();
 		}

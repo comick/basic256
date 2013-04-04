@@ -776,10 +776,6 @@ Please check your printer settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source> Portable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -789,6 +785,38 @@ Please check your printer settings.</source>
     </message>
     <message>
         <source>WARNING on line </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/h2&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>version &lt;b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/b&gt; - built with QT &lt;b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

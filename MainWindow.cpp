@@ -44,7 +44,6 @@
 
 using namespace std;
 
-#include "RunController.h"
 #include "PauseButton.h"
 #include "DockWidget.h"
 #include "MainWindow.h"
@@ -127,8 +126,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	vardock->setVisible(false);
 	vardock->setFloating(true);
 
-	RunController *rc = new RunController();
-	rcvoidpointer = rc;
+	rc = new RunController();
 	editsyntax = new EditSyntaxHighlighter(editwin->document());
 
 	// Main window toolbar
@@ -396,7 +394,13 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 MainWindow::~MainWindow()
 {
 	//printf("mwdestroy\n");
-	((RunController *) rcvoidpointer)->~RunController();
+	delete rc;
+	delete editsyntax;
+	delete mutex;
+	delete waitCond;
+	delete editwin;
+	delete outwin;
+	delete graphwin;
 }
 
 void MainWindow::about()
@@ -482,20 +486,19 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 		doquit = (msgBox.exec() == QMessageBox::Yes);
 	}
 	if (doquit) {
+		// actually quitting
 		e->accept();
+		// save current screen posision
+		SETTINGS;
+		settings.setValue(SETTINGSSIZE, size());
+		settings.setValue(SETTINGSPOS, pos());
+
 	} else {
+		// not quitting
 		e->ignore();
 	}
 
-	// save current screen posision
-    SETTINGS;
-	settings.setValue(SETTINGSSIZE, size());
-	settings.setValue(SETTINGSPOS, pos());
-
-	// close any windows from the runcontroller
-	RunController *rc = (RunController *) rcvoidpointer;
-	if (rc->replacewin) rc->replacewin->close();
-
+	
 }
 
 void MainWindow::updateStatusBar(QString status) {

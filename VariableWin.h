@@ -34,7 +34,7 @@ class VariableWin : public QTreeWidget, public ViewWidgetIFace
   VariableWin();
     
  public slots:
-  void addVar(int recurse, QString name, QString value, int arraylenx, int arrayleny);
+  void varAssignment(int recurse, QString name, QString value, int arraylenx, int arrayleny);
   
  private:
 
