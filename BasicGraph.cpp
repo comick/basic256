@@ -80,6 +80,9 @@ BasicGraph::resize(int width, int height)
 	setMouseTracking(true);
 }
 
+bool BasicGraph::isVisibleGridLines() {
+	return gridlines;
+}
 
 void
 BasicGraph::paintEvent(QPaintEvent *)

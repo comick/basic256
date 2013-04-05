@@ -53,6 +53,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   int clickX;
   int clickY;
   int clickB;
+  bool isVisibleGridLines();
 
  
  public slots:

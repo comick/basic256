@@ -26,11 +26,28 @@
 	#define SETTINGSPORTABLEINI	"Data/settings/BASIC256_IDE.ini"
 
 	// main window
+	#define SETTINGSVISIBLE "Main/Visible"
 	#define SETTINGSSIZE "Main/Size"
 	#define SETTINGSPOS "Main/Pos"
     #define SETTINGSFONT "Main/Font"
+    #define SETTINGSTOOLBAR "Main/Toolbar"
     #define SETTINGSFONTDEFAULT "Courier,10,-1,5,50,0,0,0,0,0"
-
+    #define SETTINGSOUTVISIBLE "OutDock/Visible"
+    #define SETTINGSOUTFLOAT "OutDock/Float"
+    #define SETTINGSOUTPOS "OutDock/Pos"
+    #define SETTINGSOUTSIZE "OutDock/Size"
+    #define SETTINGSOUTTOOLBAR "OutDock/Toolbar"
+    #define SETTINGSGRAPHVISIBLE "GraphDock/Visible"
+    #define SETTINGSGRAPHFLOAT "GraphDock/Float"
+    #define SETTINGSGRAPHPOS "GraphDock/Pos"
+    #define SETTINGSGRAPHSIZE "GraphDock/Size"
+    #define SETTINGSGRAPHTOOLBAR "GraphDock/Toolbar"
+    #define SETTINGSGRAPHGRIDLINES "GraphDock/GridLines"
+    #define SETTINGSVARVISIBLE "VarDock/Visible"
+    #define SETTINGSVARFLOAT "VarDock/Float"
+    #define SETTINGSVARPOS "VarDock/Pos"
+    #define SETTINGSVARSIZE "VarDock/Size"
+    
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"

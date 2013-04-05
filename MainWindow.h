@@ -44,6 +44,7 @@
 #include "RunController.h"
 #include "EditSyntaxHighlighter.h"
 #include "Settings.h"
+#include "DockWidget.h"
 
 
 class MainWindow : public QMainWindow
@@ -62,10 +63,6 @@ public:
 	QAction *textWinVisibleAct;
 	QAction *graphWinVisibleAct;
 	QAction *graphGridVisibleAct;
-	BasicWidget * editwinwgt;
-	BasicWidget * outwinwgt;
-	BasicWidget * graphwinwgt;
-	BasicWidget * varwinwgt;
 
 	RunController *rc;
 	EditSyntaxHighlighter * editsyntax;
@@ -87,6 +84,15 @@ private:
 	QAction *recentact[SETTINGSGROUPHISTN]; 
 	QAction * exitact;
 
+	BasicWidget * editwinwgt;
+	BasicWidget * outwinwgt;
+	BasicWidget * graphwinwgt;
+	BasicWidget * varwinwgt;
+
+	DockWidget * outdock;
+	DockWidget * graphdock;
+	DockWidget * vardock;
+
 	QMenu * editmenu;
 	QAction *undoact;
 	QAction *redoact;
@@ -104,6 +110,7 @@ private:
 	QAction *variableWinVisibleAct;
 
 	QMenu *runmenu;
+	QToolBar *maintbar;
 
 	// void pointer to the run controller
 	// can't specify type because of circular reference

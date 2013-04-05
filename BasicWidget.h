@@ -40,6 +40,7 @@ public:
 	
 	bool setViewWidget(QWidget * view);
 	bool usesToolBar();
+	bool isVisibleToolBar();
 	bool usesMenu();
 	QMenu *getMenu() { return m_menu; }
 

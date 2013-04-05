@@ -45,7 +45,6 @@
 using namespace std;
 
 #include "PauseButton.h"
-#include "DockWidget.h"
 #include "MainWindow.h"
 #include "Settings.h"
 #include "Version.h"
@@ -71,6 +70,8 @@ int currentKey;	// last non input key press.
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		:	QMainWindow(parent, f)
 {
+	SETTINGS;
+	bool v;
 
 	mainwin = this;
 
@@ -97,7 +98,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	outwin->setReadOnly(true);
 	outwinwgt = new BasicWidget(QObject::tr("Text Output"));
 	outwinwgt->setViewWidget(outwin);
-	DockWidget * outdock = new DockWidget();
+	outdock = new DockWidget();
 	outdock->setObjectName( "tdock" );
 	outdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	outdock->setWidget(outwinwgt);
@@ -108,7 +109,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	graphwin->setObjectName( "goutput" );
 	graphwinwgt = new BasicWidget(QObject::tr("Graphics Output"));
 	graphwinwgt->setViewWidget(graphwin);
-	DockWidget * graphdock = new DockWidget();
+	graphdock = new DockWidget();
 	graphdock->setObjectName( "graphdock" );
 	graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	graphdock->setWidget(graphwinwgt);
@@ -118,19 +119,17 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	varwin = new VariableWin();
 	varwinwgt = new BasicWidget(QObject::tr("Variable Watch"));
 	varwinwgt->setViewWidget(varwin);
-	DockWidget * vardock = new DockWidget();
+	vardock = new DockWidget();
 	vardock->setObjectName( "vardock" );
 	vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	vardock->setWidget(varwinwgt);
 	vardock->setWindowTitle(QObject::tr("Variable Watch"));
-	vardock->setVisible(false);
-	vardock->setFloating(true);
 
 	rc = new RunController();
 	editsyntax = new EditSyntaxHighlighter(editwin->document());
 
 	// Main window toolbar
-	QToolBar *maintbar = new QToolBar();
+	maintbar = new QToolBar();
 	addToolBar(maintbar);
 
 	// File menu
@@ -263,10 +262,19 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	textWinVisibleAct->setCheckable(true);
 	graphWinVisibleAct->setCheckable(true);
 	variableWinVisibleAct->setCheckable(true);
-	editWinVisibleAct->setChecked(true);
-	textWinVisibleAct->setChecked(true);
-	graphWinVisibleAct->setChecked(true);
-	variableWinVisibleAct->setChecked(false);
+	v = settings.value(SETTINGSVISIBLE, true).toBool();
+	editWinVisibleAct->setChecked(v);
+	editwinwgt->setVisible(v);
+	v = settings.value(SETTINGSOUTVISIBLE, true).toBool();
+	textWinVisibleAct->setChecked(v);
+	outdock->setVisible(v);
+	v = settings.value(SETTINGSGRAPHVISIBLE, true).toBool();
+	graphWinVisibleAct->setChecked(v);
+	graphdock->setVisible(v);
+	v = settings.value(SETTINGSVARVISIBLE, false).toBool();
+	variableWinVisibleAct->setChecked(v);
+	vardock->setVisible(v);
+	
 	QObject::connect(editWinVisibleAct, SIGNAL(toggled(bool)), editwinwgt, SLOT(setVisible(bool)));
 	QObject::connect(textWinVisibleAct, SIGNAL(toggled(bool)), outdock, SLOT(setVisible(bool)));
 	QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), graphdock, SLOT(setVisible(bool)));
@@ -281,30 +289,36 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     viewmenu->addSeparator();
     graphGridVisibleAct = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
 	graphGridVisibleAct->setCheckable(true);
-	graphGridVisibleAct->setChecked(false);
+	v = settings.value(SETTINGSGRAPHGRIDLINES, false).toBool();
+	graphGridVisibleAct->setChecked(v);
+	graphwin->slotGridLines(v);
 	QObject::connect(graphGridVisibleAct, SIGNAL(toggled(bool)), graphwin, SLOT(slotGridLines(bool)));
 
-	// view bars
+	// Toolbars
 	viewmenu->addSeparator();
 	QMenu *viewtbars = viewmenu->addMenu(QObject::tr("&Toolbars"));
 	QAction *maintbaract = viewtbars->addAction(QObject::tr("&Main"));
 	maintbaract->setCheckable(true);
-	maintbaract->setChecked(true);
+	v = settings.value(SETTINGSTOOLBAR, true).toBool();
+	maintbaract->setChecked(v);
+	maintbar->setVisible(v);
 	QObject::connect(maintbaract, SIGNAL(toggled(bool)), maintbar, SLOT(setVisible(bool)));
 	if (outwinwgt->usesToolBar())
 	{
 		QAction *texttbaract = viewtbars->addAction(QObject::tr("&Text Output"));
 		texttbaract->setCheckable(true);
-		texttbaract->setChecked(false);
-		outwinwgt->slotShowToolBar(false);
+		v = settings.value(SETTINGSOUTTOOLBAR, false).toBool();
+		texttbaract->setChecked(v);
+		outwinwgt->slotShowToolBar(v);
 		QObject::connect(texttbaract, SIGNAL(toggled(bool)), outwinwgt, SLOT(slotShowToolBar(const bool)));
 	}
 	if (graphwinwgt->usesToolBar())
 	{
 		QAction *graphtbaract = viewtbars->addAction(QObject::tr("&Graphics Output"));
 		graphtbaract->setCheckable(true);
-		graphtbaract->setChecked(false);
-		graphwinwgt->slotShowToolBar(false);
+		v = settings.value(SETTINGSGRAPHTOOLBAR, false).toBool();
+		graphtbaract->setChecked(v);
+		graphwinwgt->slotShowToolBar(v);
 		QObject::connect(graphtbaract, SIGNAL(toggled(bool)), graphwinwgt, SLOT(slotShowToolBar(const bool)));
 	}
 
@@ -375,10 +389,20 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	addDockWidget(Qt::LeftDockWidgetArea, vardock);
 	setContextMenuPolicy(Qt::NoContextMenu);
 
-	// position where it was last on screen
-    SETTINGS;
-	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
+	// position where the docks and main window were last on screen
+ 	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
 	move(settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint());
+	
+	outdock->setFloating(settings.value(SETTINGSOUTFLOAT, false).toBool());
+	if (settings.contains(SETTINGSOUTSIZE)) outdock->resize(settings.value(SETTINGSOUTSIZE, QSize(400, 400)).toSize());
+	if (settings.contains(SETTINGSOUTPOS)) outdock->move(settings.value(SETTINGSOUTPOS, QPoint(100, 100)).toPoint());
+	graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
+	if (settings.contains(SETTINGSGRAPHSIZE)) graphdock->resize(settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize());
+	if (settings.contains(SETTINGSGRAPHPOS)) graphdock->move(settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint());
+	vardock->setFloating(settings.value(SETTINGSVARFLOAT, false).toBool());
+	if (settings.contains(SETTINGSVARSIZE)) vardock->resize(settings.value(SETTINGSVARSIZE, QSize(400, 400)).toSize());
+	if (settings.contains(SETTINGSVARPOS)) vardock->move(settings.value(SETTINGSVARPOS, QPoint(100, 100)).toPoint());
+	
 
     // set initial font
     QFont initialFont;
@@ -488,10 +512,28 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 	if (doquit) {
 		// actually quitting
 		e->accept();
-		// save current screen posision
+		// save current screen posision, visibility and floating
 		SETTINGS;
+		settings.setValue(SETTINGSVISIBLE, isVisible());
 		settings.setValue(SETTINGSSIZE, size());
 		settings.setValue(SETTINGSPOS, pos());
+		settings.setValue(SETTINGSTOOLBAR, maintbar->isVisible());
+				settings.setValue(SETTINGSOUTVISIBLE, outdock->isVisible());
+		settings.setValue(SETTINGSOUTFLOAT, outdock->isFloating());
+		settings.setValue(SETTINGSOUTSIZE, outdock->size());
+		settings.setValue(SETTINGSOUTPOS, outdock->pos());
+		settings.setValue(SETTINGSOUTTOOLBAR, outwinwgt->isVisibleToolBar());
+		settings.setValue(SETTINGSGRAPHVISIBLE, graphdock->isVisible());
+		settings.setValue(SETTINGSGRAPHFLOAT, graphdock->isFloating());
+		settings.setValue(SETTINGSGRAPHSIZE, graphdock->size());
+		settings.setValue(SETTINGSGRAPHPOS, graphdock->pos());
+		settings.setValue(SETTINGSGRAPHTOOLBAR, graphwinwgt->isVisibleToolBar());
+		settings.setValue(SETTINGSGRAPHGRIDLINES, graphwin->isVisibleGridLines());
+		settings.setValue(SETTINGSVARVISIBLE, vardock->isVisible());
+		settings.setValue(SETTINGSVARFLOAT, vardock->isFloating());
+		settings.setValue(SETTINGSVARSIZE, vardock->size());
+		settings.setValue(SETTINGSVARPOS, vardock->pos());
+		
 
 	} else {
 		// not quitting

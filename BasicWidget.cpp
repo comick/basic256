@@ -92,6 +92,13 @@ void BasicWidget::slotShowToolBar(const bool vShow)
   m_toolBar->setVisible(vShow);
 }
 
+bool BasicWidget::isVisibleToolBar()
+{
+  if (NULL == m_viewWidget) return false;
+  if (NULL == m_toolBar) return false;
+  return m_toolBar->isVisible();
+}
+
 bool BasicWidget::usesToolBar()
 {
   if (NULL != m_viewWidget)
