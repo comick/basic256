@@ -650,12 +650,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../MainWindow.cpp" line="482"/>
+        <location filename="../MainWindow.cpp" line="506"/>
         <source>Program modifications have not been saved.</source>
         <translation>Las modificaciones del programa no han sido guardadas.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="483"/>
+        <location filename="../MainWindow.cpp" line="507"/>
         <source>Do you want to discard your changes?</source>
         <translation>¿Quieres descartar los cambios?</translation>
     </message>
@@ -717,14 +717,14 @@
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="293"/>
-        <location filename="../BasicGraph.cpp" line="214"/>
+        <location filename="../BasicGraph.cpp" line="217"/>
         <location filename="../BasicOutput.cpp" line="150"/>
         <source>Print Error</source>
         <translation>Error de impresión</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="293"/>
-        <location filename="../BasicGraph.cpp" line="214"/>
+        <location filename="../BasicGraph.cpp" line="217"/>
         <location filename="../BasicOutput.cpp" line="150"/>
         <source>Unable to carry out printing.
 Please check your printer settings.</source>
@@ -732,19 +732,19 @@ Please check your printer settings.</source>
 Por favor, comprueba la configuración de la impresora.</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="167"/>
+        <location filename="../BasicGraph.cpp" line="170"/>
         <location filename="../BasicOutput.cpp" line="117"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="168"/>
+        <location filename="../BasicGraph.cpp" line="171"/>
         <location filename="../BasicOutput.cpp" line="119"/>
         <source>Print</source>
         <translation>Imprimir</translation>
     </message>
     <message>
-        <location filename="../BasicGraph.cpp" line="198"/>
+        <location filename="../BasicGraph.cpp" line="201"/>
         <source>Print Graphics Output</source>
         <translation>Imprimir el area de gráficos</translation>
     </message>
@@ -769,210 +769,210 @@ Por favor, comprueba la configuración de la impresora.</translation>
         <translation>Listo.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="98"/>
-        <location filename="../MainWindow.cpp" line="104"/>
+        <location filename="../MainWindow.cpp" line="99"/>
+        <location filename="../MainWindow.cpp" line="105"/>
         <source>Text Output</source>
         <translation>Area de texto</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="109"/>
-        <location filename="../MainWindow.cpp" line="115"/>
+        <location filename="../MainWindow.cpp" line="110"/>
+        <location filename="../MainWindow.cpp" line="116"/>
         <source>Graphics Output</source>
         <translation>Area de gráficos</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="119"/>
-        <location filename="../MainWindow.cpp" line="125"/>
+        <location filename="../MainWindow.cpp" line="120"/>
+        <location filename="../MainWindow.cpp" line="126"/>
         <source>Variable Watch</source>
         <translation type="unfinished">Inspección de variables</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="137"/>
+        <location filename="../MainWindow.cpp" line="136"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="138"/>
+        <location filename="../MainWindow.cpp" line="137"/>
         <source>&amp;New</source>
         <translation>&amp;Nuevo</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="140"/>
+        <location filename="../MainWindow.cpp" line="139"/>
         <source>&amp;Open</source>
         <translation>Ab&amp;rir</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="142"/>
+        <location filename="../MainWindow.cpp" line="141"/>
         <source>&amp;Save</source>
         <translation>&amp;Guardar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="144"/>
+        <location filename="../MainWindow.cpp" line="143"/>
         <source>Save &amp;As</source>
         <translation>G&amp;uardar como</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="147"/>
+        <location filename="../MainWindow.cpp" line="146"/>
         <source>&amp;Print</source>
         <translation>&amp;Imprimir</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="169"/>
+        <location filename="../MainWindow.cpp" line="168"/>
         <source>&amp;Exit</source>
         <translation>&amp;Salir</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="193"/>
+        <location filename="../MainWindow.cpp" line="192"/>
         <source>&amp;Edit</source>
         <translation>&amp;Editar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="194"/>
+        <location filename="../MainWindow.cpp" line="193"/>
         <source>&amp;Undo</source>
         <translation>&amp;Deshacer</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="199"/>
+        <location filename="../MainWindow.cpp" line="198"/>
         <source>&amp;Redo</source>
         <translation>R&amp;estaurar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="205"/>
+        <location filename="../MainWindow.cpp" line="204"/>
         <source>Cu&amp;t</source>
         <translation>Co&amp;rtar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="208"/>
+        <location filename="../MainWindow.cpp" line="207"/>
         <source>&amp;Copy</source>
         <translation>C&amp;opiar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="211"/>
+        <location filename="../MainWindow.cpp" line="210"/>
         <source>&amp;Paste</source>
         <translation>&amp;Pegar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="214"/>
+        <location filename="../MainWindow.cpp" line="213"/>
         <source>Select &amp;All</source>
         <translation>Seleccionar &amp;todo</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="217"/>
+        <location filename="../MainWindow.cpp" line="216"/>
         <source>&amp;Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="221"/>
+        <location filename="../MainWindow.cpp" line="220"/>
         <source>&amp;Replace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="223"/>
+        <location filename="../MainWindow.cpp" line="222"/>
         <source>&amp;Beautify</source>
         <translation>Em&amp;bellecer</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="225"/>
+        <location filename="../MainWindow.cpp" line="224"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="257"/>
+        <location filename="../MainWindow.cpp" line="256"/>
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="258"/>
+        <location filename="../MainWindow.cpp" line="257"/>
         <source>&amp;Edit Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="259"/>
+        <location filename="../MainWindow.cpp" line="258"/>
         <source>&amp;Text Window</source>
         <translation>Ventana de &amp;texto</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="260"/>
+        <location filename="../MainWindow.cpp" line="259"/>
         <source>&amp;Graphics Window</source>
         <translation>Ventana de &amp;gráficos</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="261"/>
+        <location filename="../MainWindow.cpp" line="260"/>
         <source>&amp;Variable Watch Window</source>
         <translation>Ventana de &amp;inspección de variables</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="277"/>
+        <location filename="../MainWindow.cpp" line="285"/>
         <source>&amp;Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="282"/>
+        <location filename="../MainWindow.cpp" line="290"/>
         <source>Graphics Window Grid &amp;Lines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="289"/>
+        <location filename="../MainWindow.cpp" line="299"/>
         <source>&amp;Toolbars</source>
         <translation>&amp;Barras de Herramientas</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="290"/>
+        <location filename="../MainWindow.cpp" line="300"/>
         <source>&amp;Main</source>
         <translation>&amp;Principal</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="296"/>
+        <location filename="../MainWindow.cpp" line="308"/>
         <source>&amp;Text Output</source>
         <translation>Ventana de &amp;texto</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="304"/>
+        <location filename="../MainWindow.cpp" line="317"/>
         <source>&amp;Graphics Output</source>
         <translation>Ventana de &amp;gráficos</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="415"/>
+        <location filename="../MainWindow.cpp" line="439"/>
         <source>&lt;h2&gt;BASIC-256</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="415"/>
+        <location filename="../MainWindow.cpp" line="439"/>
         <source>&lt;/h2&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="416"/>
+        <location filename="../MainWindow.cpp" line="440"/>
         <source>version &lt;b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="416"/>
+        <location filename="../MainWindow.cpp" line="440"/>
         <source>&lt;/b&gt; - built with QT &lt;b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="416"/>
+        <location filename="../MainWindow.cpp" line="440"/>
         <source>&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="417"/>
+        <location filename="../MainWindow.cpp" line="441"/>
         <source>&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="418"/>
+        <location filename="../MainWindow.cpp" line="442"/>
         <source>&lt;p&gt;Please visit our web site at &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; for tutorials and documentation.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="419"/>
+        <location filename="../MainWindow.cpp" line="443"/>
         <source>&lt;p&gt;Please see the CONTRIBUTORS file for a list of developers and translators for this project.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="420"/>
+        <location filename="../MainWindow.cpp" line="444"/>
         <source>&lt;p&gt;&lt;i&gt;You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -997,45 +997,45 @@ Por favor, comprueba la configuración de la impresora.</translation>
         <translation type="obsolete">&amp;Enorme</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="312"/>
-        <location filename="../MainWindow.cpp" line="313"/>
+        <location filename="../MainWindow.cpp" line="326"/>
+        <location filename="../MainWindow.cpp" line="327"/>
         <source>&amp;Run</source>
         <translation>Eje&amp;cutar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="316"/>
+        <location filename="../MainWindow.cpp" line="330"/>
         <source>&amp;Debug</source>
         <translation>&amp;Depurar</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="318"/>
+        <location filename="../MainWindow.cpp" line="332"/>
         <source>S&amp;tep</source>
         <translation>&amp;Paso</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="321"/>
+        <location filename="../MainWindow.cpp" line="335"/>
         <source>&amp;Stop</source>
         <translation>&amp;Stop</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="333"/>
-        <location filename="../MainWindow.cpp" line="343"/>
+        <location filename="../MainWindow.cpp" line="347"/>
+        <location filename="../MainWindow.cpp" line="357"/>
         <source>&amp;Help</source>
         <translation>A&amp;yuda</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="336"/>
-        <location filename="../MainWindow.cpp" line="348"/>
+        <location filename="../MainWindow.cpp" line="350"/>
+        <location filename="../MainWindow.cpp" line="362"/>
         <source>&amp;Online help</source>
         <translation>Ayuda &amp;Online</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="409"/>
+        <location filename="../MainWindow.cpp" line="433"/>
         <source> Portable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="414"/>
+        <location filename="../MainWindow.cpp" line="438"/>
         <source>About BASIC-256</source>
         <translation>Acerca de BASIC-256</translation>
     </message>
@@ -1048,7 +1048,7 @@ Por favor, comprueba la configuración de la impresora.</translation>
         <translation type="obsolete">&lt;/b&gt;&lt;p&gt;Copyright &amp;copy; 2006-2010, The BASIC-256 Team&lt;/p&gt;&lt;p&gt;Visita nuestro sitio web en &lt;a href=http://www.basic256.org&gt;basic256.org&lt;/a&gt; donde encontrarás tutoriales y documentación.&lt;/p&gt;&lt;p&gt;En el archivo CONTRIBUTORS  puedes ver la lista de desarrolladores y traductores de este proyecto.&lt;/p&gt;&lt;p&gt;&lt;i&gt;Deberías haber recibido una copia de la licencia GNU General Public License con este programa; si no es así, escribe a la  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="352"/>
+        <location filename="../MainWindow.cpp" line="366"/>
         <source>&amp;About BASIC-256</source>
         <translation>A&amp;cerca de BASIC-256</translation>
     </message>
