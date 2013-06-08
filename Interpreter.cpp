@@ -354,6 +354,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_STRINGMAXLEN:
 			errormessage = tr("String exceeds maximum length of 16,777,216 characters.");
 			break;
+		case ERROR_FUNCRETURN:
+			errormessage = tr("Function must return a value.");
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr("Feature not implemented in this environment.");
@@ -1873,6 +1876,29 @@ Interpreter::execByteCode()
 		}
 		break;
 
+	case OP_FUNCRETURN:
+		{
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+
+			if (variables.type(*i) == T_STRING)
+			{
+				stack.pushstring(variables.getstring(*i));
+			}
+			else if (variables.type(*i) == T_FLOAT)
+			{
+				stack.pushfloat(variables.getfloat(*i));
+			}
+			else
+			{
+				errornum = ERROR_FUNCRETURN;
+				errorvarnum = *i;
+				stack.pushint(0);
+			}
+		}
+		break;
+
 	case OP_PUSHINT:
 		{
 			op++;
@@ -2547,7 +2573,7 @@ Interpreter::execByteCode()
             SETTINGS;
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
 				mutex->lock();
-                emit(executeSystem(temp.toUtf8().data()));
+                emit(executeSystem(temp));
 				waitCond->wait(mutex);
 				mutex->unlock();
 			} else {

@@ -18,6 +18,7 @@
 #include <math.h>
 #include <iostream>
 
+#include <QProcess>
 #include <QDesktopServices>
 #include <QMutex>
 #include <QWaitCondition>
@@ -224,14 +225,14 @@ RunController::speakWords(QString text)
 		text.replace("\""," quote ");
 		text.prepend("espeak \"");
 		text.append("\"");
-		executeSystem(text.toLatin1().data());
+		executeSystem(text);
 	#endif
 	#ifdef MACX_SAY
 		// easy macosX implementation - call the command line say statement
 		text.replace("\""," quote ");
 		text.prepend("say \"");
 		text.append("\"");
-		executeSystem(text.toLatin1().data());
+		executeSystem(text);
 	#endif
 	waitCond->wakeAll();
 	mutex->unlock();
@@ -239,11 +240,29 @@ RunController::speakWords(QString text)
 }
 
 void
-RunController::executeSystem(char* text)
+RunController::executeSystem(QString text)
 {
+	// need to implement system as a function to return process output
+	// and to handle input
+	
+	QProcess sy;
 	//fprintf(stderr,"system b4 %s\n", text);
 	mutex->lock();
-	system(text);
+	
+	
+     sy.start(text);
+     if (sy.waitForStarted()) {
+
+		//sy.write("Qt rocks!");
+		//sy.closeWriteChannel();
+
+		if (!sy.waitForFinished()) {
+			//QByteArray result = sy.readAll();
+		}
+	 }
+	
+	
+	//system(text);
 	waitCond->wakeAll();
 	mutex->unlock();
 	//fprintf(stderr,"system af %s\n", text);

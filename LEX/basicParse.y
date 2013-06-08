@@ -536,7 +536,7 @@ functionvariables: B256VARIABLE {
 endfunctionstmt: B256ENDFUNCTION {
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
-			addIntOp(OP_PUSHVAR, functionDefSymbol);
+			addIntOp(OP_FUNCRETURN, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
 			functionDefSymbol = -1; 
 			addOp(OP_RETURN);
@@ -1188,7 +1188,7 @@ onerrorstmt: B256ONERROR B256VARIABLE { addIntOp(OP_ONERROR, $2); }
 returnstmt: B256RETURN { 
 		if (functionDefSymbol!=-1) {
 			// if we are defining a function return pushes a variable value
-			addIntOp(OP_PUSHVAR, functionDefSymbol);
+			addIntOp(OP_FUNCRETURN, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
 		}
 		if (subroutineDefSymbol!=-1) {
