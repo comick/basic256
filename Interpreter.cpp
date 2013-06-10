@@ -294,7 +294,7 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_MAXRECURSE:
 			errormessage = tr("Maximum levels of recursion exceeded.");
 			break;
-	        case ERROR_DIVZERO:
+        case ERROR_DIVZERO:
 			errormessage = tr("Division by zero.");
             break;
 		case ERROR_BYREF:
@@ -900,7 +900,7 @@ Interpreter::execByteCode()
 		lasterrorline = currentLine;
 		errornum = ERROR_NONE;
 		errormessage = "";
-		if(onerroraddress!=0) {
+		if(onerroraddress!=0 && lasterrornum > 0) {
 			// progess call to subroutine for error handling
 			frame *temp = new frame;
 			temp->returnAddr = op;
@@ -909,7 +909,7 @@ Interpreter::execByteCode()
 			op = byteCode + onerroraddress;
 			return 0;
 		} else {
-			// no error handler defined - display message and die
+			// no error handler defined or FATAL error - display message and die
 			emit(outputReady(QObject::tr("ERROR on line ") + QString::number(lasterrorline) + ": " + getErrorMessage(lasterrornum) + " " + lasterrormessage + "\n"));
 			emit(goToLine(currentLine));
 			return -1;

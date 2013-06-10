@@ -22,10 +22,21 @@
 #ifndef ERROR_NONE
 
 #define ERROR_NONE 				0
-#define ERROR_NOSUCHLABEL		1
+
+//ERRROR numbers greater than 0 are NOT trappable with the "ONERR" statement
+// and are fatal at runtime
+#define ERROR_NOSUCHLABEL		-1
+#define ERROR_NEXTNOFOR 		-2
+#define ERROR_NOTARRAY 			-3
+#define ERROR_NOTSTRINGARRAY 	-4
+#define ERROR_ARGUMENTCOUNT 	-5
+#define ERROR_MAXRECURSE 		-6
+#define ERROR_FUNCRETURN 		-7
+
+
+//ERRROR numbers greater than 0 are trappable with the "ONERR" statement
 #define ERROR_FOR1 				2
 #define ERROR_FOR2 				3
-#define ERROR_NEXTNOFOR 		4
 #define ERROR_FILENUMBER 		5
 #define ERROR_FILEOPEN 			6
 #define ERROR_FILENOTOPEN 		7
@@ -34,8 +45,6 @@
 #define ERROR_ARRAYSIZELARGE 	10
 #define ERROR_ARRAYSIZESMALL 	11
 #define ERROR_NOSUCHVARIABLE 	12
-#define ERROR_NOTARRAY 			13
-#define ERROR_NOTSTRINGARRAY 	14
 #define ERROR_ARRAYINDEX 		15
 #define ERROR_STRNEGLEN 		16
 #define ERROR_STRSTART 			17
@@ -69,8 +78,6 @@
 #define ERROR_NETSOCKNUMBER 	45
 #define ERROR_PERMISSION 		46
 #define ERROR_IMAGESAVETYPE 	47
-#define ERROR_ARGUMENTCOUNT 	48
-#define ERROR_MAXRECURSE 		49
 #define ERROR_DIVZERO 			50
 #define ERROR_BYREF 			51
 #define ERROR_BYREFTYPE 		52
@@ -91,7 +98,6 @@
 #define ERROR_RADIX 			67
 #define ERROR_LOGRANGE 			68
 #define ERROR_STRINGMAXLEN 		69
-#define ERROR_FUNCRETURN 		70
 
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999
