@@ -159,16 +159,6 @@ clearSymbolTable() {
 }
 
 int
-getSymbol(char *name) {
-	int i;
-	for (i = 0; i < numsyms; i++) {
-		if (symtable[i] && !strcmp(name, symtable[i]))
-			return i;
-	}
-	return -1;
-}
-
-int
 newIf(int offset, int sourceline, int type) {
 	iftable[numifs] = offset;
 	iftablesourceline[numifs] = sourceline;
@@ -177,11 +167,23 @@ newIf(int offset, int sourceline, int type) {
 	return numifs - 1;
 }
 
-int
-newSymbol(char *name) {
-	symtable[numsyms] = name;
+int getSymbol(char *name) {
+	// get a symbol if it exists or create a new one on the symbol table
+	int i;
+	for (i = 0; i < numsyms; i++) {
+		if (symtable[i] && !strcmp(name, symtable[i]))
+			return i;
+	}
+	symtable[numsyms] = strdup(name);
 	numsyms++;
 	return numsyms - 1;
+}
+
+int getIntegerSymbol(int n) {
+	// an internal symbol used to jump around function and subroutine definitions
+	char name[32];
+	sprintf(name,"___%d___", n);
+	return getSymbol(name);
 }
 
 int
@@ -427,7 +429,9 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPEFLOAT;
-		addOp(OP_END); 
+		// create symbol to jump around function definition
+		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
+		//
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
 		newIf(0, linenumber, IFTABLETYPEFUNCTION);
@@ -458,7 +462,9 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPESTRING;
-		addOp(OP_END); 
+		// create symbol to jump around function definition
+		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
+		// 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
 		newIf(0, linenumber, IFTABLETYPEFUNCTION);
@@ -488,7 +494,9 @@ subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
 		}
 		// $2 is the symbol for the subroutine - add the start to the label table
 		subroutineDefSymbol = $2;
-		addOp(OP_END); 
+		// create symbol to jump around function definition
+		addIntOp(OP_GOTO, getIntegerSymbol(subroutineDefSymbol));
+		// 
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
 		newIf(0, linenumber, IFTABLETYPEFUNCTION);
@@ -538,9 +546,12 @@ endfunctionstmt: B256ENDFUNCTION {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addIntOp(OP_FUNCRETURN, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
-			functionDefSymbol = -1; 
 			addOp(OP_RETURN);
 			numifs--;
+			// add address for jump around function definition
+			labeltable[getIntegerSymbol(functionDefSymbol)] = byteOffset; 
+			functionDefSymbol = -1; 
+		// 
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -557,9 +568,11 @@ endsubroutinestmt: B256ENDSUBROUTINE {
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
-			subroutineDefSymbol = -1; 
 			addOp(OP_RETURN);
 			numifs--;
+			// add address for jump around function definition
+			labeltable[getIntegerSymbol(subroutineDefSymbol)] = byteOffset; 
+			subroutineDefSymbol = -1; 
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();

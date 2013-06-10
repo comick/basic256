@@ -49,7 +49,6 @@ extern int testIfOnTableError();
 extern void newLineOffsets(int);
 
 extern int getSymbol(char *);
-extern int newSymbol(char *);
 extern int yyparse();
 //extern YYLTYPE yylloc;
 extern int errorcode;
@@ -331,13 +330,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	while (*c != ':') c++;
 	*c = 0x0;
 	//
-	num = getSymbol(temp);
-	if (num < 0) {
-		yylval.number = newSymbol(temp); //Doesn't conflict, because label only resolved after branch
-	} else {
-		free(temp);
-		yylval.number = num;
-	}
+	yylval.number = getSymbol(temp); // get existing or create new
+	free(temp);
+	//
 	return B256LABEL;
 }
 {integer}	{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
@@ -616,24 +611,14 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {variable} {
 	int num;
 	count();
-	num = getSymbol(yytext);
-	if (num < 0) {
-		yylval.number = newSymbol(strdup(yytext));
-	} else {
-		yylval.number = num;
-	}
+	yylval.number = getSymbol(yytext);
 	return B256VARIABLE;
 }
 
 {stringvar} {
 	int num;
 	count();
-	num = getSymbol(yytext);
-	if (num < 0) {
-		yylval.number = newSymbol(strdup(yytext));
-	} else {
-		yylval.number = num;
-	}
+	yylval.number = getSymbol(yytext);
 	return B256STRINGVAR;
 }
 

@@ -14,12 +14,19 @@
 # 2013-02-05	j.m.reneau	added radix conversion test
 # 2013-02-08	j.m.reneau	removed DECIMAL statement and added SCI notation
 # 2013-04-03	j.m.reneau	added mouse test
+# 2013-06-10	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
 
 
-if version < 90946 then
-   print "this program requires version 0.9.9.46 or better"
-   end
-end if
+call versiontest(90960)
+function versiontestgood(needed)
+   return version >= needed
+end function
+subroutine versiontest(needed)
+   if not versiontestgood(needed) then
+      print "this program requires version " + (needed\1000000) + "." + (needed\10000%100) + "." + (needed\100%100) + "." + (needed%100) + " or better"
+      end
+   end if
+end subroutine
 
 # create arrays to use
 dim c(10)
@@ -735,7 +742,7 @@ if ostype()<>2 then
 end if
 print "move mouse over black dot"
 while pixel(mousex, mousey)<> black
-      pause .01
+   pause .01
 end while
 
 
