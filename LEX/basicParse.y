@@ -429,6 +429,7 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPEFLOAT;
+		addIntOp(OP_CURRLINE, linenumber);
 		// create symbol to jump around function definition
 		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
 		//
@@ -462,6 +463,7 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPESTRING;
+		addIntOp(OP_CURRLINE, linenumber);
 		// create symbol to jump around function definition
 		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
 		// 
@@ -494,6 +496,7 @@ subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
 		}
 		// $2 is the symbol for the subroutine - add the start to the label table
 		subroutineDefSymbol = $2;
+		addIntOp(OP_CURRLINE, linenumber);
 		// create symbol to jump around function definition
 		addIntOp(OP_GOTO, getIntegerSymbol(subroutineDefSymbol));
 		// 
@@ -542,7 +545,8 @@ functionvariables: B256VARIABLE {
 
 
 endfunctionstmt: B256ENDFUNCTION {
-	if (numifs>0) {
+	addIntOp(OP_CURRLINE, linenumber);
+		if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addIntOp(OP_FUNCRETURN, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
@@ -565,6 +569,7 @@ endfunctionstmt: B256ENDFUNCTION {
 ;
 
 endsubroutinestmt: B256ENDSUBROUTINE {
+	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
@@ -609,6 +614,7 @@ elsestmt: B256ELSE
 	{
 	unsigned int elsegototemp = 0;
 	// on else create a jump point to the endif
+	addIntOp(OP_CURRLINE, linenumber);
 	addIntOp(OP_PUSHINT, 0);	// false - always jump before else to endif
 	addOp(OP_BRANCH);
 	elsegototemp = addInt(0);
@@ -639,6 +645,7 @@ endifstmt: B256ENDIF
 	// if there is an if branch or jump on the iftable stack get where it is
 	// in the bytecode array and then put the current bytecode address there
 	// - so we can jump over code
+	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
 			unsigned int *temp = NULL;
@@ -676,6 +683,7 @@ endwhilestmt: endwhileexpr
 	// there should be two bytecode locations.  the TOP is the
 	// location to jump to at the top of the loopthe , TOP-1 is the location
 	// the exit jump needs to be written back to jump point on WHILE
+	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>1) {
 		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
 			unsigned int *temp = NULL;

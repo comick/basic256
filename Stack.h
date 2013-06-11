@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include <QString>
+#include "ErrorCodes.h"
 
 
 enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
@@ -47,8 +48,10 @@ class Stack
   void debug();
   int height();
   int compareTopTwo();
+  int error();
 
  private:
   std::stack<stackdata*> stackstack;
-
+  int errornumber;		// internal storage of last stack error
+  stackdata *popelement();
 };

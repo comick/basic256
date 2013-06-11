@@ -32,6 +32,7 @@
 #define ERROR_ARGUMENTCOUNT 	-5
 #define ERROR_MAXRECURSE 		-6
 #define ERROR_FUNCRETURN 		-7
+#define ERROR_STACKUNDERFLOW	-8
 
 
 //ERRROR numbers greater than 0 are trappable with the "ONERR" statement

@@ -15,6 +15,7 @@
 # 2013-02-08	j.m.reneau	removed DECIMAL statement and added SCI notation
 # 2013-04-03	j.m.reneau	added mouse test
 # 2013-06-10	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
+# 2013-06-10	j.m.reneau	changed error trap test to trap 9999 (number less than 0 now untrappable)
 
 
 call versiontest(90960)
@@ -299,8 +300,8 @@ call section("Error Trapping")
 onerror errortrap
 print 8 / 0
 call n("trap div zero", lasterror, 50)
-throwerror -99
-call n("trap throw -99", lasterror, -99)
+throwerror 888
+call n("trap throw 888", lasterror, 888)
 offerror
 
 ###################################################

@@ -357,6 +357,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_FUNCRETURN:
 			errormessage = tr("Function must return a value.");
 			break;
+		case ERROR_STACKUNDERFLOW:
+			errormessage = tr("Stack Underflow Error.");
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr("Feature not implemented in this environment.");
@@ -894,6 +897,7 @@ Interpreter::execByteCode()
 	}
 
 	// if errnum is set then handle the last thrown error
+	if (stack.error()!=ERROR_NONE) errornum = stack.error(); 
 	if (errornum!=ERROR_NONE) {
 		lasterrornum = errornum;
 		lasterrormessage = errormessage;

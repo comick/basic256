@@ -7,6 +7,7 @@
 
 Stack::Stack()
 {
+	errornumber = ERROR_NONE;
 }
 
 Stack::~Stack()
@@ -24,6 +25,7 @@ Stack::clear()
 		 stackstack.pop();
 		 delete(ele);
 	}
+	errornumber = ERROR_NONE;
 }
 
 void
@@ -37,6 +39,11 @@ int Stack::height()
 	// return the height of the stack in elements
 	// magic of pointer math returns number of elements
 	return stackstack.size();
+}
+
+int Stack::error()
+{
+	return errornumber;
 }
 
 void
@@ -86,21 +93,35 @@ Stack::pushfloat(double d)
 
 int Stack::peekType()
 {
-	stackdata *ele = stackstack.top();
-	return ele->type;
+	if (stackstack.empty()) {
+		errornumber = ERROR_STACKUNDERFLOW;
+		return T_FLOAT;
+	} else {
+		stackdata *ele = stackstack.top();
+		return ele->type;
+	}
+}
+
+stackdata *Stack::popelement() {
+	// pop an element but if there is not one on the stack
+	// pop a zero and set the error to underflow
+	stackdata *e;
+	if (stackstack.empty()) {
+		errornumber = ERROR_STACKUNDERFLOW;
+		pushint(0);
+	}
+	e = stackstack.top();
+	stackstack.pop();
+	return e;
 }
 
 void Stack::swap2()
 {
 	// swap top two pairs of elements
-	stackdata *zero = stackstack.top();
-	stackstack.pop();
-	stackdata *one = stackstack.top();
-	stackstack.pop();
-	stackdata *two = stackstack.top();
-	stackstack.pop();
-	stackdata *three = stackstack.top();
-	stackstack.pop();
+	stackdata *zero = popelement();
+	stackdata *one = popelement();
+	stackdata *two = popelement();
+	stackdata *three = popelement();
 	
 	stackstack.push(one);
 	stackstack.push(zero);
@@ -111,10 +132,8 @@ void Stack::swap2()
 void Stack::swap()
 {
 	// swap top two elements
-	stackdata *zero = stackstack.top();
-	stackstack.pop();
-	stackdata *one = stackstack.top();
-	stackstack.pop();
+	stackdata *zero = popelement();
+	stackdata *one = popelement();
 	stackstack.push(zero);
 	stackstack.push(one);
 }
@@ -124,32 +143,28 @@ Stack::topto2()
 {
 	// move the top of the stack under the next two
 	// 0, 1, 2, 3...  becomes 1, 2, 0, 3...
-	stackdata *zero = stackstack.top();
-	stackstack.pop();
-	stackdata *one = stackstack.top();
-	stackstack.pop();
-	stackdata *two = stackstack.top();
-	stackstack.pop();
+	stackdata *zero = popelement();
+	stackdata *one = popelement();
+	stackdata *two = popelement();
 	stackstack.push(zero);
 	stackstack.push(two);
 	stackstack.push(one);
 }
 
 void Stack::dup() {
-	stackdata *zero = stackstack.top();
 	// make copy of top
+	stackdata *zero = popelement();
 	stackdata *ele = new stackdata;
 	ele->type = zero->type;
 	ele->floatval = zero->floatval;
 	ele->string = zero->string;
 	stackstack.push(ele);
+	stackstack.push(zero);
 }
 
 void Stack::dup2() {
-	stackdata *zero = stackstack.top();
-	stackstack.pop();
-	stackdata *one = stackstack.top();
-	stackstack.pop();
+	stackdata *zero = popelement();
+	stackdata *one = popelement();
 	stackstack.push(one);
 	stackstack.push(zero);
 	// make copies of one and zero to dup
@@ -169,8 +184,7 @@ int
 Stack::popint()
 {
 	int i=0;
-	stackdata *top=stackstack.top();
-	stackstack.pop();
+	stackdata *top=popelement();
 	
 	if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
 		i = (int) top->floatval;
@@ -188,8 +202,7 @@ double
 Stack::popfloat()
 {
 	double f=0;
-	stackdata *top=stackstack.top();
-	stackstack.pop();
+	stackdata *top=popelement();
 
 	if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
 		f = top->floatval;
@@ -205,8 +218,7 @@ Stack::popfloat()
 
 QString Stack::popstring()
 {
-	stackdata *top=stackstack.top();
-	stackstack.pop();
+	stackdata *top=popelement();
 	QString s;
 
 	if (top->type == T_STRING) {
@@ -242,10 +254,8 @@ int Stack::compareTopTwo()
 	// complex compare logic - compare two stack types with each other
 	// return 1 if one>two  0 if one==two or -1 if one<two
 	//
-	stackdata *two = stackstack.top();
-	stackstack.pop();
-	stackdata *one = stackstack.top();
-	stackstack.pop();
+	stackdata *two = popelement();
+	stackdata *one = popelement();
 	stackstack.push(one);
 	stackstack.push(two);
 	
