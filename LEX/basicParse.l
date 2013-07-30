@@ -127,6 +127,7 @@ dbopen [Dd][Bb][Oo][Pp][Ee][Nn]
 dbopenset [Dd][Bb][Oo][Pp][Ee][Nn][Ss][Ee][Tt]
 dbrow [Dd][Bb][Rr][Oo][Ww]
 dbstring [Dd][Bb][Ss][Tt][Rr][Ii][Nn][Gg]
+debuginfo [Dd][Ee][Bb][Uu][Gg][Ii][Nn][Ff][Oo]
 degrees [Dd][Ee][Gg][Rr][Ee][Ee][Ss]
 dim [Dd][Ii][Mm]
 dir [Dd][Ii][Rr]
@@ -399,6 +400,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {dbopenset}	{ count(); return B256DBOPENSET; }
 {dbrow}		{ count(); return B256DBROW; }
 {dbstring}	{ count(); return B256DBSTRING; }
+{debuginfo}	{ count(); return B256DEBUGINFO; }
 {degrees}	{ count(); return B256DEGREES; }
 {dim}		{ count(); return B256DIM; }
 {dir}	{ count(); return B256DIR; }

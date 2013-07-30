@@ -307,6 +307,7 @@
 #define OPX_PROMPT	0x51
 #define OPX_FROMRADIX	0x52
 #define OPX_TORADIX	0x53
+#define OPX_DEBUGINFO	0x54
 
 
 

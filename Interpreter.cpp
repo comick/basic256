@@ -4688,6 +4688,29 @@ Interpreter::execByteCode()
 				break;
 
 
+			case OPX_DEBUGINFO:
+				{
+					// get info about BASIC256 runtime and return as a string
+					// put totally undocumented stuff HERE
+					// NOT FOR HUMANS TO USE
+					op++;
+					int what = stack.popint();
+					switch (what) {
+						case 1:
+							// stack height
+							stack.pushint(stack.height());
+							break;
+						case 2:
+							// type of top stack element
+							stack.pushint(stack.peekType());
+							break;
+						default:
+							stack.pushstring("");
+					}
+				}
+				break;
+
+
 
 
 

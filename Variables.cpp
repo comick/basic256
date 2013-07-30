@@ -90,8 +90,10 @@ Variables::decreaserecurse()
 void Variables::clearvariable(variable* v)
 {
 	// free a variable's current value to allow it to be reassigned
-	if (v->type == T_ARRAY)	{
+	if (v->type == T_ARRAY || v->type == T_STRARRAY)	{
+		v->arr->datamap.clear();
 		delete(v->arr);
+		v->arr = NULL;
     }
     v->type = T_UNUSED;
 }
@@ -230,11 +232,12 @@ void Variables::arraydim(b_type type, int varnum, int xdim, int ydim, bool redim
 
 	if (size <= VARIABLE_MAXARRAYELEMENTS) {
 		if (size >= 1) {
-			v->type = type;
-			if (!redim || !v->arr) {
+			if (v->type != type || !redim || !v->arr) {
 				// if array data is dim or redim without a dim then create a new one (clear the old)
+				clearvariable(v);
 				v->arr = new array;
 			}
+			v->type = type;
 			v->arr->size = size;
 			v->arr->xdim = xdim;
 			v->arr->ydim = ydim;
