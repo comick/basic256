@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-05-01T13:16:22-0700"/>
 <meta name="keywords" content="fr,month"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -17,7 +17,7 @@
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:month"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:month"/>
 <link rel="canonical" href="./fr_month.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -87,12 +87,32 @@
 <div class="level3">
 
 <p>
-Returns the current system clock&#039;s month. January is 0, February is 1… December is 11.
+Renvoie le mois en cours de l&#039;horloge système (0-11 : 0=janvier, 1=février, … 11=décembre).
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
+<div class="level3">
+<pre class="code">cls
+dim les_mois$(12)
+les_mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d=day()
+if d=1 then
+   ier$=&quot;er&quot;
+else
+   ier$=&quot;&quot;
+endif
+print day() + ier$ + &quot; &quot; + les_mois$[month()] + &quot; &quot; + year()</pre>
+
+<p>
+affichera par exemple :
+</p>
+<pre class="code">1er mai 2013</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="voir_aussi">Voir aussi</h3>
 <div class="level3">
 
 <p>
@@ -101,21 +121,7 @@ Returns the current system clock&#039;s month. January is 0, February is 1… De
 
 </div>
 
-<h3 class="sectionedit5" id="example">Example</h3>
-<div class="level3">
-<pre class="code">cls
-dim n$(12)
-n$ = {&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;}
-print day + &quot;-&quot; + n$[month] + &quot;-&quot; + year</pre>
-
-<p>
-on New Years will display
-</p>
-<pre class="code">1-Jan-2010</pre>
-
-</div>
-
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="premiere_version">Première version</h3>
 <div class="level3">
 
 <p>
@@ -127,7 +133,7 @@ on New Years will display
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/month.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/month.txt · Last modified: 2013/05/01 13:16 by fred</div>
 
                             </div></div><!-- /content -->
 

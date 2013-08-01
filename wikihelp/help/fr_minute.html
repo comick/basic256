@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-05-01T13:12:15-0700"/>
 <meta name="keywords" content="fr,minute"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -17,7 +17,7 @@
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:minute"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:minute"/>
 <link rel="canonical" href="./fr_minute.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -87,38 +87,36 @@
 <div class="level3">
 
 <p>
-Returns the current system clock&#039;s minute of the hour (0-59).
+Renvoie la minute courante de l&#039;horloge système (0-59).
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
 <div class="level3">
-<pre class="code"># display nice date
-dim months$(12)
-months$ = {&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;}
-print year + &quot;-&quot; + months$[month] + &quot;-&quot; + right(&quot;0&quot; + day, 2)
-# display pretty time
-h = hour
-if h &gt; 12 then
-h = h - 12
-ampm$ = &quot;PM&quot;
+<pre class="code"># affiche la date
+dim mois$(12)
+mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d = day()
+if d=1 then
+   ier$=&quot;er&quot;
 else
-ampm$ = &quot;AM&quot;
-end if
-if h = 0 then h = 12
-print  right(&quot;0&quot; + h, 2) + &quot;-&quot; + right(&quot;0&quot; + minute, 2) + &quot;-&quot; + right(&quot;0&quot; + second, 2) + &quot; &quot; + ampm$</pre>
+   ier$=&quot;&quot;
+endif
+print d + ier$ + &quot; &quot; + mois$[month()] + &quot; &quot; + year()
+# affiche l&#039;heure
+print  hour() + &quot;:&quot; + right(&quot;0&quot; + minute(), 2) + &quot;:&quot; + right(&quot;0&quot; + second(), 2)</pre>
 
 <p>
-Will print something like.<br/>
+affichera quelque chose comme ceci :<br/>
 
 </p>
-<pre class="code">2010-July-15
-10-00-02 PM</pre>
+<pre class="code">1er mai 2013
+21:47:04</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir aussi</h3>
 <div class="level3">
 
 <p>
@@ -127,7 +125,7 @@ Will print something like.<br/>
 
 </div>
 
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="premiere_version">Première version</h3>
 <div class="level3">
 
 <p>
@@ -139,7 +137,7 @@ Will print something like.<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/minute.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/minute.txt · Last modified: 2013/05/01 13:12 by fred</div>
 
                             </div></div><!-- /content -->
 

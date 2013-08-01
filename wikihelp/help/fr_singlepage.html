@@ -17,7 +17,7 @@
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:singlepage"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:singlepage"/>
 <link rel="canonical" href="./fr_singlepage.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -1375,7 +1375,7 @@ Retourne le chemin complet du répertoire courant. Pour toutes les <abbr title="
 <p>
 <strong>day</strong><br/>
 
-<strong>day</strong> ( )
+<strong>day</strong>()
 </p>
 
 </div>
@@ -1384,8 +1384,20 @@ Retourne le chemin complet du répertoire courant. Pour toutes les <abbr title="
 <div class="level5">
 
 <p>
-Retourne le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
+Renvoie le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
 </p>
+
+</div>
+
+<h5 id="exemple13">Exemple</h5>
+<div class="level5">
+<pre class="code">print &quot;Aujourd&#039;hui nous sommes le &quot;;
+print day() + &quot;/&quot; + (month() + 1) + &quot;/&quot; + year()</pre>
+
+<p>
+affichera par exemple :
+</p>
+<pre class="code">Aujourd&#039;hui nous sommes le 1/5/2013</pre>
 
 </div>
 
@@ -1398,19 +1410,7 @@ Retourne le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
 
 </div>
 
-<h5 id="exemple13">Exemple</h5>
-<div class="level5">
-<pre class="code">print &quot;Aujourd&#039;hui nous sommes le &quot;;
-print day + &quot;/&quot; + (month + 1) + &quot;/&quot; + year</pre>
-
-<p>
-affichera|
-</p>
-<pre class="code">Aujourd&#039;hui nous sommes le 12/09/2010</pre>
-
-</div>
-
-<h5 id="disponible_a_partir_de_la_version8">Disponible à partir de la version</h5>
+<h5 id="premiere_version">Première version</h5>
 <div class="level5">
 
 <p>
@@ -1477,7 +1477,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
 
 </div>
 
-<h5 id="disponible_a_partir_de_la_version9">Disponible à partir de la version</h5>
+<h5 id="disponible_a_partir_de_la_version8">Disponible à partir de la version</h5>
 <div class="level5">
 
 <p>
@@ -1611,7 +1611,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
 
 </div>
 
-<h5 id="disponible_a_partir_de_la_version10">Disponible à partir de la version</h5>
+<h5 id="disponible_a_partir_de_la_version9">Disponible à partir de la version</h5>
 <div class="level5">
 
 <p>
@@ -1676,7 +1676,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
 
 </div>
 
-<h5 id="disponible_a_partir_de_la_version11">Disponible à partir de la version</h5>
+<h5 id="disponible_a_partir_de_la_version10">Disponible à partir de la version</h5>
 <div class="level5">
 
 <p>
@@ -1741,7 +1741,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
 
 </div>
 
-<h5 id="disponible_a_partir_de_la_version12">Disponible à partir de la version</h5>
+<h5 id="disponible_a_partir_de_la_version11">Disponible à partir de la version</h5>
 <div class="level5">
 
 <p>
@@ -1840,7 +1840,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
 
 </div>
 
-<h5 id="disponible_a_partir_de_la_version13">Disponible à partir de la version</h5>
+<h5 id="disponible_a_partir_de_la_version12">Disponible à partir de la version</h5>
 <div class="level5">
 
 <p>
@@ -2844,9 +2844,9 @@ Returns the width (x dimension) of the current graphics display window.
 <div class="level5">
 
 <p>
-hour<br/>
+<strong>hour</strong><br/>
 
-hour()
+<strong>hour</strong>()
 </p>
 
 </div>
@@ -2855,38 +2855,36 @@ hour()
 <div class="level5">
 
 <p>
-Returns the current system clock&#039;s hour of the day (0-23).
+Renvoie l&#039;heure courante de l&#039;horloge système (0-23).
 </p>
 
 </div>
 
-<h5 id="example8">Example</h5>
+<h5 id="exemple20">Exemple</h5>
 <div class="level5">
-<pre class="code"># display nice date
-dim months$(12)
-months$ = {&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;}
-print year + &quot;-&quot; + months$[month] + &quot;-&quot; + right(&quot;0&quot; + day, 2)
-# display pretty time
-h = hour
-if h &gt; 12 then
-h = h - 12
-ampm$ = &quot;PM&quot;
+<pre class="code"># affiche la date
+dim mois$(12)
+mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d = day()
+if d=1 then
+   ier$=&quot;er&quot;
 else
-ampm$ = &quot;AM&quot;
-end if
-if h = 0 then h = 12
-print  right(&quot;0&quot; + h, 2) + &quot;-&quot; + right(&quot;0&quot; + minute, 2) + &quot;-&quot; + right(&quot;0&quot; + second, 2) + &quot; &quot; + ampm$</pre>
+   ier$=&quot;&quot;
+endif
+print d + ier$ + &quot; &quot; + mois$[month()] + &quot; &quot; + year()
+# affiche l&#039;heure
+print  hour() + &quot;:&quot; + right(&quot;0&quot; + minute(), 2) + &quot;:&quot; + right(&quot;0&quot; + second(), 2)</pre>
 
 <p>
-Will print something like.<br/>
+affichera quelque chose comme ceci :<br/>
 
 </p>
-<pre class="code">2010-July-15
-10-00-02 PM</pre>
+<pre class="code">1er mai 2013
+21:47:04</pre>
 
 </div>
 
-<h5 id="see_also16">See Also</h5>
+<h5 id="voir_aussi21">Voir aussi</h5>
 <div class="level5">
 
 <p>
@@ -2895,7 +2893,7 @@ Will print something like.<br/>
 
 </div>
 
-<h5 id="new_to_version13">New To Version</h5>
+<h5 id="premiere_version1">Première version</h5>
 <div class="level5">
 
 <p>
@@ -2942,7 +2940,7 @@ String indices begin at 1.
 
 </div>
 
-<h5 id="example9">Example</h5>
+<h5 id="example8">Example</h5>
 <div class="level5">
 <pre class="code">print instr(&quot;Hello&quot;, &quot;lo&quot;)</pre>
 
@@ -2982,7 +2980,7 @@ Convert <em>expression</em> to an integer (whole) number. Int will convert a str
 
 </div>
 
-<h5 id="see_also17">See Also</h5>
+<h5 id="see_also16">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3037,7 +3035,7 @@ Optionally scales size of the loaded image by the defined scale (1=normal size).
 
 </div>
 
-<h5 id="new_to_version14">New To Version</h5>
+<h5 id="new_to_version13">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3161,7 +3159,7 @@ Returns the last runtime error number.
 
 </div>
 
-<h5 id="example10">Example</h5>
+<h5 id="example9">Example</h5>
 <div class="level5">
 
 <p>
@@ -3170,7 +3168,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also18">See Also</h5>
+<h5 id="see_also17">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3179,7 +3177,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version15">New To Version</h5>
+<h5 id="new_to_version14">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3219,7 +3217,7 @@ Returns statement specific “extra” information about the error.
 
 </div>
 
-<h5 id="example11">Example</h5>
+<h5 id="example10">Example</h5>
 <div class="level5">
 
 <p>
@@ -3228,7 +3226,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also19">See Also</h5>
+<h5 id="see_also18">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3237,7 +3235,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version16">New To Version</h5>
+<h5 id="new_to_version15">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3277,7 +3275,7 @@ Returns the line number in the program where the runtime error happened.
 
 </div>
 
-<h5 id="example12">Example</h5>
+<h5 id="example11">Example</h5>
 <div class="level5">
 
 <p>
@@ -3286,7 +3284,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also20">See Also</h5>
+<h5 id="see_also19">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3295,7 +3293,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version17">New To Version</h5>
+<h5 id="new_to_version16">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3335,7 +3333,7 @@ Returns a string representing the last runtime error.
 
 </div>
 
-<h5 id="example13">Example</h5>
+<h5 id="example12">Example</h5>
 <div class="level5">
 
 <p>
@@ -3344,7 +3342,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also21">See Also</h5>
+<h5 id="see_also20">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3353,7 +3351,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version18">New To Version</h5>
+<h5 id="new_to_version17">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3391,7 +3389,7 @@ Returns a portion of the specified <em>string</em>, starting from the first char
 
 </div>
 
-<h5 id="see_also22">See Also</h5>
+<h5 id="see_also21">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3400,7 +3398,7 @@ Returns a portion of the specified <em>string</em>, starting from the first char
 
 </div>
 
-<h5 id="example14">Example</h5>
+<h5 id="example13">Example</h5>
 <div class="level5">
 <pre class="code">print left(&quot;Hello&quot;, 2)</pre>
 
@@ -3411,7 +3409,7 @@ will display
 
 </div>
 
-<h5 id="new_to_version19">New To Version</h5>
+<h5 id="new_to_version18">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3480,7 +3478,7 @@ Draws a line from the point x0,y0 to the point x1, y1.
 
 </div>
 
-<h5 id="example15">Example</h5>
+<h5 id="example14">Example</h5>
 <div class="level5">
 <pre class="code">color white
 rect 0,0,300,300
@@ -3526,7 +3524,7 @@ Return the base <em>e</em> lograthim of <em>expression</em>.
 
 </div>
 
-<h5 id="see_also23">See Also</h5>
+<h5 id="see_also22">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3535,7 +3533,7 @@ Return the base <em>e</em> lograthim of <em>expression</em>.
 
 </div>
 
-<h5 id="new_to_version20">New To Version</h5>
+<h5 id="new_to_version19">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3581,7 +3579,7 @@ Returns <em>string</em> with all alphabetic characters converted to lower case.
 
 </div>
 
-<h5 id="see_also24">See Also</h5>
+<h5 id="see_also23">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3596,7 +3594,7 @@ will display
 
 </div>
 
-<h5 id="new_to_version21">New To Version</h5>
+<h5 id="new_to_version20">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3634,7 +3632,7 @@ Returns a portion of the specified <em>string</em>, starting from the <em>start 
 
 </div>
 
-<h5 id="see_also25">See Also</h5>
+<h5 id="see_also24">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3643,7 +3641,7 @@ Returns a portion of the specified <em>string</em>, starting from the <em>start 
 
 </div>
 
-<h5 id="example16">Example</h5>
+<h5 id="example15">Example</h5>
 <div class="level5">
 <pre class="code">print mid(&quot;Hello&quot;, 2, 3)</pre>
 
@@ -3680,38 +3678,36 @@ will display
 <div class="level5">
 
 <p>
-Returns the current system clock&#039;s minute of the hour (0-59).
+Renvoie la minute courante de l&#039;horloge système (0-59).
 </p>
 
 </div>
 
-<h5 id="example17">Example</h5>
+<h5 id="exemple21">Exemple</h5>
 <div class="level5">
-<pre class="code"># display nice date
-dim months$(12)
-months$ = {&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;}
-print year + &quot;-&quot; + months$[month] + &quot;-&quot; + right(&quot;0&quot; + day, 2)
-# display pretty time
-h = hour
-if h &gt; 12 then
-h = h - 12
-ampm$ = &quot;PM&quot;
+<pre class="code"># affiche la date
+dim mois$(12)
+mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d = day()
+if d=1 then
+   ier$=&quot;er&quot;
 else
-ampm$ = &quot;AM&quot;
-end if
-if h = 0 then h = 12
-print  right(&quot;0&quot; + h, 2) + &quot;-&quot; + right(&quot;0&quot; + minute, 2) + &quot;-&quot; + right(&quot;0&quot; + second, 2) + &quot; &quot; + ampm$</pre>
+   ier$=&quot;&quot;
+endif
+print d + ier$ + &quot; &quot; + mois$[month()] + &quot; &quot; + year()
+# affiche l&#039;heure
+print  hour() + &quot;:&quot; + right(&quot;0&quot; + minute(), 2) + &quot;:&quot; + right(&quot;0&quot; + second(), 2)</pre>
 
 <p>
-Will print something like.<br/>
+affichera quelque chose comme ceci :<br/>
 
 </p>
-<pre class="code">2010-July-15
-10-00-02 PM</pre>
+<pre class="code">1er mai 2013
+21:47:04</pre>
 
 </div>
 
-<h5 id="see_also26">See Also</h5>
+<h5 id="voir_aussi22">Voir aussi</h5>
 <div class="level5">
 
 <p>
@@ -3720,7 +3716,7 @@ Will print something like.<br/>
 
 </div>
 
-<h5 id="new_to_version22">New To Version</h5>
+<h5 id="premiere_version2">Première version</h5>
 <div class="level5">
 
 <p>
@@ -3755,12 +3751,32 @@ Will print something like.<br/>
 <div class="level5">
 
 <p>
-Returns the current system clock&#039;s month. January is 0, February is 1… December is 11.
+Renvoie le mois en cours de l&#039;horloge système (0-11 : 0=janvier, 1=février, … 11=décembre).
 </p>
 
 </div>
 
-<h5 id="see_also27">See Also</h5>
+<h5 id="exemple22">Exemple</h5>
+<div class="level5">
+<pre class="code">cls
+dim les_mois$(12)
+les_mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d=day()
+if d=1 then
+   ier$=&quot;er&quot;
+else
+   ier$=&quot;&quot;
+endif
+print day() + ier$ + &quot; &quot; + les_mois$[month()] + &quot; &quot; + year()</pre>
+
+<p>
+affichera par exemple :
+</p>
+<pre class="code">1er mai 2013</pre>
+
+</div>
+
+<h5 id="voir_aussi23">Voir aussi</h5>
 <div class="level5">
 
 <p>
@@ -3769,21 +3785,7 @@ Returns the current system clock&#039;s month. January is 0, February is 1… De
 
 </div>
 
-<h5 id="example18">Example</h5>
-<div class="level5">
-<pre class="code">cls
-dim n$(12)
-n$ = {&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;}
-print day + &quot;-&quot; + n$[month] + &quot;-&quot; + year</pre>
-
-<p>
-on New Years will display
-</p>
-<pre class="code">1-Jan-2010</pre>
-
-</div>
-
-<h5 id="new_to_version23">New To Version</h5>
+<h5 id="premiere_version3">Première version</h5>
 <div class="level5">
 
 <p>
@@ -3843,7 +3845,7 @@ Returns the buttons that currently pressed on the mouse (if over the graphic out
 
 </div>
 
-<h5 id="see_also28">See Also</h5>
+<h5 id="see_also25">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3852,7 +3854,7 @@ Returns the buttons that currently pressed on the mouse (if over the graphic out
 
 </div>
 
-<h5 id="new_to_version24">New To Version</h5>
+<h5 id="new_to_version21">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3892,7 +3894,7 @@ Returns the current or last mouse x location of the mouse pointer over the graph
 
 </div>
 
-<h5 id="see_also29">See Also</h5>
+<h5 id="see_also26">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3901,7 +3903,7 @@ Returns the current or last mouse x location of the mouse pointer over the graph
 
 </div>
 
-<h5 id="new_to_version25">New To Version</h5>
+<h5 id="new_to_version22">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3941,7 +3943,7 @@ Returns the current or last mouse y location of the mouse pointer over the graph
 
 </div>
 
-<h5 id="see_also30">See Also</h5>
+<h5 id="see_also27">See Also</h5>
 <div class="level5">
 
 <p>
@@ -3950,7 +3952,7 @@ Returns the current or last mouse y location of the mouse pointer over the graph
 
 </div>
 
-<h5 id="new_to_version26">New To Version</h5>
+<h5 id="new_to_version23">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -3994,7 +3996,7 @@ Close the specified network connection (socket). If <em>socket_number</em> is no
 
 </div>
 
-<h5 id="example19">Example</h5>
+<h5 id="example16">Example</h5>
 <div class="level5">
 
 <p>
@@ -4003,7 +4005,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also31">See Also</h5>
+<h5 id="see_also28">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4012,7 +4014,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version27">New To Version</h5>
+<h5 id="new_to_version24">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4056,7 +4058,7 @@ Open a network connection (client) to a server.  The IP address or host name of 
 
 </div>
 
-<h5 id="example20">Example</h5>
+<h5 id="example17">Example</h5>
 <div class="level5">
 
 <p>
@@ -4133,7 +4135,7 @@ I got &#039;end&#039;.</pre>
 
 </div>
 
-<h5 id="see_also32">See Also</h5>
+<h5 id="see_also29">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4142,7 +4144,7 @@ I got &#039;end&#039;.</pre>
 
 </div>
 
-<h5 id="new_to_version28">New To Version</h5>
+<h5 id="new_to_version25">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4186,7 +4188,7 @@ Returns a true value (1) of there is data waiting to be read in using the <a hre
 
 </div>
 
-<h5 id="example21">Example</h5>
+<h5 id="example18">Example</h5>
 <div class="level5">
 
 <p>
@@ -4195,7 +4197,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also33">See Also</h5>
+<h5 id="see_also30">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4204,7 +4206,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version29">New To Version</h5>
+<h5 id="new_to_version26">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4248,7 +4250,7 @@ Open up a network connection (server) on a specific port address and wait for an
 
 </div>
 
-<h5 id="example22">Example</h5>
+<h5 id="example19">Example</h5>
 <div class="level5">
 
 <p>
@@ -4257,7 +4259,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also34">See Also</h5>
+<h5 id="see_also31">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4266,7 +4268,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version30">New To Version</h5>
+<h5 id="new_to_version27">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4308,7 +4310,7 @@ Read data from the specified network connection and return it as a string.  This
 
 </div>
 
-<h5 id="example23">Example</h5>
+<h5 id="example20">Example</h5>
 <div class="level5">
 
 <p>
@@ -4317,7 +4319,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also35">See Also</h5>
+<h5 id="see_also32">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4326,7 +4328,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version31">New To Version</h5>
+<h5 id="new_to_version28">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4370,7 +4372,7 @@ Send a string to the specified open network connection.  If <em>socket_number</e
 
 </div>
 
-<h5 id="example24">Example</h5>
+<h5 id="example21">Example</h5>
 <div class="level5">
 
 <p>
@@ -4379,7 +4381,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also36">See Also</h5>
+<h5 id="see_also33">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4388,7 +4390,7 @@ See example of usage on <a href="./fr_netconnect.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version32">New To Version</h5>
+<h5 id="new_to_version29">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4441,7 +4443,7 @@ BASIC256 may have up to 8 files open at a single time.  The files are numbered f
 
 </div>
 
-<h5 id="see_also37">See Also</h5>
+<h5 id="see_also34">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4479,7 +4481,7 @@ Turns off error trapping and restores the default error behavior.
 
 </div>
 
-<h5 id="example25">Example</h5>
+<h5 id="example22">Example</h5>
 <div class="level5">
 
 <p>
@@ -4488,7 +4490,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also38">See Also</h5>
+<h5 id="see_also35">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4497,7 +4499,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version33">New To Version</h5>
+<h5 id="new_to_version30">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4535,7 +4537,7 @@ Causes the subroutine at <em>label</em> to be executed when an runtime error occ
 
 </div>
 
-<h5 id="example26">Example</h5>
+<h5 id="example23">Example</h5>
 <div class="level5">
 
 <p>
@@ -4544,7 +4546,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="see_also39">See Also</h5>
+<h5 id="see_also36">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4553,7 +4555,7 @@ See example of usage on <a href="./fr_errorcodes.html" class="wikilink1" title="
 
 </div>
 
-<h5 id="new_to_version34">New To Version</h5>
+<h5 id="new_to_version31">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4622,7 +4624,7 @@ Returns the RGB value of the pixel at the <em>x</em> and <em>y</em> coordinate. 
 
 </div>
 
-<h5 id="see_also40">See Also</h5>
+<h5 id="see_also37">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4631,7 +4633,7 @@ Returns the RGB value of the pixel at the <em>x</em> and <em>y</em> coordinate. 
 
 </div>
 
-<h5 id="new_to_version35">New To Version</h5>
+<h5 id="new_to_version32">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4711,7 +4713,7 @@ The number of points in the array argument was removed from the poly statement i
 
 </div>
 
-<h5 id="see_also41">See Also</h5>
+<h5 id="see_also38">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4720,7 +4722,7 @@ The number of points in the array argument was removed from the poly statement i
 
 </div>
 
-<h5 id="example27">Example</h5>
+<h5 id="example24">Example</h5>
 <div class="level5">
 <pre class="code">color blue
 rect 0,0,300,300
@@ -4770,7 +4772,7 @@ Writes text to the text output window, appending a new line.  If the optional se
 
 </div>
 
-<h5 id="see_also42">See Also</h5>
+<h5 id="see_also39">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4810,7 +4812,7 @@ Put the graphics stored in the slice string on the screen at x,y. If a transpare
 
 </div>
 
-<h5 id="see_also43">See Also</h5>
+<h5 id="see_also40">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4819,7 +4821,7 @@ Put the graphics stored in the slice string on the screen at x,y. If a transpare
 
 </div>
 
-<h5 id="new_to_version36">New To Version</h5>
+<h5 id="new_to_version33">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -4859,7 +4861,7 @@ Converts an angle in degrees to radians.<br/>
 
 </div>
 
-<h5 id="see_also44">See Also</h5>
+<h5 id="see_also41">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4941,7 +4943,7 @@ Reads and returns a token from an open file.  A token is any string of character
 
 </div>
 
-<h5 id="see_also45">See Also</h5>
+<h5 id="see_also42">See Also</h5>
 <div class="level5">
 
 <p>
@@ -4983,7 +4985,7 @@ Reads and returns an entire line from an open file.  If the file number is not s
 
 </div>
 
-<h5 id="see_also46">See Also</h5>
+<h5 id="see_also43">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5023,7 +5025,7 @@ Draws a <em>width</em> x <em>height</em> pixel rectangle using the current color
 
 </div>
 
-<h5 id="example28">Example</h5>
+<h5 id="example25">Example</h5>
 <div class="level5">
 <pre class="code">color white
 rect 0,0,300,300
@@ -5077,7 +5079,7 @@ Re-sizes a previously created array, preserving data. If an array is enlarged th
 
 </div>
 
-<h5 id="see_also47">See Also</h5>
+<h5 id="see_also44">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5086,7 +5088,7 @@ Re-sizes a previously created array, preserving data. If an array is enlarged th
 
 </div>
 
-<h5 id="new_to_version37">New To Version</h5>
+<h5 id="new_to_version34">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5124,7 +5126,7 @@ Updates the graphics output window to show all drawing since the previous refres
 
 </div>
 
-<h5 id="see_also48">See Also</h5>
+<h5 id="see_also45">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5197,7 +5199,7 @@ Clears an open file.  All data stored in the file is lost.  If the file number i
 
 </div>
 
-<h5 id="see_also49">See Also</h5>
+<h5 id="see_also46">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5235,7 +5237,7 @@ Returns the RGB value of the color made up of the red, green, and blue component
 
 </div>
 
-<h5 id="see_also50">See Also</h5>
+<h5 id="see_also47">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5244,7 +5246,7 @@ Returns the RGB value of the color made up of the red, green, and blue component
 
 </div>
 
-<h5 id="new_to_version38">New To Version</h5>
+<h5 id="new_to_version35">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5282,7 +5284,7 @@ Returns a portion of the specified <em>string</em>, starting from the last <em>l
 
 </div>
 
-<h5 id="see_also51">See Also</h5>
+<h5 id="see_also48">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5291,7 +5293,7 @@ Returns a portion of the specified <em>string</em>, starting from the last <em>l
 
 </div>
 
-<h5 id="example29">Example</h5>
+<h5 id="example26">Example</h5>
 <div class="level5">
 <pre class="code">print right(&quot;Hello&quot;, 2)</pre>
 
@@ -5302,7 +5304,7 @@ will display
 
 </div>
 
-<h5 id="new_to_version39">New To Version</h5>
+<h5 id="new_to_version36">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5377,38 +5379,36 @@ Utilise le moteur du système de synthèse vocale (TTS - Text to Speech) pour di
 <div class="level5">
 
 <p>
-Returns the current system clock&#039;s second of the current minute (0-59).
+Renvoie la seconde courante de la minute courante de l&#039;horloge système (0-59).
 </p>
 
 </div>
 
-<h5 id="example30">Example</h5>
+<h5 id="exemple23">Exemple</h5>
 <div class="level5">
-<pre class="code"># display nice date
-dim months$(12)
-months$ = {&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;}
-print year + &quot;-&quot; + months$[month] + &quot;-&quot; + right(&quot;0&quot; + day, 2)
-# display pretty time
-h = hour
-if h &gt; 12 then
-h = h - 12
-ampm$ = &quot;PM&quot;
+<pre class="code"># affiche la date
+dim mois$(12)
+mois$ = {&quot;janvier&quot;, &quot;février&quot;, &quot;mars&quot;, &quot;avril&quot;, &quot;mai&quot;, &quot;juin&quot;, &quot;juillet&quot;, &quot;août&quot;, &quot;septembre&quot;, &quot;octobre&quot;, &quot;novembre&quot;, &quot;décembre&quot;}
+d = day()
+if d=1 then
+   ier$=&quot;er&quot;
 else
-ampm$ = &quot;AM&quot;
-end if
-if h = 0 then h = 12
-print  right(&quot;0&quot; + h, 2) + &quot;-&quot; + right(&quot;0&quot; + minute, 2) + &quot;-&quot; + right(&quot;0&quot; + second, 2) + &quot; &quot; + ampm$</pre>
+   ier$=&quot;&quot;
+endif
+print d + ier$ + &quot; &quot; + mois$[month()] + &quot; &quot; + year()
+# affiche l&#039;heure
+print  hour() + &quot;:&quot; + right(&quot;0&quot; + minute(), 2) + &quot;:&quot; + right(&quot;0&quot; + second(), 2)</pre>
 
 <p>
-Will print something like.<br/>
+affichera quelque chose comme ceci :<br/>
 
 </p>
-<pre class="code">2010-July-15
-10-00-02 PM</pre>
+<pre class="code">1er mai 2013
+21:47:04</pre>
 
 </div>
 
-<h5 id="see_also52">See Also</h5>
+<h5 id="voir_aussi24">Voir aussi</h5>
 <div class="level5">
 
 <p>
@@ -5417,7 +5417,7 @@ Will print something like.<br/>
 
 </div>
 
-<h5 id="new_to_version40">New To Version</h5>
+<h5 id="premiere_version4">Première version</h5>
 <div class="level5">
 
 <p>
@@ -5461,7 +5461,7 @@ Moves the read/write location to a specific location (offset in bytes from the s
 
 </div>
 
-<h5 id="see_also53">See Also</h5>
+<h5 id="see_also49">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5470,7 +5470,7 @@ Moves the read/write location to a specific location (offset in bytes from the s
 
 </div>
 
-<h5 id="new_to_version41">New To Version</h5>
+<h5 id="new_to_version37">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5517,7 +5517,7 @@ The sin function does not produce an exact result.
 
 </div>
 
-<h5 id="see_also54">See Also</h5>
+<h5 id="see_also50">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5526,7 +5526,7 @@ The sin function does not produce an exact result.
 
 </div>
 
-<h5 id="example31">Example</h5>
+<h5 id="example27">Example</h5>
 <div class="level5">
 <pre class="code">clg
 color black
@@ -5584,7 +5584,7 @@ Returns the length, in bytes, of an opened file.  If the file number is not spec
 
 </div>
 
-<h5 id="see_also55">See Also</h5>
+<h5 id="see_also51">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5593,7 +5593,7 @@ Returns the length, in bytes, of an opened file.  If the file number is not spec
 
 </div>
 
-<h5 id="new_to_version42">New To Version</h5>
+<h5 id="new_to_version38">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5640,7 +5640,7 @@ Sound support for LINUX systems was added in version 0.9.5g.  Sound was changed 
 
 </div>
 
-<h5 id="see_also56">See Also</h5>
+<h5 id="see_also52">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5678,7 +5678,7 @@ Function returns true if the two sprites are colliding.  The Spritecollide funct
 
 </div>
 
-<h5 id="see_also57">See Also</h5>
+<h5 id="see_also53">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5687,7 +5687,7 @@ Function returns true if the two sprites are colliding.  The Spritecollide funct
 
 </div>
 
-<h5 id="new_to_version43">New To Version</h5>
+<h5 id="new_to_version39">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5727,7 +5727,7 @@ Create <em>n</em> sprite placeholders in memory.  Sprites are accessed in your p
 
 </div>
 
-<h5 id="see_also58">See Also</h5>
+<h5 id="see_also54">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5736,7 +5736,7 @@ Create <em>n</em> sprite placeholders in memory.  Sprites are accessed in your p
 
 </div>
 
-<h5 id="new_to_version44">New To Version</h5>
+<h5 id="new_to_version40">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5774,7 +5774,7 @@ Returns the height, in pixels, of a loaded sprite.
 
 </div>
 
-<h5 id="see_also59">See Also</h5>
+<h5 id="see_also55">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5783,7 +5783,7 @@ Returns the height, in pixels, of a loaded sprite.
 
 </div>
 
-<h5 id="new_to_version45">New To Version</h5>
+<h5 id="new_to_version41">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5822,7 +5822,7 @@ Hides a sprite.  All image and position information is retained.
 
 </div>
 
-<h5 id="see_also60">See Also</h5>
+<h5 id="see_also56">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5831,7 +5831,7 @@ Hides a sprite.  All image and position information is retained.
 
 </div>
 
-<h5 id="new_to_version46">New To Version</h5>
+<h5 id="new_to_version42">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5871,7 +5871,7 @@ Load an image or picture from a file and save it as a sprite.  The sprite will b
 
 </div>
 
-<h5 id="see_also61">See Also</h5>
+<h5 id="see_also57">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5880,7 +5880,7 @@ Load an image or picture from a file and save it as a sprite.  The sprite will b
 
 </div>
 
-<h5 id="new_to_version47">New To Version</h5>
+<h5 id="new_to_version43">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5920,7 +5920,7 @@ Move a sprite from its current position by the specified number of pixels.  Moti
 
 </div>
 
-<h5 id="see_also62">See Also</h5>
+<h5 id="see_also58">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5929,7 +5929,7 @@ Move a sprite from its current position by the specified number of pixels.  Moti
 
 </div>
 
-<h5 id="new_to_version48">New To Version</h5>
+<h5 id="new_to_version44">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -5969,7 +5969,7 @@ Place the center of a sprite at a specific location on the screen. Like <a href=
 
 </div>
 
-<h5 id="see_also63">See Also</h5>
+<h5 id="see_also59">See Also</h5>
 <div class="level5">
 
 <p>
@@ -5978,7 +5978,7 @@ Place the center of a sprite at a specific location on the screen. Like <a href=
 
 </div>
 
-<h5 id="new_to_version49">New To Version</h5>
+<h5 id="new_to_version45">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6018,7 +6018,7 @@ Show a hidden sprite.
 
 </div>
 
-<h5 id="see_also64">See Also</h5>
+<h5 id="see_also60">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6027,7 +6027,7 @@ Show a hidden sprite.
 
 </div>
 
-<h5 id="new_to_version50">New To Version</h5>
+<h5 id="new_to_version46">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6067,7 +6067,7 @@ Copy the rectangular region of the screen with it&#039;s top left corner represe
 
 </div>
 
-<h5 id="see_also65">See Also</h5>
+<h5 id="see_also61">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6076,7 +6076,7 @@ Copy the rectangular region of the screen with it&#039;s top left corner represe
 
 </div>
 
-<h5 id="new_to_version51">New To Version</h5>
+<h5 id="new_to_version47">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6114,7 +6114,7 @@ Returns true if the sprite is visible.
 
 </div>
 
-<h5 id="see_also66">See Also</h5>
+<h5 id="see_also62">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6123,7 +6123,7 @@ Returns true if the sprite is visible.
 
 </div>
 
-<h5 id="new_to_version52">New To Version</h5>
+<h5 id="new_to_version48">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6161,7 +6161,7 @@ Returns the width, in pixels, of a loaded sprite.
 
 </div>
 
-<h5 id="see_also67">See Also</h5>
+<h5 id="see_also63">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6170,7 +6170,7 @@ Returns the width, in pixels, of a loaded sprite.
 
 </div>
 
-<h5 id="new_to_version53">New To Version</h5>
+<h5 id="new_to_version49">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6208,7 +6208,7 @@ Returns the x coordinate of the center of a loaded sprite.
 
 </div>
 
-<h5 id="see_also68">See Also</h5>
+<h5 id="see_also64">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6217,7 +6217,7 @@ Returns the x coordinate of the center of a loaded sprite.
 
 </div>
 
-<h5 id="new_to_version54">New To Version</h5>
+<h5 id="new_to_version50">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6255,7 +6255,7 @@ Returns the y coordinate of the center of a loaded sprite.
 
 </div>
 
-<h5 id="see_also69">See Also</h5>
+<h5 id="see_also65">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6264,7 +6264,7 @@ Returns the y coordinate of the center of a loaded sprite.
 
 </div>
 
-<h5 id="new_to_version55">New To Version</h5>
+<h5 id="new_to_version51">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6312,7 +6312,7 @@ Draws a polygon with top left corner (origin) at x, y. Optionally scales size of
 
 </div>
 
-<h5 id="see_also70">See Also</h5>
+<h5 id="see_also66">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6321,7 +6321,7 @@ Draws a polygon with top left corner (origin) at x, y. Optionally scales size of
 
 </div>
 
-<h5 id="example32">Example</h5>
+<h5 id="example28">Example</h5>
 <div class="level5">
 
 <p>
@@ -6354,7 +6354,7 @@ Both programs will draw:<br/>
 
 </div>
 
-<h5 id="new_to_version56">New To Version</h5>
+<h5 id="new_to_version52">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6392,7 +6392,7 @@ Returns the string representation of a number.
 
 </div>
 
-<h5 id="see_also71">See Also</h5>
+<h5 id="see_also67">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6432,7 +6432,7 @@ Execute a system command in a terminal window.  WARNING: This can be a very dang
 
 </div>
 
-<h5 id="new_to_version57">New To Version</h5>
+<h5 id="new_to_version53">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6479,7 +6479,7 @@ The tan function does not produce an exact result.
 
 </div>
 
-<h5 id="see_also72">See Also</h5>
+<h5 id="see_also68">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6488,7 +6488,7 @@ The tan function does not produce an exact result.
 
 </div>
 
-<h5 id="example33">Example</h5>
+<h5 id="example29">Example</h5>
 <div class="level5">
 <pre class="code">clg
 color black
@@ -6544,7 +6544,7 @@ Paints a text string on the Graphics Output Window at <em>x</em>, <em>y</em> usi
 
 </div>
 
-<h5 id="example34">Example</h5>
+<h5 id="example30">Example</h5>
 <div class="level5">
 <pre class="code">color grey
 rect 0,0,graphwidth,graphheight
@@ -6563,7 +6563,7 @@ Will draw.<br/>
 
 </div>
 
-<h5 id="see_also73">See Also</h5>
+<h5 id="see_also69">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6572,7 +6572,7 @@ Will draw.<br/>
 
 </div>
 
-<h5 id="new_to_version58">New To Version</h5>
+<h5 id="new_to_version54">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6610,7 +6610,7 @@ Returns <em>string</em> with all alphabetic characters converted to upper case.
 
 </div>
 
-<h5 id="see_also74">See Also</h5>
+<h5 id="see_also70">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6619,7 +6619,7 @@ Returns <em>string</em> with all alphabetic characters converted to upper case.
 
 </div>
 
-<h5 id="example35">Example</h5>
+<h5 id="example31">Example</h5>
 <div class="level5">
 <pre class="code">print upper(&quot;BlUe!&quot;)</pre>
 
@@ -6630,7 +6630,7 @@ will display
 
 </div>
 
-<h5 id="new_to_version59">New To Version</h5>
+<h5 id="new_to_version55">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6670,7 +6670,7 @@ Adjust the volume of the notes played with the <a href="./fr_sound.html" class="
 
 </div>
 
-<h5 id="see_also75">See Also</h5>
+<h5 id="see_also71">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6679,7 +6679,7 @@ Adjust the volume of the notes played with the <a href="./fr_sound.html" class="
 
 </div>
 
-<h5 id="new_to_version60">New To Version</h5>
+<h5 id="new_to_version56">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6719,7 +6719,7 @@ Play WAV audio file asynchronously (in the background).
 
 </div>
 
-<h5 id="see_also76">See Also</h5>
+<h5 id="see_also72">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6728,7 +6728,7 @@ Play WAV audio file asynchronously (in the background).
 
 </div>
 
-<h5 id="new_to_version61">New To Version</h5>
+<h5 id="new_to_version57">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6766,7 +6766,7 @@ Stop playing the current asynchronous (background) WAV audio file.
 
 </div>
 
-<h5 id="see_also77">See Also</h5>
+<h5 id="see_also73">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6775,7 +6775,7 @@ Stop playing the current asynchronous (background) WAV audio file.
 
 </div>
 
-<h5 id="new_to_version62">New To Version</h5>
+<h5 id="new_to_version58">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6827,7 +6827,7 @@ Writes <em>string</em> to the end of an open file.  If the file number is not sp
 
 </div>
 
-<h5 id="see_also78">See Also</h5>
+<h5 id="see_also74">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6871,7 +6871,7 @@ Writes <em>string</em> append with a newline character to the end of an open fil
 
 </div>
 
-<h5 id="see_also79">See Also</h5>
+<h5 id="see_also75">See Also</h5>
 <div class="level5">
 
 <p>
@@ -6880,7 +6880,7 @@ Writes <em>string</em> append with a newline character to the end of an open fil
 
 </div>
 
-<h5 id="new_to_version63">New To Version</h5>
+<h5 id="new_to_version59">New To Version</h5>
 <div class="level5">
 
 <p>
@@ -6906,7 +6906,7 @@ Writes <em>string</em> append with a newline character to the end of an open fil
 <p>
 <strong>year</strong><br/>
 
-<strong>year</strong> ( )
+<strong>year</strong>()
 </p>
 
 </div>
@@ -6915,12 +6915,24 @@ Writes <em>string</em> append with a newline character to the end of an open fil
 <div class="level5">
 
 <p>
-Returns the current system clock&#039;s 4 digit year.
+Renvoie l&#039;année en cours de l&#039;horloge système sur 4 chiffres.
 </p>
 
 </div>
 
-<h5 id="see_also80">See Also</h5>
+<h5 id="exemple24">Exemple</h5>
+<div class="level5">
+<pre class="code">print &quot;la date du jour est le &quot;;
+print day() + &quot;/&quot; + (month() + 1) + &quot;/&quot; + year()</pre>
+
+<p>
+affiche
+</p>
+<pre class="code">la date du jour est le 1/5/2013</pre>
+
+</div>
+
+<h5 id="voir_aussi25">Voir aussi</h5>
 <div class="level5">
 
 <p>
@@ -6929,19 +6941,7 @@ Returns the current system clock&#039;s 4 digit year.
 
 </div>
 
-<h5 id="example36">Example</h5>
-<div class="level5">
-<pre class="code">print &quot;today&#039;s date is &quot;;
-print (month + 1) + &quot;/&quot; + day + &quot;/&quot; + year</pre>
-
-<p>
-will display
-</p>
-<pre class="code">today&#039;s date is 11/30/2009</pre>
-
-</div>
-
-<h5 id="new_to_version64">New To Version</h5>
+<h5 id="premiere_version5">Première version</h5>
 <div class="level5">
 
 <p>

@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:15-0700"/>
+<meta name="date" content="2013-05-01T13:05:21-0700"/>
 <meta name="keywords" content="fr,day"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -17,7 +17,7 @@
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:day"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:day"/>
 <link rel="canonical" href="./fr_day.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -78,7 +78,7 @@
 <p>
 <strong>day</strong><br/>
 
-<strong>day</strong> ( )
+<strong>day</strong>()
 </p>
 
 </div>
@@ -87,12 +87,24 @@
 <div class="level3">
 
 <p>
-Retourne le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
+Renvoie le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="voir_aussi">Voir aussi</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
+<div class="level3">
+<pre class="code">print &quot;Aujourd&#039;hui nous sommes le &quot;;
+print day() + &quot;/&quot; + (month() + 1) + &quot;/&quot; + year()</pre>
+
+<p>
+affichera par exemple :
+</p>
+<pre class="code">Aujourd&#039;hui nous sommes le 1/5/2013</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="voir_aussi">Voir aussi</h3>
 <div class="level3">
 
 <p>
@@ -101,19 +113,7 @@ Retourne le jour du mois actuel (1-31) d&#039;après l&#039;horloge système.
 
 </div>
 
-<h3 class="sectionedit5" id="exemple">Exemple</h3>
-<div class="level3">
-<pre class="code">print &quot;Aujourd&#039;hui nous sommes le &quot;;
-print day + &quot;/&quot; + (month + 1) + &quot;/&quot; + year</pre>
-
-<p>
-affichera|
-</p>
-<pre class="code">Aujourd&#039;hui nous sommes le 12/09/2010</pre>
-
-</div>
-
-<h3 class="sectionedit6" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
+<h3 class="sectionedit6" id="premiere_version">Première version</h3>
 <div class="level3">
 
 <p>
@@ -125,7 +125,7 @@ affichera|
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/day.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/day.txt · Last modified: 2013/05/01 13:05 by fred</div>
 
                             </div></div><!-- /content -->
 

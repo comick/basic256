@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="date" content="2013-05-01T13:18:08-0700"/>
 <meta name="keywords" content="fr,year"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -17,7 +17,7 @@
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:year"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:year"/>
 <link rel="canonical" href="./fr_year.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -78,7 +78,7 @@
 <p>
 <strong>year</strong><br/>
 
-<strong>year</strong> ( )
+<strong>year</strong>()
 </p>
 
 </div>
@@ -87,12 +87,24 @@
 <div class="level3">
 
 <p>
-Returns the current system clock&#039;s 4 digit year.
+Renvoie l&#039;année en cours de l&#039;horloge système sur 4 chiffres.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
+<div class="level3">
+<pre class="code">print &quot;la date du jour est le &quot;;
+print day() + &quot;/&quot; + (month() + 1) + &quot;/&quot; + year()</pre>
+
+<p>
+affiche
+</p>
+<pre class="code">la date du jour est le 1/5/2013</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="voir_aussi">Voir aussi</h3>
 <div class="level3">
 
 <p>
@@ -101,19 +113,7 @@ Returns the current system clock&#039;s 4 digit year.
 
 </div>
 
-<h3 class="sectionedit5" id="example">Example</h3>
-<div class="level3">
-<pre class="code">print &quot;today&#039;s date is &quot;;
-print (month + 1) + &quot;/&quot; + day + &quot;/&quot; + year</pre>
-
-<p>
-will display
-</p>
-<pre class="code">today&#039;s date is 11/30/2009</pre>
-
-</div>
-
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="premiere_version">Première version</h3>
 <div class="level3">
 
 <p>
@@ -125,7 +125,7 @@ will display
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/year.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/year.txt · Last modified: 2013/05/01 13:18 by fred</div>
 
                             </div></div><!-- /content -->
 

@@ -6,8 +6,8 @@
     <title>pt:do [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,follow"/>
-<meta name="date" content="1969-12-31T17:00:00-0700"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-03-30T03:39:41-0700"/>
 <meta name="keywords" content="pt,do"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -16,7 +16,8 @@
 <link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:do"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:do"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1359429941.css"/>
+<link rel="canonical" href="./pt_do.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
@@ -48,7 +49,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_do.html" class="wikilink2" title="pt:do" rel="nofollow">do</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a> » <span class="curid"><a href="./pt_do.html" class="wikilink1" title="pt:do">do</a></span></div>
 
     
     
@@ -65,12 +66,66 @@
 
                 <div class="page group">
                                                             <!-- wikipage start -->
-                    
-<h1 class="sectionedit1" id="this_topic_does_not_exist_yet">This topic does not exist yet</h1>
-<div class="level1">
+
+<h2 class="sectionedit1" id="do_until">Do / Until</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="formato">Formato</h3>
+<div class="level3">
 
 <p>
-You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissions allow, you may create it by clicking on “Create this page”.
+<strong>do</strong><br/>
+
+<em>código</em><br/>
+
+<strong>until</strong> <em>expresão booleana</em>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="descricao">Descrição</h3>
+<div class="level3">
+
+<p>
+Executa <em>instruções</em> dentro do ciclo até que <em>expressão booleana</em> devolva falso.  Do / Until executa pelo menos uma vez pois o teste é feito no fim do ciclo.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="ver_tambem">Ver também</h3>
+<div class="level3">
+
+<p>
+<a href="./pt_fornext.html" class="wikilink1" title="pt:fornext">For / Next</a>, <a href="./pt_whileendwhile.html" class="wikilink1" title="pt:whileendwhile">While / End While</a>
+</p>
+
+</div>
+
+<h3 class="sectionedit5" id="exemplo">Exemplo</h3>
+<div class="level3">
+<pre class="code">t = 1
+do
+  print t
+  t = t + 1
+until t = 5</pre>
+
+<p>
+exibirá
+</p>
+<pre class="code">1
+2
+3
+4</pre>
+
+</div>
+
+<h3 class="sectionedit6" id="introduzido">Introduzido</h3>
+<div class="level3">
+
+<p>
+0.9.4g
 </p>
 
 </div>
@@ -78,7 +133,7 @@ You&#039;ve followed a link to a topic that doesn&#039;t exist yet. If permissio
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"></div>
+                <div class="docInfo">pt/do.txt · Last modified: 2013/03/30 03:39 by m_santos</div>
 
                             </div></div><!-- /content -->
 
