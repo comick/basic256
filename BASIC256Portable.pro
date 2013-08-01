@@ -11,8 +11,8 @@ DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
 CONFIG						+=	 qt release
-OBJECTS_DIR					=	portabletmp/obj
-MOC_DIR						=	portabletmp/moc
+OBJECTS_DIR					=	tmp/obj
+MOC_DIR						=	tmp/moc
 
 QT							+=	webkit
 contains( QT_VERSION, "^5.*" ) {
