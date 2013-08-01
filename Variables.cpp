@@ -35,12 +35,13 @@ void
 Variables::clear()
 {
 	lasterror = ERROR_NONE;
-	// erase all variables
+	// erase all variables and delete them
 	while(!varmap.empty()) {
 		std::map<int, std::map<int,variable*> >::iterator i=varmap.begin();
 		while(!(*i).second.empty()) {
 			std::map<int,variable*>::iterator j=(*i).second.begin();
 			clearvariable((*j).second);
+			delete((*j).second);						// delete the variable object
 			(*i).second.erase((*j).first);
 		}
 		varmap.erase((*i).first);
@@ -78,7 +79,8 @@ Variables::decreaserecurse()
 			while(!varmap[recurselevel].empty()) {
 				std::map<int,variable*>::iterator j=varmap[recurselevel].begin();
 				clearvariable((*j).second);
-				varmap[recurselevel].erase((*j).first);
+				delete((*j).second);						// delete the variable object
+				varmap[recurselevel].erase((*j).first);		// delete it from the recurse map
 			}
 			varmap.erase(recurselevel);
 		}
@@ -90,8 +92,13 @@ Variables::decreaserecurse()
 void Variables::clearvariable(variable* v)
 {
 	// free a variable's current value to allow it to be reassigned
+	// but do not delete it
 	if (v->type == T_ARRAY || v->type == T_STRARRAY)	{
-		v->arr->datamap.clear();
+		while(!v->arr->datamap.empty()) {
+			std::map<int,arraydata*>::iterator j=v->arr->datamap.begin();
+			delete((*j).second);					// delete the array element object
+			v->arr->datamap.erase((*j).first);		// delete it from the map
+		}
 		delete(v->arr);
 		v->arr = NULL;
     }
