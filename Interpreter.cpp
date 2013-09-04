@@ -95,6 +95,7 @@ extern "C" {
 	extern unsigned int byteOffset;
 	extern unsigned int maxbyteoffset;
 	extern char *symtable[];
+	extern int numsyms;
 }
 
 Interpreter::Interpreter()
@@ -614,6 +615,24 @@ Interpreter::compileProgram(char *code)
 			case COMPERR_RETURNTYPE:
 				emit(outputReady(tr("RETURN value type is not the same as FUNCTION on line ") + QString::number(linenumber) + ".\n"));
 				break;
+			case COMPERR_CONTINUEDO:
+				emit(outputReady(tr("CONTINUE DO without matching DO on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_CONTINUEFOR:
+				emit(outputReady(tr("CONTINUE DO without matching DO on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_CONTINUEWHILE:
+				emit(outputReady(tr("CONTINUE WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_EXITDO:
+				emit(outputReady(tr("EXIT DO without matching DO on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_EXITFOR:
+				emit(outputReady(tr("EXIT FOR without matching FOR on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_EXITWHILE:
+				emit(outputReady(tr("EXIT WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			default:
 				if(column==0) {
 					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
@@ -638,7 +657,7 @@ Interpreter::compileProgram(char *code)
 			currentLine = *i;
 			op += sizeof(int);
 		}
-		else if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR)
+		else if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR || *op == OP_BRANCH)
 		{
 			op += sizeof(unsigned char);
 			int *i = (int *) op;
@@ -951,6 +970,7 @@ Interpreter::execByteCode()
 
 	case OP_BRANCH:
 		{
+			// goto if true
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
@@ -4704,6 +4724,70 @@ Interpreter::execByteCode()
 							// type of top stack element
 							stack.pushint(stack.peekType());
 							break;
+						case 3:
+							// number of symbols - display them to output area
+							{
+								for(int i=0;i<numsyms;i++) {
+									mutex->lock();
+									emit(outputReady(QString("SYM %1\n").arg(symtable[i])));
+									waitCond->wait(mutex);
+									mutex->unlock();
+								}
+								stack.pushint(numsyms);
+							}
+							break;
+						case 4:
+							// Hex dump of the program object code
+							{
+							unsigned char *o = byteCode;
+							while (o <= byteCode + byteOffset) {
+								mutex->lock();
+								unsigned int offset = o-byteCode;
+								unsigned char o1 = (unsigned char) *o;
+								o += sizeof(unsigned char);
+								if (o1 < (unsigned char) OP_TYPEARGINT)	{
+									// in the group of OP_TYPEARGNONE
+									// op has no args - move to next byte
+									emit(outputReady(QString("%1 %2\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0'))));
+								} else if (*o == OP_EXTENDEDNONE) {	
+									// simple one byte op follows the extended
+									// op has no args - move to next byte
+									emit(outputReady(QString("%1 %2%3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((unsigned char) *o,2,16,QChar('0'))));
+									o += sizeof(unsigned char);
+								} else if (*o < (unsigned char) OP_TYPEARG2INT) {
+									// in the group of OP_TYPEARGINT
+									//op has one Int arg
+									emit(outputReady(QString("%1 %2   int %3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((int) *o)));
+									o += sizeof(int);
+								} else if (*o < (unsigned char) OP_TYPEARGFLOAT) {
+									// in the group of OP_TYPEARG2INT
+									// op has 2 Int arg
+									emit(outputReady(QString("%1 %2   int %3 int %4\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((int) *o).arg((int) *(o+sizeof(int)))));
+									o += 2 * sizeof(int);
+								} else if (*o < (unsigned char) OP_TYPEARGSTRING) {
+									// in the group of OP_TYPEARGFLOAT
+									// op has a single Float arg
+									unsigned int offset = o-byteCode;
+									unsigned char o1 = (unsigned char) *o;
+									o += sizeof(unsigned char);
+									double d = (double) *o;
+									o += sizeof(double);
+									emit(outputReady(QString("%1 %2   dbl %3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg(d)));
+								} else if (*o < (unsigned char) OP_TYPEARGEXT) {
+									// in the group of OP_TYPESTRING
+									// op has a single null terminated String arg
+									char* d = (char*) o;
+									emit(outputReady(QString("%1 %2   str \"%3\"\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg(d)));
+									int len = strlen((char *) o) + 1;
+									o += len;
+								}
+								waitCond->wait(mutex);
+								mutex->unlock();
+							}
+							}
+							stack.pushint(0);
+							break;
+
 						default:
 							stack.pushstring("");
 					}

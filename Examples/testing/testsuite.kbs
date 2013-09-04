@@ -16,9 +16,10 @@
 # 2013-04-03	j.m.reneau	added mouse test
 # 2013-06-10	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
 # 2013-06-10	j.m.reneau	changed error trap test to trap 9999 (number less than 0 now untrappable)
+# 2013-09-03	j.m.reneau	added tests for exit (do|if|for|while) and continue (do|for|while)
 
 
-call versiontest(90960)
+call versiontest(90965)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -32,7 +33,6 @@ end subroutine
 # create arrays to use
 dim c(10)
 dim twod(10,10)
-
 
 ###################################################
 call section("Numeric Assignment")
@@ -745,6 +745,61 @@ print "move mouse over black dot"
 while pixel(mousex, mousey)<> black
    pause .01
 end while
+
+
+###################################################
+call section("Loops with Exit and Continue")
+###################################################
+total = 0
+for t = 1 to 100
+   if t = 3 or t = 4 or t = 10 then
+      print "continue for = skip " + t
+      continuefor
+   end if
+   total = total + t
+   print t + " " + total
+   if total > 100 then
+      print "exit for"
+      exit for
+   end if
+next t
+call n("FOR - Exit and Continue", total, 103)
+# test do
+total = 0
+t = 0
+do
+t++
+   if t = 3 or t = 4 or t = 10 then
+      print "continue do = skip " + t
+      continue do
+   end if
+   total = total + t
+   print t + " " + total
+   if total > 100 then
+      print "exit do"
+      exit do
+   end if
+until t >= 100
+call n("DO - Exit and Continue", total, 103)
+# test while
+total = 0
+t = 0
+while true
+t++
+   if t = 3 or t = 4 or t = 10 then
+      print "continue while = skip " + t
+      continue while
+   end if
+   total = total + t
+   print t + " " + total
+   if total > 100 then
+      print "exit while"
+      exit while
+   end if
+end while
+call n("WHILE - Exit and Continue", total, 103)
+
+
 
 
 

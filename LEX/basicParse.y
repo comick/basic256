@@ -65,17 +65,17 @@ char *EMPTYSTR = "";
 char *symtable[SYMTABLESIZE];
 int labeltable[SYMTABLESIZE];
 int numsyms = 0;
-int numlabels = 0;
 unsigned int maxbyteoffset = 0;
 
 // array to hold stack of if statement branch locations
 // that need to have final jump location added to them
 // the iftable is also used by for, subroutine, and function to insure
 // that no if,do,while,... is nested incorrectly
-unsigned int iftable[IFTABLESIZE];
 unsigned int iftablesourceline[IFTABLESIZE];
 unsigned int iftabletype[IFTABLESIZE];
+int iftableid[IFTABLESIZE];			// used to store a sequential number for this if - unique label creation
 int numifs = 0;
+int nextifid;
 
 #define IFTABLETYPEIF 1
 #define IFTABLETYPEELSE 2
@@ -102,11 +102,12 @@ void
 clearIfTable() {
 	int j;
 	for (j = 0; j < IFTABLESIZE; j++) {
-		iftable[j] = -1;
 		iftablesourceline[j] = -1;
 		iftabletype[j] = -1;
+		iftableid[j] = -1;
 	}
 	numifs = 0;
+	nextifid = 0;
 }
 
 int testIfOnTable() {
@@ -138,7 +139,6 @@ clearLabelTable() {
 	for (j = 0; j < SYMTABLESIZE; j++) {
 		labeltable[j] = -1;
 	}
-	numlabels = 0;
 }
 
 void
@@ -158,11 +158,11 @@ clearSymbolTable() {
 	numsyms = 0;
 }
 
-int
-newIf(int offset, int sourceline, int type) {
-	iftable[numifs] = offset;
+int newIf(int sourceline, int type) {
 	iftablesourceline[numifs] = sourceline;
 	iftabletype[numifs] = type;
+	iftableid[numifs] = nextifid;
+	nextifid++;
 	numifs++;
 	return numifs - 1;
 }
@@ -179,10 +179,14 @@ int getSymbol(char *name) {
 	return numsyms - 1;
 }
 
-int getIntegerSymbol(int n) {
-	// an internal symbol used to jump around function and subroutine definitions
+#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
+#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
+#define INTERNALSYMBOLTOP 2 // at the end of the loop - all done
+
+int getInternalSymbol(int id, int type) {
+	// an internal symbol used to jump an if
 	char name[32];
-	sprintf(name,"___%d___", n);
+	sprintf(name,"___%d_%d", id, type);
 	return getSymbol(name);
 }
 
@@ -341,6 +345,7 @@ addStringOp(char op, char *data) {
 %token B256ALERT B256CONFIRM B256PROMPT
 %token B256FROMBINARY B256FROMHEX B256FROMOCTAL B256FROMRADIX B256TOBINARY B256TOHEX B256TOOCTAL B256TORADIX
 %token B256DEBUGINFO
+%token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 
 
 %union
@@ -395,20 +400,31 @@ label: B256LABEL {
 }
 ;
 
-validstatement: compoundifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| ifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| elsestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| endifstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+validstatement: compoundifstmt {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
+	| ifstmt {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
+	| elsestmt {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
+	| endifstmt {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
 	| whilestmt {
-		// push to iftable the byte location of the end of the last stmt (top of loop)
-		newIf(lastLineOffset, linenumber-1, IFTABLETYPEWHILE);
 		lastLineOffset = byteOffset; 
 		addIntOp(OP_CURRLINE, linenumber);
 	}
-	| endwhilestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| endwhilestmt {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
 	| dostmt {
-		// push to iftable the byte location of the end of the last stmt (top of loop)
-		newIf(lastLineOffset, linenumber, IFTABLETYPEDO);
 		lastLineOffset = byteOffset;
 		addIntOp(OP_CURRLINE, linenumber);
 	}
@@ -427,22 +443,28 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 			errorcode = COMPERR_FUNCTIONNOTHERE;
 			return -1;
 		}
+		//
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPEFLOAT;
 		addIntOp(OP_CURRLINE, linenumber);
-		// create symbol to jump around function definition
-		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
 		//
+		// create jump around function definition (use nextifid and 0 for jump after)
+		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+		//
+		// create the new if frame for this function
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-		newIf(0, linenumber, IFTABLETYPEFUNCTION);
+		newIf(linenumber, IFTABLETYPEFUNCTION);
+		//
 		// initialize return variable
 		addIntOp(OP_PUSHINT, 0);
 		addIntOp(OP_NUMASSIGN, $2);
+		//
 		// check to see if there are enough values on the stack
 		addIntOp(OP_PUSHINT, numargs);
 		addOp(OP_ARGUMENTCOUNTTEST);
+		//
 		// add the assigns of the function arguments
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
@@ -461,22 +483,29 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 			errorcode = COMPERR_FUNCTIONNOTHERE;
 			return -1;
 		}
+		//
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPESTRING;
 		addIntOp(OP_CURRLINE, linenumber);
-		// create symbol to jump around function definition
-		addIntOp(OP_GOTO, getIntegerSymbol(functionDefSymbol));
-		// 
+		//
+		// create jump around function definition (use nextifid and 0 for jump after)
+		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+		//
+		// create the new if frame for this function
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-		newIf(0, linenumber, IFTABLETYPEFUNCTION);
+		newIf(linenumber, IFTABLETYPEFUNCTION);
+		// 
 		// initialize return variable
 		addStringOp(OP_PUSHSTRING, "");
 		addIntOp(OP_STRINGASSIGN, $2);
+		//
 		// check to see if there are enough values on the stack
 		addIntOp(OP_PUSHINT, numargs);
 		addOp(OP_ARGUMENTCOUNTTEST);
+		//
+		// add the assigns of the function arguments
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
 			for(t=numargs-1;t>=0;t--) {
@@ -495,18 +524,23 @@ subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
 			errorcode = COMPERR_FUNCTIONNOTHERE;
 			return -1;
 		}
+		//
 		// $2 is the symbol for the subroutine - add the start to the label table
 		subroutineDefSymbol = $2;
 		addIntOp(OP_CURRLINE, linenumber);
-		// create symbol to jump around function definition
-		addIntOp(OP_GOTO, getIntegerSymbol(subroutineDefSymbol));
+		//
+		// create jump around subroutine definition (use nextifid and 0 for jump after)
+		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 		// 
+		// create the new if frame for this subroutine
 		labeltable[$2] = byteOffset;
 		lastLineOffset = byteOffset;
-		newIf(0, linenumber, IFTABLETYPEFUNCTION);
+		newIf(linenumber, IFTABLETYPEFUNCTION);
+		//
 		// check to see if there are enough values on the stack
 		addIntOp(OP_PUSHINT, numargs);
 		addOp(OP_ARGUMENTCOUNTTEST);
+		//
 		// add the assigns of the function arguments
 		addOp(OP_INCREASERECURSE);
 		{ 	int t;
@@ -549,13 +583,17 @@ endfunctionstmt: B256ENDFUNCTION {
 	addIntOp(OP_CURRLINE, linenumber);
 		if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+			//
+			// add return if there is not one
 			addIntOp(OP_FUNCRETURN, functionDefSymbol);
 			addOp(OP_DECREASERECURSE);
 			addOp(OP_RETURN);
-			numifs--;
+			//
 			// add address for jump around function definition
-			labeltable[getIntegerSymbol(functionDefSymbol)] = byteOffset; 
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			functionDefSymbol = -1; 
+			//
+			numifs--;
 		// 
 		} else {
 			errorcode = testIfOnTableError();
@@ -575,10 +613,12 @@ endsubroutinestmt: B256ENDSUBROUTINE {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
 			addOp(OP_RETURN);
-			numifs--;
+			//
 			// add address for jump around function definition
-			labeltable[getIntegerSymbol(subroutineDefSymbol)] = byteOffset; 
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			subroutineDefSymbol = -1; 
+			//
+			numifs--;
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -594,13 +634,10 @@ endsubroutinestmt: B256ENDSUBROUTINE {
 compoundifstmt: ifexpr B256THEN compoundstmt
 	{
 	// if there is an if branch or jump on the iftable stack get where it is
-	// in the bytecode array and then put the current bytecode address there
-	// - so we can jump over code
+	// in the bytecode array and then resolve the lable
 	if (numifs>0) {
-		unsigned int *temp = NULL;
+		labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 		numifs--;
-		temp = (unsigned int *) (byteCode + iftable[numifs]);
-		*temp = byteOffset;
 	}
 }
 ;
@@ -613,21 +650,20 @@ ifstmt: ifexpr B256THEN
 
 elsestmt: B256ELSE
 	{
-	unsigned int elsegototemp = 0;
-	// on else create a jump point to the endif
+	//
+	// create jump around from end of the THEN to end of the ELSE
+	addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 	addIntOp(OP_CURRLINE, linenumber);
-	addIntOp(OP_PUSHINT, 0);	// false - always jump before else to endif
-	addOp(OP_BRANCH);
-	elsegototemp = addInt(0);
-	// resolve the false jump on the if to the current location
+	//
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF) {
-			unsigned int *temp = NULL;
+			//
+			// resolve the label on the if to the current location
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
-			temp = (unsigned int *) (byteCode + iftable[numifs]);
-			*temp = byteOffset; 
-			// now add the elsegoto jump to the iftable
-			newIf(elsegototemp, linenumber, IFTABLETYPEELSE);
+			//
+			// put new if on the frame for the else
+			newIf(linenumber, IFTABLETYPEELSE);
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -649,10 +685,10 @@ endifstmt: B256ENDIF
 	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
-			unsigned int *temp = NULL;
+			//
+			// resolve the label on the if/else to the current location
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
-			temp = (unsigned int *) (byteCode + iftable[numifs]);
-			*temp = byteOffset; 
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -667,13 +703,15 @@ endifstmt: B256ENDIF
 
 whilestmt: B256WHILE floatexpr
 	{
-	// create temp
-	//if true, don't branch. If false, go to next line do the loop.
-	addOp(OP_BRANCH);
-	// after branch add a placeholder for the final end of the loop
-	// it will be resolved in the endwhile statement, push the
-	// location of this location on the iftable
-	newIf(addInt(0), linenumber-1, IFTABLETYPEWHILE);
+	//
+	// create internal symbol and add to the label table for the top of the loop
+	labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = lastLineOffset; 
+	//
+	// add branch to end if false
+	addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+	//
+	// add to if frame
+	newIf(linenumber-1, IFTABLETYPEWHILE);
 }
 ;
 
@@ -681,19 +719,18 @@ endwhileexpr: B256ENDWHILE;
 
 endwhilestmt: endwhileexpr
 	{
-	// there should be two bytecode locations.  the TOP is the
-	// location to jump to at the top of the loopthe , TOP-1 is the location
-	// the exit jump needs to be written back to jump point on WHILE
 	addIntOp(OP_CURRLINE, linenumber);
-	if (numifs>1) {
+	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
-			unsigned int *temp = NULL;
-			addIntOp(OP_PUSHINT, 0);	// false - always jump back to the beginning
-			addIntOp(OP_BRANCH, iftable[numifs-1]);
-			// resolve the false jump on the while to the current location
-			temp = (unsigned int *) (byteCode + iftable[numifs-2]);
-			*temp = byteOffset; 
-			numifs-=2;
+			//
+			// jump to the top
+			addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE));
+			//
+			// resolve the label to the bottom
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			//
+			// remove the single placeholder from the if frame
+			numifs--;
 		} else {
 			errorcode = testIfOnTableError();
 			linenumber = testIfOnTable();
@@ -708,7 +745,12 @@ endwhilestmt: endwhileexpr
 
 dostmt: B256DO
 	{
-		// need nothing done at top of a do
+	//
+	// create internal symbol and add to the label table for the top of the loop
+	labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = lastLineOffset; 
+	//
+	// add to if frame
+	newIf(linenumber, IFTABLETYPEDO);
 	}
 ;
 
@@ -718,7 +760,15 @@ untilstmt: B256UNTIL floatexpr
 	//if If false, go to to the corresponding do.
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEDO) {
-			addIntOp(OP_BRANCH, iftable[numifs-1]);
+			//
+			// create label for CONTINUE DO
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = lastLineOffset; 
+			//
+			// branch back to top if condition holds
+			addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
+			//
+			// create label for EXIT DO
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
 		} else {
 			errorcode = testIfOnTableError();
@@ -813,6 +863,13 @@ statement: gotostmt
 	| piestmt
 	| penwidthstmt
 	| alertstmt
+	| continuedostmt
+	| continueforstmt
+	| continuewhilestmt
+	| exitdostmt
+	| exitforstmt
+	| exitwhilestmt
+	
 ;
 
 dimstmt: B256DIM B256VARIABLE floatexpr {
@@ -885,14 +942,12 @@ endstmt: B256END { addOp(OP_END); }
 
 ifexpr: B256IF floatexpr
 	{
-	//if true, don't branch. If false, go to next line.
-	addOp(OP_BRANCH);
-	// after branch add a placeholder for the final end of the if
-	// it will be resolved in the if/else/endif statement, push the
-	// location of this location on the iftable
-	checkByteMem(sizeof(int));
-	newIf(byteOffset, linenumber, IFTABLETYPEIF);
-	byteOffset += sizeof(int);
+		//
+		// add branch to the end if false
+		addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+		//
+		// put new if on the frame for the IF
+		newIf(linenumber, IFTABLETYPEIF);
 	}
 ;
 
@@ -1148,7 +1203,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		newIf(0, linenumber-1, IFTABLETYPEFOR);
+		newIf(linenumber-1, IFTABLETYPEFOR);
 	}
 	| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr
 	{
@@ -1156,7 +1211,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		newIf(0, linenumber-1, IFTABLETYPEFOR);
+		newIf(linenumber-1, IFTABLETYPEFOR);
 	}
 ;
 
@@ -1164,7 +1219,9 @@ nextstmt: B256NEXT B256VARIABLE
 	{
 		if (numifs>0) {
 			if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = byteOffset; 
 				addIntOp(OP_NEXT, $2);
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 				numifs--;
 			} else {
 				errorcode = testIfOnTableError();
@@ -1829,8 +1886,94 @@ alertstmt: B256ALERT stringexpr {
 	}
 ;
 
+continuedostmt: B256CONTINUEDO {
+	// find most recent DO and jump to CONTINUE
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEDO) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLCONTINUE));
+	} else {
+		errorcode = COMPERR_CONTINUEDO;
+		return -1;
+	}
+}
+
+continueforstmt: B256CONTINUEFOR {
+	// find most recent FOR and jump to CONTINUE
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEFOR) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLCONTINUE));
+	} else {
+		errorcode = COMPERR_CONTINUEFOR;
+		return -1;
+	}
+}
+
+continuewhilestmt: B256CONTINUEWHILE {
+	// find most recent WHILE and jump to CONTINUE
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEWHILE) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLCONTINUE));
+	} else {
+		errorcode = COMPERR_EXITWHILE;
+		return -1;
+	}
+}
+
+exitdostmt: B256EXITDO {
+	// find most recent DO and jump to exit
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEDO) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLEXIT));
+	} else {
+		errorcode = COMPERR_EXITDO;
+		return -1;
+	}
+}
+
+exitforstmt: B256EXITFOR {
+	// find most recent FOR and jump to exit
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEFOR) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLEXIT));
+	} else {
+		errorcode = COMPERR_EXITFOR;
+		return -1;
+	}
+}
+
+exitwhilestmt: B256EXITWHILE {
+	// find most recent WHILE and jump to exit
+	int n=numifs-1;
+	while(n>=0&&iftabletype[n]!=IFTABLETYPEWHILE) {
+		n--;
+	}
+	if (n>=0) {
+		addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLEXIT));
+	} else {
+		errorcode = COMPERR_EXITWHILE;
+		return -1;
+	}
+}
 
 
+/* ####################################
+   ### INSERT NEW Statements BEFORE ###
+   #################################### */
 
 
 immediatestrlist: '{' stringlist '}'
@@ -2306,6 +2449,9 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 		addExtendedOp(OPX_FROMRADIX);
 	}
 
+/* ###########################################
+   ### INSERT NEW Numeric Functions BEFORE ###
+   ########################################### */
 ;
 
 
@@ -2410,6 +2556,9 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 	}
 
 
+/* ##########################################
+   ### INSERT NEW String Functions BEFORE ###
+   ########################################## */
 ;
 
 %%

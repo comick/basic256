@@ -97,6 +97,9 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Cc][Oo][Ll][Oo][Rr]\\b"										// color
 		<< "\\b[Cc][Oo][Ll][Oo][Uu][Rr]\\b"									// colour
 		<< "\\b[Cc][Oo][Nn][Ff][Ii][Rr][Mm]\\b"								// confirm
+		<< "\\b[Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Dd][Oo]\\b"			// continuedo
+		<< "\\b[Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Ff][Oo][Rr]\\b"		// continuefor
+		<< "\\b[Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Ww][Hh][Ii][Ll][Ee]\\b"	// continuewhile
 		<< "\\b[Cc][Oo][Ss]\\b"												// cos
 		<< "\\b[Cc][Oo][Uu][Nn][Tt]\\b"										// count
 		<< "\\b[Cc][Oo][Uu][Nn][Tt][Xx]\\b"									// countx
@@ -120,12 +123,15 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"   			// editvisible
 		<< "\\b[Ee][Ll][Ss][Ee]\\b"											// else
 		<< "\\b[Ee][Nn][Dd]\\b"												// end
-		<< "\\b[Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"				// endfunction
-		<< "\\b[Ee][Nn][Dd][Ii][Ff]\\b"										// endif
-		<< "\\b[Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"		// endsubroutine
-		<< "\\b[Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee]\\b"							// endwhile
+		<< "\\b[Ee][Nn][Dd][ \t]*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"		// endfunction
+		<< "\\b[Ee][Nn][Dd][ \t]*[Ii][Ff]\\b"								// endif
+		<< "\\b[Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"	// endsubroutine
+		<< "\\b[Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]\\b"					// endwhile
 		<< "\\b[Ee][Oo][Ff]\\b"												// eof
 		<< "\\b[Ee][Xx][Ii][Ss][Tt][Ss]\\b"									// exists
+		<< "\\b[Ee][Xx][Ii][Tt][ \t]*[Dd][Dd]\\b"							// exitdo
+		<< "\\b[Ee][Xx][Ii][Tt][ \t]*[Ff][Oo][Rr]\\b"						// exitfor
+		<< "\\b[Ee][Xx][Ii][Tt][ \t]*[Ww][Hh][Ii][Ll][Ee]\\b"				// exitwhile
 		<< "\\b[Ee][Xx][Pp]\\b"												// exp
 		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee]\\b"								// explode
 		<< "\\b[Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]\\b"							// explodex
