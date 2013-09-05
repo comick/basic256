@@ -5173,7 +5173,7 @@ Interpreter::execByteCode()
 							{
 								for(int i=0;i<numsyms;i++) {
 									mutex->lock();
-									emit(outputReady(QString("SYM %1 LOC %2\n").arg(symtable[i]).arg(labeltable[i],8,16,QChar('0'))));
+									emit(outputReady(QString("SYM %1 LOC %2\n").arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
 									waitCond->wait(mutex);
 									mutex->unlock();
 								}
@@ -5190,34 +5190,34 @@ Interpreter::execByteCode()
 								unsigned char currentop = (unsigned char) *o;
 								o += sizeof(unsigned char);
 								if (optype(currentop) == OPTYPE_NONE)	{
-									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20)));
+									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20)));
 								} else if (optype(currentop) == OPTYPE_EXTENDED) {	
 									unsigned char currentopx = (unsigned char) *o;
-									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opxname(currentopx),20)));
+									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opxname(currentopx),-20)));
 									o += sizeof(unsigned char);
 								} else if (optype(currentop) == OPTYPE_INT) {
 									//op has one Int arg
-									emit(outputReady(QString("%1 %2   int %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o)));
+									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o)));
 									o += sizeof(int);
 								} else if (optype(currentop) == OPTYPE_VARIABLE) {
 									//op has one Int arg
-									emit(outputReady(QString("%1 %2   var %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg(symtable[(int) *o])));
+									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtable[(int) *o])));
 									o += sizeof(int);
 								} else if (optype(currentop) == OPTYPE_LABEL) {
 									//op has one Int arg
-									emit(outputReady(QString("%1 %2   loc %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o,8,16,QChar('0'))));
+									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o,8,16,QChar('0'))));
 									o += sizeof(int);
 								} else if (optype(currentop) == OPTYPE_INTINT) {
 									// op has 2 Int arg
-									emit(outputReady(QString("%1 %2   int %3 int %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o).arg((int) *(o+sizeof(int)))));
+									emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o).arg((int) *(o+sizeof(int)))));
 									o += 2 * sizeof(int);
 								} else if (optype(currentop) == OPTYPE_FLOAT) {
 									// op has a single double arg
-									emit(outputReady(QString("%1 %2   dbl %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((double) *o)));
+									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((double) *o)));
 									o += sizeof(double);
 								} else if (optype(currentop) == OPTYPE_STRING) {
 									// op has a single null terminated String arg
-									emit(outputReady(QString("%1 %2   str \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((char*) o)));
+									emit(outputReady(QString("%1 %2 \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((char*) o)));
 									int len = strlen((char*) o) + 1;
 									o += len;
 								}

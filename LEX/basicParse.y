@@ -385,8 +385,14 @@ program: program '\n' validline
 	| validline
 ;
 
-validline: label validstatement
-	| validstatement
+validline: label validstatement {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
+	| validstatement {
+		lastLineOffset = byteOffset;
+		addIntOp(OP_CURRLINE, linenumber);
+	}
 ;
 
 label: B256LABEL {
@@ -395,47 +401,23 @@ label: B256LABEL {
 		return -1;
 	}
 	labeltable[$1] = byteOffset; 
-	lastLineOffset = byteOffset;
-	addIntOp(OP_CURRLINE, linenumber);
 }
 ;
 
-validstatement: compoundifstmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| ifstmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| elsestmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| endifstmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| whilestmt {
-		lastLineOffset = byteOffset; 
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| endwhilestmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| dostmt {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| untilstmt    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| compoundstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| functionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| endfunctionstmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| subroutinestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| endsubroutinestmt { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
-
-	| /*empty*/    { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+validstatement: compoundifstmt
+	| ifstmt
+	| elsestmt
+	| endifstmt
+	| whilestmt
+	| endwhilestmt
+	| dostmt
+	| untilstmt
+	| compoundstmt
+	| functionstmt
+	| endfunctionstmt
+	| subroutinestmt
+	| endsubroutinestmt
+	| /*empty*/
 ;
 
 functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
@@ -447,7 +429,6 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPEFLOAT;
-		addIntOp(OP_CURRLINE, linenumber);
 		//
 		// create jump around function definition (use nextifid and 0 for jump after)
 		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -487,7 +468,6 @@ functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
 		// $2 is the symbol for the function - add the start to the label table
 		functionDefSymbol = $2;
 		functionType = FUNCTIONTYPESTRING;
-		addIntOp(OP_CURRLINE, linenumber);
 		//
 		// create jump around function definition (use nextifid and 0 for jump after)
 		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -527,7 +507,6 @@ subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
 		//
 		// $2 is the symbol for the subroutine - add the start to the label table
 		subroutineDefSymbol = $2;
-		addIntOp(OP_CURRLINE, linenumber);
 		//
 		// create jump around subroutine definition (use nextifid and 0 for jump after)
 		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -580,7 +559,6 @@ functionvariables: B256VARIABLE {
 
 
 endfunctionstmt: B256ENDFUNCTION {
-	addIntOp(OP_CURRLINE, linenumber);
 		if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			//
@@ -608,7 +586,6 @@ endfunctionstmt: B256ENDFUNCTION {
 ;
 
 endsubroutinestmt: B256ENDSUBROUTINE {
-	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 			addOp(OP_DECREASERECURSE);
@@ -653,7 +630,6 @@ elsestmt: B256ELSE
 	//
 	// create jump around from end of the THEN to end of the ELSE
 	addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-	addIntOp(OP_CURRLINE, linenumber);
 	//
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF) {
@@ -682,7 +658,6 @@ endifstmt: B256ENDIF
 	// if there is an if branch or jump on the iftable stack get where it is
 	// in the bytecode array and then put the current bytecode address there
 	// - so we can jump over code
-	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
 			//
@@ -711,15 +686,12 @@ whilestmt: B256WHILE floatexpr
 	addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 	//
 	// add to if frame
-	newIf(linenumber-1, IFTABLETYPEWHILE);
+	newIf(linenumber, IFTABLETYPEWHILE);
 }
 ;
 
-endwhileexpr: B256ENDWHILE;
-
-endwhilestmt: endwhileexpr
+endwhilestmt: B256ENDWHILE
 	{
-	addIntOp(OP_CURRLINE, linenumber);
 	if (numifs>0) {
 		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
 			//
@@ -1131,7 +1103,6 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 	}
 	| arrayassignerrors {
 		errorcode = COMPERR_ASSIGNS2N;
-		if (yytext[0] == '\n') { linenumber--; };
 		return -1;
 	}
 ;
@@ -1181,7 +1152,6 @@ numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
 	}
 	| numassignerrors {
 		errorcode = COMPERR_ASSIGNS2N;
-		if (yytext[0] == '\n') { linenumber--; };
 		return -1;
 	}
 
@@ -1203,7 +1173,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		newIf(linenumber-1, IFTABLETYPEFOR);
+		newIf(linenumber, IFTABLETYPEFOR);
 	}
 	| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr
 	{
@@ -1211,7 +1181,7 @@ forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
 		// add to iftable to make sure it is not broken with an if
 		// do, while, else, and to report if it is
 		// next ed before end of program
-		newIf(linenumber-1, IFTABLETYPEFOR);
+		newIf(linenumber, IFTABLETYPEFOR);
 	}
 ;
 
@@ -2566,6 +2536,5 @@ stringexpr: '(' stringexpr ')' { $$ = $2; }
 int
 yyerror(const char *msg) {
 	errorcode = COMPERR_SYNTAX;
-	if (yytext[0] == '\n') { linenumber--; } // error happened on previous line
 	return -1;
 }
