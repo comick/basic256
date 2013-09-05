@@ -267,6 +267,8 @@ int Stack::compareTopTwo()
 		QString stwo = popstring();
 		QString sone = popstring();
 		ans = sone.compare(stwo);
+		if (ans<0) ans=-1;
+		if (ans>0) ans=1;
 	} else {
 		// anything else - compare them as doubles
 		double ftwo = popfloat();

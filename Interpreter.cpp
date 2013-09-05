@@ -139,6 +139,454 @@ Interpreter::~Interpreter() {
 }
 
 
+int Interpreter::optype(int op) {
+	// define how big the ocode is and if anything follows it
+	// REQUIRED for all new opcodes
+	// use constantants found in ByteCodes.h
+	if (op==OP_END) return OPTYPE_NONE;
+	else if (op==OP_NOP) return OPTYPE_NONE;
+	else if (op==OP_RETURN) return OPTYPE_NONE;
+	else if (op==OP_CONCAT) return OPTYPE_NONE;
+	else if (op==OP_EQUAL) return OPTYPE_NONE;
+	else if (op==OP_NEQUAL) return OPTYPE_NONE;
+	else if (op==OP_GT) return OPTYPE_NONE;
+	else if (op==OP_LT) return OPTYPE_NONE;
+	else if (op==OP_GTE) return OPTYPE_NONE;   
+	else if (op==OP_LTE) return OPTYPE_NONE;   
+	else if (op==OP_AND) return OPTYPE_NONE;   
+	else if (op==OP_NOT) return OPTYPE_NONE;   
+	else if (op==OP_OR) return OPTYPE_NONE;   
+	else if (op==OP_XOR) return OPTYPE_NONE;   
+	else if (op==OP_INT) return OPTYPE_NONE;   
+	else if (op==OP_STRING) return OPTYPE_NONE;
+	else if (op==OP_ADD) return OPTYPE_NONE;
+	else if (op==OP_SUB) return OPTYPE_NONE;
+	else if (op==OP_MUL) return OPTYPE_NONE;
+	else if (op==OP_DIV) return OPTYPE_NONE;
+	else if (op==OP_EX) return OPTYPE_NONE;
+	else if (op==OP_NEGATE) return OPTYPE_NONE;
+	else if (op==OP_PRINT) return OPTYPE_NONE;
+	else if (op==OP_PRINTN) return OPTYPE_NONE;
+	else if (op==OP_INPUT) return OPTYPE_NONE;
+	else if (op==OP_KEY) return OPTYPE_NONE;
+	else if (op==OP_PLOT) return OPTYPE_NONE;
+	else if (op==OP_RECT) return OPTYPE_NONE;
+	else if (op==OP_CIRCLE) return OPTYPE_NONE;
+	else if (op==OP_LINE) return OPTYPE_NONE;
+	else if (op==OP_REFRESH) return OPTYPE_NONE;
+	else if (op==OP_FASTGRAPHICS) return OPTYPE_NONE;
+	else if (op==OP_CLS) return OPTYPE_NONE;
+	else if (op==OP_CLG) return OPTYPE_NONE;
+	else if (op==OP_GRAPHSIZE) return OPTYPE_NONE;
+	else if (op==OP_GRAPHWIDTH) return OPTYPE_NONE;
+	else if (op==OP_GRAPHHEIGHT) return OPTYPE_NONE;
+	else if (op==OP_SIN) return OPTYPE_NONE;
+	else if (op==OP_COS) return OPTYPE_NONE;
+	else if (op==OP_TAN) return OPTYPE_NONE;
+	else if (op==OP_RAND) return OPTYPE_NONE;
+	else if (op==OP_CEIL) return OPTYPE_NONE;
+	else if (op==OP_FLOOR) return OPTYPE_NONE;
+	else if (op==OP_ABS) return OPTYPE_NONE;
+	else if (op==OP_PAUSE) return OPTYPE_NONE;
+	else if (op==OP_POLY) return OPTYPE_NONE;
+	else if (op==OP_LENGTH) return OPTYPE_NONE;
+	else if (op==OP_MID) return OPTYPE_NONE;
+	else if (op==OP_INSTR) return OPTYPE_NONE;
+	else if (op==OP_INSTR_S) return OPTYPE_NONE;
+	else if (op==OP_INSTR_SC) return OPTYPE_NONE;
+	else if (op==OP_INSTRX) return OPTYPE_NONE;
+	else if (op==OP_INSTRX_S) return OPTYPE_NONE;
+	else if (op==OP_OPEN) return OPTYPE_NONE;
+	else if (op==OP_READ) return OPTYPE_NONE;
+	else if (op==OP_WRITE) return OPTYPE_NONE;
+	else if (op==OP_CLOSE) return OPTYPE_NONE;
+	else if (op==OP_RESET) return OPTYPE_NONE;
+	else if (op==OP_SOUND) return OPTYPE_NONE;
+	else if (op==OP_INCREASERECURSE) return OPTYPE_NONE;
+	else if (op==OP_DECREASERECURSE) return OPTYPE_NONE;
+	else if (op==OP_ASC) return OPTYPE_NONE;
+	else if (op==OP_CHR) return OPTYPE_NONE;
+	else if (op==OP_FLOAT) return OPTYPE_NONE;
+	else if (op==OP_READLINE) return OPTYPE_NONE;
+	else if (op==OP_EOF) return OPTYPE_NONE;
+	else if (op==OP_MOD) return OPTYPE_NONE;
+	else if (op==OP_YEAR) return OPTYPE_NONE;
+	else if (op==OP_MONTH) return OPTYPE_NONE;
+	else if (op==OP_DAY) return OPTYPE_NONE;
+	else if (op==OP_HOUR) return OPTYPE_NONE;
+	else if (op==OP_MINUTE) return OPTYPE_NONE;
+	else if (op==OP_SECOND) return OPTYPE_NONE;
+	else if (op==OP_MOUSEX) return OPTYPE_NONE;
+	else if (op==OP_MOUSEY) return OPTYPE_NONE;
+	else if (op==OP_MOUSEB) return OPTYPE_NONE;
+	else if (op==OP_CLICKCLEAR) return OPTYPE_NONE;
+	else if (op==OP_CLICKX) return OPTYPE_NONE;
+	else if (op==OP_CLICKY) return OPTYPE_NONE;
+	else if (op==OP_CLICKB) return OPTYPE_NONE;
+	else if (op==OP_TEXT) return OPTYPE_NONE;
+	else if (op==OP_FONT) return OPTYPE_NONE;
+	else if (op==OP_SAY) return OPTYPE_NONE;
+	else if (op==OP_WAVPLAY) return OPTYPE_NONE;
+	else if (op==OP_WAVSTOP) return OPTYPE_NONE;
+	else if (op==OP_SEEK) return OPTYPE_NONE;
+	else if (op==OP_SIZE) return OPTYPE_NONE;
+	else if (op==OP_EXISTS) return OPTYPE_NONE;
+	else if (op==OP_LEFT) return OPTYPE_NONE;
+	else if (op==OP_RIGHT) return OPTYPE_NONE;
+	else if (op==OP_UPPER) return OPTYPE_NONE;
+	else if (op==OP_LOWER) return OPTYPE_NONE;
+	else if (op==OP_SYSTEM) return OPTYPE_NONE;
+	else if (op==OP_VOLUME) return OPTYPE_NONE;
+	else if (op==OP_SETCOLOR) return OPTYPE_NONE;
+	else if (op==OP_RGB) return OPTYPE_NONE;
+	else if (op==OP_PIXEL) return OPTYPE_NONE;
+	else if (op==OP_GETCOLOR) return OPTYPE_NONE;
+	else if (op==OP_ASIN) return OPTYPE_NONE;
+	else if (op==OP_ACOS) return OPTYPE_NONE;
+	else if (op==OP_ATAN) return OPTYPE_NONE;
+	else if (op==OP_DEGREES) return OPTYPE_NONE;
+	else if (op==OP_RADIANS) return OPTYPE_NONE;
+	else if (op==OP_INTDIV) return OPTYPE_NONE;
+	else if (op==OP_LOG) return OPTYPE_NONE;
+	else if (op==OP_LOGTEN) return OPTYPE_NONE;
+	else if (op==OP_GETSLICE) return OPTYPE_NONE;
+	else if (op==OP_PUTSLICE) return OPTYPE_NONE;
+	else if (op==OP_PUTSLICEMASK) return OPTYPE_NONE;
+	else if (op==OP_IMGLOAD) return OPTYPE_NONE;
+	else if (op==OP_SQR) return OPTYPE_NONE;
+	else if (op==OP_EXP) return OPTYPE_NONE;
+	else if (op==OP_ARGUMENTCOUNTTEST) return OPTYPE_NONE;
+	else if (op==OP_THROWERROR) return OPTYPE_NONE;
+	else if (op==OP_READBYTE) return OPTYPE_NONE;
+	else if (op==OP_WRITEBYTE) return OPTYPE_NONE;
+	else if (op==OP_STACKSWAP) return OPTYPE_NONE;
+	else if (op==OP_STACKTOPTO2) return OPTYPE_NONE;
+	else if (op==OP_STACKDUP) return OPTYPE_NONE;
+	else if (op==OP_STACKDUP2) return OPTYPE_NONE;
+	else if (op==OP_STACKSWAP2) return OPTYPE_NONE;
+	else if (op==OP_GOTO) return OPTYPE_LABEL;
+	else if (op==OP_GOSUB) return OPTYPE_LABEL;
+	else if (op==OP_BRANCH) return OPTYPE_LABEL;
+	else if (op==OP_NUMASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_STRINGASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_ARRAYASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_STRARRAYASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_PUSHVAR) return OPTYPE_VARIABLE;
+	else if (op==OP_PUSHINT) return OPTYPE_INT;
+	else if (op==OP_DEREF) return OPTYPE_VARIABLE;
+	else if (op==OP_FOR) return OPTYPE_VARIABLE;
+	else if (op==OP_NEXT) return OPTYPE_VARIABLE;
+	else if (op==OP_CURRLINE) return OPTYPE_INT;
+	else if (op==OP_DIM) return OPTYPE_VARIABLE;
+	else if (op==OP_DIMSTR) return OPTYPE_VARIABLE;
+	else if (op==OP_ONERROR) return OPTYPE_LABEL;
+	else if (op==OP_EXPLODESTR) return OPTYPE_VARIABLE;
+	else if (op==OP_EXPLODESTR_C) return OPTYPE_VARIABLE;
+	else if (op==OP_EXPLODE) return OPTYPE_VARIABLE;
+	else if (op==OP_EXPLODE_C) return OPTYPE_VARIABLE;
+	else if (op==OP_EXPLODEXSTR) return OPTYPE_VARIABLE;
+	else if (op==OP_EXPLODEX) return OPTYPE_VARIABLE;
+	else if (op==OP_IMPLODE) return OPTYPE_VARIABLE;
+	else if (op==OP_GLOBAL) return OPTYPE_VARIABLE;
+	else if (op==OP_STAMP) return OPTYPE_INT;
+	else if (op==OP_STAMP_LIST) return OPTYPE_INT;
+	else if (op==OP_STAMP_S_LIST) return OPTYPE_INT;
+	else if (op==OP_STAMP_SR_LIST) return OPTYPE_INT;
+	else if (op==OP_POLY_LIST) return OPTYPE_INT;
+	else if (op==OP_WRITELINE) return OPTYPE_NONE;
+	else if (op==OP_ARRAYASSIGN2D) return OPTYPE_VARIABLE;
+	else if (op==OP_STRARRAYASSIGN2D) return OPTYPE_VARIABLE;
+	else if (op==OP_SOUND_ARRAY) return OPTYPE_VARIABLE;
+	else if (op==OP_SOUND_LIST) return OPTYPE_INT;
+	else if (op==OP_DEREF2D) return OPTYPE_VARIABLE;
+	else if (op==OP_REDIM) return OPTYPE_VARIABLE;
+	else if (op==OP_REDIMSTR) return OPTYPE_VARIABLE;
+	else if (op==OP_REDIM2D) return OPTYPE_VARIABLE;
+	else if (op==OP_REDIMSTR2D) return OPTYPE_VARIABLE;
+	else if (op==OP_ALEN) return OPTYPE_VARIABLE;
+	else if (op==OP_ALENX) return OPTYPE_VARIABLE;
+	else if (op==OP_ALENY) return OPTYPE_VARIABLE;
+	else if (op==OP_PUSHVARREF) return OPTYPE_VARIABLE;
+	else if (op==OP_PUSHVARREFSTR) return OPTYPE_VARIABLE;
+	else if (op==OP_VARREFASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_VARREFSTRASSIGN) return OPTYPE_VARIABLE;
+	else if (op==OP_FUNCRETURN) return OPTYPE_VARIABLE;
+	else if (op==OP_ARRAYLISTASSIGN) return OPTYPE_INTINT;
+	else if (op==OP_STRARRAYLISTASSIGN) return OPTYPE_INTINT;
+	else if (op==OP_PUSHFLOAT) return OPTYPE_FLOAT;
+	else if (op==OP_PUSHSTRING) return OPTYPE_STRING;
+	else if (op==OP_EXTENDEDNONE) return OPTYPE_EXTENDED;
+	else return OPTYPE_NONE;
+}
+
+QString Interpreter::opname(int op) {
+	// used to convert opcode number in debuginfo to opcode name
+	if (op==OP_END) return QString("OP_END");
+	else if (op==OP_NOP) return QString("OP_NOP");
+	else if (op==OP_RETURN) return QString("OP_RETURN");
+	else if (op==OP_CONCAT) return QString("OP_CONCAT");
+	else if (op==OP_EQUAL) return QString("OP_EQUAL");
+	else if (op==OP_NEQUAL) return QString("OP_NEQUAL");
+	else if (op==OP_GT) return QString("OP_GT");
+	else if (op==OP_LT) return QString("OP_LT");
+	else if (op==OP_GTE) return QString("OP_GTE");
+	else if (op==OP_LTE) return QString("OP_LTE");
+	else if (op==OP_AND) return QString("OP_AND");
+	else if (op==OP_NOT) return QString("OP_NOT");
+	else if (op==OP_OR) return QString("OP_OR");
+	else if (op==OP_XOR) return QString("OP_XOR");
+	else if (op==OP_INT) return QString("OP_INT");
+	else if (op==OP_STRING) return QString("OP_STRING");
+	else if (op==OP_ADD) return QString("OP_ADD");
+	else if (op==OP_SUB) return QString("OP_SUB");
+	else if (op==OP_MUL) return QString("OP_MUL");
+	else if (op==OP_DIV) return QString("OP_DIV");
+	else if (op==OP_EX) return QString("OP_EX");
+	else if (op==OP_NEGATE) return QString("OP_NEGATE");
+	else if (op==OP_PRINT) return QString("OP_PRINT");
+	else if (op==OP_PRINTN) return QString("OP_PRINTN");
+	else if (op==OP_INPUT) return QString("OP_INPUT");
+	else if (op==OP_KEY) return QString("OP_KEY");
+	else if (op==OP_PLOT) return QString("OP_PLOT");
+	else if (op==OP_RECT) return QString("OP_RECT");
+	else if (op==OP_CIRCLE) return QString("OP_CIRCLE");
+	else if (op==OP_LINE) return QString("OP_LINE");
+	else if (op==OP_REFRESH) return QString("OP_REFRESH");
+	else if (op==OP_FASTGRAPHICS) return QString("OP_FASTGRAPHICS");
+	else if (op==OP_CLS) return QString("OP_CLS");
+	else if (op==OP_CLG) return QString("OP_CLG");
+	else if (op==OP_GRAPHSIZE) return QString("OP_GRAPHSIZE");
+	else if (op==OP_GRAPHWIDTH) return QString("OP_GRAPHWIDTH");
+	else if (op==OP_GRAPHHEIGHT) return QString("OP_GRAPHHEIGHT");
+	else if (op==OP_SIN) return QString("OP_SIN");
+	else if (op==OP_COS) return QString("OP_COS");
+	else if (op==OP_TAN) return QString("OP_TAN");
+	else if (op==OP_RAND) return QString("OP_RAND");
+	else if (op==OP_CEIL) return QString("OP_CEIL");
+	else if (op==OP_FLOOR) return QString("OP_FLOOR");
+	else if (op==OP_ABS) return QString("OP_ABS");
+	else if (op==OP_PAUSE) return QString("OP_PAUSE");
+	else if (op==OP_POLY) return QString("OP_POLY");
+	else if (op==OP_LENGTH) return QString("OP_LENGTH");
+	else if (op==OP_MID) return QString("OP_MID");
+	else if (op==OP_INSTR) return QString("OP_INSTR");
+	else if (op==OP_INSTR_S) return QString("OP_INSTR_S");
+	else if (op==OP_INSTR_SC) return QString("OP_INSTR_SC");
+	else if (op==OP_INSTRX) return QString("OP_INSTRX");
+	else if (op==OP_INSTRX_S) return QString("OP_INSTRX_S");
+	else if (op==OP_OPEN) return QString("OP_OPEN");
+	else if (op==OP_READ) return QString("OP_READ");
+	else if (op==OP_WRITE) return QString("OP_WRITE");
+	else if (op==OP_CLOSE) return QString("OP_CLOSE");
+	else if (op==OP_RESET) return QString("OP_RESET");
+	else if (op==OP_SOUND) return QString("OP_SOUND");
+	else if (op==OP_INCREASERECURSE) return QString("OP_INCREASERECURSE");
+	else if (op==OP_DECREASERECURSE) return QString("OP_DECREASERECURSE");
+	else if (op==OP_ASC) return QString("OP_ASC");
+	else if (op==OP_CHR) return QString("OP_CHR");
+	else if (op==OP_FLOAT) return QString("OP_FLOAT");
+	else if (op==OP_READLINE) return QString("OP_READLINE");
+	else if (op==OP_EOF) return QString("OP_EOF");
+	else if (op==OP_MOD) return QString("OP_MOD");
+	else if (op==OP_YEAR) return QString("OP_YEAR");
+	else if (op==OP_MONTH) return QString("OP_MONTH");
+	else if (op==OP_DAY) return QString("OP_DAY");
+	else if (op==OP_HOUR) return QString("OP_HOUR");
+	else if (op==OP_MINUTE) return QString("OP_MINUTE");
+	else if (op==OP_SECOND) return QString("OP_SECOND");
+	else if (op==OP_MOUSEX) return QString("OP_MOUSEX");
+	else if (op==OP_MOUSEY) return QString("OP_MOUSEY");
+	else if (op==OP_MOUSEB) return QString("OP_MOUSEB");
+	else if (op==OP_CLICKCLEAR) return QString("OP_CLICKCLEAR");
+	else if (op==OP_CLICKX) return QString("OP_CLICKX");
+	else if (op==OP_CLICKY) return QString("OP_CLICKY");
+	else if (op==OP_CLICKB) return QString("OP_CLICKB");
+	else if (op==OP_TEXT) return QString("OP_TEXT");
+	else if (op==OP_FONT) return QString("OP_FONT");
+	else if (op==OP_SAY) return QString("OP_SAY");
+	else if (op==OP_WAVPLAY) return QString("OP_WAVPLAY");
+	else if (op==OP_WAVSTOP) return QString("OP_WAVSTOP");
+	else if (op==OP_SEEK) return QString("OP_SEEK");
+	else if (op==OP_SIZE) return QString("OP_SIZE");
+	else if (op==OP_EXISTS) return QString("OP_EXISTS");
+	else if (op==OP_LEFT) return QString("OP_LEFT");
+	else if (op==OP_RIGHT) return QString("OP_RIGHT");
+	else if (op==OP_UPPER) return QString("OP_UPPER");
+	else if (op==OP_LOWER) return QString("OP_LOWER");
+	else if (op==OP_SYSTEM) return QString("OP_SYSTEM");
+	else if (op==OP_VOLUME) return QString("OP_VOLUME");
+	else if (op==OP_SETCOLOR) return QString("OP_SETCOLOR");
+	else if (op==OP_RGB) return QString("OP_RGB");
+	else if (op==OP_PIXEL) return QString("OP_PIXEL");
+	else if (op==OP_GETCOLOR) return QString("OP_GETCOLOR");
+	else if (op==OP_ASIN) return QString("OP_ASIN");
+	else if (op==OP_ACOS) return QString("OP_ACOS");
+	else if (op==OP_ATAN) return QString("OP_ATAN");
+	else if (op==OP_DEGREES) return QString("OP_DEGREES");
+	else if (op==OP_RADIANS) return QString("OP_RADIANS");
+	else if (op==OP_INTDIV) return QString("OP_INTDIV");
+	else if (op==OP_LOG) return QString("OP_LOG");
+	else if (op==OP_LOGTEN) return QString("OP_LOGTEN");
+	else if (op==OP_GETSLICE) return QString("OP_GETSLICE");
+	else if (op==OP_PUTSLICE) return QString("OP_PUTSLICE");
+	else if (op==OP_PUTSLICEMASK) return QString("OP_PUTSLICEMASK");
+	else if (op==OP_IMGLOAD) return QString("OP_IMGLOAD");
+	else if (op==OP_SQR) return QString("OP_SQR");
+	else if (op==OP_EXP) return QString("OP_EXP");
+	else if (op==OP_ARGUMENTCOUNTTEST) return QString("OP_ARGUMENTCOUNTTEST");
+	else if (op==OP_THROWERROR) return QString("OP_THROWERROR");
+	else if (op==OP_READBYTE) return QString("OP_READBYTE");
+	else if (op==OP_WRITEBYTE) return QString("OP_WRITEBYTE");
+	else if (op==OP_STACKSWAP) return QString("OP_STACKSWAP");
+	else if (op==OP_STACKTOPTO2) return QString("OP_STACKTOPTO2");
+	else if (op==OP_STACKDUP) return QString("OP_STACKDUP");
+	else if (op==OP_STACKDUP2) return QString("OP_STACKDUP2");
+	else if (op==OP_STACKSWAP2) return QString("OP_STACKSWAP2");
+	else if (op==OP_GOTO) return QString("OP_GOTO");
+	else if (op==OP_GOSUB) return QString("OP_GOSUB");
+	else if (op==OP_BRANCH) return QString("OP_BRANCH");
+	else if (op==OP_NUMASSIGN) return QString("OP_NUMASSIGN");
+	else if (op==OP_STRINGASSIGN) return QString("OP_STRINGASSIGN");
+	else if (op==OP_ARRAYASSIGN) return QString("OP_ARRAYASSIGN");
+	else if (op==OP_STRARRAYASSIGN) return QString("OP_STRARRAYASSIGN");
+	else if (op==OP_PUSHVAR) return QString("OP_PUSHVAR");
+	else if (op==OP_PUSHINT) return QString("OP_PUSHINT");
+	else if (op==OP_DEREF) return QString("OP_DEREF");
+	else if (op==OP_FOR) return QString("OP_FOR");
+	else if (op==OP_NEXT) return QString("OP_NEXT");
+	else if (op==OP_CURRLINE) return QString("OP_CURRLINE");
+	else if (op==OP_DIM) return QString("OP_DIM");
+	else if (op==OP_DIMSTR) return QString("OP_DIMSTR");
+	else if (op==OP_ONERROR) return QString("OP_ONERROR");
+	else if (op==OP_EXPLODESTR) return QString("OP_EXPLODESTR");
+	else if (op==OP_EXPLODESTR_C) return QString("OP_EXPLODESTR_C");
+	else if (op==OP_EXPLODE) return QString("OP_EXPLODE");
+	else if (op==OP_EXPLODE_C) return QString("OP_EXPLODE_C");
+	else if (op==OP_EXPLODEXSTR) return QString("OP_EXPLODEXSTR");
+	else if (op==OP_EXPLODEX) return QString("OP_EXPLODEX");
+	else if (op==OP_IMPLODE) return QString("OP_IMPLODE");
+	else if (op==OP_GLOBAL) return QString("OP_GLOBAL");
+	else if (op==OP_STAMP) return QString("OP_STAMP");
+	else if (op==OP_STAMP_LIST) return QString("OP_STAMP_LIST");
+	else if (op==OP_STAMP_S_LIST) return QString("OP_STAMP_S_LIST");
+	else if (op==OP_STAMP_SR_LIST) return QString("OP_STAMP_SR_LIST");
+	else if (op==OP_POLY_LIST) return QString("OP_POLY_LIST");
+	else if (op==OP_WRITELINE) return QString("OP_WRITELINE");
+	else if (op==OP_ARRAYASSIGN2D) return QString("OP_ARRAYASSIGN2D");
+	else if (op==OP_STRARRAYASSIGN2D) return QString("OP_STRARRAYASSIGN2D");
+	else if (op==OP_SOUND_ARRAY) return QString("OP_SOUND_ARRAY");
+	else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
+	else if (op==OP_DEREF2D) return QString("OP_DEREF2D");
+	else if (op==OP_REDIM) return QString("OP_REDIM");
+	else if (op==OP_REDIMSTR) return QString("OP_REDIMSTR");
+	else if (op==OP_REDIM2D) return QString("OP_REDIM2D");
+	else if (op==OP_REDIMSTR2D) return QString("OP_REDIMSTR2D");
+	else if (op==OP_ALEN) return QString("OP_ALEN");
+	else if (op==OP_ALENX) return QString("OP_ALENX");
+	else if (op==OP_ALENY) return QString("OP_ALENY");
+	else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
+	else if (op==OP_PUSHVARREFSTR) return QString("OP_PUSHVARREFSTR");
+	else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
+	else if (op==OP_VARREFSTRASSIGN) return QString("OP_VARREFSTRASSIGN");
+	else if (op==OP_FUNCRETURN) return QString("OP_FUNCRETURN");
+	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
+	else if (op==OP_STRARRAYLISTASSIGN) return QString("OP_STRARRAYLISTASSIGN");
+	else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
+	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
+	else if (op==OP_EXTENDEDNONE) return QString("OP_EXTENDEDNONE");
+	else return QString("OP_UNKNOWN");
+}
+
+QString Interpreter::opxname(int op) {
+	// used to convert extended opcode number in debuginfo to opcode name
+	if (op==OPX_SPRITEDIM) return QString("OPX_SPRITEDIM");
+	else if (op==OPX_SPRITELOAD) return QString("OPX_SPRITELOAD");
+	else if (op==OPX_SPRITESLICE) return QString("OPX_SPRITESLICE");
+	else if (op==OPX_SPRITEMOVE) return QString("OPX_SPRITEMOVE");
+	else if (op==OPX_SPRITEHIDE) return QString("OPX_SPRITEHIDE");
+	else if (op==OPX_SPRITESHOW) return QString("OPX_SPRITESHOW");
+	else if (op==OPX_SPRITECOLLIDE) return QString("OPX_SPRITECOLLIDE");
+	else if (op==OPX_SPRITEPLACE) return QString("OPX_SPRITEPLACE");
+	else if (op==OPX_SPRITEX) return QString("OPX_SPRITEX");
+	else if (op==OPX_SPRITEY) return QString("OPX_SPRITEY");
+	else if (op==OPX_SPRITEH) return QString("OPX_SPRITEH");
+	else if (op==OPX_SPRITEW) return QString("OPX_SPRITEW");
+	else if (op==OPX_SPRITEV) return QString("OPX_SPRITEV");
+	else if (op==OPX_CHANGEDIR) return QString("OPX_CHANGEDIR");
+	else if (op==OPX_CURRENTDIR) return QString("OPX_CURRENTDIR");
+	else if (op==OPX_WAVWAIT) return QString("OPX_WAVWAIT");
+	else if (op==OPX_DBOPEN) return QString("OPX_DBOPEN");
+	else if (op==OPX_DBCLOSE) return QString("OPX_DBCLOSE");
+	else if (op==OPX_DBEXECUTE) return QString("OPX_DBEXECUTE");
+	else if (op==OPX_DBOPENSET) return QString("OPX_DBOPENSET");
+	else if (op==OPX_DBCLOSESET) return QString("OPX_DBCLOSESET");
+	else if (op==OPX_DBROW) return QString("OPX_DBROW");
+	else if (op==OPX_DBINT) return QString("OPX_DBINT");
+	else if (op==OPX_DBFLOAT) return QString("OPX_DBFLOAT");
+	else if (op==OPX_DBSTRING) return QString("OPX_DBSTRING");
+	else if (op==OPX_LASTERROR) return QString("OPX_LASTERROR");
+	else if (op==OPX_LASTERRORLINE) return QString("OPX_LASTERRORLINE");
+	else if (op==OPX_LASTERRORMESSAGE) return QString("OPX_LASTERRORMESSAGE");
+	else if (op==OPX_LASTERROREXTRA) return QString("OPX_LASTERROREXTRA");
+	else if (op==OPX_OFFERROR) return QString("OPX_OFFERROR");
+	else if (op==OPX_NETLISTEN) return QString("OPX_NETLISTEN");
+	else if (op==OPX_NETCONNECT) return QString("OPX_NETCONNECT");
+	else if (op==OPX_NETREAD) return QString("OPX_NETREAD");
+	else if (op==OPX_NETWRITE) return QString("OPX_NETWRITE");
+	else if (op==OPX_NETCLOSE) return QString("OPX_NETCLOSE");
+	else if (op==OPX_NETDATA) return QString("OPX_NETDATA");
+	else if (op==OPX_NETADDRESS) return QString("OPX_NETADDRESS");
+	else if (op==OPX_KILL) return QString("OPX_KILL");
+	else if (op==OPX_MD5) return QString("OPX_MD5");
+	else if (op==OPX_SETSETTING) return QString("OPX_SETSETTING");
+	else if (op==OPX_GETSETTING) return QString("OPX_GETSETTING");
+	else if (op==OPX_PORTIN) return QString("OPX_PORTIN");
+	else if (op==OPX_PORTOUT) return QString("OPX_PORTOUT");
+	else if (op==OPX_BINARYOR) return QString("OPX_BINARYOR");
+	else if (op==OPX_BINARYAND) return QString("OPX_BINARYAND");
+	else if (op==OPX_BINARYNOT) return QString("OPX_BINARYNOT");
+	else if (op==OPX_IMGSAVE) return QString("OPX_IMGSAVE");
+	else if (op==OPX_DIR) return QString("OPX_DIR");
+	else if (op==OPX_REPLACE) return QString("OPX_REPLACE");
+	else if (op==OPX_REPLACE_C) return QString("OPX_REPLACE_C");
+	else if (op==OPX_REPLACEX) return QString("OPX_REPLACEX");
+	else if (op==OPX_COUNT) return QString("OPX_COUNT");
+	else if (op==OPX_COUNT_C) return QString("OPX_COUNT_C");
+	else if (op==OPX_COUNTX) return QString("OPX_COUNTX");
+	else if (op==OPX_OSTYPE) return QString("OPX_OSTYPE");
+	else if (op==OPX_MSEC) return QString("OPX_MSEC");
+	else if (op==OPX_EDITVISIBLE) return QString("OPX_EDITVISIBLE");
+	else if (op==OPX_GRAPHVISIBLE) return QString("OPX_GRAPHVISIBLE");
+	else if (op==OPX_OUTPUTVISIBLE) return QString("OPX_OUTPUTVISIBLE");
+	else if (op==OPX_TEXTWIDTH) return QString("OPX_TEXTWIDTH");
+	else if (op==OPX_SPRITER) return QString("OPX_SPRITER");
+	else if (op==OPX_SPRITES) return QString("OPX_SPRITES");
+	else if (op==OPX_FREEFILE) return QString("OPX_FREEFILE");
+	else if (op==OPX_FREENET) return QString("OPX_FREENET");
+	else if (op==OPX_FREEDB) return QString("OPX_FREEDB");
+	else if (op==OPX_FREEDBSET) return QString("OPX_FREEDBSET");
+	else if (op==OPX_DBINTS) return QString("OPX_DBINTS");
+	else if (op==OPX_DBFLOATS) return QString("OPX_DBFLOATS");
+	else if (op==OPX_DBSTRINGS) return QString("OPX_DBSTRINGS");
+	else if (op==OPX_DBNULL) return QString("OPX_DBNULL");
+	else if (op==OPX_DBNULLS) return QString("OPX_DBNULLS");
+	else if (op==OPX_ARC) return QString("OPX_ARC");
+	else if (op==OPX_CHORD) return QString("OPX_CHORD");
+	else if (op==OPX_PIE) return QString("OPX_PIE");
+	else if (op==OPX_PENWIDTH) return QString("OPX_PENWIDTH");
+	else if (op==OPX_GETPENWIDTH) return QString("OPX_GETPENWIDTH");
+	else if (op==OPX_GETBRUSHCOLOR) return QString("OPX_GETBRUSHCOLOR");
+	else if (op==OPX_RUNTIMEWARNING) return QString("OPX_RUNTIMEWARNING");
+	else if (op==OPX_ALERT) return QString("OPX_ALERT");
+	else if (op==OPX_CONFIRM) return QString("OPX_CONFIRM");
+	else if (op==OPX_PROMPT) return QString("OPX_PROMPT");
+	else if (op==OPX_FROMRADIX) return QString("OPX_FROMRADIX");
+	else if (op==OPX_TORADIX) return QString("OPX_TORADIX");
+	else if (op==OPX_DEBUGINFO) return QString("OPX_DEBUGINFO");
+	else return QString("OPX_UNKNOWN");
+}
+
+
 void Interpreter::printError(int e, QString message)
 {
 	emit(outputReady(tr("ERROR on line ") + QString::number(currentLine) + ": " + getErrorMessage(e) + " " + message + "\n"));
@@ -648,18 +1096,21 @@ Interpreter::compileProgram(char *code)
 	// label address from labeltable into the bytecode
 	op = byteCode;
 	currentLine = 1;
+	unsigned char currentop;
 	while (op <= byteCode + byteOffset)
 	{
-		if (*op == OP_CURRLINE)
+		currentop = (unsigned char) *op;
+		op += sizeof(unsigned char);
+		if (currentop == OP_CURRLINE)
 		{
-			op++;
 			int *i = (int *) op;
 			currentLine = *i;
 			op += sizeof(int);
 		}
-		else if (*op == OP_GOTO || *op == OP_GOSUB || *op == OP_ONERROR || *op == OP_BRANCH)
+		else if (optype(currentop) == OPTYPE_LABEL)
 		{
-			op += sizeof(unsigned char);
+			// change label number to actual bytecode address
+			// before execution
 			int *i = (int *) op;
 			op += sizeof(int);
 			if (labeltable[*i] >=0)
@@ -673,41 +1124,34 @@ Interpreter::compileProgram(char *code)
 				return -1;
 			}
 		}
-		else if (*op < (unsigned char) OP_TYPEARGINT)
+		else if (optype(currentop) == OPTYPE_NONE)
 		{
-			// in the group of OP_TYPEARGNONE
-			// op has no args - move to next byte
+			// op has no args - do nothing
+		}
+		else if (optype(currentop) == OPTYPE_INT || optype(currentop) == OPTYPE_VARIABLE)
+		{
+			// op has an integer following
+			op += sizeof(int);
+		}
+		else if (optype(currentop) == OPTYPE_INTINT)
+		{
+			// op has two integers following
+			op += sizeof(int) * 2;
+		}
+		else if (optype(currentop) == OPTYPE_EXTENDED)
+		{
+			// op has second extended op
 			op += sizeof(unsigned char);
 		}
-		else if (*op == OP_EXTENDEDNONE)
+		else if (optype(currentop) == OPTYPE_FLOAT)
 		{
-			// simple one byte op follows the extended
-			// op has no args - move to next byte
-			op += sizeof(unsigned char) * 2;
+			// double follows float
+			op += sizeof(double);
 		}
-		else if (*op < (unsigned char) OP_TYPEARG2INT)
-		{
-			// in the group of OP_TYPEARGINT
-			//op has one Int arg
-			op += sizeof(unsigned char) + sizeof(int);
-		}
-		else if (*op < (unsigned char) OP_TYPEARGFLOAT)
-		{
-			// in the group of OP_TYPEARG2INT
-			// op has 2 Int arg
-			op += sizeof(unsigned char) + 2 * sizeof(int);
-		}
-		else if (*op < (unsigned char) OP_TYPEARGSTRING)
-		{
-			// in the group of OP_TYPEARGFLOAT
-			// op has a single Float arg
-			op += sizeof(unsigned char) + sizeof(double);
-		}
-		else if (*op < (unsigned char) OP_TYPEARGEXT)
+		else if (optype(currentop) == OPTYPE_STRING)
 		{
 			// in the group of OP_TYPESTRING
 			// op has a single null terminated String arg
-			op += sizeof(unsigned char);
 			int len = strlen((char *) op) + 1;
 			op += len;
 		}
@@ -4729,7 +5173,7 @@ Interpreter::execByteCode()
 							{
 								for(int i=0;i<numsyms;i++) {
 									mutex->lock();
-									emit(outputReady(QString("SYM %1\n").arg(symtable[i])));
+									emit(outputReady(QString("SYM %1 LOC %2\n").arg(symtable[i]).arg(labeltable[i],8,16,QChar('0'))));
 									waitCond->wait(mutex);
 									mutex->unlock();
 								}
@@ -4737,48 +5181,44 @@ Interpreter::execByteCode()
 							}
 							break;
 						case 4:
-							// Hex dump of the program object code
+							// dump the program object code
 							{
 							unsigned char *o = byteCode;
 							while (o <= byteCode + byteOffset) {
 								mutex->lock();
 								unsigned int offset = o-byteCode;
-								unsigned char o1 = (unsigned char) *o;
+								unsigned char currentop = (unsigned char) *o;
 								o += sizeof(unsigned char);
-								if (o1 < (unsigned char) OP_TYPEARGINT)	{
-									// in the group of OP_TYPEARGNONE
-									// op has no args - move to next byte
-									emit(outputReady(QString("%1 %2\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0'))));
-								} else if (*o == OP_EXTENDEDNONE) {	
-									// simple one byte op follows the extended
-									// op has no args - move to next byte
-									emit(outputReady(QString("%1 %2%3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((unsigned char) *o,2,16,QChar('0'))));
+								if (optype(currentop) == OPTYPE_NONE)	{
+									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20)));
+								} else if (optype(currentop) == OPTYPE_EXTENDED) {	
+									unsigned char currentopx = (unsigned char) *o;
+									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opxname(currentopx),20)));
 									o += sizeof(unsigned char);
-								} else if (*o < (unsigned char) OP_TYPEARG2INT) {
-									// in the group of OP_TYPEARGINT
+								} else if (optype(currentop) == OPTYPE_INT) {
 									//op has one Int arg
-									emit(outputReady(QString("%1 %2   int %3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((int) *o)));
+									emit(outputReady(QString("%1 %2   int %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o)));
 									o += sizeof(int);
-								} else if (*o < (unsigned char) OP_TYPEARGFLOAT) {
-									// in the group of OP_TYPEARG2INT
+								} else if (optype(currentop) == OPTYPE_VARIABLE) {
+									//op has one Int arg
+									emit(outputReady(QString("%1 %2   var %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg(symtable[(int) *o])));
+									o += sizeof(int);
+								} else if (optype(currentop) == OPTYPE_LABEL) {
+									//op has one Int arg
+									emit(outputReady(QString("%1 %2   loc %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o,8,16,QChar('0'))));
+									o += sizeof(int);
+								} else if (optype(currentop) == OPTYPE_INTINT) {
 									// op has 2 Int arg
-									emit(outputReady(QString("%1 %2   int %3 int %4\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg((int) *o).arg((int) *(o+sizeof(int)))));
+									emit(outputReady(QString("%1 %2   int %3 int %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((int) *o).arg((int) *(o+sizeof(int)))));
 									o += 2 * sizeof(int);
-								} else if (*o < (unsigned char) OP_TYPEARGSTRING) {
-									// in the group of OP_TYPEARGFLOAT
-									// op has a single Float arg
-									unsigned int offset = o-byteCode;
-									unsigned char o1 = (unsigned char) *o;
-									o += sizeof(unsigned char);
-									double d = (double) *o;
+								} else if (optype(currentop) == OPTYPE_FLOAT) {
+									// op has a single double arg
+									emit(outputReady(QString("%1 %2   dbl %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((double) *o)));
 									o += sizeof(double);
-									emit(outputReady(QString("%1 %2   dbl %3\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg(d)));
-								} else if (*o < (unsigned char) OP_TYPEARGEXT) {
-									// in the group of OP_TYPESTRING
+								} else if (optype(currentop) == OPTYPE_STRING) {
 									// op has a single null terminated String arg
-									char* d = (char*) o;
-									emit(outputReady(QString("%1 %2   str \"%3\"\n").arg(offset,6,16,QChar('0')).arg(o1,2,16,QChar('0')).arg(d)));
-									int len = strlen((char *) o) + 1;
+									emit(outputReady(QString("%1 %2   str \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),20).arg((char*) o)));
+									int len = strlen((char*) o) + 1;
 									o += len;
 								}
 								waitCond->wait(mutex);

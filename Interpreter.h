@@ -134,6 +134,9 @@ class Interpreter : public QThread
   void dialogPrompt(QString, QString);
 
  private:
+  int optype(int op);
+  QString opname(int);
+  QString opxname(int);
   int compareTwostackdata(stackdata *, stackdata *);
   void waitForGraphics();
   void printError(int, QString);
