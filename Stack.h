@@ -10,10 +10,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <cmath>
+#include <limits>
 
 #include <QString>
 #include "ErrorCodes.h"
 
+#define BASIC256EPSILON 0.00000001
 
 enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
 // stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
@@ -48,6 +50,7 @@ class Stack
   void debug();
   int height();
   int compareTopTwo();
+  int compareFloats(double, double);
   int error();
 
  private:

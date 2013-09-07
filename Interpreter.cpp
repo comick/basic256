@@ -809,6 +809,9 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_STACKUNDERFLOW:
 			errormessage = tr("Stack Underflow Error.");
 			break;
+		case ERROR_NOTANUMBER:
+			errormessage = tr("Mathematical operation returned an undefined value.");
+			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr("Feature not implemented in this environment.");
@@ -1543,11 +1546,11 @@ Interpreter::execByteCode()
 					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
 				}
 
-				if (temp->step > 0 && val <= temp->endNum)
+				if (temp->step > 0 && stack.compareFloats(val, temp->endNum)!=1)
 				{
 					op = temp->returnAddr;
 				}
-				else if (temp->step < 0 && val >= temp->endNum)
+				else if (temp->step < 0 && stack.compareFloats(val, temp->endNum)!=-1)
 				{
 					op = temp->returnAddr;
 				}
@@ -2417,11 +2420,11 @@ Interpreter::execByteCode()
 
 	case OP_INT:
 		{
-			// bigger integer safe (trim floating point off of a float)
 			op++;
+			// bigger integer safe (trim floating point off of a float)
 			double val = stack.popfloat();
 			double intpart;
-			val = modf(val, &intpart);
+			val = modf(val + (val>0?BASIC256EPSILON:-BASIC256EPSILON), &intpart);
 			stack.pushfloat(intpart);
 		}
 		break;
@@ -2833,11 +2836,16 @@ Interpreter::execByteCode()
 			double oneval = stack.popfloat();
 			double twoval = stack.popfloat();
 			double ans = pow(twoval, oneval);
-			if (isinf(ans)) {
-				errornum = ERROR_INFINITY;
+			if (isnan(ans)) {
+				errornum = ERROR_NOTANUMBER;
 				stack.pushint(0);
 			} else {
-				stack.pushfloat(ans);
+				if (isinf(ans)) {
+					errornum = ERROR_INFINITY;
+					stack.pushint(0);
+				} else {
+					stack.pushfloat(ans);
+				}
 			}
 			break;
 		}

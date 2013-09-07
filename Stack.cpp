@@ -187,7 +187,7 @@ Stack::popint()
 	stackdata *top=popelement();
 	
 	if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
-		i = (int) top->floatval;
+		i = (int) (top->floatval + (top->floatval>0?BASIC256EPSILON:-BASIC256EPSILON));
 	}
 	else if (top->type == T_STRING)
 	{
@@ -249,6 +249,16 @@ QString Stack::popstring()
 	return s;
 }
 
+int Stack::compareFloats(double one, double two) {
+	// return 1 if one>two  0 if one==two or -1 if one<two
+	// USE FOR ALL COMPARISON WITH NUMBERS
+	// used a small number (epsilon) to make sure that
+	// decimal precission errors are ignored
+	if (fabs(one - two)<=BASIC256EPSILON) return 0;
+	else if (one < two) return -1;
+	else return 1;
+}
+
 int Stack::compareTopTwo()
 {
 	// complex compare logic - compare two stack types with each other
@@ -259,24 +269,19 @@ int Stack::compareTopTwo()
 	stackstack.push(one);
 	stackstack.push(two);
 	
-	int ans = 0;	// default equal
-	
 	if (one->type == T_STRING || two->type == T_STRING)
 	{
 		// one or both strings - [compare them as strings] strcmp
 		QString stwo = popstring();
 		QString sone = popstring();
-		ans = sone.compare(stwo);
-		if (ans<0) ans=-1;
-		if (ans>0) ans=1;
+		int ans = sone.compare(stwo);
+		if (ans==0) return 0;
+		else if (ans<0) return -1;
+		else return 1;
 	} else {
 		// anything else - compare them as doubles
 		double ftwo = popfloat();
 		double fone = popfloat();
-		if (fone == ftwo) ans = 0;
-		else if (fone < ftwo) ans = -1;
-		else ans = 1;
+		return compareFloats(fone, ftwo);
 	}
-	// 
-	return ans;
 }

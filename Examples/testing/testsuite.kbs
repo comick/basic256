@@ -17,9 +17,11 @@
 # 2013-06-10	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
 # 2013-06-10	j.m.reneau	changed error trap test to trap 9999 (number less than 0 now untrappable)
 # 2013-09-03	j.m.reneau	added tests for exit (do|if|for|while) and continue (do|for|while)
+# 2013-09-06	j.m.reneau	arranged tests so that interactive tests were first for speed
+#				added tests for floating point to integer compare (epsilon)
 
 
-call versiontest(90965)
+call versiontest(90968)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -33,6 +35,376 @@ end subroutine
 # create arrays to use
 dim c(10)
 dim twod(10,10)
+
+###################################################
+###################################################
+###################################################
+## Iteractive tests follow
+###################################################
+###################################################
+###################################################
+
+
+###################################################
+call section("1D Numeric Array")
+###################################################
+c = {9,8,7,6,5,4,3,2,1,0}
+call n("c[1]=8 after immediate assign",c[1],8)
+call n("c[8]=1 after immediate assign",c[8],1)
+c[0] = c[0] + c[8] : call n("c[0] after c[0] = c[0] + c[8]", c[0], 10)
+c[0] += c[7] : call n("c[0] after c[0] += c[7]", c[0], 12)
+c[0] -= c[6] : call n("c[0] after c[0] -= c[6]", c[0], 9)
+c[1] *= c[2] : call n("c[1] after c[1] *= c[2]", c[1], 56)
+c[1] /= c[7] : call n("c[1] after c[1] /= c[7]", c[1], 28)
+redim c(20)
+call n("c[1]=28 after redim",c[1],28)
+call n("c[9]=0 after redim",c[9],0)
+input "Input the number -3.14 > ", c[2]
+call n("c[2]=-3.14 after rinput",c[2],-3.14)
+input "Input the string 'crap' > ", c[2]
+call n("c[2]=0 after input crap",c[2],0)
+
+###################################################
+call section("2D Numeric Array")
+###################################################
+for t = 0 to twod[?,]-1
+   for u = 0 to twod[,?]-1
+      twod[t,u] = t*100+u
+   next u
+next t
+call n("twod[5,7]=507 after assign",twod[5,7],507)
+twod[5,7]+=7
+call n("twod[5,7] after twod[5,7]+=7",twod[5,7],514)
+twod[5,7]-=7
+call n("twod[5,7] after twod[5,7]-=7",twod[5,7],507)
+twod[5,7]*=7
+call n("twod[5,7] after twod[5,7]*=7",twod[5,7],3549)
+twod[5,7]/=7
+call n("twod[5,7] after twod[5,7]/=7",twod[5,7],507)
+twod[5,7]++
+call n("twod[5,7] after twod[5,7]++",twod[5,7],508)
+twod[5,7]--
+call n("twod[5,7] after twod[5,7]--",twod[5,7],507)
+for t = 0 to twod[?,]-1
+   for u = 0 to twod[,?]-1
+      call n("twod["+t+","+u+"] as originally assigned",twod[t,u],t*100+u)
+      twod[t,u] = t*100+u
+   next u
+next t
+input "Input the number -3.14 > ", twod[2,1]
+call n("twod[2,1]=-3.14 after rinput",twod[2,1],-3.14)
+input "Input the string 'crap' > ", twod[3,2]
+call n("twod[3,2]=0 after input crap",twod[3,2],0)
+
+###################################################
+call section("1D/2D String Array")
+###################################################
+c$ = {"A","B","C","D","E","F"}	#autodim
+call s("c$[0]=A",c$[0],"A")
+call s("c$[1]=B",c$[1],"B")
+call s("c$[2]=C",c$[2],"C")
+call s("c$[3]=D",c$[3],"D")
+call s("c$[4]=E",c$[4],"E")
+call s("c$[5]=F",c$[5],"F")
+#
+input "input string 'able' >", c$[5]
+call s("c$[5]='able'",c$[5],"able")
+#
+redim c$(5,2)
+call s("c$[0,0]=A",c$[0,0],"A")
+call s("c$[0,1]=B",c$[0,1],"B")
+call s("c$[1,0]=C",c$[1,0],"C")
+call s("c$[1,1]=D",c$[1,1],"D")
+call s("c$[2,0]=E",c$[2,0],"E")
+call s("c$[2,1]=able",c$[2,1],"able")
+call s("c$[3,0]=''",c$[3,0],"")
+call s("c$[3,1]=''",c$[3,1],"")
+call s("c$[4,0]=''",c$[3,0],"")
+call s("c$[4,1]=''",c$[3,1],"")
+# switch
+t$ = c$[0,1]
+c$[0,1]=c$[0,0]
+c$[0,0] = t$
+call s("c$[0,0]=B",c$[0,0],"B")
+call s("c$[0,1]=A",c$[0,1],"A")
+#
+input "input string 'alpha' > ", c$[3,1]
+call s("c$[3,1]='alpha'",c$[3,1],"alpha")
+
+###################################################
+call section("Input, Key, and Prompt")
+###################################################
+a$ = "foo"
+input "input the string 'abcd' ?", a$
+call s("input prompt $",a$,"abcd")
+print "input the string 'able' ?";
+input a$
+call s("input $",a$,"able")
+input "Press enter?", a$
+call s("input enter $",a$,"")
+a = 99
+input "input the number 99.99 ?", a
+call n("input prompt #",a,99.99)
+print "input the number -1.234 ?";
+input a
+call s("input #",a,-1.234)
+input "input the string 'abcd' ?", a
+call n("input prompt bad #",a,0)
+input "Press enter?", a
+call s("input enter #",a,0)
+print "Press the space bar"
+# debounce
+do
+   a = key
+until a = 0
+# get key
+do
+   a = key
+until a <> 0
+call n("key space",a,32)
+print "Press the shift key."
+# debounce
+do
+   a = key
+until a = 0
+# get key
+do
+   a = key
+until a <> 0
+call n("key shift",a,16777248)
+a$=prompt("Click OK to accept the default","abcd")
+call s("prompt dialog default",a$,"abcd")
+a$=prompt("Change the value and click cancel","abcd")
+call s("prompt dialog cancel default",a$,"abcd")
+a$=prompt("Change the value to 'able' and click OK")
+call s("prompt dialog",a$,"able")
+
+###################################################
+call section("Basic Graphics")
+###################################################
+clg
+color blue
+rect 10,10,20,20
+call q("Blue rectangle")
+call n("is 20,20 blue",pixel(20,20), blue)
+#
+clg
+color red
+call n("is current color red",getcolor, red)
+circle 30,30,10
+call q("red circle")
+#
+clg
+for t = 1 to 10
+   color rgb(rand*256,rand*256,rand*256), rgb(rand*256,rand*256,rand*256)
+   circle rand*300,rand*300,rand*10+10
+next t
+call q("10 random circles")
+#
+clg
+color black
+for t = 0 to 300 step 3
+   line 0,0,t,300
+   line 0,0,300,t
+next t
+call q("morie pattern std size")
+#
+graphsize 200,150
+clg
+color black
+for t = 0 to 1 step .01
+   line 0,0,t*graphwidth,graphheight
+   line 0,0,graphwidth,t*graphheight
+next t
+call q("morie pattern odd size")
+graphsize 300,300
+#
+clg
+color black
+for x = 0 to 10 step .1
+   y = (100- x^2)^.5
+   plot 150-x, 150-y
+   plot 150-x, 150+y
+   plot 150+x, 150-y
+   plot 150+x, 150+y
+next x
+call q("circle using x^2+y^2=r^2")
+#
+clg
+penwidth 10
+color green, blue
+redim c(1)
+c = {100, 100, 200, 200, 100, 200}
+poly c
+penwidth 5
+color orange, black
+poly {100, 100, 200, 200, 200, 100}
+call q("poly - orange/black and green/blue triangles with different fill and pen")
+penwidth 0
+#
+clg
+color red
+font "Times New Roman",18,50
+text 10,100,"This is Times New Roman"
+color darkgreen
+font "Tahoma",10,100
+text 10,200,"This is Tahoma!"
+call q("Font - Times and Tahoma")
+# need image load, stamp, and sprite tests
+
+
+###################################################
+call section("Sound")
+###################################################
+say "hello.": call q("say helo")
+say 3 + 7: call q("say ten")
+sound 440,500: call q("half second sound")
+sound {440,100,220,100,300,200} : call q("three sounds from list")
+# need wavplay
+
+###################################################
+call section("Sprites")
+###################################################
+spritedim 5
+clg
+# make the sprites from polys using the subroutine polysprite
+penwidth 3
+# two big right triangles
+points =  {0,0,200,0,100,100}
+call polysprite(0, ref(points), black, red, clear, 1)
+call polysprite(1, ref(points), black, green, clear, 1)
+# two small right triangles
+points =  {200,0,200,100,150,50}
+call polysprite(2, ref(points), black, blue, clear, 1)
+call polysprite(3, ref(points), black, yellow, clear, 1)
+# one medium triangle
+points =  {200,100,200,200,100,200}
+call polysprite(4, ref(points), black, cyan, clear, 1)
+color white
+rect 0,0,graphwidth, graphheight
+color black
+penwidth 1
+for t = 0 to graphwidth step 10
+   line 0,t,graphwidth,t
+   line t,0,t,graphheight
+next t
+refresh
+for t = 0 to 4
+   spriteshow t
+next t
+# move the sprites randomly scaled and rotated
+for t = 1 to 500
+   spriteplace int(rand*5), int(rand*graphwidth) , int(rand*graphheight),rand*2,int(2*pi*rand)
+   refresh
+next t
+for t = 0 to 4
+   spritehide t
+next t
+call q("sprite test - is the screen a clean grid?")
+
+###################################################
+call section("IMGSave, IMGLoad, Kill and Exists")
+###################################################
+clg
+penwidth 1
+for t = 1 to 20
+   color rgb(rand*256,rand*256,rand*256,rand*256)
+   line rand*graphwidth, rand*graphheight, 10*rand, 10*rand
+next t
+refresh
+imgsave "testimgsave.png"
+pause .5
+clg
+refresh
+pause .5
+imgload graphwidth/2,graphheight /2,"testimgsave.png"
+call q("imgload - did the image wink out?")
+clg
+for t = 0 to 2* pi step .1
+   imgload graphwidth/2,graphheight /2,t/2,t,"testimgsave.png"
+   refresh
+next t
+call q("imgload - did the image spin out?")
+kill "testimgsave.png"
+call n("delete temp imgsave image",exists("testimgsave.png"),false)
+
+###################################################
+call section("Poly and Stamp")
+###################################################
+clg
+penwidth 5
+color red, black
+poly {100,100,30,200,170,200}
+refresh
+call q("poly black triangle red border?")
+clg
+for t = 0 to 2 * pi step .1
+   stamp 150,150,t / (2*pi),t,{0,0,-70,100,70,100}
+   refresh
+next t
+call q("stamp growing and rotating black triangle red border?")
+
+###################################################
+call section("Mouse Functionality")
+###################################################
+clg
+penwidth 1
+color blue
+rect 100,100,20,20
+color red
+rect 100,130,20,20
+color green
+circle 110,170,10
+color black
+circle 110,220,10
+refresh
+print "left click on the blue rectangle"
+clickclear
+while clickb <> 1
+   pause .01
+end while
+call n("left click blue",pixel(clickx, clicky),blue)
+print "RIGHT click on the green circle"
+clickclear
+while clickb <> 2
+   pause .01
+end while
+call n("right click green",pixel(clickx, clicky),green)
+if ostype()<>2 then
+   print "CENTER click on the RED rectangle"
+   clickclear
+   while clickb <> 4
+      pause .01
+   end while
+   call n("center click red",pixel(clickx, clicky),red)
+end if
+print "move mouse over black dot"
+while pixel(mousex, mousey)<> black
+   pause .01
+end while
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################################################
+###################################################
+###################################################
+## Unattended tests follow
+###################################################
+###################################################
+###################################################
 
 ###################################################
 call section("Numeric Assignment")
@@ -193,92 +565,6 @@ call s("36 -> 10 (36)", toradix(36,36), "10")
 call n("22 (36) -> 74", fromradix("22",36), 74)
 
 ###################################################
-call section("1D Numeric Array")
-###################################################
-c = {9,8,7,6,5,4,3,2,1,0}
-call n("c[1]=8 after immediate assign",c[1],8)
-call n("c[8]=1 after immediate assign",c[8],1)
-c[0] = c[0] + c[8] : call n("c[0] after c[0] = c[0] + c[8]", c[0], 10)
-c[0] += c[7] : call n("c[0] after c[0] += c[7]", c[0], 12)
-c[0] -= c[6] : call n("c[0] after c[0] -= c[6]", c[0], 9)
-c[1] *= c[2] : call n("c[1] after c[1] *= c[2]", c[1], 56)
-c[1] /= c[7] : call n("c[1] after c[1] /= c[7]", c[1], 28)
-redim c(20)
-call n("c[1]=28 after redim",c[1],28)
-call n("c[9]=0 after redim",c[9],0)
-input "Input the number -3.14 > ", c[2]
-call n("c[2]=-3.14 after rinput",c[2],-3.14)
-input "Input the string 'crap' > ", c[2]
-call n("c[2]=0 after input crap",c[2],0)
-
-###################################################
-call section("2D Numeric Array")
-###################################################
-for t = 0 to twod[?,]-1
-   for u = 0 to twod[,?]-1
-      twod[t,u] = t*100+u
-   next u
-next t
-call n("twod[5,7]=507 after assign",twod[5,7],507)
-twod[5,7]+=7
-call n("twod[5,7] after twod[5,7]+=7",twod[5,7],514)
-twod[5,7]-=7
-call n("twod[5,7] after twod[5,7]-=7",twod[5,7],507)
-twod[5,7]*=7
-call n("twod[5,7] after twod[5,7]*=7",twod[5,7],3549)
-twod[5,7]/=7
-call n("twod[5,7] after twod[5,7]/=7",twod[5,7],507)
-twod[5,7]++
-call n("twod[5,7] after twod[5,7]++",twod[5,7],508)
-twod[5,7]--
-call n("twod[5,7] after twod[5,7]--",twod[5,7],507)
-for t = 0 to twod[?,]-1
-   for u = 0 to twod[,?]-1
-      call n("twod["+t+","+u+"] as originally assigned",twod[t,u],t*100+u)
-      twod[t,u] = t*100+u
-   next u
-next t
-input "Input the number -3.14 > ", twod[2,1]
-call n("twod[2,1]=-3.14 after rinput",twod[2,1],-3.14)
-input "Input the string 'crap' > ", twod[3,2]
-call n("twod[3,2]=0 after input crap",twod[3,2],0)
-
-###################################################
-call section("1D/2D String Array")
-###################################################
-c$ = {"A","B","C","D","E","F"}	#autodim
-call s("c$[0]=A",c$[0],"A")
-call s("c$[1]=B",c$[1],"B")
-call s("c$[2]=C",c$[2],"C")
-call s("c$[3]=D",c$[3],"D")
-call s("c$[4]=E",c$[4],"E")
-call s("c$[5]=F",c$[5],"F")
-#
-input "input string 'able' >", c$[5]
-call s("c$[5]='able'",c$[5],"able")
-#
-redim c$(5,2)
-call s("c$[0,0]=A",c$[0,0],"A")
-call s("c$[0,1]=B",c$[0,1],"B")
-call s("c$[1,0]=C",c$[1,0],"C")
-call s("c$[1,1]=D",c$[1,1],"D")
-call s("c$[2,0]=E",c$[2,0],"E")
-call s("c$[2,1]=able",c$[2,1],"able")
-call s("c$[3,0]=''",c$[3,0],"")
-call s("c$[3,1]=''",c$[3,1],"")
-call s("c$[4,0]=''",c$[3,0],"")
-call s("c$[4,1]=''",c$[3,1],"")
-# switch
-t$ = c$[0,1]
-c$[0,1]=c$[0,0]
-c$[0,0] = t$
-call s("c$[0,0]=B",c$[0,0],"B")
-call s("c$[0,1]=A",c$[0,1],"A")
-#
-input "input string 'alpha' > ", c$[3,1]
-call s("c$[3,1]='alpha'",c$[3,1],"alpha")
-
-###################################################
 call section("Functions and Subroutines")
 ###################################################
 global globala, globalb$
@@ -337,54 +623,6 @@ call n("int(-9)", int(-9), -9)
 call n("int(-9.8)", int(-9.9), -9)
 call n("int(5.4)", int(5.4), 5)
 call n("int(0)", int(0), 0)
-
-###################################################
-call section("Input, Key, and Prompt")
-###################################################
-a$ = "foo"
-input "input the string 'abcd' ?", a$
-call s("input prompt $",a$,"abcd")
-print "input the string 'able' ?";
-input a$
-call s("input $",a$,"able")
-input "Press enter?", a$
-call s("input enter $",a$,"")
-a = 99
-input "input the number 99.99 ?", a
-call n("input prompt #",a,99.99)
-print "input the number -1.234 ?";
-input a
-call s("input #",a,-1.234)
-input "input the string 'abcd' ?", a
-call n("input prompt bad #",a,0)
-input "Press enter?", a
-call s("input enter #",a,0)
-print "Press the space bar"
-# debounce
-do
-   a = key
-until a = 0
-# get key
-do
-   a = key
-until a <> 0
-call n("key space",a,32)
-print "Press the shift key."
-# debounce
-do
-   a = key
-until a = 0
-# get key
-do
-   a = key
-until a <> 0
-call n("key shift",a,16777248)
-a$=prompt("Click OK to accept the default","abcd")
-call s("prompt dialog default",a$,"abcd")
-a$=prompt("Change the value and click cancel","abcd")
-call s("prompt dialog cancel default",a$,"abcd")
-a$=prompt("Change the value to 'able' and click OK")
-call s("prompt dialog",a$,"able")
 
 ###################################################
 call section("File I/O")
@@ -518,89 +756,6 @@ dbclose
 kill "testsuite.db"
 
 ###################################################
-call section("Graphics")
-###################################################
-clg
-color blue
-rect 10,10,20,20
-call q("Blue rectangle")
-call n("is 20,20 blue",pixel(20,20), blue)
-#
-clg
-color red
-call n("is current color red",getcolor, red)
-circle 30,30,10
-call q("red circle")
-#
-clg
-for t = 1 to 10
-   color rgb(rand*256,rand*256,rand*256), rgb(rand*256,rand*256,rand*256)
-   circle rand*300,rand*300,rand*10+10
-next t
-call q("10 random circles")
-#
-clg
-color black
-for t = 0 to 300 step 3
-   line 0,0,t,300
-   line 0,0,300,t
-next t
-call q("morie pattern std size")
-#
-graphsize 200,150
-clg
-color black
-for t = 0 to 1 step .01
-   line 0,0,t*graphwidth,graphheight
-   line 0,0,graphwidth,t*graphheight
-next t
-call q("morie pattern odd size")
-graphsize 300,300
-#
-clg
-color black
-for x = 0 to 10 step .1
-   y = (100- x^2)^.5
-   plot 150-x, 150-y
-   plot 150-x, 150+y
-   plot 150+x, 150-y
-   plot 150+x, 150+y
-next x
-call q("circle using x^2+y^2=r^2")
-#
-clg
-penwidth 10
-color green, blue
-redim c(1)
-c = {100, 100, 200, 200, 100, 200}
-poly c
-penwidth 5
-color orange, black
-poly {100, 100, 200, 200, 200, 100}
-call q("poly - orange/black and green/blue triangles with different fill and pen")
-penwidth 0
-#
-clg
-color red
-font "Times New Roman",18,50
-text 10,100,"This is Times New Roman"
-color darkgreen
-font "Tahoma",10,100
-text 10,200,"This is Tahoma!"
-call q("Font - Times and Tahoma")
-# need image load, stamp, and sprite tests
-
-
-###################################################
-call section("Sound")
-###################################################
-say "hello.": call q("say helo")
-say 3 + 7: call q("say ten")
-sound 440,500: call q("half second sound")
-sound {440,100,220,100,300,200} : call q("three sounds from list")
-# need wavplay
-
-###################################################
 call section("Test Random and fastgraphics")
 ###################################################
 clg
@@ -624,127 +779,6 @@ tot = tot / k
 call n("rand min "+min+">= 0..", min >=0, true)
 call n("rand max "+max+"< 1", max < 1, true)
 call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
-
-###################################################
-call section("Sprites")
-###################################################
-spritedim 5
-clg
-# make the sprites from polys using the subroutine polysprite
-penwidth 3
-# two big right triangles
-points =  {0,0,200,0,100,100}
-call polysprite(0, ref(points), black, red, clear, 1)
-call polysprite(1, ref(points), black, green, clear, 1)
-# two small right triangles
-points =  {200,0,200,100,150,50}
-call polysprite(2, ref(points), black, blue, clear, 1)
-call polysprite(3, ref(points), black, yellow, clear, 1)
-# one medium triangle
-points =  {200,100,200,200,100,200}
-call polysprite(4, ref(points), black, cyan, clear, 1)
-color white
-rect 0,0,graphwidth, graphheight
-color black
-penwidth 1
-for t = 0 to graphwidth step 10
-   line 0,t,graphwidth,t
-   line t,0,t,graphheight
-next t
-refresh
-for t = 0 to 4
-   spriteshow t
-next t
-# move the sprites randomly scaled and rotated
-for t = 1 to 500
-   spriteplace int(rand*5), int(rand*graphwidth) , int(rand*graphheight),rand*2,int(2*pi*rand)
-   refresh
-next t
-for t = 0 to 4
-   spritehide t
-next t
-call q("sprite test - is the screen a clean grid?")
-
-###################################################
-call section("IMGSave, IMGLoad, Kill and Exists")
-###################################################
-clg
-penwidth 1
-for t = 1 to 20
-   color rgb(rand*256,rand*256,rand*256,rand*256)
-   line rand*graphwidth, rand*graphheight, 10*rand, 10*rand
-next t
-refresh
-imgsave "testimgsave.png"
-pause .5
-clg
-refresh
-pause .5
-imgload graphwidth/2,graphheight /2,"testimgsave.png"
-call q("imgload - did the image wink out?")
-clg
-for t = 0 to 2* pi step .1
-   imgload graphwidth/2,graphheight /2,t/2,t,"testimgsave.png"
-   refresh
-next t
-call q("imgload - did the image spin out?")
-kill "testimgsave.png"
-call n("delete temp imgsave image",exists("testimgsave.png"),false)
-
-###################################################
-call section("Poly and Stamp")
-###################################################
-clg
-penwidth 5
-color red, black
-poly {100,100,30,200,170,200}
-refresh
-call q("poly black triangle red border?")
-clg
-for t = 0 to 2 * pi step .1
-   stamp 150,150,t / (2*pi),t,{0,0,-70,100,70,100}
-   refresh
-next t
-call q("stamp growing and rotating black triangle red border?")
-
-###################################################
-call section("Mouse Functionality")
-###################################################
-clg
-penwidth 1
-color blue
-rect 100,100,20,20
-color red
-rect 100,130,20,20
-color green
-circle 110,170,10
-color black
-circle 110,220,10
-refresh
-print "left click on the blue rectangle"
-clickclear
-while clickb <> 1
-   pause .01
-end while
-call n("left click blue",pixel(clickx, clicky),blue)
-print "RIGHT click on the green circle"
-clickclear
-while clickb <> 2
-   pause .01
-end while
-call n("right click green",pixel(clickx, clicky),green)
-if ostype()<>2 then
-   print "CENTER click on the RED rectangle"
-   clickclear
-   while clickb <> 4
-      pause .01
-   end while
-   call n("center click red",pixel(clickx, clicky),red)
-end if
-print "move mouse over black dot"
-while pixel(mousex, mousey)<> black
-   pause .01
-end while
 
 
 ###################################################
@@ -798,6 +832,29 @@ t++
    end if
 end while
 call n("WHILE - Exit and Continue", total, 103)
+
+
+###################################################
+call section("Epsilon - Integer to Float Compare")
+###################################################
+total = 0
+for t=1 to 10 step .00001
+if t=int(t) then print t;: total+= t
+next t
+print " " + total
+call n("EPSILON - For INT", total, 55)
+#
+total = 0
+for t=10 to 1 step -.00001
+if t=int(t) then print t;: total+= t
+next t
+print " " + total
+call n("EPSILON - For Backwards INT", total, 55)
+
+
+
+
+
 
 
 
