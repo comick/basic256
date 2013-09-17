@@ -60,6 +60,11 @@ extern int subroutineDefSymbol;
 int linenumber;
 int column;
 
+#define MAX_INCLUDE_DEPTH 10
+YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
+int include_linenumber[MAX_INCLUDE_DEPTH];
+int include_stack_ptr = 0;
+
 #ifdef __cplusplus
 }
 #endif
@@ -67,6 +72,8 @@ int column;
 void count();
 
 %}
+
+%x includefilename
 
 binaryinteger 0[bB][01]+
 blankline ^[ \t]*[\n]
@@ -182,6 +189,7 @@ imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 input [Ii][Nn][Pp][Uu][Tt]
+include [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
 key [Kk][Ee][Yy]
@@ -312,6 +320,45 @@ year [Yy][Ee][Aa][Rr]
 yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 %%
+
+{include} BEGIN(includefilename);
+
+<includefilename>[^ \t\n]+   { /* got the include file name */
+	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
+               
+	if ( include_stack_ptr >= MAX_INCLUDE_DEPTH ) {
+		errorcode = COMPERR_INCLUDEDEPTH;
+		return -1;
+	}
+     
+	include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
+                  
+	yyin = fopen( yytext, "r" );
+	if ( ! yyin ) {
+		errorcode = COMPERR_INCLUDEFILE;
+		return -1;
+	}     
+
+     
+	include_linenumber[include_stack_ptr] = linenumber;
+	linenumber = 1;    
+	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
+    
+    BEGIN(INITIAL);
+}
+     
+<<EOF>> {
+	if ( include_stack_ptr == 0 ) {
+		// eof of the top level program
+		yyterminate();
+	} else {
+		// eof of an include - return to the includer
+		include_stack_ptr--;
+		linenumber=include_linenumber[include_stack_ptr];
+		yy_delete_buffer( YY_CURRENT_BUFFER );
+		yy_switch_to_buffer(include_stack[include_stack_ptr] );
+	}
+}
 
 {label} {
 	char *temp;

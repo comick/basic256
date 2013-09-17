@@ -1084,6 +1084,12 @@ Interpreter::compileProgram(char *code)
 			case COMPERR_EXITWHILE:
 				emit(outputReady(tr("EXIT WHILE without matching WHILE on line ") + QString::number(linenumber) + ".\n"));
 				break;
+			case COMPERR_INCLUDEFILE:
+				emit(outputReady(tr("Unable to open INCLUDE file on line ") + QString::number(linenumber) + ".\n"));
+				break;
+			case COMPERR_INCLUDEDEPTH:
+				emit(outputReady(tr("Maximum depth of INCLUDE files on line ") + QString::number(linenumber) + ".\n"));
+				break;
 			default:
 				if(column==0) {
 					emit(outputReady(tr("Syntax error on line ") + QString::number(linenumber) + tr(" around end of line.") + "\n"));
