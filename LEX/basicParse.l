@@ -669,6 +669,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
                
 	if ( numincludes >= MAX_INCLUDE_DEPTH ) {
+		BEGIN(INITIAL);
 		errorcode = COMPERR_INCLUDEDEPTH;
 		return -1;
 	}
@@ -683,6 +684,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 		//	include_stack[t] = NULL;
 		//}
 		//numincludes=0;
+		BEGIN(INITIAL);
 		errorcode = COMPERR_INCLUDEFILE;
 		return -1;
 	}     
