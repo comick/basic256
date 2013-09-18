@@ -40,6 +40,7 @@ int yyerror(const char *);
 int errorcode;
 extern int column;
 extern int linenumber;
+extern int numincludes;
 
 char *byteCode = NULL;
 unsigned int byteOffset = 0;
@@ -74,6 +75,7 @@ unsigned int maxbyteoffset = 0;
 unsigned int iftablesourceline[IFTABLESIZE];
 unsigned int iftabletype[IFTABLESIZE];
 int iftableid[IFTABLESIZE];			// used to store a sequential number for this if - unique label creation
+int iftableincludes[IFTABLESIZE];			// used to store the include depth of the code
 int numifs = 0;
 int nextifid;
 
@@ -105,30 +107,35 @@ clearIfTable() {
 		iftablesourceline[j] = -1;
 		iftabletype[j] = -1;
 		iftableid[j] = -1;
+		iftableincludes[j] = -1;
 	}
 	numifs = 0;
 	nextifid = 0;
 }
 
-int testIfOnTable() {
+int testIfOnTable(int includelevel) {
 	// return line number if there is an unfinished while.do.if.else
 	// or send back -1
 	if (numifs >=1 ) {
-		return iftablesourceline[numifs-1];
+		if (iftableincludes[numifs-1]>=includelevel) {
+			return iftablesourceline[numifs-1];
+		}
 	}	
 	return -1;
 }
 
-int testIfOnTableError() {
+int testIfOnTableError(int includelevel) {
 	// return Error number if there is an unfinished while.do.if.else
 	// or send back 0
 	if (numifs >=1 ) {
-		if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
-		if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
-		if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
-		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
-		if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
-		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
+		if (iftableincludes[numifs-1]>=includelevel) {
+			if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
+		}
 	}	
 	return 0;
 }
@@ -162,6 +169,7 @@ int newIf(int sourceline, int type) {
 	iftablesourceline[numifs] = sourceline;
 	iftabletype[numifs] = type;
 	iftableid[numifs] = nextifid;
+	iftableincludes[numifs] = numincludes;
 	nextifid++;
 	numifs++;
 	return numifs - 1;
@@ -574,8 +582,8 @@ endfunctionstmt: B256ENDFUNCTION {
 			numifs--;
 		// 
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -597,8 +605,8 @@ endsubroutinestmt: B256ENDSUBROUTINE {
 			//
 			numifs--;
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -641,8 +649,8 @@ elsestmt: B256ELSE
 			// put new if on the frame for the else
 			newIf(linenumber, IFTABLETYPEELSE);
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -665,8 +673,8 @@ endifstmt: B256ENDIF
 			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -704,8 +712,8 @@ endwhilestmt: B256ENDWHILE
 			// remove the single placeholder from the if frame
 			numifs--;
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -743,8 +751,8 @@ untilstmt: B256UNTIL floatexpr
 			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
 		} else {
-			errorcode = testIfOnTableError();
-			linenumber = testIfOnTable();
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
 			return -1;
 		}
 	} else {
@@ -1194,8 +1202,8 @@ nextstmt: B256NEXT B256VARIABLE
 				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 				numifs--;
 			} else {
-				errorcode = testIfOnTableError();
-				linenumber = testIfOnTable();
+				errorcode = testIfOnTableError(numincludes);
+				linenumber = testIfOnTable(numincludes);
 				return -1;
 			}
 		} else {

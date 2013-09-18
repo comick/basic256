@@ -16,10 +16,11 @@
  **/
 
 
-
 %{
 #include "basicParse.tab.h"
 #include "../CompileErrors.h"
+#include "../ByteCodes.h"
+
 
 #ifdef __cplusplus
 	extern "C" {
@@ -44,11 +45,17 @@ extern void clearSymbolTable();
 extern void dumpSynbolTable();
 extern void clearLabelTable();
 extern void clearIfTable();
-extern int testIfOnTable();
-extern int testIfOnTableError();
+extern int testIfOnTable(int);
+extern int testIfOnTableError(int);
 extern void newLineOffsets(int);
 
 extern int getSymbol(char *);
+extern void addIntOp(char, int);
+extern void addOp(char);
+extern void addString(char*);
+extern void addStringOp(char, char*);
+
+
 extern int yyparse();
 //extern YYLTYPE yylloc;
 extern int errorcode;
@@ -59,11 +66,12 @@ extern int subroutineDefSymbol;
 
 int linenumber;
 int column;
+char *currentinclude;
 
 #define MAX_INCLUDE_DEPTH 10
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int include_linenumber[MAX_INCLUDE_DEPTH];
-int include_stack_ptr = 0;
+int numincludes=0;
 
 #ifdef __cplusplus
 }
@@ -73,7 +81,7 @@ void count();
 
 %}
 
-%x includefilename
+%x INCLUDE
 
 binaryinteger 0[bB][01]+
 blankline ^[ \t]*[\n]
@@ -321,44 +329,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 %%
 
-{include} BEGIN(includefilename);
-
-<includefilename>[^ \t\n]+   { /* got the include file name */
-	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
-               
-	if ( include_stack_ptr >= MAX_INCLUDE_DEPTH ) {
-		errorcode = COMPERR_INCLUDEDEPTH;
-		return -1;
-	}
-     
-	include_stack[include_stack_ptr++] = YY_CURRENT_BUFFER;
-                  
-	yyin = fopen( yytext, "r" );
-	if ( ! yyin ) {
-		errorcode = COMPERR_INCLUDEFILE;
-		return -1;
-	}     
-
-     
-	include_linenumber[include_stack_ptr] = linenumber;
-	linenumber = 1;    
-	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
-    
-    BEGIN(INITIAL);
-}
-     
-<<EOF>> {
-	if ( include_stack_ptr == 0 ) {
-		// eof of the top level program
-		yyterminate();
-	} else {
-		// eof of an include - return to the includer
-		include_stack_ptr--;
-		linenumber=include_linenumber[include_stack_ptr];
-		yy_delete_buffer( YY_CURRENT_BUFFER );
-		yy_switch_to_buffer(include_stack[include_stack_ptr] );
-	}
-}
+{include} BEGIN(INCLUDE);
 
 {label} {
 	char *temp;
@@ -394,11 +365,12 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {binaryinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
 {hexinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
 {octalinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
-{string}	{ int len; count(); len = strlen(yytext);
-			yylval.string = strdup(yytext + 1);
-			yylval.string[len - 2] = 0;
-		return B256STRING; }
-
+{string}	{
+	int len; count(); len = strlen(yytext);
+	yylval.string = strdup(yytext + 1);
+	yylval.string[len - 2] = 0;
+	return B256STRING;
+}
 {abs}		{ count(); return B256ABS; }
 {acos}		{ count(); return B256ACOS; }
 {alert}		{ count(); return B256ALERT; }
@@ -688,6 +660,73 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {whitespace} /* ignore whitespace */
 . 	{ count(); return yytext[0]; }
 
+<INCLUDE>[ \t]*  	{
+    // eat the whitespace before the file
+}
+
+<INCLUDE>[^ \t\n]+   {
+	// got the include file name
+	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
+               
+	if ( numincludes >= MAX_INCLUDE_DEPTH ) {
+		errorcode = COMPERR_INCLUDEDEPTH;
+		return -1;
+	}
+     
+	include_stack[numincludes] = YY_CURRENT_BUFFER;
+                  
+	yyin = fopen( yytext, "r" );
+	if ( ! yyin ) {
+		//int t;
+		//for(t=0;t<numincludes;t++) {
+		//	yy_delete_buffer( include_stack[t]  );
+		//	include_stack[t] = NULL;
+		//}
+		//numincludes=0;
+		errorcode = COMPERR_INCLUDEFILE;
+		return -1;
+	}     
+
+     
+	include_linenumber[numincludes] = linenumber; // save last level's line number
+	linenumber = 1;  
+	currentinclude = strdup(yytext);
+	numincludes++;  
+
+	addStringOp(OP_INCLUDEFILE, currentinclude);
+	addIntOp(OP_CURRLINE, linenumber);
+
+	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
+    BEGIN(INITIAL);
+}
+
+
+<<EOF>> {
+	if ( numincludes == 0 ) {
+		// eof of the top level program
+		//yyterminate();
+		return 0;
+	} else {
+		//
+		// check for unclosed if structures
+		if (testIfOnTable(numincludes)!=-1) {
+			linenumber = testIfOnTable(numincludes);
+			return testIfOnTableError(0);
+		}
+		//
+		// eof of an include - return to the includer
+		numincludes--;
+		linenumber=include_linenumber[numincludes];
+		currentinclude = strdup("");
+		
+		addStringOp(OP_INCLUDEFILE, currentinclude);
+		addIntOp(OP_CURRLINE, linenumber);
+		
+		yy_delete_buffer( YY_CURRENT_BUFFER );
+		yy_switch_to_buffer(include_stack[numincludes] );
+	}
+}
+
 %%
 
 int
@@ -711,9 +750,15 @@ count() {
 int
 basicParse(char *code) {
 
-	yy_delete_buffer(YY_CURRENT_BUFFER);
-	yy_scan_string(code);
-
+	//int t;
+	//for(t=0;t<MAX_INCLUDE_DEPTH;t++) {
+	//	yy_delete_buffer( include_stack[t]  );
+	//	include_stack[t] = NULL;
+	//}
+	YY_BUFFER_STATE bp;
+	
+	numincludes=0;
+	
 	clearSymbolTable();
 	clearLabelTable();
 	clearIfTable();
@@ -724,13 +769,20 @@ basicParse(char *code) {
 	errorcode = 0;
 	functionDefSymbol = -1;
 	subroutineDefSymbol = -1;
+	
+	currentinclude = strdup("");
 
+	yy_delete_buffer(YY_CURRENT_BUFFER);
 
+	bp = yy_scan_string(code);
+	yy_switch_to_buffer(bp);
 	yyparse();
+	yy_delete_buffer(bp);
+	
 
-	if (testIfOnTable()!=-1 && errorcode==0) {
-		linenumber = testIfOnTable();
-		errorcode = testIfOnTableError();
+	if (testIfOnTable(0)!=-1 && errorcode==0) {
+		linenumber = testIfOnTable(0);
+		errorcode = testIfOnTableError(0);
 	}
 
 	return errorcode;

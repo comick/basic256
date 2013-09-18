@@ -137,7 +137,6 @@ class Interpreter : public QThread
   int optype(int op);
   QString opname(int);
   QString opxname(int);
-  int compareTwostackdata(stackdata *, stackdata *);
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);
@@ -181,6 +180,7 @@ class Interpreter : public QThread
   DIR *directorypointer;			// used by dir function
   QTime runtimer;				// used by 
   Sound sound;
+  QString currentIncludeFile;	// set to current included file name for runtime error messages
 };
 
 

@@ -203,7 +203,9 @@ enum {
 	OP_STRARRAYLISTASSIGN,
 	OP_PUSHFLOAT,
 	OP_PUSHSTRING,
+	OP_INCLUDEFILE,
 	OP_EXTENDEDNONE
+
 };
 
 // extended opcodes (second byte) - NO ARGMENTS
