@@ -90,7 +90,7 @@ extern "C" {
 	extern int labeltable[];
 	extern int linenumber;			// linenumber being LEXd
 	extern int column;				// column on line being LEXd
-	extern char* currentinclude;	// current included file name being LEXd
+	extern char* lexingfilename;	// current included file name being LEXd
 	extern int newByteCode(int size);
 	extern unsigned char *byteCode;
 	extern unsigned int byteOffset;
@@ -1019,8 +1019,8 @@ Interpreter::compileProgram(char *code)
 	if (result < 0)
 	{
 		QString msg = tr("COMPILE ERROR");
-		if (strlen(currentinclude)!=0) {
-			msg += tr(" in included file ") + QString(currentinclude);
+		if (strlen(lexingfilename)!=0) {
+			msg += tr(" in included file ") + QString(lexingfilename);
 		} else {
 			emit(goToLine(linenumber-(column==0?1:0)));
 		}

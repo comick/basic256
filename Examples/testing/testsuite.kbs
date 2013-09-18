@@ -4,24 +4,26 @@
 
 # Modification History
 # date		programmer	description
-# 2012-11-03	j.m.reneau	added strings, file io, '' strings
-# 2012-11-22	j.m.reneau	added freefile, freedb, freedbset, multiple db connections,
+# 20121103	j.m.reneau	added strings, file io, '' strings
+# 20121122	j.m.reneau	added freefile, freedb, freedbset, multiple db connections,
 #				and multiple db sets open on a single connection
-# 2012-11-25	j.m.reneau	added dbnull and logic to test dbstring,
+# 20121125	j.m.reneau	added dbnull and logic to test dbstring,
 #				dbint, dbfloat, and dbnull with column names and numbers
-# 2013-01-02	j.m.reneau	added color with pen and fill and penwidth
-# 2013-01-26	j.m.reneau	added alert/confirm, sprites, imgsave, and imgload
-# 2013-02-05	j.m.reneau	added radix conversion test
-# 2013-02-08	j.m.reneau	removed DECIMAL statement and added SCI notation
-# 2013-04-03	j.m.reneau	added mouse test
-# 2013-06-10	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
-# 2013-06-10	j.m.reneau	changed error trap test to trap 9999 (number less than 0 now untrappable)
-# 2013-09-03	j.m.reneau	added tests for exit (do|if|for|while) and continue (do|for|while)
-# 2013-09-06	j.m.reneau	arranged tests so that interactive tests were first for speed
+# 20130102	j.m.reneau	added color with pen and fill and penwidth
+# 20130126	j.m.reneau	added alert/confirm, sprites, imgsave, and imgload
+# 20130205	j.m.reneau	added radix conversion test
+# 20130208	j.m.reneau	removed DECIMAL statement and added SCI notation
+# 20130403	j.m.reneau	added mouse test
+# 20130610	j.m.reneau	added jump around subroutines - program will not run before 0.9.9.60
+# 20130610	j.m.reneau	changed error trap test to trap 9999 (number less than 0 now untrappable)
+# 20130903	j.m.reneau	added tests for exit (do|if|for|while) and continue (do|for|while)
+# 20130906	j.m.reneau	arranged tests so that interactive tests were first for speed
 #				added tests for floating point to integer compare (epsilon)
+# 20130918	j.m.reneau	moved functions to seperate file and included them
 
+include "testsuite_functions.kbs"
 
-call versiontest(90968)
+call versiontest(90969)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -917,59 +919,4 @@ subroutine polysprite(spriteno, ref(points), pencolor, brushcolor, backgroundcol
    stamp x,y,scale,0,points
    spriteslice spriteno,0,0,w,h
 end subroutine
-
-
-###################################################
-## TEST SYSTEM FUNCTIONS
-###################################################
-
-subroutine section(sec$)
-   print "###########"
-   print sec$
-   print "###########"
-end subroutine
-
-subroutine q(message$)
-   # ask user to press y if test worked or n if it failed
-   if confirm(message$, true) then
-      print "pass"
-   else
-      print "fail - tests ended"
-      end
-   end if
-end subroutine
-
-subroutine n(message$,a,b)
-   # test that a and b are the same numerically (EXACTLY)
-   print "testing " + message$ + " (" + a + "," + b + ") ";
-   if a = b then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
-end subroutine
-
-subroutine nclose(message$,a,b)
-   # test that a and b are the same numerically ALMOST
-   print "testing " + message$ + " (" + a + "," + b + ") ";
-   if abs(a - b) < .0001 then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
-end subroutine
-
-subroutine s(message$,a$,b$)
-   # test that a$ and b$ are the same string
-   print "testing " + message$ + " ('" + a$ + "','" + b$ + "') ";
-   if a$ = b$ then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
-end subroutine
-
 

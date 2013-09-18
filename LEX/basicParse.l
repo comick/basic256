@@ -66,11 +66,12 @@ extern int subroutineDefSymbol;
 
 int linenumber;
 int column;
-char *currentinclude;
+char *lexingfilename;
 
 #define MAX_INCLUDE_DEPTH 10
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int include_linenumber[MAX_INCLUDE_DEPTH];
+char* include_filename[MAX_INCLUDE_DEPTH];
 int numincludes=0;
 
 #ifdef __cplusplus
@@ -329,12 +330,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 %%
 
-{include} BEGIN(INCLUDE);
-
 {label} {
 	char *temp;
 	char *c, *d;
-	int num;
 
 	count();
 	temp = strdup(yytext);
@@ -366,7 +364,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {hexinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
 {octalinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
 {string}	{
-	int len; count(); len = strlen(yytext);
+	int len;
+	count();
+	len = strlen(yytext);
 	yylval.string = strdup(yytext + 1);
 	yylval.string[len - 2] = 0;
 	return B256STRING;
@@ -479,6 +479,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {imgload}	{ count(); return B256IMGLOAD; }
 {imgsave}	{ count(); return B256IMGSAVE; }
 {implode}	{ count(); return B256IMPLODE; }
+{include} 	{ count();
+				BEGIN(INCLUDE);
+			}
 {input}		{ count(); return B256INPUT; }
 {instr}		{ count(); return B256INSTR; }
 {instrx}		{ count(); return B256INSTRX; }
@@ -642,14 +645,12 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 	
 {variable} {
-	int num;
 	count();
 	yylval.number = getSymbol(yytext);
 	return B256VARIABLE;
 }
 
 {stringvar} {
-	int num;
 	count();
 	yylval.number = getSymbol(yytext);
 	return B256STRINGVAR;
@@ -664,8 +665,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
     // eat the whitespace before the file
 }
 
-<INCLUDE>[^ \t\n]+   {
-	// got the include file name
+<INCLUDE>((\"[^\"\n]*\")|(\'[^\'\n]*\'))   {
+	// got the include file name (with quotes)
 	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
                
 	if ( numincludes >= MAX_INCLUDE_DEPTH ) {
@@ -675,27 +676,24 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	}
      
 	include_stack[numincludes] = YY_CURRENT_BUFFER;
+	
+	char *filename = strdup(yytext+1);
+	filename[strlen(filename)-1] = 0x00;
                   
-	yyin = fopen( yytext, "r" );
+	yyin = fopen( filename, "r" );
 	if ( ! yyin ) {
-		//int t;
-		//for(t=0;t<numincludes;t++) {
-		//	yy_delete_buffer( include_stack[t]  );
-		//	include_stack[t] = NULL;
-		//}
-		//numincludes=0;
 		BEGIN(INITIAL);
 		errorcode = COMPERR_INCLUDEFILE;
 		return -1;
 	}     
-
      
-	include_linenumber[numincludes] = linenumber; // save last level's line number
-	linenumber = 1;  
-	currentinclude = strdup(yytext);
+	include_linenumber[numincludes] = linenumber;	// save last level's line number
+	include_filename[numincludes] = lexingfilename;	// save the previous file name to the stack
 	numincludes++;  
 
-	addStringOp(OP_INCLUDEFILE, currentinclude);
+	lexingfilename = filename;
+	addStringOp(OP_INCLUDEFILE, lexingfilename);
+	linenumber = 1;  
 	addIntOp(OP_CURRLINE, linenumber);
 
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
@@ -706,8 +704,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 <<EOF>> {
 	if ( numincludes == 0 ) {
 		// eof of the top level program
-		//yyterminate();
-		return 0;
+		yyterminate();
 	} else {
 		//
 		// check for unclosed if structures
@@ -719,10 +716,11 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 		// eof of an include - return to the includer
 		numincludes--;
 		linenumber=include_linenumber[numincludes];
-		currentinclude = strdup("");
-		
-		addStringOp(OP_INCLUDEFILE, currentinclude);
 		addIntOp(OP_CURRLINE, linenumber);
+		
+		free(lexingfilename);
+		lexingfilename=include_filename[numincludes];
+		addStringOp(OP_INCLUDEFILE, lexingfilename);
 		
 		yy_delete_buffer( YY_CURRENT_BUFFER );
 		yy_switch_to_buffer(include_stack[numincludes] );
@@ -772,7 +770,7 @@ basicParse(char *code) {
 	functionDefSymbol = -1;
 	subroutineDefSymbol = -1;
 	
-	currentinclude = strdup("");
+	lexingfilename = strdup("");
 
 	yy_delete_buffer(YY_CURRENT_BUFFER);
 

@@ -166,6 +166,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ii][Mm][Gg][Ll][Oo][Aa][Dd]\\b"								// imgload
 		<< "\\b[Ii][Mm][Gg][Ss][Aa][Vv][Ee]\\b"								// imgsave
 		<< "\\b[Ii][Mm][Pp][Ll][Oo][Dd][Ee]\\b"								// implode
+		<< "\\b[Ii][Nn][Cc][Ll][Uu][Dd][Ee]\\b"								// include
 		<< "\\b[Ii][Nn][Pp][Uu][Tt]\\b"										// input
 		<< "\\b[Ii][Nn][Ss][Tt][Rr]\\b"										// instr
 		<< "\\b[Ii][Nn][Ss][Tt][Rr][Xx]\\b"									// instrx
