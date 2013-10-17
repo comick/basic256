@@ -189,7 +189,7 @@ int Interpreter::optype(int op) {
 	else if (op==OP_FLOOR) return OPTYPE_NONE;
 	else if (op==OP_ABS) return OPTYPE_NONE;
 	else if (op==OP_PAUSE) return OPTYPE_NONE;
-	else if (op==OP_POLY) return OPTYPE_NONE;
+	else if (op==OP_POLY) return OPTYPE_INT;
 	else if (op==OP_LENGTH) return OPTYPE_NONE;
 	else if (op==OP_MID) return OPTYPE_NONE;
 	else if (op==OP_INSTR) return OPTYPE_NONE;
