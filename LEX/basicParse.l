@@ -285,6 +285,7 @@ spritehide [Ss][Pp][Rr][Ii][Tt][Ee][Hh][Ii][Dd][Ee]
 spriteload [Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]
 spritemove [Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]
 spriteplace [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]
+spritepoly [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]
 spriter [Ss][Pp][Rr][Ii][Tt][Ee][Rr]
 sprites [Ss][Pp][Rr][Ii][Tt][Ee][Ss]
 spriteshow [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]
@@ -568,6 +569,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {spriteload}	{ count(); return B256SPRITELOAD; }
 {spritemove}	{ count(); return B256SPRITEMOVE; }
 {spriteplace}	{ count(); return B256SPRITEPLACE; }
+{spritepoly}		{ count(); return B256SPRITEPOLY; }
 {spriter}	{ count(); return B256SPRITER; }
 {sprites}	{ count(); return B256SPRITES; }
 {spriteshow}	{ count(); return B256SPRITESHOW; }

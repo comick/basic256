@@ -246,6 +246,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]\\b"					// spriteload
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]\\b"					// spritemove
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]\\b"				// spriteplace
+		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]\\b"				// spritepoly
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Rr]\\b"								// spriter
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ss]\\b"								// sprites
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]\\b"					// spriteshow

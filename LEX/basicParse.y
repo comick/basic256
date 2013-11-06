@@ -325,7 +325,8 @@ addStringOp(char op, char *data) {
 %token B256VOLUME
 %token B256GRAPHWIDTH B256GRAPHHEIGHT B256GETSLICE B256PUTSLICE B256IMGLOAD
 %token B256SPRITEDIM B256SPRITELOAD B256SPRITESLICE B256SPRITEMOVE B256SPRITEHIDE B256SPRITESHOW B256SPRITEPLACE
-%token B256SPRITECOLLIDE B256SPRITEX B256SPRITEY B256SPRITEH B256SPRITEW B256SPRITEV B256SPRITER B256SPRITES
+%token B256SPRITECOLLIDE B256SPRITEX B256SPRITEY B256SPRITEH B256SPRITEW B256SPRITEV
+%token B256SPRITEPOLY B256SPRITER B256SPRITES
 %token B256WAVPLAY B256WAVSTOP B256WAVWAIT
 %token B256SIZE B256SEEK B256EXISTS
 %token B256BOOLTRUE B256BOOLFALSE
@@ -814,6 +815,7 @@ statement: gotostmt
 	| spritedimstmt
 	| spriteloadstmt
 	| spriteslicestmt
+	| spritepolystmt
 	| spriteplacestmt
 	| spritemovestmt
 	| spritehidestmt
@@ -1622,6 +1624,11 @@ spriteloadstmt: B256SPRITELOAD floatexpr ',' stringexpr  {addExtendedOp(OPX_SPRI
 
 spriteslicestmt: B256SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr  {addExtendedOp(OPX_SPRITESLICE);  }
 	| B256SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OPX_SPRITESLICE); }
+;
+
+spritepolystmt: B256SPRITEPOLY floatexpr ',' B256VARIABLE { addIntOp(OP_SPRITEPOLY, $4); }
+	| B256SPRITEPOLY '(' floatexpr ',' B256VARIABLE ')' { addIntOp(OP_SPRITEPOLY, $5); }
+	| B256SPRITEPOLY floatexpr ',' immediatelist { addIntOp(OP_SPRITEPOLY_LIST, listlen); listlen=0; }
 ;
 
 spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {

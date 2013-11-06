@@ -317,6 +317,8 @@ int Interpreter::optype(int op) {
 	else if (op==OP_PUSHFLOAT) return OPTYPE_FLOAT;
 	else if (op==OP_PUSHSTRING) return OPTYPE_STRING;
 	else if (op==OP_INCLUDEFILE) return OPTYPE_STRING;
+	else if (op==OP_SPRITEPOLY) return OPTYPE_INT;
+	else if (op==OP_SPRITEPOLY_LIST) return OPTYPE_INT;
 	else if (op==OP_EXTENDEDNONE) return OPTYPE_EXTENDED;
 	else return OPTYPE_NONE;
 }
@@ -496,6 +498,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
 	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
 	else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
+	else if (op==OP_SPRITEPOLY) return QString("OP_SPRITEPOLY");
+	else if (op==OP_SPRITEPOLY_LIST) return QString("OP_SPRITEPOLY_LIST");
 	else if (op==OP_EXTENDEDNONE) return QString("OP_EXTENDEDNONE");
 	else return QString("OP_UNKNOWN");
 }
@@ -3940,6 +3944,133 @@ Interpreter::execByteCode()
 			}
 		}
 		break;
+
+	case OP_SPRITEPOLY:
+		{
+			// Create a Sprite from a poly. assume top left corner is at 0,0
+			// from a numeric array
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			int maxx=0, maxy=0;
+			int x,y;
+			int n = stack.popint(); // sprite number
+			
+			if (variables.type(*i) != T_ARRAY) {
+				errornum = ERROR_POLYARRAY;
+			} else {
+				int pairs = variables.arraysize(*i) / 2;
+				if (pairs < 3)
+				{
+					errornum = ERROR_POLYPOINTS;
+				} else {
+
+					QPointF *points = new QPointF[pairs];
+	
+					for (int j = 0; j < pairs; j++)
+					{
+						x = variables.arraygetfloat(*i, j*2);
+						points[j].setX(x);
+						if (x>maxx) maxx=x;
+						y = variables.arraygetfloat(*i, j*2+1);
+						points[j].setY(y);
+						if (y>maxy) maxy=y;
+					}
+
+					if(n < 0 || n >=nsprites) {
+						errornum = ERROR_SPRITENUMBER;
+					} else {
+						spriteundraw(n);
+						if (sprites[n].image) {
+							// free previous image before replacing
+							delete sprites[n].image;
+							sprites[n].image = NULL;
+						}
+						sprites[n].image = new QImage(maxx,maxy,QImage::Format_ARGB32);
+						sprites[n].image->fill(Qt::transparent);
+						QPainter poly(sprites[n].image);
+						poly.setPen(drawingpen);
+						poly.setBrush(drawingbrush);
+						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+							poly.setCompositionMode(QPainter::CompositionMode_Clear);
+						}
+						poly.drawPolygon(points, pairs);
+						poly.end();
+						
+						if (sprites[n].underimage) {
+							// free previous underimage before replacing
+							delete sprites[n].underimage;
+							sprites[n].underimage = NULL;
+						}
+						sprites[n].visible = false;
+						spriteredraw(n);
+					}
+					delete points;
+				}
+			}
+		}
+		break;
+
+	case OP_SPRITEPOLY_LIST:
+		{
+			// doing a polygon from an immediate list
+			// i is a pointer to the length of the list
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			int maxx=0, maxy=0;
+			int x,y;
+			
+			int pairs = *i / 2;
+			if (pairs < 3)
+			{
+				errornum = ERROR_POLYPOINTS;
+			} else {
+				QPointF *points = new QPointF[pairs];
+				for (int j = 0; j < pairs; j++)
+				{
+					y = stack.popint();
+					x = stack.popint();
+					points[j].setX(x);
+					points[j].setY(y);
+					if (x>maxx) maxx=x;
+					if (y>maxy) maxy=y;
+				}
+				
+				int n = stack.popint(); // sprite number
+				if(n < 0 || n >=nsprites) {
+					errornum = ERROR_SPRITENUMBER;
+				} else {
+					spriteundraw(n);
+					if (sprites[n].image) {
+						// free previous image before replacing
+						delete sprites[n].image;
+						sprites[n].image = NULL;
+					}
+					sprites[n].image = new QImage(maxx,maxy,QImage::Format_ARGB32);
+					sprites[n].image->fill(Qt::transparent);
+					QPainter poly(sprites[n].image);
+					poly.setPen(drawingpen);
+					poly.setBrush(drawingbrush);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						poly.setCompositionMode(QPainter::CompositionMode_Clear);
+					}
+					poly.drawPolygon(points, pairs);
+					poly.end();
+
+					if (sprites[n].underimage) {
+						// free previous underimage before replacing
+						delete sprites[n].underimage;
+						sprites[n].underimage = NULL;
+					}
+					sprites[n].visible = false;
+					spriteredraw(n);
+				}
+				delete points;
+			}
+		}
+		break;
+
 
 	
 	case OP_EXTENDEDNONE:
