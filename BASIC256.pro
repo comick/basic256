@@ -99,10 +99,13 @@ unix:!macx {
 	LIBS					+=	-lSDL_mixer
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
-	#DEFINES 				+=	SOUND_QMOBILITY
-	#QT						+=	mobility
-	#CONFIG					+=	mobility
-	#MOBILITY				+=	multimedia
+	#DEFINES					+=	SOUND_QMOBILITY
+    #QT						+=	multimedia
+    #INCLUDEPATH				+=	QtMultimediaKit
+	#INCLUDEPATH				+=	QtMobility
+	#CONFIG 					+=	mobility
+    #MOBILITY				=	multimedia
+
 
 	########
 	# rules for make install

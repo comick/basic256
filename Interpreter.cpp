@@ -104,6 +104,7 @@ Interpreter::Interpreter()
 	fastgraphics = false;
 	directorypointer=NULL;
 	status = R_STOPPED;
+	printing = false;
 	for (int t=0;t<NUMSOCKETS;t++) netsockfd[t]=-1;
 	// on a windows box start winsock
 	#ifdef WIN32
@@ -189,7 +190,6 @@ int Interpreter::optype(int op) {
 	else if (op==OP_FLOOR) return OPTYPE_NONE;
 	else if (op==OP_ABS) return OPTYPE_NONE;
 	else if (op==OP_PAUSE) return OPTYPE_NONE;
-	else if (op==OP_POLY) return OPTYPE_INT;
 	else if (op==OP_LENGTH) return OPTYPE_NONE;
 	else if (op==OP_MID) return OPTYPE_NONE;
 	else if (op==OP_INSTR) return OPTYPE_NONE;
@@ -202,7 +202,6 @@ int Interpreter::optype(int op) {
 	else if (op==OP_WRITE) return OPTYPE_NONE;
 	else if (op==OP_CLOSE) return OPTYPE_NONE;
 	else if (op==OP_RESET) return OPTYPE_NONE;
-	else if (op==OP_SOUND) return OPTYPE_NONE;
 	else if (op==OP_INCREASERECURSE) return OPTYPE_NONE;
 	else if (op==OP_DECREASERECURSE) return OPTYPE_NONE;
 	else if (op==OP_ASC) return OPTYPE_NONE;
@@ -289,16 +288,14 @@ int Interpreter::optype(int op) {
 	else if (op==OP_EXPLODEX) return OPTYPE_VARIABLE;
 	else if (op==OP_IMPLODE) return OPTYPE_VARIABLE;
 	else if (op==OP_GLOBAL) return OPTYPE_VARIABLE;
-	else if (op==OP_STAMP) return OPTYPE_INT;
-	else if (op==OP_STAMP_LIST) return OPTYPE_INT;
-	else if (op==OP_STAMP_S_LIST) return OPTYPE_INT;
-	else if (op==OP_STAMP_SR_LIST) return OPTYPE_INT;
-	else if (op==OP_POLY_LIST) return OPTYPE_INT;
+	else if (op==OP_STAMP_LIST) return OPTYPE_NONE;
+	else if (op==OP_STAMP_S_LIST) return OPTYPE_NONE;
+	else if (op==OP_STAMP_SR_LIST) return OPTYPE_NONE;
+	else if (op==OP_POLY_LIST) return OPTYPE_NONE;
 	else if (op==OP_WRITELINE) return OPTYPE_NONE;
 	else if (op==OP_ARRAYASSIGN2D) return OPTYPE_VARIABLE;
 	else if (op==OP_STRARRAYASSIGN2D) return OPTYPE_VARIABLE;
-	else if (op==OP_SOUND_ARRAY) return OPTYPE_VARIABLE;
-	else if (op==OP_SOUND_LIST) return OPTYPE_INT;
+	else if (op==OP_SOUND_LIST) return OPTYPE_NONE;
 	else if (op==OP_DEREF2D) return OPTYPE_VARIABLE;
 	else if (op==OP_REDIM) return OPTYPE_VARIABLE;
 	else if (op==OP_REDIMSTR) return OPTYPE_VARIABLE;
@@ -312,13 +309,14 @@ int Interpreter::optype(int op) {
 	else if (op==OP_VARREFASSIGN) return OPTYPE_VARIABLE;
 	else if (op==OP_VARREFSTRASSIGN) return OPTYPE_VARIABLE;
 	else if (op==OP_FUNCRETURN) return OPTYPE_VARIABLE;
-	else if (op==OP_ARRAYLISTASSIGN) return OPTYPE_INTINT;
-	else if (op==OP_STRARRAYLISTASSIGN) return OPTYPE_INTINT;
+	else if (op==OP_ARRAYLISTASSIGN) return OPTYPE_INT;
+	else if (op==OP_STRARRAYLISTASSIGN) return OPTYPE_INT;
+	else if (op==OP_ARRAY2STACK) return OPTYPE_VARIABLE;
+	else if (op==OP_STRARRAY2STACK) return OPTYPE_VARIABLE;
 	else if (op==OP_PUSHFLOAT) return OPTYPE_FLOAT;
 	else if (op==OP_PUSHSTRING) return OPTYPE_STRING;
 	else if (op==OP_INCLUDEFILE) return OPTYPE_STRING;
-	else if (op==OP_SPRITEPOLY) return OPTYPE_INT;
-	else if (op==OP_SPRITEPOLY_LIST) return OPTYPE_INT;
+	else if (op==OP_SPRITEPOLY_LIST) return OPTYPE_NONE;
 	else if (op==OP_EXTENDEDNONE) return OPTYPE_EXTENDED;
 	else return OPTYPE_NONE;
 }
@@ -370,7 +368,6 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_FLOOR) return QString("OP_FLOOR");
 	else if (op==OP_ABS) return QString("OP_ABS");
 	else if (op==OP_PAUSE) return QString("OP_PAUSE");
-	else if (op==OP_POLY) return QString("OP_POLY");
 	else if (op==OP_LENGTH) return QString("OP_LENGTH");
 	else if (op==OP_MID) return QString("OP_MID");
 	else if (op==OP_INSTR) return QString("OP_INSTR");
@@ -383,7 +380,6 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_WRITE) return QString("OP_WRITE");
 	else if (op==OP_CLOSE) return QString("OP_CLOSE");
 	else if (op==OP_RESET) return QString("OP_RESET");
-	else if (op==OP_SOUND) return QString("OP_SOUND");
 	else if (op==OP_INCREASERECURSE) return QString("OP_INCREASERECURSE");
 	else if (op==OP_DECREASERECURSE) return QString("OP_DECREASERECURSE");
 	else if (op==OP_ASC) return QString("OP_ASC");
@@ -470,7 +466,6 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_EXPLODEX) return QString("OP_EXPLODEX");
 	else if (op==OP_IMPLODE) return QString("OP_IMPLODE");
 	else if (op==OP_GLOBAL) return QString("OP_GLOBAL");
-	else if (op==OP_STAMP) return QString("OP_STAMP");
 	else if (op==OP_STAMP_LIST) return QString("OP_STAMP_LIST");
 	else if (op==OP_STAMP_S_LIST) return QString("OP_STAMP_S_LIST");
 	else if (op==OP_STAMP_SR_LIST) return QString("OP_STAMP_SR_LIST");
@@ -478,7 +473,6 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_WRITELINE) return QString("OP_WRITELINE");
 	else if (op==OP_ARRAYASSIGN2D) return QString("OP_ARRAYASSIGN2D");
 	else if (op==OP_STRARRAYASSIGN2D) return QString("OP_STRARRAYASSIGN2D");
-	else if (op==OP_SOUND_ARRAY) return QString("OP_SOUND_ARRAY");
 	else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
 	else if (op==OP_DEREF2D) return QString("OP_DEREF2D");
 	else if (op==OP_REDIM) return QString("OP_REDIM");
@@ -495,11 +489,12 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_FUNCRETURN) return QString("OP_FUNCRETURN");
 	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
 	else if (op==OP_STRARRAYLISTASSIGN) return QString("OP_STRARRAYLISTASSIGN");
+	else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
+	else if (op==OP_STRARRAY2STACK) return QString("OP_STRARRAY2STACK");
 	else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
 	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
 	else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
-	else if (op==OP_SPRITEPOLY) return QString("OP_SPRITEPOLY");
-	else if (op==OP_SPRITEPOLY_LIST) return QString("OP_SPRITEPOLY_LIST");
+	else if (op==OP_SPRITEPOLY_LIST) return QString("OP_SPRITEPOLY");
 	else if (op==OP_EXTENDEDNONE) return QString("OP_EXTENDEDNONE");
 	else return QString("OP_UNKNOWN");
 }
@@ -589,6 +584,9 @@ QString Interpreter::opxname(int op) {
 	else if (op==OPX_PROMPT) return QString("OPX_PROMPT");
 	else if (op==OPX_FROMRADIX) return QString("OPX_FROMRADIX");
 	else if (op==OPX_TORADIX) return QString("OPX_TORADIX");
+	else if (op==OPX_PRINTERPAGE) return QString("OPX_PRINTERPAGE");
+	else if (op==OPX_PRINTEROFF) return QString("OPX_PRINTERON");
+	else if (op==OPX_PRINTERON) return QString("OPX_PRINTEROFF");
 	else if (op==OPX_DEBUGINFO) return QString("OPX_DEBUGINFO");
 	else return QString("OPX_UNKNOWN");
 }
@@ -826,6 +824,15 @@ QString Interpreter::getErrorMessage(int e) {
 			break;
 		case ERROR_NOTANUMBER:
 			errormessage = tr("Mathematical operation returned an undefined value");
+			break;
+		case ERROR_PRINTERNOTON:
+			errormessage = tr("Printer is not on.");
+			break;
+		case ERROR_PRINTERNOTOFF:
+			errormessage = tr("Printing is already on.");
+			break;
+		case ERROR_PRINTEROPEN:
+			errormessage = tr("Unable to open printer.");
 			break;
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
@@ -1232,6 +1239,7 @@ Interpreter::initialize()
 	fontpoint = 0;
 	fontweight = 0;
 	nsprites = 0;
+	printing = false;
 	runtimer.start();
 	// initialize files to NULL (closed)
 	stream = new QFile *[NUMFILES];
@@ -1288,10 +1296,15 @@ Interpreter::cleanup()
 	for (int t=0;t<NUMDBCONN;t++) {
 		closeDatabase(t);
 	}
-	//
+	// close the currently open folder
 	if(directorypointer != NULL) {
 		closedir(directorypointer);
 		directorypointer = NULL;
+	}
+	// close a print document if it is open
+	if (printing) {
+		printing = false;
+		printdocumentpainter->end();
 	}
 }
 
@@ -2055,8 +2068,9 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int *i = (int *) op;
-			int items = i[1];
-			op += 2 * sizeof(int);
+			op += sizeof(int);
+			
+			int items = stack.popint();
 			
 			if (variables.arraysize(*i)!=items) variables.arraydim(T_STRARRAY, *i, items, 1, false);
 
@@ -2249,8 +2263,9 @@ Interpreter::execByteCode()
 		{
 			op++;
 			int *i = (int *) op;
-			int items = i[1];
-			op += 2 * sizeof(int);
+			op += sizeof(int);
+			
+			int items = stack.popint();
 			
 			if (variables.arraysize(*i)!=items) variables.arraydim(T_ARRAY, *i, items, 1, false);
 			if(errornum==ERROR_NONE) {
@@ -2999,53 +3014,12 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_SOUND:
-		{
-			op++;
-			int duration = stack.popint();
-			int frequency = stack.popint();
-			int* freqdur;
-			freqdur = (int*) malloc(2 * sizeof(int));
-			freqdur[0] = frequency;
-			freqdur[1] = duration;
-			sound.playSounds(1 , freqdur);
-			free(freqdur);
-		}
-		break;
-		
-	case OP_SOUND_ARRAY:
-		{
-			// play an array of sounds
-
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			
-			if (variables.type(*i) == T_ARRAY)
-			{
-				int length = variables.arraysize(*i);
-				
-				int* freqdur;
-				freqdur = (int*) malloc(length * sizeof(int));
-				
-				for (int j = 0; j < length; j++)
-				{
-					freqdur[j] = (int) variables.arraygetfloat(*i, j);
-				}
-				
-				sound.playSounds(length / 2 , freqdur);
-				free(freqdur);
-			} 
-		}
-		break;
-
 	case OP_SOUND_LIST:
 		{
 			// play an immediate list of sounds
 			op++;
-			int *i = (int *) op;
-			int length = *i;
-			op += sizeof(int);
+
+			int length = stack.popint();
 			
 			int* freqdur;
 			freqdur = (int*) malloc(length * sizeof(int));
@@ -3212,23 +3186,31 @@ Interpreter::execByteCode()
 				offset+=4;
 				if (ok) {
 
-					QPainter ian(graphwin->image);
-					ian.setPen(lastrgb);
+					QPainter *ian;
+					if (printing) {
+						ian = printdocumentpainter;
+					} else {
+						ian = new QPainter(graphwin->image);
+					}
+			
+					ian->setPen(lastrgb);
 					for(th=0; th<h && ok; th++) {
 						for(tw=0; tw<w && ok; tw++) {
 							rgb = imagedata.mid(offset, 8).toUInt(&ok, 16);
 							offset+=8;
 							if (ok && rgb != mask) {
 								if (rgb!=lastrgb) {
-									ian.setPen(rgb);
+									ian->setPen(rgb);
 									lastrgb = rgb;
 								}
-								ian.drawPoint(x + tw, y + th);
+								ian->drawPoint(x + tw, y + th);
 							}
 						}
 					}
-					ian.end();
-					if (!fastgraphics) waitForGraphics();
+					if (!printing) {
+						ian->end();
+						if (!fastgraphics) waitForGraphics();
+					}
 				}
 			}
 			if (!ok) {
@@ -3246,19 +3228,27 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(graphwin->image);
-			ian.setPen(drawingpen);
-			ian.setBrush(drawingbrush);
+			QPainter *ian;
+			if (printing) {
+				ian = printdocumentpainter;
+			} else {
+				ian = new QPainter(graphwin->image);
+			}
+			
+			ian->setPen(drawingpen);
+			ian->setBrush(drawingbrush);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+				ian->setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (x1val >= 0 && y1val >= 0)
 			{
-				ian.drawLine(x0val, y0val, x1val, y1val);
+				ian->drawLine(x0val, y0val, x1val, y1val);
 			}
-			ian.end();
-
-			if (!fastgraphics) waitForGraphics();
+			
+			if (!printing) {
+				ian->end();
+				if (!fastgraphics) waitForGraphics();
+			}
 		}
 		break;
 
@@ -3271,72 +3261,40 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(graphwin->image);
-			ian.setBrush(drawingbrush);
-			ian.setPen(drawingpen);
+			QPainter *ian;
+			if (printing) {
+				ian = printdocumentpainter;
+			} else {
+				ian = new QPainter(graphwin->image);
+			}
+			
+			ian->setBrush(drawingbrush);
+			ian->setPen(drawingpen);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+				ian->setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if (x1val > 0 && y1val > 0)
 			{
-				ian.drawRect(x0val, y0val, x1val - 1, y1val - 1);
+				ian->drawRect(x0val, y0val, x1val - 1, y1val - 1);
 			}
-			ian.end();
-
-			if (!fastgraphics) waitForGraphics();
-		}
-		break;
-
-
-	case OP_POLY:
-		{
-			// doing a polygon from an array
-			// i is a pointer to the variable number (array)
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
 			
-			if (variables.type(*i) != T_ARRAY) {
-				errornum = ERROR_POLYARRAY;
-			} else {
-				int pairs = variables.arraysize(*i) / 2;
-				if (pairs < 3)
-				{
-					errornum = ERROR_POLYPOINTS;
-				} else {
-
-					QPointF *points = new QPointF[pairs];
-	
-					for (int j = 0; j < pairs; j++)
-					{
-						points[j].setX(variables.arraygetfloat(*i, j*2));
-						points[j].setY(variables.arraygetfloat(*i, j*2+1));
-					}
-
-					QPainter poly(graphwin->image);
-					poly.setPen(drawingpen);
-					poly.setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-						poly.setCompositionMode(QPainter::CompositionMode_Clear);
-					}
-					poly.drawPolygon(points, pairs);
-					poly.end();
-					if (!fastgraphics) waitForGraphics();
-					delete points;
-				}
+			if (!printing) {
+				ian->end();
+				if (!fastgraphics) waitForGraphics();
 			}
 		}
 		break;
+
 
 	case OP_POLY_LIST:
 		{
 			// doing a polygon from an immediate list
 			// i is a pointer to the length of the list
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+
+			int numbers = stack.popint();
 			
-			int pairs = *i / 2;
+			int pairs = numbers / 2;
 			if (pairs < 3)
 			{
 				errornum = ERROR_POLYPOINTS;
@@ -3350,81 +3308,29 @@ Interpreter::execByteCode()
 					points[j].setY(ypoint);
 				}
 				
-				QPainter poly(graphwin->image);
-				poly.setPen(drawingpen);
-				poly.setBrush(drawingbrush);
-				if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-					poly.setCompositionMode(QPainter::CompositionMode_Clear);
+				QPainter *poly;
+				if (printing) {
+					poly = printdocumentpainter;
+				} else {
+					poly = new QPainter(graphwin->image);
 				}
-				poly.drawPolygon(points, pairs);
-				poly.end();
-	
-				if (!fastgraphics) waitForGraphics();
+			
+				poly->setPen(drawingpen);
+				poly->setBrush(drawingbrush);
+				if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+					poly->setCompositionMode(QPainter::CompositionMode_Clear);
+				}
+				poly->drawPolygon(points, pairs);
+				
+				if(!printing) {
+					poly->end();
+					if (!fastgraphics) waitForGraphics();
+				}
+				
 				delete points;
 			}
 		}
 		break;
-
-	case OP_STAMP:
-		{
-			// special type of poly where x,y,scale, are given first and
-			// the ploy is sized and loacted - so we can move them easy
-			// doing a stamp from an array
-			// i is a pointer to the variable number (array)
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			
-			double rotate = stack.popfloat();
-			double scale = stack.popfloat();
-			int y = stack.popint();
-			int x = stack.popint();
-
-			double tx, ty, savetx;		// used in scaling and rotating
-
-			if (variables.type(*i) != T_ARRAY) {
-				errornum = ERROR_POLYARRAY;
-			} else {
-				int pairs = variables.arraysize(*i) / 2;
-				if (pairs < 3)
-				{
-					errornum = ERROR_POLYPOINTS;
-				} else {
-					if (scale<0) {
-						errornum = ERROR_IMAGESCALE;
-					} else {
-						QPointF *points = new QPointF[pairs];
-						for (int j = 0; j < pairs; j++)
-						{
-							tx = scale * variables.arraygetfloat(*i, j*2);
-							ty = scale * variables.arraygetfloat(*i, j*2+1);
-							if (rotate!=0) {
-								savetx = tx;
-								tx = cos(rotate) * tx - sin(rotate) * ty;
-								ty = cos(rotate) * ty + sin(rotate) * savetx;
-							}
-							points[j].setX(tx + x);
-							points[j].setY(ty + y);
-						}
-
-						QPainter poly(graphwin->image);
-						poly.setPen(drawingpen);
-						poly.setBrush(drawingbrush);
-						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-							poly.setCompositionMode(QPainter::CompositionMode_Clear);
-						}
-						poly.drawPolygon(points, pairs);
-						poly.end();
-						if (!fastgraphics) waitForGraphics();
-
-						delete points;
-					}
-				}
-			}
-
-		}
-		break;
-
 
 	case OP_STAMP_LIST:
 	case OP_STAMP_S_LIST:
@@ -3443,11 +3349,9 @@ Interpreter::execByteCode()
 			
 			unsigned char opcode = *op;
 			op++;
-			int *i = (int *) op;
-			int llist = *i;
-			op += sizeof(int);
-			
+
 			// pop the immediate list to uncover the location and scale
+			int llist = stack.popint();
 			double *list = (double *) calloc(llist, sizeof(double));
 			for(int j = llist; j>0 ; j--) {
 				list[j-1] = stack.popfloat();
@@ -3481,16 +3385,25 @@ Interpreter::execByteCode()
 						points[j].setY(ty + y);
 					}
 
-					QPainter poly(graphwin->image);
-					poly.setPen(drawingpen);
-					poly.setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-						poly.setCompositionMode(QPainter::CompositionMode_Clear);
+					QPainter *poly;
+					if (printing) {
+						poly = printdocumentpainter;
+					} else {
+						poly = new QPainter(graphwin->image);
 					}
-					poly.drawPolygon(points, pairs);
-					poly.end();
-				
-					if (!fastgraphics) waitForGraphics();
+			
+					poly->setPen(drawingpen);
+					poly->setBrush(drawingbrush);
+					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+						poly->setCompositionMode(QPainter::CompositionMode_Clear);
+					}
+					poly->drawPolygon(points, pairs);
+					
+					if (!printing) {
+						poly->end();
+						if (!fastgraphics) waitForGraphics();
+					}
+					
 					delete points;
 				}
 			}
@@ -3507,16 +3420,24 @@ Interpreter::execByteCode()
 			int yval = stack.popint();
 			int xval = stack.popint();
 
-			QPainter ian(graphwin->image);
-			ian.setPen(drawingpen);
-			ian.setBrush(drawingbrush);
-			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+			QPainter *ian;
+			if (printing) {
+				ian = printdocumentpainter;
+			} else {
+				ian = new QPainter(graphwin->image);
 			}
-			ian.drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
-			ian.end();
-
-			if (!fastgraphics) waitForGraphics();
+			
+			ian->setPen(drawingpen);
+			ian->setBrush(drawingbrush);
+			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+				ian->setCompositionMode(QPainter::CompositionMode_Clear);
+			}
+			ian->drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
+			
+			if(!printing) {
+				ian->end();
+				if (!fastgraphics) waitForGraphics();
+			}
 		}
 		break;
 
@@ -3540,16 +3461,24 @@ Interpreter::execByteCode()
 				if(i.isNull()) {
 					errornum = ERROR_IMAGEFILE;
 				} else {
-					QPainter ian(graphwin->image);
+					QPainter *ian;
+					if (printing) {
+						ian = printdocumentpainter;
+					} else {
+						ian = new QPainter(graphwin->image);
+					}
+			
 					if (rotate != 0 || scale != 1) {
 						QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
 						i = i.transformed(transform);
 					}
 					if (i.width() != 0 && i.height() != 0) {
-						ian.drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+						ian->drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
 					}
-					ian.end();
-					if (!fastgraphics) waitForGraphics();
+					if (!printing) {
+						ian->end();
+						if (!fastgraphics) waitForGraphics();
+					}
 				}
 			}
 		}
@@ -3562,19 +3491,27 @@ Interpreter::execByteCode()
 			int y0val = stack.popint();
 			int x0val = stack.popint();
 
-			QPainter ian(graphwin->image);
-			ian.setPen(drawingpen);
-			ian.setBrush(drawingbrush);
+			QPainter *ian;
+			if (printing) {
+				ian = printdocumentpainter;
+			} else {
+				ian = new QPainter(graphwin->image);
+			}
+
+			ian->setPen(drawingpen);
+			ian->setBrush(drawingbrush);
 			if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+				ian->setCompositionMode(QPainter::CompositionMode_Clear);
 			}
 			if(!fontfamily.isEmpty()) {
-				ian.setFont(QFont(fontfamily, fontpoint, fontweight));
+				ian->setFont(QFont(fontfamily, fontpoint, fontweight));
 			}
-			ian.drawText(x0val, y0val+(QFontMetrics(ian.font()).ascent()), txt);
-			ian.end();
-
-			if (!fastgraphics) waitForGraphics();
+			ian->drawText(x0val, y0val+(QFontMetrics(ian->font()).ascent()), txt);
+			
+			if (!printing) {
+				ian->end();
+				if (!fastgraphics) waitForGraphics();
+			}
 		}
 		break;
 
@@ -3630,16 +3567,23 @@ Interpreter::execByteCode()
 			int oneval = stack.popint();
 			int twoval = stack.popint();
 
-			QPainter ian(graphwin->image);
-			ian.setPen(drawingpen);
-			if (drawingpen.color()==QColor(0,0,0,0)) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+			QPainter *ian;
+			if (printing) {
+				ian = printdocumentpainter;
+			} else {
+				ian = new QPainter(graphwin->image);
 			}
+			
+			ian->setPen(drawingpen);
+			if (drawingpen.color()==QColor(0,0,0,0)) {
+				ian->setCompositionMode(QPainter::CompositionMode_Clear);
+			}
+			ian->drawPoint(twoval, oneval);
 
-			ian.drawPoint(twoval, oneval);
-			ian.end();
-
-			if (!fastgraphics) waitForGraphics();
+			if (!printing) {
+				ian->end();
+				if (!fastgraphics) waitForGraphics();
+			}
 		}
 		break;
 
@@ -3672,14 +3616,22 @@ Interpreter::execByteCode()
 	case OP_GRAPHWIDTH:
 		{
 			op++;
-			stack.pushint((int) graphwin->image->width());
+			if (printing) {
+				stack.pushint(printdocument->width());
+			} else {
+				stack.pushint((int) graphwin->image->width());
+			}
 		}
 		break;
 
 	case OP_GRAPHHEIGHT:
 		{
 			op++;
-			stack.pushint((int) graphwin->image->height());
+			if (printing) {
+				stack.pushint(printdocument->height());
+			} else {
+				stack.pushint((int) graphwin->image->height());
+			}
 		}
 		break;
 
@@ -3945,83 +3897,61 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_SPRITEPOLY:
+	case OP_ARRAY2STACK:
 		{
-			// Create a Sprite from a poly. assume top left corner is at 0,0
-			// from a numeric array
+			// Push all of the elements of an array to the stack and then push the length to the stack
+			// expects one integer - variable number
 			op++;
-			int *i = (int *) op;
+			int *var = (int *) op;
 			op += sizeof(int);
-			int maxx=0, maxy=0;
-			int x,y;
-			int n = stack.popint(); // sprite number
 			
-			if (variables.type(*i) != T_ARRAY) {
+			if (variables.type(*var) != T_ARRAY) {
 				errornum = ERROR_POLYARRAY;
+				stack.pushint(0);
 			} else {
-				int pairs = variables.arraysize(*i) / 2;
-				if (pairs < 3)
-				{
-					errornum = ERROR_POLYPOINTS;
-				} else {
-
-					QPointF *points = new QPointF[pairs];
-	
-					for (int j = 0; j < pairs; j++)
-					{
-						x = variables.arraygetfloat(*i, j*2);
-						points[j].setX(x);
-						if (x>maxx) maxx=x;
-						y = variables.arraygetfloat(*i, j*2+1);
-						points[j].setY(y);
-						if (y>maxy) maxy=y;
-					}
-
-					if(n < 0 || n >=nsprites) {
-						errornum = ERROR_SPRITENUMBER;
-					} else {
-						spriteundraw(n);
-						if (sprites[n].image) {
-							// free previous image before replacing
-							delete sprites[n].image;
-							sprites[n].image = NULL;
-						}
-						sprites[n].image = new QImage(maxx,maxy,QImage::Format_ARGB32);
-						sprites[n].image->fill(Qt::transparent);
-						QPainter poly(sprites[n].image);
-						poly.setPen(drawingpen);
-						poly.setBrush(drawingbrush);
-						if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-							poly.setCompositionMode(QPainter::CompositionMode_Clear);
-						}
-						poly.drawPolygon(points, pairs);
-						poly.end();
-						
-						if (sprites[n].underimage) {
-							// free previous underimage before replacing
-							delete sprites[n].underimage;
-							sprites[n].underimage = NULL;
-						}
-						sprites[n].visible = false;
-						spriteredraw(n);
-					}
-					delete points;
+				int n = variables.arraysize(*var);
+				for (int j = 0; j < n; j++) {
+					stack.pushfloat(variables.arraygetfloat(*var, j));
 				}
+				stack.pushint(n);
+			}
+		}
+		break;
+		
+	case OP_STRARRAY2STACK:
+		{
+			// Push all of the elements of a string array to the stack and then push the length to the stack
+			// expects one integer - variable number
+			op++;
+			int *var = (int *) op;
+			op += sizeof(int);
+			
+			if (variables.type(*var) != T_ARRAY) {
+				errornum = ERROR_POLYARRAY;
+				stack.pushint(0);
+			} else {
+				int n = variables.arraysize(*var);
+				for (int j = 0; j < n; j++) {
+					stack.pushstring(variables.arraygetstring(*var, j));
+				}
+				stack.pushint(n);
 			}
 		}
 		break;
 
 	case OP_SPRITEPOLY_LIST:
 		{
-			// doing a polygon from an immediate list
-			// i is a pointer to the length of the list
+			// create a sprite from a polygon from an immediate list on the stack
+			// first stack element is the number of points*2 to pull from the stack
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
 			int maxx=0, maxy=0;
 			int x,y;
 			
-			int pairs = *i / 2;
+			//emit(outputReady("begining of spritepoly=**" + stack.debug() + "**\n"));
+			
+			int i = stack.popint(); // number of numbers pushed on stack from list or array
+			
+			int pairs = i / 2;
 			if (pairs < 3)
 			{
 				errornum = ERROR_POLYPOINTS;
@@ -4070,6 +4000,7 @@ Interpreter::execByteCode()
 			}
 		}
 		break;
+
 
 
 	
@@ -5085,12 +5016,22 @@ Interpreter::execByteCode()
 					op++;
 					QString txt = stack.popstring();
 					int w = 0;
-					QPainter ian(graphwin->image);
-					if(!fontfamily.isEmpty()) {
-						ian.setFont(QFont(fontfamily, fontpoint, fontweight));
+					
+					QPainter *ian;
+					if (printing) {
+						ian = printdocumentpainter;
+					} else {
+						ian = new QPainter(graphwin->image);
 					}
-					w = QFontMetrics(ian.font()).width(txt);
-					ian.end();
+			
+					if(!fontfamily.isEmpty()) {
+						ian->setFont(QFont(fontfamily, fontpoint, fontweight));
+					}
+					w = QFontMetrics(ian->font()).width(txt);
+					
+					if (!printing) {
+						ian->end();
+					}
 					stack.pushint((int) (w));
 				}
 				break;
@@ -5188,25 +5129,32 @@ Interpreter::execByteCode()
 					// transform to clockwise from 12'oclock
 					s = 1440-s-aw;
 
-					QPainter ian(graphwin->image);
-					ian.setPen(drawingpen);
-					ian.setBrush(drawingbrush);
+					QPainter *ian;
+					if (printing) {
+						ian = printdocumentpainter;
+					} else {
+						ian = new QPainter(graphwin->image);
+					}
+
+					ian->setPen(drawingpen);
+					ian->setBrush(drawingbrush);
 					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-						ian.setCompositionMode(QPainter::CompositionMode_Clear);
+						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					if(opcode==OPX_ARC) {
-						ian.drawArc(xval, yval, wval, hval, s, aw);
+						ian->drawArc(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OPX_CHORD) {
-						ian.drawChord(xval, yval, wval, hval, s, aw);
+						ian->drawChord(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OPX_PIE) {
-						ian.drawPie(xval, yval, wval, hval, s, aw);
+						ian->drawPie(xval, yval, wval, hval, s, aw);
 					}
 					
-					ian.end();
-
-					if (!fastgraphics) waitForGraphics();
+					if (!printing) {
+						ian->end();
+						if (!fastgraphics) waitForGraphics();
+					}
 				}
 				break;
 
@@ -5323,6 +5271,64 @@ Interpreter::execByteCode()
 					} else {
 						errornum = ERROR_RADIX;
 						stack.pushfloat(0);
+					}
+				}
+				break;
+
+			case OPX_PRINTEROFF:
+				{
+					op++;
+					if (printing) {
+						printing = false;
+						printdocumentpainter->end();
+					} else {
+						errornum = ERROR_PRINTERNOTON;
+					}
+				}
+				break;
+
+			case OPX_PRINTERON:
+				{
+					op++;
+					if (printing) {
+						errornum = ERROR_PRINTERNOTOFF;
+					} else {
+						printdocument = new QPrinter(QPrinter::ScreenResolution);
+						if (printdocument) {
+							printdocument->setPaperSize(QPrinter::Letter);
+							printdocument->setOrientation(QPrinter::Portrait);
+							printdocumentpainter = new QPainter();
+							if (!printdocumentpainter->begin(printdocument)) {
+								errornum = ERROR_PRINTEROPEN;
+							} else {
+								printing = true;
+							}
+						} else {
+							errornum = 99999;
+						}
+					}
+				}
+				break;
+
+			case OPX_PRINTERPAGE:
+				{
+					op++;
+					if (printing) {
+						printdocument->newPage();
+					} else {
+						errornum = ERROR_PRINTERNOTON;
+					}
+				}
+				break;
+
+			case OPX_PRINTERCANCEL:
+				{
+					op++;
+					if (printing) {
+						printing = false;
+						printdocument->abort();
+					} else {
+						errornum = ERROR_PRINTERNOTON;
 					}
 				}
 				break;

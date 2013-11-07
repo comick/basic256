@@ -126,9 +126,9 @@ cls [Cc][Ll][Ss]
 color [Cc][Oo][Ll][Oo][Rr]
 colour [Cc][Oo][Ll][Oo][Uu][Rr]
 confirm [Cc][Oo][Nn][Ff][Ii][Rr][Mm]
-continuedo ([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][Dd][Oo])|([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]+[Dd][Oo])
-continuefor ([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][Ff][Oo][Rr])|([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]+[Ff][Oo][Rr])
-continuewhile ([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][Ww][Hh][Ii][Ll][Ee])|([Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]+[Ww][Hh][Ii][Ll][Ee])
+continuedo [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Dd][Oo]
+continuefor [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Ff][Oo][Rr]
+continuewhile [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Ww][Hh][Ii][Ll][Ee]
 cos [Cc][Oo][Ss]
 count [Cc][Oo][Uu][Nn][Tt]
 countx [Cc][Oo][Uu][Nn][Tt][Xx]
@@ -154,14 +154,14 @@ do [Dd][Oo]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 else [Ee][Ll][Ss][Ee]
 end [Ee][Nn][Dd]
-endfunction ([Ee][Nn][Dd][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn])|([Ee][Nn][Dd][ \t]+[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn])
-endif ([Ee][Nn][Dd][Ii][Ff])|([Ee][Nn][Dd][ \t]+[Ii][Ff])
-endsubroutine ([Ee][Nn][Dd][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee])|([Ee][Nn][Dd][ \t]+[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee])
-endwhile ([Ee][Nn][Dd][Ww][Hh][Ii][Ll][Ee])|([Ee][Nn][Dd][ \t]+[Ww][Hh][Ii][Ll][Ee])
+endfunction [Ee][Nn][Dd][ \t]?[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
+endsubroutine [Ee][Nn][Dd][ \t]?[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+endwhile [Ee][Nn][Dd][ \t]?[Ww][Hh][Ii][Ll][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
-exitdo ([Ee][Xx][Ii][Tt][Dd][Oo])|([Ee][Xx][Ii][Tt][ \t]+[Dd][Oo])
-exitfor ([Ee][Xx][Ii][Tt][Ff][Oo][Rr])|([Ee][Xx][Ii][Tt][ \t]+[Ff][Oo][Rr])
-exitwhile ([Ee][Xx][Ii][Tt][Ww][Hh][Ii][Ll][Ee])|([Ee][Xx][Ii][Tt][ \t]+[Ww][Hh][Ii][Ll][Ee])
+exitdo [Ee][Xx][Ii][Tt][ \t]?[Dd][Oo]
+exitfor [Ee][Xx][Ii][Tt][ \t]?[Ff][Oo][Rr]
+exitwhile [Ee][Xx][Ii][Tt][ \t]?[Ww][Hh][Ii][Ll][Ee]
 exp [Ee][Xx][Pp]
 explode [Ee][Xx][Pp][Ll][Oo][Dd][Ee]
 explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
@@ -249,6 +249,10 @@ poly [Pp][Oo][Ll][Yy]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 print [Pp][Rr][Ii][Nn][Tt]
+printercancel [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Cc][Aa][Nn][Cc][Ee][Ll]
+printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Ff][Ff]
+printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Nn]
+printerpage [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Pp][Aa][Gg][Ee]
 prompt [Pp][Rr][Oo][Mm][Pp][Tt]
 purple [Pp][Uu][Rr][Pp][Ll][Ee]
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
@@ -533,6 +537,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {portin}	{ count(); return B256PORTIN; }
 {portout}	{ count(); return B256PORTOUT; }
 {print}		{ count(); return B256PRINT; }
+{printercancel}		{ count(); return B256PRINTERCANCEL; }
+{printeroff}		{ count(); return B256PRINTEROFF; }
+{printeron}		{ count(); return B256PRINTERON; }
+{printerpage}		{ count(); return B256PRINTERPAGE; }
 {prompt}	{ count(); return B256PROMPT; }
 {purple}	{ count(); return B256PURPLE; }
 {putslice}	{ count(); return B256PUTSLICE; }

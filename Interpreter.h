@@ -24,6 +24,8 @@
 #include <QFile>
 #include <QDir>
 #include <QTime>
+#include <QPrinter>
+#include <QPrintDialog>
 #include <stdio.h>
 #include <cmath>
 #include <sqlite3.h>
@@ -181,6 +183,9 @@ class Interpreter : public QThread
   QTime runtimer;				// used by 
   Sound sound;
   QString currentIncludeFile;	// set to current included file name for runtime error messages
+  bool printing;
+  QPrinter *printdocument;
+  QPainter *printdocumentpainter;
 };
 
 

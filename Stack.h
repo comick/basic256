@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stack>
+#include <list>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,14 +47,14 @@ class Stack
   double popfloat();
   QString popstring();
   void clear();
-  void debug();
+  QString debug();
   int height();
   int compareTopTwo();
   int compareFloats(double, double);
   int error();
 
  private:
-  std::stack<stackdata*> stackstack;
+  std::list<stackdata*> stacklist;
   int errornumber;		// internal storage of last stack error
   stackdata *popelement();
 };

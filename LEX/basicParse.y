@@ -355,6 +355,7 @@ addStringOp(char op, char *data) {
 %token B256FROMBINARY B256FROMHEX B256FROMOCTAL B256FROMRADIX B256TOBINARY B256TOHEX B256TOOCTAL B256TORADIX
 %token B256DEBUGINFO
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
+%token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
 
 
 %union
@@ -851,6 +852,10 @@ statement: gotostmt
 	| exitdostmt
 	| exitforstmt
 	| exitwhilestmt
+	| printercancelstmt
+	| printeroffstmt
+	| printeronstmt
+	| printerpagestmt
 	
 ;
 
@@ -958,8 +963,9 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYA
 	}
 
 	| B256STRINGVAR '=' immediatestrlist {
-		addInt2Op(OP_STRARRAYLISTASSIGN, $1, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen = 0;
+		addIntOp(OP_STRARRAYLISTASSIGN, $1);
 	}
 	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' { addIntOp(OP_EXPLODESTR, $1);}
 	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' { addIntOp(OP_EXPLODESTR_C, $1); }
@@ -1099,8 +1105,9 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addIntOp(OP_ARRAYASSIGN2D, $1);
 	}
 	| B256VARIABLE '=' immediatelist {
-		addInt2Op(OP_ARRAYLISTASSIGN, $1, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen = 0;
+		addIntOp(OP_ARRAYLISTASSIGN, $1);
 	}
 	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
 		addIntOp(OP_EXPLODE, $1);
@@ -1312,11 +1319,11 @@ colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
 	| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  { addOp(OP_SETCOLOR); }
 ;
 
-soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_SOUND_ARRAY, $3); }
-	| B256SOUND B256VARIABLE { addIntOp(OP_SOUND_ARRAY, $2); }
-	| B256SOUND immediatelist { addIntOp(OP_SOUND_LIST, listlen); listlen=0; }
-	| B256SOUND '(' floatexpr ',' floatexpr ')' { addOp(OP_SOUND); }
-	| B256SOUND floatexpr ',' floatexpr { addOp(OP_SOUND); }
+soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_ARRAY2STACK,$3); addOp(OP_SOUND_LIST); }
+	| B256SOUND B256VARIABLE { addIntOp(OP_ARRAY2STACK,$2); addOp(OP_SOUND_LIST); }
+	| B256SOUND immediatelist { addIntOp(OP_PUSHINT, listlen); listlen = 0; addOp(OP_SOUND_LIST); }
+	| B256SOUND '(' floatexpr ',' floatexpr ')' { addIntOp(OP_PUSHINT, 2); addOp(OP_SOUND_LIST); }
+	| B256SOUND floatexpr ',' floatexpr { addIntOp(OP_PUSHINT, 2); addOp(OP_SOUND_LIST); }
 ;
 
 plotstmt: B256PLOT floatexpr ',' floatexpr { addOp(OP_PLOT); }
@@ -1367,58 +1374,64 @@ systemstmt: B256SYSTEM stringexpr { addOp(OP_SYSTEM); }
 volumestmt: B256VOLUME floatexpr { addOp(OP_VOLUME); } // parens added by single floatexpr
 ;
 
-polystmt: B256POLY B256VARIABLE { addIntOp(OP_POLY, $2); }
-	| B256POLY '(' B256VARIABLE ')' { addIntOp(OP_POLY, $3); }
-	| B256POLY immediatelist { addIntOp(OP_POLY_LIST, listlen); listlen=0; }
+polystmt: B256POLY B256VARIABLE { addIntOp(OP_ARRAY2STACK, $2); addOp(OP_POLY_LIST); }
+	| B256POLY '(' B256VARIABLE ')' { addIntOp(OP_ARRAY2STACK, $3); addOp(OP_POLY_LIST); }
+	| B256POLY immediatelist {  addIntOp(OP_PUSHINT, listlen); listlen=0; addOp(OP_POLY_LIST);  }
 ;
 
 stampstmt: B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE {
-		addFloatOp(OP_PUSHFLOAT, 0);
-		addIntOp(OP_STAMP, $8);
+		addIntOp(OP_ARRAY2STACK, $8);
+		addOp(OP_STAMP_S_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addFloatOp(OP_PUSHFLOAT, 0);
-		addIntOp(OP_STAMP, $9);
+		addIntOp(OP_ARRAY2STACK, $9);
+		addOp(OP_STAMP_S_LIST);
 	}
 	| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_STAMP_S_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_S_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_STAMP_S_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_S_LIST);
 	}
 	| B256STAMP floatexpr ',' floatexpr ',' B256VARIABLE {
-		addFloatOp(OP_PUSHFLOAT, 1);
-		addFloatOp(OP_PUSHFLOAT, 0);
-		addIntOp(OP_STAMP, $6);
+		addIntOp(OP_ARRAY2STACK, $6);
+		addOp(OP_STAMP_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addFloatOp(OP_PUSHFLOAT, 1);
-		addFloatOp(OP_PUSHFLOAT, 0);
-		addIntOp(OP_STAMP, $7);
+		addIntOp(OP_ARRAY2STACK, $7);
+		addOp(OP_STAMP_LIST);
 	}
 	| B256STAMP floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_STAMP_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_STAMP_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_LIST);
 	}
 	| B256STAMP floatexpr ',' floatexpr ','  floatexpr ',' floatexpr ',' B256VARIABLE {
-		addIntOp(OP_STAMP, $10);
+		addIntOp(OP_ARRAY2STACK, $10);
+		addOp(OP_STAMP_SR_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addIntOp(OP_STAMP, $11);
+		addIntOp(OP_ARRAY2STACK, $11);
+		addOp(OP_STAMP_SR_LIST);
 	}
 	| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_STAMP_SR_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_SR_LIST);
 	}
 	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_STAMP_SR_LIST, listlen);
+		addIntOp(OP_PUSHINT, listlen);
 		listlen=0;
+		addOp(OP_STAMP_SR_LIST);
 	}
 ;
 
@@ -1626,9 +1639,9 @@ spriteslicestmt: B256SPRITESLICE floatexpr ',' floatexpr ',' floatexpr ',' float
 	| B256SPRITESLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addExtendedOp(OPX_SPRITESLICE); }
 ;
 
-spritepolystmt: B256SPRITEPOLY floatexpr ',' B256VARIABLE { addIntOp(OP_SPRITEPOLY, $4); }
-	| B256SPRITEPOLY '(' floatexpr ',' B256VARIABLE ')' { addIntOp(OP_SPRITEPOLY, $5); }
-	| B256SPRITEPOLY floatexpr ',' immediatelist { addIntOp(OP_SPRITEPOLY_LIST, listlen); listlen=0; }
+spritepolystmt: B256SPRITEPOLY floatexpr ',' B256VARIABLE { addIntOp(OP_ARRAY2STACK, $4); addOp(OP_SPRITEPOLY_LIST); }
+	| B256SPRITEPOLY '(' floatexpr ',' B256VARIABLE ')' { addIntOp(OP_ARRAY2STACK, $5); addOp(OP_SPRITEPOLY_LIST); }
+	| B256SPRITEPOLY floatexpr ',' immediatelist { addIntOp(OP_PUSHINT, listlen); listlen=0; addOp(OP_SPRITEPOLY_LIST); }
 ;
 
 spriteplacestmt: B256SPRITEPLACE floatexpr ',' floatexpr ',' floatexpr  {
@@ -1954,6 +1967,26 @@ exitwhilestmt: B256EXITWHILE {
 		return -1;
 	}
 }
+
+printercancelstmt: B256PRINTERCANCEL {
+		addExtendedOp(OPX_PRINTERCANCEL);
+	}
+;
+printeroffstmt: B256PRINTEROFF {
+		addExtendedOp(OPX_PRINTEROFF);
+	}
+;
+
+printeronstmt: B256PRINTERON {
+		addExtendedOp(OPX_PRINTERON);
+	}
+;
+
+printerpagestmt: B256PRINTERPAGE {
+		addExtendedOp(OPX_PRINTERPAGE);
+	}
+;
+
 
 
 /* ####################################

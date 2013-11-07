@@ -20,25 +20,38 @@ void
 Stack::clear()
 {
 	stackdata *ele;
-	while(!stackstack.empty()) {
-		 ele = stackstack.top();
-		 stackstack.pop();
+	while(!stacklist.empty()) {
+		 ele = stacklist.front();
+		 stacklist.pop_front();
 		 delete(ele);
 	}
 	errornumber = ERROR_NONE;
 }
 
-void
-Stack::debug()
+QString Stack::debug()
 {
-	// display the contents of the stack
+	// return a string representing the stack
+	QString s("");
+	stackdata *ele;
+	for (std::list<stackdata*>::iterator it = stacklist.begin(); it != stacklist.end(); it++) {
+		ele = *it;
+		if(ele->type==T_FLOAT) s += "float(" + QString::number(ele->floatval) + ") ";
+		if(ele->type==T_STRING) s += "string(" + ele->string + ") ";
+		if(ele->type==T_BOOL) s += "bool=" + QString::number(ele->floatval) + " ";
+		if(ele->type==T_ARRAY) s += "array=" + QString::number(ele->floatval) + " ";
+		if(ele->type==T_STRARRAY) s += "strarray=" + QString::number(ele->floatval) + " ";
+		if(ele->type==T_UNUSED) s += "unused ";
+		if(ele->type==T_VARREF) s += "varref=" + QString::number(ele->floatval) + " ";
+		if(ele->type==T_VARREFSTR) s += "varrefstr=" + QString::number(ele->floatval) + " ";
+	}
+	return s;
 }
 
 int Stack::height()
 {
 	// return the height of the stack in elements
 	// magic of pointer math returns number of elements
-	return stackstack.size();
+	return stacklist.size();
 }
 
 int Stack::error()
@@ -52,7 +65,7 @@ Stack::pushstring(QString string)
 	stackdata *ele = new stackdata;
 	ele->type = T_STRING;
 	ele->string = string;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 void
@@ -61,7 +74,7 @@ Stack::pushint(int i)
 	stackdata *ele = new stackdata;
 	ele->type = T_FLOAT;
 	ele->floatval = (double) i;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 void
@@ -70,7 +83,7 @@ Stack::pushvarref(int i)
 	stackdata *ele = new stackdata;
     ele->type = T_VARREF;
     ele->floatval = i;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 void
@@ -79,7 +92,7 @@ Stack::pushvarrefstr(int i)
 	stackdata *ele = new stackdata;
     ele->type = T_VARREFSTR;
     ele->floatval = i;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 void
@@ -88,16 +101,16 @@ Stack::pushfloat(double d)
 	stackdata *ele = new stackdata;
 	ele->type = T_FLOAT;
 	ele->floatval = d;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 int Stack::peekType()
 {
-	if (stackstack.empty()) {
+	if (stacklist.empty()) {
 		errornumber = ERROR_STACKUNDERFLOW;
 		return T_FLOAT;
 	} else {
-		stackdata *ele = stackstack.top();
+		stackdata *ele = stacklist.front();
 		return ele->type;
 	}
 }
@@ -106,12 +119,12 @@ stackdata *Stack::popelement() {
 	// pop an element but if there is not one on the stack
 	// pop a zero and set the error to underflow
 	stackdata *e;
-	if (stackstack.empty()) {
+	if (stacklist.empty()) {
 		errornumber = ERROR_STACKUNDERFLOW;
 		pushint(0);
 	}
-	e = stackstack.top();
-	stackstack.pop();
+	e = stacklist.front();
+	stacklist.pop_front();
 	return e;
 }
 
@@ -123,10 +136,10 @@ void Stack::swap2()
 	stackdata *two = popelement();
 	stackdata *three = popelement();
 	
-	stackstack.push(one);
-	stackstack.push(zero);
-	stackstack.push(three);
-	stackstack.push(two);
+	stacklist.push_front(one);
+	stacklist.push_front(zero);
+	stacklist.push_front(three);
+	stacklist.push_front(two);
 }
 
 void Stack::swap()
@@ -134,8 +147,8 @@ void Stack::swap()
 	// swap top two elements
 	stackdata *zero = popelement();
 	stackdata *one = popelement();
-	stackstack.push(zero);
-	stackstack.push(one);
+	stacklist.push_front(zero);
+	stacklist.push_front(one);
 }
 
 void 
@@ -146,9 +159,9 @@ Stack::topto2()
 	stackdata *zero = popelement();
 	stackdata *one = popelement();
 	stackdata *two = popelement();
-	stackstack.push(zero);
-	stackstack.push(two);
-	stackstack.push(one);
+	stacklist.push_front(zero);
+	stacklist.push_front(two);
+	stacklist.push_front(one);
 }
 
 void Stack::dup() {
@@ -158,26 +171,26 @@ void Stack::dup() {
 	ele->type = zero->type;
 	ele->floatval = zero->floatval;
 	ele->string = zero->string;
-	stackstack.push(ele);
-	stackstack.push(zero);
+	stacklist.push_front(ele);
+	stacklist.push_front(zero);
 }
 
 void Stack::dup2() {
 	stackdata *zero = popelement();
 	stackdata *one = popelement();
-	stackstack.push(one);
-	stackstack.push(zero);
+	stacklist.push_front(one);
+	stacklist.push_front(zero);
 	// make copies of one and zero to dup
 	stackdata *ele = new stackdata;
 	ele->type = one->type;
 	ele->floatval = one->floatval;
 	ele->string = one->string;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 	ele = new stackdata;
 	ele->type = zero->type;
 	ele->floatval = zero->floatval;
 	ele->string = zero->string;
-	stackstack.push(ele);
+	stacklist.push_front(ele);
 }
 
 int 
@@ -266,8 +279,8 @@ int Stack::compareTopTwo()
 	//
 	stackdata *two = popelement();
 	stackdata *one = popelement();
-	stackstack.push(one);
-	stackstack.push(two);
+	stacklist.push_front(one);
+	stacklist.push_front(two);
 	
 	if (one->type == T_STRING || two->type == T_STRING)
 	{

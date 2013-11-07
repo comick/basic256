@@ -100,6 +100,10 @@
 #define ERROR_LOGRANGE 			68
 #define ERROR_STRINGMAXLEN 		69
 #define ERROR_NOTANUMBER		70
+#define ERROR_PRINTERNOTON		71
+#define ERROR_PRINTERNOTOFF		72
+#define ERROR_PRINTEROPEN		73
+
 
 // Insert new error messages here
 #define ERROR_NOTIMPLEMENTED 9999

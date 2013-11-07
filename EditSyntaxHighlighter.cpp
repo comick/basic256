@@ -216,6 +216,10 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Pp][Oo][Rr][Tt][Ii][Nn]\\b"									// portin
 		<< "\\b[Pp][Oo][Rr][Tt][Oo][Uu][Tt]\\b"								// portout
 		<< "\\b[Pp][Rr][Ii][Nn][Tt]\\b"										// print
+		<< "\\b[Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Cc][Aa][Nn][Cc][Ee][Ll]\\b"	// printercancel
+		<< "\\b[Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Ff][Ff]\\b"			// printeroff
+		<< "\\b[Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Nn]\\b"				// printeron
+		<< "\\b[Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Pp][Aa][Gg][Ee]\\b"		// printerpage
 		<< "\\b[Pp][Rr][Oo][Mm][Pp][Tt]\\b"									// prompt
 		<< "\\b[Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]\\b"							// putslice
 		<< "\\b[Rr][Aa][Dd][Ii][Aa][Nn][Ss]\\b"								// radians
