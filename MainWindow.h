@@ -41,6 +41,7 @@
 #include "VariableWin.h"
 #include "DocumentationWin.h"
 #include "PreferencesWin.h"
+#include "PrefPrinterWin.h"
 #include "RunController.h"
 #include "EditSyntaxHighlighter.h"
 #include "Settings.h"
@@ -105,6 +106,7 @@ private:
 	QAction *replaceact;
 	QAction *beautifyact;
 	QAction *prefact;
+	QAction *prefprinteract;
 
 	QMenu *viewmenu;
 	QAction *variableWinVisibleAct;

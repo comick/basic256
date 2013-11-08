@@ -5293,10 +5293,11 @@ Interpreter::execByteCode()
 					if (printing) {
 						errornum = ERROR_PRINTERNOTOFF;
 					} else {
-						printdocument = new QPrinter(QPrinter::ScreenResolution);
+						SETTINGS;
+						printdocument = new QPrinter((QPrinter::PrinterMode)settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt());
 						if (printdocument) {
 							printdocument->setPaperSize(QPrinter::Letter);
-							printdocument->setOrientation(QPrinter::Portrait);
+							printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
 							printdocumentpainter = new QPainter();
 							if (!printdocumentpainter->begin(printdocument)) {
 								errornum = ERROR_PRINTEROPEN;

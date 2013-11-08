@@ -74,6 +74,12 @@
 	#define SETTINGSALLOWPORTDEFAULT true
 	#define SETTINGSALLOWWARNINGS "Allow/Warnings"
 	#define SETTINGSALLOWWARNINGSDEFAULT true
+	
+	// printersettings
+	#define SETTINGSPRINTERRESOLUTION "Printer/Resolution"
+	#define SETTINGSPRINTERRESOLUTIONDEFAULT 0
+	#define SETTINGSPRINTERORIENT "Printer/Orient"
+	#define SETTINGSPRINTERORIENTDEFAULT 0
 
 	// store history of files as SaveHistory/0 ... SaveHistory/8 
 	#define SETTINGSGROUPHIST "SaveHistory"

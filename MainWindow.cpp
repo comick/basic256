@@ -222,6 +222,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
 	editmenu->addSeparator();
 	prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
+	prefprinteract = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Printer Preferences"));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
 	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
@@ -235,6 +236,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
 	QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
 	QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
+	QObject::connect(prefprinteract, SIGNAL(triggered()), rc, SLOT(showPrefPrinter()));
 
 	bool extraSepAdded = false;
 	if (outwinwgt->usesMenu())

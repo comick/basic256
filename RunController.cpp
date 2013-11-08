@@ -556,6 +556,15 @@ RunController::showPreferences()
 	}
 }
 
+void
+RunController::showPrefPrinter()
+{
+	PrefPrinterWin *w = new PrefPrinterWin(mainwin);
+	w->show();
+	w->raise();
+	w->activateWindow();
+}
+
 void RunController::showReplace()
 {
      if (!replacewin) replacewin = new ReplaceWin();
