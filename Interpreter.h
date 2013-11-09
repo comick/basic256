@@ -25,7 +25,7 @@
 #include <QDir>
 #include <QTime>
 #include <QPrinter>
-#include <QPrintDialog>
+#include <QPrinterInfo>
 #include <stdio.h>
 #include <cmath>
 #include <sqlite3.h>

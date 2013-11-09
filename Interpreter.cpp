@@ -560,6 +560,7 @@ QString Interpreter::opxname(int op) {
 	else if (op==OPX_EDITVISIBLE) return QString("OPX_EDITVISIBLE");
 	else if (op==OPX_GRAPHVISIBLE) return QString("OPX_GRAPHVISIBLE");
 	else if (op==OPX_OUTPUTVISIBLE) return QString("OPX_OUTPUTVISIBLE");
+	else if (op==OPX_TEXTHEIGHT) return QString("OPX_TEXTHEIGHT");
 	else if (op==OPX_TEXTWIDTH) return QString("OPX_TEXTWIDTH");
 	else if (op==OPX_SPRITER) return QString("OPX_SPRITER");
 	else if (op==OPX_SPRITES) return QString("OPX_SPRITES");
@@ -5010,12 +5011,14 @@ Interpreter::execByteCode()
 				}
 				break;
 
+			case OPX_TEXTHEIGHT:
 			case OPX_TEXTWIDTH:
 				{
-					// return the number of pixels the test string will require for diaplay
+					// return the number of pixels the font requires for diaplay
+					// a string is required for width but not for height
+					unsigned char opcode = *op;
 					op++;
-					QString txt = stack.popstring();
-					int w = 0;
+					int v = 0;
 					
 					QPainter *ian;
 					if (printing) {
@@ -5027,12 +5030,17 @@ Interpreter::execByteCode()
 					if(!fontfamily.isEmpty()) {
 						ian->setFont(QFont(fontfamily, fontpoint, fontweight));
 					}
-					w = QFontMetrics(ian->font()).width(txt);
+
+					if (opcode==OPX_TEXTWIDTH) {
+						QString txt = stack.popstring();
+						v = QFontMetrics(ian->font()).width(txt);
+					}
+					if (opcode==OPX_TEXTHEIGHT) v = QFontMetrics(ian->font()).height();
 					
 					if (!printing) {
 						ian->end();
 					}
-					stack.pushint((int) (w));
+					stack.pushint((int) (v));
 				}
 				break;
 
@@ -5294,9 +5302,23 @@ Interpreter::execByteCode()
 						errornum = ERROR_PRINTERNOTOFF;
 					} else {
 						SETTINGS;
-						printdocument = new QPrinter((QPrinter::PrinterMode)settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt());
+						int resolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
+						int printer = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
+						int paper = settings.value(SETTINGSPRINTERPAPER, SETTINGSPRINTERPAPERDEFAULT).toInt();
+						if (printer==-1) {
+							// pdf printer
+							printdocument = new QPrinter((QPrinter::PrinterMode) resolution);
+							printdocument->setOutputFormat(QPrinter::PdfFormat);
+							printdocument->setOutputFileName(settings.value(SETTINGSPRINTERPDFFILE, "./output.pdf").toString());
+
+						} else {
+							// system printer
+							QList<QPrinterInfo> printerList=QPrinterInfo::availablePrinters();
+							if (printer>=printerList.count()) printer = 0;
+							printdocument = new QPrinter(printerList[printer], (QPrinter::PrinterMode) resolution);
+						}
 						if (printdocument) {
-							printdocument->setPaperSize(QPrinter::Letter);
+							printdocument->setPaperSize((QPrinter::PaperSize) paper);
 							printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
 							printdocumentpainter = new QPainter();
 							if (!printdocumentpainter->begin(printdocument)) {

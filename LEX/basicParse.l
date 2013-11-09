@@ -307,6 +307,7 @@ system [Ss][Yy][Ss][Tt][Ee][Mm]
 tan [Tt][Aa][Nn]
 text [Tt][Ee][Xx][Tt]
 textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
+textheight [Tt][Ee][Xx][Tt][Hh][Ee][Ii][Gg][Hh][Tt]
 then [Tt][Hh][Ee][Nn]
 throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 to [Tt][Oo]
@@ -595,6 +596,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {tan}		{ count(); return B256TAN; }
 {text}		{ count(); return B256TEXT; }
 {textwidth}		{ count(); return B256TEXTWIDTH; }
+{textheight}		{ count(); return B256TEXTHEIGHT; }
 {then}		{ count(); return B256THEN; }
 {throwerror}	{ count(); return B256THROWERROR; }
 {to}		{ count(); return B256TO; }

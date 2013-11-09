@@ -39,10 +39,12 @@
 	#include <QLabel>
 	#include <QLineEdit>
 	#include <QCheckBox>
+	#include <QComboBox>
 	#include <QPushButton>
 	#include <QAction>
 	#include <QGroupBox>
 	#include <QRadioButton>
+	#include <QPrinterInfo>
 #endif
 
 
@@ -71,7 +73,12 @@ private:
 	QGroupBox *orientgroup;
 	QRadioButton *orientportrait;
 	QRadioButton *orientlandscape;
-
+	QLabel *printerslabel;
+	QComboBox *printerscombo;
+	QLabel *pdffilelabel;
+	QLineEdit *pdffileinput;
+	QLabel *paperlabel;
+	QComboBox *papercombo;
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;
 

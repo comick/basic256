@@ -268,6 +268,8 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ss][Yy][Ss][Tt][Ee][Mm]\\b"									// system
 		<< "\\b[Tt][Aa][Nn]\\b"												// tan
 		<< "\\b[Tt][Ee][Xx][Tt]\\b"											// text
+		<< "\\b[Tt][Ee][Xx][Tt][Hh][Ee][Ii][Gg][Hh][Tt]\\b"					// textwidth
+		<< "\\b[Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]\\b"						// textheight
 		<< "\\b[Tt][Hh][Ee][Nn]\\b"											// then
 		<< "\\b[Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]\\b"					// throwerror
 		<< "\\b[Tt][Oo]\\b"													// to
