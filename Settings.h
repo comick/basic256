@@ -75,6 +75,10 @@
 	#define SETTINGSALLOWWARNINGS "Allow/Warnings"
 	#define SETTINGSALLOWWARNINGSDEFAULT true
 	
+	// espeak language settings
+	#define SETTINGSESPEAKVOICE "eSpeak/Voice"
+	#define SETTINGSESPEAKVOICEDEFAULT "default"
+	
 	// printersettings
 	#define SETTINGSPRINTERPRINTER "Printer/Printer"
 	#define SETTINGSPRINTERPDFFILE "Printer/PDFFile"

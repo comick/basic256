@@ -105,15 +105,17 @@ PrefPrinterWin::PrefPrinterWin (QWidget * parent)
 		// add to layout
 		layout->addWidget(papercombo,r,2,1,2);
 	}
+	//
 	r++;
 	{
-	pdffilelabel = new QLabel(tr("PDF File Name:"),this);
-	pdffileinput = new QLineEdit(QString::null,this);
-	pdffileinput->setText(settings.value(SETTINGSPRINTERPDFFILE, "").toString());
-	pdffileinput->setMaxLength(96);
-	layout->addWidget(pdffilelabel,r,1,1,1);
-	layout->addWidget(pdffileinput,r,2,1,2);
+		pdffilelabel = new QLabel(tr("PDF File Name:"),this);
+		pdffileinput = new QLineEdit(QString::null,this);
+		pdffileinput->setText(settings.value(SETTINGSPRINTERPDFFILE, "").toString());
+		pdffileinput->setMaxLength(96);
+		layout->addWidget(pdffilelabel,r,1,1,1);
+		layout->addWidget(pdffileinput,r,2,1,2);
 	}
+	//
 	r++;
 	{
 		resolutiongroup = new QGroupBox(tr("Printer Resolution:"));

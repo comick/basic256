@@ -24,6 +24,10 @@ using namespace std;
 #include "MainWindow.h"
 #include "md5.h"
 
+#ifdef ESPEAK
+	#include <speak_lib.h>
+#endif
+
 PreferencesWin::PreferencesWin (QWidget * parent)
 		:QDialog(parent)
 {
@@ -68,6 +72,34 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	warningscheckbox->setChecked(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool());
 	layout->addWidget(warningscheckbox,r,2,1,2);
 	//
+	#ifdef ESPEAK
+		r++;
+		{
+			QString setvoice;
+			voicelabel = new QLabel(tr("SAY Voice:"));
+			layout->addWidget(voicelabel,r,1,1,1);
+			voicecombo = new QComboBox();
+			
+			const espeak_VOICE **voices;
+			voices = espeak_ListVoices(NULL);
+
+			voicecombo->addItem(QString("default"),	QString("default"));
+			for(int i=0; voices[i] != NULL; i++) {
+				QString name = voices[i]->name;
+				voicecombo->addItem(name,	name);
+			}
+			
+			// set setting and select
+			setvoice = settings.value(SETTINGSESPEAKVOICE, SETTINGSESPEAKVOICEDEFAULT).toString();
+			int index = voicecombo->findData(setvoice);
+			if ( index != -1 ) { // -1 for not found
+				voicecombo->setCurrentIndex(index);
+			}
+			// add to layout
+			layout->addWidget(voicecombo,r,2,1,2);
+		}
+	#endif
+	//
 	r++;
 	cancelbutton = new QPushButton(tr("Cancel"), this);
 	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
@@ -105,6 +137,12 @@ void PreferencesWin::clickSaveButton() {
 		#endif
 	#endif
 	settings.setValue(SETTINGSALLOWWARNINGS, warningscheckbox->isChecked());
+	#ifdef ESPEAK
+		//
+		if (voicecombo->currentIndex()!=-1) {
+			settings.setValue(SETTINGSESPEAKVOICE, voicecombo->itemData(voicecombo->currentIndex()));
+		}
+	#endif
 	//
 	QMessageBox msgBox;
 	msgBox.setText(tr("Preferences and settings have been saved."));

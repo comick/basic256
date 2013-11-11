@@ -17,6 +17,7 @@
 
 #include <QObject>
 #include <QIcon>
+#include <QPrinterInfo>
 #if QT_VERSION >= 0x05000000
 	#include <QtWidgets/QMessageBox>
 	#include <QtWidgets/QWidget>
@@ -26,6 +27,7 @@
 	#include <QtWidgets/QLabel>
 	#include <QtWidgets/QLineEdit>
 	#include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QComboBox>
 	#include <QtWidgets/QPushButton>
 	#include <QtWidgets/QAction>
 	#include <QtWidgets/QGroupBox>
@@ -44,7 +46,6 @@
 	#include <QAction>
 	#include <QGroupBox>
 	#include <QRadioButton>
-	#include <QPrinterInfo>
 #endif
 
 

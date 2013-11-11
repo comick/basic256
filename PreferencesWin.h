@@ -26,6 +26,7 @@
 	#include <QtWidgets/QLabel>
 	#include <QtWidgets/QLineEdit>
 	#include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QComboBox>
 	#include <QtWidgets/QPushButton>
 	#include <QtWidgets/QAction>
 #else
@@ -37,11 +38,10 @@
 	#include <QLabel>
 	#include <QLineEdit>
 	#include <QCheckBox>
+	#include <QComboBox>
 	#include <QPushButton>
 	#include <QAction>
 #endif
-
-
 
 #ifndef PREFERENCESWINH
 
@@ -67,6 +67,9 @@ private:
 	QCheckBox *settingcheckbox;
 	QCheckBox *portcheckbox;
 	QCheckBox *warningscheckbox;
+	QLabel *voicelabel;
+	QComboBox *voicecombo;
+
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;
 

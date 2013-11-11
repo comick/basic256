@@ -23,6 +23,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QFile>
+#include <QDir>
 #if QT_VERSION >= 0x05000000
 	#include <QtWidgets/QFileDialog>
 	#include <QtWidgets/QMessageBox>
@@ -49,7 +50,6 @@ using namespace std;
 #ifdef WIN32
 	#include <windows.h> 
 	#include <servprov.h>
-	#include <sapi.h>
 	#include <string>
 	#include <cstdlib>
 //	#include <mmsystem.h>
@@ -73,16 +73,8 @@ using namespace std;
 	QSound *wavsound;
 #endif
 
-#ifdef LINUX_ESPEAK
+#ifdef ESPEAK
 	#include <speak_lib.h>
-#endif
-
-#ifdef LINUX_FLITE
-	#include <flite.h>
-	extern "C"
-	{
-		cst_voice* register_cmu_us_kal();
-	}
 #endif
 
 extern QMutex* mutex;
@@ -160,67 +152,39 @@ void
 RunController::speakWords(QString text)
 {
 	mutex->lock();
-	#ifdef WIN32
-
-		// use microsoft sapi with the default voice
-		ISpVoice * pVoice = NULL;
-
-		if (FAILED(::CoInitialize(NULL))) {
-			fprintf(stderr, "RunController::speakWords - Unable to CoInitialize SAPI.\n");
-		} else {
-			HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
-			if( SUCCEEDED( hr ) )
-			{
-				// convert qchar* wo wchar*
-				WCHAR *wutext = new WCHAR[text.length() + 1];
-				for (int i = 0; i < text.length(); ++i) wutext[i] = text[i].unicode();
-				wutext[text.length()] = 0;
+	#ifdef ESPEAK
+	    SETTINGS;
+		espeak_ERROR err;
 		
-				hr = pVoice->Speak(wutext, 0, NULL);
-				pVoice->Release();
-				pVoice = NULL;
-			
-				delete wutext;	// send to gc - just in case
-			} else {
-				fprintf(stderr, "RunController::speakWords - Unable to create SAPI instance.\n");
-			}
-			::CoUninitialize();
-		}
-	#endif
-	#ifdef LINUX_ESPEAK
-		//QMessageBox::information( 0, "BASIC-256", QString("ESpeak"));
-    
 		// espeak tts library
-		char *data_path = NULL;   // use default path for espeak-data
-		int synth_flags = espeakCHARS_AUTO | espeakPHONEMES | espeakENDPAUSE;
-	
-		int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,data_path,0);
-			if (samplerate!=-1) {
-			espeak_SetVoiceByName("default");
-			int size=text.length()+1;	// buffer length
-			espeak_ERROR err = espeak_Synth(text.toLatin1(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-			if (err!=EE_OK) {
-				fprintf(stderr,"espeak synth error %i\n", err);
+		int synth_flags = espeakCHARS_UTF8 | espeakPHONEMES | espeakENDPAUSE;
+		#ifdef WIN32
+			// use program install folder
+			int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
+		#else
+			// use default path for espeak-data
+			int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
+		#endif
+		if (samplerate!=-1) {
+			QString voicename = settings.value(SETTINGSESPEAKVOICE,SETTINGSESPEAKVOICEDEFAULT).toString();
+			err = espeak_SetVoiceByName(voicename.toUtf8());
+			if(err==EE_OK) {
+				int size=text.length()+1;	// buffer length
+				err = espeak_Synth(text.toUtf8(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+				if (err==EE_OK) {
+					espeak_Synchronize();		// wait to finish
+					espeak_Terminate();		// clean up
+				} else {
+					printf("espeak synth error %i\n", err);
+				}
+			} else {
+				printf("espeak st voice error %i\n", err);
 			}
-			espeak_Synchronize();		// wait to finish
-			espeak_Terminate();		// clean up
-
 		} else {
-			fprintf(stderr,"Unable to initialize espeak\n");
+			printf("Unable to initialize espeak\n");
 		}
 	#endif
-	#ifdef LINUX_FLITE
-		// CMU flite (compiled festival voices) from http://www.speech.cs.cmu.edu/flite/
-		cst_voice *v;
-		flite_init();
-		v = register_cmu_us_kal();
-		int length = flite_text_to_speech(text.toLatin1(),v,"play");
-		// wait for finish
-		//clock_t endwait = clock() + (length + 1) * CLOCKS_PER_SEC;
-		//while (clock() < endwait) {}
-
-	#endif
-	#ifdef LINUX_ESPEAK_EXECUTE
+	#ifdef ESPEAK_EXECUTE
 		// easy espeak implementation when all else fails
 		text.replace("\""," quote ");
 		text.prepend("espeak \"");

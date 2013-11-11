@@ -28,6 +28,65 @@ Windows you will need:
   called mingw-extra.zip
   and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
 
+* Microsoft Speech SDK 5.1
+  available from http://www.microsoft.com/download/en/details.aspx?id=10121
+  - install the SpeechSDK51.exe file
+  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
+    C:\QtSDK\mingw\lib
+
+
+WINDOWS (QT5.1.1)
+
+http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-mingw48_opengl-x86-offline.exe
+
+add paths
+
+C:\Qt\Qt5.1.1\Tools\mingw48_32\bin>copy mingw32-make.exe make.exe
+        1 file(s) copied.
+  
+ 
+http://sourceforge.net/projects/mingw/files/latest/download?source=files  
+  *install mingw Developer tools
+  * mingw32-base
+  * mingw32-cgg-g++
+  * msys-base
+  
+Add to path ->  C:\MinGW\bin;C:\MinGW\msys\1.0\bin
+  
+* TTS Option 2 - libespeak
+	-- follow instructions on compiling espeak at
+	-- http://jarek.katowice.pl/other/forum/viewtopic.php?f=5&t=17
+	-- or download binary bundle
+	
+* TTS Option 1 - Microsoft Speech SDK 5.1
+  available from http://www.microsoft.com/download/en/details.aspx?id=10121
+  - install the SpeechSDK51.exe file
+  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
+    C:\QtSDK\mingw\lib
+  - copy the files in include to C:\Qt\Qt5.1.1\Tools\mingw48_32\include
+
+ ^
+FILE Qt/Qt5.1.1/5.1.1/mingw48_32/include/sapi.h
+LINE 851
+CHANGE
+  void * __RPC_USER MIDL_user_allocate(size_t);
+TO
+  void *__RPC_API MIDL_user_allocate(size_t)
+ 
+FILE c:\qt\qt5.1.1\tools\mingw48_32\i686-w64-mingw32\include\rpcndr.h
+LINE 110 & 111
+CHANGE 
+  void *__RPC_USER MIDL_user_allocate(SIZE_T);
+  void __RPC_USER MIDL_user_free(void *);
+TO
+  void *__RPC_API MIDL_user_allocate(SIZE_T);
+  void __RPC_API MIDL_user_free(void *);
+                                            ^
+                                            
+
+
+
+
 * sqlite development libraries and headers need to be installed and downloaded from
   http://www.sqlite.org/download.html
   - use the *amalgation* zip file and copy the *.h files into MinGW/include
@@ -42,12 +101,6 @@ Windows you will need:
   - you will also need to place the inpout32.dll and inpout32.sys fileg in the project/trunk/debug 
     and project/trunk/release folders.
   
-* Microsoft Speech SDK 5.1
-  available from http://www.microsoft.com/download/en/details.aspx?id=10121
-  - install the SpeechSDK51.exe file
-  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
-    C:\QtSDK\mingw\lib
-
 For MAC 10.6.4
 	- QT
 	- XCode (from apple)
