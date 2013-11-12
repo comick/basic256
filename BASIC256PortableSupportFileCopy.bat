@@ -19,46 +19,46 @@ mkdir %INSTDIR%\espeak-data
 xcopy /e release\espeak-data %INSTDIR%\espeak-data
 
 mkdir %INSTDIR%\accessible
-copy %SDK_PLUGINS%\accessible\qtaccessiblewidgets.dll %INSTDIR%\accessable
+xcopy %SDK_PLUGINS%\accessible\qtaccessiblewidgets.dll %INSTDIR%\accessible
 
 mkdir %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qgif.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qico.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qjpeg.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qmng.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qsvg.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qtga.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qtiff.dll %INSTDIR%\imageformats
-copy %SDK_PLUGINS%\imageformats\qwbmp.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qgif.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qico.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qjpeg.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qmng.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qsvg.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qtga.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qtiff.dll %INSTDIR%\imageformats
+xcopy %SDK_PLUGINS%\imageformats\qwbmp.dll %INSTDIR%\imageformats
 
 mkdir %INSTDIR%\platforms
-copy %SDK_PLUGINS%\platforms\qwindows.dll %INSTDIR%\platforms
+xcopy %SDK_PLUGINS%\platforms\qwindows.dll %INSTDIR%\platforms
 
 mkdir %INSTDIR%\printsupport
-copy %SDK_PLUGINS%\printsupport\windowsprintersupport.dll %INSTDIR%\printsupport
+xcopy %SDK_PLUGINS%\printsupport\windowsprintersupport.dll %INSTDIR%\printsupport
 
-copy ChangeLog %INSTDIR%
-copy CONTRIBUTORS %INSTDIR%
-copy license.txt %INSTDIR%
+xcopy ChangeLog %INSTDIR%
+xcopy CONTRIBUTORS %INSTDIR%
+xcopy license.txt %INSTDIR%
 
-copy %SDK_BIN%\icudt51.dll %INSTDIR%
-copy %SDK_BIN%\icuin51.dll %INSTDIR%
-copy %SDK_BIN%\icuuc51.dll %INSTDIR%
-copy %SDK_BIN%\libgcc_s_dw2-1.dll %INSTDIR%
-copy %SDK_BIN%\\libstdc++-6.dll %INSTDIR%
-copy %SDK_BIN%\\libwinpthread-1.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5Multimedia.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5Core.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5Gui.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5WebKit.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5PrintSupport.dll %INSTDIR%
-copy %SDK_BIN%\\Qt5Widgets.dll %INSTDIR%
-copy %SDK_BIN%\\\Qt5Network.dll %INSTDIR%
+xcopy %SDK_BIN%\icudt51.dll %INSTDIR%
+xcopy %SDK_BIN%\icuin51.dll %INSTDIR%
+xcopy %SDK_BIN%\icuuc51.dll %INSTDIR%
+xcopy %SDK_BIN%\libgcc_s_dw2-1.dll %INSTDIR%
+xcopy %SDK_BIN%\libstdc++-6.dll %INSTDIR%
+xcopy %SDK_BIN%\libwinpthread-1.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5Multimedia.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5Core.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5Gui.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5WebKit.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5PrintSupport.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5Widgets.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5Network.dll %INSTDIR%
 
-copy %SDK_LIB%\\libespeak.dll %INSTDIR%
-copy %SDK_LIB%\\libportaudio-2.dll %INSTDIR%
-copy %SDK_LIB%\\libpthread-2.dll %INSTDIR%
-copy %SDK_LIB%\\sqlite3.dll %INSTDIR%
-copy %SDK_LIB%\\inpout32.dll %INSTDIR%
-copy %SDK_LIB%\\InstallDriver.exe %INSTDIR%
+xcopy %SDK_LIB%\libespeak.dll %INSTDIR%
+xcopy %SDK_LIB%\libportaudio-2.dll %INSTDIR%
+xcopy %SDK_LIB%\libpthread-2.dll %INSTDIR%
+xcopy %SDK_LIB%\sqlite3.dll %INSTDIR%
+xcopy %SDK_LIB%\inpout32.dll %INSTDIR%
+xcopy %SDK_LIB%\InstallDriver.exe %INSTDIR%
 
