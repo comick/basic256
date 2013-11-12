@@ -28,11 +28,9 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 LIBS						+= -lsqlite3
 
 win32 {
-	# use SAPI for speech
 	DEFINES 				+=	WIN32
 	DEFINES 				+=	USEQSOUND
 	LIBS					+=	-lole32 \
-								-lsapi \
 								-lws2_32 \
 								-lwinmm
 				

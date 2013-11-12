@@ -34,16 +34,26 @@ LIBS						+= -lsqlite3
 DESTDIR = BASIC256Portable/App/BASIC256
 
 win32 {
-	# use SAPI for speech
 	DEFINES 				+=	WIN32
 	DEFINES 				+=	USEQSOUND
 	LIBS					+=	-lole32 \
-								-lsapi \
 								-lws2_32 \
 								-lwinmm
 				
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign
+
+	########
+	# TTS control - How Say statement works
+	########
+	# uncomment one of the options
+
+	## TTS Option 1 - ececute 'espak' command to speak 
+	#DEFINES				+=	ESPEAK_EXECUTE
+
+	## TTS Option 2 - use the espeak library
+	DEFINES					+=	ESPEAK
+	LIBS					+=	-lespeak
 
 	########
 	# Sound class - How Sound statement works
@@ -70,7 +80,7 @@ exists( ./LEX/Makefile ) {
 	message( Running make for ./LEX/Makefile )
 	system( make -C ./LEX )
 } else { 
-	error( Couldn't make LEX project - aborting... )
+	error( Couldnt make LEX project - aborting... )
 }
 
 
@@ -81,17 +91,6 @@ HEADERS 					+=	*.h
 SOURCES 					+=	LEX/lex.yy.c 
 SOURCES 					+=	LEX/basicParse.tab.c 
 SOURCES 					+=	*.cpp
-
-# copy files to the proper locaiton to the package
-DESTDIR_WIN = $${DESTDIR}
-DESTDIR_WIN ~= s,/,\\,g
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\BASIC256Portable.exe $$DESTDIR_WIN $$escape_expand(\n\t)
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon.ico $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon_16.png $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\appicon_32.png $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\appinfo.ini $$DESTDIR_WIN\\AppInfo $$escape_expand(\n\t)
-QMAKE_POST_LINK += copy /y PortableAppsFiles\\BASIC256Portable.ini $$DESTDIR_WIN\\AppInfo\\Launcher $$escape_expand(\n\t)
-
 
 
 

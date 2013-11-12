@@ -75,6 +75,14 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 	#ifdef ESPEAK
 		r++;
 		{
+			#ifdef WIN32
+				// use program install folder
+				int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
+			#else
+				// use default path for espeak-data
+				int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
+			#endif
+			
 			QString setvoice;
 			voicelabel = new QLabel(tr("SAY Voice:"));
 			layout->addWidget(voicelabel,r,1,1,1);
@@ -86,7 +94,8 @@ PreferencesWin::PreferencesWin (QWidget * parent)
 			voicecombo->addItem(QString("default"),	QString("default"));
 			for(int i=0; voices[i] != NULL; i++) {
 				QString name = voices[i]->name;
-				voicecombo->addItem(name,	name);
+				QString lang = (voices[i]->languages + 1);
+				voicecombo->addItem( lang + " (" + name + ")",	name);
 			}
 			
 			// set setting and select

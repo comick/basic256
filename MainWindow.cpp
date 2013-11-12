@@ -440,7 +440,7 @@ void MainWindow::about()
 	QMessageBox::about(this, QObject::tr("About BASIC-256") +  PORTABLE,
 		QObject::tr("<h2>BASIC-256") + PORTABLE + QObject::tr("</h2>") +
 		QObject::tr("version <b>") +  VERSION + QObject::tr("</b> - built with QT <b>") + QT_VERSION_STR +QObject::tr("</b>") +
-		QObject::tr("<p>Copyright &copy; 2006-2010, The BASIC-256 Team</p>") + 
+		QObject::tr("<p>Copyright &copy; 2006-2013, The BASIC-256 Team</p>") + 
 		QObject::tr("<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>") +
 		QObject::tr("<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>") +
 		QObject::tr("<p><i>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>")

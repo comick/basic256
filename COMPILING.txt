@@ -1,4 +1,6 @@
-Compiling Instructions and Dependencies - 2013-02-15
+Compiling Instructions and Dependencies
+2013-11-12 VERSION 1.0.0.0
+
 
 LINUX you will need:
 * g++
@@ -12,94 +14,53 @@ LINUX you will need:
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
 * and the sqlite3 amalgamation installed from sqlite.org
 
-Windows you will need:
-
-* mingw c++ compiler for Win32 and the qt sdk
-  - the easiest way to get this installed and working is to use the
-    Qt SDK version 1.x.x from the download page at QT.  Choose a custom install and select mingw to be installed
-  - You will have problems getting this to work if you do not have the EXACT mingw version required
-  - be sure you have the following (or similar) fildres listed in the PATH system variable
-    C:\QtSDK\mingw\bin and C:\QtSDK\Desktop\Qt\4.7.3\mingw\bin
-
-* gtk win32 bundle headers and libraries from http://www.gtk.org/download/win32.php
-  - extract the zip file to the mingw folder
-
-* the gretl development headers need to be added to mingw they are in a file
-  called mingw-extra.zip
-  and can be found at http://ricardo.ecn.wfu.edu/pub/gretl/winbuild/
-
-* Microsoft Speech SDK 5.1
-  available from http://www.microsoft.com/download/en/details.aspx?id=10121
-  - install the SpeechSDK51.exe file
-  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
-    C:\QtSDK\mingw\lib
-
 
 WINDOWS (QT5.1.1)
 
-http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-mingw48_opengl-x86-offline.exe
+* QT SDK with MINGW Compiler
+	** Available from:
+		http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-mingw48_opengl-x86-offline.exe
+	** add paths C:\Qt\Qt5.1.1\5.1.1\mingw48_32\bin;C:\Qt\Qt5.1.1\Tools\mingw48_32\bin; to your system environment variable
+	** in folder C:\Qt\Qt5.1.1\Tools\mingw48_32\bin
+		copy mingw32-make.exe make.exe
 
-add paths
-
-C:\Qt\Qt5.1.1\Tools\mingw48_32\bin>copy mingw32-make.exe make.exe
-        1 file(s) copied.
+* MINGW and MSYS developer tools and libraries
+	**Available from:
+		http://sourceforge.net/projects/mingw/files/latest/download?source=files  
+	**install mingw Developer tools, mingw32-base, mingw32-cgg-g++, msys-base
+	** add paths C:\MinGW\bin;C:\MinGW\msys\1.0\bin to your system environment
   
- 
-http://sourceforge.net/projects/mingw/files/latest/download?source=files  
-  *install mingw Developer tools
-  * mingw32-base
-  * mingw32-cgg-g++
-  * msys-base
-  
-Add to path ->  C:\MinGW\bin;C:\MinGW\msys\1.0\bin
-  
-* TTS Option 2 - libespeak
-	-- follow instructions on compiling espeak at
-	-- http://jarek.katowice.pl/other/forum/viewtopic.php?f=5&t=17
-	-- or download binary bundle
-	
-* TTS Option 1 - Microsoft Speech SDK 5.1
-  available from http://www.microsoft.com/download/en/details.aspx?id=10121
-  - install the SpeechSDK51.exe file
-  - copy the file C:\Program Files\Microsoft Speech SDK 5.1\Lib\i386\sapi.lib into
-    C:\QtSDK\mingw\lib
-  - copy the files in include to C:\Qt\Qt5.1.1\Tools\mingw48_32\include
+* libespeak - TTS Library
+	** follow instructions on compiling espeak at
+		http://jarek.katowice.pl/other/forum/viewtopic.php?f=5&t=17
+	** or download binary bundle
+	** copy libspeak.dll, libportaudio-2.dll, libpthread-2.dll
+		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
+		and basic256/trunk/debug
+		and basic256/trunk/release
+	** copy portaudio.h and speak_lib.h
+		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\include
+		
+* sqlite development libraries and headers
+	** Available from:
+		http://www.sqlite.org/download.html
+	** use the *amalgation* zip file and copy the *.h files into
+		C:\Qt\Qt5.1.1\5.1.1\mingw48_32\include MinGW/include
+	** download the windows dll zip file, extract files into
+		C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
+		and run the following
+		dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
+	** copy sqlite.dll file
+		to basic256/trunk/debug
+		and basic256/trunk/release
 
- ^
-FILE Qt/Qt5.1.1/5.1.1/mingw48_32/include/sapi.h
-LINE 851
-CHANGE
-  void * __RPC_USER MIDL_user_allocate(size_t);
-TO
-  void *__RPC_API MIDL_user_allocate(size_t)
- 
-FILE c:\qt\qt5.1.1\tools\mingw48_32\i686-w64-mingw32\include\rpcndr.h
-LINE 110 & 111
-CHANGE 
-  void *__RPC_USER MIDL_user_allocate(SIZE_T);
-  void __RPC_USER MIDL_user_free(void *);
-TO
-  void *__RPC_API MIDL_user_allocate(SIZE_T);
-  void __RPC_API MIDL_user_free(void *);
-                                            ^
-                                            
-
-
-
-
-* sqlite development libraries and headers need to be installed and downloaded from
-  http://www.sqlite.org/download.html
-  - use the *amalgation* zip file and copy the *.h files into MinGW/include
-  - download the windows dll zip file, extract files into MinGW/lib, and run the following
-    dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
-  - you will also need to place the sqlite.dll file in the project/trunk/debug 
-    and project/trunk/release folders.
-
-* inpout32.dll
-  - download version 1.2 from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
-  - copy the file inpout32.dll into MinGW/lib
-  - you will also need to place the inpout32.dll and inpout32.sys fileg in the project/trunk/debug 
-    and project/trunk/release folders.
+* inpout32 Serial Driver
+	** download version 1.500
+		from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
+	** copy the files inpout32.dll, inpout32.lib, and InstallDriver.exe
+		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
+		and basic256/trunk/debug
+		and basic256/trunk/release
   
 For MAC 10.6.4
 	- QT
@@ -131,7 +92,7 @@ Build Windows MINGW, LINUX, and MACX (g++):
 
 Release Build (Windows):
   To build a nice WIN32 installer use the nullsoft scriptable install system file
-  2.39 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
+  3.0 or better) called BASIC256.nsi.  You must build a release copy of BASCI256.
   
   Make sure the dll and library files are copied in the folders as above. 
   
@@ -146,12 +107,12 @@ Portable Build (Windows):
   will be able to create the *.paf.exe file.
   
   BE SURE TO EDIT THE VERSION NUMBER IN trunk/BASIC256Portable/App/AppInfo/appinfo.ini
-  before building the PAF file.  Be sure the following files are in the App folder:
-  libgcc_s_dw2-1.dll, mingwm10.dll, phonon4.dll, QtCore4.dll, QtGui4.dll, QtMultimedia4.dll,
-  QtWebKit4.dll, and sqlite3.dll
+  before building the PAF file.
 
-  
-  ** TO BUILD THE Portable BINARY **
+  ** TO BUILD THE Portable BINARY and complete the directory **
+ 
+  delete all files and folders from trunk/BASIC256Portable/App/BASIC256
+  BASIC256PortableSupportFileCopy.bat
   make clean
   qmake BASIC256Portable.pro
   make release 

@@ -22,6 +22,10 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QFileInfo>
+#include <QtPlugin>
+	
+//Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
+
 #if QT_VERSION >= 0x05000000
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QStatusBar>
