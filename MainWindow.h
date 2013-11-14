@@ -56,14 +56,55 @@ public:
 	~MainWindow();
 	void closeEvent(QCloseEvent *);
 	void loadAndGoMode();
+
+	// Main IU Widgets
+	BasicWidget * editwinwgt;
+	BasicWidget * outwinwgt;
+	BasicWidget * graphwinwgt;
+	BasicWidget * varwinwgt;
+
+	// file menu and choices
+	QMenu * filemenu;
+	QAction * newact;
+	QAction * openact;
+	QAction * saveact;
+	QAction * saveasact;
+	QAction * printact;
+	bool showRecentList;
+	QAction *recentact[SETTINGSGROUPHISTN]; 
+	QAction * exitact;
+
+	// edit menu and choices
+	QMenu * editmenu;
+	QAction *undoact;
+	QAction *redoact;
+	QAction *cutact;
+	QAction *copyact;
+	QAction *pasteact;
+	QAction *selectallact;
+	QAction *findact;
+	QShortcut* findagain1;
+	QShortcut* findagain2;
+	QAction *replaceact;
+	QAction *beautifyact;
+	QAction *prefact;
+	QAction *prefprinteract;
+
+	// view menu
+	QMenu *viewmenu;
+	QAction *editWinVisibleAct;
+	QAction *textWinVisibleAct;
+	QAction *graphWinVisibleAct;
+	QAction *variableWinVisibleAct;
+	QAction *graphGridVisibleAct;
+	QAction *fontact;
+
+	// run menu
+	QMenu *runmenu;
 	QAction * runact;
 	QAction * debugact;
 	QAction * stepact;
 	QAction * stopact;
-	QAction *editWinVisibleAct;
-	QAction *textWinVisibleAct;
-	QAction *graphWinVisibleAct;
-	QAction *graphGridVisibleAct;
 
 	RunController *rc;
 	EditSyntaxHighlighter * editsyntax;
@@ -75,43 +116,11 @@ public slots:
   void updateWindowTitle(QString);
 
 private:
-	QMenu * filemenu;
-	QAction * newact;
-	QAction * openact;
-	QAction * saveact;
-	QAction * saveasact;
-	QAction * printact;
-	bool showRecentList;
-	QAction *recentact[SETTINGSGROUPHISTN]; 
-	QAction * exitact;
-
-	BasicWidget * editwinwgt;
-	BasicWidget * outwinwgt;
-	BasicWidget * graphwinwgt;
-	BasicWidget * varwinwgt;
 
 	DockWidget * outdock;
 	DockWidget * graphdock;
 	DockWidget * vardock;
 
-	QMenu * editmenu;
-	QAction *undoact;
-	QAction *redoact;
-	QAction *cutact;
-	QAction *copyact;
-	QAction *pasteact;
-	QAction *selectallact;
-	QAction *findact;
-	QShortcut *findagain;
-	QAction *replaceact;
-	QAction *beautifyact;
-	QAction *prefact;
-	QAction *prefprinteract;
-
-	QMenu *viewmenu;
-	QAction *variableWinVisibleAct;
-
-	QMenu *runmenu;
 	QToolBar *maintbar;
 
 	// void pointer to the run controller

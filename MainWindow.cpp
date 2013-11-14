@@ -215,8 +215,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	editmenu->addSeparator();
 	findact = editmenu->addAction(QObject::tr("&Find"));
 	findact->setShortcut(Qt::Key_F + Qt::CTRL);
-	QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
-	QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
+	findagain1 = new QShortcut(Qt::Key_F3, this);
+	findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
 	replaceact = editmenu->addAction(QObject::tr("&Replace"));
 	editmenu->addSeparator();
 	beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
@@ -284,8 +284,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
     // Editor and Output font
     viewmenu->addSeparator();
-    QAction *fontSelect = viewmenu->addAction(QObject::tr("&Font"));
-    QObject::connect(fontSelect, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
+    fontact = viewmenu->addAction(QObject::tr("&Font"));
+    QObject::connect(fontact, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
 
     // Graphics Grid Lines
     viewmenu->addSeparator();
@@ -461,7 +461,7 @@ void MainWindow::updateRecent()
 			if (QString::compare(path, fn.left(path.length()))==0) {
 				fn = fn.right(fn.length()-path.length());
 			}
-			recentact[i]->setEnabled(fn.length()!=0);		
+			recentact[i]->setEnabled(fn.length()!=0 && newact->isEnabled());		
 			recentact[i]->setVisible(fn.length()!=0);		
 			recentact[i]->setText("&" + QString::number(i+1) + " - " + fn);
 		}
@@ -520,7 +520,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 		settings.setValue(SETTINGSSIZE, size());
 		settings.setValue(SETTINGSPOS, pos());
 		settings.setValue(SETTINGSTOOLBAR, maintbar->isVisible());
-				settings.setValue(SETTINGSOUTVISIBLE, outdock->isVisible());
+		settings.setValue(SETTINGSOUTVISIBLE, outdock->isVisible());
 		settings.setValue(SETTINGSOUTFLOAT, outdock->isFloating());
 		settings.setValue(SETTINGSOUTSIZE, outdock->size());
 		settings.setValue(SETTINGSOUTPOS, outdock->pos());

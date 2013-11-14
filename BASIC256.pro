@@ -105,8 +105,7 @@ unix:!macx {
     #QT						+=	multimedia
     #INCLUDEPATH				+=	QtMultimediaKit
 	#INCLUDEPATH				+=	QtMobility
-	#CONFIG 					+=	mobility
-    #MOBILITY				=	multimedia
+
 
 
 	########

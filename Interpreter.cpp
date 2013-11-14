@@ -2466,7 +2466,7 @@ Interpreter::execByteCode()
 	case OP_INCLUDEFILE:
 		{
 			// current include file name save for runtime error codes
-			// set to "" when returning to main program
+			// set to "" in the byte code when returning to main program
 			op++;
 			int len = strlen((char *) op) + 1;
 			currentIncludeFile = QString::fromUtf8((char *) op);

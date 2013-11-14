@@ -109,7 +109,7 @@ RunController::RunController()
 	QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
 	QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
 	QObject::connect(i, SIGNAL(dialogPrompt(QString, QString)), this, SLOT(dialogPrompt(QString, QString)));
-	QObject::connect(i, SIGNAL(executeSystem(char*)), this, SLOT(executeSystem(char*)));
+	QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
 	QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputReady()));
 	QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
 	QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
@@ -304,10 +304,7 @@ RunController::startDebug()
 		graphwin->setFocus();
 		i->start();
 		varwin->clear();
-		mainwin->runact->setEnabled(false);
-		mainwin->debugact->setEnabled(false);
-		mainwin->stepact->setEnabled(true);
-		mainwin->stopact->setEnabled(true);
+		mainWindowSetRunning(2);
 		emit(debugStarted());
 	}
 }
@@ -330,10 +327,7 @@ RunController::startRun()
 		graphwin->setFocus();
 		i->start();
 		varwin->clear();
-		mainwin->runact->setEnabled(false);
-		mainwin->debugact->setEnabled(false);
-		mainwin->stepact->setEnabled(false);
-		mainwin->stopact->setEnabled(true);
+		mainWindowSetRunning(1);
 		emit(runStarted());
 	}
 }
@@ -389,10 +383,7 @@ RunController::stopRun()
 {
 	mainwin->statusBar()->showMessage(tr("Ready."));
 
-	mainwin->runact->setEnabled(true);
-	mainwin->debugact->setEnabled(true);
-	mainwin->stepact->setEnabled(false);
-	mainwin->stopact->setEnabled(false);
+	mainWindowSetRunning(0);
 
 	stopWAV();
 
@@ -650,4 +641,42 @@ void RunController::dialogFontSelect()
     }
 }
 
-
+void RunController::mainWindowSetRunning(int type)
+{
+    // set the menus, menu options, and tool bar items to
+    // correct state based on the stop/run/debug status
+    // type 0 - stop, 1-run, 2-debug
+    
+	editwin->setReadOnly(type!=0);
+    
+    // file menu
+    mainwin->newact->setEnabled(type==0);
+    mainwin->openact->setEnabled(type==0);
+    mainwin->saveact->setEnabled(type==0);
+    mainwin->saveasact->setEnabled(type==0);
+    mainwin->printact->setEnabled(type==0);
+    for(int t=0; t<10; t++) mainwin->recentact[t]->setEnabled(type==0);
+    mainwin->exitact->setEnabled(true);
+    
+	// edit menu
+    mainwin->undoact->setEnabled(type==0);
+    mainwin->redoact->setEnabled(type==0);
+    mainwin->cutact->setEnabled(type==0);
+    mainwin->copyact->setEnabled(true);
+    mainwin->pasteact->setEnabled(type==0);
+    mainwin->selectallact->setEnabled(true);
+    mainwin->findact->setEnabled(type==0);
+    mainwin->findagain1->setEnabled(type==0);
+    mainwin->findagain2->setEnabled(type==0);
+    mainwin->replaceact->setEnabled(type==0);
+    mainwin->beautifyact->setEnabled(type==0);
+    mainwin->prefact->setEnabled(type==0);
+    mainwin->prefprinteract->setEnabled(type==0);
+    
+	// run menu    
+    mainwin->runact->setEnabled(type==0);
+	mainwin->debugact->setEnabled(type==0);
+	mainwin->stepact->setEnabled(type==2);
+	mainwin->stopact->setEnabled(type!=0);
+    
+}

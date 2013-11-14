@@ -83,6 +83,7 @@ class RunController : public QObject
   void dialogConfirm(QString, int);
   void dialogPrompt(QString, QString);
   void dialogFontSelect();
+  void mainWindowSetRunning(int);
 
  private:
   Interpreter *i;
