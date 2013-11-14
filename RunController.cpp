@@ -648,6 +648,9 @@ void RunController::mainWindowSetRunning(int type)
     // type 0 - stop, 1-run, 2-debug
     
 	editwin->setReadOnly(type!=0);
+	QTextCursor textCursor = editwin->textCursor();
+	textCursor.clearSelection();
+	editwin->setTextCursor( textCursor );
     
     // file menu
     mainwin->newact->setEnabled(type==0);
@@ -661,8 +664,8 @@ void RunController::mainWindowSetRunning(int type)
 	// edit menu
     mainwin->undoact->setEnabled(type==0);
     mainwin->redoact->setEnabled(type==0);
-    mainwin->cutact->setEnabled(type==0);
-    mainwin->copyact->setEnabled(true);
+    mainwin->cutact->setEnabled(false);
+    mainwin->copyact->setEnabled(false);
     mainwin->pasteact->setEnabled(type==0);
     mainwin->selectallact->setEnabled(true);
     mainwin->findact->setEnabled(type==0);
@@ -679,4 +682,11 @@ void RunController::mainWindowSetRunning(int type)
 	mainwin->stepact->setEnabled(type==2);
 	mainwin->stopact->setEnabled(type!=0);
     
+}
+
+void RunController::mainWindowEnableCopy(bool stuffToCopy)
+{
+	// only enable the copy buttons when there is stuff to copy
+    mainwin->cutact->setEnabled(stuffToCopy && mainwin->pasteact->isEnabled());
+    mainwin->copyact->setEnabled(stuffToCopy);
 }

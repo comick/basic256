@@ -225,9 +225,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	prefprinteract = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Printer Preferences"));
 	//
 	QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
-	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), cutact, SLOT(setEnabled(bool)));
 	QObject::connect(copyact, SIGNAL(triggered()), editwin, SLOT(copy()));
-	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), copyact, SLOT(setEnabled(bool)));
+	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), rc, SLOT(mainWindowEnableCopy(bool)));
 	QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
 	QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
 	QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
