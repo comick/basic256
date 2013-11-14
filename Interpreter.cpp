@@ -3978,7 +3978,7 @@ Interpreter::execByteCode()
 						delete sprites[n].image;
 						sprites[n].image = NULL;
 					}
-					sprites[n].image = new QImage(maxx,maxy,QImage::Format_ARGB32);
+					sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32);
 					sprites[n].image->fill(Qt::transparent);
 					QPainter poly(sprites[n].image);
 					poly.setPen(drawingpen);
