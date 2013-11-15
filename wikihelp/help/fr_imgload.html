@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-20T19:01:36-0700"/>
 <meta name="keywords" content="fr,imgload"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,11 +76,11 @@
 <div class="level3">
 
 <p>
-<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>filename</em><br/>
+<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>nomfichier</em><br/>
 
-<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>scale</em>, <em>filename</em><br/>
+<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, <em>nomfichier</em><br/>
 
-<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>scale</em>, <em>rotation</em>, <em>filename</em><br/>
+<strong>imgload</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, <em>rotation</em>, <em>nomfichier</em><br/>
 
 </p>
 
@@ -90,16 +90,18 @@
 <div class="level3">
 
 <p>
-Load an image or picture from a file and paint it on the Graphics Output Window.<br/>
+Charge une image à partir d&#039;un fichier et l&#039;affiche dans la fenêtre d&#039;affichage graphique.<br/>
 
-The parameters <em>x</em> and <em>y</em> represent the location on the screen for the CENTER of the loaded image. This behaviour is different than all of the other graphics statements.  The axis of rotation will also be this CENTER point.\\The Imgload starement will read in most common image file formats including: BMP (Windows Bitmap), <abbr title="Graphics Interchange Format">GIF</abbr> (Graphic Interchange Format),<abbr title="Joint Photographics Experts Group">JPG</abbr>/<abbr title="Joint Photographics Experts Group">JPEG</abbr> (Joint Photographic Experts Group), and <abbr title="Portable Network Graphics">PNG</abbr> (Portable Network Graphics).<br/>
+Les paramètre <em>x</em> et <em>y</em> indiquent ou doit être positionné le centre de l&#039;image dans la fenêtre graphique. Cette façon de faire est différente de toutes les autres fonctionnalités graphiques. L&#039;axe de rotation éventuel sera aussi ce même point central.<br/>
 
-Optionally scales size of the loaded image by the defined scale (1=normal size). Also optionally rotates the image by a specified angle around the images center (clockwise in radians).
+Cette fonction est capable de lire la plupart des formats graphiques courant : BMP (Windows Bitmap), <abbr title="Graphics Interchange Format">GIF</abbr> (Graphic Interchange Format),<abbr title="Joint Photographics Experts Group">JPG</abbr>/<abbr title="Joint Photographics Experts Group">JPEG</abbr> (Joint Photographic Experts Group), et <abbr title="Portable Network Graphics">PNG</abbr> (Portable Network Graphics).<br/>
+
+<strong>Imgload</strong> met éventuellement à l&#039;échelle l&#039;image avec le paramètre <em>echelle</em> (1 = taille normale). Elle permet aussi d&#039;effectuer une rotation de l&#039;image en passant le paramètre <em>rotation</em> qui est l&#039;angle de rotation en radian dans le sens des aiguilles d&#039;une montre autour du centre de l&#039;image.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit4" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
 <div class="level3">
 
 <p>
@@ -111,7 +113,7 @@ Optionally scales size of the loaded image by the defined scale (1=normal size).
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/imgload.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/imgload.txt · Last modified: 2013/08/20 19:01 by philrich123</div>
 
                             </div></div><!-- /content -->
 

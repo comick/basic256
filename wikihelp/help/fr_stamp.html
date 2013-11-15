@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="date" content="2013-08-20T20:11:38-0700"/>
 <meta name="keywords" content="fr,stamp"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,17 +76,17 @@
 <div class="level3">
 
 <p>
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>array</em><br/>
+<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>tableau</em><br/>
 
 <strong>stamp</strong> <em>x</em>, <em>y</em>, {x1, y1, x2, y2, x3, y3 …}<br/>
 
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>scale</em>, <em>array</em><br/>
+<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, <em>tableau</em><br/>
 
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>scale</em>, {x1, y1, x2, y2, x3, y3 …}<br/>
+<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, {x1, y1, x2, y2, x3, y3 …}<br/>
 
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>scale</em>, <em>rotation</em>, <em>array</em><br/>
+<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, <em>rotation</em>, <em>tableau</em><br/>
 
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>scale</em>, <em>rotation</em>, {x1, y1, x2, y2, x3, y3 …}
+<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>echelle</em>, <em>rotation</em>, {x1, y1, x2, y2, x3, y3 …}
 </p>
 
 </div>
@@ -95,12 +95,14 @@
 <div class="level3">
 
 <p>
-Draws a polygon with top left corner (origin) at x, y. Optionally scales size of polygon by the defined scale (1=normal size). Also optionally rotates the polygon by a specified angle around the origin (clockwise in radians).  The sides of the polygon are defined by the values in an array, which should be stored as x,y pairs, sequentially. The length of the array/2 will define the number of points.  A stamped polygon can also be specified using a list of x,y pairs enclosed in curly braces {}.
+Dessine un polygone dons le coin supérieur gauche sera positionné aux coordonnées <em>x</em>, <em>y</em>. Il est possible de définir une <em>echelle</em> de tracé ( 1 = taille normale )ainsi qu&#039;une <em>rotation</em> définie à partir de l&#039;origine dans le sens des aiguilles d&#039;une montre en radian.<br/>
+
+Les sommets du polygone sont donnés par des coordonnées x,y stockées à la suite les unes des autres dans un tableau. La taille du tableau divisée par 2 définie le nombre de sommets. Cette fonction peut aussi être appelée avec en paramètre un tableau anonyme ( une suite de coordonnées x,y enfermées entre des accolades {}).
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -109,11 +111,11 @@ Draws a polygon with top left corner (origin) at x, y. Optionally scales size of
 
 </div>
 
-<h3 class="sectionedit5" id="example">Example</h3>
+<h3 class="sectionedit5" id="exemple">Exemple</h3>
 <div class="level3">
 
 <p>
-Both of the code blocks below will draw a pair of green triangles on the graphics window:
+Les deux codes ci-dessous produiront le même affichage.
 </p>
 <pre class="code">clg
 color blue
@@ -121,28 +123,28 @@ rect 0,0,300,300
 color green
 dim tri(6)
 tri = {0, 0, 100, 100, 0, 100}
-# stamp the triangle at 0,0 (full size)
+# stamp du triangle en 0,0 (taille normale)
 stamp 100, 100, tri
-# stamp the triangle at 200,100 (half size)
+# stamp du triangle en 200,100 (taille moitié)
 stamp 200, 100, .5, tri</pre>
 <pre class="code">clg
 color blue
 rect 0,0,300,300
 color green
-# stamp the triangle at 0,0 (full size)
+# stamp du triangle en 0,0 (taille normale)
 stamp 100, 100, {0, 0, 100, 100, 0, 100}
-# stamp the triangle at 200,100 (half size)
+# stamp du triangle en 200,100 (taille moitié)
 stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}</pre>
 
 <p>
-Both programs will draw:<br/>
+Le réultat sera:<br/>
 
 <a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_stamp&amp;media=en:stamp.png" class="media" title="en:stamp.png"><img src="lib/exe/en_stamp.png" class="media" alt="" /></a>
 </p>
 
 </div>
 
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="disponible_depuis_la_version">Disponible depuis la version</h3>
 <div class="level3">
 
 <p>
@@ -154,7 +156,7 @@ Both programs will draw:<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/stamp.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/stamp.txt · Last modified: 2013/08/20 20:11 by philrich123</div>
 
                             </div></div><!-- /content -->
 

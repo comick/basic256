@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="date" content="2013-08-20T04:18:07-0700"/>
 <meta name="keywords" content="fr,techinformation"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -67,63 +67,63 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
 
-<h2 class="sectionedit1" id="developer_and_technical">Developer and Technical</h2>
+<h2 class="sectionedit1" id="le_coin_des_developpeur_et_des_aspects_techniques">Le coin des Développeur et des aspects Techniques</h2>
 <div class="level2">
 
 </div>
 
-<h3 class="sectionedit2" id="overview">Overview</h3>
+<h3 class="sectionedit2" id="generalites">Généralités</h3>
 <div class="level3">
 
 <p>
-BASIC-256 programs are first compiled to byte code using LEX and YACC, and then run by interpreting the byte code in a stack machine. Adding functions is a simple matter of adding a byte code, letting LEX and YACC know how to parse the syntax, and coding the appropriate instruction in the interpreter. If you&#039;ve never written a compiler or interpreter, the BASIC-256 internals would provide an excellent introduction to the basics of that.
+Les programmes en BASIC-256 sont tout d&#039;abord compilés en “byte code” en utilisant LEX et YACC, et ensuite exécutés en interprétant le “byte code” dans une “stack machine”. Ajouter une fonction c&#039;est juste ajouter un “byte code”, en disant à LEX et YACC comment en traiter la syntaxe, puis coder les instructions appropriées dans l&#039;interpréteur. Si vous n&#039;avez jamais codé un compilateur ou un interpréteur, le fonctionnement interne de BASIC-256 se révélera très formateur pour les bases ce type de travail.
 </p>
 
 <p>
-Please keep in mind that BASIC-256 is a teaching language for children (target ages 7-9), so we&#039;d like to stay away from advanced concepts as much as possible. While it would be fun to make BASIC-256 a powerful high-level language, there are already much better languages that exist to fill that need: Python, Scheme.
+Il faut malgré tout garder à l&#039;esprit que BASIC-256 est un langage d&#039;apprentissage destiné aux débutants (voir aux enfant de 7 à 9 ans), on s&#039;évertuera donc à ne pas aborder les concepts avancés. Bien qu&#039;il serait intéressant de faire de BASIC-256 un langage de haut niveau puissant, il faut garder à l&#039;esprit qu&#039;il existe déjà de meilleurs langages qui remplissent cette tâche: Python, Scheme…
 </p>
 
 </div>
 
-<h3 class="sectionedit3" id="to_do">To do</h3>
+<h3 class="sectionedit3" id="a_faire">A faire</h3>
 <div class="level3">
 <ol>
-<li class="level1"><div class="li"> Real-time error checking in the editor (parse each line just after it&#039;s typed)</div>
+<li class="level1"><div class="li"> Vérification des erreurs en temps réel dans l&#039;éditeur (analyse des lignes pendant la saisie)</div>
 </li>
 </ol>
 
 </div>
 
-<h3 class="sectionedit4" id="the_life_of_a_basic-256_program">The life of a BASIC-256 program</h3>
+<h3 class="sectionedit4" id="la_vie_d_un_programme_basic-256">La vie d&#039;un programme BASIC-256</h3>
 <div class="level3">
 <ol>
-<li class="level1"><div class="li"> BASIC program parsed into tokens by LEX</div>
+<li class="level1"><div class="li"> Les mots clés du programme BASIC sont décodés par LEX</div>
 </li>
-<li class="level1"><div class="li"> LEX feeds tokens to YACC</div>
+<li class="level1"><div class="li"> LEX fournis ces derniers à YACC</div>
 </li>
-<li class="level1"><div class="li"> YACC determines if line is valid syntax. If so, it adds the appropriate byte codes to the byte-coded program</div>
+<li class="level1"><div class="li"> YACC détermine si la syntaxe de la ligne est valide. Si c&#039;est le cas, il ajoute les “byte codes” appropriés dans le programme “byte-codé”</div>
 </li>
-<li class="level1"><div class="li"> If no syntax errors occur, the C++ portion of the program interprets the byte code one instruction at a time, using a stack machine</div>
+<li class="level1"><div class="li"> Si aucune erreur de syntaxe apparaît, la partie C++ du programme interprète les “byte code” un par un en utilisant une “stack machine”</div>
 </li>
-<li class="level1"><div class="li"> Run time errors halt program execution and display an error message on the screen</div>
+<li class="level1"><div class="li"> Les erreurs d’exécution stoppent le déroulement normal du programme et affichent un message d&#039;erreur à l&#039;écran.</div>
 </li>
 </ol>
 
 </div>
 
-<h3 class="sectionedit5" id="graphical_output">Graphical Output</h3>
+<h3 class="sectionedit5" id="l_affichage_graphique">L&#039;affichage Graphique</h3>
 <div class="level3">
 
 <p>
-All graphing functions are performed on a buffer, which is subsequently written to the screen immediately after each operation. This is intentionally inefficient. The “fast” way to do this would be to have a separate rendering thread that calls a display routine when it&#039;s done, or to do all the rendering in the display routine.
+Toutes les fonctions graphiques travaillent dans une mémoire tampon qui est ensuite utilisée pour mettre à jour l&#039;affichage immédiatement après chaque opération. Cette façon de procéder est intentionnellement inefficace. La méthode “rapide” consisterait à avoir une tâche séparée s&#039;occupant de générer ce qu&#039;il faut afficher qui appellerait une routine d&#039;affichage quand cela serait nécessaire, ou que ce soit la routine d&#039;affichage qui s&#039;occupe de générer ce qu&#039;il faut afficher.
 </p>
 
 <p>
-This is an ideal illustration of concessions made in BASIC-256 to keep things simple. We&#039;re interested in kids being able to see their dots move across the screen without having to explain double-buffering and multi-threading. We also want to allow them to write games like Pong that test for collisions using basic geometric formulas and draw the ball and paddles in a single loop. The current approach allows for this.
+Ceci est la parfaite illustration des concessions faite dans BASIC-256 afin de garder les choses le plus simple possible. On vise ici un public d&#039;enfants (ou de novices) qui souhaitent voir les points graphiques s&#039;allumer sur l&#039;écran sans avoir à expliquer le “double-buffering” ou le multitâche. Cette façon de procéder permet de créer des jeux comme “Pong” qui testent les collisions en utilisant des formules géométriques de base, de dessiner une balle et des raquettes avec une simple boucle.
 </p>
 
 <p>
-Note: To speed things up for children doing more advanced programs, the <a href="./fr_fastgraphics.html" class="wikilink1" title="fr:fastgraphics">FASTGRAPHICS</a> mode has been added. When in this mode, the display will only be updated when the BASIC program uses the <a href="./fr_refresh.html" class="wikilink1" title="fr:refresh">REFRESH</a> command. This allows kids to benefit from double-buffering without having to understand it completely.
+Remarque: Afin d&#039;accélérer l&#039;affichage pour les enfants ou débutants souhaitant faire des programmes plus avancés, le mode <a href="./fr_fastgraphics.html" class="wikilink1" title="fr:fastgraphics">FASTGRAPHICS</a> a été ajouté. Dans ce mode l&#039;affichage sera mis à jour seulement quand le programme BASIC utilisera la commande <a href="./fr_refresh.html" class="wikilink1" title="fr:refresh">REFRESH</a>. Cela permettra de bénéficier du “double-buffering” sans avoir à en maîtriser tout les aspects.
 </p>
 
 </div>
@@ -131,7 +131,7 @@ Note: To speed things up for children doing more advanced programs, the <a href=
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/techinformation.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/techinformation.txt · Last modified: 2013/08/20 04:18 by philrich123</div>
 
                             </div></div><!-- /content -->
 

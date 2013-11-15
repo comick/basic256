@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="date" content="2013-08-21T04:44:01-0700"/>
 <meta name="keywords" content="fr,spriteslice"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,9 +76,9 @@
 <div class="level3">
 
 <p>
-<strong>spriteslice</strong> <em>spritenumber</em>, <em>x</em>, <em>y</em>, <em>width</em>, <em>height</em><br/>
+<strong>spriteslice</strong> <em>numerosprite</em>, <em>x</em>, <em>y</em>, <em>largeur</em>, <em>hauteur</em><br/>
 
-<strong>spriteslice</strong> ( <em>spritenumber</em>, <em>x</em>, <em>y</em>, <em>width</em>, <em>height</em> )
+<strong>spriteslice</strong> ( <em>numerosprite</em>, <em>x</em>, <em>y</em>, <em>largeur</em>, <em>hauteur</em> )
 </p>
 
 </div>
@@ -87,12 +87,13 @@
 <div class="level3">
 
 <p>
-Copy the rectangular region of the screen with it&#039;s top left corner represented by <em>x</em> and <em>y</em> of the specified <em>height</em> and <em>width</em> and create a sprite.  The sprite will be active and movable but will not be visible until the Spriteshow statement is executed.  It is recommended that you execute the <a href="./fr_clg.html" class="wikilink1" title="fr:clg">Clg</a> command before drawing and slicing the sprite.  All unpainted pixels will be transparent when the sprite is drawn on the screen.  Transparent pixels may also be set by drawing with the color CLEAR.
+Créé un sprite à partir d&#039;une région donné de l&#039;affichage graphique définie par le coin supérieur gauche (<em>x</em>, <em>y</em>), sa <em>largeur</em> et sa <em>hauteur</em>. Le “sprite” est dès lors actif et déplaçable mais il ne s&#039;affichera à l&#039;écran que lors de l&#039;appel à la fonction <a href="./fr_spriteshow.html" class="wikilink1" title="fr:spriteshow">Spriteshow</a>.
+Il est recommandé d&#039;effacer la fenêtre graphique avec <a href="./fr_clg.html" class="wikilink1" title="fr:clg">Clg</a> avant de dessiner le “sprite” puis d&#039;utiliser cette fonction. Les zones non dessinées seront transparentes quand le “sprite” sera affiché à l&#039;écran. Les pixels transparents peuvent également être dessinés avec la couleur CLEAR.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="see_also">See Also</h3>
+<h3 class="sectionedit4" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -101,7 +102,7 @@ Copy the rectangular region of the screen with it&#039;s top left corner represe
 
 </div>
 
-<h3 class="sectionedit5" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit5" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
 <div class="level3">
 
 <p>
@@ -113,7 +114,7 @@ Copy the rectangular region of the screen with it&#039;s top left corner represe
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/spriteslice.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/spriteslice.txt · Last modified: 2013/08/21 04:44 by philrich123</div>
 
                             </div></div><!-- /content -->
 

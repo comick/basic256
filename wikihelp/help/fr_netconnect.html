@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-25T04:16:38-0700"/>
 <meta name="keywords" content="fr,netconnect"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -91,26 +91,26 @@
 <div class="level3">
 
 <p>
-Open a network connection (client) to a server.  The IP address or host name of a server are specified in the <em>server_name</em> argument, and the specific network port number in the <em>port_number</em> argument.  If <em>socket_number</em> is not specified socket number zero (0) will be used.
+Ouvre une connexion (client) réseau sur un serveur. Le paramètre <em>server_name</em> donne l&#039;adresse IP ou le nom d’hôte du serveur, tandis que <em>port_number</em> donne le numéro de port spécifique sur lequel la connexion doit être établie. Si le numéro de socket <em>socket_number</em> n&#039;est pas spécifié, zéro (0) est utilisé par défaut.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
 <div class="level3">
 
 <p>
-Open two instances of BASIC-256 on a single computer.  Paste the “server” code into one and the “client” code into the other.  Run the server first and the client second.  You can see how the messages are sent back and forth between the two different processes.
+Ouvrez deux instances de BASIC-256 sur un même ordinateur. Collez le code “serveur” dans une instance et collez le code “client” dans l&#039;autre. Lancez le code “serveur” en premier, puis le “client”. Vous pouvez voir les messages envoyés de l&#039;un à l&#039;autre des deux processus.
 </p>
 
 </div>
 
-<h4 id="server_code">Server Code</h4>
+<h4 id="code_serveur">Code Serveur</h4>
 <div class="level4">
-<pre class="code"># get a message and send back success
-print &quot;wait for connection&quot;
+<pre class="code"># Récupère un message et répond
+print &quot;Attente de connexion&quot;
 netlisten 9997
-print &quot;got connection&quot;
+print &quot;j&#039;ai la connexion&quot;
 do
    while not netdata
       pause .1
@@ -118,62 +118,62 @@ do
    end while
    n$ = netread
    print n$
-   netwrite &quot;I got &#039;&quot; + n$ + &quot;&#039;.&quot;
-until n$ = &quot;end&quot;
+   netwrite &quot;J&#039;ai reçu &#039;&quot; + n$ + &quot;&#039;.&quot;
+until n$ = &quot;fin&quot;
 netclose</pre>
 
 <p>
-will display
+Affichera
 </p>
-<pre class="code">wait for connection
-got connection
-.1 Hi There
-....2 Hi There
-........3 Hi There
-..........4 Hi There
-.....5 Hi There
-.......6 Hi There
-....7 Hi There
-..........8 Hi There
-....9 Hi There
-.....10 Hi There
-.end</pre>
+<pre class="code">Attente de connexion
+j&#039;ai la connexion
+.1 Coucou
+....2 Coucou
+........3 Coucou
+..........4 Coucou
+.....5 Coucou
+.......6 Coucou
+....7 Coucou
+..........8 Coucou
+....9 Coucou
+.....10 Coucou
+.fin</pre>
 
 </div>
 
-<h4 id="client_code">Client Code</h4>
+<h4 id="code_client">Code Client</h4>
 <div class="level4">
-<pre class="code"># have the user enter a message and send it to the server
-input &quot;enter message?&quot;, m$
+<pre class="code"># Attendre un message de l&#039;utilisateur et l&#039;envoyer au serveur
+input &quot;entrer un message?&quot;, m$
 netconnect &quot;127.0.0.1&quot;, 9997
 for t = 1 to 10
    pause rand
    netwrite t + &quot; &quot; + m$
    print netread
 next t
-netwrite &quot;end&quot;
+netwrite &quot;fin&quot;
 print netread
 netclose</pre>
 
 <p>
-will display
+Affichera
 </p>
-<pre class="code">enter message?Hi There
-I got &#039;1 Hi There&#039;.
-I got &#039;2 Hi There&#039;.
-I got &#039;3 Hi There&#039;.
-I got &#039;4 Hi There&#039;.
-I got &#039;5 Hi There&#039;.
-I got &#039;6 Hi There&#039;.
-I got &#039;7 Hi There&#039;.
-I got &#039;8 Hi There&#039;.
-I got &#039;9 Hi There&#039;.
-I got &#039;10 Hi There&#039;.
-I got &#039;end&#039;.</pre>
+<pre class="code">entrer un message?Coucou
+J&#039;ai reçu &#039;1 Coucou&#039;.
+J&#039;ai reçu &#039;2 Coucou&#039;.
+J&#039;ai reçu &#039;3 Coucou&#039;.
+J&#039;ai reçu &#039;4 Coucou&#039;.
+J&#039;ai reçu &#039;5 Coucou&#039;.
+J&#039;ai reçu &#039;6 Coucou&#039;.
+J&#039;ai reçu &#039;7 Coucou&#039;.
+J&#039;ai reçu &#039;8 Coucou&#039;.
+J&#039;ai reçu &#039;9 Coucou&#039;.
+J&#039;ai reçu &#039;10 Coucou&#039;.
+J&#039;ai reçu &#039;end&#039;.</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -182,7 +182,7 @@ I got &#039;end&#039;.</pre>
 
 </div>
 
-<h3 class="sectionedit6" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit6" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
 <div class="level3">
 
 <p>
@@ -194,7 +194,7 @@ I got &#039;end&#039;.</pre>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/netconnect.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/netconnect.txt · Last modified: 2013/08/25 04:16 by philrich123</div>
 
                             </div></div><!-- /content -->
 

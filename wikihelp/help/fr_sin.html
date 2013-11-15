@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-20T17:33:14-0700"/>
 <meta name="keywords" content="fr,sin"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -85,7 +85,7 @@
 <div class="level3">
 
 <p>
-Computes the sine of <em>expression</em>. <em>Expression</em> must be in radians.
+Calcul et retourne le sinus de <em>expression</em>. <em>Expression</em> doit être exprimé en  radians.
 </p>
 
 </div>
@@ -94,12 +94,12 @@ Computes the sine of <em>expression</em>. <em>Expression</em> must be in radians
 <div class="level3">
 
 <p>
-The sin function does not produce an exact result.
+La fonction sinus ne produit pas un résultat exacte.
 </p>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -108,16 +108,16 @@ The sin function does not produce an exact result.
 
 </div>
 
-<h3 class="sectionedit6" id="example">Example</h3>
+<h3 class="sectionedit6" id="exemple">Exemple</h3>
 <div class="level3">
 <pre class="code">clg
 color black
-# draw a line across the graphic output
+# On trace une ligne d&#039;axe dans la fenêtre d&#039;affichage graphique
 line 0,150,300,150
-# where do we start
+# On commence à x=0
 lastx = 0
 lasty = sin(0) * 50 + 150
-# now step across the line and draw
+# Ensuite on trace une ligne entre chaque point de la courbe de la fonction
 for x = 0 to 300 step 5
    angle = x / 300 * 2 * pi
    y = sin(angle) * 50 + 150
@@ -127,7 +127,7 @@ for x = 0 to 300 step 5
 next x</pre>
 
 <p>
-Draws
+Donnera le resultat suivant :
 <a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_sin&amp;media=fr:sin.jpg" class="media" title="fr:sin.jpg"><img src="lib/exe/fr_sin.jpg" class="media" title="Sine Curve" alt="Sine Curve" /></a>
 </p>
 
@@ -136,7 +136,7 @@ Draws
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/sin.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/sin.txt · Last modified: 2013/08/20 17:33 by philrich123</div>
 
                             </div></div><!-- /content -->
 

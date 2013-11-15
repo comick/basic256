@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:15-0700"/>
+<meta name="date" content="2013-08-19T14:22:46-0700"/>
 <meta name="keywords" content="fr,dbopen"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -99,17 +99,18 @@ Ouvre un fichier de base de données SQLite. Si le fichier n&#039;existe pas, il
 # crée un nouveau fichier de base de données ou l&#039;ouvre
 dbopen &quot;dbtest.sqlite3&quot;
 
-# efface l&#039;ancienne foo table - renvoie une erreur si c&#039;est une nouvelle base de données
+# efface l&#039;ancienne table &quot;foo&quot; - renvoie une erreur si c&#039;est une nouvelle base de données
 onerror errortrap
 dbexecute &quot;drop table foo;&quot;
 offerror
 # crée et peuple
 dbexecute &quot;create table foo (id integer, words text, value decimal);&quot;
-dbexecute &quot;insert into foo values (1,&#039;one&#039;,3.14);&quot;
-dbexecute &quot;insert into foo values (2,&#039;two&#039;,6.28);&quot;
-dbexecute &quot;insert into foo values (3,&#039;three&#039;,9.43);&quot;
+dbexecute &quot;insert into foo values (1,&#039;un&#039;,3.14);&quot;
+dbexecute &quot;insert into foo values (2,&#039;deux&#039;,6.28);&quot;
+dbexecute &quot;insert into foo values (3,&#039;trois&#039;,9.43);&quot;
 
-# ouvre un enregistrement et tourne en boucle  à travers les lignes de données
+# ouvre une table (série d&#039;enregistrements) résultat de la requête et
+# tourne en boucle pour parcourir tous les enregistrements (toutes les lignes de données).
 dbopenset &quot;select * from foo order by words;&quot;
 while dbrow()
 	print dbint(0) + dbstring(1) + dbfloat(2)
@@ -127,9 +128,9 @@ return</pre>
 <p>
 affichera
 </p>
-<pre class="code">1one3.14
-3three9.43
-2two6.28</pre>
+<pre class="code">1un3.14
+3trois9.43
+2deux6.28</pre>
 
 </div>
 
@@ -163,7 +164,7 @@ De plus amples informations (en anglais) sur les bases de données en général 
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/dbopen.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/dbopen.txt · Last modified: 2013/08/19 14:22 by philrich123</div>
 
                             </div></div><!-- /content -->
 

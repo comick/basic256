@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:17-0700"/>
+<meta name="date" content="2013-08-20T17:37:03-0700"/>
 <meta name="keywords" content="fr,tan"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -85,21 +85,21 @@
 <div class="level3">
 
 <p>
-Computes the tangent of <em>expression</em>. <em>Expression</em> must be in radians.
+Calcul et retourne la tangente de <em>expression</em> qui doit être donné en radians.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="note">Note</h3>
+<h3 class="sectionedit4" id="remarque">Remarque</h3>
 <div class="level3">
 
 <p>
-The tan function does not produce an exact result.
+La fonction tangente ne produit pas un résultat exacte.
 </p>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -112,12 +112,12 @@ The tan function does not produce an exact result.
 <div class="level3">
 <pre class="code">clg
 color black
-# draw a line across the graphic output
+# On trace l&#039;axe des x
 line 0,150,300,150
-# where do we start
+# on calcul le premier point
 lastx = 0
 lasty = tan(0) * 50 + 150
-# now step across the line and draw
+# on trace une ligne entre chaque point de la courbe
 for x = 0 to 300 step 5
    angle = x / 300 * 2 * pi
    y = tan(angle) * 50 + 150
@@ -127,7 +127,8 @@ for x = 0 to 300 step 5
 next x</pre>
 
 <p>
-Draws
+Donnera le résultat suivant:<br/>
+
 <a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_tan&amp;media=fr:tan.jpg" class="media" title="fr:tan.jpg"><img src="lib/exe/fr_tan.jpg" class="media" title="tan.jpg" alt="tan.jpg" /></a>
 </p>
 
@@ -136,7 +137,7 @@ Draws
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/tan.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/tan.txt · Last modified: 2013/08/20 17:37 by philrich123</div>
 
                             </div></div><!-- /content -->
 

@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-25T13:07:58-0700"/>
 <meta name="keywords" content="fr,ifthen"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,27 +76,27 @@
 <div class="level3">
 
 <p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong> <em>statement</em>
+<strong>if</strong> <em>expression_booléenne</em> <strong>then</strong> <em>instruction</em>
 </p>
 <hr />
 
 <p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/>
+<strong>if</strong> <em>expression_booléenne</em> <strong>then</strong><br/>
 
-<em>statement(s)</em><br/>
+<em>instruction(s)</em><br/>
 
 <strong>end if</strong>
 </p>
 <hr />
 
 <p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/>
+<strong>if</strong> <em>expression_booléenne</em> <strong>then</strong><br/>
 
-<em>statement(s)</em><br/>
+<em>instruction(s)</em><br/>
 
 <strong>else</strong><br/>
 
-<em>statement(s)</em><br/>
+<em>instruction(s)</em><br/>
 
 <strong>end if</strong>
 </p>
@@ -107,31 +107,32 @@
 <div class="level3">
 
 <p>
-A single line IF evaluates <em>booleanexpr</em>, when true the <em>statement(s)</em> following the then is executed, otherwise execution continues on the next line. There are also two forms of a multi-line if statement, one with a true block and one with a true and a false block of code to execute.
+un <strong>if</strong> (si) en une ligne évalue l&#039;<em>expression_booléenne</em>, si cette dernière est vrai alors l&#039;<em>instruction</em> qui suit <strong>then</strong> (alors) est exécuté. Sinon l&#039;exécution continue à la ligne qui suit le <strong>if</strong>.
+Il existe aussi deux autre formes de <strong>if</strong> (si) sur de multiple-lignes, une forme avec seulement un bloc d&#039;<em>instruction(s)</em> <strong>then</strong> (alors) exécuté si l&#039;<em>expression_booléenne</em> et vraie, et une autre forme avec en plus un bloc d&#039;<em>instruction(s)</em> <strong>else</strong> (sinon) exécuté si l&#039;<em>expression_booléenne</em> et fausse.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
 <div class="level3">
-<pre class="code">print &quot;Guess my letter - press a key&quot;
-# wait for the user to press a key
+<pre class="code">print &quot;Devinez la lettre à laquelle je pense - pressez la touche&quot;
+# Attend que l&#039;utilisateur presse une touche
 do
   a = key
   pause .01
 until a &lt;&gt; 0
 #
 if chr(a) = &quot;Z&quot; then
-   print &quot;Yippie, you pressed the Z key!!!&quot;
+   print &quot;Youpi, vous avez trouvé c&#039;est Z !!!&quot;
 else
-   print &quot;darn, you pressed something else.&quot;
+   print &quot;Eh non, c&#039;est pas ça.&quot;
 end if
 #
 end</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit5" id="disponible_depuis_la_version">Disponible depuis la version</h3>
 <div class="level3">
 
 <p>
@@ -143,7 +144,7 @@ end</pre>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/ifthen.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/ifthen.txt · Last modified: 2013/08/25 13:07 by philrich123</div>
 
                             </div></div><!-- /content -->
 

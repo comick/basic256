@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-26T13:21:56-0700"/>
 <meta name="keywords" content="fr,open"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,13 +76,21 @@
 <div class="level3">
 
 <p>
-<strong>open</strong> <em>filename</em><br/>
+<strong>open</strong> <em>nomfichier</em><br/>
 
-<strong>open</strong>(<em>filename</em>)<br/>
+<strong>open</strong>(<em>nomfichier</em>)<br/>
 
-<strong>open</strong> <em>filenumber</em>, <em>filename</em><br/>
+<strong>open</strong> <em>numerofichier</em>, <em>nomfichier</em><br/>
 
-<strong>open</strong>(<em>filenumber</em>, <em>filename</em>)
+<strong>open</strong>(<em>numerofichier</em>, <em>nomfichier</em>)<br/>
+
+<strong>openb</strong> <em>nomfichier</em><br/>
+
+<strong>openb</strong>(<em>nomfichier</em>)<br/>
+
+<strong>openb</strong> <em>numerofichier</em>, <em>nomfichier</em><br/>
+
+<strong>openb</strong>(<em>numerofichier</em>, <em>nomfichier</em>)
 </p>
 
 </div>
@@ -91,21 +99,22 @@
 <div class="level3">
 
 <p>
-Opens a file for reading and writing.  The <em>filename</em> is specified as a string, and may be an absolute or relative path.  If the file number is not specified file number zero (0) will be used.
+Ouvre un fichier pour la lecture/écriture. Le <em>nomfichier</em> est spécifié sous forme d&#039;une chaîne de caractères, et peut contenir un chemin d&#039;accès relatif ou absolu. Si aucun <em>numerofichier</em> n&#039;est spécifié le numéro zéro (0) sera utilisé par défaut.
+Openb ouvre le fichier en mode bianire (“binary safe”). Cet type d&#039;ouverture de fichiers est recommandé pour les fichiers dont on accède à l&#039;aide grâce au fonctions <a href="./fr_readbyte.html" class="wikilink1" title="fr:readbyte">Readbyte</a> et <a href="./fr_writebyte.html" class="wikilink1" title="fr:writebyte">Writebyte</a>.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="note">Note</h3>
+<h3 class="sectionedit4" id="remarque">Remarque</h3>
 <div class="level3">
 
 <p>
-BASIC256 may have up to 8 files open at a single time.  The files are numbered from 0 to 7.  Opening a file to a number while another is already open to that number will close the open file.
+BASIC256 peut ouvrir jusqu&#039;à 8 fichiers en même temps.  Les fichiers peuvent être numérotés de 0 à 7.  L&#039;ouverture d&#039;un fichier avec le numéro d&#039;un fichier déjà ouvert provoque la fermeture de ce dernier.
 </p>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
 <div class="level3">
 
 <p>
@@ -117,7 +126,7 @@ BASIC256 may have up to 8 files open at a single time.  The files are numbered f
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/open.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/open.txt · Last modified: 2013/08/26 13:21 by philrich123</div>
 
                             </div></div><!-- /content -->
 

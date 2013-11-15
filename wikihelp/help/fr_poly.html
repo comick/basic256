@@ -7,7 +7,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:16-0700"/>
+<meta name="date" content="2013-08-20T19:43:57-0700"/>
 <meta name="keywords" content="fr,poly"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -76,7 +76,7 @@
 <div class="level3">
 
 <p>
-<strong>poly</strong> <em>numeric array variable</em><br/>
+<strong>poly</strong> <em>variable_tableau_numerique</em><br/>
 
 <strong>poly</strong> {x1, y1, x2, y2, x3, y3 …}
 </p>
@@ -87,21 +87,21 @@
 <div class="level3">
 
 <p>
-Draws a polygon.  The sides of the polygon are defined by the values stored in the array, which should be stored as x,y pairs, sequentially. The length of the array/2 will define the number of points. A polygon may also be specified using a list of x,y pairs enclosed in curly braces {}.
+Trace un polygone.  Les sommets du polygone sont donnés par des coordonnées x,y stockées à la suite les unes des autres dans un tableau. La taille du tableau divisée par 2 définie le nombre de sommets. Cette fonction peut aussi être appelée avec en paramètre un tableau anonyme ( une suite de coordonnées x,y enfermées entre des accolades {}).
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="note">Note</h3>
+<h3 class="sectionedit4" id="remarque">Remarque</h3>
 <div class="level3">
 
 <p>
-The number of points in the array argument was removed from the poly statement in version 0.9.4.
+Avant la version 0.9.4 il fallait également passer le nombre de sommets en paramètre.
 </p>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="voir_aussi">Voir aussi</h3>
 <div class="level3">
 
 <p>
@@ -110,7 +110,7 @@ The number of points in the array argument was removed from the poly statement i
 
 </div>
 
-<h3 class="sectionedit6" id="example">Example</h3>
+<h3 class="sectionedit6" id="exemple">Exemple</h3>
 <div class="level3">
 <pre class="code">color blue
 rect 0,0,300,300
@@ -124,7 +124,7 @@ color green
 poly {100, 100, 200, 200, 100, 200}</pre>
 
 <p>
-Both programs use the poly statement to draw the following:<br/>
+Les deux codes ci-dessus produiront le résultat suivant:<br/>
 
 <a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_poly&amp;media=en:poly.png" class="media" title="en:poly.png"><img src="lib/exe/en_poly.png" class="media" alt="" /></a>
 </p>
@@ -134,7 +134,7 @@ Both programs use the poly statement to draw the following:<br/>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">fr/poly.txt · Last modified: 2011/03/29 11:56 (external edit)</div>
+                <div class="docInfo">fr/poly.txt · Last modified: 2013/08/20 19:43 by philrich123</div>
 
                             </div></div><!-- /content -->
 
