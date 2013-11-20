@@ -77,8 +77,8 @@ using namespace std;
 	#include <speak_lib.h>
 #endif
 
-extern QMutex* mutex;
-extern QMutex* debugmutex;
+extern QMutex* mymutex;
+extern QMutex* mydebugmutex;
 extern QWaitCondition* waitCond;
 extern QWaitCondition* waitDebugCond;
 
@@ -151,7 +151,7 @@ RunController::~RunController()
 void
 RunController::speakWords(QString text)
 {
-	mutex->lock();
+	mymutex->lock();
 	#ifdef ESPEAK
 	    SETTINGS;
 		espeak_ERROR err;
@@ -199,7 +199,7 @@ RunController::speakWords(QString text)
 		executeSystem(text);
 	#endif
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 
 }
 
@@ -211,7 +211,7 @@ RunController::executeSystem(QString text)
 	
 	QProcess sy;
 	//fprintf(stderr,"system b4 %s\n", text);
-	mutex->lock();
+	mymutex->lock();
 	
 	
      sy.start(text);
@@ -228,13 +228,13 @@ RunController::executeSystem(QString text)
 	
 	//system(text);
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 	//fprintf(stderr,"system af %s\n", text);
 }
 
 void RunController::playWAV(QString file)
 {
-	mutex->lock();
+	mymutex->lock();
 	#ifdef USEQSOUND
 		wavsound->play(file);
 	#endif
@@ -245,13 +245,13 @@ void RunController::playWAV(QString file)
     	Mix_PlayChannel(SDL_CHAN_WAV,music,0);
 	#endif
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 
 void RunController::waitWAV()
 {
-	mutex->lock();
+	mymutex->lock();
 	#ifdef USEQSOUND
 		while(!wavsound->isFinished())
 		#ifdef WIN32
@@ -269,12 +269,12 @@ void RunController::waitWAV()
 		#endif
 	#endif
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void RunController::stopWAV()
 {
-	mutex->lock();
+	mymutex->lock();
 	#ifdef USEQSOUND
 		wavsound->stop();
 	#endif
@@ -282,7 +282,7 @@ void RunController::stopWAV()
 		Mix_HaltChannel(SDL_CHAN_WAV);
 	#endif
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
@@ -337,45 +337,45 @@ void
 RunController::inputEntered(QString text)
 {
 	graphwin->setFocus();
-	mutex->lock();
+	mymutex->lock();
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
 RunController::outputClear()
 {
-	mutex->lock();
+	mymutex->lock();
 	outwin->clear();
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
 RunController::outputReady(QString text)
 {
-	mutex->lock();
+	mymutex->lock();
 	outwin->insertPlainText(text);
 	outwin->ensureCursorVisible();
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
 RunController::goutputReady()
 {
-	mutex->lock();
+	mymutex->lock();
 	graphwin->repaint();
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
 RunController::stepThrough()
 {
-	debugmutex->lock();
+	mydebugmutex->lock();
 	waitDebugCond->wakeAll();
-	debugmutex->unlock();
+	mydebugmutex->unlock();
 }
 
 void
@@ -387,15 +387,15 @@ RunController::stopRun()
 
 	stopWAV();
 
-	mutex->lock();
+	mymutex->lock();
 	outwin->setReadOnly(true);
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 
-	debugmutex->lock();
+	mydebugmutex->lock();
 	i->debugMode = false;
 	waitDebugCond->wakeAll();
-	debugmutex->unlock();
+	mydebugmutex->unlock();
 
 	emit(runHalted());
 }
@@ -560,13 +560,13 @@ void
 RunController::mainWindowsResize(int w, int width, int height)
 {
 	// only resize graphics window now - may add other windows later
-	mutex->lock();
+	mymutex->lock();
 	if (w==1) {
 		graphwin->resize(width, height);
 		graphwin->setMinimumSize(graphwin->image->width(), graphwin->image->height());
 	}
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 
@@ -578,10 +578,10 @@ RunController::dialogAlert(QString prompt)
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setDefaultButton(QMessageBox::Ok);
 	// actualy show alert (take exclusive control)
-	mutex->lock();
+	mymutex->lock();
 	msgBox.exec();
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
@@ -598,14 +598,14 @@ RunController::dialogConfirm(QString prompt, int dflt)
 		}
 	}
 	// actualy show confirm (take exclusive control)
-	mutex->lock();
+	mymutex->lock();
 	if (msgBox.exec()==QMessageBox::Yes) {
 		i->returnInt = 1;
 	} else {
 		i->returnInt = 0;
 	}
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void
@@ -615,14 +615,14 @@ RunController::dialogPrompt(QString prompt, QString dflt)
 	in.setLabelText(prompt);
 	in.setTextValue(dflt);
 	// actualy show prompt (take exclusive control)
-	mutex->lock();
+	mymutex->lock();
 	if (in.exec()==QDialog::Accepted) {
 		i->returnString = in.textValue();
 	} else {
 		i->returnString = dflt;
 	}
 	waitCond->wakeAll();
-	mutex->unlock();
+	mymutex->unlock();
 }
 
 void RunController::dialogFontSelect()
@@ -633,11 +633,11 @@ void RunController::dialogFontSelect()
     if (ok) {
         settings.setValue(SETTINGSFONT, newf.toString());
 
-		mutex->lock();
+		mymutex->lock();
         editwin->setFont(newf);
         outwin->setFont(newf);
 		waitCond->wakeAll();
-		mutex->unlock();
+		mymutex->unlock();
     }
 }
 

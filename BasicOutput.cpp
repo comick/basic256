@@ -39,7 +39,7 @@
 #include "Settings.h"
 #include "BasicOutput.h"
 
-extern QMutex *mutex;
+extern QMutex *mymutex;
 extern int currentKey;
 
 BasicOutput::BasicOutput( ) : QTextEdit () 
@@ -70,9 +70,9 @@ BasicOutput::keyPressEvent(QKeyEvent *e)
   e->accept();
   if (!gettingInput)
     {
-      mutex->lock();
+      mymutex->lock();
       currentKey = e->key();
-      mutex->unlock();
+      mymutex->unlock();
       //QTextEdit::keyPressEvent(e);
     }
   else

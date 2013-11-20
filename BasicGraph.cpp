@@ -37,11 +37,9 @@
     #include <QPrinter>
 #endif
 
-using namespace std;
-
 #include "BasicGraph.h"
 
-extern QMutex *mutex;
+extern QMutex *mymutex;
 extern int currentKey;
 
 BasicGraph::BasicGraph()
@@ -133,9 +131,9 @@ BasicGraph::keyPressEvent(QKeyEvent *e)
 {
   e->accept();
   
-  mutex->lock();
+  mymutex->lock();
   currentKey = e->key();
-  mutex->unlock();
+  mymutex->unlock();
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {

@@ -49,9 +49,9 @@ using namespace std;
 #include "Settings.h"
 #include "Version.h"
 
-// global mutexes and timers
-QMutex* mutex;
-QMutex* debugmutex;
+// global mymutexes and timers
+QMutex* mymutex;
+QMutex* mydebugmutex;
 QWaitCondition* waitCond;
 QWaitCondition* waitDebugCond;
 
@@ -75,9 +75,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	mainwin = this;
 
-	// create the global mutexes and waits
-	mutex = new QMutex(QMutex::NonRecursive);
-	debugmutex = new QMutex(QMutex::NonRecursive);
+	// create the global mymutexes and waits
+	mymutex = new QMutex(QMutex::NonRecursive);
+	mydebugmutex = new QMutex(QMutex::NonRecursive);
 	waitCond = new QWaitCondition();
 	waitDebugCond = new QWaitCondition();
 
@@ -421,7 +421,7 @@ MainWindow::~MainWindow()
 	//printf("mwdestroy\n");
 	delete rc;
 	delete editsyntax;
-	delete mutex;
+	delete mymutex;
 	delete waitCond;
 	delete editwin;
 	delete outwin;

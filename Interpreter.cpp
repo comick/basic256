@@ -76,8 +76,8 @@ using namespace std;
 #include "Settings.h"
 #include "Sound.h"
 
-extern QMutex *mutex;
-extern QMutex *debugmutex;
+extern QMutex *mymutex;
+extern QMutex *mydebugmutex;
 extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
 
@@ -1381,10 +1381,10 @@ void
 Interpreter::waitForGraphics()
 {
 	// wait for graphics operation to complete
-	mutex->lock();
+	mymutex->lock();
 	emit(goutputReady());
-	waitCond->wait(mutex);
-	mutex->unlock();
+	waitCond->wait(mymutex);
+	mymutex->unlock();
 }
 
 
@@ -1439,9 +1439,9 @@ Interpreter::execByteCode()
 		if (debugMode && *op != OP_CURRLINE)
 		{
 			emit(highlightLine(currentLine));
-			debugmutex->lock();
-			waitDebugCond->wait(debugmutex);
-			debugmutex->unlock();
+			mydebugmutex->lock();
+			waitDebugCond->wait(mydebugmutex);
+			mydebugmutex->unlock();
 		}
 	}
 
@@ -3050,10 +3050,10 @@ Interpreter::execByteCode()
 	case OP_SAY:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
  			emit(speakWords(stack.popstring()));
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
@@ -3064,10 +3064,10 @@ Interpreter::execByteCode()
 
             SETTINGS;
 			if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
-				mutex->lock();
+				mymutex->lock();
                 emit(executeSystem(temp));
-				waitCond->wait(mutex);
-				mutex->unlock();
+				waitCond->wait(mymutex);
+				mymutex->unlock();
 			} else {
 				errornum = ERROR_PERMISSION;
 			}
@@ -3077,20 +3077,20 @@ Interpreter::execByteCode()
 	case OP_WAVPLAY:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
 			emit(playWAV(stack.popstring()));
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
 	case OP_WAVSTOP:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
 			emit(stopWAV());
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
@@ -3540,10 +3540,10 @@ Interpreter::execByteCode()
 	case OP_CLS:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
 			emit(outputClear());
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
@@ -3606,10 +3606,10 @@ Interpreter::execByteCode()
 			if (twoval>0) width = twoval;
 			if (width > 0 && height > 0)
 			{
-				mutex->lock();
+				mymutex->lock();
 				emit(mainWindowsResize(1, width, height));
-				waitCond->wait(mutex);
-				mutex->unlock();
+				waitCond->wait(mymutex);
+				mymutex->unlock();
 			}
 		}
 		break;
@@ -3639,10 +3639,10 @@ Interpreter::execByteCode()
 	case OP_REFRESH:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
 			emit(goutputReady());
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
@@ -3650,20 +3650,20 @@ Interpreter::execByteCode()
 		{
 			op++;
 			status = R_INPUT;
-			mutex->lock();
+			mymutex->lock();
 			emit(getInput());
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 		}
 		break;
 
 	case OP_KEY:
 		{
 			op++;
-			mutex->lock();
+			mymutex->lock();
 			stack.pushint(currentKey);
 			currentKey = 0;
-			mutex->unlock();
+			mymutex->unlock();
 		}
 		break;
 
@@ -3675,10 +3675,10 @@ Interpreter::execByteCode()
 			{
 				p += "\n";
 			}
-			mutex->lock();
+			mymutex->lock();
 			emit(outputReady(p));
-			waitCond->wait(mutex);
-			mutex->unlock();
+			waitCond->wait(mymutex);
+			mymutex->unlock();
 			op++;
 		}
 		break;
@@ -4251,10 +4251,10 @@ Interpreter::execByteCode()
 			case OPX_WAVWAIT:
 				{
 					op++;
-					mutex->lock();
+					mymutex->lock();
 					emit(waitWAV());
-					waitCond->wait(mutex);
-					mutex->unlock();
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 				}
 				break;
 
@@ -5209,10 +5209,10 @@ Interpreter::execByteCode()
 				{
 					op++;
 					QString temp = stack.popstring();
-					mutex->lock();
+					mymutex->lock();
 					emit(dialogAlert(temp));
-					waitCond->wait(mutex);
-					mutex->unlock();
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 					waitForGraphics();
 				}
 				break;
@@ -5222,10 +5222,10 @@ Interpreter::execByteCode()
 					op++;
 					int dflt = stack.popint();
 					QString temp = stack.popstring();
-					mutex->lock();
+					mymutex->lock();
 					emit(dialogConfirm(temp,dflt));
-					waitCond->wait(mutex);
-					mutex->unlock();
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 					stack.pushint(returnInt);
 					waitForGraphics();
 				}
@@ -5236,10 +5236,10 @@ Interpreter::execByteCode()
 					op++;
 					QString dflt = stack.popstring();
 					QString msg = stack.popstring();
-					mutex->lock();
+					mymutex->lock();
 					emit(dialogPrompt(msg,dflt));
-					waitCond->wait(mutex);
-					mutex->unlock();
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 					stack.pushstring(returnString);
 					waitForGraphics();
 				}
@@ -5377,10 +5377,10 @@ Interpreter::execByteCode()
 							// number of symbols - display them to output area
 							{
 								for(int i=0;i<numsyms;i++) {
-									mutex->lock();
+									mymutex->lock();
 									emit(outputReady(QString("SYM %1 LOC %2\n").arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
-									waitCond->wait(mutex);
-									mutex->unlock();
+									waitCond->wait(mymutex);
+									mymutex->unlock();
 								}
 								stack.pushint(numsyms);
 							}
@@ -5390,7 +5390,7 @@ Interpreter::execByteCode()
 							{
 							unsigned char *o = byteCode;
 							while (o <= byteCode + byteOffset) {
-								mutex->lock();
+								mymutex->lock();
 								unsigned int offset = o-byteCode;
 								unsigned char currentop = (unsigned char) *o;
 								o += sizeof(unsigned char);
@@ -5426,8 +5426,8 @@ Interpreter::execByteCode()
 									int len = strlen((char*) o) + 1;
 									o += len;
 								}
-								waitCond->wait(mutex);
-								mutex->unlock();
+								waitCond->wait(mymutex);
+								mymutex->unlock();
 							}
 							}
 							stack.pushint(0);
