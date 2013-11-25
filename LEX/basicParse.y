@@ -85,6 +85,8 @@ int nextifid;
 #define IFTABLETYPEWHILE 4
 #define IFTABLETYPEFOR 5
 #define IFTABLETYPEFUNCTION 6
+#define IFTABLETYPETRY 7
+#define IFTABLETYPECATCH 8
 
 
 // store the function variables here during a function definition
@@ -135,6 +137,8 @@ int testIfOnTableError(int includelevel) {
 			if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
 			if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
 			if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPETRY) return COMPERR_TRYNOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
 		}
 	}	
 	return 0;
@@ -356,6 +360,7 @@ addStringOp(char op, char *data) {
 %token B256DEBUGINFO
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 %token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
+%token B256TRY B256CATCH B256ENDTRY
 
 
 %union
@@ -395,14 +400,8 @@ program: program '\n' validline
 	| validline
 ;
 
-validline: label validstatement {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
-	| validstatement {
-		lastLineOffset = byteOffset;
-		addIntOp(OP_CURRLINE, linenumber);
-	}
+validline: label validstatement { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
+	| validstatement { lastLineOffset = byteOffset; addIntOp(OP_CURRLINE, linenumber); }
 ;
 
 label: B256LABEL {
@@ -427,6 +426,9 @@ validstatement: compoundifstmt
 	| endfunctionstmt
 	| subroutinestmt
 	| endsubroutinestmt
+	| trystmt
+	| catchstmt
+	| endtrystmt
 	| /*empty*/
 ;
 
@@ -762,6 +764,70 @@ untilstmt: B256UNTIL floatexpr
 		return -1;
 	}
 }
+
+trystmt: B256TRY
+	{
+		//
+		// add on error branch
+		addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+		//
+		// put new if on the frame for the TRY
+		newIf(linenumber, IFTABLETYPETRY);
+	}
+;
+
+catchstmt: B256CATCH
+	{
+	//
+	// create jump around from end of the TRY to end of the CATCH
+	addExtendedOp(OPX_OFFERROR);
+	addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+	//
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPETRY) {
+			//
+			// resolve the try onerrorcatch to the catch address
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			numifs--;
+			//
+			// put new if on the frame for the catch
+			newIf(linenumber, IFTABLETYPECATCH);
+			addExtendedOp(OPX_OFFERROR);
+		} else {
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_CATCH;
+		return -1;
+	}
+}
+;
+
+endtrystmt: B256ENDTRY
+	{
+	// if there is an if branch or jump on the iftable stack get where it is
+	// in the bytecode array and then put the current bytecode address there
+	// - so we can jump over code
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPECATCH) {
+			//
+			// resolve the label on the Catch to the current location
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			numifs--;
+		} else {
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_ENDTRY;
+		return -1;
+	}
+}
+;
+
 
 compoundstmt: statement | compoundstmt ':' statement
 ;
@@ -1245,10 +1311,26 @@ callstmt: B256CALL B256VARIABLE  { addIntOp(OP_GOSUB, $2); }
 	| B256CALL B256VARIABLE '(' explist ')'  { addIntOp(OP_GOSUB, $2); }
 ;
 
-offerrorstmt: B256OFFERROR { addExtendedOp(OPX_OFFERROR); }
+offerrorstmt: B256OFFERROR { 
+	int i;
+	for(i=0; i < numifs; i++) {
+		if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
+			errorcode = COMPERR_NOTINTRYCATCH;
+			return -1;
+		}
+	}
+	addExtendedOp(OPX_OFFERROR); }
 ;
 
-onerrorstmt: B256ONERROR B256VARIABLE { addIntOp(OP_ONERROR, $2); }
+onerrorstmt: B256ONERROR B256VARIABLE {
+	int i;
+	for(i=0; i < numifs; i++) {
+		if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
+			errorcode = COMPERR_NOTINTRYCATCH;
+			return -1;
+		}
+	}
+	addIntOp(OP_ONERRORGOSUB, $2); }
 ;
 
 returnstmt: B256RETURN { 

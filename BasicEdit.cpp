@@ -355,6 +355,16 @@ void BasicEdit::beautifyProgram()
 		} else if (line.contains(QRegExp("^[Uu][Nn][Tt][Ii][Ll]\\s"))) {
 			// until - come out of block
 			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Tt][Rr][Yy]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// try indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Cc][Aa][Tt][Cc][Hh]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// catch - come out of block and start new block
+			decreaseIndent = true;
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Tt][Rr][Yy]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// end try - come out of block - reduce indent
+			decreaseIndent = true;
 		}
 		//
 		if (decreaseIndent) {

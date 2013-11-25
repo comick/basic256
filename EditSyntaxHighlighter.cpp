@@ -82,6 +82,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Aa][Ss][Ii][Nn]\\b"											// asin
 		<< "\\b[Aa][Tt][Aa][Nn]\\b"											// atan
 		<< "\\b[Cc][Aa][Ll][Ll]\\b"											// call
+		<< "\\b[Cc][Aa][Tt][Cc][Hh]\\b"										// catch
 		<< "\\b[Cc][Ee][Ii][Ll]\\b"											// ceil
 		<< "\\b[Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]\\b"						// changedir
 		<< "\\b[Cc][Hh][Oo][Rr][Dd]\\b"										// chord
@@ -126,6 +127,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"		// endfunction
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ii][Ff]\\b"								// endif
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"	// endsubroutine
+		<< "\\b[Ee][Nn][Dd][ \t]*[Tt][Rr][Yy]\\b"							// endtry
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]\\b"					// endwhile
 		<< "\\b[Ee][Oo][Ff]\\b"												// eof
 		<< "\\b[Ee][Xx][Ii][Ss][Tt][Ss]\\b"									// exists
@@ -250,7 +252,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]\\b"					// spriteload
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]\\b"					// spritemove
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]\\b"				// spriteplace
-		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]\\b"				// spritepoly
+		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]\\b"					// spritepoly
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Rr]\\b"								// spriter
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ss]\\b"								// sprites
 		<< "\\b[Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]\\b"					// spriteshow
@@ -277,6 +279,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Tt][Oo][Hh][Ee][Xx]\\b"										// tohex
 		<< "\\b[Tt][Oo][Oc][Cc][Tt][Aa][Ll]\\b"								// tooctal
 		<< "\\b[Tt][Oo][Rr][Aa][Dd][Ii][Xx]\\b"								// toradix
+		<< "\\b[Tt][Rr][Yy]\\b"												// try
 		<< "\\b[Uu][Nn][Tt][Ii][Ll]\\b"										// until
 		<< "\\b[Uu][Pp][Pp][Ee][Rr]\\b"										// upper
 		<< "\\b[Vv][Ee][Rr][Ss][Ii][Oo][Nn]\\b"								// version

@@ -40,6 +40,7 @@ struct symbol
 	} value;
 };
 
+extern int numifs;
 extern struct symbol symtable[];
 extern void clearSymbolTable();
 extern void dumpSynbolTable();
@@ -110,6 +111,7 @@ booleof [Ee][Oo][Ff]
 boolfalse [Ff][Aa][Ll][Ss][Ee]
 booltrue [Tt][Rr][Uu][Ee]
 call [Cc][Aa][Ll][Ll]
+catch [Cc][Aa][Tt][Cc][Hh]
 ceil [Cc][Ee][Ii][Ll]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
 chord [Cc][Hh][Oo][Rr][Dd]
@@ -156,6 +158,7 @@ else [Ee][Ll][Ss][Ee]
 end [Ee][Nn][Dd]
 endfunction [Ee][Nn][Dd][ \t]?[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
+endtry [Ee][Nn][Dd][ \t]?[Tt][Rr][Yy]
 endsubroutine [Ee][Nn][Dd][ \t]?[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endwhile [Ee][Nn][Dd][ \t]?[Ww][Hh][Ii][Ll][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
@@ -318,6 +321,7 @@ toint [Ii][Nn][Tt]
 tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
 toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
+try [Tt][Rr][Yy]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
@@ -391,6 +395,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {boolfalse}	{ count(); return B256BOOLFALSE; }
 {booltrue}	{ count(); return B256BOOLTRUE; }
 {call}		{ count(); return B256CALL; }
+{catch}		{ count(); return B256CATCH; }
 {ceil}		{ count(); return B256CEIL; }
 {changedir}	{ count(); return B256CHANGEDIR; }
 {chord}		{ count(); return B256CHORD; }
@@ -445,6 +450,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {endfunction}	{ count(); return B256ENDFUNCTION; }
 {endif}		{ count(); return B256ENDIF; }
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
+{endtry}	{ count(); return B256ENDTRY; }
 {endwhile}	{ count(); return B256ENDWHILE; }
 {exists}	{ count(); return B256EXISTS; }
 {exitdo}	{ count(); return B256EXITDO; }
@@ -607,6 +613,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {tooctal}		{ count(); return B256TOOCTAL; }
 {toradix}		{ count(); return B256TORADIX; }
 {tostring}	{ count(); return B256TOSTRING; }
+{try}	{ count(); return B256TRY; }
 {until}		{ count(); return B256UNTIL; }
 {upper}		{ count(); return B256UPPER; }
 {version}		{ count(); return B256VERSION; }
@@ -718,13 +725,13 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 		// eof of the top level program
 		yyterminate();
 	} else {
-		//
-		// check for unclosed if structures
+
+		// check for unclosed if and other structures
 		if (testIfOnTable(numincludes)!=-1) {
-			linenumber = testIfOnTable(numincludes);
-			return testIfOnTableError(0);
+			linenumber = testIfOnTable(numincludes)+1;
+			return testIfOnTableError(numincludes);
 		}
-		//
+
 		// eof of an include - return to the includer
 		numincludes--;
 		linenumber=include_linenumber[numincludes];
@@ -793,7 +800,7 @@ basicParse(char *code) {
 	
 
 	if (testIfOnTable(0)!=-1 && errorcode==0) {
-		linenumber = testIfOnTable(0);
+		linenumber = testIfOnTable(0)+1;
 		errorcode = testIfOnTableError(0);
 	}
 

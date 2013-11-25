@@ -279,7 +279,8 @@ int Interpreter::optype(int op) {
 	else if (op==OP_CURRLINE) return OPTYPE_INT;
 	else if (op==OP_DIM) return OPTYPE_VARIABLE;
 	else if (op==OP_DIMSTR) return OPTYPE_VARIABLE;
-	else if (op==OP_ONERROR) return OPTYPE_LABEL;
+	else if (op==OP_ONERRORGOSUB) return OPTYPE_LABEL;
+	else if (op==OP_ONERRORCATCH) return OPTYPE_LABEL;
 	else if (op==OP_EXPLODESTR) return OPTYPE_VARIABLE;
 	else if (op==OP_EXPLODESTR_C) return OPTYPE_VARIABLE;
 	else if (op==OP_EXPLODE) return OPTYPE_VARIABLE;
@@ -457,7 +458,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_CURRLINE) return QString("OP_CURRLINE");
 	else if (op==OP_DIM) return QString("OP_DIM");
 	else if (op==OP_DIMSTR) return QString("OP_DIMSTR");
-	else if (op==OP_ONERROR) return QString("OP_ONERROR");
+	else if (op==OP_ONERRORGOSUB) return QString("OP_ONERRORGOSUB");
+	else if (op==OP_ONERRORCATCH) return QString("OP_ONERRORCATCH");
 	else if (op==OP_EXPLODESTR) return QString("OP_EXPLODESTR");
 	else if (op==OP_EXPLODESTR_C) return QString("OP_EXPLODESTR_C");
 	else if (op==OP_EXPLODE) return QString("OP_EXPLODE");
@@ -1049,10 +1051,10 @@ Interpreter::compileProgram(char *code)
 				msg += tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration");
 				break;
 			case COMPERR_GLOBALNOTHERE:
-				msg += tr("You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE");
+				msg += tr("You may not define GLOBAL variable(s) inside an IF, loop, TRY, CATCH, or FUNCTION/SUBROUTINE");
 				break;
 			case COMPERR_FUNCTIONNOTHERE:
-				msg += tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE");
+				msg += tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, TRY, CATCH, or other FUNCTION/SUBROUTINE");
 				break;
 			case COMPERR_ENDFUNCTION:
 				msg += tr("END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE");
@@ -1120,6 +1122,23 @@ Interpreter::compileProgram(char *code)
 			case COMPERR_INCLUDEDEPTH:
 				msg += tr("Maximum depth of INCLUDE files");
 				break;
+			case COMPERR_TRYNOEND:
+				msg += tr("TRY without matching CATCH statement");
+				break;
+			case COMPERR_CATCH:
+				msg += tr("CATCH whthout matching TRY statement");
+				break;
+			case COMPERR_CATCHNOEND:
+				msg += tr("CATCH whthout matching ENDTRY statement");
+				break;
+			case COMPERR_ENDTRY:
+				msg += tr("ENDTRY whthout matching CATCH statement");
+				break;
+			case COMPERR_NOTINTRYCATCH:
+				msg += tr("You may not define an ONERROR or an OFFERROR in a TRY/CACTCH declaration");
+				break;
+
+
 			default:
 				if(column==0) {
 					msg += tr("Syntax error around end of line");
@@ -1227,6 +1246,7 @@ Interpreter::initialize()
 {
 	op = byteCode;
 	callstack = NULL;
+	onerrorstack = NULL;
 	forstack = NULL;
 	fastgraphics = false;
 	drawingpen = QPen(Qt::black);
@@ -1359,7 +1379,7 @@ Interpreter::run()
 	lasterrornum = ERROR_NONE;
     lasterrormessage = "";
 	lasterrorline = 0;
-	onerroraddress = 0;
+	onerrorstack = NULL;
 	while (status != R_STOPPED && execByteCode() >= 0) {} //continue
 	status = R_STOPPED;
 	cleanup(); // cleanup the variables, databases, files, stack and everything
@@ -1415,13 +1435,16 @@ Interpreter::execByteCode()
 		lasterrorline = currentLine;
 		errornum = ERROR_NONE;
 		errormessage = "";
-		if(onerroraddress!=0 && lasterrornum > 0) {
+		if(onerrorstack && lasterrornum > 0) {
 			// progess call to subroutine for error handling
-			frame *temp = new frame;
-			temp->returnAddr = op;
-			temp->next = callstack;
-			callstack = temp;
-			op = byteCode + onerroraddress;
+			// or jump to the catch label
+			if (onerrorstack->onerrorgosub) {
+				frame *temp = new frame;
+				temp->returnAddr = op;
+				temp->next = callstack;
+				callstack = temp;
+			}
+			op = byteCode + onerrorstack->onerroraddress;
 			return 0;
 		} else {
 			// no error handler defined or FATAL error - display message and die
@@ -1479,22 +1502,43 @@ Interpreter::execByteCode()
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
-
+			// setup return
 			frame *temp = new frame;
 			temp->returnAddr = op;
 			temp->next = callstack;
 			callstack = temp;
+			// do jump
 			op = byteCode + *i;
 		}
 		break;
 
-	case OP_ONERROR:
+	case OP_ONERRORGOSUB:
 		{
 			// get the address of the subroutine for error handling
 			op++;
 			int *i = (int *) op;
 			op += sizeof(int);
-			onerroraddress = *i;
+			// setup onerror frame and put on top of onerrorstack
+			onerrorframe *temp = new onerrorframe;
+			temp->onerroraddress = *i;
+			temp->onerrorgosub = true;
+			temp->next = onerrorstack;
+			onerrorstack = temp;
+		}
+		break;
+
+	case OP_ONERRORCATCH:
+		{
+			// get the address of the catch for error handling
+			op++;
+			int *i = (int *) op;
+			op += sizeof(int);
+			// setup onerror frame and put on top of onerrorstack
+			onerrorframe *temp = new onerrorframe;
+			temp->onerroraddress = *i;
+			temp->onerrorgosub = false;
+			temp->next = onerrorstack;
+			onerrorstack = temp;
 		}
 		break;
 
@@ -4487,9 +4531,12 @@ Interpreter::execByteCode()
 
 			case OPX_OFFERROR:
 				{
-					// turn off error trapping
+					// pop a trap off of the trap stack
 					op++;
-					onerroraddress = 0;
+					onerrorframe *temp = onerrorstack;
+					if (temp) {
+						onerrorstack = temp->next;
+					}
 				}
 				break;
 

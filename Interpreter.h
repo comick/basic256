@@ -64,7 +64,14 @@ struct frame {
   unsigned char *returnAddr;
 };
 
-  
+// used to track nested on-error and try/catch definitions
+struct onerrorframe {
+  onerrorframe *next;
+  int onerroraddress;
+  bool onerrorgosub;
+};
+
+// structure for the nested for statements  
 struct forframe {
   forframe *prev;
   forframe *next;
@@ -150,6 +157,7 @@ class Interpreter : public QThread
   unsigned char *op;
   frame *callstack;
   forframe *forstack;
+  onerrorframe *onerrorstack;
   QPen drawingpen;
   QBrush drawingbrush;
   run_status status;
@@ -177,7 +185,6 @@ class Interpreter : public QThread
   int lasterrornum;
   QString lasterrormessage;
   int lasterrorline;
-  int onerroraddress;
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;			// used by dir function
   QTime runtimer;				// used by 
