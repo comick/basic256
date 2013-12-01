@@ -161,6 +161,74 @@ endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
 endtry [Ee][Nn][Dd][ \t]?[Tt][Rr][Yy]
 endsubroutine [Ee][Nn][Dd][ \t]?[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endwhile [Ee][Nn][Dd][ \t]?[Ww][Hh][Ii][Ll][Ee]
+error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]
+error_for1 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]
+error_for2 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]
+error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
+error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
+error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
+error_filewrite [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]
+error_filereset [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]
+error_arraysizelarge [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]
+error_arraysizesmall [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]
+error_nosuchvariable [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee]
+error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
+error_strneglen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Nn][Ee][Gg][Ll][Ee][Nn]
+error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
+error_strend [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ee][Nn][Dd]
+error_nonnumeric [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
+error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
+error_putbitformat [Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]
+error_polyarray [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Aa][Rr][Rr][Aa][Yy]
+error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
+error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
+error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
+error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]
+error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
+error_folder [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]
+error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]
+error_dbopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Oo][Pp][Ee][Nn]
+error_dbquery [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]
+error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
+error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
+error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]
+error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]
+error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]
+error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]
+error_netread [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]
+error_netnone [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]
+error_netwrite [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
+error_netsockopt [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]
+error_netbind [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]
+error_netaccept [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]
+error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]
+error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
+error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
+error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]
+error_byref [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff]
+error_byreftype [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff][Tt][Yy][Pp][Ee]
+error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
+error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
+error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]
+error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]
+error_freedbset [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
+error_dbsetnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Ss][Ee][Tt][Nn][Uu][Mm][Bb][Ee][Rr]
+error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]
+error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
+error_colornumber [Ee][Rr][Rr][Oo][Rr][_][Cc][Oo][Ll][Oo][Rr][Nn][Uu][Mm][Bb][Ee][Rr]
+error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
+error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
+error_fontsize [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ss][Ii][Zz][Ee]
+error_fontweight [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ww][Ee][Ii][Gg][Hh][Tt]
+error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]
+error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]
+error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]
+error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
+error_notanumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]
+error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
+error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
+error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
+error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 exitdo [Ee][Xx][Ii][Tt][ \t]?[Dd][Oo]
 exitfor [Ee][Xx][Ii][Tt][ \t]?[Ff][Oo][Rr]
@@ -452,6 +520,74 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
 {endtry}	{ count(); return B256ENDTRY; }
 {endwhile}	{ count(); return B256ENDWHILE; }
+{error_none} { count(); return B256ERROR_NONE; }
+{error_for1} { count(); return B256ERROR_FOR1; }
+{error_for2} { count(); return B256ERROR_FOR2; }
+{error_filenumber} { count(); return B256ERROR_FILENUMBER; }
+{error_fileopen} { count(); return B256ERROR_FILEOPEN; }
+{error_filenotopen} { count(); return B256ERROR_FILENOTOPEN; }
+{error_filewrite} { count(); return B256ERROR_FILEWRITE; }
+{error_filereset} { count(); return B256ERROR_FILERESET; }
+{error_arraysizelarge} { count(); return B256ERROR_ARRAYSIZELARGE; }
+{error_arraysizesmall} { count(); return B256ERROR_ARRAYSIZESMALL; }
+{error_nosuchvariable} { count(); return B256ERROR_NOSUCHVARIABLE; }
+{error_arrayindex} { count(); return B256ERROR_ARRAYINDEX; }
+{error_strneglen} { count(); return B256ERROR_STRNEGLEN; }
+{error_strstart} { count(); return B256ERROR_STRSTART; }
+{error_strend} { count(); return B256ERROR_STREND; }
+{error_nonnumeric} { count(); return B256ERROR_NONNUMERIC; }
+{error_rgb} { count(); return B256ERROR_RGB; }
+{error_putbitformat} { count(); return B256ERROR_PUTBITFORMAT; }
+{error_polyarray} { count(); return B256ERROR_POLYARRAY; }
+{error_polypoints} { count(); return B256ERROR_POLYPOINTS; }
+{error_imagefile} { count(); return B256ERROR_IMAGEFILE; }
+{error_spritenumber} { count(); return B256ERROR_SPRITENUMBER; }
+{error_spritena} { count(); return B256ERROR_SPRITENA; }
+{error_spriteslice} { count(); return B256ERROR_SPRITESLICE; }
+{error_folder} { count(); return B256ERROR_FOLDER; }
+{error_infinity} { count(); return B256ERROR_INFINITY; }
+{error_dbopen} { count(); return B256ERROR_DBOPEN; }
+{error_dbquery} { count(); return B256ERROR_DBQUERY; }
+{error_dbnotopen} { count(); return B256ERROR_DBNOTOPEN; }
+{error_dbcolno} { count(); return B256ERROR_DBCOLNO; }
+{error_dbnotset} { count(); return B256ERROR_DBNOTSET; }
+{error_netsock} { count(); return B256ERROR_NETSOCK; }
+{error_nethost} { count(); return B256ERROR_NETHOST; }
+{error_netconn} { count(); return B256ERROR_NETCONN; }
+{error_netread} { count(); return B256ERROR_NETREAD; }
+{error_netnone} { count(); return B256ERROR_NETNONE; }
+{error_netwrite} { count(); return B256ERROR_NETWRITE; }
+{error_netsockopt} { count(); return B256ERROR_NETSOCKOPT; }
+{error_netbind} { count(); return B256ERROR_NETBIND; }
+{error_netaccept} { count(); return B256ERROR_NETACCEPT; }
+{error_netsocknumber} { count(); return B256ERROR_NETSOCKNUMBER; }
+{error_permission} { count(); return B256ERROR_PERMISSION; }
+{error_imagesavetype} { count(); return B256ERROR_IMAGESAVETYPE; }
+{error_divzero} { count(); return B256ERROR_DIVZERO; }
+{error_byref} { count(); return B256ERROR_BYREF; }
+{error_byreftype} { count(); return B256ERROR_BYREFTYPE; }
+{error_freefile} { count(); return B256ERROR_FREEFILE; }
+{error_freenet} { count(); return B256ERROR_FREENET; }
+{error_freedb} { count(); return B256ERROR_FREEDB; }
+{error_dbconnnumber} { count(); return B256ERROR_DBCONNNUMBER; }
+{error_freedbset} { count(); return B256ERROR_FREEDBSET; }
+{error_dbsetnumber} { count(); return B256ERROR_DBSETNUMBER; }
+{error_dbnotsetrow} { count(); return B256ERROR_DBNOTSETROW; }
+{error_penwidth} { count(); return B256ERROR_PENWIDTH; }
+{error_colornumber} { count(); return B256ERROR_COLORNUMBER; }
+{error_arrayindexmissing} { count(); return B256ERROR_ARRAYINDEXMISSING; }
+{error_imagescale} { count(); return B256ERROR_IMAGESCALE; }
+{error_fontsize} { count(); return B256ERROR_FONTSIZE; }
+{error_fontweight} { count(); return B256ERROR_FONTWEIGHT; }
+{error_radixstring} { count(); return B256ERROR_RADIXSTRING; }
+{error_radix} { count(); return B256ERROR_RADIX; }
+{error_logrange} { count(); return B256ERROR_LOGRANGE; }
+{error_stringmaxlen} { count(); return B256ERROR_STRINGMAXLEN; }
+{error_notanumber} { count(); return B256ERROR_NOTANUMBER; }
+{error_printernoton} { count(); return B256ERROR_PRINTERNOTON; }
+{error_printernotoff} { count(); return B256ERROR_PRINTERNOTOFF; }
+{error_printeropen} { count(); return B256ERROR_PRINTEROPEN; }
+{error_notimplemented} { count(); return B256ERROR_NOTIMPLEMENTED; }
 {exists}	{ count(); return B256EXISTS; }
 {exitdo}	{ count(); return B256EXITDO; }
 {exitfor}	{ count(); return B256EXITFOR; }

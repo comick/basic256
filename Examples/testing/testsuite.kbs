@@ -20,7 +20,7 @@
 # 20130906	j.m.reneau	arranged tests so that interactive tests were first for speed
 #				added tests for floating point to integer compare (epsilon)
 # 20130918	j.m.reneau	moved functions to seperate file and included them
-# 20131125  j.m.reneau   added try/catch error trapping
+# 20131125	j.m.reneau	added try/catch error trapping
 
 include "testsuite_functions.kbs"
 
@@ -47,6 +47,9 @@ dim twod(10,10)
 ###################################################
 ###################################################
 
+editvisible 1
+graphvisible 1
+outputvisible 1
 
 ###################################################
 call section("1D Numeric Array")
@@ -274,15 +277,22 @@ clg
 penwidth 3
 # two big right triangles
 points =  {0,0,200,0,100,100}
-call polysprite(0, ref(points), black, red, clear, 1)
-call polysprite(1, ref(points), black, green, clear, 1)
+penwidth 1
+color black,red
+spritepoly 0, {0,0,200,0,100,100}
+color black,green
+spritepoly 1, {0,0,200,0,100,100}
 # two small right triangles
 points =  {200,0,200,100,150,50}
-call polysprite(2, ref(points), black, blue, clear, 1)
-call polysprite(3, ref(points), black, yellow, clear, 1)
+color black, blue
+spritepoly 2,{200,0,200,100,150,50}
+color black,yellow
+spritepoly 3,{50,0,50,100,0,50}
 # one medium triangle
-points =  {200,100,200,200,100,200}
-call polysprite(4, ref(points), black, cyan, clear, 1)
+points =  {100,0,100,100,0,100}
+penwidth 2
+color black, cyan
+spritepoly 4, {100,0,100,100,0,100}
 color white
 rect 0,0,graphwidth, graphheight
 color black
@@ -935,29 +945,3 @@ subroutine subone(a, b$)
    globala += a
    globalb$ += b$
 end subroutine
-
-subroutine polysprite(spriteno, ref(points), pencolor, brushcolor, backgroundcolor, scale)
-   # DRAW A STAMP ON THE SCREEN WITH SPECIFIED COLORS AND SCALE AND
-   # CAPTURE IT AS A SPRITE
-   minx = points[0]
-   miny = points[1]
-   maxx = points[0]
-   maxy = points[1]
-   for t = 1 to points[?]/2-1
-      if points[t*2] < minx then minx = points[t*2]
-      if points[t*2] > maxx then maxx = points[t*2]
-      if points[t*2+1] < miny then miny = points[t*2+1]
-      if points[t*2+1] > maxy then maxy = points[t*2+1]
-   next t
-   w = (maxx-minx)*scale + getpenwidth
-   h = (maxy-miny)*scale + getpenwidth
-   x = minx*-scale
-   y = miny*-scale
-   clg
-   color backgroundcolor
-   rect 0,0,w,h
-   color pencolor, brushcolor
-   stamp x,y,scale,0,points
-   spriteslice spriteno,0,0,w,h
-end subroutine
-

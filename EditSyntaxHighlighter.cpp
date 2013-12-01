@@ -325,7 +325,74 @@ void EditSyntaxHighlighter::initColors()
 		<< "\\b([Dd][Aa][Rr][Kk]){0,1}[Yy][Ee][Ll][Ll][Oo][Ww]\\b"	// yellow and darkyellow
 		<< "\\b([Dd][Aa][Rr][Kk]){0,1}[Oo][Rr][Aa][Nn][Gg][Ee]\\b"	// orange and darkorange
 		<< "\\b([Dd][Aa][Rr][Kk]){0,1}[Gg][Rr][AaEe][Yy]\\b"		// gray and darkgrey
-	;
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]\\b"		// ERROR_NONE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]\\b"		// ERROR_FOR1
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]\\b"		// ERROR_FOR2
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_FILENUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]\\b"		// ERROR_FILEOPEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]\\b"		// ERROR_FILENOTOPEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]\\b"		// ERROR_FILEWRITE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]\\b"		// ERROR_FILERESET
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]\\b"		// ERROR_ARRAYSIZELARGE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]\\b"		// ERROR_ARRAYSIZESMALL
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee]\\b"		// ERROR_NOSUCHVARIABLE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]\\b"		// ERROR_ARRAYINDEX
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Nn][Ee][Gg][Ll][Ee][Nn]\\b"		// ERROR_STRNEGLEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]\\b"		// ERROR_STRSTART
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ee][Nn][Dd]\\b"		// ERROR_STREND
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Nn][Uu][Mm][Ee][Rr][Ii][Cc]\\b"		// ERROR_NONNUMERIC
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]\\b"		// ERROR_RGB
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]\\b"		// ERROR_PUTBITFORMAT
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Aa][Rr][Rr][Aa][Yy]\\b"		// ERROR_POLYARRAY
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]\\b"		// ERROR_POLYPOINTS
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]\\b"		// ERROR_IMAGEFILE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_SPRITENUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]\\b"		// ERROR_SPRITENA
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]\\b"		// ERROR_SPRITESLICE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]\\b"		// ERROR_FOLDER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]\\b"		// ERROR_INFINITY
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Oo][Pp][Ee][Nn]\\b"		// ERROR_DBOPEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]\\b"		// ERROR_DBQUERY
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]\\b"		// ERROR_DBNOTOPEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]\\b"		// ERROR_DBCOLNO
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]\\b"		// ERROR_DBNOTSET
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]\\b"		// ERROR_NETSOCK
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]\\b"		// ERROR_NETHOST
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]\\b"		// ERROR_NETCONN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]\\b"		// ERROR_NETREAD
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]\\b"		// ERROR_NETNONE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]\\b"		// ERROR_NETWRITE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]\\b"		// ERROR_NETSOCKOPT
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]\\b"		// ERROR_NETBIND
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]\\b"		// ERROR_NETACCEPT
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_NETSOCKNUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]\\b"		// ERROR_PERMISSION
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]\\b"		// ERROR_IMAGESAVETYPE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]\\b"		// ERROR_DIVZERO
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff]\\b"		// ERROR_BYREF
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff][Tt][Yy][Pp][Ee]\\b"		// ERROR_BYREFTYPE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]\\b"		// ERROR_FREEFILE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]\\b"		// ERROR_FREENET
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]\\b"		// ERROR_FREEDB
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_DBCONNNUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]\\b"		// ERROR_FREEDBSET
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Ss][Ee][Tt][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_DBSETNUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]\\b"		// ERROR_DBNOTSETROW
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]\\b"		// ERROR_PENWIDTH
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Cc][Oo][Ll][Oo][Rr][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_COLORNUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]\\b"		// ERROR_ARRAYINDEXMISSING
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]\\b"		// ERROR_IMAGESCALE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ss][Ii][Zz][Ee]\\b"		// ERROR_FONTSIZE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ww][Ee][Ii][Gg][Hh][Tt]\\b"		// ERROR_FONTWEIGHT
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]\\b"		// ERROR_RADIXSTRING
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]\\b"		// ERROR_RADIX
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]\\b"		// ERROR_LOGRANGE
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]\\b"		// ERROR_STRINGMAXLEN
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_NOTANUMBER
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]\\b"		// ERROR_PRINTERNOTON
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]\\b"		// ERROR_PRINTERNOTOFF
+		<< "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]\\b"		// ERROR_PRINTEROPEN
+		;
   for (QStringList::iterator it = colorPatterns.begin(); it != colorPatterns.end(); ++it )
     {
       rule.pattern = QRegExp(*it);

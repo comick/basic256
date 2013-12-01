@@ -714,9 +714,6 @@ QString Interpreter::getErrorMessage(int e) {
 		case ERROR_DBNOTSET:
 			errormessage = tr("Record set must be opened first");
 			break;
-		case ERROR_EXTOPBAD:
-			errormessage = tr("Invalid Extended Op-code");
-			break;
 		case ERROR_NETSOCK:
 			errormessage = tr("Error opening network socket");
 			break;
@@ -5495,7 +5492,6 @@ Interpreter::execByteCode()
 				
 			default:
 				{
-					printError(ERROR_EXTOPBAD, "");
 					status = R_STOPPED;
 					return -1;
 					break;

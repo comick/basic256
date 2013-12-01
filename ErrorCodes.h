@@ -66,7 +66,7 @@
 #define ERROR_DBNOTOPEN 		32
 #define ERROR_DBCOLNO 			33
 #define ERROR_DBNOTSET 			34
-#define ERROR_EXTOPBAD 			35
+//#define 35 unused
 #define ERROR_NETSOCK 			36
 #define ERROR_NETHOST 			37
 #define ERROR_NETCONN 			38
