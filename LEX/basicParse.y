@@ -361,7 +361,7 @@ addStringOp(char op, char *data) {
 %token B256DEBUGINFO
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 %token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
-%token B256TRY B256CATCH B256ENDTRY
+%token B256TRY B256CATCH B256ENDTRY B256LET
 %token B256ERROR_NONE B256ERROR_FOR1 B256ERROR_FOR2 B256ERROR_FILENUMBER B256ERROR_FILEOPEN
 %token B256ERROR_FILENOTOPEN B256ERROR_FILEWRITE B256ERROR_FILERESET B256ERROR_ARRAYSIZELARGE
 %token B256ERROR_ARRAYSIZESMALL B256ERROR_NOSUCHVARIABLE B256ERROR_ARRAYINDEX B256ERROR_STRNEGLEN
@@ -1022,6 +1022,7 @@ ifexpr: B256IF floatexpr
 ;
 
 strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN, $1); }
+	| B256LET B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN, $2); }
 	| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL expr {
 		// a$[n] += s$
 		addOp(OP_STACKSWAP);
@@ -1032,7 +1033,22 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYA
 		addOp(OP_CONCAT);
 		addIntOp(OP_STRARRAYASSIGN, $1);
 	}
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN2D, $1); }
+	| B256LET B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL expr {
+		// a$[n] += s$
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_CONCAT);
+		addIntOp(OP_STRARRAYASSIGN, $2);
+	}
+	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr {
+		addIntOp(OP_STRARRAYASSIGN2D, $1);
+	}
+	| B256LET B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr {
+		addIntOp(OP_STRARRAYASSIGN2D, $2);
+	}
 	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL expr {
 		// a$[b,c] += s$
 		addOp(OP_STACKTOPTO2);
@@ -1044,33 +1060,79 @@ strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYA
 		addOp(OP_CONCAT);
 		addIntOp(OP_STRARRAYASSIGN2D, $1);
 	}
-
+	| B256LET B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL expr {
+		// a$[b,c] += s$
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_CONCAT);
+		addIntOp(OP_STRARRAYASSIGN2D, $2);
+	}
 	| B256STRINGVAR '=' immediatestrlist {
 		addIntOp(OP_PUSHINT, listlen);
 		listlen = 0;
 		addIntOp(OP_STRARRAYLISTASSIGN, $1);
 	}
-	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' { addIntOp(OP_EXPLODESTR, $1);}
-	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' { addIntOp(OP_EXPLODESTR_C, $1); }
-	| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' { addIntOp(OP_EXPLODEXSTR, $1);}
+	| B256LET B256STRINGVAR '=' immediatestrlist {
+		addIntOp(OP_PUSHINT, listlen);
+		listlen = 0;
+		addIntOp(OP_STRARRAYLISTASSIGN, $2);
+	}
+	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' {
+		addIntOp(OP_EXPLODESTR, $1);
+	}
+	| B256LET B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' {
+		addIntOp(OP_EXPLODESTR, $2);
+	}
+	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
+		addIntOp(OP_EXPLODESTR_C, $1);
+	}
+	| B256LET B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
+		addIntOp(OP_EXPLODESTR_C, $2);
+	}
+	| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
+		addIntOp(OP_EXPLODEXSTR, $1);
+	}
+	| B256LET B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
+		addIntOp(OP_EXPLODEXSTR, $2);
+	}
 ;
 
-arrayassignerrors: B256VARIABLE '[' floatexpr ']' '=' stringexpr
+arrayassignerrors:
+	B256VARIABLE '[' floatexpr ']' '=' stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ']' '=' stringexpr
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' stringexpr
 	| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ']' B256ADDEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ']' B256SUBEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ']' B256MULEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ']' B256MULEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ']' B256DIVEQUAL stringexpr
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL stringexpr
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL stringexpr
 	| B256VARIABLE '=' immediatestrlist
+	| B256LET B256VARIABLE '=' immediatestrlist
 ;
 
 
-arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
+arrayassign:
+	B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addIntOp(OP_ARRAYASSIGN, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ']' '=' floatexpr {
+		addIntOp(OP_ARRAYASSIGN, $2);
 	}
 	| B256VARIABLE '[' floatexpr ']' B256ADD1 {
 		// a[n]++ (Statement)
@@ -1080,6 +1142,14 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_ADD);
 		addIntOp(OP_ARRAYASSIGN, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256ADD1 {
+		// a[n]++ (Statement)
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_ARRAYASSIGN, $2);
+	}
 	| B256VARIABLE '[' floatexpr ']' B256SUB1 {
 		// a[n]-- (Statement)
 		addOp(OP_STACKDUP);
@@ -1087,6 +1157,14 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addIntOp(OP_PUSHINT,1);
 		addOp(OP_SUB);
 		addIntOp(OP_ARRAYASSIGN, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256SUB1 {
+		// a[n]-- (Statement)
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_ARRAYASSIGN, $2);
 	}
 	| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL floatexpr {
 		// a[n] += n
@@ -1098,6 +1176,16 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_ADD);
 		addIntOp(OP_ARRAYASSIGN, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256ADDEQUAL floatexpr {
+		// a[n] += n
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_ADD);
+		addIntOp(OP_ARRAYASSIGN, $2);
+	}
 	| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL floatexpr {
 		// a[n] -= n
 		addOp(OP_STACKSWAP);
@@ -1107,6 +1195,16 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_STACKTOPTO2);
 		addOp(OP_SUB);
 		addIntOp(OP_ARRAYASSIGN, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256SUBEQUAL floatexpr {
+		// a[n] -= n
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_SUB);
+		addIntOp(OP_ARRAYASSIGN, $2);
 	}
 	| B256VARIABLE '[' floatexpr ']' B256MULEQUAL floatexpr {
 		// a[n] *= n
@@ -1118,6 +1216,16 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_MUL);
 		addIntOp(OP_ARRAYASSIGN, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256MULEQUAL floatexpr {
+		// a[n] *= n
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_MUL);
+		addIntOp(OP_ARRAYASSIGN, $2);
+	}
 	| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL floatexpr {
 		// a[n] /= n
 		addOp(OP_STACKSWAP);
@@ -1128,8 +1236,21 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_DIV);
 		addIntOp(OP_ARRAYASSIGN, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ']' B256DIVEQUAL floatexpr {
+		// a[n] /= n
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKDUP);
+		addIntOp(OP_DEREF,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_DIV);
+		addIntOp(OP_ARRAYASSIGN, $2);
+	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' floatexpr {
 		addIntOp(OP_ARRAYASSIGN2D, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' floatexpr {
+		addIntOp(OP_ARRAYASSIGN2D, $2);
 	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADD1 {
 		addOp(OP_STACKDUP2);
@@ -1138,12 +1259,26 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_ADD);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADD1 {
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
+	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUB1 {
 		addOp(OP_STACKDUP2);
 		addIntOp(OP_DEREF2D,$1);
 		addIntOp(OP_PUSHINT,1);
 		addOp(OP_SUB);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUB1 {
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
 	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL floatexpr {
 		// a[b,c] += n
@@ -1154,6 +1289,16 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_STACKSWAP2);
 		addOp(OP_ADD);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL floatexpr {
+		// a[b,c] += n
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_ADD);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
 	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL floatexpr {
 		// a[b,c] -= n
@@ -1166,6 +1311,17 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_SUB);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL floatexpr {
+		// a[b,c] -= n
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SUB);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
+	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL floatexpr {
 		// a[b,c] *= n
 		addOp(OP_STACKTOPTO2);
@@ -1175,6 +1331,16 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_STACKSWAP2);
 		addOp(OP_MUL);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
+	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL floatexpr {
+		// a[b,c] *= n
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_MUL);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
 	}
 	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL floatexpr {
 		// a[b,c] /= n
@@ -1187,19 +1353,44 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 		addOp(OP_DIV);
 		addIntOp(OP_ARRAYASSIGN2D, $1);
 	}
+	| B256LET B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL floatexpr {
+		// a[b,c] /= n
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKDUP2);
+		addIntOp(OP_DEREF2D,$2);
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_DIV);
+		addIntOp(OP_ARRAYASSIGN2D, $2);
+	}
 	| B256VARIABLE '=' immediatelist {
 		addIntOp(OP_PUSHINT, listlen);
 		listlen = 0;
 		addIntOp(OP_ARRAYLISTASSIGN, $1);
 	}
+	| B256LET B256VARIABLE '=' immediatelist {
+		addIntOp(OP_PUSHINT, listlen);
+		listlen = 0;
+		addIntOp(OP_ARRAYLISTASSIGN, $2);
+	}
 	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
 		addIntOp(OP_EXPLODE, $1);
+	}
+	| B256LET B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
+		addIntOp(OP_EXPLODE, $2);
 	}
 	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
 		addIntOp(OP_EXPLODE_C, $1);
 	}
+	| B256LET B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
+		addIntOp(OP_EXPLODE_C, $2);
+	}
 	| B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
 		addIntOp(OP_EXPLODEX, $1);
+	}
+	| B256LET B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
+		addIntOp(OP_EXPLODEX, $2);
 	}
 	| arrayassignerrors {
 		errorcode = COMPERR_ASSIGNS2N;
@@ -1207,20 +1398,34 @@ arrayassign: B256VARIABLE '[' floatexpr ']' '=' floatexpr {
 	}
 ;
 
-numassignerrors: B256VARIABLE '=' stringexpr
+numassignerrors:
+	B256VARIABLE '=' stringexpr
+	| B256LET B256VARIABLE '=' stringexpr
 	| B256VARIABLE B256ADDEQUAL stringexpr
+	| B256LET B256VARIABLE B256ADDEQUAL stringexpr
 	| B256VARIABLE B256SUBEQUAL stringexpr
+	| B256LET B256VARIABLE B256SUBEQUAL stringexpr
 	| B256VARIABLE B256MULEQUAL stringexpr
+	| B256LET B256VARIABLE B256MULEQUAL stringexpr
 	| B256VARIABLE B256DIVEQUAL stringexpr
+	| B256LET B256VARIABLE B256DIVEQUAL stringexpr
 ;
 
 
-numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
+numassign: 
+	B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
+	| B256LET B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $2); }
 	| B256VARIABLE B256ADD1 {
 		addIntOp(OP_PUSHVAR,$1);
 		addIntOp(OP_PUSHINT,1);
 		addOp(OP_ADD);
 		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256LET B256VARIABLE B256ADD1 {
+		addIntOp(OP_PUSHVAR,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	| B256VARIABLE B256SUB1 {
 		addIntOp(OP_PUSHVAR,$1);
@@ -1228,10 +1433,21 @@ numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
 		addOp(OP_SUB);
 		addIntOp(OP_NUMASSIGN, $1);
 	}
+	| B256LET B256VARIABLE B256SUB1 {
+		addIntOp(OP_PUSHVAR,$2);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $2);
+	}
 	| B256VARIABLE B256ADDEQUAL floatexpr {
 		addIntOp(OP_PUSHVAR,$1);
 		addOp(OP_ADD);
 		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256LET B256VARIABLE B256ADDEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$2);
+		addOp(OP_ADD);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	| B256VARIABLE B256SUBEQUAL floatexpr {
 		addIntOp(OP_PUSHVAR,$1);
@@ -1239,16 +1455,33 @@ numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
 		addOp(OP_SUB);
 		addIntOp(OP_NUMASSIGN, $1);
 	}
+	| B256LET B256VARIABLE B256SUBEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SUB);
+		addIntOp(OP_NUMASSIGN, $2);
+	}
 	| B256VARIABLE B256MULEQUAL floatexpr {
 		addIntOp(OP_PUSHVAR,$1);
 		addOp(OP_MUL);
 		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256LET B256VARIABLE B256MULEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$2);
+		addOp(OP_MUL);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	| B256VARIABLE B256DIVEQUAL floatexpr {
 		addIntOp(OP_PUSHVAR,$1);
 		addOp(OP_STACKSWAP);
 		addOp(OP_DIV);
 		addIntOp(OP_NUMASSIGN, $1);
+	}
+	| B256LET B256VARIABLE B256DIVEQUAL floatexpr {
+		addIntOp(OP_PUSHVAR,$2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_DIV);
+		addIntOp(OP_NUMASSIGN, $2);
 	}
 	| numassignerrors {
 		errorcode = COMPERR_ASSIGNS2N;
@@ -1257,12 +1490,20 @@ numassign: B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
 
 ;
 
-stringassign: B256STRINGVAR '=' expr { addIntOp(OP_STRINGASSIGN, $1); }
+stringassign:
+	B256STRINGVAR '=' expr { addIntOp(OP_STRINGASSIGN, $1); }
+	| B256LET B256STRINGVAR '=' expr { addIntOp(OP_STRINGASSIGN, $2); }
 	| B256STRINGVAR B256ADDEQUAL expr {
 		addIntOp(OP_PUSHVAR,$1);
 		addOp(OP_STACKSWAP);
 		addOp(OP_CONCAT);
 		addIntOp(OP_STRINGASSIGN, $1);
+	}
+	| B256LET B256STRINGVAR B256ADDEQUAL expr {
+		addIntOp(OP_PUSHVAR,$2);
+		addOp(OP_STACKSWAP);
+		addOp(OP_CONCAT);
+		addIntOp(OP_STRINGASSIGN, $2);
 	}
 ;
 

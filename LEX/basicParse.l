@@ -281,6 +281,7 @@ lasterrorline [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]
 lasterrormessage [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]
 left [Ll][Ee][Ff][Tt]
 length [Ll][Ee][Nn][Gg][Tt][Hh]
+let [Ll][Ee][Tt]
 line [Ll][Ii][Nn][Ee]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
@@ -641,6 +642,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {lasterrormessage} { count(); return B256LASTERRORMESSAGE; }
 {left}		{ count(); return B256LEFT; }
 {length}	{ count(); return B256LENGTH; }
+{let}		{ count(); return B256LET; }
 {line}		{ count(); return B256LINE; }
 {log}		{ count(); return B256LOG; }
 {logten}	{ count(); return B256LOGTEN; }

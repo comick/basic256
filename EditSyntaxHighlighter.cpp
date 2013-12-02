@@ -180,6 +180,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]\\b"		// lasterrorline
 		<< "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]\\b"// lasterrormessage
 		<< "\\b[Ll][Ee][Ff][Tt]\\b"											// left
+		<< "\\b[Ll][Ee][Tt]\\b"												// let
 		<< "\\b[Ll][Ee][Nn][Gg][Tt][Hh]\\b"									// length
 		<< "\\b[Ll][Ii][Nn][Ee]\\b"											// line
 		<< "\\b[Ll][Oo][Gg]\\b"												// log
