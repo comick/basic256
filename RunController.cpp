@@ -658,7 +658,7 @@ void RunController::mainWindowSetRunning(int type)
     mainwin->saveact->setEnabled(type==0);
     mainwin->saveasact->setEnabled(type==0);
     mainwin->printact->setEnabled(type==0);
-    for(int t=0; t<9; t++) mainwin->recentact[t]->setEnabled(type==0);
+    for(int t=0; t<SETTINGSGROUPHISTN; t++) mainwin->recentact[t]->setEnabled(type==0);
     mainwin->exitact->setEnabled(true);
     
 	// edit menu
