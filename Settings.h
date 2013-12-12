@@ -48,6 +48,10 @@
     #define SETTINGSVARPOS "VarDock/Pos"
     #define SETTINGSVARSIZE "VarDock/Size"
     
+	// other IDE preferences
+	#define SETTINGSIDESAVEONRUN "IDE/SaveOnRun"
+	#define SETTINGSIDESAVEONRUNDEFAULT false
+	
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"

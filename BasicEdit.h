@@ -39,6 +39,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
  public:
   BasicEdit();
   void loadFile(QString);
+  void saveFile(bool);
   void findString(QString, bool, bool);
   void replaceString(QString, QString, bool, bool, bool);
   bool codeChanged;

@@ -137,9 +137,10 @@ BasicEdit::newProgram()
 }
 
 
-void
-BasicEdit::saveProgram()
+void BasicEdit::saveFile(bool overwrite)
 {
+	// BE SURE TO SET filename PROPERTY FIRST
+	// or set it to '' to prompt for a new file name
 	if (filename == "")
 	{
 		filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
@@ -154,7 +155,7 @@ BasicEdit::saveProgram()
 		}
 		QFile f(filename);
 		bool dooverwrite = true;
-		if (f.exists()) {
+		if (!overwrite && f.exists()) {
 			QMessageBox msgBox;
 			msgBox.setText(tr("The file ") + filename + tr(" already exists."));
 			msgBox.setInformativeText(tr("Do you want to overwrite?"));
@@ -172,6 +173,23 @@ BasicEdit::saveProgram()
 			codeChanged = false;
 			addFileToRecentList(filename);
 		}
+	}
+}
+
+void
+BasicEdit::saveProgram()
+{
+	saveFile(false);
+}
+
+void
+BasicEdit::saveAsProgram()
+{
+	QString tempfilename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ")+ "(*.kbs);;" + tr("Any File ")+ "(*.*)");
+	if (tempfilename != "")
+	{
+		filename = tempfilename;
+		saveFile(false);
 	}
 }
 
@@ -199,18 +217,6 @@ void BasicEdit::addFileToRecentList(QString fn) {
 	//	printf("%i %s\n", i, settings.value(QString::number(i), "").toString().toUtf8().data());
 	//}
 	//settings.endGroup();
-}
-
-void
-BasicEdit::saveAsProgram()
-{
-	QString tempfilename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ")+ "(*.kbs);;" + tr("Any File ")+ "(*.*)");
-
-	if (tempfilename != "")
-	{
-		filename = tempfilename;
-		saveProgram();
-	}
 }
 
 void

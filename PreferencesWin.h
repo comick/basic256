@@ -29,6 +29,9 @@
 	#include <QtWidgets/QComboBox>
 	#include <QtWidgets/QPushButton>
 	#include <QtWidgets/QAction>
+	#include <QtWidgets/QTabWidget>
+	#include <QtWidgets/QGroupBox>
+	#include <QtWidgets/QRadioButton>
 #else
 	#include <QMessageBox>
 	#include <QWidget>
@@ -41,6 +44,9 @@
 	#include <QComboBox>
 	#include <QPushButton>
 	#include <QAction>
+	#include <QTabWidget>
+	#include <QGroupBox>
+	#include <QRadioButton>
 #endif
 
 #ifndef PREFERENCESWINH
@@ -52,7 +58,7 @@ class PreferencesWin : public QDialog
   Q_OBJECT
 
  public:
-	PreferencesWin(QWidget * parent);
+	PreferencesWin(QWidget * parent, bool );
 	void closeEvent(QCloseEvent *);
 
 private slots:
@@ -61,14 +67,45 @@ private slots:
 
   
 private:
+	
+	// advanced Tab
+	QWidget * advancedtabwidget;
+	QGridLayout * advancedtablayout;
 	QLabel *passwordlabel;
 	QLineEdit *passwordinput;
 	QCheckBox *systemcheckbox;
 	QCheckBox *settingcheckbox;
 	QCheckBox *portcheckbox;
+	
+	// user tab
+	QWidget * usertabwidget;
+	QGridLayout * usertablayout;
 	QCheckBox *warningscheckbox;
+	QCheckBox *saveonruncheckbox;
+
+	// sound tab
+	QWidget * soundtabwidget;
+	QGridLayout * soundtablayout;
 	QLabel *voicelabel;
 	QComboBox *voicecombo;
+
+	// printer tab
+	QWidget * printertabwidget;
+	QGridLayout * printertablayout;
+	QGroupBox *resolutiongroup;
+	QRadioButton *resolutionhigh;
+	QRadioButton *resolutionscreen;
+	QGroupBox *orientgroup;
+	QRadioButton *orientportrait;
+	QRadioButton *orientlandscape;
+	QLabel *printerslabel;
+	QComboBox *printerscombo;
+	QLabel *pdffilelabel;
+	QLineEdit *pdffileinput;
+	QLabel *paperlabel;
+	QComboBox *papercombo;
+
+
 
 	QPushButton *cancelbutton;
 	QPushButton *savebutton;

@@ -314,6 +314,8 @@ RunController::startRun()
 {
 	if (i->isStopped())
 	{
+		//
+		// Start Compile
 		int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
 		i->debugMode = false;
 		if (result < 0)
@@ -321,6 +323,14 @@ RunController::startRun()
 			emit(runHalted());
 			return;
 		}
+		// if successful compile see if we need to save it
+		SETTINGS;
+		if(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool()) {
+			editwin->saveFile(true);
+			mainwin->statusBar()->showMessage(tr("Saved"));
+		}
+		//
+		// now setup and start the run
 		i->initialize();
 		outputClear();
 		mainwin->statusBar()->showMessage(tr("Running"));
@@ -486,39 +496,23 @@ void RunController::showOnlineContextDocumentation()
 void
 RunController::showPreferences()
 {
-	bool good = true;
+	bool advanced = true;
     SETTINGS;
     QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
 	if (prefpass.length()!=0) {
 		char * digest;
-		QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Preferences and Settings"),
+		QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Advanced Preferences and Settings"),
 			tr("Password:"), QLineEdit::Password, QString:: null);
 		digest = MD5(text.toUtf8().data()).hexdigest();
-		good = (QString::compare(digest, prefpass)==0);
+		advanced = (QString::compare(digest, prefpass)==0);
 		free(digest);
 	}
-	if (good) {
-		PreferencesWin *w = new PreferencesWin(mainwin);
-		w->show();
-		w->raise();
-		w->activateWindow();
-	} else {
-		QMessageBox msgBox;
-		msgBox.setText("Incorrect password.");
-		msgBox.setStandardButtons(QMessageBox::Ok);
-		msgBox.setDefaultButton(QMessageBox::Ok);
-		msgBox.exec();
-	}
-}
-
-void
-RunController::showPrefPrinter()
-{
-	PrefPrinterWin *w = new PrefPrinterWin(mainwin);
+	PreferencesWin *w = new PreferencesWin(mainwin, advanced);
 	w->show();
 	w->raise();
 	w->activateWindow();
 }
+
 
 void RunController::showReplace()
 {
@@ -674,7 +668,6 @@ void RunController::mainWindowSetRunning(int type)
     mainwin->replaceact->setEnabled(type==0);
     mainwin->beautifyact->setEnabled(type==0);
     mainwin->prefact->setEnabled(type==0);
-    mainwin->prefprinteract->setEnabled(type==0);
     
 	// run menu    
     mainwin->runact->setEnabled(type==0);

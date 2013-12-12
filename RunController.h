@@ -74,7 +74,6 @@ class RunController : public QObject
   void showOnlineDocumentation();
   void showOnlineContextDocumentation();
   void showPreferences();
-  void showPrefPrinter();
   void showReplace();
   void showFind();
   void findAgain();
