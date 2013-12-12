@@ -1259,6 +1259,10 @@ Interpreter::initialize()
 	nsprites = 0;
 	printing = false;
 	runtimer.start();
+	// clickclear mouse status
+	graphwin->clickX = 0;
+	graphwin->clickY = 0;
+	graphwin->clickB = 0;
 	// initialize files to NULL (closed)
 	stream = new QFile *[NUMFILES];
 	for (int t=0;t<NUMFILES;t++) {
