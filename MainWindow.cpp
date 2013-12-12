@@ -32,6 +32,7 @@
 	#include <QtWidgets/QDialog>
 	#include <QtWidgets/QLabel>
 	#include <QtWidgets/QShortcut>
+	#include <QtWidgets/QDesktopWidget>
 #else
 	#include <QApplication>
 	#include <QGridLayout>
@@ -40,6 +41,7 @@
 	#include <QDialog>
 	#include <QLabel>
 	#include <QShortcut>
+	#include <QDesktopWidget>
 #endif
 
 using namespace std;
@@ -391,19 +393,55 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	setContextMenuPolicy(Qt::NoContextMenu);
 
 	// position where the docks and main window were last on screen
- 	resize(settings.value(SETTINGSSIZE, QSize(800, 600)).toSize());
-	move(settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint());
+	// unless the position is off the screen
+	QDesktopWidget *screen = QApplication::desktop();
+ 	QPoint l;
+ 	QSize z;
+ 	
+ 	l = settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint();
+ 	if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
+ 	if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+	move(l);
+ 	z = settings.value(SETTINGSSIZE, QSize(800, 600)).toSize();
+ 	if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+ 	if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+	resize(z);
 	
 	outdock->setFloating(settings.value(SETTINGSOUTFLOAT, false).toBool());
-	if (settings.contains(SETTINGSOUTSIZE)) outdock->resize(settings.value(SETTINGSOUTSIZE, QSize(400, 400)).toSize());
-	if (settings.contains(SETTINGSOUTPOS)) outdock->move(settings.value(SETTINGSOUTPOS, QPoint(100, 100)).toPoint());
-	graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
-	if (settings.contains(SETTINGSGRAPHSIZE)) graphdock->resize(settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize());
-	if (settings.contains(SETTINGSGRAPHPOS)) graphdock->move(settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint());
-	vardock->setFloating(settings.value(SETTINGSVARFLOAT, false).toBool());
-	if (settings.contains(SETTINGSVARSIZE)) vardock->resize(settings.value(SETTINGSVARSIZE, QSize(400, 400)).toSize());
-	if (settings.contains(SETTINGSVARPOS)) vardock->move(settings.value(SETTINGSVARPOS, QPoint(100, 100)).toPoint());
+	if (settings.contains(SETTINGSOUTPOS)) {
+		l = settings.value(SETTINGSOUTPOS, QPoint(100, 100)).toPoint();
+		if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
+		if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+		outdock->move(l);
+		z = settings.value(SETTINGSOUTSIZE, QSize(400, 400)).toSize();
+		if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+		outdock->resize(z);
+	}
 	
+	graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
+	if (settings.contains(SETTINGSGRAPHPOS)) {
+		l = settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint();
+		if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
+		if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+		graphdock->move(l);
+		z = settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize();
+		if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+		graphdock->resize(z);
+	}
+	
+	vardock->setFloating(settings.value(SETTINGSVARFLOAT, false).toBool());
+	if (settings.contains(SETTINGSVARPOS)) {
+		l = settings.value(SETTINGSVARPOS, QPoint(100, 100)).toPoint();
+		if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
+		if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+		vardock->move(l);
+		z = settings.value(SETTINGSVARSIZE, QSize(400, 400)).toSize();
+		if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+		vardock->resize(z);
+	}
 
     // set initial font
     QFont initialFont;

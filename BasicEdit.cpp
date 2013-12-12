@@ -254,19 +254,36 @@ BasicEdit::loadFile(QString s)
 			doload = (msgBox.exec() == QMessageBox::Yes);
 		}
 		if (doload) {
-			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-			QFile f(s);
-			f.open(QIODevice::ReadOnly);
-			QByteArray ba = f.readAll();
-			this->setPlainText(QString::fromUtf8(ba.data()));
-			f.close();
-			filename = s;
-			QFileInfo fi(f);
-			emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
-			QDir::setCurrent(fi.absolutePath());
-			codeChanged = false;
-			addFileToRecentList(s);
-			QApplication::restoreOverrideCursor();
+			if (QFile::exists(s)) {
+				QFile f(s);
+				if (f.open(QIODevice::ReadOnly)) {
+					QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+					QByteArray ba = f.readAll();
+					this->setPlainText(QString::fromUtf8(ba.data()));
+					f.close();
+					filename = s;
+					QFileInfo fi(f);
+					emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
+					QDir::setCurrent(fi.absolutePath());
+					codeChanged = false;
+					addFileToRecentList(s);
+					QApplication::restoreOverrideCursor();
+				} else {
+					QMessageBox msgBox;
+					msgBox.setText(tr("File \"")+s+tr("\"."));
+					msgBox.setInformativeText(tr("Unable to open program file."));
+					msgBox.setStandardButtons(QMessageBox::Ok);
+					msgBox.setDefaultButton(QMessageBox::Ok);
+					msgBox.exec();
+				}
+			} else {
+				QMessageBox msgBox;
+				msgBox.setText(tr("File \"")+s+tr("\"."));
+				msgBox.setInformativeText(tr("Program file does not exist."));
+				msgBox.setStandardButtons(QMessageBox::Ok);
+				msgBox.setDefaultButton(QMessageBox::Ok);
+				msgBox.exec();
+			}
 		}
 	}
 
