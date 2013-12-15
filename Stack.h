@@ -32,6 +32,7 @@ class Stack
  public:
   Stack();
   ~Stack();
+  
   void pushstring(QString);
   void pushint(int);
   void pushfloat(double);
@@ -52,9 +53,12 @@ class Stack
   int compareTopTwo();
   int compareFloats(double, double);
   int error();
+  void clearerror();
+  void settypeconverror(int);
 
  private:
   std::list<stackdata*> stacklist;
   int errornumber;		// internal storage of last stack error
+  int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
   stackdata *popelement();
 };

@@ -28,7 +28,6 @@
 #include "../ByteCodes.h"
 #include "../CompileErrors.h"
 #include "../ErrorCodes.h"
-#include "../WarningCodes.h"
 #include "../Version.h"
 
 
@@ -1414,23 +1413,7 @@ returnstmt: B256RETURN {
 	}
 ;
 
-colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
-		addIntOp(OP_PUSHINT, 255); 
-		addOp(OP_RGB);
-		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLOR);
-		addIntOp(OP_PUSHINT, WARNING_DEPRECATED_FORM); 
-		addExtendedOp(OPX_RUNTIMEWARNING);
-	}
-	| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT, 255); 
-		addOp(OP_RGB);
-		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLOR);
-		addIntOp(OP_PUSHINT, WARNING_DEPRECATED_FORM); 
-		addExtendedOp(OPX_RUNTIMEWARNING);
-	}
-	| B256SETCOLOR floatexpr {
+colorstmt: B256SETCOLOR floatexpr {
 		addOp(OP_STACKDUP);
 		addOp(OP_SETCOLOR);
 	}

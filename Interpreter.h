@@ -34,7 +34,6 @@
 #include "Stack.h"
 #include "Variables.h"
 #include "ErrorCodes.h"
-#include "WarningCodes.h"
 #include "Sound.h"
 
 #ifndef M_PI

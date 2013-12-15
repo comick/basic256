@@ -82,6 +82,8 @@ private:
 	QGridLayout * usertablayout;
 	QCheckBox *warningscheckbox;
 	QCheckBox *saveonruncheckbox;
+	QLabel *typeconvlabel;
+	QComboBox *typeconvcombo;
 
 	// sound tab
 	QWidget * soundtabwidget;

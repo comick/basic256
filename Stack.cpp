@@ -8,6 +8,7 @@
 Stack::Stack()
 {
 	errornumber = ERROR_NONE;
+	typeconverror = false;
 }
 
 Stack::~Stack()
@@ -56,7 +57,23 @@ int Stack::height()
 
 int Stack::error()
 {
+	// return error 
 	return errornumber;
+}
+
+void Stack::clearerror()
+{
+	// clear error
+	errornumber = ERROR_NONE;
+}
+
+void Stack::settypeconverror(int e)
+{
+	// in popint or popfloat errors
+	// if 0- report no errors
+	// 1 - report problems as warning
+	// 2 - report problems as an error
+	typeconverror = e;
 }
 
 void
@@ -206,6 +223,13 @@ Stack::popint()
 	{
 		bool ok;
 		i = top->string.toInt(&ok);
+		if (!ok && typeconverror) {
+			if (typeconverror==1) {
+				errornumber = WARNING_TYPECONV;
+			} else {
+				errornumber = ERROR_TYPECONV;
+			}
+		}
 	}
 	delete(top);
 	return i;
@@ -224,6 +248,13 @@ Stack::popfloat()
 	{
 		bool ok;
 		f = top->string.toDouble(&ok);
+		if (!ok && typeconverror) {
+			if (typeconverror==1) {
+				errornumber = WARNING_TYPECONV;
+			} else {
+				errornumber = ERROR_TYPECONV;
+			}
+		}
 	}
 	delete(top);
 	return f;

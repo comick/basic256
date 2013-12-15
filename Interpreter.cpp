@@ -597,7 +597,12 @@ QString Interpreter::opxname(int op) {
 
 void Interpreter::printError(int e, QString message)
 {
-	QString msg = tr("ERROR");
+	QString msg;
+	if (e<WARNING_START) {
+		msg = tr("ERROR");
+	} else {
+		msg = tr("WARNING");
+	}
 	if (currentIncludeFile!="") {
 		msg += tr(" in included file ") + currentIncludeFile;
 	} else {
@@ -826,18 +831,33 @@ QString Interpreter::getErrorMessage(int e) {
 			errormessage = tr("Mathematical operation returned an undefined value");
 			break;
 		case ERROR_PRINTERNOTON:
-			errormessage = tr("Printer is not on.");
+			errormessage = tr("Printer is not on");
 			break;
 		case ERROR_PRINTERNOTOFF:
-			errormessage = tr("Printing is already on.");
+			errormessage = tr("Printing is already on");
 			break;
 		case ERROR_PRINTEROPEN:
-			errormessage = tr("Unable to open printer.");
+			errormessage = tr("Unable to open printer");
 			break;
+		case ERROR_TYPECONV:
+			errormessage = tr("Unable to convert string to number");
+			break;
+
+
         // put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
 			errormessage = tr("Feature not implemented in this environment");
 			break;
+		// warnings
+		case WARNING_DEPRECATED_FORM :
+			errormessage = tr("The used format of the statement has been deprecated.  It is recommended that you reauthor that statement.");
+			break;
+		case WARNING_TYPECONV:
+			errormessage = tr("Unable to convert string to number, zero used");
+			break;
+
+
+        // put WARNING new messages here
 		default:
 			errormessage = tr("User thrown error number");
 			
@@ -848,21 +868,6 @@ QString Interpreter::getErrorMessage(int e) {
 		}
 	}
 	return errormessage;
-}
-
-QString Interpreter::getWarningMessage(int e) {
-	QString message("");
-	switch(e) {
-		// warnings
-		case WARNING_DEPRECATED_FORM :
-			message = tr("The used format of the statement has been deprecated.  It is recommended that you reauthor that statement.");
-			break;
-        // put WARNING new messages here
-		case WARNING_NOTIMPLEMENTED:
-			message = tr("Feature not implemented in this environment.");
-			break;
-	}
-	return message;
 }
 
 int Interpreter::netSockClose(int fd)
@@ -1241,6 +1246,8 @@ Interpreter::getByteCode(char *code)
 void
 Interpreter::initialize()
 {
+	SETTINGS;
+	
 	op = byteCode;
 	callstack = NULL;
 	onerrorstack = NULL;
@@ -1283,6 +1290,9 @@ Interpreter::initialize()
 			dbsetrow[t][u] = false;
 		}
 	}
+	// set settings
+	stack.settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
+	
 }
 
 
@@ -1429,7 +1439,10 @@ Interpreter::execByteCode()
 	}
 
 	// if errnum is set then handle the last thrown error
-	if (stack.error()!=ERROR_NONE) errornum = stack.error(); 
+	if (stack.error()!=ERROR_NONE) {
+		errornum = stack.error(); 
+		stack.clearerror();
+	}
 	if (errornum!=ERROR_NONE) {
 		lasterrornum = errornum;
 		lasterrormessage = errormessage;
@@ -1448,9 +1461,10 @@ Interpreter::execByteCode()
 			op = byteCode + onerrorstack->onerroraddress;
 			return 0;
 		} else {
-			// no error handler defined or FATAL error - display message and die
+			// no error handler defined or FATAL error - display message
 			printError(lasterrornum, lasterrormessage);
-			return -1;
+			// if error number less than the start of warnings then die
+			if (lasterrornum<WARNING_START) return -1;
 		}
 	}
 	
@@ -5248,7 +5262,7 @@ Interpreter::execByteCode()
 					int w = stack.popint();
                     SETTINGS;
 					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
-						emit(outputReady(QObject::tr("WARNING on line ") + QString::number(currentLine) + ": " + getWarningMessage(w) + "\n"));
+						printError(w, "");
 					}
 				}
 				break;

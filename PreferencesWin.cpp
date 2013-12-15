@@ -80,16 +80,35 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	r=0;
 	//
 	r++;
-	warningscheckbox = new QCheckBox(tr("Show runtime warning messages"),this);
+	warningscheckbox = new QCheckBox(tr("Show runtime compiler warning messages"),this);
 	warningscheckbox->setChecked(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool());
 	usertablayout->addWidget(warningscheckbox,r,2,1,2);
+	//
+	r++;
+	{
+		int settypeconv;
+		typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"));
+		usertablayout->addWidget(typeconvlabel,r,1,1,1);
+		typeconvcombo = new QComboBox();
+		typeconvcombo->addItem("Ignore", SETTINGSTYPECONVNONE);
+		typeconvcombo->addItem("Warn", SETTINGSTYPECONVWARN);	
+		typeconvcombo->addItem("Error", SETTINGSTYPECONVERROR);	
+		// set setting and select
+		settypeconv = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
+		int index = typeconvcombo->findData(settypeconv);
+		if ( index != -1 ) { // -1 for not found
+			typeconvcombo->setCurrentIndex(index);
+		}
+		// add to layout
+		usertablayout->addWidget(typeconvcombo,r,2,1,2);
+	}
 	//
 	r++;
 	saveonruncheckbox = new QCheckBox(tr("Automatically save program when it is successfully run."),this);
 	saveonruncheckbox->setChecked(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool());
 	usertablayout->addWidget(saveonruncheckbox,r,2,1,2);
 
-
+	//
 	// *******************************************************************************************
 	// build the sound tab
 	soundtablayout = new QGridLayout();
@@ -328,6 +347,9 @@ void PreferencesWin::clickSaveButton() {
 		// user settings
 		settings.setValue(SETTINGSALLOWWARNINGS, warningscheckbox->isChecked());
 		settings.setValue(SETTINGSIDESAVEONRUN, saveonruncheckbox->isChecked());
+		if (typeconvcombo->currentIndex()!=-1) {
+			settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));
+		}
 		
 		// *******************************************************************************************
 		// sound settings

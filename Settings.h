@@ -52,6 +52,7 @@
 	#define SETTINGSIDESAVEONRUN "IDE/SaveOnRun"
 	#define SETTINGSIDESAVEONRUNDEFAULT false
 	
+	
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"
@@ -76,8 +77,17 @@
 	#define SETTINGSALLOWSETTINGDEFAULT true
 	#define SETTINGSALLOWPORT "Allow/Port"
 	#define SETTINGSALLOWPORTDEFAULT true
+
+
+	// user settings
 	#define SETTINGSALLOWWARNINGS "Allow/Warnings"
 	#define SETTINGSALLOWWARNINGSDEFAULT true
+	#define SETTINGSTYPECONV "Runtime/TypeConv"
+	#define SETTINGSTYPECONVDEFAULT 0
+	#define SETTINGSTYPECONVNONE 0
+	#define SETTINGSTYPECONVWARN 1
+	#define SETTINGSTYPECONVERROR 2
+	
 	
 	// espeak language settings
 	#define SETTINGSESPEAKVOICE "eSpeak/Voice"
