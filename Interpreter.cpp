@@ -91,12 +91,21 @@ extern "C" {
 	extern int linenumber;			// linenumber being LEXd
 	extern int column;				// column on line being LEXd
 	extern char* lexingfilename;	// current included file name being LEXd
+	
+	extern int numparsewarnings;
 	extern int newByteCode(int size);
 	extern unsigned char *byteCode;
 	extern unsigned int byteOffset;
 	extern unsigned int maxbyteoffset;
 	extern char *symtable[];
 	extern int numsyms;
+	
+	// arrays to return warnings from compiler
+	// defined in basicParse.y
+	extern int parsewarningtable[];
+	extern int parsewarningtablelinenumber[];
+	extern int parsewarningtablecolumn[];
+	extern char *parsewarningtablelexingfilename[];
 }
 
 Interpreter::Interpreter()
@@ -581,7 +590,6 @@ QString Interpreter::opxname(int op) {
 	else if (op==OPX_PENWIDTH) return QString("OPX_PENWIDTH");
 	else if (op==OPX_GETPENWIDTH) return QString("OPX_GETPENWIDTH");
 	else if (op==OPX_GETBRUSHCOLOR) return QString("OPX_GETBRUSHCOLOR");
-	else if (op==OPX_RUNTIMEWARNING) return QString("OPX_RUNTIMEWARNING");
 	else if (op==OPX_ALERT) return QString("OPX_ALERT");
 	else if (op==OPX_CONFIRM) return QString("OPX_CONFIRM");
 	else if (op==OPX_PROMPT) return QString("OPX_PROMPT");
@@ -849,9 +857,6 @@ QString Interpreter::getErrorMessage(int e) {
 			errormessage = tr("Feature not implemented in this environment");
 			break;
 		// warnings
-		case WARNING_DEPRECATED_FORM :
-			errormessage = tr("The used format of the statement has been deprecated.  It is recommended that you reauthor that statement.");
-			break;
 		case WARNING_TYPECONV:
 			errormessage = tr("Unable to convert string to number, zero used");
 			break;
@@ -1032,8 +1037,36 @@ Interpreter::compileProgram(char *code)
 
 
 	int result = basicParse(code);
-	if (result < 0)
-	{
+	//
+	// display warnings from compile and free the lexing file name string
+	for(int i=0;i<numparsewarnings;i++) {
+		QString msg = tr("COMPILE WARNING");
+		if (strlen(parsewarningtablelexingfilename[i])!=0) {
+			msg += tr(" in included file ") + QString(parsewarningtablelexingfilename[i]);
+		} else {
+			emit(goToLine(parsewarningtablelinenumber[i]-(parsewarningtablecolumn[i]==0?1:0)));
+		}
+		msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]-(parsewarningtablecolumn[i]==0?1:0)) + tr(": ");
+		switch(parsewarningtable[i])
+		{
+			case COMPWARNING_MAXIMUMWARNINGS:
+				msg += tr("The maximum number of compiler warnings have been displayed");
+				break;
+			case COMPWARNING_DEPRECATED_FORM:
+				msg += tr("Statement format has been deprecated. It is recommended that you reauthor");
+				break;
+
+			default:
+				msg += tr("Unknown compiler warning #") + QString::number(parsewarningtable[i]);
+		}
+		msg += tr(".\n");
+		emit(outputReady(msg));
+		//
+		free(parsewarningtablelexingfilename[i]);
+	}
+	//
+	// now display fatal error if there is one
+	if (result != COMPERR_NONE)	{
 		QString msg = tr("COMPILE ERROR");
 		if (strlen(lexingfilename)!=0) {
 			msg += tr(" in included file ") + QString(lexingfilename);
@@ -1140,7 +1173,6 @@ Interpreter::compileProgram(char *code)
 				msg += tr("You may not define an ONERROR or an OFFERROR in a TRY/CACTCH declaration");
 				break;
 
-
 			default:
 				if(column==0) {
 					msg += tr("Syntax error around end of line");
@@ -1149,7 +1181,6 @@ Interpreter::compileProgram(char *code)
 				}
 		}
 		msg += tr(".\n");
-		emit(outputClear());
 		emit(outputReady(msg));
 		return -1;
 	}
@@ -1220,28 +1251,13 @@ Interpreter::compileProgram(char *code)
 		else
 		{
 			emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + ".\n"));
+			return -1;
 		}
 	}
 
 	currentLine = 1;
 	return 0;
 }
-
-
-byteCodeData *
-Interpreter::getByteCode(char *code)
-{
-	if (compileProgram(code) < 0)
-	{
-		return NULL;
-	}
-	byteCodeData *temp = new byteCodeData;
-	temp->size = byteOffset;
-	temp->data = byteCode;
-
-	return temp;
-}
-
 
 void
 Interpreter::initialize()
@@ -5254,19 +5270,6 @@ Interpreter::execByteCode()
 				}
 				break;
 		
-			case OPX_RUNTIMEWARNING:
-				{
-					// display a runtime warning message
-					// added in yacc/bison for deprecated and other warnings
-					op++;
-					int w = stack.popint();
-                    SETTINGS;
-					if(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool()) {
-						printError(w, "");
-					}
-				}
-				break;
-
 			case OPX_ALERT:
 				{
 					op++;

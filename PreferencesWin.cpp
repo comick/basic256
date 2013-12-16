@@ -80,11 +80,6 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	r=0;
 	//
 	r++;
-	warningscheckbox = new QCheckBox(tr("Show runtime compiler warning messages"),this);
-	warningscheckbox->setChecked(settings.value(SETTINGSALLOWWARNINGS, SETTINGSALLOWWARNINGSDEFAULT).toBool());
-	usertablayout->addWidget(warningscheckbox,r,2,1,2);
-	//
-	r++;
 	{
 		int settypeconv;
 		typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"));
@@ -345,7 +340,6 @@ void PreferencesWin::clickSaveButton() {
 		
 		// *******************************************************************************************
 		// user settings
-		settings.setValue(SETTINGSALLOWWARNINGS, warningscheckbox->isChecked());
 		settings.setValue(SETTINGSIDESAVEONRUN, saveonruncheckbox->isChecked());
 		if (typeconvcombo->currentIndex()!=-1) {
 			settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));

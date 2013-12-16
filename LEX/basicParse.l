@@ -65,6 +65,14 @@ extern int lastLineOffset;
 extern int functionDefSymbol;
 extern int subroutineDefSymbol;
 
+// arrays to return warnings from compiler
+// defined in basicParse.y and also used in interperter.cpp
+extern int parsewarningtable[];
+extern int parsewarningtablesourceline[];
+extern int parsewarningtablecolumn[];
+extern char *parsewarningcolumnlexingfilename[];
+extern int numparsewarnings;
+
 int linenumber;
 int column;
 char *lexingfilename;
@@ -915,6 +923,7 @@ basicParse(char *code) {
 	YY_BUFFER_STATE bp;
 	
 	numincludes=0;
+	numparsewarnings=0;
 	
 	clearSymbolTable();
 	clearLabelTable();
@@ -923,7 +932,7 @@ basicParse(char *code) {
 	linenumber = 1;
 	lastLineOffset = 0;
 	column = 0;
-	errorcode = 0;
+	errorcode = COMPERR_NONE;
 	functionDefSymbol = -1;
 	subroutineDefSymbol = -1;
 	
@@ -937,7 +946,7 @@ basicParse(char *code) {
 	yy_delete_buffer(bp);
 	
 
-	if (testIfOnTable(0)!=-1 && errorcode==0) {
+	if (testIfOnTable(0)!=-1 && errorcode==COMPERR_NONE) {
 		linenumber = testIfOnTable(0)+1;
 		errorcode = testIfOnTableError(0);
 	}

@@ -290,6 +290,7 @@ RunController::startDebug()
 {
 	if (i->isStopped())
 	{
+		outputClear();
 		int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
 		if (result < 0)
 		{
@@ -299,7 +300,6 @@ RunController::startDebug()
 		}
 		i->initialize();
 		i->debugMode = true;
-		outputClear();
 		mainwin->statusBar()->showMessage(tr("Running"));
 		graphwin->setFocus();
 		i->start();
@@ -315,6 +315,7 @@ RunController::startRun()
 	if (i->isStopped())
 	{
 		//
+		outputClear();
 		// Start Compile
 		int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
 		i->debugMode = false;
@@ -332,7 +333,6 @@ RunController::startRun()
 		//
 		// now setup and start the run
 		i->initialize();
-		outputClear();
 		mainwin->statusBar()->showMessage(tr("Running"));
 		graphwin->setFocus();
 		i->start();
@@ -426,38 +426,6 @@ RunController::pauseResume()
 		paused = true;
 		emit(runPaused());
 	}
-}
-
-
-
-void
-RunController::saveByteCode()
-{
-    byteCodeData *bc = i->getByteCode((editwin->toPlainText() + "\n").toUtf8().data());
-	if (bc == NULL)
-	{
-		return;
-	}
-
-	if (bytefilename == "")
-	{
-		bytefilename = QFileDialog::getSaveFileName(NULL, tr("Save file as"), ".", tr("BASIC-256 Compiled File ") + "(*.kbc);;" + tr("Any File ") + "(*.*)");
-	}
-
-	if (bytefilename != "")
-	{
-		QRegExp rx("\\.[^\\/]*$");
-		if (rx.indexIn(bytefilename) == -1)
-		{
-			bytefilename += ".kbc";
-			//FIXME need to test for existence here
-		}
-		QFile f(bytefilename);
-		f.open(QIODevice::WriteOnly | QIODevice::Truncate);
-		f.write((const char *) bc->data, bc->size);
-		f.close();
-	}
-	delete bc;
 }
 
 void

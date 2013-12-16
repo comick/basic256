@@ -80,7 +80,6 @@ private:
 	// user tab
 	QWidget * usertabwidget;
 	QGridLayout * usertablayout;
-	QCheckBox *warningscheckbox;
 	QCheckBox *saveonruncheckbox;
 	QLabel *typeconvlabel;
 	QComboBox *typeconvcombo;

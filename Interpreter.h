@@ -99,7 +99,6 @@ class Interpreter : public QThread
   ~Interpreter();
   int compileProgram(char *);
   void initialize();
-  byteCodeData *getByteCode(char *);
   bool isRunning();
   bool isStopped();
   bool isAwaitingInput();

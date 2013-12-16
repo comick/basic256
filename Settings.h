@@ -80,8 +80,6 @@
 
 
 	// user settings
-	#define SETTINGSALLOWWARNINGS "Allow/Warnings"
-	#define SETTINGSALLOWWARNINGSDEFAULT true
 	#define SETTINGSTYPECONV "Runtime/TypeConv"
 	#define SETTINGSTYPECONVDEFAULT 0
 	#define SETTINGSTYPECONVNONE 0

@@ -67,7 +67,6 @@ class RunController : public QObject
   void startRun();
   void stopRun();
   void pauseResume();
-  void saveByteCode();
   void stepThrough();
   void showDocumentation();
   void showContextDocumentation();

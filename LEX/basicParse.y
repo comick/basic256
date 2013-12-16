@@ -33,6 +33,7 @@
 
 #define SYMTABLESIZE 2000
 #define IFTABLESIZE 1000
+#define PARSEWARNINGTABLESIZE 10
 
 extern int yylex();
 extern char *yytext;
@@ -40,6 +41,7 @@ int yyerror(const char *);
 int errorcode;
 extern int column;
 extern int linenumber;
+extern char *lexingfilename;
 extern int numincludes;
 
 char *byteCode = NULL;
@@ -98,6 +100,13 @@ int numargs = 0;
 #define ARGSTYPESTR 1
 #define ARGSTYPEVARREF 2
 #define ARGSTYPEVARREFSTR 3
+
+// compiler workings - store in array so that interperter can display all of them
+int parsewarningtable[PARSEWARNINGTABLESIZE];
+int parsewarningtablelinenumber[PARSEWARNINGTABLESIZE];
+int parsewarningtablecolumn[PARSEWARNINGTABLESIZE];
+char *parsewarningtablelexingfilename[PARSEWARNINGTABLESIZE];
+int numparsewarnings = 0;
 
 int
 basicParse(char *);
@@ -177,6 +186,23 @@ int newIf(int sourceline, int type) {
 	nextifid++;
 	numifs++;
 	return numifs - 1;
+}
+
+void newParseWarning(int type) {
+	// add warning to warnings table (if not maximum)
+	if (numparsewarnings<PARSEWARNINGTABLESIZE) {
+		parsewarningtable[numparsewarnings] = type;
+		parsewarningtablelinenumber[numparsewarnings] = linenumber;
+		parsewarningtablecolumn[numparsewarnings] = column;
+		parsewarningtablelexingfilename[numparsewarnings] = strdup(lexingfilename);
+		numparsewarnings++;
+	} else {
+		parsewarningtable[numparsewarnings-1] = COMPWARNING_MAXIMUMWARNINGS;
+		parsewarningtablelinenumber[numparsewarnings-1] = 0;
+		parsewarningtablecolumn[numparsewarnings-1] = 0;
+		free(parsewarningtablelexingfilename[numparsewarnings-1]);
+		parsewarningtablelexingfilename[numparsewarnings-1] = strdup("");
+	}
 }
 
 int getSymbol(char *name) {
@@ -1413,7 +1439,21 @@ returnstmt: B256RETURN {
 	}
 ;
 
-colorstmt: B256SETCOLOR floatexpr {
+colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
+		addIntOp(OP_PUSHINT, 255); 
+		addOp(OP_RGB);
+		addOp(OP_STACKDUP);
+		addOp(OP_SETCOLOR);
+		newParseWarning(COMPWARNING_DEPRECATED_FORM);
+	}
+	| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+		addIntOp(OP_PUSHINT, 255); 
+		addOp(OP_RGB);
+		addOp(OP_STACKDUP);
+		addOp(OP_SETCOLOR);
+		newParseWarning(COMPWARNING_DEPRECATED_FORM);
+	}
+	| B256SETCOLOR floatexpr {
 		addOp(OP_STACKDUP);
 		addOp(OP_SETCOLOR);
 	}
