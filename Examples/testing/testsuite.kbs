@@ -2,6 +2,11 @@
 
 # This program will test most of the basic256 language compiler and interperter
 
+###
+### assumes "Runtime handling of bad type conversions"
+### settings to ignore or warn
+###
+
 # Modification History
 # date		programmer	description
 # 20121103	j.m.reneau	added strings, file io, '' strings

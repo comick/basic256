@@ -957,6 +957,11 @@ void Interpreter::spriteundraw(int n) {
 		if (sprites[i].underimage && sprites[i].visible) {
 			x = sprites[i].x - (sprites[i].underimage->width()/2);
 			y = sprites[i].y - (sprites[i].underimage->height()/2);
+			//if (i==n) {
+				ian.setCompositionMode(QPainter::CompositionMode_Clear);
+				ian.drawImage(x, y, *(sprites[i].underimage));
+				ian.setCompositionMode(QPainter::CompositionMode_SourceOver);
+			//}
 			ian.drawImage(x, y, *(sprites[i].underimage));
 		}
 		i--;
