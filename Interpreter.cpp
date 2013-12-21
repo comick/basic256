@@ -957,11 +957,9 @@ void Interpreter::spriteundraw(int n) {
 		if (sprites[i].underimage && sprites[i].visible) {
 			x = sprites[i].x - (sprites[i].underimage->width()/2);
 			y = sprites[i].y - (sprites[i].underimage->height()/2);
-			//if (i==n) {
-				ian.setCompositionMode(QPainter::CompositionMode_Clear);
-				ian.drawImage(x, y, *(sprites[i].underimage));
-				ian.setCompositionMode(QPainter::CompositionMode_SourceOver);
-			//}
+			ian.setCompositionMode(QPainter::CompositionMode_Clear);
+			ian.drawImage(x, y, *(sprites[i].underimage));
+			ian.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			ian.drawImage(x, y, *(sprites[i].underimage));
 		}
 		i--;
@@ -1011,9 +1009,9 @@ bool Interpreter::spritecollide(int n1, int n2) {
 	int top1, bottom1, left1, right1;
 	int top2, bottom2, left2, right2;
 	
-	if (n1==n2) return true;
-	
-	if (!sprites[n1].image || !sprites[n2].image) return false;
+	if (n1==n2) return true;											// cant collide with itself
+	if (!sprites[n1].visible || !sprites[n2].visible) return false; 	// cant collide if invisible
+	if (!sprites[n1].image || !sprites[n2].image) return false;			// cant collide if not initialized
 	
 	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()*sprites[n1].s/2.0);
 	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()*sprites[n2].s/2.0);;
@@ -4240,6 +4238,7 @@ Interpreter::execByteCode()
 						op++;
 						
 						int n = stack.popint();
+						bool vis = opcode==OPX_SPRITESHOW;
 						
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
@@ -4247,12 +4246,12 @@ Interpreter::execByteCode()
 							if(!sprites[n].image) {
 								errornum = ERROR_SPRITENA;
 							} else {
-						
-								spriteundraw(n);
-								sprites[n].visible = (opcode==OPX_SPRITESHOW);
-								spriteredraw(n);
-						
-								if (!fastgraphics) waitForGraphics();
+								if (sprites[n].visible != vis) {
+									spriteundraw(n);
+									sprites[n].visible = vis;
+									spriteredraw(n);
+									if (!fastgraphics) waitForGraphics();
+								}
 							}
 						}
 					}
