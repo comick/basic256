@@ -19,7 +19,9 @@
 #ifndef __TOOLBAR_H
 #define __TOOLBAR_H
 
-#if QT_VERSION >= 0x05000000
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
     #include <QtWidgets/QToolBar>
 #else
     #include <QToolBar>

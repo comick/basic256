@@ -17,7 +17,7 @@
 
 #include <QObject>
 #include <QIcon>
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QMessageBox>
 	#include <QtWidgets/QWidget>
 	#include <QtWidgets/QDialog>

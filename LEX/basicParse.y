@@ -228,8 +228,7 @@ int getInternalSymbol(int id, int type) {
 	return getSymbol(name);
 }
 
-int
-newByteCode(unsigned int size) {
+int newByteCode(unsigned int size) {
 	if (byteCode) {
 		free(byteCode);
 	}
@@ -244,31 +243,38 @@ newByteCode(unsigned int size) {
 	return -1;
 }
 
-void
-checkByteMem(unsigned int addedbytes) {
+void checkByteMem(unsigned int addedbytes) {
 	if (byteOffset + addedbytes + 1 >= maxbyteoffset) {
-		maxbyteoffset += maxbyteoffset + addedbytes + 32;
+		maxbyteoffset += maxbyteoffset + addedbytes + 1024;
 		byteCode = realloc(byteCode, maxbyteoffset);
 		memset(byteCode + byteOffset, 0, maxbyteoffset - byteOffset);
 	}
 }
 
-void
-addOp(char op) {
+void addOp(char op) {
 	checkByteMem(sizeof(char));
 	byteCode[byteOffset] = op;
 	byteOffset++;
 }
 
-void
-addExtendedOp(char extop) {
+void alignArgumentToWordBoundary() {
+	// in some processors (ARM and others not i386) floats, doubles, and strings
+	// need to start on a 4 byte boundary.  pack OP_NOP so that the next char opcode
+	// fills the last byte of the word so that stuff is aligned
+	while((int)(byteCode+byteOffset)%8!=7) {
+		addOp(OP_NOP);
+	}
+}
+
+
+
+void addExtendedOp(char extop) {
 	// ad an extended op WITHOUT an argument
 	addOp(OP_EXTENDEDNONE);
 	addOp(extop);
 }
 
-unsigned int
-addInt(int data) {
+unsigned int addInt(int data) {
 	// add an integer to the bytecode at the current location
 	// return starting location of the integer - so we can write to it later
 	int *temp;
@@ -280,16 +286,14 @@ addInt(int data) {
 	return holdOffset;
 }
 
-void
-addString(char *data) {
+void addString(char *data) {
 	int len = strlen(data) + 1;
 	checkByteMem(len+1);
 	strncpy((char *) byteCode + byteOffset, data, len);
 	byteOffset += len;
 }
 
-void
-addIntOp(char op, int data) {
+void addIntOp(char op, int data) {
 	int *temp = NULL;
 	checkByteMem(sizeof(char) + sizeof(int));
 	byteCode[byteOffset] = op;
@@ -300,8 +304,7 @@ addIntOp(char op, int data) {
 	byteOffset += sizeof(int);
 }
 
-void
-addInt2Op(char op, int data1, int data2) {
+void addInt2Op(char op, int data1, int data2) {
 	int *temp = NULL;
 	checkByteMem(sizeof(char) + 2 * sizeof(int));
 	byteCode[byteOffset] = op;
@@ -313,20 +316,19 @@ addInt2Op(char op, int data1, int data2) {
 	byteOffset += 2 * sizeof(int);
 }
 
-void
-addFloatOp(char op, double data) {
+void addFloatOp(char op, double data) {
 	double *temp = NULL;
+	alignArgumentToWordBoundary();
 	checkByteMem(sizeof(char) + sizeof(double));
 	byteCode[byteOffset] = op;
 	byteOffset++;
-
 	temp = (double *) (byteCode + byteOffset);
 	*temp = data;
 	byteOffset += sizeof(double);
 }
 
-void
-addStringOp(char op, char *data) {
+void addStringOp(char op, char *data) {
+	alignArgumentToWordBoundary();
 	addOp(op);
 	addString(data);
 }
@@ -2159,6 +2161,10 @@ expr: floatexpr
 ;
 
 
+
+
+
+
 floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| floatexpr '+' floatexpr { addOp(OP_ADD); }
 	| floatexpr '-' floatexpr { addOp(OP_SUB); }
@@ -2399,47 +2405,161 @@ floatexpr: '(' floatexpr ')' { $$ = $2; }
 	| B256CLICKY '(' ')' { addOp(OP_CLICKY); }
 	| B256CLICKB { addOp(OP_CLICKB); }
 	| B256CLICKB '(' ')' { addOp(OP_CLICKB); }
-	| B256CLEAR { addFloatOp(OP_PUSHFLOAT, 0x00000000); }
-	| B256CLEAR '(' ')' { addFloatOp(OP_PUSHFLOAT, 0x00000000); }
-	| B256BLACK { addFloatOp(OP_PUSHFLOAT, 0xff000000); }
-	| B256BLACK '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff000000); }
-	| B256WHITE { addFloatOp(OP_PUSHFLOAT, 0xfff8f8f8); }
-	| B256WHITE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xfff8f8f8); }
-	| B256RED { addFloatOp(OP_PUSHFLOAT, 0xffff0000); }
-	| B256RED '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff0000); }
-	| B256DARKRED { addFloatOp(OP_PUSHFLOAT, 0xff800000); }
-	| B256DARKRED '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff800000); }
-	| B256GREEN { addFloatOp(OP_PUSHFLOAT, 0xff00ff00); }
-	| B256GREEN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff00ff00); }
-	| B256DARKGREEN { addFloatOp(OP_PUSHFLOAT, 0xff008000); }
-	| B256DARKGREEN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff008000); }
-	| B256BLUE { addFloatOp(OP_PUSHFLOAT, 0xff0000ff); }
-	| B256BLUE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff0000ff); }
-	| B256DARKBLUE { addFloatOp(OP_PUSHFLOAT, 0xff000080); }
-	| B256DARKBLUE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff000080); }
-	| B256CYAN { addFloatOp(OP_PUSHFLOAT, 0xff00ffff); }
-	| B256CYAN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff00ffff); }
-	| B256DARKCYAN { addFloatOp(OP_PUSHFLOAT, 0xff008080); }
-	| B256DARKCYAN '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff008080); }
-	| B256PURPLE { addFloatOp(OP_PUSHFLOAT, 0xffff00ff); }
-	| B256PURPLE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff00ff); }
-	| B256DARKPURPLE { addFloatOp(OP_PUSHFLOAT, 0xff800080); }
-	| B256DARKPURPLE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff800080); }
-	| B256YELLOW { addFloatOp(OP_PUSHFLOAT, 0xffffff00); }
-	| B256YELLOW '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffffff00); }
-	| B256DARKYELLOW { addFloatOp(OP_PUSHFLOAT, 0xff808000); }
-	| B256DARKYELLOW '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff808000); }
-	| B256ORANGE { addFloatOp(OP_PUSHFLOAT, 0xffff6600); }
-	| B256ORANGE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffff6600); }
-	| B256DARKORANGE { addFloatOp(OP_PUSHFLOAT, 0xffaa3300); }
-	| B256DARKORANGE '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffaa3300); }
-	| B256GREY { addFloatOp(OP_PUSHFLOAT, 0xffa4a4a4); }
-	| B256GREY '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xffa4a4a4); }
-	| B256DARKGREY { addFloatOp(OP_PUSHFLOAT, 0xff808080); }
-	| B256DARKGREY '(' ')' { addFloatOp(OP_PUSHFLOAT, 0xff808080); }
+	| B256CLEAR {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0x00);	addOp(OP_RGB);
+		}
+	| B256CLEAR '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0x00);	addOp(OP_RGB);
+		}
+	| B256BLACK {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256BLACK '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256WHITE {
+		addIntOp(OP_PUSHINT, 0xf8); addIntOp(OP_PUSHINT, 0xf8);	addIntOp(OP_PUSHINT, 0xf8);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256WHITE '(' ')' {
+		addIntOp(OP_PUSHINT, 0xf8); addIntOp(OP_PUSHINT, 0xf8);	addIntOp(OP_PUSHINT, 0xf8);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256RED {
+		addIntOp(OP_PUSHINT, 0xff); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256RED '(' ')' {
+		addIntOp(OP_PUSHINT, 0xff); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKRED {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKRED '(' ')' {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256GREEN {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256GREEN '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKGREEN {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKGREEN '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256BLUE {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256BLUE '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKBLUE {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKBLUE '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256CYAN {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256CYAN '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKCYAN {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKCYAN '(' ')' {
+		addIntOp(OP_PUSHINT, 0x00); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256PURPLE {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256PURPLE '(' ')' {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0xFF);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKPURPLE {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKPURPLE '(' ')' {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x00);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256YELLOW {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256YELLOW '(' ')' {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0xFF);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKYELLOW {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKYELLOW '(' ')' {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256ORANGE {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x66);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256ORANGE '(' ')' {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x66);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKORANGE {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x33);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKORANGE '(' ')' {
+		addIntOp(OP_PUSHINT, 0xFF); addIntOp(OP_PUSHINT, 0x33);	addIntOp(OP_PUSHINT, 0x00);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256GREY {
+		addIntOp(OP_PUSHINT, 0xA4); addIntOp(OP_PUSHINT, 0xA4);	addIntOp(OP_PUSHINT, 0xA4);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256GREY '(' ')' {
+		addIntOp(OP_PUSHINT, 0xA4); addIntOp(OP_PUSHINT, 0xA4);	addIntOp(OP_PUSHINT, 0xA4);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKGREY {
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
+	| B256DARKGREY '(' ')'{
+		addIntOp(OP_PUSHINT, 0x80); addIntOp(OP_PUSHINT, 0x80);	addIntOp(OP_PUSHINT, 0x80);
+		addIntOp(OP_PUSHINT, 0xff);	addOp(OP_RGB);
+		}
 	| B256PIXEL '(' floatexpr ',' floatexpr ')' { addOp(OP_PIXEL); }
 	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT, 255); 
+		addIntOp(OP_PUSHINT, 0xff); 
 		addOp(OP_RGB);
 	}
 	| B256RGB '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {

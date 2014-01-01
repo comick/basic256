@@ -24,7 +24,7 @@
 #include <QWaitCondition>
 #include <QFile>
 #include <QDir>
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QFileDialog>
 	#include <QtWidgets/QMessageBox>
 	#include <QtWidgets/QInputDialog>
@@ -77,6 +77,11 @@ using namespace std;
 	#include <speak_lib.h>
 #endif
 
+#ifdef ANDROID
+    #include "android/AndroidTTS.h"
+    AndroidTTS *androidtts;
+#endif
+
 extern QMutex* mymutex;
 extern QMutex* mydebugmutex;
 extern QWaitCondition* waitCond;
@@ -97,11 +102,15 @@ RunController::RunController()
 	replacewin = NULL;
 	docwin = NULL;
 	
-	#ifdef USEQSOUND
-		wavsound = new QSound(QString(""));
-	#endif
+#ifdef USEQSOUND
+    wavsound = new QSound(QString(""));
+#endif
 
-	//signals for the Interperter (i)
+#ifdef ANDROID
+    androidtts = new AndroidTTS();
+#endif
+
+    //signals for the Interperter (i)
 	QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
 	QObject::connect(i, SIGNAL(highlightLine(int)), editwin, SLOT(highlightLine(int)));
 	
@@ -152,52 +161,55 @@ void
 RunController::speakWords(QString text)
 {
 	mymutex->lock();
-	#ifdef ESPEAK
-	    SETTINGS;
-		espeak_ERROR err;
-		
-		// espeak tts library
-		int synth_flags = espeakCHARS_UTF8 | espeakPHONEMES | espeakENDPAUSE;
-		#ifdef WIN32
-			// use program install folder
-			int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
-		#else
-			// use default path for espeak-data
-			int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
-		#endif
-		if (samplerate!=-1) {
-			QString voicename = settings.value(SETTINGSESPEAKVOICE,SETTINGSESPEAKVOICEDEFAULT).toString();
-			err = espeak_SetVoiceByName(voicename.toUtf8());
-			if(err==EE_OK) {
-				int size=text.length()+1;	// buffer length
-				err = espeak_Synth(text.toUtf8(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
-				if (err==EE_OK) {
-					espeak_Synchronize();		// wait to finish
-					espeak_Terminate();		// clean up
-				} else {
-					printf("espeak synth error %i\n", err);
-				}
-			} else {
-				printf("espeak st voice error %i\n", err);
-			}
-		} else {
-			printf("Unable to initialize espeak\n");
-		}
-	#endif
-	#ifdef ESPEAK_EXECUTE
-		// easy espeak implementation when all else fails
-		text.replace("\""," quote ");
-		text.prepend("espeak \"");
-		text.append("\"");
-		executeSystem(text);
-	#endif
-	#ifdef MACX_SAY
-		// easy macosX implementation - call the command line say statement
-		text.replace("\""," quote ");
-		text.prepend("say \"");
-		text.append("\"");
-		executeSystem(text);
-	#endif
+#ifdef ESPEAK
+    SETTINGS;
+    espeak_ERROR err;
+
+    // espeak tts library
+    int synth_flags = espeakCHARS_UTF8 | espeakPHONEMES | espeakENDPAUSE;
+    #ifdef WIN32
+        // use program install folder
+        int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
+    #else
+        // use default path for espeak-data
+        int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
+    #endif
+    if (samplerate!=-1) {
+        QString voicename = settings.value(SETTINGSESPEAKVOICE,SETTINGSESPEAKVOICEDEFAULT).toString();
+        err = espeak_SetVoiceByName(voicename.toUtf8());
+        if(err==EE_OK) {
+            int size=text.length()+1;	// buffer length
+            err = espeak_Synth(text.toUtf8(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);
+            if (err==EE_OK) {
+                espeak_Synchronize();		// wait to finish
+                espeak_Terminate();		// clean up
+            } else {
+                printf("espeak synth error %i\n", err);
+            }
+        } else {
+            printf("espeak st voice error %i\n", err);
+        }
+    } else {
+        printf("Unable to initialize espeak\n");
+    }
+#endif
+#ifdef ESPEAK_EXECUTE
+    // easy espeak implementation when all else fails
+    text.replace("\""," quote ");
+    text.prepend("espeak \"");
+    text.append("\"");
+    executeSystem(text);
+#endif
+#ifdef MACX_SAY
+    // easy macosX implementation - call the command line say statement
+    text.replace("\""," quote ");
+    text.prepend("say \"");
+    text.append("\"");
+    executeSystem(text);
+#endif
+#ifdef ANDROID
+    androidtts->say(text);
+#endif
 	waitCond->wakeAll();
 	mymutex->unlock();
 

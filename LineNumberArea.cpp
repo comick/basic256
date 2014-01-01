@@ -42,7 +42,7 @@
 // 2013-01-27
 
 #include <QPaintEvent>
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QWidget>
 #else
 	#include <QWidget>

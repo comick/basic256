@@ -23,7 +23,7 @@
 #include <QMutex>
 #include <QPainter>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
     #include <QtPrintSupport/QPrintDialog>
     #include <QtPrintSupport/QPrinter>
     #include <QtWidgets/QAction>
@@ -194,14 +194,19 @@ void BasicGraph::slotCopy()
 
 void BasicGraph::slotPrint()
 {
-	QPrinter printer(QPrinter::HighResolution);
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	dialog->setWindowTitle(QObject::tr("Print Graphics Output"));
+
+#ifdef ANDROID
+    QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Printing is not supported in this platform at this time."));
+#else
+
+    QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(QObject::tr("Print Graphics Output"));
 	
-	if (dialog->exec() == QDialog::Accepted) 
-	{
-		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
-		{
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
+        {
 			QPainter painter(&printer);
 			QRect rect = painter.viewport();
 			QSize size = image->size();
@@ -209,10 +214,12 @@ void BasicGraph::slotPrint()
 			painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
 			painter.setWindow(image->rect());
 			painter.drawImage(0, 0, *image);
-		}
-		else
-		{
-			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-		}		
-	}	
+        }
+        else
+        {
+            QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+        }
+    }
+#endif
+
 }

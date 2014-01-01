@@ -22,7 +22,7 @@
 #include <QMutex>
 #include <QClipboard>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QAction>
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QMessageBox>
@@ -134,20 +134,20 @@ bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar)
 
 void BasicOutput::slotPrint()
 {
-  QTextDocument *document = this->document();
-  QPrinter printer;
-  QPrintDialog *dialog = new QPrintDialog(&printer, this);
-  dialog->setWindowTitle(QObject::tr("Print Text Output"));
+#ifdef ANDROID
+    QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Printing is not supported in this platform at this time."));
+#else
+    QTextDocument *document = this->document();
+    QPrinter printer;
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(QObject::tr("Print Text Output"));
 	
-  if (dialog->exec() == QDialog::Accepted)
-    {
-      if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
-	{
-	  document->print(&printer);
-	}
-      else
-	{
-	  QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-	}		
+    if (dialog->exec() == QDialog::Accepted) {
+        if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))	{
+            document->print(&printer);
+        } else {
+            QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+        }
     }
+#endif
 }

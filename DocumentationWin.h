@@ -16,8 +16,9 @@
  **/
 
 
+#include <qglobal.h>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QWidget>
 	#include <QtWidgets/QDialog>
 	#include <QtWidgets/QVBoxLayout>

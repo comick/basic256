@@ -19,7 +19,9 @@
 #ifndef __BASICWIDGET_H
 #define __BASICWIDGET_H
 
-#if QT_VERSION >= 0x05000000
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QVBoxLayout>
 	#include <QtWidgets/QWidget>
 #else

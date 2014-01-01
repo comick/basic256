@@ -15,9 +15,9 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+#include <qglobal.h>
 
-
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QDockWidget>
 	#include <QtWidgets/QTreeWidget>
 #else

@@ -18,7 +18,6 @@
 
 #include "GhostButton.h"
 
-
 GhostButton::GhostButton(QString text) 
   : QPushButton(text)
 {

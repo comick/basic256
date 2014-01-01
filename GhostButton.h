@@ -18,8 +18,10 @@
 
 #ifndef __GHOSTBUTTON
 #define __GHOSTBUTTON
- 
-#if QT_VERSION >= 0x05000000
+
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QPushButton>
 #else
 	#include <QPushButton>

@@ -19,7 +19,9 @@
 #ifndef __VIEWWIDGETIFACE_H
 #define __VIEWWIDGETIFACE_H
 
-#if QT_VERSION >= 0x05000000
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
     #include <QtWidgets/QMenu>
 #else
     #include <QMenu>

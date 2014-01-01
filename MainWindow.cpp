@@ -24,7 +24,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QGridLayout>
 	#include <QtWidgets/QMenuBar>
@@ -128,7 +128,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	vardock->setWindowTitle(QObject::tr("Variable Watch"));
 
 	rc = new RunController();
+#ifndef DISABLESYNTAXHIGHLIGHT
 	editsyntax = new EditSyntaxHighlighter(editwin->document());
+#endif
 
 	// Main window toolbar
 	maintbar = new QToolBar();
@@ -346,8 +348,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// Help menu
 	QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
-	#ifdef WIN32PORTABLE
-		// in portable mode make doc online and context help online
+#if defined(WIN32PORTABLE) || defined(ANDROID)
+        // in portable or android make doc online and context help online
 		QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
 		onlinehact->setShortcut(Qt::Key_F1);
 		QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
@@ -392,19 +394,34 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
 	// position where the docks and main window were last on screen
 	// unless the position is off the screen
-	QDesktopWidget *screen = QApplication::desktop();
- 	QPoint l;
- 	QSize z;
- 	
- 	l = settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint();
+
+#ifndef ANDROID
+
+    QDesktopWidget *screen = QApplication::desktop();
+    QPoint l;
+    QSize z;
+
+    l = settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint();
  	if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
  	if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
 	move(l);
  	z = settings.value(SETTINGSSIZE, QSize(800, 600)).toSize();
- 	if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
- 	if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
-	resize(z);
-	
+    if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+    if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+    resize(z);
+
+    graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
+    if (settings.contains(SETTINGSGRAPHPOS)) {
+        l = settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint();
+        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
+        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+        graphdock->move(l);
+        z = settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize();
+        if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+        if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+        graphdock->resize(z);
+    }
+
 	outdock->setFloating(settings.value(SETTINGSOUTFLOAT, false).toBool());
 	if (settings.contains(SETTINGSOUTPOS)) {
 		l = settings.value(SETTINGSOUTPOS, QPoint(100, 100)).toPoint();
@@ -412,22 +429,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
 		outdock->move(l);
 		z = settings.value(SETTINGSOUTSIZE, QSize(400, 400)).toSize();
-		if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
-		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
-		outdock->resize(z);
-	}
-	
-	graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
-	if (settings.contains(SETTINGSGRAPHPOS)) {
-		l = settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint();
-		if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
-		if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
-		graphdock->move(l);
-		z = settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize();
-		if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
-		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
-		graphdock->resize(z);
-	}
+        if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+        if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+        outdock->resize(z);
+    }
 	
 	vardock->setFloating(settings.value(SETTINGSVARFLOAT, false).toBool());
 	if (settings.contains(SETTINGSVARPOS)) {
@@ -440,6 +445,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 		if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
 		vardock->resize(z);
 	}
+#endif
 
     // set initial font
     QFont initialFont;
@@ -456,7 +462,9 @@ MainWindow::~MainWindow()
 {
 	//printf("mwdestroy\n");
 	delete rc;
-	delete editsyntax;
+#ifndef DISABLESYNTAXHIGHLIGHT
+    delete editsyntax;
+#endif
 	delete mymutex;
 	delete waitCond;
 	delete editwin;
@@ -466,14 +474,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::about()
 {
-	#ifdef WIN32PORTABLE
-		#define PORTABLE QObject::tr(" Portable")
-	#else
-		#define PORTABLE ""
-	#endif
-		
-	QMessageBox::about(this, QObject::tr("About BASIC-256") +  PORTABLE,
-		QObject::tr("<h2>BASIC-256") + PORTABLE + QObject::tr("</h2>") +
+#ifdef WIN32PORTABLE
+    #define PLATFORM QObject::tr(" Portable")
+#else
+#ifdef ANDROID
+    #define PLATFORM QObject::tr(" Android")
+#else
+    #define PLATFORM ""
+#endif
+#endif
+
+    QMessageBox::about(this, QObject::tr("About BASIC-256") +  PLATFORM,
+        QObject::tr("<h2>BASIC-256") + PLATFORM + QObject::tr("</h2>") +
 		QObject::tr("version <b>") +  VERSION + QObject::tr("</b> - built with QT <b>") + QT_VERSION_STR +QObject::tr("</b>") +
 		QObject::tr("<p>Copyright &copy; 2006-2013, The BASIC-256 Team</p>") + 
 		QObject::tr("<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>") +
@@ -550,6 +562,8 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 		// actually quitting
 		e->accept();
 		// save current screen posision, visibility and floating
+        // if we ae not android
+#ifndef ANDROID
 		SETTINGS;
 		settings.setValue(SETTINGSVISIBLE, isVisible());
 		settings.setValue(SETTINGSSIZE, size());
@@ -570,7 +584,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 		settings.setValue(SETTINGSVARFLOAT, vardock->isFloating());
 		settings.setValue(SETTINGSVARSIZE, vardock->size());
 		settings.setValue(SETTINGSVARPOS, vardock->pos());
-		
+#endif
 
 	} else {
 		// not quitting

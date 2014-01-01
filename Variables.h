@@ -19,18 +19,18 @@
 #define VARIABLE_MAXARRAYELEMENTS 1048576
 #define MAX_RECURSE_LEVELS	1048576
 
-struct arraydata {
+typedef struct VariableArrayData {
   double floatval;
   QString string;
-};
+} VariableArrayData;
   
-struct array
+typedef struct VariableArrayPart
 {
   int xdim;
   int ydim;
   int size;
-  std::map<int,arraydata*> datamap;
-};
+  std::map<int,VariableArrayData*> datamap;
+} VariableArrayPart;
 
 
 struct variable
@@ -38,7 +38,7 @@ struct variable
   b_type type;
   QString string;
   double floatval; 
-  array *arr;
+  VariableArrayPart *arr;
 };
 
 
@@ -92,7 +92,7 @@ class Variables
 		std::map<int, bool> globals;
 		void clearvariable(variable*);
 		variable* getv(int, bool);
-		arraydata* getarraydata(variable*, int);
+        VariableArrayData* getarraydata(variable*, int);
 		bool isglobal(int);
 
 };

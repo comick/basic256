@@ -18,8 +18,10 @@
 
 #ifndef __RUNCONTROLLER_H
 #define __RUNCONTROLLER_H
- 
-#if QT_VERSION >= 0x05000000
+
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QTextEdit>
 	#include <QtWidgets/QPushButton>
 	#include <QtWidgets/QStatusBar>

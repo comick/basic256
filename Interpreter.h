@@ -24,11 +24,8 @@
 #include <QFile>
 #include <QDir>
 #include <QTime>
-#include <QPrinter>
-#include <QPrinterInfo>
 #include <stdio.h>
 #include <cmath>
-#include <sqlite3.h>
 #include <dirent.h>
 #include "BasicGraph.h"
 #include "Stack.h"
@@ -36,8 +33,22 @@
 #include "ErrorCodes.h"
 #include "Sound.h"
 
+
+#if QT_VERSION >= 0x050000
+    #include <QtPrintSupport/QPrinter>
+    #include <QtPrintSUpport/QPrinterInfo>
+#else
+    #include <QPrinter>
+    #include <QPrinterInfo>
+#endif
+
+#ifndef ANDROID
+    // specific stuff disabled - hopefully temp for ANDROID
+    #include <sqlite3.h>
+#endif
+
 #ifndef M_PI
-#define M_PI 3.14159265
+    #define M_PI 3.14159265
 #endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
@@ -174,9 +185,6 @@ class Interpreter : public QThread
   sprite *sprites;
   int nsprites;
   void closeDatabase(int);
-  sqlite3 **dbconn;
-  sqlite3_stmt ***dbset;
-  bool dbsetrow[NUMDBCONN][NUMDBSET];		// have we "stepped" into a row
   int errornum;
   int errorvarnum;
   QString errormessage;
@@ -191,6 +199,15 @@ class Interpreter : public QThread
   bool printing;
   QPrinter *printdocument;
   QPainter *printdocumentpainter;
+
+#ifndef DISABLESQLITE
+  // specific stuff disabled - hopefully temp for ANDROID
+  sqlite3 **dbconn;
+  sqlite3_stmt ***dbset;
+  bool dbsetrow[NUMDBCONN][NUMDBSET];		// have we "stepped" into a row
+#endif
+
+
 };
 
 

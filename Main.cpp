@@ -26,7 +26,7 @@
 	
 //Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QStatusBar>
 #else

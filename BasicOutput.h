@@ -21,7 +21,10 @@
 
 #include <QKeyEvent>
 #include <QPaintEvent>
-#if QT_VERSION >= 0x05000000
+
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QTextEdit>
 #else
 	#include <QTextEdit>

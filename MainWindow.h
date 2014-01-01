@@ -19,7 +19,9 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#if QT_VERSION >= 0x05000000
+#include <qglobal.h>
+
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QMainWindow>
 	#include <QtWidgets/QGridLayout>
 	#include <QtWidgets/QAction>
@@ -42,7 +44,9 @@
 #include "DocumentationWin.h"
 #include "PreferencesWin.h"
 #include "RunController.h"
-#include "EditSyntaxHighlighter.h"
+#ifndef DISABLESYNTAXHIGHLIGHT
+    #include "EditSyntaxHighlighter.h"
+#endif
 #include "Settings.h"
 #include "DockWidget.h"
 
@@ -105,7 +109,9 @@ public:
 	QAction * stopact;
 
 	RunController *rc;
-	EditSyntaxHighlighter * editsyntax;
+#ifndef DISABLESYNTAXHIGHLIGHT
+    EditSyntaxHighlighter * editsyntax;
+#endif
 
 	QString localecode;
 

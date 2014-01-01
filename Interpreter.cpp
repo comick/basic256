@@ -23,7 +23,6 @@
 #include <time.h>
 #include <cmath>
 #include <string>
-#include <sqlite3.h>
 #include <errno.h>
 
 #ifdef WIN32
@@ -39,6 +38,7 @@
 	InpOut32InpType Inp32 = NULL;
 	InpOut32OutType Out32 = NULL;
 #else
+    // unix, mac, android
 	#include <sys/types.h> 
 	#include <sys/socket.h>
 	#include <netinet/in.h>
@@ -46,8 +46,14 @@
 	#include <poll.h> 
 	#include <arpa/inet.h>
 	#include <net/if.h>
-	#include <ifaddrs.h>
-	#include <unistd.h>
+    #ifndef ANDROID
+        #include <ifaddrs.h>
+    #endif
+    #include <unistd.h>
+#endif
+
+#ifndef DISABLESQLITE
+    #include <sqlite3.h>
 #endif
 
 #include <QString>
@@ -60,7 +66,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
 	#include <QtWidgets/QMessageBox>
 #else
 	#include <QMessageBox>
@@ -1299,7 +1305,8 @@ Interpreter::initialize()
 		netsockfd[t] = netSockClose(netsockfd[t]);
 	}
 	// initialize databse connections
-	dbconn = new sqlite3 *[NUMDBCONN];
+#ifndef DISABLESQLITE
+    dbconn = new sqlite3 *[NUMDBCONN];
 	dbset = new sqlite3_stmt **[NUMDBCONN];
 	for (int t=0;t<NUMDBCONN;t++) {
 		dbconn[t] = NULL;
@@ -1308,7 +1315,8 @@ Interpreter::initialize()
 			dbset[t][u] = NULL;
 			dbsetrow[t][u] = false;
 		}
-	}
+    }
+#endif
 	// set settings
 	stack.settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
 	
@@ -1361,7 +1369,8 @@ Interpreter::cleanup()
 
 void Interpreter::closeDatabase(int n) {
 	// cleanup database
-	for (int t=0; t<NUMDBSET; t++) {
+#ifndef DISABLESQLITE
+    for (int t=0; t<NUMDBSET; t++) {
 		if (dbset[n][t]) {
 			sqlite3_finalize(dbset[n][t]);
 			dbset[n][t] = NULL;
@@ -1372,6 +1381,7 @@ void Interpreter::closeDatabase(int n) {
 		sqlite3_close(dbconn[n]);
 		dbconn[n] = NULL;
 	}
+#endif
 }
 
 void
@@ -2971,7 +2981,7 @@ Interpreter::execByteCode()
 			double oneval = stack.popfloat();
 			double twoval = stack.popfloat();
 			double ans = pow(twoval, oneval);
-			if (isnan(ans)) {
+            if (std::isnan(ans)) {
 				errornum = ERROR_NOTANUMBER;
 				stack.pushint(0);
 			} else {
@@ -4341,9 +4351,10 @@ Interpreter::execByteCode()
 					{
 						op++;
 						// open database connection
-						QString file = stack.popstring();
+                        QString file = stack.popstring();
 						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
@@ -4352,28 +4363,36 @@ Interpreter::execByteCode()
 								errornum = ERROR_DBOPEN;
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+            }
 					break;
 
 			case OPX_DBCLOSE:
 					{
 						op++;
-						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+                        int n = stack.popint();
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-						}
-					}
+                        }
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_DBEXECUTE:
 					{
 						op++;
 						// execute a statement on the database
-						QString stmt = stack.popstring();
+                        QString stmt = stack.popstring();
 						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if(dbconn[n]) {
@@ -4386,7 +4405,10 @@ Interpreter::execByteCode()
 								errornum = ERROR_DBNOTOPEN;
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_DBOPENSET:
@@ -4396,7 +4418,8 @@ Interpreter::execByteCode()
 						QString stmt = stack.popstring();
 						int set = stack.popint();
 						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
@@ -4418,7 +4441,10 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_DBCLOSESET:
@@ -4426,7 +4452,8 @@ Interpreter::execByteCode()
 						op++;
 						int set = stack.popint();
 						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
@@ -4440,7 +4467,10 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_DBROW:
@@ -4448,7 +4478,8 @@ Interpreter::execByteCode()
 						op++;
 						int set = stack.popint();
 						int n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
@@ -4463,7 +4494,10 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_DBINT:
@@ -4487,7 +4521,8 @@ Interpreter::execByteCode()
 						}
 						set = stack.popint();
 						n = stack.popint();
-						if (n<0||n>=NUMDBCONN) {
+#ifndef DISABLESQLITE
+                        if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
@@ -4533,7 +4568,10 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-					}
+#else
+                        errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                    }
 					break;
 
 			case OPX_LASTERROR:
@@ -4750,7 +4788,7 @@ Interpreter::execByteCode()
 					if (fn<0||fn>=NUMSOCKETS) {
 						errornum = ERROR_NETSOCKNUMBER;
 					} else {
-						#ifdef WIN32
+#ifdef WIN32
 						unsigned long n;
 						if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
 							stack.pushint(0);
@@ -4761,7 +4799,7 @@ Interpreter::execByteCode()
 								stack.pushint(1);
 							}
 						}
-						#else
+#else
 						struct pollfd p[1];
 						p[0].fd = netsockfd[fn];
 						p[0].events = POLLIN | POLLPRI;
@@ -4774,7 +4812,7 @@ Interpreter::execByteCode()
 								stack.pushint(0);
 							}
 						}
-						#endif
+#endif
 					}
 				}
 				break;
@@ -4783,7 +4821,7 @@ Interpreter::execByteCode()
 				{
 					op++;
 					// get first non "lo" ip4 address
-					#ifdef WIN32
+#ifdef WIN32
 					char szHostname[100];
 					HOSTENT *pHostEnt;
 					int nAdapter = 0;
@@ -4792,7 +4830,10 @@ Interpreter::execByteCode()
 					pHostEnt = gethostbyname( szHostname );
 					memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
 					stack.pushstring(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
-					#else
+#else
+#ifdef ANDROID
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					bool good = false;
 					struct ifaddrs *myaddrs, *ifa;
 					void *in_addr;
@@ -4818,8 +4859,9 @@ Interpreter::execByteCode()
 						// on error give local loopback
 						stack.pushstring(QString("127.0.0.1"));
 					}
-					#endif
-				}
+#endif
+#endif
+                }
 				break;
 
 			case OPX_KILL:
@@ -4914,8 +4956,8 @@ Interpreter::execByteCode()
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 						#ifdef WIN32
 							#ifdef WIN32PORTABLE
-									errornum = ERROR_NOTIMPLEMENTED;
-							# else
+                                 errornum = ERROR_NOTIMPLEMENTED;
+                            # else
 								if (Inp32==NULL) {
 									errornum = ERROR_NOTIMPLEMENTED;
 								} else {
@@ -5059,16 +5101,19 @@ Interpreter::execByteCode()
 					// Return type of OS this compile was for
 					op++;
 					int os = -1;
-					#ifdef WIN32
+#ifdef WIN32
 						os = 0;
-					#endif
-					#ifdef LINUX
+#endif
+#ifdef LINUX
 						os = 1;
-					#endif
-					#ifdef MACX
-						os = 2;
-					#endif
-					stack.pushint(os);
+#endif
+#ifdef MACX
+                        os = 2;
+#endif
+#ifdef ANDROID
+                        os = 3;
+#endif
+                    stack.pushint(os);
 				}
 				break;
 
@@ -5164,7 +5209,9 @@ Interpreter::execByteCode()
 				{
 					// return the next free databsae number - throw error if none free
 					op++;
-					int f=-1;
+
+#ifndef DISABLESQLITE
+                    int f=-1;
 					for (int t=0;(t<NUMDBCONN)&&(f==-1);t++) {
 						if (!dbconn[t]) f = t;
 					}
@@ -5174,7 +5221,10 @@ Interpreter::execByteCode()
 					} else {
 						stack.pushint(f);
 					}
-				}
+#else
+                    errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                }
 				break;
 
 			case OPX_FREEDBSET:
@@ -5182,7 +5232,8 @@ Interpreter::execByteCode()
 					// return the next free set for a database - throw error if none free
 					op++;
 					int n = stack.popint();
-					int f=-1;
+#ifndef DISABLESQLITE
+                    int f=-1;
 					if (n<0||n>=NUMDBCONN) {
 						errornum = ERROR_DBCONNNUMBER;
 						stack.pushint(0);
@@ -5197,7 +5248,10 @@ Interpreter::execByteCode()
 							stack.pushint(f);
 						}
 					}
-				}
+#else
+                    errornum = ERROR_NOTIMPLEMENTED;
+#endif
+                }
 				break;
 
 			case OPX_ARC:

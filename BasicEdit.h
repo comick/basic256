@@ -19,8 +19,9 @@
 #ifndef __BASICEDIT_H
 #define __BASICEDIT_H
 
+#include <qglobal.h>
 
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
     #include <QtWidgets/QApplication>
     #include <QtWidgets/QPlainTextEdit>
     #include <QtWidgets/QMainWindow>
@@ -36,8 +37,10 @@
 class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 {
   Q_OBJECT
+
  public:
   BasicEdit();
+
   void loadFile(QString);
   void saveFile(bool);
   void findString(QString, bool, bool);

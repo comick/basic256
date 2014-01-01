@@ -24,7 +24,7 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#if QT_VERSION >= 0x05000000
+#if QT_VERSION >= 0x050000
     #include <QtWidgets/QFileDialog>
     #include <QtWidgets/QMessageBox>
     #include <QtWidgets/QStatusBar>
@@ -55,7 +55,7 @@ BasicEdit::BasicEdit()
 
     currentMaxLine = 10;
 	currentLine = 1;
-	startPos = textCursor().position();
+    startPos = this->textCursor().position();
 	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
 	codeChanged = false;
 	
@@ -95,7 +95,7 @@ BasicEdit::highlightLine(int hline)
 void
 BasicEdit::goToLine(int newLine)
 {
-	QTextCursor t(textCursor());
+    QTextCursor t(this->textCursor());
 	t.setPosition(0);
 	int line = 1;
 	while (line < newLine && t.movePosition(QTextCursor::NextBlock))
@@ -298,24 +298,31 @@ BasicEdit::loadFile(QString s)
 
 void BasicEdit::slotPrint()
 {
-	QTextDocument *document = this->document();
+#ifdef ANDROID
+    QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Printing is not supported in this platform at this time."));
+#else
+    QTextDocument *document = this->document();
 	QPrinter printer;
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	dialog->setWindowTitle(QObject::tr("Print Code"));
 
-	if (dialog->exec() == QDialog::Accepted)
-	{
-		if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
-		{
-			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(QObject::tr("Print Code"));
+
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))
+        {
+
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 			document->print(&printer);
-			QApplication::restoreOverrideCursor();
-		}
-		else
-		{
-			QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
-		}
-	}
+            QApplication::restoreOverrideCursor();
+        }
+        else
+        {
+            QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+        }
+
+    }
+#endif
 }
 
 

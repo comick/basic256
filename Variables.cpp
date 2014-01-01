@@ -95,7 +95,7 @@ void Variables::clearvariable(variable* v)
 	// but do not delete it
 	if (v->type == T_ARRAY || v->type == T_STRARRAY)	{
 		while(!v->arr->datamap.empty()) {
-			std::map<int,arraydata*>::iterator j=v->arr->datamap.begin();
+            std::map<int,VariableArrayData*>::iterator j=v->arr->datamap.begin();
 			delete((*j).second);					// delete the array element object
 			v->arr->datamap.erase((*j).first);		// delete it from the map
 		}
@@ -137,13 +137,13 @@ variable* Variables::getv(int varnum, bool makenew) {
 	return(v);
 }
 
-arraydata* Variables::getarraydata(variable *v, int i) {
+VariableArrayData* Variables::getarraydata(variable *v, int i) {
 	// get arraydata from array elements [i] in v from map	arraydata *d;
-	arraydata *d;
+    VariableArrayData *d;
 	if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 		d = v->arr->datamap[i];
 	} else {
-		d = new arraydata;
+        d = new VariableArrayData;
 		d->floatval = 0;
 		d->string = QString("");
 		v->arr->datamap[i] = d;
@@ -242,7 +242,7 @@ void Variables::arraydim(b_type type, int varnum, int xdim, int ydim, bool redim
 			if (v->type != type || !redim || !v->arr) {
 				// if array data is dim or redim without a dim then create a new one (clear the old)
 				clearvariable(v);
-				v->arr = new array;
+                v->arr = new VariableArrayPart;
 			}
 			v->type = type;
 			v->arr->size = size;
