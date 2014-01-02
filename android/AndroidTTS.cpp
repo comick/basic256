@@ -43,7 +43,7 @@ void AndroidTTS::say(QString text) {
         qCritical()<<"JNI AttachCurrentThread failed";
         return;
     }
-    jstring str = env->NewString(reinterpret_cast<const jchar*>(text.toUtf8().data()), text.length());
+    jstring str = env->NewString(reinterpret_cast<const jchar*>(text.constData()), text.length());
     jboolean res = env->CallBooleanMethod(m_ttsHelperObject, s_ttsHelperSayMethodID, str);
     env->DeleteLocalRef(str);
     s_javaVM->DetachCurrentThread();

@@ -46,6 +46,14 @@ public class AndroidTTSHelper {
 	public void say(String text) {
 		if (ttsInitialized) {
 			ttsEngine.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+			// wait for say to finish
+			while(ttsEngine.isSpeaking()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
 		}
 	}
 	

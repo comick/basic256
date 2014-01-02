@@ -63,6 +63,7 @@ DEFINES                         		+=	USEQSOUND
 
 	########
 	# TTS control - How Say statement works
+        # in Android the ANDROID define handles this setting
 	########
 
 	########
