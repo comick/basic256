@@ -3,6 +3,33 @@
 ###
 ###
 
+### ***********************************************************************
+### ***********************************************************************
+### ***********************************************************************
+###
+### BE SURE TO COPY %buildtemp%/src/org/qtproject/qt5/android/bindings/QtActivity.java
+### to trunk/android/src/org/qtproject/qt5/android/bindings/QtActivity.java
+### and make the changes as recommended by ThomasL
+### as posted at: https://groups.google.com/forum/#!searchin/android-qt/context/android-qt/rTz8d6IzgEM/7c6YEei47GEJ
+###
+### add the following to QtActivity.java:
+### private static QtActivity QtActivityInstance;
+### public static QtActivity getQtActivityInstance()
+### {
+### return QtActivity.QtActivityInstance;
+### }
+###
+### and in QtActivity.java loadApplication() method, we added this
+### QtActivity.QtActivityInstance = this;
+###
+### Now the "Context can be exposed by
+### import org.qtproject.qt5.android.bindings.QtActivity;
+### by calling the QtActivity.getQtActivityInstance() method
+###
+### ***********************************************************************
+### ***********************************************************************
+### ***********************************************************************
+
 QT       += core gui widgets printsupport
 
 ###message($$[QT_VERSION])
@@ -20,6 +47,7 @@ QMAKE_CXXFLAGS                                  +=	-g
 CONFIG						+=	qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
+ANDROID_PACKAGE_SOURCE_DIR                      =       $$PWD/android
 
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc

@@ -78,7 +78,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 	}
 
 	// search for say method
-    s_ttsHelperSayMethodID = env->GetMethodID(s_ttsHelperClassID, "say", "(Ljava/lang/String;)Z");
+    s_ttsHelperSayMethodID = env->GetMethodID(s_ttsHelperClassID, "say", "(Ljava/lang/String;)V");
     if (!s_ttsHelperSayMethodID) {
         qCritical()<<"Can't find AndroidTTSHelper say method";
 		return -1;
