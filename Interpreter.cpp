@@ -52,9 +52,6 @@
     #include <unistd.h>
 #endif
 
-#ifndef DISABLESQLITE
-    #include <sqlite3.h>
-#endif
 
 #include <QString>
 #include <QPainter>
@@ -1305,18 +1302,12 @@ Interpreter::initialize()
 		netsockfd[t] = netSockClose(netsockfd[t]);
 	}
 	// initialize databse connections
-#ifndef DISABLESQLITE
-    dbconn = new sqlite3 *[NUMDBCONN];
-	dbset = new sqlite3_stmt **[NUMDBCONN];
+	// by closing any that were previously open
 	for (int t=0;t<NUMDBCONN;t++) {
-		dbconn[t] = NULL;
-		dbset[t] = new sqlite3_stmt *[NUMDBSET];
-		for (int u=0;u<NUMDBSET;u++) {
-			dbset[t][u] = NULL;
-			dbsetrow[t][u] = false;
-		}
+		closeDatabase(t);
     }
-#endif
+
+
 	// set settings
 	stack.settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
 	
@@ -1367,21 +1358,16 @@ Interpreter::cleanup()
 	}
 }
 
-void Interpreter::closeDatabase(int n) {
-	// cleanup database
-#ifndef DISABLESQLITE
-    for (int t=0; t<NUMDBSET; t++) {
-		if (dbset[n][t]) {
-			sqlite3_finalize(dbset[n][t]);
-			dbset[n][t] = NULL;
-			dbsetrow[n][t] = false;
+void Interpreter::closeDatabase(int t) {
+	// cleanup database and all of its sets
+	for (int u=0;u<NUMDBSET;u++) {
+        if (dbSet[t][u].isActive()) {
+            dbSet[t][u].clear();
 		}
 	}
-	if (dbconn[n]) {
-		sqlite3_close(dbconn[n]);
-		dbconn[n] = NULL;
+    if (dbConn[t].isOpen()) {
+        dbConn[t].close();
 	}
-#endif
 }
 
 void
@@ -4353,19 +4339,17 @@ Interpreter::execByteCode()
 						// open database connection
                         QString file = stack.popstring();
 						int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-							int error = sqlite3_open(file.toUtf8().data(), &dbconn[n]);
-							if (error) {
+                            dbConn[n].addDatabase("QSQLITE");
+                            dbConn[n].setDatabaseName(file);
+                            bool ok = dbConn[n].open();
+							if (!ok) {
 								errornum = ERROR_DBOPEN;
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
             }
 					break;
 
@@ -4373,15 +4357,11 @@ Interpreter::execByteCode()
 					{
 						op++;
                         int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
                         }
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -4391,23 +4371,20 @@ Interpreter::execByteCode()
 						// execute a statement on the database
                         QString stmt = stack.popstring();
 						int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-							if(dbconn[n]) {
-								int error = sqlite3_exec(dbconn[n], stmt.toUtf8().data(), 0, 0, 0);
-								if (error != SQLITE_OK) {
+                            if(dbConn[n].isOpen()) {
+                                QSqlQuery q(dbConn[n]);
+                                bool ok = q.exec(stmt);
+								if (!ok) {
 									errornum = ERROR_DBQUERY;
-									errormessage = sqlite3_errmsg(dbconn[n]);
+									errormessage = q.lastError().databaseText();
 								}
 							} else {
 								errornum = ERROR_DBNOTOPEN;
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -4418,32 +4395,29 @@ Interpreter::execByteCode()
 						QString stmt = stack.popstring();
 						int set = stack.popint();
 						int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-								if(dbconn[n]) {
-									if (dbset[n][set]) {
-										sqlite3_finalize(dbset[n][set]);
-										dbset[n][set] = NULL;
+                                if(dbConn[n].isOpen()) {
+                                    if (dbSet[n][set].isActive()) {
+                                        dbSet[n][set].clear();
+										dbSet[n][set] = NULL;
 									}
-									dbsetrow[n][set] = false;
-									int error = sqlite3_prepare_v2(dbconn[n], stmt.toUtf8().data(), -1, &(dbset[n][set]), NULL);
-									if (error != SQLITE_OK) {
+									dbSetRow[n][set] = false;	// have we moved to the first row yet
+                                    QSqlQuery (dbSet[n][set])(dbConn[n]);
+                                    bool ok = dbSet[n][set].exec(stmt);
+									if (!ok) {
 										errornum = ERROR_DBQUERY;
-										errormessage = sqlite3_errmsg(dbconn[n]);
+                                        errormessage = dbSet[n][set].lastError().databaseText();
 									}
 								} else {
 									errornum = ERROR_DBNOTOPEN;
 								}
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -4452,24 +4426,19 @@ Interpreter::execByteCode()
 						op++;
 						int set = stack.popint();
 						int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-								if (dbset[n][set]) {
-									sqlite3_finalize(dbset[n][set]);
-									dbset[n][set] = NULL;
+                                if (dbSet[n][set].isActive()) {
+                                    dbSet[n][set].clear();
 								} else {
 									errornum = ERROR_DBNOTSET;
 								}
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -4478,25 +4447,21 @@ Interpreter::execByteCode()
 						op++;
 						int set = stack.popint();
 						int n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-								if (dbset[n][set]) {
+                                if (dbSet[n][set].isActive()) {
 									// return true if we move to a new row else false
-									dbsetrow[n][set] = true;
-									stack.pushint((sqlite3_step(dbset[n][set]) == SQLITE_ROW?1:0));
+									dbSetRow[n][set] = true;
+                                    stack.pushint(dbSet[n][set].next());
 								} else {
 									errornum = ERROR_DBNOTSET;
 								}
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -4521,46 +4486,40 @@ Interpreter::execByteCode()
 						}
 						set = stack.popint();
 						n = stack.popint();
-#ifndef DISABLESQLITE
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-								if (!dbset[n][set]) {
+                                if (!dbSet[n][set].isActive()) {
 									errornum = ERROR_DBNOTSET;
 								} else {
-									if (!dbsetrow[n][set]) {
+                                    if (!dbSetRow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
 										if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
-											// find the column number for name and save in col
-											for(int t=0;t<sqlite3_column_count(dbset[n][set])&&col==-1;t++) {
-												if (strcmp(colname.toUtf8().data(),sqlite3_column_name(dbset[n][set],t))==0) {
-													col = t;
-												}
-											}
+                                            col = dbSet[n][set].record().indexOf(colname);
 										}
-										if (col < 0 || col >= sqlite3_column_count(dbset[n][set])) {
+                                        if (col < 0 || col >= dbSet[n][set].record().count()) {
 											errornum = ERROR_DBCOLNO;
 										} else {
 											switch(opcode) {
 												case OPX_DBINT:
 												case OPX_DBINTS:
-													stack.pushint(sqlite3_column_int(dbset[n][set], col));
+                                                    stack.pushint(dbSet[n][set].record().value(col).toInt());
 													break;
 												case OPX_DBFLOAT:
 												case OPX_DBFLOATS:
-													stack.pushfloat(sqlite3_column_double(dbset[n][set], col));
+                                                    stack.pushfloat(dbSet[n][set].record().value(col).toDouble());
 													break;
 												case OPX_DBNULL:
 												case OPX_DBNULLS:
-													stack.pushint((char*)sqlite3_column_text(dbset[n][set], col)==NULL);
+                                                    stack.pushint(dbSet[n][set].record().value(col).isNull());
 													break;
 												case OPX_DBSTRING:
 												case OPX_DBSTRINGS:
-													stack.pushstring(QString::fromUtf8((char*)sqlite3_column_text(dbset[n][set], col)));
+                                                    stack.pushstring(dbSet[n][set].record().value(col).toString());
 													break;
 											}
 										}
@@ -4568,9 +4527,6 @@ Interpreter::execByteCode()
 								}
 							}
 						}
-#else
-                        errornum = ERROR_NOTIMPLEMENTED;
-#endif
                     }
 					break;
 
@@ -5210,10 +5166,9 @@ Interpreter::execByteCode()
 					// return the next free databsae number - throw error if none free
 					op++;
 
-#ifndef DISABLESQLITE
                     int f=-1;
 					for (int t=0;(t<NUMDBCONN)&&(f==-1);t++) {
-						if (!dbconn[t]) f = t;
+                        if (!dbConn[t].isOpen()) f = t;
 					}
 					if (f==-1) {
 						errornum = ERROR_FREEDB;
@@ -5221,9 +5176,6 @@ Interpreter::execByteCode()
 					} else {
 						stack.pushint(f);
 					}
-#else
-                    errornum = ERROR_NOTIMPLEMENTED;
-#endif
                 }
 				break;
 
@@ -5232,14 +5184,13 @@ Interpreter::execByteCode()
 					// return the next free set for a database - throw error if none free
 					op++;
 					int n = stack.popint();
-#ifndef DISABLESQLITE
                     int f=-1;
 					if (n<0||n>=NUMDBCONN) {
 						errornum = ERROR_DBCONNNUMBER;
 						stack.pushint(0);
 					} else {
 						for (int t=0;(t<NUMDBSET)&&(f==-1);t++) {
-							if (!dbset[n][t]) f = t;
+                            if (!dbSet[n][t].isActive()) f = t;
 						}
 						if (f==-1) {
 							errornum = ERROR_FREEDBSET;
@@ -5248,9 +5199,6 @@ Interpreter::execByteCode()
 							stack.pushint(f);
 						}
 					}
-#else
-                    errornum = ERROR_NOTIMPLEMENTED;
-#endif
                 }
 				break;
 

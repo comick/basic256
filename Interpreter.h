@@ -42,10 +42,10 @@
     #include <QPrinterInfo>
 #endif
 
-#ifndef ANDROID
-    // specific stuff disabled - hopefully temp for ANDROID
-    #include <sqlite3.h>
-#endif
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlError>
 
 #ifndef M_PI
     #define M_PI 3.14159265
@@ -200,12 +200,9 @@ class Interpreter : public QThread
   QPrinter *printdocument;
   QPainter *printdocumentpainter;
 
-#ifndef DISABLESQLITE
-  // specific stuff disabled - hopefully temp for ANDROID
-  sqlite3 **dbconn;
-  sqlite3_stmt ***dbset;
-  bool dbsetrow[NUMDBCONN][NUMDBSET];		// have we "stepped" into a row
-#endif
+    QSqlDatabase dbConn[NUMDBCONN];
+    QSqlQuery dbSet[NUMDBCONN][NUMDBSET];
+	bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
 
 };

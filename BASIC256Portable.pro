@@ -18,6 +18,7 @@ QT							+=	webkit
 contains( QT_VERSION, "^5.*" ) {
 	QT						+=	widgets
 	QT						+=	printsupport
+	QT						+=	sql
 }
 
 RESOURCES					+=	resources/resource.qrc
