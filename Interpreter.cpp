@@ -616,8 +616,6 @@ void Interpreter::printError(int e, QString message)
 	}
 	if (currentIncludeFile!="") {
 		msg += tr(" in included file ") + currentIncludeFile;
-	} else {
-		emit(goToLine(currentLine));
 	}
 	msg += tr(" on line ") + QString::number(currentLine) + tr(": ") + getErrorMessage(e);
 	if (message!="") msg+= " " + message;
@@ -1365,8 +1363,8 @@ void Interpreter::closeDatabase(int t) {
             dbSet[t][u].clear();
 		}
 	}
-    if (dbConn[t].isOpen()) {
-        dbConn[t].close();
+	if (dbConn[t].isOpen()) {
+		dbConn[t].close();
 	}
 }
 
@@ -1478,8 +1476,12 @@ Interpreter::execByteCode()
 		} else {
 			// no error handler defined or FATAL error - display message
 			printError(lasterrornum, lasterrormessage);
-			// if error number less than the start of warnings then die
-			if (lasterrornum<WARNING_START) return -1;
+			// if error number less than the start of warnings then
+			// highlight the current line AND die
+			if (lasterrornum<WARNING_START) {
+				if (currentIncludeFile!="") emit(goToLine(currentLine));
+				return -1;
+			}
 		}
 	}
 	
@@ -4343,7 +4345,7 @@ Interpreter::execByteCode()
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-                            dbConn[n].addDatabase("QSQLITE");
+                            dbConn[n] = QSqlDatabase::addDatabase("QSQLITE");
                             dbConn[n].setDatabaseName(file);
                             bool ok = dbConn[n].open();
 							if (!ok) {
@@ -4404,10 +4406,9 @@ Interpreter::execByteCode()
                                 if(dbConn[n].isOpen()) {
                                     if (dbSet[n][set].isActive()) {
                                         dbSet[n][set].clear();
-										dbSet[n][set] = NULL;
 									}
 									dbSetRow[n][set] = false;	// have we moved to the first row yet
-                                    QSqlQuery (dbSet[n][set])(dbConn[n]);
+                                    dbSet[n][set] = QSqlQuery(dbConn[n]);
                                     bool ok = dbSet[n][set].exec(stmt);
 									if (!ok) {
 										errornum = ERROR_DBQUERY;

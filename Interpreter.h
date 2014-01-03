@@ -36,7 +36,7 @@
 
 #if QT_VERSION >= 0x050000
     #include <QtPrintSupport/QPrinter>
-    #include <QtPrintSUpport/QPrinterInfo>
+    #include <QtPrintSupport/QPrinterInfo>
 #else
     #include <QPrinter>
     #include <QPrinterInfo>
@@ -192,17 +192,18 @@ class Interpreter : public QThread
   QString lasterrormessage;
   int lasterrorline;
   int netsockfd[NUMSOCKETS];
-  DIR *directorypointer;			// used by dir function
-  QTime runtimer;				// used by 
+  DIR *directorypointer;		// used by DIR function
+  QTime runtimer;				// used by MSEC function
   Sound sound;
   QString currentIncludeFile;	// set to current included file name for runtime error messages
+
   bool printing;
   QPrinter *printdocument;
   QPainter *printdocumentpainter;
 
-    QSqlDatabase dbConn[NUMDBCONN];
-    QSqlQuery dbSet[NUMDBCONN][NUMDBSET];
-	bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
+  QSqlDatabase dbConn[NUMDBCONN];				// database connections
+  QSqlQuery dbSet[NUMDBCONN][NUMDBSET];			// allow NUMDBSET number of sets on a database connection
+  bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
 
 };
