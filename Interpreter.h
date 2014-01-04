@@ -201,8 +201,7 @@ class Interpreter : public QThread
   QPrinter *printdocument;
   QPainter *printdocumentpainter;
 
-  QSqlDatabase dbConn[NUMDBCONN];				// database connections
-  QSqlQuery dbSet[NUMDBCONN][NUMDBSET];			// allow NUMDBSET number of sets on a database connection
+  QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
   bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
 

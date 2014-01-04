@@ -143,6 +143,14 @@ Interpreter::Interpreter()
 			}
 		}
 	#endif
+	//
+	// initialize pointers used for database recordsets (querries)
+	for (int t=0;t<NUMDBCONN;t++) {
+		for (int u=0;u<NUMDBSET;u++) {
+			dbSet[t][u] = NULL;
+		}
+	}
+
 }
 
 Interpreter::~Interpreter() {
@@ -1358,13 +1366,18 @@ Interpreter::cleanup()
 
 void Interpreter::closeDatabase(int t) {
 	// cleanup database and all of its sets
-	for (int u=0;u<NUMDBSET;u++) {
-        if (dbSet[t][u].isActive()) {
-            dbSet[t][u].clear();
+	QString dbconnection = "DBCONNECTION" + QString::number(t);
+	QSqlDatabase db = QSqlDatabase::database(dbconnection);
+	if (db.isValid()) {
+		for (int u=0;u<NUMDBSET;u++) {
+			if (dbSet[t][u]) {
+				dbSet[t][u]->clear();
+				delete dbSet[t][u];
+				dbSet[t][u] = NULL;
+			}
 		}
-	}
-	if (dbConn[t].isOpen()) {
-		dbConn[t].close();
+		db.close();
+		QSqlDatabase::removeDatabase(dbconnection);
 	}
 }
 
@@ -4345,11 +4358,13 @@ Interpreter::execByteCode()
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-                            dbConn[n] = QSqlDatabase::addDatabase("QSQLITE","DBCONNECTION" + QString::number(n));
-                            dbConn[n].setDatabaseName(file);
-                            bool ok = dbConn[n].open();
+							QString dbconnection = "DBCONNECTION" + QString::number(n);
+                            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",dbconnection);
+                            db.setDatabaseName(file);
+                            bool ok = db.open();
 							if (!ok) {
 								errornum = ERROR_DBOPEN;
+								closeDatabase(n);
 							}
 						}
             }
@@ -4363,7 +4378,6 @@ Interpreter::execByteCode()
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-							QSqlDatabase::removeDatabase("DBCONNECTION" + QString::number(n));
                         }
                     }
 					break;
@@ -4377,13 +4391,16 @@ Interpreter::execByteCode()
                         if (n<0||n>=NUMDBCONN) {
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
-                            if(dbConn[n].isOpen()) {
-                                QSqlQuery q(dbConn[n]);
-                                bool ok = q.exec(stmt);
+ 							QString dbconnection = "DBCONNECTION" + QString::number(n);
+                            QSqlDatabase db = QSqlDatabase::database(dbconnection);
+                            if(db.isValid()) {
+                                QSqlQuery *q = new QSqlQuery(db);
+                                bool ok = q->exec(stmt);
 								if (!ok) {
 									errornum = ERROR_DBQUERY;
-									errormessage = q.lastError().databaseText();
+									errormessage = q->lastError().databaseText();
 								}
+								delete q;
 							} else {
 								errornum = ERROR_DBNOTOPEN;
 							}
@@ -4404,16 +4421,20 @@ Interpreter::execByteCode()
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-                                if(dbConn[n].isOpen()) {
-                                    if (dbSet[n][set].isActive()) {
-                                        dbSet[n][set].clear();
+								QString dbconnection = "DBCONNECTION" + QString::number(n);
+								QSqlDatabase db = QSqlDatabase::database(dbconnection);
+								if(db.isValid()) {
+                                    if (dbSet[n][set]) {
+										dbSet[n][set]->clear();
+                                        delete dbSet[n][set];
+                                        dbSet[n][set] = NULL;
 									}
 									dbSetRow[n][set] = false;	// have we moved to the first row yet
-                                    dbSet[n][set] = QSqlQuery(dbConn[n]);
-                                    bool ok = dbSet[n][set].exec(stmt);
+                                    dbSet[n][set] = new QSqlQuery(db);
+                                    bool ok = dbSet[n][set]->exec(stmt);
 									if (!ok) {
 										errornum = ERROR_DBQUERY;
-                                        errormessage = dbSet[n][set].lastError().databaseText();
+                                        errormessage = dbSet[n][set]->lastError().databaseText();
 									}
 								} else {
 									errornum = ERROR_DBNOTOPEN;
@@ -4434,8 +4455,10 @@ Interpreter::execByteCode()
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-                                if (dbSet[n][set].isActive()) {
-                                    dbSet[n][set].clear();
+                                if (dbSet[n][set]) {
+									dbSet[n][set]->clear();
+                                    delete dbSet[n][set];
+                                    dbSet[n][set] = NULL;
 								} else {
 									errornum = ERROR_DBNOTSET;
 								}
@@ -4455,10 +4478,10 @@ Interpreter::execByteCode()
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-                                if (dbSet[n][set].isActive()) {
+                                if (dbSet[n][set]->isActive()) {
 									// return true if we move to a new row else false
 									dbSetRow[n][set] = true;
-                                    stack.pushint(dbSet[n][set].next());
+                                    stack.pushint(dbSet[n][set]->next());
 								} else {
 									errornum = ERROR_DBNOTSET;
 								}
@@ -4494,34 +4517,34 @@ Interpreter::execByteCode()
 							if (set<0||set>=NUMDBSET) {
 								errornum = ERROR_DBSETNUMBER;
 							} else {
-                                if (!dbSet[n][set].isActive()) {
+                                if (!dbSet[n][set]->isActive()) {
 									errornum = ERROR_DBNOTSET;
 								} else {
                                     if (!dbSetRow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
 										if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
-                                            col = dbSet[n][set].record().indexOf(colname);
+                                            col = dbSet[n][set]->record().indexOf(colname);
 										}
-                                        if (col < 0 || col >= dbSet[n][set].record().count()) {
+                                        if (col < 0 || col >= dbSet[n][set]->record().count()) {
 											errornum = ERROR_DBCOLNO;
 										} else {
 											switch(opcode) {
 												case OPX_DBINT:
 												case OPX_DBINTS:
-                                                    stack.pushint(dbSet[n][set].record().value(col).toInt());
+                                                    stack.pushint(dbSet[n][set]->record().value(col).toInt());
 													break;
 												case OPX_DBFLOAT:
 												case OPX_DBFLOATS:
-                                                    stack.pushfloat(dbSet[n][set].record().value(col).toDouble());
+                                                    stack.pushfloat(dbSet[n][set]->record().value(col).toDouble());
 													break;
 												case OPX_DBNULL:
 												case OPX_DBNULLS:
-                                                    stack.pushint(dbSet[n][set].record().value(col).isNull());
+                                                    stack.pushint(dbSet[n][set]->record().value(col).isNull());
 													break;
 												case OPX_DBSTRING:
 												case OPX_DBSTRINGS:
-                                                    stack.pushstring(dbSet[n][set].record().value(col).toString());
+                                                    stack.pushstring(dbSet[n][set]->record().value(col).toString());
 													break;
 											}
 										}
@@ -5170,7 +5193,9 @@ Interpreter::execByteCode()
 
                     int f=-1;
 					for (int t=0;(t<NUMDBCONN)&&(f==-1);t++) {
-                        if (!dbConn[t].isOpen()) f = t;
+						QString dbconnection = "DBCONNECTION" + QString::number(t);
+                        QSqlDatabase db = QSqlDatabase::database(dbconnection);
+                        if (!db.isValid()) f = t;
 					}
 					if (f==-1) {
 						errornum = ERROR_FREEDB;
@@ -5192,7 +5217,7 @@ Interpreter::execByteCode()
 						stack.pushint(0);
 					} else {
 						for (int t=0;(t<NUMDBSET)&&(f==-1);t++) {
-                            if (!dbSet[n][t].isActive()) f = t;
+                            if (!dbSet[n][t]) f = t;
 						}
 						if (f==-1) {
 							errornum = ERROR_FREEDBSET;

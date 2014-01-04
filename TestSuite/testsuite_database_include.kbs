@@ -17,7 +17,7 @@ call s("dbstring(1)='two''", dbstring(1), "two")
 call n("dbint('i')=2", dbint('i'), 2)
 call s("dbstring('d')='two''", dbstring('d'), "two")
 call n("drow() - get row", dbrow(), false)
-dbcloseset
+# leave set open so that next stmt has to close
 #
 dbopenset "select * from t where i = 3;"
 call n("drow() - get row", dbrow(), true)
@@ -37,19 +37,22 @@ dbexecute t, "drop table if exists t;"
 dbexecute t, "create table t (i integer primary key, d text);"
 dbexecute t, "insert into t (i,d) values (1,'one');"
 dbexecute t, "insert into t (i,d) values (2,'two');"
-dbopenset t, "select * from t order by d desc limit 1;"
-call n("drow(t) - get row", dbrow(t), true)
-call n("dbint(t,0)=2", dbint(t,0), 2)
-call s("dbstring(t,1)='two''", dbstring(t,1), "two")
-call n("drow(t) - get row", dbrow(t), false)
+b = freedbset(t)
+dbopenset t,b, "select * from t order by d desc limit 1;"
+call n("drow(t,b) - get row", dbrow(t,b), true)
+call n("dbint(t,b,0)=2", dbint(t,b,0), 2)
+call s("dbstring(t,b,1)='two''", dbstring(t,b,1), "two")
+call n("drow(t,b) - get row", dbrow(t,b), false)
 a = freedbset(t)
 dbopenset t,a, "select * from t order by 1 limit 1;"
 call n("drow(t,a) - get row", dbrow(t,a), true)
 call n("dbint(t,a,0)=1", dbint(t,a,0), 1)
 call s("dbstring(t,a,1)='one''", dbstring(t,a,1), "one")
 call n("drow(t,a) - get row", dbrow(t,a), false)
-dbcloseset t,a
-dbcloseset t
+# leave both seta open so that we can let dbclose close them
+#
+print "t,b,a = " + t + "," + b + "," + a
+#
 dbclose t
 kill "testsuite2.db"
 dbclose
