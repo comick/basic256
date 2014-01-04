@@ -1,5 +1,5 @@
 Compiling Instructions and Dependencies
-2013-11-12 VERSION 1.0.0.0
+2014-01-03 VERSION 1.0.0.7
 
 
 LINUX you will need:
@@ -12,7 +12,6 @@ LINUX you will need:
   - this option gives an integrated library approach to the say statement
 * espeak (if using the LINUX_ESPEAK_EXECUTE option in BASIC256.pro)
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
-* and the sqlite3 amalgamation installed from sqlite.org
 
 
 WINDOWS (QT5.1.1)
@@ -40,19 +39,6 @@ WINDOWS (QT5.1.1)
 		and basic256/trunk/release
 	** copy portaudio.h and speak_lib.h
 		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\include
-		
-* sqlite development libraries and headers
-	** Available from:
-		http://www.sqlite.org/download.html
-	** use the *amalgation* zip file and copy the *.h files into
-		C:\Qt\Qt5.1.1\5.1.1\mingw48_32\include MinGW/include
-	** download the windows dll zip file, extract files into
-		C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
-		and run the following
-		dlltool -D sqlite3.dll -d sqlite3.def -l libsqlite3dll.a
-	** copy sqlite.dll file
-		to basic256/trunk/debug
-		and basic256/trunk/release
 
 * inpout32 Serial Driver
 	** download version 1.500
@@ -66,7 +52,6 @@ For MAC 10.6.4
 	- QT
 	- XCode (from apple)
 	- MACPorts (Porticus front end is handy)
-		-	sqlite3
 		-	flex
 		-	libsdl_dev
 		-	libsdl_dev-framework

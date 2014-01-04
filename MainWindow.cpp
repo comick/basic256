@@ -474,26 +474,36 @@ MainWindow::~MainWindow()
 
 void MainWindow::about()
 {
-#ifdef WIN32PORTABLE
-    #define PLATFORM QObject::tr(" Portable")
-#else
+QString title;
+QString message;
+
 #ifdef ANDROID
-    #define PLATFORM QObject::tr(" Android")
+	// android does not have webkit dialogs - make plain text
+    title = QObject::tr("About BASIC-256") +  QObject::tr(" Android");
+    message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
+		QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
+		QObject::tr("Sopyright &copy; 2006-2014, The BASIC-256 Team") + "\n" +
+		QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
+		QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
+		QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.");
 #else
-    #define PLATFORM ""
-#endif
+	// webkit dialogs for all platforms except android
+    #ifdef WIN32PORTABLE
+	title = QObject::tr("About BASIC-256") +  QObject::tr(" Portable");
+	message = "<h2>" + QObject::tr("BASIC-256") + QObject::tr(" Portable") + "</h2>";
+	#else
+	title = QObject::tr("About BASIC-256");
+	message = "<h2>" + QObject::tr("BASIC-256") + "</h2>";
+	#endif	// WIN32PORTABLE
+
+	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
+		"<p>" + QObject::tr("Copyright &copy; 2006-2014, The BASIC-256 Team") + "</p>" + 
+		"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
+		"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
+		"<p><i>" + QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.")  + "</i></p>";
 #endif
 
-    QMessageBox::about(this, QObject::tr("About BASIC-256") +  PLATFORM,
-        QObject::tr("<h2>BASIC-256") + PLATFORM + QObject::tr("</h2>") +
-		QObject::tr("version <b>") +  VERSION + QObject::tr("</b> - built with QT <b>") + QT_VERSION_STR +QObject::tr("</b>") +
-		QObject::tr("<p>Copyright &copy; 2006-2013, The BASIC-256 Team</p>") + 
-		QObject::tr("<p>Please visit our web site at <a href=http://www.basic256.org>basic256.org</a> for tutorials and documentation.</p>") +
-		QObject::tr("<p>Please see the CONTRIBUTORS file for a list of developers and translators for this project.</p>") +
-		QObject::tr("<p><i>You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</i></p>")
-		);
-
-   #undef PORTABLE
+    QMessageBox::about(this, title, message);
 }
 
 void MainWindow::updateRecent()

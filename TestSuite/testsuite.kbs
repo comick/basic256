@@ -26,8 +26,10 @@
 #				added tests for floating point to integer compare (epsilon)
 # 20130918	j.m.reneau	moved functions to seperate file and included them
 # 20131125	j.m.reneau	added try/catch error trapping
+# 20140103	j.m.reneau	moved to own folder and split file and database
+#				out to own include so that they can be run independently
 
-include "testsuite_functions.kbs"
+include "testsuite_common_include.kbs"
 
 call versiontest(1000002)
 function versiontestgood(needed)
@@ -680,133 +682,12 @@ call n("int(0)", int(0), 0)
 ###################################################
 call section("File I/O")
 ###################################################
-b$ = "testsuite_file.txt"
-print "new file - 0 to 255 on random length lines"
-fileno = 3
-open fileno,b$
-reset fileno
-for t = 0 to 255
-   r = rand
-   if r<.20 then
-      writeline fileno, string(t)
-   else
-      if r<.40 then
-         write fileno, string(t) + chr(9)
-      else
-         write fileno, string(t) + " "
-      end if
-   end if
-next t
-close fileno
-# read tokens from file
-open b$
-a = 0
-while not eof
-   t$ = read
-   a += int(t$)
-end while
-call n("read data sum", a, 32640)
-close
-# read lines from file and explode
-open b$
-a = 0
-while not eof
-   t$ = readline
-   t$ = replace(t$,chr(9)," ")
-   c$ = explodex(t$,"\t| ")
-   for t = 0 to c$[?]-1
-      a += int(c$[t])
-   next t
-end while
-call n("readline data sum", a, 32640)
-close
-kill b$
-# test freefile
-for t = 0 to 7
-   call n("freefile", freefile, t)
-   open freefile,"testsuite_"+t+".txt"
-next t
-for t = 0 to 7
-   close t
-   kill "testsuite_"+t+".txt"
-next t
-call n("freefile", freefile, 0)
-
-###################################################
-call section("Binary File")
-###################################################
-b$ = "testsuite_binary.dat"
-print "new file"
-openb b$
-reset
-for t = 0 to 255
-   writebyte t
-next t
-close
-openb b$
-a = 0
-while not eof
-   a+= readbyte()
-end while
-call n("bindata sum", a, 32640)
-print "position to 10 and read"
-seek 10
-a=0
-while not eof
-   a+= readbyte()
-end while
-call n("bindata sum from 10", a, 32595)
-close
-kill b$
+include "testsuite_fileio_include.kbs"
 
 ###################################################
 call section("Database")
 ###################################################
-dbopen "testsuite.db"
-dbexecute "drop table if exists t;"
-dbexecute "create table t (i integer primary key, d text);"
-dbexecute "insert into t (i,d) values (1,'one');"
-dbexecute "insert into t (i,d) values (2,'two');"
-dbexecute "insert into t (i,d) values (3,NULL);"
-dbopenset "select * from t order by d desc limit 1;"
-call n("drow() - get row", dbrow(), true)
-call n("dbint(0)=2", dbint(0), 2)
-call s("dbstring(1)='two''", dbstring(1), "two")
-call n("dbint('i')=2", dbint('i'), 2)
-call s("dbstring('d')='two''", dbstring('d'), "two")
-dbcloseset
-#
-dbopenset "select * from t where i = 3;"
-call n("drow() - get row", dbrow(), true)
-call n("dbnull(0)=false", dbnull(0), false)
-call n("dbnull(1)=true'", dbnull(1), true)
-call n("dbnull('i')=false", dbnull('i'), false)
-call n("dbnull('d')=true", dbnull('d'), true)
-call s("dbstring(1)='''", dbstring(1), "")
-call s("dbstring('d')='''", dbstring('d'), "")
-dbcloseset
-#
-t = freedb
-dbopen t, "testsuite2.db"
-dbexecute t, "drop table if exists t;"
-dbexecute t, "create table t (i integer primary key, d text);"
-dbexecute t, "insert into t (i,d) values (1,'one');"
-dbexecute t, "insert into t (i,d) values (2,'two');"
-dbopenset t, "select * from t order by d desc limit 1;"
-call n("drow(t) - get row", dbrow(t), true)
-call n("dbint(t,0)=2", dbint(t,0), 2)
-call s("dbstring(t,1)='two''", dbstring(t,1), "two")
-a = freedbset(t)
-dbopenset t,a, "select * from t order by 1 limit 1;"
-call n("drow(t,a) - get row", dbrow(t,a), true)
-call n("dbint(t,a,0)=1", dbint(t,a,0), 1)
-call s("dbstring(t,a,1)='one''", dbstring(t,a,1), "one")
-dbcloseset t,a
-dbcloseset t
-dbclose t
-kill "testsuite2.db"
-dbclose
-kill "testsuite.db"
+include "testsuite_database_include.kbs"
 
 ###################################################
 call section("Test Random and fastgraphics")

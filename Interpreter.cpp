@@ -4345,7 +4345,7 @@ Interpreter::execByteCode()
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
-                            dbConn[n] = QSqlDatabase::addDatabase("QSQLITE");
+                            dbConn[n] = QSqlDatabase::addDatabase("QSQLITE","DBCONNECTION" + QString::number(n));
                             dbConn[n].setDatabaseName(file);
                             bool ok = dbConn[n].open();
 							if (!ok) {
@@ -4363,6 +4363,7 @@ Interpreter::execByteCode()
 							errornum = ERROR_DBCONNNUMBER;
 						} else {
 							closeDatabase(n);
+							QSqlDatabase::removeDatabase("DBCONNECTION" + QString::number(n));
                         }
                     }
 					break;
