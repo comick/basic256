@@ -1651,56 +1651,61 @@ seekstmt: B256SEEK floatexpr  {
 	| B256SEEK floatexpr ',' floatexpr { addOp(OP_SEEK); }
 ;
 
-inputexpr: B256INPUT stringexpr {
-		addOp(OP_PRINT);
-	}
-;
-
-inputstmt:	inputexpr ',' B256STRINGVAR {
+inputstmt:	B256INPUT stringexpr ',' B256STRINGVAR {
 		addOp(OP_INPUT);
-		addIntOp(OP_STRINGASSIGN, $3);
+		addIntOp(OP_STRINGASSIGN, $4);
 	}
 	| B256INPUT B256STRINGVAR  {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_STRINGASSIGN, $2);
 	}
-	| inputexpr ',' B256VARIABLE {
+	| B256INPUT stringexpr ',' B256VARIABLE {
 		addOp(OP_INPUT);
-		addIntOp(OP_NUMASSIGN, $3);
+		addIntOp(OP_NUMASSIGN, $4);
 	}
 	| B256INPUT B256VARIABLE  {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_NUMASSIGN, $2);
 	}
-	| inputexpr ',' B256STRINGVAR '[' floatexpr ']' {
+	| B256INPUT stringexpr ',' B256STRINGVAR '[' floatexpr ']' {
+		addOp(OP_STACKSWAP);		// bring prompt to top
 		addOp(OP_INPUT);
-		addIntOp(OP_STRARRAYASSIGN, $3);
+		addIntOp(OP_STRARRAYASSIGN, $4);
 	}
 	| B256INPUT B256STRINGVAR '[' floatexpr ']' {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_STRARRAYASSIGN, $2);
 	}
-	| inputexpr ',' B256VARIABLE '[' floatexpr ']' {
+	| B256INPUT stringexpr ',' B256VARIABLE '[' floatexpr ']' {
+		addOp(OP_STACKSWAP);		// bring prompt to top
 		addOp(OP_INPUT);
-		addIntOp(OP_ARRAYASSIGN, $3);
+		addIntOp(OP_ARRAYASSIGN, $4);
 	}
 	| B256INPUT B256VARIABLE '[' floatexpr ']' {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_ARRAYASSIGN, $2);
 	}
-	| inputexpr ',' B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+	| B256INPUT stringexpr ',' B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 		addOp(OP_INPUT);
-		addIntOp(OP_STRARRAYASSIGN2D, $3);
+		addIntOp(OP_STRARRAYASSIGN2D, $4);
 	}
 	| B256INPUT B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_STRARRAYASSIGN2D, $2);
 	}
-	| inputexpr ',' B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+	| B256INPUT stringexpr ',' B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+		addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 		addOp(OP_INPUT);
-		addIntOp(OP_ARRAYASSIGN2D, $3);
+		addIntOp(OP_ARRAYASSIGN2D, $4);
 	}
 	| B256INPUT B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+		addStringOp(OP_PUSHSTRING, "");
 		addOp(OP_INPUT);
 		addIntOp(OP_ARRAYASSIGN2D, $2);
 	}

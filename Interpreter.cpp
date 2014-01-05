@@ -15,8 +15,6 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -189,8 +187,8 @@ int Interpreter::optype(int op) {
 	else if (op==OP_NEGATE) return OPTYPE_NONE;
 	else if (op==OP_PRINT) return OPTYPE_NONE;
 	else if (op==OP_PRINTN) return OPTYPE_NONE;
-	else if (op==OP_INPUT) return OPTYPE_NONE;
-	else if (op==OP_KEY) return OPTYPE_NONE;
+    else if (op==OP_INPUT) return OPTYPE_NONE;
+    else if (op==OP_KEY) return OPTYPE_NONE;
 	else if (op==OP_PLOT) return OPTYPE_NONE;
 	else if (op==OP_RECT) return OPTYPE_NONE;
 	else if (op==OP_CIRCLE) return OPTYPE_NONE;
@@ -368,8 +366,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_NEGATE) return QString("OP_NEGATE");
 	else if (op==OP_PRINT) return QString("OP_PRINT");
 	else if (op==OP_PRINTN) return QString("OP_PRINTN");
-	else if (op==OP_INPUT) return QString("OP_INPUT");
-	else if (op==OP_KEY) return QString("OP_KEY");
+    else if (op==OP_INPUT) return QString("OP_INPUT");
+    else if (op==OP_KEY) return QString("OP_KEY");
 	else if (op==OP_PLOT) return QString("OP_PLOT");
 	else if (op==OP_RECT) return QString("OP_RECT");
 	else if (op==OP_CIRCLE) return QString("OP_CIRCLE");
@@ -3737,23 +3735,58 @@ Interpreter::execByteCode()
 
 	case OP_INPUT:
 		{
-			op++;
-			status = R_INPUT;
+            op++;
+            QString prompt = stack.popstring();
+            if (prompt.length()>0) {
+                mymutex->lock();
+                emit(outputReady(prompt));
+                waitCond->wait(mymutex);
+                mymutex->unlock();
+            }
+#ifdef ANDROID
+            // input statement on android with popup keyboard
+            // problmatic so use a popup dialog box but display
+            // to output like it was really done there
+
+            mymutex->lock();
+            if (prompt.length(j)==0) prompt = "?";
+            emit(dialogPrompt(prompt,""));
+            waitCond->wait(mymutex);
+            mymutex->unlock();
+            //
+            mymutex->lock();
+            emit(outputReady(returnString+"\n"));
+            waitCond->wait(mymutex);
+            mymutex->unlock();
+            waitForGraphics();
+            //
+            stack.pushstring(returnString);
+#else
+            // use the input status of interperter and get
+            // input from BasicOutput
+            // input is pushed by the emit back to the interperter
+            status = R_INPUT;
 			mymutex->lock();
 			emit(getInput());
 			waitCond->wait(mymutex);
 			mymutex->unlock();
+#endif
 		}
 		break;
 
 	case OP_KEY:
 		{
 			op++;
-			mymutex->lock();
-			stack.pushint(currentKey);
-			currentKey = 0;
+#ifdef ANDROID
+            errornum = ERROR_NOTIMPLEMENTED;
+            stack.pushint(0);
+#else
+            mymutex->lock();
+            stack.pushint(currentKey);
+            currentKey = 0;
 			mymutex->unlock();
-		}
+#endif
+        }
 		break;
 
 	case OP_PRINT:

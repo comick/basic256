@@ -1,7 +1,16 @@
 ###
 ### qmake for android
+### requires QT 5.2.
 ###
-###
+
+### KNOWN ISSUES:  2013-01-04 j.m.reneau
+### 1) editor is very flaky - this is a reported problem with QT
+### at the present version.  Hopefully soon a good fix.
+### https://bugreports.qt-project.org/browse/QTBUG-34616
+### 2) after long periods of inactivity the UI goes black and will not
+### respond - kill the application and restart.  several reports
+### of this problem with many other apps have been reported
+
 
 ### ***********************************************************************
 ### ***********************************************************************

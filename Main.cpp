@@ -108,31 +108,38 @@ int main(int argc, char *argv[])
 	mainwin->localecode = localecode;
 	mainwin->show();
 
-	#if !defined(WIN32) || defined(__MINGW32__)
-		// load initial file -- POSIX style
-		if (optind < argc) {
-			// printf("extra arg %s\n",argv[optind]);
-			QString s = QString::fromUtf8(argv[optind]);
-			if (s.endsWith(".kbs")) {
-				QFileInfo fi(s);
-				if (fi.exists()) {
-					editwin->loadFile(fi.absoluteFilePath());
-				}
+#if defined(WIN32)
+	// load initial file -- Win style
+	if (argc >= 1 && argv[1] != NULL)
+	{
+		QString s = QString::fromUtf8(argv[1]);
+		if (s.endsWith(".kbs")) {
+			QFileInfo fi(s);
+			if (fi.exists()) {
+				editwin->loadFile(fi.absoluteFilePath());
 			}
 		}
-	#else
-		// load initial file -- Win style
-		if (argc >= 1 && argv[1] != NULL)
-		{
-			QString s = QString::fromUtf8(argv[1]);
-			if (s.endsWith(".kbs")) {
-				QFileInfo fi(s);
-				if (fi.exists()) {
-					editwin->loadFile(fi.absoluteFilePath());
-				}
+	}
+#else
+#ifdef ANDROID
+	// android - dont load initial file but set default folder to sdcard if exists
+    if (QDir("/storage/sdcard0").exists()) {
+		QDir::setCurrent("/storage/sdcard0");
+	}
+#else
+	// load initial file -- POSIX style
+	if (optind < argc) {
+		// printf("extra arg %s\n",argv[optind]);
+		QString s = QString::fromUtf8(argv[optind]);
+		if (s.endsWith(".kbs")) {
+			QFileInfo fi(s);
+			if (fi.exists()) {
+				editwin->loadFile(fi.absoluteFilePath());
 			}
 		}
-	#endif
+	}
+#endif // ANDROID
+#endif // WIN32
 
 	setlocale(LC_ALL,"C");
 

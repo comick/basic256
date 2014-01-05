@@ -20,7 +20,8 @@ do
    print "1 - view a random quote "
    print "2 - list all quotes"
    print "3 - add a quote"
-   input "0 - quit >", choice
+   print "0 - quit"
+   input "0,1,2,or 3 >", choice
    
    if choice = 1 then call showrandomquote()
    if choice = 2 then call showallquotes()
