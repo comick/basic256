@@ -5,7 +5,7 @@
 make clean
 
 # rename files we do not want to incluse in the tar
-for file in *.sqlite3 *.kbs *.bin
+for file in *.sqlite3 *.kbs *.bin *.pdf
 do
 	mv $file $file.donttar
 	echo Moved $file to $file.donttar
