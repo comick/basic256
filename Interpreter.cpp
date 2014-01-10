@@ -1182,6 +1182,21 @@ Interpreter::compileProgram(char *code)
 			case COMPERR_NOTINTRYCATCH:
 				msg += tr("You may not define an ONERROR or an OFFERROR in a TRY/CACTCH declaration");
 				break;
+			case COMPERR_ENDBEGINCASE:
+				msg += tr("CASE whthout matching BEGIN CASE statement");
+				break;
+			case COMPERR_ENDENDCASEBEGIN:
+				msg += tr("END CASE without matching BEGIN CASE statement");
+				break;
+			case COMPERR_ENDENDCASE:
+				msg += tr("END CASE whthout matching CASE statement");
+				break;
+			case COMPERR_BEGINCASENOEND:
+				msg += tr("BEGIN CASE whthout matching END CASE statement");
+				break;
+			case COMPERR_CASENOEND:
+				msg += tr("CASE whthout next CASE or matching END CASE statement");
+				break;
 
 			default:
 				if(column==0) {

@@ -113,12 +113,14 @@ arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
+begincase [Bb][Ee][Gg][Ii][Nn][ \t]?[Cc][Aa][Ss][Ee]
 black [Bb][Ll][Aa][Cc][Kk]
 blue [Bb][Ll][Uu][Ee]
 booleof [Ee][Oo][Ff]
 boolfalse [Ff][Aa][Ll][Ss][Ee]
 booltrue [Tt][Rr][Uu][Ee]
 call [Cc][Aa][Ll][Ll]
+case [Cc][Aa][Ss][Ee]
 catch [Cc][Aa][Tt][Cc][Hh]
 ceil [Cc][Ee][Ii][Ll]
 changedir [Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]
@@ -164,6 +166,7 @@ do [Dd][Oo]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 else [Ee][Ll][Ss][Ee]
 end [Ee][Nn][Dd]
+endcase [Ee][Nn][Dd][ \t]?[Cc][Aa][Ss][Ee]
 endfunction [Ee][Nn][Dd][ \t]?[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
 endtry [Ee][Nn][Dd][ \t]?[Tt][Rr][Yy]
@@ -466,12 +469,14 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {asc}		{ count(); return B256ASC; }
 {asin}		{ count(); return B256ASIN; }
 {atan}		{ count(); return B256ATAN; }
+{begincase}		{ count(); return B256BEGINCASE; }
 {black}		{ count(); return B256BLACK; }
 {blue}		{ count(); return B256BLUE; }
 {booleof}	{ count(); return B256BOOLEOF; }
 {boolfalse}	{ count(); return B256BOOLFALSE; }
 {booltrue}	{ count(); return B256BOOLTRUE; }
 {call}		{ count(); return B256CALL; }
+{case}		{ count(); return B256CASE; }
 {catch}		{ count(); return B256CATCH; }
 {ceil}		{ count(); return B256CEIL; }
 {changedir}	{ count(); return B256CHANGEDIR; }
@@ -524,6 +529,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {editvisible}	{ count(); return B256EDITVISIBLE; }
 {else}		{ count(); return B256ELSE; }
 {end}		{ count(); return B256END; }
+{endcase}		{ count(); return B256ENDCASE; }
 {endfunction}	{ count(); return B256ENDFUNCTION; }
 {endif}		{ count(); return B256ENDIF; }
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }

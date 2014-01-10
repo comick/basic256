@@ -83,7 +83,9 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Aa][Ss][Cc]\\b"												// asc
 		<< "\\b[Aa][Ss][Ii][Nn]\\b"											// asin
 		<< "\\b[Aa][Tt][Aa][Nn]\\b"											// atan
+		<< "\\b[Bb][Ee][Gg][Ii][Nn][ \t]*[Cc][Aa][Ss][Ee]\\b"				// begincase
 		<< "\\b[Cc][Aa][Ll][Ll]\\b"											// call
+		<< "\\b[Cc][Aa][Ss][Ee]\\b"											// case
 		<< "\\b[Cc][Aa][Tt][Cc][Hh]\\b"										// catch
 		<< "\\b[Cc][Ee][Ii][Ll]\\b"											// ceil
 		<< "\\b[Cc][Hh][Aa][Nn][Gg][Ee][Dd][Ii][Rr]\\b"						// changedir
@@ -126,6 +128,7 @@ void EditSyntaxHighlighter::initKeywords()
 		<< "\\b[Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"   			// editvisible
 		<< "\\b[Ee][Ll][Ss][Ee]\\b"											// else
 		<< "\\b[Ee][Nn][Dd]\\b"												// end
+		<< "\\b[Ee][Nn][Dd][ \t]*[Cc][Aa][Ss][Ee]\\b"						// endcase
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\b"		// endfunction
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ii][Ff]\\b"								// endif
 		<< "\\b[Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\b"	// endsubroutine

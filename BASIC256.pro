@@ -11,10 +11,10 @@ MOC_DIR						=	tmp/moc
 
 QT						+=	webkit
 QT						+=	gui
+QT						+=	sql
 contains( QT_VERSION, "^5.*" ) {
 	QT						+=	widgets
 	QT						+=	printsupport
-	QT						+=	sql
 }
 
 RESOURCES					+=	resources/resource.qrc

@@ -336,6 +336,8 @@ void BasicEdit::beautifyProgram()
 	bool indentThisLine = true;
 	bool increaseIndent = false;
 	bool decreaseIndent = false;
+	bool increaseIndentDouble = false;
+	bool decreaseIndentDouble = false;
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	program = this->document()->toPlainText();
 	lines = program.split(QRegExp("\\n"));
@@ -395,12 +397,27 @@ void BasicEdit::beautifyProgram()
 		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Tt][Rr][Yy]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
 			// end try - come out of block - reduce indent
 			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^[Bb][Ee][Gg][Ii][Nn]\\s*[Cc][Aa][Ss][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// begin case double indent next (block of code)
+			increaseIndentDouble = true;
+		} else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Cc][Aa][Ss][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// end case double reduce
+			decreaseIndentDouble = true;
+		} else if (line.contains(QRegExp("^[Cc][Aa][Ss][Ee]\\s.+\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
+			// case expression - indent one line
+			decreaseIndent = true;
+			increaseIndent = true;
 		}
 		//
 		if (decreaseIndent) {
 			indent -= TAB;
 			if (indent<0) indent=0;
 			decreaseIndent = false;
+		}
+		if (decreaseIndentDouble) {
+			indent -= TAB*2;
+			if (indent<0) indent=0;
+			decreaseIndentDouble = false;
 		}
 		if (indentThisLine) {
 			line = QString(indent, QChar(' ')) + line;
@@ -410,6 +427,10 @@ void BasicEdit::beautifyProgram()
 		if (increaseIndent) {
 			indent += TAB;
 			increaseIndent = false;
+		}
+		if (increaseIndentDouble) {
+			indent += TAB*2;
+			increaseIndentDouble = false;
 		}
 		//
 		lines.replace(i, line);

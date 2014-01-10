@@ -89,6 +89,8 @@ int nextifid;
 #define IFTABLETYPEFUNCTION 6
 #define IFTABLETYPETRY 7
 #define IFTABLETYPECATCH 8
+#define IFTABLETYPEBEGINCASE 9
+#define IFTABLETYPECASE 10
 
 
 // store the function variables here during a function definition
@@ -148,6 +150,8 @@ int testIfOnTableError(int includelevel) {
 			if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
 			if (iftabletype[numifs-1]==IFTABLETYPETRY) return COMPERR_TRYNOEND;
 			if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
+			if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
 		}
 	}	
 	return 0;
@@ -342,7 +346,8 @@ void addStringOp(char op, char *data) {
 
 %token B256PRINT B256INPUT B256KEY 
 %token B256PIXEL B256RGB B256PLOT B256CIRCLE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
-%token B256IF B256THEN B256ELSE B256ENDIF B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT 
+%token B256IF B256THEN B256ELSE B256ENDIF B256BEGINCASE B256CASE B256ENDCASE
+%token B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT 
 %token B256OPEN B256OPENB B256READ B256WRITE B256CLOSE B256RESET
 %token B256GOTO B256GOSUB B256RETURN B256REM B256END B256SETCOLOR
 %token B256GTE B256LTE B256NE
@@ -461,6 +466,9 @@ validstatement: compoundifstmt
 	| ifstmt
 	| elsestmt
 	| endifstmt
+	| begincasestmt
+	| casestmt
+	| endcasestmt
 	| whilestmt
 	| endwhilestmt
 	| dostmt
@@ -732,6 +740,82 @@ endifstmt: B256ENDIF
 }
 ;
 
+begincasestmt: B256BEGINCASE
+	{
+	// start a case block
+	newIf(linenumber, IFTABLETYPEBEGINCASE);
+}
+;
+
+caseexpr: B256CASE
+	{
+	// if not first case then add jump to to "endcase" and resolve the branchfalse
+	if (numifs>1) {
+		if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+			if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
+				//
+				// create jump around from end of the CASE to end of the END CASE
+				addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
+			} else {
+				errorcode = COMPERR_ENDBEGINCASE;
+				linenumber = iftablesourceline[numifs-1];
+				return -1;
+			}
+			//
+			// resolve branchfalse from previous case
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			//
+			numifs--;
+		}
+	}
+	//
+}
+;
+
+casestmt: caseexpr floatexpr
+	{
+		//
+		// add branch to the end if false
+		addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+		//
+		// put new CASE on the frame for the IF
+		newIf(linenumber, IFTABLETYPECASE);
+}
+;
+
+
+endcasestmt: B256ENDCASE
+	{
+	// add label for last case branchfalse to jump to
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			numifs--;
+		} else {
+			errorcode = COMPERR_ENDENDCASE;
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_ENDENDCASE;
+		return -1;
+	}
+	// add label for all cases to jump to after execution
+	if (numifs>0) {
+		if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) {
+			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+			numifs--;
+		} else {
+			errorcode = testIfOnTableError(numincludes);
+			linenumber = testIfOnTable(numincludes);
+			return -1;
+		}
+	} else {
+		errorcode = COMPERR_ENDENDCASEBEGIN;
+		return -1;
+	}
+}
+;
+	
 whilestmt: B256WHILE floatexpr
 	{
 	//
