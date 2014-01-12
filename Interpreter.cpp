@@ -633,7 +633,7 @@ QString Interpreter::getErrorMessage(int e) {
 	QString errormessage("");
 	switch(e) {
 		case ERROR_NOSUCHLABEL:
-			errormessage = tr("No such label");
+			errormessage = tr("No such label %VARNAME%");
 			break;
 		case ERROR_FOR1:
 			errormessage = tr("Illegal FOR -- start number > end number");
@@ -1117,7 +1117,7 @@ Interpreter::compileProgram(char *code)
 				msg += tr("DO without matching UNTIL statement");
 				break;
 			case COMPERR_ELSENOEND:
-				msg += tr("ELSE without matching END IF statement");
+				msg += tr("ELSE without matching END IF or END CASE statement");
 				break;
 			case COMPERR_IFNOEND:
 				msg += tr("IF without matching END IF or ELSE statement");
@@ -1231,13 +1231,14 @@ Interpreter::compileProgram(char *code)
 			// before execution
 			int *i = (int *) op;
 			op += sizeof(int);
+			int tbloff = *i;
 			if (labeltable[*i] >=0)
 			{
-				int tbloff = *i;
 				*i = labeltable[tbloff];
 			}
 			else
 			{
+				errorvarnum = tbloff;
 				printError(ERROR_NOSUCHLABEL,"");
 				return -1;
 			}

@@ -704,6 +704,25 @@ elsestmt: B256ELSE
 			//
 			// put new if on the frame for the else
 			newIf(linenumber, IFTABLETYPEELSE);
+		} else if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+			if (numifs>1) {
+				if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
+					//
+					// create jump around from end of the CASE to end of the END CASE
+					addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
+				} else {
+					errorcode = COMPERR_ENDBEGINCASE;
+					linenumber = iftablesourceline[numifs-1];
+					return -1;
+				}
+				//
+				// resolve branchfalse from previous case
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
+				//
+				numifs--;
+				// put new if on the frame for the else
+				newIf(linenumber, IFTABLETYPEELSE);
+			}
 		} else {
 			errorcode = testIfOnTableError(numincludes);
 			linenumber = testIfOnTable(numincludes);
@@ -788,7 +807,7 @@ endcasestmt: B256ENDCASE
 	{
 	// add label for last case branchfalse to jump to
 	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+		if (iftabletype[numifs-1]==IFTABLETYPECASE || iftabletype[numifs-1]==IFTABLETYPEELSE) {
 			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = byteOffset; 
 			numifs--;
 		} else {
