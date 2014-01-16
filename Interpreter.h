@@ -71,7 +71,7 @@ struct byteCodeData
 // used by function calls, subroutine calls, and gosubs for return location
 struct frame {
   frame *next;
-  unsigned char *returnAddr;
+  int *returnAddr;
 };
 
 // used to track nested on-error and try/catch definitions
@@ -86,7 +86,7 @@ struct forframe {
   forframe *prev;
   forframe *next;
   unsigned int variable;
-  unsigned char *returnAddr;
+  int *returnAddr;
   double endNum;
   double step;
   int recurselevel;
@@ -163,7 +163,7 @@ class Interpreter : public QThread
   Variables variables;
   Stack stack;
   QFile **stream;
-  unsigned char *op;
+  int *op;
   frame *callstack;
   forframe *forstack;
   onerrorframe *onerrorstack;

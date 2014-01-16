@@ -70,7 +70,7 @@
 using namespace std;
 
 #include "LEX/basicParse.tab.h"
-#include "ByteCodes.h"
+#include "WordCodes.h"
 #include "CompileErrors.h"
 #include "Interpreter.h"
 #include "md5.h"
@@ -94,10 +94,11 @@ extern "C" {
 	extern char* lexingfilename;	// current included file name being LEXd
 	
 	extern int numparsewarnings;
-	extern int newByteCode(int size);
-	extern unsigned char *byteCode;
-	extern unsigned int byteOffset;
-	extern unsigned int maxbyteoffset;
+	extern int newWordCode();
+	extern int bytesToFullWords(int size);
+	extern int *wordCode;
+	extern unsigned int wordOffset;
+	extern unsigned int maxwordoffset;
 	extern char *symtable[];
 	extern int numsyms;
 	
@@ -160,184 +161,8 @@ Interpreter::~Interpreter() {
 
 
 int Interpreter::optype(int op) {
-	// define how big the ocode is and if anything follows it
-	// REQUIRED for all new opcodes
-	// use constantants found in ByteCodes.h
-	if (op==OP_END) return OPTYPE_NONE;
-	else if (op==OP_NOP) return OPTYPE_NONE;
-	else if (op==OP_RETURN) return OPTYPE_NONE;
-	else if (op==OP_CONCAT) return OPTYPE_NONE;
-	else if (op==OP_EQUAL) return OPTYPE_NONE;
-	else if (op==OP_NEQUAL) return OPTYPE_NONE;
-	else if (op==OP_GT) return OPTYPE_NONE;
-	else if (op==OP_LT) return OPTYPE_NONE;
-	else if (op==OP_GTE) return OPTYPE_NONE;   
-	else if (op==OP_LTE) return OPTYPE_NONE;   
-	else if (op==OP_AND) return OPTYPE_NONE;   
-	else if (op==OP_NOT) return OPTYPE_NONE;   
-	else if (op==OP_OR) return OPTYPE_NONE;   
-	else if (op==OP_XOR) return OPTYPE_NONE;   
-	else if (op==OP_INT) return OPTYPE_NONE;   
-	else if (op==OP_STRING) return OPTYPE_NONE;
-	else if (op==OP_ADD) return OPTYPE_NONE;
-	else if (op==OP_SUB) return OPTYPE_NONE;
-	else if (op==OP_MUL) return OPTYPE_NONE;
-	else if (op==OP_DIV) return OPTYPE_NONE;
-	else if (op==OP_EX) return OPTYPE_NONE;
-	else if (op==OP_NEGATE) return OPTYPE_NONE;
-	else if (op==OP_PRINT) return OPTYPE_NONE;
-	else if (op==OP_PRINTN) return OPTYPE_NONE;
-    else if (op==OP_INPUT) return OPTYPE_NONE;
-    else if (op==OP_KEY) return OPTYPE_NONE;
-	else if (op==OP_PLOT) return OPTYPE_NONE;
-	else if (op==OP_RECT) return OPTYPE_NONE;
-	else if (op==OP_CIRCLE) return OPTYPE_NONE;
-	else if (op==OP_LINE) return OPTYPE_NONE;
-	else if (op==OP_REFRESH) return OPTYPE_NONE;
-	else if (op==OP_FASTGRAPHICS) return OPTYPE_NONE;
-	else if (op==OP_CLS) return OPTYPE_NONE;
-	else if (op==OP_CLG) return OPTYPE_NONE;
-	else if (op==OP_GRAPHSIZE) return OPTYPE_NONE;
-	else if (op==OP_GRAPHWIDTH) return OPTYPE_NONE;
-	else if (op==OP_GRAPHHEIGHT) return OPTYPE_NONE;
-	else if (op==OP_SIN) return OPTYPE_NONE;
-	else if (op==OP_COS) return OPTYPE_NONE;
-	else if (op==OP_TAN) return OPTYPE_NONE;
-	else if (op==OP_RAND) return OPTYPE_NONE;
-	else if (op==OP_CEIL) return OPTYPE_NONE;
-	else if (op==OP_FLOOR) return OPTYPE_NONE;
-	else if (op==OP_ABS) return OPTYPE_NONE;
-	else if (op==OP_PAUSE) return OPTYPE_NONE;
-	else if (op==OP_LENGTH) return OPTYPE_NONE;
-	else if (op==OP_MID) return OPTYPE_NONE;
-	else if (op==OP_INSTR) return OPTYPE_NONE;
-	else if (op==OP_INSTR_S) return OPTYPE_NONE;
-	else if (op==OP_INSTR_SC) return OPTYPE_NONE;
-	else if (op==OP_INSTRX) return OPTYPE_NONE;
-	else if (op==OP_INSTRX_S) return OPTYPE_NONE;
-	else if (op==OP_OPEN) return OPTYPE_NONE;
-	else if (op==OP_READ) return OPTYPE_NONE;
-	else if (op==OP_WRITE) return OPTYPE_NONE;
-	else if (op==OP_CLOSE) return OPTYPE_NONE;
-	else if (op==OP_RESET) return OPTYPE_NONE;
-	else if (op==OP_INCREASERECURSE) return OPTYPE_NONE;
-	else if (op==OP_DECREASERECURSE) return OPTYPE_NONE;
-	else if (op==OP_ASC) return OPTYPE_NONE;
-	else if (op==OP_CHR) return OPTYPE_NONE;
-	else if (op==OP_FLOAT) return OPTYPE_NONE;
-	else if (op==OP_READLINE) return OPTYPE_NONE;
-	else if (op==OP_EOF) return OPTYPE_NONE;
-	else if (op==OP_MOD) return OPTYPE_NONE;
-	else if (op==OP_YEAR) return OPTYPE_NONE;
-	else if (op==OP_MONTH) return OPTYPE_NONE;
-	else if (op==OP_DAY) return OPTYPE_NONE;
-	else if (op==OP_HOUR) return OPTYPE_NONE;
-	else if (op==OP_MINUTE) return OPTYPE_NONE;
-	else if (op==OP_SECOND) return OPTYPE_NONE;
-	else if (op==OP_MOUSEX) return OPTYPE_NONE;
-	else if (op==OP_MOUSEY) return OPTYPE_NONE;
-	else if (op==OP_MOUSEB) return OPTYPE_NONE;
-	else if (op==OP_CLICKCLEAR) return OPTYPE_NONE;
-	else if (op==OP_CLICKX) return OPTYPE_NONE;
-	else if (op==OP_CLICKY) return OPTYPE_NONE;
-	else if (op==OP_CLICKB) return OPTYPE_NONE;
-	else if (op==OP_TEXT) return OPTYPE_NONE;
-	else if (op==OP_FONT) return OPTYPE_NONE;
-	else if (op==OP_SAY) return OPTYPE_NONE;
-	else if (op==OP_WAVPLAY) return OPTYPE_NONE;
-	else if (op==OP_WAVSTOP) return OPTYPE_NONE;
-	else if (op==OP_SEEK) return OPTYPE_NONE;
-	else if (op==OP_SIZE) return OPTYPE_NONE;
-	else if (op==OP_EXISTS) return OPTYPE_NONE;
-	else if (op==OP_LEFT) return OPTYPE_NONE;
-	else if (op==OP_RIGHT) return OPTYPE_NONE;
-	else if (op==OP_UPPER) return OPTYPE_NONE;
-	else if (op==OP_LOWER) return OPTYPE_NONE;
-	else if (op==OP_SYSTEM) return OPTYPE_NONE;
-	else if (op==OP_VOLUME) return OPTYPE_NONE;
-	else if (op==OP_SETCOLOR) return OPTYPE_NONE;
-	else if (op==OP_RGB) return OPTYPE_NONE;
-	else if (op==OP_PIXEL) return OPTYPE_NONE;
-	else if (op==OP_GETCOLOR) return OPTYPE_NONE;
-	else if (op==OP_ASIN) return OPTYPE_NONE;
-	else if (op==OP_ACOS) return OPTYPE_NONE;
-	else if (op==OP_ATAN) return OPTYPE_NONE;
-	else if (op==OP_DEGREES) return OPTYPE_NONE;
-	else if (op==OP_RADIANS) return OPTYPE_NONE;
-	else if (op==OP_INTDIV) return OPTYPE_NONE;
-	else if (op==OP_LOG) return OPTYPE_NONE;
-	else if (op==OP_LOGTEN) return OPTYPE_NONE;
-	else if (op==OP_GETSLICE) return OPTYPE_NONE;
-	else if (op==OP_PUTSLICE) return OPTYPE_NONE;
-	else if (op==OP_PUTSLICEMASK) return OPTYPE_NONE;
-	else if (op==OP_IMGLOAD) return OPTYPE_NONE;
-	else if (op==OP_SQR) return OPTYPE_NONE;
-	else if (op==OP_EXP) return OPTYPE_NONE;
-	else if (op==OP_ARGUMENTCOUNTTEST) return OPTYPE_NONE;
-	else if (op==OP_THROWERROR) return OPTYPE_NONE;
-	else if (op==OP_READBYTE) return OPTYPE_NONE;
-	else if (op==OP_WRITEBYTE) return OPTYPE_NONE;
-	else if (op==OP_STACKSWAP) return OPTYPE_NONE;
-	else if (op==OP_STACKTOPTO2) return OPTYPE_NONE;
-	else if (op==OP_STACKDUP) return OPTYPE_NONE;
-	else if (op==OP_STACKDUP2) return OPTYPE_NONE;
-	else if (op==OP_STACKSWAP2) return OPTYPE_NONE;
-	else if (op==OP_GOTO) return OPTYPE_LABEL;
-	else if (op==OP_GOSUB) return OPTYPE_LABEL;
-	else if (op==OP_BRANCH) return OPTYPE_LABEL;
-	else if (op==OP_NUMASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_STRINGASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_ARRAYASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_STRARRAYASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_PUSHVAR) return OPTYPE_VARIABLE;
-	else if (op==OP_PUSHINT) return OPTYPE_INT;
-	else if (op==OP_DEREF) return OPTYPE_VARIABLE;
-	else if (op==OP_FOR) return OPTYPE_VARIABLE;
-	else if (op==OP_NEXT) return OPTYPE_VARIABLE;
-	else if (op==OP_CURRLINE) return OPTYPE_INT;
-	else if (op==OP_DIM) return OPTYPE_VARIABLE;
-	else if (op==OP_DIMSTR) return OPTYPE_VARIABLE;
-	else if (op==OP_ONERRORGOSUB) return OPTYPE_LABEL;
-	else if (op==OP_ONERRORCATCH) return OPTYPE_LABEL;
-	else if (op==OP_EXPLODESTR) return OPTYPE_VARIABLE;
-	else if (op==OP_EXPLODESTR_C) return OPTYPE_VARIABLE;
-	else if (op==OP_EXPLODE) return OPTYPE_VARIABLE;
-	else if (op==OP_EXPLODE_C) return OPTYPE_VARIABLE;
-	else if (op==OP_EXPLODEXSTR) return OPTYPE_VARIABLE;
-	else if (op==OP_EXPLODEX) return OPTYPE_VARIABLE;
-	else if (op==OP_IMPLODE) return OPTYPE_VARIABLE;
-	else if (op==OP_GLOBAL) return OPTYPE_VARIABLE;
-	else if (op==OP_STAMP_LIST) return OPTYPE_NONE;
-	else if (op==OP_STAMP_S_LIST) return OPTYPE_NONE;
-	else if (op==OP_STAMP_SR_LIST) return OPTYPE_NONE;
-	else if (op==OP_POLY_LIST) return OPTYPE_NONE;
-	else if (op==OP_WRITELINE) return OPTYPE_NONE;
-	else if (op==OP_ARRAYASSIGN2D) return OPTYPE_VARIABLE;
-	else if (op==OP_STRARRAYASSIGN2D) return OPTYPE_VARIABLE;
-	else if (op==OP_SOUND_LIST) return OPTYPE_NONE;
-	else if (op==OP_DEREF2D) return OPTYPE_VARIABLE;
-	else if (op==OP_REDIM) return OPTYPE_VARIABLE;
-	else if (op==OP_REDIMSTR) return OPTYPE_VARIABLE;
-	else if (op==OP_REDIM2D) return OPTYPE_VARIABLE;
-	else if (op==OP_REDIMSTR2D) return OPTYPE_VARIABLE;
-	else if (op==OP_ALEN) return OPTYPE_VARIABLE;
-	else if (op==OP_ALENX) return OPTYPE_VARIABLE;
-	else if (op==OP_ALENY) return OPTYPE_VARIABLE;
-	else if (op==OP_PUSHVARREF) return OPTYPE_VARIABLE;
-	else if (op==OP_PUSHVARREFSTR) return OPTYPE_VARIABLE;
-	else if (op==OP_VARREFASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_VARREFSTRASSIGN) return OPTYPE_VARIABLE;
-	else if (op==OP_FUNCRETURN) return OPTYPE_VARIABLE;
-	else if (op==OP_ARRAYLISTASSIGN) return OPTYPE_INT;
-	else if (op==OP_STRARRAYLISTASSIGN) return OPTYPE_INT;
-	else if (op==OP_ARRAY2STACK) return OPTYPE_VARIABLE;
-	else if (op==OP_STRARRAY2STACK) return OPTYPE_VARIABLE;
-	else if (op==OP_PUSHFLOAT) return OPTYPE_FLOAT;
-	else if (op==OP_PUSHSTRING) return OPTYPE_STRING;
-	else if (op==OP_INCLUDEFILE) return OPTYPE_STRING;
-	else if (op==OP_SPRITEPOLY_LIST) return OPTYPE_NONE;
-	else if (op==OP_EXTENDEDNONE) return OPTYPE_EXTENDED;
-	else return OPTYPE_NONE;
+	// use constantants found in WordCodes.h
+	return (OPTYPE_MASK & op) ;
 }
 
 QString Interpreter::opname(int op) {
@@ -515,100 +340,94 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
 	else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
 	else if (op==OP_SPRITEPOLY_LIST) return QString("OP_SPRITEPOLY");
-	else if (op==OP_EXTENDEDNONE) return QString("OP_EXTENDEDNONE");
+	else if (op==OP_SPRITEDIM) return QString("OP_SPRITEDIM");
+	else if (op==OP_SPRITELOAD) return QString("OP_SPRITELOAD");
+	else if (op==OP_SPRITESLICE) return QString("OP_SPRITESLICE");
+	else if (op==OP_SPRITEMOVE) return QString("OP_SPRITEMOVE");
+	else if (op==OP_SPRITEHIDE) return QString("OP_SPRITEHIDE");
+	else if (op==OP_SPRITESHOW) return QString("OP_SPRITESHOW");
+	else if (op==OP_SPRITECOLLIDE) return QString("OP_SPRITECOLLIDE");
+	else if (op==OP_SPRITEPLACE) return QString("OP_SPRITEPLACE");
+	else if (op==OP_SPRITEX) return QString("OP_SPRITEX");
+	else if (op==OP_SPRITEY) return QString("OP_SPRITEY");
+	else if (op==OP_SPRITEH) return QString("OP_SPRITEH");
+	else if (op==OP_SPRITEW) return QString("OP_SPRITEW");
+	else if (op==OP_SPRITEV) return QString("OP_SPRITEV");
+	else if (op==OP_CHANGEDIR) return QString("OP_CHANGEDIR");
+	else if (op==OP_CURRENTDIR) return QString("OP_CURRENTDIR");
+	else if (op==OP_WAVWAIT) return QString("OP_WAVWAIT");
+	else if (op==OP_DBOPEN) return QString("OP_DBOPEN");
+	else if (op==OP_DBCLOSE) return QString("OP_DBCLOSE");
+	else if (op==OP_DBEXECUTE) return QString("OP_DBEXECUTE");
+	else if (op==OP_DBOPENSET) return QString("OP_DBOPENSET");
+	else if (op==OP_DBCLOSESET) return QString("OP_DBCLOSESET");
+	else if (op==OP_DBROW) return QString("OP_DBROW");
+	else if (op==OP_DBINT) return QString("OP_DBINT");
+	else if (op==OP_DBFLOAT) return QString("OP_DBFLOAT");
+	else if (op==OP_DBSTRING) return QString("OP_DBSTRING");
+	else if (op==OP_LASTERROR) return QString("OP_LASTERROR");
+	else if (op==OP_LASTERRORLINE) return QString("OP_LASTERRORLINE");
+	else if (op==OP_LASTERRORMESSAGE) return QString("OP_LASTERRORMESSAGE");
+	else if (op==OP_LASTERROREXTRA) return QString("OP_LASTERROREXTRA");
+	else if (op==OP_OFFERROR) return QString("OP_OFFERROR");
+	else if (op==OP_NETLISTEN) return QString("OP_NETLISTEN");
+	else if (op==OP_NETCONNECT) return QString("OP_NETCONNECT");
+	else if (op==OP_NETREAD) return QString("OP_NETREAD");
+	else if (op==OP_NETWRITE) return QString("OP_NETWRITE");
+	else if (op==OP_NETCLOSE) return QString("OP_NETCLOSE");
+	else if (op==OP_NETDATA) return QString("OP_NETDATA");
+	else if (op==OP_NETADDRESS) return QString("OP_NETADDRESS");
+	else if (op==OP_KILL) return QString("OP_KILL");
+	else if (op==OP_MD5) return QString("OP_MD5");
+	else if (op==OP_SETSETTING) return QString("OP_SETSETTING");
+	else if (op==OP_GETSETTING) return QString("OP_GETSETTING");
+	else if (op==OP_PORTIN) return QString("OP_PORTIN");
+	else if (op==OP_PORTOUT) return QString("OP_PORTOUT");
+	else if (op==OP_BINARYOR) return QString("OP_BINARYOR");
+	else if (op==OP_BINARYAND) return QString("OP_BINARYAND");
+	else if (op==OP_BINARYNOT) return QString("OP_BINARYNOT");
+	else if (op==OP_IMGSAVE) return QString("OP_IMGSAVE");
+	else if (op==OP_DIR) return QString("OP_DIR");
+	else if (op==OP_REPLACE) return QString("OP_REPLACE");
+	else if (op==OP_REPLACE_C) return QString("OP_REPLACE_C");
+	else if (op==OP_REPLACEX) return QString("OP_REPLACEX");
+	else if (op==OP_COUNT) return QString("OP_COUNT");
+	else if (op==OP_COUNT_C) return QString("OP_COUNT_C");
+	else if (op==OP_COUNTX) return QString("OP_COUNTX");
+	else if (op==OP_OSTYPE) return QString("OP_OSTYPE");
+	else if (op==OP_MSEC) return QString("OP_MSEC");
+	else if (op==OP_EDITVISIBLE) return QString("OP_EDITVISIBLE");
+	else if (op==OP_GRAPHVISIBLE) return QString("OP_GRAPHVISIBLE");
+	else if (op==OP_OUTPUTVISIBLE) return QString("OP_OUTPUTVISIBLE");
+	else if (op==OP_TEXTHEIGHT) return QString("OP_TEXTHEIGHT");
+	else if (op==OP_TEXTWIDTH) return QString("OP_TEXTWIDTH");
+	else if (op==OP_SPRITER) return QString("OP_SPRITER");
+	else if (op==OP_SPRITES) return QString("OP_SPRITES");
+	else if (op==OP_FREEFILE) return QString("OP_FREEFILE");
+	else if (op==OP_FREENET) return QString("OP_FREENET");
+	else if (op==OP_FREEDB) return QString("OP_FREEDB");
+	else if (op==OP_FREEDBSET) return QString("OP_FREEDBSET");
+	else if (op==OP_DBINTS) return QString("OP_DBINTS");
+	else if (op==OP_DBFLOATS) return QString("OP_DBFLOATS");
+	else if (op==OP_DBSTRINGS) return QString("OP_DBSTRINGS");
+	else if (op==OP_DBNULL) return QString("OP_DBNULL");
+	else if (op==OP_DBNULLS) return QString("OP_DBNULLS");
+	else if (op==OP_ARC) return QString("OP_ARC");
+	else if (op==OP_CHORD) return QString("OP_CHORD");
+	else if (op==OP_PIE) return QString("OP_PIE");
+	else if (op==OP_PENWIDTH) return QString("OP_PENWIDTH");
+	else if (op==OP_GETPENWIDTH) return QString("OP_GETPENWIDTH");
+	else if (op==OP_GETBRUSHCOLOR) return QString("OP_GETBRUSHCOLOR");
+	else if (op==OP_ALERT) return QString("OP_ALERT");
+	else if (op==OP_CONFIRM) return QString("OP_CONFIRM");
+	else if (op==OP_PROMPT) return QString("OP_PROMPT");
+	else if (op==OP_FROMRADIX) return QString("OP_FROMRADIX");
+	else if (op==OP_TORADIX) return QString("OP_TORADIX");
+	else if (op==OP_PRINTERPAGE) return QString("OP_PRINTERPAGE");
+	else if (op==OP_PRINTEROFF) return QString("OP_PRINTERON");
+	else if (op==OP_PRINTERON) return QString("OP_PRINTEROFF");
+	else if (op==OP_DEBUGINFO) return QString("OP_DEBUGINFO");
 	else return QString("OP_UNKNOWN");
-}
-
-QString Interpreter::opxname(int op) {
-	// used to convert extended opcode number in debuginfo to opcode name
-	if (op==OPX_SPRITEDIM) return QString("OPX_SPRITEDIM");
-	else if (op==OPX_SPRITELOAD) return QString("OPX_SPRITELOAD");
-	else if (op==OPX_SPRITESLICE) return QString("OPX_SPRITESLICE");
-	else if (op==OPX_SPRITEMOVE) return QString("OPX_SPRITEMOVE");
-	else if (op==OPX_SPRITEHIDE) return QString("OPX_SPRITEHIDE");
-	else if (op==OPX_SPRITESHOW) return QString("OPX_SPRITESHOW");
-	else if (op==OPX_SPRITECOLLIDE) return QString("OPX_SPRITECOLLIDE");
-	else if (op==OPX_SPRITEPLACE) return QString("OPX_SPRITEPLACE");
-	else if (op==OPX_SPRITEX) return QString("OPX_SPRITEX");
-	else if (op==OPX_SPRITEY) return QString("OPX_SPRITEY");
-	else if (op==OPX_SPRITEH) return QString("OPX_SPRITEH");
-	else if (op==OPX_SPRITEW) return QString("OPX_SPRITEW");
-	else if (op==OPX_SPRITEV) return QString("OPX_SPRITEV");
-	else if (op==OPX_CHANGEDIR) return QString("OPX_CHANGEDIR");
-	else if (op==OPX_CURRENTDIR) return QString("OPX_CURRENTDIR");
-	else if (op==OPX_WAVWAIT) return QString("OPX_WAVWAIT");
-	else if (op==OPX_DBOPEN) return QString("OPX_DBOPEN");
-	else if (op==OPX_DBCLOSE) return QString("OPX_DBCLOSE");
-	else if (op==OPX_DBEXECUTE) return QString("OPX_DBEXECUTE");
-	else if (op==OPX_DBOPENSET) return QString("OPX_DBOPENSET");
-	else if (op==OPX_DBCLOSESET) return QString("OPX_DBCLOSESET");
-	else if (op==OPX_DBROW) return QString("OPX_DBROW");
-	else if (op==OPX_DBINT) return QString("OPX_DBINT");
-	else if (op==OPX_DBFLOAT) return QString("OPX_DBFLOAT");
-	else if (op==OPX_DBSTRING) return QString("OPX_DBSTRING");
-	else if (op==OPX_LASTERROR) return QString("OPX_LASTERROR");
-	else if (op==OPX_LASTERRORLINE) return QString("OPX_LASTERRORLINE");
-	else if (op==OPX_LASTERRORMESSAGE) return QString("OPX_LASTERRORMESSAGE");
-	else if (op==OPX_LASTERROREXTRA) return QString("OPX_LASTERROREXTRA");
-	else if (op==OPX_OFFERROR) return QString("OPX_OFFERROR");
-	else if (op==OPX_NETLISTEN) return QString("OPX_NETLISTEN");
-	else if (op==OPX_NETCONNECT) return QString("OPX_NETCONNECT");
-	else if (op==OPX_NETREAD) return QString("OPX_NETREAD");
-	else if (op==OPX_NETWRITE) return QString("OPX_NETWRITE");
-	else if (op==OPX_NETCLOSE) return QString("OPX_NETCLOSE");
-	else if (op==OPX_NETDATA) return QString("OPX_NETDATA");
-	else if (op==OPX_NETADDRESS) return QString("OPX_NETADDRESS");
-	else if (op==OPX_KILL) return QString("OPX_KILL");
-	else if (op==OPX_MD5) return QString("OPX_MD5");
-	else if (op==OPX_SETSETTING) return QString("OPX_SETSETTING");
-	else if (op==OPX_GETSETTING) return QString("OPX_GETSETTING");
-	else if (op==OPX_PORTIN) return QString("OPX_PORTIN");
-	else if (op==OPX_PORTOUT) return QString("OPX_PORTOUT");
-	else if (op==OPX_BINARYOR) return QString("OPX_BINARYOR");
-	else if (op==OPX_BINARYAND) return QString("OPX_BINARYAND");
-	else if (op==OPX_BINARYNOT) return QString("OPX_BINARYNOT");
-	else if (op==OPX_IMGSAVE) return QString("OPX_IMGSAVE");
-	else if (op==OPX_DIR) return QString("OPX_DIR");
-	else if (op==OPX_REPLACE) return QString("OPX_REPLACE");
-	else if (op==OPX_REPLACE_C) return QString("OPX_REPLACE_C");
-	else if (op==OPX_REPLACEX) return QString("OPX_REPLACEX");
-	else if (op==OPX_COUNT) return QString("OPX_COUNT");
-	else if (op==OPX_COUNT_C) return QString("OPX_COUNT_C");
-	else if (op==OPX_COUNTX) return QString("OPX_COUNTX");
-	else if (op==OPX_OSTYPE) return QString("OPX_OSTYPE");
-	else if (op==OPX_MSEC) return QString("OPX_MSEC");
-	else if (op==OPX_EDITVISIBLE) return QString("OPX_EDITVISIBLE");
-	else if (op==OPX_GRAPHVISIBLE) return QString("OPX_GRAPHVISIBLE");
-	else if (op==OPX_OUTPUTVISIBLE) return QString("OPX_OUTPUTVISIBLE");
-	else if (op==OPX_TEXTHEIGHT) return QString("OPX_TEXTHEIGHT");
-	else if (op==OPX_TEXTWIDTH) return QString("OPX_TEXTWIDTH");
-	else if (op==OPX_SPRITER) return QString("OPX_SPRITER");
-	else if (op==OPX_SPRITES) return QString("OPX_SPRITES");
-	else if (op==OPX_FREEFILE) return QString("OPX_FREEFILE");
-	else if (op==OPX_FREENET) return QString("OPX_FREENET");
-	else if (op==OPX_FREEDB) return QString("OPX_FREEDB");
-	else if (op==OPX_FREEDBSET) return QString("OPX_FREEDBSET");
-	else if (op==OPX_DBINTS) return QString("OPX_DBINTS");
-	else if (op==OPX_DBFLOATS) return QString("OPX_DBFLOATS");
-	else if (op==OPX_DBSTRINGS) return QString("OPX_DBSTRINGS");
-	else if (op==OPX_DBNULL) return QString("OPX_DBNULL");
-	else if (op==OPX_DBNULLS) return QString("OPX_DBNULLS");
-	else if (op==OPX_ARC) return QString("OPX_ARC");
-	else if (op==OPX_CHORD) return QString("OPX_CHORD");
-	else if (op==OPX_PIE) return QString("OPX_PIE");
-	else if (op==OPX_PENWIDTH) return QString("OPX_PENWIDTH");
-	else if (op==OPX_GETPENWIDTH) return QString("OPX_GETPENWIDTH");
-	else if (op==OPX_GETBRUSHCOLOR) return QString("OPX_GETBRUSHCOLOR");
-	else if (op==OPX_ALERT) return QString("OPX_ALERT");
-	else if (op==OPX_CONFIRM) return QString("OPX_CONFIRM");
-	else if (op==OPX_PROMPT) return QString("OPX_PROMPT");
-	else if (op==OPX_FROMRADIX) return QString("OPX_FROMRADIX");
-	else if (op==OPX_TORADIX) return QString("OPX_TORADIX");
-	else if (op==OPX_PRINTERPAGE) return QString("OPX_PRINTERPAGE");
-	else if (op==OPX_PRINTEROFF) return QString("OPX_PRINTERON");
-	else if (op==OPX_PRINTERON) return QString("OPX_PRINTEROFF");
-	else if (op==OPX_DEBUGINFO) return QString("OPX_DEBUGINFO");
-	else return QString("OPX_UNKNOWN");
 }
 
 
@@ -1040,7 +859,7 @@ int
 Interpreter::compileProgram(char *code)
 {
 	variables.clear();
-	if (newByteCode(strlen(code)) < 0)
+	if (newWordCode() < 0)
 	{
 		return -1;
 	}
@@ -1212,74 +1031,65 @@ Interpreter::compileProgram(char *code)
 
 	// this logic goes through the bytecode generated and puts the actual
 	// label address from labeltable into the bytecode
-	op = byteCode;
+	op = wordCode;
 	currentLine = 1;
-	unsigned char currentop;
-	while (op <= byteCode + byteOffset)
+	int currentop;
+	while (op <= wordCode + wordOffset)
 	{
-		currentop = (unsigned char) *op;
-		op += sizeof(unsigned char);
+		currentop = *op;
+		op ++;
 		if (currentop == OP_CURRLINE)
 		{
-			int *i = (int *) op;
-			currentLine = *i;
-			op += sizeof(int);
+			currentLine = *op;
+			op++;
 		}
-		else if (optype(currentop) == OPTYPE_LABEL)
-		{
-			// change label number to actual bytecode address
-			// before execution
-			int *i = (int *) op;
-			op += sizeof(int);
-			int tbloff = *i;
-			if (labeltable[*i] >=0)
-			{
-				*i = labeltable[tbloff];
+		else {
+			switch (optype(currentop)) {
+				case OPTYPE_NONE:
+					break;
+				case OPTYPE_VARIABLE:
+				case OPTYPE_INT:
+					op++;
+					break;
+				case OPTYPE_FLOAT:
+					op += bytesToFullWords(sizeof(double));
+					break;
+				case OPTYPE_STRING:
+					op += bytesToFullWords(strlen((char *) op) + 1);
+					break;
+				case OPTYPE_LABEL:
+					// change label number to actual wordcode address
+					// before execution
+					if (labeltable[*op] >=0)
+					{
+						*op = labeltable[*op];
+					}
+					else
+					{
+						errorvarnum = *op;
+						printError(ERROR_NOSUCHLABEL,"");
+						return -1;
+					}
+					op++;
+					break;
+				default:
+					emit(outputReady("optype=" + QString::number(optype(currentop)) + " op=" + QString::number(currentop,16) + "\n"));
+					emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + ".\n"));
+					return -1;
+					break;
 			}
-			else
-			{
-				errorvarnum = tbloff;
-				printError(ERROR_NOSUCHLABEL,"");
-				return -1;
-			}
-		}
-		else if (optype(currentop) == OPTYPE_NONE)
-		{
-			// op has no args - do nothing
-		}
-		else if (optype(currentop) == OPTYPE_INT || optype(currentop) == OPTYPE_VARIABLE)
-		{
-			// op has an integer following
-			op += sizeof(int);
-		}
-		else if (optype(currentop) == OPTYPE_INTINT)
-		{
-			// op has two integers following
-			op += sizeof(int) * 2;
-		}
-		else if (optype(currentop) == OPTYPE_EXTENDED)
-		{
-			// op has second extended op
-			op += sizeof(unsigned char);
-		}
-		else if (optype(currentop) == OPTYPE_FLOAT)
-		{
-			// double follows float
-			op += sizeof(double);
-		}
-		else if (optype(currentop) == OPTYPE_STRING)
-		{
-			// in the group of OP_TYPESTRING
-			// op has a single null terminated String arg
-			int len = strlen((char *) op) + 1;
-			op += len;
-		}
-		else
-		{
-			emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + ".\n"));
-			return -1;
 		}
 	}
+
+	// for debugging - dump the wordcode as hex
+	//op = wordCode;
+	//currentLine = 1;
+	//while (op <= wordCode + wordOffset)
+	//{
+	//	emit(outputReady("off=" + QString::number(op-wordCode,16) + " w=" + QString::number(*op,16) + "\n"));
+	//	op++;
+	//}
+
 
 	currentLine = 1;
 	return 0;
@@ -1290,7 +1100,7 @@ Interpreter::initialize()
 {
 	SETTINGS;
 	
-	op = byteCode;
+	op = wordCode;
 	callstack = NULL;
 	onerrorstack = NULL;
 	forstack = NULL;
@@ -1346,10 +1156,10 @@ Interpreter::cleanup()
 	// Clean up sprites
 	clearsprites();
 	// Clean up, for frames, etc.
-	if (byteCode)
+	if (wordCode)
 	{
-		free(byteCode);
-		byteCode = NULL;
+		free(wordCode);
+		wordCode = NULL;
 	}
 	// close open files (set to NULL if closed)
 	for (int t=0;t<NUMFILES;t++) {
@@ -1498,7 +1308,7 @@ Interpreter::execByteCode()
 				temp->next = callstack;
 				callstack = temp;
 			}
-			op = byteCode + onerrorstack->onerroraddress;
+			op = wordCode + onerrorstack->onerroraddress;
 			return 0;
 		} else {
 			// no error handler defined or FATAL error - display message
@@ -1515,9 +1325,8 @@ Interpreter::execByteCode()
 	while (*op == OP_CURRLINE)
 	{
 		op++;
-		int *i = (int *) op;
-		currentLine = *i;
-		op += sizeof(int);
+		currentLine = *op;
+		op++;
 		if (debugMode && *op != OP_CURRLINE)
 		{
 			emit(highlightLine(currentLine));
@@ -1527,7 +1336,7 @@ Interpreter::execByteCode()
 		}
 	}
 
-	//printf("%02x %d  -> ",*op, stack.height());stack.debug();
+	//emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack.debug() + "\n"));
 
 	switch(*op)
 	{
@@ -1545,13 +1354,13 @@ Interpreter::execByteCode()
 		{
 			// goto if true
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			int val = stack.popint();
 
 			if (val == 0) // go to next line on false, otherwise execute rest of line.
 			{
-				op = byteCode + *i;
+				op = wordCode + i;
 			}
 		}
 		break;
@@ -1559,15 +1368,15 @@ Interpreter::execByteCode()
 	case OP_GOSUB:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			// setup return
 			frame *temp = new frame;
 			temp->returnAddr = op;
 			temp->next = callstack;
 			callstack = temp;
 			// do jump
-			op = byteCode + *i;
+			op = wordCode + i;
 		}
 		break;
 
@@ -1575,11 +1384,11 @@ Interpreter::execByteCode()
 		{
 			// get the address of the subroutine for error handling
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			// setup onerror frame and put on top of onerrorstack
 			onerrorframe *temp = new onerrorframe;
-			temp->onerroraddress = *i;
+			temp->onerroraddress = i;
 			temp->onerrorgosub = true;
 			temp->next = onerrorstack;
 			onerrorstack = temp;
@@ -1590,11 +1399,11 @@ Interpreter::execByteCode()
 		{
 			// get the address of the catch for error handling
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			// setup onerror frame and put on top of onerrorstack
 			onerrorframe *temp = new onerrorframe;
-			temp->onerroraddress = *i;
+			temp->onerroraddress = i;
 			temp->onerrorgosub = false;
 			temp->next = onerrorstack;
 			onerrorstack = temp;
@@ -1621,9 +1430,9 @@ Interpreter::execByteCode()
 	case OP_GOTO:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			op = byteCode + *i;
+			int i = *op;
+			op++;
+			op = wordCode + i;
 		}
 		break;
 
@@ -1631,8 +1440,8 @@ Interpreter::execByteCode()
 	case OP_FOR:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			forframe *temp = new forframe;
 			double step = stack.popfloat();
 			double endnum = stack.popfloat();
@@ -1640,14 +1449,14 @@ Interpreter::execByteCode()
 
 			temp->next = forstack;
 			temp->prev = NULL;
-			temp->variable = *i;
+			temp->variable = i;
 			temp->recurselevel = variables.getrecurse();
 
-			variables.setfloat(*i, startnum);
+			variables.setfloat(i, startnum);
 
 			if(debugMode)
 			{
-				emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
+				emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.getfloat(i)), -1, -1));
 			}
 
 			temp->endNum = endnum;
@@ -1658,10 +1467,10 @@ Interpreter::execByteCode()
 				forstack->prev = temp;
 			}
 			forstack = temp;
-			if (temp->step > 0 && variables.getfloat(*i) > temp->endNum)
+			if (temp->step > 0 && variables.getfloat(i) > temp->endNum)
 			{
 				errornum = ERROR_FOR1;
-			} else if (temp->step < 0 && variables.getfloat(*i) < temp->endNum)
+			} else if (temp->step < 0 && variables.getfloat(i) < temp->endNum)
 			{
 				errornum = ERROR_FOR2;
 			}
@@ -1671,11 +1480,11 @@ Interpreter::execByteCode()
 	case OP_NEXT:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			forframe *temp = forstack;
 
-			while (temp && temp->variable != (unsigned int ) *i)
+			while (temp && temp->variable != (unsigned int ) i)
 			{
 				temp = temp->next;
 			}
@@ -1684,13 +1493,13 @@ Interpreter::execByteCode()
 				errornum = ERROR_NEXTNOFOR;
 			} else {
 
-				double val = variables.getfloat(*i);
+				double val = variables.getfloat(i);
 				val += temp->step;
-				variables.setfloat(*i, val);
+				variables.setfloat(i, val);
 
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.getfloat(*i)), -1, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.getfloat(i)), -1, -1));
 				}
 
 				if (temp->step > 0 && stack.compareFloats(val, temp->endNum)!=1)
@@ -1880,7 +1689,7 @@ Interpreter::execByteCode()
 	case OP_WRITE:
 	case OP_WRITELINE:
 		{
-			unsigned char whichop = *op;
+			int whichop = *op;
 			op++;
 			QString temp = stack.popstring();
 			int fn = stack.popint();
@@ -2044,21 +1853,27 @@ Interpreter::execByteCode()
 
 	case OP_DIM:
 	case OP_REDIM:
+	case OP_DIMSTR:
+	case OP_REDIMSTR:
 		{
-			unsigned char whichdim = *op;
+			int whichop = *op;
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			int ydim = stack.popint();
 			int xdim = stack.popint();
-			variables.arraydim(T_ARRAY, *i, xdim, ydim, whichdim == OP_REDIM);
+			if (whichop==OP_DIM || OP_REDIM) {
+				variables.arraydim(T_ARRAY, i, xdim, ydim, whichop == OP_REDIM);
+			} else {
+				variables.arraydim(T_STRARRAY, i, xdim, ydim, whichop == OP_REDIMSTR);
+			}
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
 					if (ydim==1) {
-						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, -1));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, xdim, -1));
 					} else {
-						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, ydim));
+						emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, xdim, ydim));
 					}
 				}
 			} else {
@@ -2068,51 +1883,25 @@ Interpreter::execByteCode()
 		}
 		break;
 
-	case OP_DIMSTR:
-	case OP_REDIMSTR:
-		{
-			unsigned char whichdim = *op;
-			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			int ydim = stack.popint();
-			int xdim = stack.popint();
-			variables.arraydim(T_STRARRAY, *i, xdim, ydim, whichdim == OP_REDIMSTR);
-			if (variables.error()==ERROR_NONE) {
-				if(debugMode)
-				{
-					if (ydim==1) {
-						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, -1));
-					} else {
-						emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, xdim, ydim));
-					}
-				}
-			} else {
-				 errornum = variables.error();
- 				 errorvarnum = variables.errorvarnum();
-			}
-		}
-		break;
-
 	case OP_ALEN:
 	case OP_ALENX:
 	case OP_ALENY:
 		{
 			// return array lengths
-			unsigned char opcode = *op;
+			int whichop = *op;
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			
-			switch(opcode) {
+			switch(whichop) {
 				case OP_ALEN:
-					stack.pushint(variables.arraysize(*i));
+					stack.pushint(variables.arraysize(i));
 					break;
 				case OP_ALENX:
-					stack.pushint(variables.arraysizex(*i));
+					stack.pushint(variables.arraysizex(i));
 					break;
 				case OP_ALENY:
-					stack.pushint(variables.arraysizey(*i));
+					stack.pushint(variables.arraysizey(i));
 					break;
 			}
 			if (variables.error()!=ERROR_NONE) {
@@ -2126,17 +1915,17 @@ Interpreter::execByteCode()
 	case OP_STRARRAYASSIGN:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-
+			int i = *op;
+			op++;
+			
 			QString val = stack.popstring();
 			int index = stack.popint();
 
-			variables.arraysetstring(*i, index, val);
+			variables.arraysetstring(i, index, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, index), index, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, index), index, -1));
 				}
 			} else {
 				errornum = variables.error();
@@ -2148,18 +1937,18 @@ Interpreter::execByteCode()
 	case OP_STRARRAYASSIGN2D:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-
+			int i = *op;
+			op++;
+			
 			QString val = stack.popstring(); 
 			int yindex = stack.popint();
 			int xindex = stack.popint();
 
-			variables.array2dsetstring(*i, xindex, yindex, val);
+			variables.array2dsetstring(i, xindex, yindex, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.array2dgetstring(*i, xindex, yindex), xindex, yindex));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.array2dgetstring(i, xindex, yindex), xindex, yindex));
 				}
 			} else {
 				errornum = variables.error();
@@ -2171,28 +1960,28 @@ Interpreter::execByteCode()
 	case OP_STRARRAYLISTASSIGN:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			
 			int items = stack.popint();
 			
-			if (variables.arraysize(*i)!=items) variables.arraydim(T_STRARRAY, *i, items, 1, false);
+			if (variables.arraysize(i)!=items) variables.arraydim(T_STRARRAY, i, items, 1, false);
 
 			if(errornum==ERROR_NONE)
 			{
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, items, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, -1));
 				}
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 				{
 					QString q = stack.popstring();
-					variables.arraysetstring(*i, index, q);
+					variables.arraysetstring(i, index, q);
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
 						{
-							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, index), index, -1));
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, index), index, -1));
 						}
 					} else {
 						errornum = variables.error();
@@ -2215,10 +2004,10 @@ Interpreter::execByteCode()
 		{
 			// unicode safe explode a string to an array function
 			bool ok;
-			unsigned char opcode = *op;
+			int opcode = *op;
 			op++;
-			int *i = (int *) op;		// variable number
-			op += sizeof(int);
+			int i = *op;		// variable number
+			op++;
 			
 			Qt::CaseSensitivity casesens = Qt::CaseSensitive;
 			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODE_C) {
@@ -2236,32 +2025,32 @@ Interpreter::execByteCode()
 			}
 			
 			if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-				if (variables.arraysize(*i)!=list.size()) variables.arraydim(T_STRARRAY, *i, list.size(), 1, false);
+				if (variables.arraysize(i)!=list.size()) variables.arraydim(T_STRARRAY, i, list.size(), 1, false);
 			} else {
-				if (variables.arraysize(*i)!=list.size()) variables.arraydim(T_ARRAY, *i, list.size(), 1, false);
+				if (variables.arraysize(i)!=list.size()) variables.arraydim(T_ARRAY, i, list.size(), 1, false);
 			}
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, list.size(), -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, list.size(), -1));
 				}
 					
 				for(int x=0; x<list.size(); x++) {
 					if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-						variables.arraysetstring(*i, x, list.at(x));
+						variables.arraysetstring(i, x, list.at(x));
 						if (variables.error()==ERROR_NONE) {
 							if(debugMode) {
-								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), variables.arraygetstring(*i, x), x, -1));
+								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, x), x, -1));
 							}
 						} else {
 							errornum = variables.error();
 							errorvarnum = variables.errorvarnum();
 						}			
 					} else {
-						variables.arraysetfloat(*i, x, list.at(x).toDouble(&ok));
+						variables.arraysetfloat(i, x, list.at(x).toDouble(&ok));
 						if (variables.error()==ERROR_NONE) {
 							if(debugMode) {
-								emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, x)), x, -1));
+								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, x)), x, -1));
 							}
 						} else {
 							errornum = variables.error();
@@ -2280,28 +2069,28 @@ Interpreter::execByteCode()
 		{
 
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			
 			QString qdelim = stack.popstring();
 
 			QString stuff = "";
 
-			if (variables.type(*i) == T_STRARRAY || variables.type(*i) == T_ARRAY)
+			if (variables.type(i) == T_STRARRAY || variables.type(i) == T_ARRAY)
 			{
-				int kount = variables.arraysize(*i);
+				int kount = variables.arraysize(i);
 				for(int n=0;n<kount;n++) {
 					if (n>0) stuff.append(qdelim);
-					if (variables.type(*i) == T_STRARRAY) {
-						stuff.append(variables.arraygetstring(*i, n));
+					if (variables.type(i) == T_STRARRAY) {
+						stuff.append(variables.arraygetstring(i, n));
 					} else {
-						stack.pushfloat(variables.arraygetfloat(*i, n));
+						stack.pushfloat(variables.arraygetfloat(i, n));
 						stuff.append(stack.popstring());
 					}
 				}
 			} else {
 				errornum = ERROR_NOTARRAY;
-				errorvarnum = *i;
+				errorvarnum = i;
 			}
 			stack.pushstring(stuff);
 		}
@@ -2311,26 +2100,26 @@ Interpreter::execByteCode()
 		{
 			// make a variable number a global variable
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-			variables.makeglobal(*i);
+			int i = *op;
+			op++;
+			variables.makeglobal(i);
 		}
 		break;
 
 	case OP_ARRAYASSIGN:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-
+			int i = *op;
+			op++;
+			
 			double val = stack.popfloat();
 			int index = stack.popint();
 			
-			variables.arraysetfloat(*i, index, val);
+			variables.arraysetfloat(i, index, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, index)), index, -1));
 				}
 			} else {
 				errornum = variables.error();
@@ -2342,18 +2131,18 @@ Interpreter::execByteCode()
 	case OP_ARRAYASSIGN2D:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-
+			int i = *op;
+			op++;
+			
 			double val = stack.popfloat();
 			int yindex = stack.popint();
 			int xindex = stack.popint();
 			
-			variables.array2dsetfloat(*i, xindex, yindex, val);
+			variables.array2dsetfloat(i, xindex, yindex, val);
 			if (variables.error()==ERROR_NONE) {
 				if(debugMode)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.array2dgetfloat(*i, xindex, yindex)), xindex, yindex));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.array2dgetfloat(i, xindex, yindex)), xindex, yindex));
 				}
 			} else {
 				errornum = variables.error();
@@ -2366,26 +2155,26 @@ Interpreter::execByteCode()
 	case OP_ARRAYLISTASSIGN:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			
 			int items = stack.popint();
 			
-			if (variables.arraysize(*i)!=items) variables.arraydim(T_ARRAY, *i, items, 1, false);
+			if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 1, false);
 			if(errornum==ERROR_NONE) {
 				if(debugMode && errornum==ERROR_NONE)
 				{
-					emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), NULL, items, -1));
+					emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, -1));
 				}
 			
 				for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--)
 				{
 					double one = stack.popfloat();
-					variables.arraysetfloat(*i, index, one);
+					variables.arraysetfloat(i, index, one);
 					if (variables.error()==ERROR_NONE) {
 						if(debugMode)
 						{
-							emit(varAssignment(variables.getrecurse(),QString(symtable[*i]), QString::number(variables.arraygetfloat(*i, index)), index, -1));
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, index)), index, -1));
 						}
 					} else {
 						errornum = variables.error();
@@ -2405,21 +2194,21 @@ Interpreter::execByteCode()
 		{
 
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			int index = stack.popint();
 
-			if (variables.type(*i) == T_STRARRAY)
+			if (variables.type(i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.arraygetstring(*i, index));
+				stack.pushstring(variables.arraygetstring(i, index));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
 				}			
 			}
-			else if (variables.type(*i) == T_ARRAY)
+			else if (variables.type(i) == T_ARRAY)
 			{
-				stack.pushfloat(variables.arraygetfloat(*i, index));
+				stack.pushfloat(variables.arraygetfloat(i, index));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -2428,7 +2217,7 @@ Interpreter::execByteCode()
 			else
 			{
 				errornum = ERROR_NOTARRAY;
-				errorvarnum = *i;
+				errorvarnum = i;
 				stack.pushint(0);
 			}
 		}
@@ -2437,22 +2226,22 @@ Interpreter::execByteCode()
 	case OP_DEREF2D:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 			int yindex = stack.popint();
 			int xindex = stack.popint();
 
-			if (variables.type(*i) == T_STRARRAY)
+			if (variables.type(i) == T_STRARRAY)
 			{
-				stack.pushstring(variables.array2dgetstring(*i, xindex, yindex));
+				stack.pushstring(variables.array2dgetstring(i, xindex, yindex));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
 				}			
 			}
-			else if (variables.type(*i) == T_ARRAY)
+			else if (variables.type(i) == T_ARRAY)
 			{
-				stack.pushfloat(variables.array2dgetfloat(*i, xindex, yindex));
+				stack.pushfloat(variables.array2dgetfloat(i, xindex, yindex));
 				if (variables.error()!=ERROR_NONE) {
 					errornum = variables.error();
 					errorvarnum = variables.errorvarnum();
@@ -2461,7 +2250,7 @@ Interpreter::execByteCode()
 			else
 			{
 				errornum = ERROR_NOTARRAY;
-				errorvarnum = *i;
+				errorvarnum = i;
 				stack.pushint(0);
 			}
 		}
@@ -2470,27 +2259,27 @@ Interpreter::execByteCode()
 	case OP_PUSHVAR:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
-
-			if (variables.type(*i) == T_STRING)
+			int i = *op;
+			op++;
+			
+			if (variables.type(i) == T_STRING)
 			{
-				stack.pushstring(variables.getstring(*i));
+				stack.pushstring(variables.getstring(i));
 			}
-			else if (variables.type(*i) == T_FLOAT)
+			else if (variables.type(i) == T_FLOAT)
 			{
-				stack.pushfloat(variables.getfloat(*i));
+				stack.pushfloat(variables.getfloat(i));
 			}
-			else if (variables.type(*i) == T_ARRAY || variables.type(*i) == T_STRARRAY)
+			else if (variables.type(i) == T_ARRAY || variables.type(i) == T_STRARRAY)
 			{
 				errornum = ERROR_ARRAYINDEXMISSING;
-				errorvarnum = *i;
+				errorvarnum = i;
 				stack.pushint(0);
 			}
 			else
 			{
 				errornum = ERROR_NOSUCHVARIABLE;
-				errorvarnum = *i;
+				errorvarnum = i;
 				stack.pushint(0);
 			}
 		}
@@ -2499,21 +2288,21 @@ Interpreter::execByteCode()
 	case OP_FUNCRETURN:
 		{
 			op++;
-			int *i = (int *) op;
-			op += sizeof(int);
+			int i = *op;
+			op++;
 
-			if (variables.type(*i) == T_STRING)
+			if (variables.type(i) == T_STRING)
 			{
-				stack.pushstring(variables.getstring(*i));
+				stack.pushstring(variables.getstring(i));
 			}
-			else if (variables.type(*i) == T_FLOAT)
+			else if (variables.type(i) == T_FLOAT)
 			{
-				stack.pushfloat(variables.getfloat(*i));
+				stack.pushfloat(variables.getfloat(i));
 			}
 			else
 			{
 				errornum = ERROR_FUNCRETURN;
-				errorvarnum = *i;
+				errorvarnum = i;
 				stack.pushint(0);
 			}
 		}
@@ -2522,27 +2311,27 @@ Interpreter::execByteCode()
 	case OP_PUSHINT:
 		{
 			op++;
-			int *i = (int *) op;
-			stack.pushint(*i);
-			op += sizeof(int);
+			int i = *op;
+			op++;
+			stack.pushint(i);
 		}
 		break;
 
     case OP_PUSHVARREF:
         {
             op++;
-            int *i = (int *) op;
-            stack.pushvarref(*i);
-            op += sizeof(int);
+            int i = *op;
+            op++;
+            stack.pushvarref(i);
         }
         break;
 
     case OP_PUSHVARREFSTR:
         {
             op++;
-            int *i = (int *) op;
-            stack.pushvarrefstr(*i);
-            op += sizeof(int);
+            int i = *op;
+            op++;
+            stack.pushvarrefstr(i);
         }
         break;
 
@@ -2551,7 +2340,7 @@ Interpreter::execByteCode()
 			op++;
 			double *d = (double *) op;
 			stack.pushfloat(*d);
-			op += sizeof(double);
+			op += bytesToFullWords(sizeof(double));
 		}
 		break;
 
@@ -2562,7 +2351,7 @@ Interpreter::execByteCode()
 			op++;
 			int len = strlen((char *) op) + 1;
 			stack.pushstring(QString::fromUtf8((char *) op));
-			op += len;
+			op += bytesToFullWords(len);
 		}
 		break;
 
@@ -2573,7 +2362,7 @@ Interpreter::execByteCode()
 			op++;
 			int len = strlen((char *) op) + 1;
 			currentIncludeFile = QString::fromUtf8((char *) op);
-			op += len;
+			op += bytesToFullWords(len);
 		}
 		break;
 
@@ -2607,10 +2396,10 @@ Interpreter::execByteCode()
 
 	case OP_RAND:
 		{
+			op++;
 			double r = 1.0;
 			double ra;
 			double rx;
-			op++;
 			if (once)
 			{
 				int ms = 999 + QTime::currentTime().msec();
@@ -2679,7 +2468,7 @@ Interpreter::execByteCode()
 	case OP_RIGHT:
 		{
 			// unicode safe left/right string
-			unsigned char opcode = *op;
+			int opcode = *op;
 			op++;
 			int len = stack.popint();
 			QString qtemp = stack.popstring();
@@ -2748,7 +2537,7 @@ Interpreter::execByteCode()
 	case OP_INSTRX_S:
 		{
 			// unicode safe instr function
-			unsigned char opcode = *op;
+			int opcode = *op;
 			op++;
 			
 			Qt::CaseSensitivity casesens = Qt::CaseSensitive;
@@ -2798,8 +2587,9 @@ Interpreter::execByteCode()
 	case OP_SQR:
 	case OP_EXP:
 		{
-			unsigned char whichop = *op;
-			op += sizeof(unsigned char);
+			int whichop = *op;
+			op++;
+			
 			double val = stack.popfloat();
 			switch (whichop)
 			{
@@ -3451,7 +3241,7 @@ Interpreter::execByteCode()
 			
 			double tx, ty, savetx;		// used in scaling and rotating
 			
-			unsigned char opcode = *op;
+			int opcode = *op;
 			op++;
 
 			// pop the immediate list to uncover the location and scale
@@ -3839,15 +3629,15 @@ Interpreter::execByteCode()
     case OP_NUMASSIGN:
         {
             op++;
-            int *num = (int *) op;
-            op += sizeof(int);
+            int num = *op;
+            op++;
             double temp = stack.popfloat();
 
-            variables.setfloat(*num, temp);
+            variables.setfloat(num, temp);
 
             if(debugMode)
             {
-                emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), QString::number(variables.getfloat(*num)), -1, -1));
+                emit(varAssignment(variables.getrecurse(),QString(symtable[num]), QString::number(variables.getfloat(num)), -1, -1));
             }
         }
         break;
@@ -3855,15 +3645,15 @@ Interpreter::execByteCode()
      case OP_STRINGASSIGN:
 		{
 			op++;
-			int *num = (int *) op;
-			op += sizeof(int);
+			int num = *op;
+			op++;
 
 			QString q = stack.popstring();
-			variables.setstring(*num, q);
+			variables.setstring(num, q);
 			
 			if(debugMode)
 			{
-			  emit(varAssignment(variables.getrecurse(),QString(symtable[*num]), variables.getstring(*num), -1, -1));
+			  emit(varAssignment(variables.getrecurse(),QString(symtable[num]), variables.getstring(num), -1, -1));
 			}
 		}
 		break;
@@ -3872,12 +3662,12 @@ Interpreter::execByteCode()
         {
         // assign a numeric variable reference
         op++;
-        int *num = (int *) op;
-        op += sizeof(int);
+        int num = *op;
+        op++;
         int type = stack.peekType();
         int value = stack.popint();
         if (type==T_VARREF) {
-            variables.setvarref(*num, value);
+            variables.setvarref(num, value);
         } else {
             if (type==T_VARREFSTR) {
                 errornum = ERROR_BYREFTYPE;
@@ -3892,12 +3682,12 @@ Interpreter::execByteCode()
         {
         // assign a string variable reference
         op++;
-        int *num = (int *) op;
-        op += sizeof(int);
+        int num = *op;
+        op++;
         int type = stack.peekType();
         int value = stack.popint();
         if (type==T_VARREFSTR) {
-            variables.setvarref(*num, value);
+            variables.setvarref(num, value);
         } else {
             if (type==T_VARREF) {
                 errornum = ERROR_BYREFTYPE;
@@ -4041,16 +3831,16 @@ Interpreter::execByteCode()
 			// Push all of the elements of an array to the stack and then push the length to the stack
 			// expects one integer - variable number
 			op++;
-			int *var = (int *) op;
-			op += sizeof(int);
+			int var = *op;
+			op++;
 			
-			if (variables.type(*var) != T_ARRAY) {
+			if (variables.type(var) != T_ARRAY) {
 				errornum = ERROR_POLYARRAY;
 				stack.pushint(0);
 			} else {
-				int n = variables.arraysize(*var);
+				int n = variables.arraysize(var);
 				for (int j = 0; j < n; j++) {
-					stack.pushfloat(variables.arraygetfloat(*var, j));
+					stack.pushfloat(variables.arraygetfloat(var, j));
 				}
 				stack.pushint(n);
 			}
@@ -4062,16 +3852,16 @@ Interpreter::execByteCode()
 			// Push all of the elements of a string array to the stack and then push the length to the stack
 			// expects one integer - variable number
 			op++;
-			int *var = (int *) op;
-			op += sizeof(int);
+			int var = *op;
+			op++;
 			
-			if (variables.type(*var) != T_ARRAY) {
+			if (variables.type(var) != T_ARRAY) {
 				errornum = ERROR_POLYARRAY;
 				stack.pushint(0);
 			} else {
-				int n = variables.arraysize(*var);
+				int n = variables.arraysize(var);
 				for (int j = 0; j < n; j++) {
-					stack.pushstring(variables.arraygetstring(*var, j));
+					stack.pushstring(variables.arraygetstring(var, j));
 				}
 				stack.pushint(n);
 			}
@@ -4143,16 +3933,10 @@ Interpreter::execByteCode()
 
 
 	
-	case OP_EXTENDEDNONE:
-		{
-			// extended none - allow for an extra range of operations
-			// ALL MUST BE ONE BYTE op codes in thiis group of extended ops
-			op++;
-			switch(*op) {
-				case OPX_SPRITEDIM:
+				case OP_SPRITEDIM:
 					{
-						int n = stack.popint();
 						op++;
+						int n = stack.popint();
 						// deallocate existing sprites
 						clearsprites();
 						// create new ones that are not visible, active, and are at origin
@@ -4173,7 +3957,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OPX_SPRITELOAD:
+				case OP_SPRITELOAD:
 					{
 						op++;
 						
@@ -4206,7 +3990,7 @@ Interpreter::execByteCode()
 					}
 					break;
 					
-				case OPX_SPRITESLICE:
+				case OP_SPRITESLICE:
 					{
 						op++;
 						
@@ -4242,11 +4026,11 @@ Interpreter::execByteCode()
 					}
 					break;
 					
-				case OPX_SPRITEMOVE:
-				case OPX_SPRITEPLACE:
+				case OP_SPRITEMOVE:
+				case OP_SPRITEPLACE:
 					{
 						
-						unsigned char opcode = *op;
+						int opcode = *op;
 						op++;
 						
 						double r = stack.popfloat();
@@ -4266,7 +4050,7 @@ Interpreter::execByteCode()
 								} else {
 				
 									spriteundraw(n);
-									if (opcode==OPX_SPRITEMOVE) {
+									if (opcode==OP_SPRITEMOVE) {
 										x += sprites[n].x;
 										y += sprites[n].y;
 										s += sprites[n].s;
@@ -4290,15 +4074,15 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OPX_SPRITEHIDE:
-				case OPX_SPRITESHOW:
+				case OP_SPRITEHIDE:
+				case OP_SPRITESHOW:
 					{
 						
-						unsigned char opcode = *op;
+						int opcode = *op;
 						op++;
 						
 						int n = stack.popint();
-						bool vis = opcode==OPX_SPRITESHOW;
+						bool vis = opcode==OP_SPRITESHOW;
 						
 						if(n < 0 || n >=nsprites) {
 							errornum = ERROR_SPRITENUMBER;
@@ -4317,7 +4101,7 @@ Interpreter::execByteCode()
 					}
 					break;
 
-				case OPX_SPRITECOLLIDE:
+				case OP_SPRITECOLLIDE:
 					{
 						op++;
 						
@@ -4336,16 +4120,16 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OPX_SPRITEX:
-			case OPX_SPRITEY:
-			case OPX_SPRITEH:
-			case OPX_SPRITEW:
-			case OPX_SPRITEV:
-			case OPX_SPRITER:
-			case OPX_SPRITES:
+			case OP_SPRITEX:
+			case OP_SPRITEY:
+			case OP_SPRITEH:
+			case OP_SPRITEW:
+			case OP_SPRITEV:
+			case OP_SPRITER:
+			case OP_SPRITES:
 				{
 					
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					int n = stack.popint();
 					
@@ -4357,20 +4141,20 @@ Interpreter::execByteCode()
 							errornum = ERROR_SPRITENA;
 							stack.pushint(0);	
 						} else {
-							if (opcode==OPX_SPRITEX) stack.pushfloat(sprites[n].x);
-							if (opcode==OPX_SPRITEY) stack.pushfloat(sprites[n].y);
-							if (opcode==OPX_SPRITEH) stack.pushint(sprites[n].image->height());
-							if (opcode==OPX_SPRITEW) stack.pushint(sprites[n].image->width());
-							if (opcode==OPX_SPRITEV) stack.pushint(sprites[n].visible?1:0);
-							if (opcode==OPX_SPRITER) stack.pushfloat(sprites[n].r);
-							if (opcode==OPX_SPRITES) stack.pushfloat(sprites[n].s);
+							if (opcode==OP_SPRITEX) stack.pushfloat(sprites[n].x);
+							if (opcode==OP_SPRITEY) stack.pushfloat(sprites[n].y);
+							if (opcode==OP_SPRITEH) stack.pushint(sprites[n].image->height());
+							if (opcode==OP_SPRITEW) stack.pushint(sprites[n].image->width());
+							if (opcode==OP_SPRITEV) stack.pushint(sprites[n].visible?1:0);
+							if (opcode==OP_SPRITER) stack.pushfloat(sprites[n].r);
+							if (opcode==OP_SPRITES) stack.pushfloat(sprites[n].s);
 						}
 					}
 				}
 				break;
 
 			
-			case OPX_CHANGEDIR:
+			case OP_CHANGEDIR:
 					{
 						op++;
 						QString file = stack.popstring();
@@ -4380,14 +4164,14 @@ Interpreter::execByteCode()
 					}
 					break;
 
-			case OPX_CURRENTDIR:
+			case OP_CURRENTDIR:
 				{
 					op++;
 					stack.pushstring(QDir::currentPath());
 				}
 				break;
 				
-			case OPX_WAVWAIT:
+			case OP_WAVWAIT:
 				{
 					op++;
 					mymutex->lock();
@@ -4397,7 +4181,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_DBOPEN:
+			case OP_DBOPEN:
 					{
 						op++;
 						// open database connection
@@ -4419,7 +4203,7 @@ Interpreter::execByteCode()
             }
 					break;
 
-			case OPX_DBCLOSE:
+			case OP_DBCLOSE:
 					{
 						op++;
                         int n = stack.popint();
@@ -4431,7 +4215,7 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_DBEXECUTE:
+			case OP_DBEXECUTE:
 					{
 						op++;
 						// execute a statement on the database
@@ -4457,7 +4241,7 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_DBOPENSET:
+			case OP_DBOPENSET:
 					{
 						op++;
 						// open recordset
@@ -4493,7 +4277,7 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_DBCLOSESET:
+			case OP_DBCLOSESET:
 					{
 						op++;
 						int set = stack.popint();
@@ -4516,7 +4300,7 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_DBROW:
+			case OP_DBROW:
 					{
 						op++;
 						int set = stack.popint();
@@ -4539,21 +4323,22 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_DBINT:
-			case OPX_DBINTS:
-			case OPX_DBFLOAT:
-			case OPX_DBFLOATS:
-			case OPX_DBNULL:
-			case OPX_DBNULLS:
-			case OPX_DBSTRING:
-			case OPX_DBSTRINGS:
+			case OP_DBINT:
+			case OP_DBINTS:
+			case OP_DBFLOAT:
+			case OP_DBFLOATS:
+			case OP_DBNULL:
+			case OP_DBNULLS:
+			case OP_DBSTRING:
+			case OP_DBSTRINGS:
 					{
-						unsigned char opcode = *op;
+						int opcode = *op;
+						op++;
+
 						int col = -1, set, n;
 						QString colname;
-						op++;
 						// get a column data (integer)
-						if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
+						if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
 							colname = stack.popstring();
 						} else {
 							col = stack.popint();
@@ -4572,27 +4357,27 @@ Interpreter::execByteCode()
                                     if (!dbSetRow[n][set]) {
 										errornum = ERROR_DBNOTSETROW;
 									} else {
-										if (opcode == OPX_DBINTS || opcode == OPX_DBFLOATS || opcode == OPX_DBNULLS || opcode == OPX_DBSTRINGS) {
+										if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
                                             col = dbSet[n][set]->record().indexOf(colname);
 										}
                                         if (col < 0 || col >= dbSet[n][set]->record().count()) {
 											errornum = ERROR_DBCOLNO;
 										} else {
 											switch(opcode) {
-												case OPX_DBINT:
-												case OPX_DBINTS:
+												case OP_DBINT:
+												case OP_DBINTS:
                                                     stack.pushint(dbSet[n][set]->record().value(col).toInt());
 													break;
-												case OPX_DBFLOAT:
-												case OPX_DBFLOATS:
+												case OP_DBFLOAT:
+												case OP_DBFLOATS:
                                                     stack.pushfloat(dbSet[n][set]->record().value(col).toDouble());
 													break;
-												case OPX_DBNULL:
-												case OPX_DBNULLS:
+												case OP_DBNULL:
+												case OP_DBNULLS:
                                                     stack.pushint(dbSet[n][set]->record().value(col).isNull());
 													break;
-												case OPX_DBSTRING:
-												case OPX_DBSTRINGS:
+												case OP_DBSTRING:
+												case OP_DBSTRINGS:
                                                     stack.pushstring(dbSet[n][set]->record().value(col).toString());
 													break;
 											}
@@ -4604,35 +4389,35 @@ Interpreter::execByteCode()
                     }
 					break;
 
-			case OPX_LASTERROR:
+			case OP_LASTERROR:
 				{
 					op++;
 					stack.pushint(lasterrornum);
 				}
 				break;
 
-			case OPX_LASTERRORLINE:
+			case OP_LASTERRORLINE:
 				{
 					op++;
 					stack.pushint(lasterrorline);
 				}
 				break;
 
-			case OPX_LASTERROREXTRA:
+			case OP_LASTERROREXTRA:
 				{
 					op++;
 					stack.pushstring(lasterrormessage);
 				}
 				break;
 
-			case OPX_LASTERRORMESSAGE:
+			case OP_LASTERRORMESSAGE:
 				{
 					op++;
 					stack.pushstring(getErrorMessage(lasterrornum));
 				}
 				break;
 
-			case OPX_OFFERROR:
+			case OP_OFFERROR:
 				{
 					// pop a trap off of the trap stack
 					op++;
@@ -4643,7 +4428,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETLISTEN:
+			case OP_NETLISTEN:
 				{
 					op++;
 					int tempsockfd;
@@ -4695,7 +4480,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETCONNECT:
+			case OP_NETCONNECT:
 				{
 					op++;
 
@@ -4741,7 +4526,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETREAD:
+			case OP_NETREAD:
 				{
 					op++;
 					int MAXSIZE = 2048;
@@ -4772,7 +4557,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETWRITE:
+			case OP_NETWRITE:
 				{
 					op++;
 					QString data = stack.popstring();
@@ -4793,7 +4578,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETCLOSE:
+			case OP_NETCLOSE:
 				{
 					op++;
 					int fn = stack.popint();
@@ -4809,7 +4594,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETDATA:
+			case OP_NETDATA:
 				{
 					op++;
 					// push 1 if there is data to read on network connection
@@ -4847,7 +4632,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_NETADDRESS:
+			case OP_NETADDRESS:
 				{
 					op++;
 					// get first non "lo" ip4 address
@@ -4894,7 +4679,7 @@ Interpreter::execByteCode()
                 }
 				break;
 
-			case OPX_KILL:
+			case OP_KILL:
 				{
 					op++;
 					QString name = stack.popstring();
@@ -4904,7 +4689,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_MD5:
+			case OP_MD5:
 				{
 					op++;
 					QString stuff = stack.popstring();
@@ -4912,7 +4697,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_SETSETTING:
+			case OP_SETSETTING:
 				{
 					op++;
 					QString stuff = stack.popstring();
@@ -4931,7 +4716,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_GETSETTING:
+			case OP_GETSETTING:
 				{
 					op++;
 					QString key = stack.popstring();
@@ -4951,7 +4736,7 @@ Interpreter::execByteCode()
 				break;
 
 
-			case OPX_PORTOUT:
+			case OP_PORTOUT:
 				{
 					op++;
 					int data = stack.popint();
@@ -4977,7 +4762,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PORTIN:
+			case OP_PORTIN:
 				{
 					op++;
 					int data=0;
@@ -5004,7 +4789,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_BINARYOR:
+			case OP_BINARYOR:
 				{
 					op++;
 					unsigned long a = stack.popint();
@@ -5013,7 +4798,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_BINARYAND:
+			case OP_BINARYAND:
 				{
 					op++;
 					unsigned long a = stack.popint();
@@ -5022,7 +4807,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_BINARYNOT:
+			case OP_BINARYNOT:
 				{
 					op++;
 					unsigned long a = stack.popint();
@@ -5030,7 +4815,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_IMGSAVE:
+			case OP_IMGSAVE:
 				{
 					// Image Save - Save image
 					op++;
@@ -5046,7 +4831,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_DIR:
+			case OP_DIR:
 				{
 					// Get next directory entry - id path send start a new folder else get next file name
 					// return "" if we have no names on list - skippimg . and ..
@@ -5077,16 +4862,16 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_REPLACE:
-			case OPX_REPLACE_C:
-			case OPX_REPLACEX:
+			case OP_REPLACE:
+			case OP_REPLACE_C:
+			case OP_REPLACEX:
 				{
 					// unicode safe replace function
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					
 					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-					if(opcode==OPX_REPLACE_C) {
+					if(opcode==OP_REPLACE_C) {
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
@@ -5094,7 +4879,7 @@ Interpreter::execByteCode()
 					QString qfrom = stack.popstring();
 					QString qhaystack = stack.popstring();
 
-					if(opcode==OPX_REPLACE || opcode==OPX_REPLACE_C) {
+					if(opcode==OP_REPLACE || opcode==OP_REPLACE_C) {
 						stack.pushstring(qhaystack.replace(qfrom, qto, casesens));
 					} else {
 						stack.pushstring(qhaystack.replace(QRegExp(qfrom), qto));
@@ -5102,23 +4887,23 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_COUNT:
-			case OPX_COUNT_C:
-			case OPX_COUNTX:
+			case OP_COUNT:
+			case OP_COUNT_C:
+			case OP_COUNTX:
 				{
 					// unicode safe count function
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					
 					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-					if(opcode==OPX_COUNT_C) {
+					if(opcode==OP_COUNT_C) {
 						if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
 					}
 			
 					QString qneedle = stack.popstring();
 					QString qhaystack = stack.popstring();
 			
-					if(opcode==OPX_COUNT || opcode==OPX_COUNT_C) {
+					if(opcode==OP_COUNT || opcode==OP_COUNT_C) {
 						stack.pushint((int) (qhaystack.count(qneedle, casesens)));
 					} else {
 						stack.pushint((int) (qhaystack.count(QRegExp(qneedle))));
@@ -5126,7 +4911,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_OSTYPE:
+			case OP_OSTYPE:
 				{
 					// Return type of OS this compile was for
 					op++;
@@ -5147,7 +4932,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_MSEC:
+			case OP_MSEC:
 				{
 					// Return number of milliseconds the BASIC256 program has been running
 					op++;
@@ -5155,25 +4940,25 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_EDITVISIBLE:
-			case OPX_GRAPHVISIBLE:
-			case OPX_OUTPUTVISIBLE:
+			case OP_EDITVISIBLE:
+			case OP_GRAPHVISIBLE:
+			case OP_OUTPUTVISIBLE:
 				{
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					int show = stack.popint();
-					if (opcode==OPX_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
-					if (opcode==OPX_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
-					if (opcode==OPX_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
+					if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
+					if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
+					if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
 				}
 				break;
 
-			case OPX_TEXTHEIGHT:
-			case OPX_TEXTWIDTH:
+			case OP_TEXTHEIGHT:
+			case OP_TEXTWIDTH:
 				{
 					// return the number of pixels the font requires for diaplay
 					// a string is required for width but not for height
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					int v = 0;
 					
@@ -5188,11 +4973,11 @@ Interpreter::execByteCode()
 						ian->setFont(QFont(fontfamily, fontpoint, fontweight));
 					}
 
-					if (opcode==OPX_TEXTWIDTH) {
+					if (opcode==OP_TEXTWIDTH) {
 						QString txt = stack.popstring();
 						v = QFontMetrics(ian->font()).width(txt);
 					}
-					if (opcode==OPX_TEXTHEIGHT) v = QFontMetrics(ian->font()).height();
+					if (opcode==OP_TEXTHEIGHT) v = QFontMetrics(ian->font()).height();
 					
 					if (!printing) {
 						ian->end();
@@ -5201,7 +4986,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_FREEFILE:
+			case OP_FREEFILE:
 				{
 					// return the next free file number - throw error if not free files
 					op++;
@@ -5218,7 +5003,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_FREENET:
+			case OP_FREENET:
 				{
 					// return the next free network socket number - throw error if not free sockets
 					op++;
@@ -5235,7 +5020,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_FREEDB:
+			case OP_FREEDB:
 				{
 					// return the next free databsae number - throw error if none free
 					op++;
@@ -5255,7 +5040,7 @@ Interpreter::execByteCode()
                 }
 				break;
 
-			case OPX_FREEDBSET:
+			case OP_FREEDBSET:
 				{
 					// return the next free set for a database - throw error if none free
 					op++;
@@ -5278,11 +5063,11 @@ Interpreter::execByteCode()
                 }
 				break;
 
-			case OPX_ARC:
-			case OPX_CHORD:
-			case OPX_PIE:
+			case OP_ARC:
+			case OP_CHORD:
+			case OP_PIE:
 				{
-					unsigned char opcode = *op;
+					int opcode = *op;
 					op++;
 					double angwval = stack.popfloat();
 					double startval = stack.popfloat();
@@ -5309,13 +5094,13 @@ Interpreter::execByteCode()
 					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
-					if(opcode==OPX_ARC) {
+					if(opcode==OP_ARC) {
 						ian->drawArc(xval, yval, wval, hval, s, aw);
 					}
-					if(opcode==OPX_CHORD) {
+					if(opcode==OP_CHORD) {
 						ian->drawChord(xval, yval, wval, hval, s, aw);
 					}
-					if(opcode==OPX_PIE) {
+					if(opcode==OP_PIE) {
 						ian->drawPie(xval, yval, wval, hval, s, aw);
 					}
 					
@@ -5326,7 +5111,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PENWIDTH:
+			case OP_PENWIDTH:
 				{
 					op++;
 					double a = stack.popfloat();
@@ -5338,21 +5123,21 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_GETPENWIDTH:
+			case OP_GETPENWIDTH:
 				{
 					op++;
 					stack.pushfloat((double) (drawingpen.widthF()));
 				}
 				break;
 
-			case OPX_GETBRUSHCOLOR:
+			case OP_GETBRUSHCOLOR:
 				{
 					op++;
 					stack.pushfloat((unsigned int) drawingbrush.color().rgba());
 				}
 				break;
 		
-			case OPX_ALERT:
+			case OP_ALERT:
 				{
 					op++;
 					QString temp = stack.popstring();
@@ -5364,7 +5149,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_CONFIRM:
+			case OP_CONFIRM:
 				{
 					op++;
 					int dflt = stack.popint();
@@ -5378,7 +5163,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PROMPT:
+			case OP_PROMPT:
 				{
 					op++;
 					QString dflt = stack.popstring();
@@ -5392,7 +5177,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_FROMRADIX:
+			case OP_FROMRADIX:
 				{
 					op++;
 					bool ok;
@@ -5414,7 +5199,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_TORADIX:
+			case OP_TORADIX:
 				{
 					op++;
 					int base = stack.popint();
@@ -5430,7 +5215,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PRINTEROFF:
+			case OP_PRINTEROFF:
 				{
 					op++;
 					if (printing) {
@@ -5442,7 +5227,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PRINTERON:
+			case OP_PRINTERON:
 				{
 					op++;
 					if (printing) {
@@ -5480,7 +5265,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PRINTERPAGE:
+			case OP_PRINTERPAGE:
 				{
 					op++;
 					if (printing) {
@@ -5491,7 +5276,7 @@ Interpreter::execByteCode()
 				}
 				break;
 
-			case OPX_PRINTERCANCEL:
+			case OP_PRINTERCANCEL:
 				{
 					op++;
 					if (printing) {
@@ -5504,7 +5289,7 @@ Interpreter::execByteCode()
 				break;
 
 
-			case OPX_DEBUGINFO:
+			case OP_DEBUGINFO:
 				{
 					// get info about BASIC256 runtime and return as a string
 					// put totally undocumented stuff HERE
@@ -5535,42 +5320,34 @@ Interpreter::execByteCode()
 						case 4:
 							// dump the program object code
 							{
-							unsigned char *o = byteCode;
-							while (o <= byteCode + byteOffset) {
+							int *o = wordCode;
+							while (o <= wordCode + wordOffset) {
 								mymutex->lock();
-								unsigned int offset = o-byteCode;
-								unsigned char currentop = (unsigned char) *o;
-								o += sizeof(unsigned char);
+								unsigned int offset = o-wordCode;
+								int currentop = *o;
+								o++;
 								if (optype(currentop) == OPTYPE_NONE)	{
 									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20)));
-								} else if (optype(currentop) == OPTYPE_EXTENDED) {	
-									unsigned char currentopx = (unsigned char) *o;
-									emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opxname(currentopx),-20)));
-									o += sizeof(unsigned char);
 								} else if (optype(currentop) == OPTYPE_INT) {
 									//op has one Int arg
 									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o)));
-									o += sizeof(int);
+									o++;
 								} else if (optype(currentop) == OPTYPE_VARIABLE) {
 									//op has one Int arg
 									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtable[(int) *o])));
-									o += sizeof(int);
+									o++;
 								} else if (optype(currentop) == OPTYPE_LABEL) {
 									//op has one Int arg
 									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o,8,16,QChar('0'))));
-									o += sizeof(int);
-								} else if (optype(currentop) == OPTYPE_INTINT) {
-									// op has 2 Int arg
-									emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o).arg((int) *(o+sizeof(int)))));
-									o += 2 * sizeof(int);
+									o++;
 								} else if (optype(currentop) == OPTYPE_FLOAT) {
 									// op has a single double arg
 									emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((double) *o)));
-									o += sizeof(double);
+									o += bytesToFullWords(sizeof(double));
 								} else if (optype(currentop) == OPTYPE_STRING) {
 									// op has a single null terminated String arg
 									emit(outputReady(QString("%1 %2 \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((char*) o)));
-									int len = strlen((char*) o) + 1;
+									int len = bytesToFullWords(strlen((char*) o) + 1);
 									o += len;
 								}
 								waitCond->wait(mymutex);
@@ -5591,17 +5368,9 @@ Interpreter::execByteCode()
 
 
 
-				// insert additional extended operations here
+				// insert additional operations here
 				
-			default:
-				{
-					status = R_STOPPED;
-					return -1;
-					break;
-				}
-			}
-		}
-		break;
+
 		
 	case OP_STACKSWAP:
 		{

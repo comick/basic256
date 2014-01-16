@@ -19,7 +19,7 @@
 %{
 #include "basicParse.tab.h"
 #include "../CompileErrors.h"
-#include "../ByteCodes.h"
+#include "../WordCodes.h"
 
 
 #ifdef __cplusplus
@@ -51,16 +51,16 @@ extern int testIfOnTableError(int);
 extern void newLineOffsets(int);
 
 extern int getSymbol(char *);
-extern void addIntOp(char, int);
-extern void addOp(char);
+extern void addIntOp(int, int);
+extern void addOp(int);
 extern void addString(char*);
-extern void addStringOp(char, char*);
+extern void addStringOp(int, char*);
 
 
 extern int yyparse();
 //extern YYLTYPE yylloc;
 extern int errorcode;
-extern int byteOffset;
+extern int wordOffset;
 extern int lastLineOffset;
 extern int functionDefSymbol;
 extern int subroutineDefSymbol;
