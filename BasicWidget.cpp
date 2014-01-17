@@ -18,9 +18,9 @@
 #include <qglobal.h>
 
 #if QT_VERSION >= 0x050000
-	#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenu>
 #else
-	#include <QMenu>
+#include <QMenu>
 #endif
 
 #include "ToolBar.h"
@@ -28,95 +28,78 @@
 #include "BasicWidget.h"
 
 BasicWidget::BasicWidget(const QString & title, QWidget * parent, Qt::WindowFlags f)
-  :	QWidget(parent, f)
-  ,	m_viewWidget(NULL)
-  ,	m_toolBar(NULL)
-  ,	m_menu(NULL)
-{
-  m_toolBar = new ToolBar();
-  m_menu = new QMenu(title);
-  m_layout = new QVBoxLayout();
+    :	QWidget(parent, f)
+    ,	m_viewWidget(NULL)
+    ,	m_toolBar(NULL)
+    ,	m_menu(NULL) {
+    m_toolBar = new ToolBar();
+    m_menu = new QMenu(title);
+    m_layout = new QVBoxLayout();
 
-  setLayout(m_layout);
+    setLayout(m_layout);
 }
 
-BasicWidget::~BasicWidget()
-{
-  if (NULL != m_toolBar)
-    {
-      delete m_toolBar;
-      m_toolBar = NULL;
-    }		
-}
-
-bool BasicWidget::setViewWidget(QWidget * view)
-{
-  if (NULL == view)
-    {
-      return false;
+BasicWidget::~BasicWidget() {
+    if (NULL != m_toolBar) {
+        delete m_toolBar;
+        m_toolBar = NULL;
     }
-	
-  m_viewWidget = dynamic_cast< ViewWidgetIFace * >(view);
+}
 
-  if (NULL != m_viewWidget)
-    {
-      if (m_viewWidget->initActions(m_menu, m_toolBar))
-	{
-	  if (!m_viewWidget->usesToolBar())
-	    {
-	      delete m_toolBar;
-	      m_toolBar = NULL;
-	    }
-	  else
-	    {
-	      m_layout->addWidget(m_toolBar);
-	    }
-	  if (!m_viewWidget->usesMenu())
-	    {
-	      delete m_menu;
-	      m_menu = NULL;
-	    }
-	}
-
-      m_layout->addWidget(view, 1);
-		
-      return true;
+bool BasicWidget::setViewWidget(QWidget * view) {
+    if (NULL == view) {
+        return false;
     }
-	
-  return false;
-}
 
-void BasicWidget::slotShowToolBar(const bool vShow)
-{
-  if (NULL == m_toolBar)
-    return;
-	
-  m_toolBar->setVisible(vShow);
-}
+    m_viewWidget = dynamic_cast< ViewWidgetIFace * >(view);
 
-bool BasicWidget::isVisibleToolBar()
-{
-  if (NULL == m_viewWidget) return false;
-  if (NULL == m_toolBar) return false;
-  return m_toolBar->isVisible();
-}
+    if (NULL != m_viewWidget) {
+        if (m_viewWidget->initActions(m_menu, m_toolBar)) {
+            if (!m_viewWidget->usesToolBar()) {
+                delete m_toolBar;
+                m_toolBar = NULL;
+            } else {
+                m_layout->addWidget(m_toolBar);
+            }
+            if (!m_viewWidget->usesMenu()) {
+                delete m_menu;
+                m_menu = NULL;
+            }
+        }
 
-bool BasicWidget::usesToolBar()
-{
-  if (NULL != m_viewWidget)
-    {
-      return m_viewWidget->usesToolBar();
+        m_layout->addWidget(view, 1);
+
+        return true;
     }
-	
-  return false;
+
+    return false;
 }
 
-bool BasicWidget::usesMenu()
-{
-  if (NULL != m_viewWidget)
-    {
-      return m_viewWidget->usesMenu();
+void BasicWidget::slotShowToolBar(const bool vShow) {
+    if (NULL == m_toolBar)
+        return;
+
+    m_toolBar->setVisible(vShow);
+}
+
+bool BasicWidget::isVisibleToolBar() {
+    if (NULL == m_viewWidget) return false;
+    if (NULL == m_toolBar) return false;
+    return m_toolBar->isVisible();
+}
+
+bool BasicWidget::usesToolBar() {
+    if (NULL != m_viewWidget) {
+        return m_viewWidget->usesToolBar();
     }
-	
-  return false;
+
+    return false;
+}
+
+bool BasicWidget::usesMenu() {
+    if (NULL != m_viewWidget) {
+        return m_viewWidget->usesMenu();
+    }
+
+    return false;
 }

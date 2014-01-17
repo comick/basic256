@@ -26,124 +26,123 @@ using namespace std;
 
 extern BasicEdit * editwin;
 
-ReplaceWin::ReplaceWin ()
-{
+ReplaceWin::ReplaceWin () {
 
-	replaceMode = true;
-	
-	// position where it was last on screen
+    replaceMode = true;
+
+    // position where it was last on screen
     SETTINGS;
-	move(settings.value(SETTINGSREPLACEPOS, QPoint(200, 200)).toPoint());
+    move(settings.value(SETTINGSREPLACEPOS, QPoint(200, 200)).toPoint());
 
-	QGridLayout * layout = new QGridLayout();
-	int r=0;
+    QGridLayout * layout = new QGridLayout();
+    int r=0;
 
-	fromlabel = new QLabel(tr("From:"),this);
-	layout->addWidget(fromlabel,r,1,1,1);
-	frominput = new QLineEdit(settings.value(SETTINGSREPLACEFROM, "").toString());
-	frominput->setMaxLength(100);
-	connect(frominput, SIGNAL(textChanged(QString)), this, SLOT (changeFromInput(QString)));
-	layout->addWidget(frominput,r,2,1,3);
-	//
-	r++;
-	tolabel = new QLabel(tr("To:"),this);
-	layout->addWidget(tolabel,r,1,1,1);
-	toinput = new QLineEdit(settings.value(SETTINGSREPLACETO, "").toString());
-	toinput->setMaxLength(100);
-	layout->addWidget(toinput,r,2,1,3);
-	//
-	r++;
-	backcheckbox = new QCheckBox(tr("Search Backwards"),this);
-	backcheckbox->setChecked(settings.value(SETTINGSREPLACEBACK, SETTINGSREPLACEBACKDEFAULT).toBool());
-	layout->addWidget(backcheckbox,r,2,1,2);
-	//
-	r++;
-	casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
-	casecheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACECASEDEFAULT).toBool());
-	layout->addWidget(casecheckbox,r,2,1,3);
-	//
-	r++;
-	cancelbutton = new QPushButton(tr("Cancel"), this);
-	connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
-	layout->addWidget(cancelbutton,r,1,1,1);
-	replaceallbutton = new QPushButton(tr("Replace &All"), this);
-	connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
-	layout->addWidget(replaceallbutton,r,2,1,1);
-	replacebutton = new QPushButton(tr("&Replace"), this);
-	connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
-	layout->addWidget(replacebutton,r,3,1,1);
-	findbutton = new QPushButton(tr("&Find"), this);
-	connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
-	layout->addWidget(findbutton,r,4,1,1);
-	//
-	QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
-	connect(findagain1, SIGNAL(activated()), this, SLOT (clickFindButton()));
-	QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
-	connect(findagain2, SIGNAL(activated()), this, SLOT (clickFindButton()));
-	//
-	this->setLayout(layout);
-	this->show();
-	changeFromInput(frominput->text());
-	
-	findbutton->setFocus();
+    fromlabel = new QLabel(tr("From:"),this);
+    layout->addWidget(fromlabel,r,1,1,1);
+    frominput = new QLineEdit(settings.value(SETTINGSREPLACEFROM, "").toString());
+    frominput->setMaxLength(100);
+    connect(frominput, SIGNAL(textChanged(QString)), this, SLOT (changeFromInput(QString)));
+    layout->addWidget(frominput,r,2,1,3);
+    //
+    r++;
+    tolabel = new QLabel(tr("To:"),this);
+    layout->addWidget(tolabel,r,1,1,1);
+    toinput = new QLineEdit(settings.value(SETTINGSREPLACETO, "").toString());
+    toinput->setMaxLength(100);
+    layout->addWidget(toinput,r,2,1,3);
+    //
+    r++;
+    backcheckbox = new QCheckBox(tr("Search Backwards"),this);
+    backcheckbox->setChecked(settings.value(SETTINGSREPLACEBACK, SETTINGSREPLACEBACKDEFAULT).toBool());
+    layout->addWidget(backcheckbox,r,2,1,2);
+    //
+    r++;
+    casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
+    casecheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACECASEDEFAULT).toBool());
+    layout->addWidget(casecheckbox,r,2,1,3);
+    //
+    r++;
+    cancelbutton = new QPushButton(tr("Cancel"), this);
+    connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
+    layout->addWidget(cancelbutton,r,1,1,1);
+    replaceallbutton = new QPushButton(tr("Replace &All"), this);
+    connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
+    layout->addWidget(replaceallbutton,r,2,1,1);
+    replacebutton = new QPushButton(tr("&Replace"), this);
+    connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
+    layout->addWidget(replacebutton,r,3,1,1);
+    findbutton = new QPushButton(tr("&Find"), this);
+    connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
+    layout->addWidget(findbutton,r,4,1,1);
+    //
+    QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
+    connect(findagain1, SIGNAL(activated()), this, SLOT (clickFindButton()));
+    QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
+    connect(findagain2, SIGNAL(activated()), this, SLOT (clickFindButton()));
+    //
+    this->setLayout(layout);
+    this->show();
+    changeFromInput(frominput->text());
+
+    findbutton->setFocus();
 }
 
 void ReplaceWin::setReplaceMode(bool m) {
-	replaceMode = m;
-	tolabel->setEnabled(replaceMode);
-	tolabel->setVisible(replaceMode);
-	toinput->setEnabled(replaceMode);
-	toinput->setVisible(replaceMode);
-	replaceallbutton->setEnabled(replaceMode);
-	replaceallbutton->setVisible(replaceMode);
-	replacebutton->setEnabled(replaceMode);
-	replacebutton->setVisible(replaceMode);
-	if (replaceMode) {
-		setWindowTitle(tr("BASIC-256 Find/Replace"));
-	} else {
-		setWindowTitle(tr("BASIC-256 Find"));
-	}
-	findbutton->setFocus();
+    replaceMode = m;
+    tolabel->setEnabled(replaceMode);
+    tolabel->setVisible(replaceMode);
+    toinput->setEnabled(replaceMode);
+    toinput->setVisible(replaceMode);
+    replaceallbutton->setEnabled(replaceMode);
+    replaceallbutton->setVisible(replaceMode);
+    replacebutton->setEnabled(replaceMode);
+    replacebutton->setVisible(replaceMode);
+    if (replaceMode) {
+        setWindowTitle(tr("BASIC-256 Find/Replace"));
+    } else {
+        setWindowTitle(tr("BASIC-256 Find"));
+    }
+    findbutton->setFocus();
 }
 
 void ReplaceWin::changeFromInput(QString t) {
-		replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(editwin->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
-		replaceallbutton->setEnabled(replaceMode && t.length() != 0);
-		findbutton->setEnabled(t.length() != 0);
+    replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(editwin->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
+    replaceallbutton->setEnabled(replaceMode && t.length() != 0);
+    findbutton->setEnabled(t.length() != 0);
 }
 
 void ReplaceWin::clickCancelButton() {
-	close();
+    close();
 }
 
 void ReplaceWin::findAgain() {
-	editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-	changeFromInput(frominput->text());
+    editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+    changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickFindButton() {
-	editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-	changeFromInput(frominput->text());
+    editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+    changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceButton() {
-	editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
-	changeFromInput(frominput->text());
+    editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
+    changeFromInput(frominput->text());
 }
 
 void ReplaceWin::clickReplaceAllButton() {
-	editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
+    editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {
-	saveSettings();
+    saveSettings();
 }
 
 void ReplaceWin::saveSettings() {
     SETTINGS;
-	settings.setValue(SETTINGSREPLACEPOS, pos());
-	settings.setValue(SETTINGSREPLACEFROM, frominput->text());
-	if (replaceMode) settings.setValue(SETTINGSREPLACETO, toinput->text());
-	settings.setValue(SETTINGSREPLACECASE, casecheckbox->isChecked());
+    settings.setValue(SETTINGSREPLACEPOS, pos());
+    settings.setValue(SETTINGSREPLACEFROM, frominput->text());
+    if (replaceMode) settings.setValue(SETTINGSREPLACETO, toinput->text());
+    settings.setValue(SETTINGSREPLACECASE, casecheckbox->isChecked());
 }
 

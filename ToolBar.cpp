@@ -19,12 +19,10 @@
 #include "ToolBar.h"
 
 ToolBar::ToolBar(QString & title, QWidget * parent)
-:	QToolBar(title, parent)
-{
-	
+    :	QToolBar(title, parent) {
+
 }
 
 ToolBar::ToolBar(QWidget * parent)
-:	QToolBar(parent)
-{
+    :	QToolBar(parent) {
 }

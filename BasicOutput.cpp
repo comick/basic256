@@ -23,17 +23,17 @@
 #include <QClipboard>
 
 #if QT_VERSION >= 0x050000
-	#include <QtWidgets/QAction>
-	#include <QtWidgets/QApplication>
-	#include <QtWidgets/QMessageBox>
-	#include <QtPrintSupport/QPrintDialog>
-	#include <QtPrintSupport/QPrinter>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrinter>
 #else
-	#include <QAction>
-	#include <QApplication>
-	#include <QMessageBox>
-	#include <QPrintDialog>
-	#include <QPrinter>
+#include <QAction>
+#include <QApplication>
+#include <QMessageBox>
+#include <QPrintDialog>
+#include <QPrinter>
 #endif
 
 #include "Settings.h"
@@ -42,98 +42,81 @@
 extern QMutex *mymutex;
 extern int currentKey;
 
-BasicOutput::BasicOutput( ) : QTextEdit () 
-{
-  setFocusPolicy(Qt::StrongFocus);
-  setAcceptRichText(false);
-  gettingInput = false;
+BasicOutput::BasicOutput( ) : QTextEdit () {
+    setFocusPolicy(Qt::StrongFocus);
+    setAcceptRichText(false);
+    gettingInput = false;
 
 }
 
-BasicOutput::~BasicOutput( ) 
-{
-  // destructor for basic output
-}
-
-void
-BasicOutput::getInput()
-{
-  gettingInput = true;
-  startPos = textCursor().position();
-  setReadOnly(false);
-  setFocus();
+BasicOutput::~BasicOutput( ) {
+    // destructor for basic output
 }
 
 void
-BasicOutput::keyPressEvent(QKeyEvent *e)
-{
-  e->accept();
-  if (!gettingInput)
-    {
-      mymutex->lock();
-      currentKey = e->key();
-      mymutex->unlock();
-      //QTextEdit::keyPressEvent(e);
-    }
-  else
-    {
-      if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
-	{
-	  QTextCursor t(textCursor());
-	  t.setPosition(startPos, QTextCursor::KeepAnchor);
-	  emit(inputEntered(t.selectedText()));
+BasicOutput::getInput() {
+    gettingInput = true;
+    startPos = textCursor().position();
+    setReadOnly(false);
+    setFocus();
+}
 
-	  insertPlainText("\n");
-	  gettingInput = false;
-	  setReadOnly(true);
-	}
-      else if (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Left)
-	{
-	  QTextCursor t(textCursor());
-	  t.movePosition(QTextCursor::PreviousCharacter);
-	  if (t.position() >= startPos)
-	    QTextEdit::keyPressEvent(e);
-	}
-      else if (e->key() == Qt::Key_Home || e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Up)
-	{
-	  QTextCursor t(textCursor());
-	  t.setPosition(startPos);
-	  setTextCursor(t);
-	}
-      else
-	{
-	  QTextEdit::keyPressEvent(e);
-	}
+void
+BasicOutput::keyPressEvent(QKeyEvent *e) {
+    e->accept();
+    if (!gettingInput) {
+        mymutex->lock();
+        currentKey = e->key();
+        mymutex->unlock();
+        //QTextEdit::keyPressEvent(e);
+    } else {
+        if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
+            QTextCursor t(textCursor());
+            t.setPosition(startPos, QTextCursor::KeepAnchor);
+            emit(inputEntered(t.selectedText()));
+
+            insertPlainText("\n");
+            gettingInput = false;
+            setReadOnly(true);
+        } else if (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Left) {
+            QTextCursor t(textCursor());
+            t.movePosition(QTextCursor::PreviousCharacter);
+            if (t.position() >= startPos)
+                QTextEdit::keyPressEvent(e);
+        } else if (e->key() == Qt::Key_Home || e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Up) {
+            QTextCursor t(textCursor());
+            t.setPosition(startPos);
+            setTextCursor(t);
+        } else {
+            QTextEdit::keyPressEvent(e);
+        }
     }
 }
 
-bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar)
-{
-  if ((NULL == vMenu) || (NULL == vToolBar))
-    {
-      return false;
+bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar) {
+    if ((NULL == vMenu) || (NULL == vToolBar)) {
+        return false;
     }
-  
-  QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-  QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
-  QAction *printAct = vMenu->addAction(QObject::tr("Print"));
 
-  vToolBar->addAction(copyAct);
-  vToolBar->addAction(pasteAct);
-  vToolBar->addAction(printAct);
-	
-  QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
-  QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
-  QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+    QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+    QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
+    QAction *printAct = vMenu->addAction(QObject::tr("Print"));
 
-  m_usesToolBar = true;
-  m_usesMenu = true;
-	
-  return true;
+    vToolBar->addAction(copyAct);
+    vToolBar->addAction(pasteAct);
+    vToolBar->addAction(printAct);
+
+    QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+    QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+    QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+
+    m_usesToolBar = true;
+    m_usesMenu = true;
+
+    return true;
 }
 
-void BasicOutput::slotPrint()
-{
+void BasicOutput::slotPrint() {
 #ifdef ANDROID
     QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Printing is not supported in this platform at this time."));
 #else
@@ -141,7 +124,7 @@ void BasicOutput::slotPrint()
     QPrinter printer;
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
     dialog->setWindowTitle(QObject::tr("Print Text Output"));
-	
+
     if (dialog->exec() == QDialog::Accepted) {
         if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted))	{
             document->print(&printer);

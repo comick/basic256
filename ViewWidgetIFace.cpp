@@ -19,16 +19,13 @@
 #include "ViewWidgetIFace.h"
 
 ViewWidgetIFace::ViewWidgetIFace()
-:	m_usesToolBar(false)
-,	m_usesMenu(false)
-{
+    :	m_usesToolBar(false)
+    ,	m_usesMenu(false) {
 }
 
-ViewWidgetIFace::~ViewWidgetIFace()
-{	
+ViewWidgetIFace::~ViewWidgetIFace() {
 }
 
-bool ViewWidgetIFace::initActions(QMenu *, ToolBar *)
-{
-	return true;	// Success.	
+bool ViewWidgetIFace::initActions(QMenu *, ToolBar *) {
+    return true;	// Success.
 }

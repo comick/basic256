@@ -19,38 +19,31 @@
 #include "PauseButton.h"
 
 
-PauseButton::PauseButton(QString text) 
-  : GhostButton(text)
-{
-  pauseMode = true;
-  connect(this, SIGNAL(pressed()), this, SLOT(toggleText()));
+PauseButton::PauseButton(QString text)
+    : GhostButton(text) {
+    pauseMode = true;
+    connect(this, SIGNAL(pressed()), this, SLOT(toggleText()));
 }
 
 
 void
-PauseButton::toggleText()
-{
-  if (pauseMode)
-    {
-      pauseMode = false;
-      setText("Resume");
-    }
-  else
-    { 
-      pauseMode = true;
-      setText("Pause");
+PauseButton::toggleText() {
+    if (pauseMode) {
+        pauseMode = false;
+        setText("Resume");
+    } else {
+        pauseMode = true;
+        setText("Pause");
     }
 }
 
 void
-PauseButton::setToPause()
-{
-  setText("Pause");
+PauseButton::setToPause() {
+    setText("Pause");
 }
 
 void
-PauseButton::setToResume()
-{
-  setText("Resume");
+PauseButton::setToResume() {
+    setText("Resume");
 }
 

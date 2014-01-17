@@ -18,21 +18,18 @@
 
 #include "GhostButton.h"
 
-GhostButton::GhostButton(QString text) 
-  : QPushButton(text)
-{
-  
+GhostButton::GhostButton(QString text)
+    : QPushButton(text) {
+
 }
 
 void
-GhostButton::disableButton()
-{
-  setEnabled(false);
+GhostButton::disableButton() {
+    setEnabled(false);
 }
 
 void
-GhostButton::enableButton()
-{
-  setEnabled(true);
+GhostButton::enableButton() {
+    setEnabled(true);
 }
 

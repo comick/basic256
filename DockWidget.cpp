@@ -16,21 +16,18 @@
  **/
 
 #include "DockWidget.h"
- 
+
 DockWidget::DockWidget( const QString & title, QWidget * parent, Qt::WindowFlags flags )
-:	QDockWidget( title, parent, flags )
-,	m_pWidget( NULL )
-{
+    :	QDockWidget( title, parent, flags )
+    ,	m_pWidget( NULL ) {
 }
 
 DockWidget::DockWidget( QWidget * parent, Qt::WindowFlags flags )
-:	QDockWidget( parent, flags )
-,	m_pWidget( NULL )
-{
+    :	QDockWidget( parent, flags )
+    ,	m_pWidget( NULL ) {
 }
 
-void DockWidget::setWidget( QWidget * vpWidget )
-{
-	m_pWidget = vpWidget;
-	QDockWidget::setWidget( m_pWidget );
+void DockWidget::setWidget( QWidget * vpWidget ) {
+    m_pWidget = vpWidget;
+    QDockWidget::setWidget( m_pWidget );
 }
