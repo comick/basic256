@@ -2386,15 +2386,13 @@ Interpreter::execByteCode() {
                     if(start < 1) {
                         errornum = ERROR_STRSTART;
                     } else {
-                        if (start > qhay.length()) {
-                            errornum = ERROR_STREND;
-                        } else {
-                            if(opcode==OP_INSTR || opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
-                                pos = qhay.indexOf(qstr, start-1, casesens)+1;
-                            } else {
-                                pos = qhay.indexOf(QRegExp(qstr), start-1)+1;
-                            }
-                        }
+						if (start <= qhay.length()) {
+							if(opcode==OP_INSTR || opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
+								pos = qhay.indexOf(qstr, start-1, casesens)+1;
+							} else {
+								pos = qhay.indexOf(QRegExp(qstr), start-1)+1;
+							}
+						}
                     }
                     stack.pushint(pos);
                 }
