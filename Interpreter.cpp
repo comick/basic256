@@ -3271,7 +3271,7 @@ Interpreter::execByteCode() {
                     // to output like it was really done there
 
                     mymutex->lock();
-                    if (prompt.length(j)==0) prompt = "?";
+                    if (prompt.length()==0) prompt = "?";
                     emit(dialogPrompt(prompt,""));
                     waitCond->wait(mymutex);
                     mymutex->unlock();
