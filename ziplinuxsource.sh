@@ -1,32 +1,28 @@
 #!/bin/bash
 # ziplinuxsource.sh
 # create a zip file of the trunk source for uploading to sourceforge
+# rewrote to better align with the creation of debian build folders 2014-01-23 j.m.reneau
 
 make clean
 
-# rename files we do not want to incluse in the tar
-for file in *.sqlite3 *.kbs *.bin *.pdf
-do
-	mv $file $file.donttar
-	echo Moved $file to $file.donttar
-done
+VERSION=`cat Version.h | grep "#define VERSION " | sed -e 's/#define VERSION "\(.*\)/\1/;s/ .*//'`
 
-tar \
-	-cvzf ../basic256_n.n.nx.tgz \
-	--exclude='.*' \
-	--exclude='*.donttar' \
-	--exclude='*~' \
-	--exclude='BASIC256' \
-	--exclude='debug' \
-	--exclude='tmp' \
-	--exclude='release' \
-	*
+rm -Rf ../basic256-$VERSION
+mkdir ../basic256-$VERSION
 
-# name all of the files in the . folde rback to their previous names
-for file in *.donttar
-do
-	mv $file `basename $file .donttar`
-	echo Moved $file back to original `basename $file .donttar`
-done
+cp -r * ../basic256-$VERSION
 
+rm ../basic256-$VERSION/*.sqlite3
+rm ../basic256-$VERSION/*.kbs
+rm ../basic256-$VERSION/*.bin
+rm ../basic256-$VERSION/*.pdf
 
+rm -R ../basic256-$VERSION/.*
+rm -R ../basic256-$VERSION/*~
+rm -R ../basic256-$VERSION/BASIC256
+rm -R ../basic256-$VERSION/debug
+rm -R ../basic256-$VERSION/tmp
+rm -R ../basic256-$VERSION/release
+
+tar -cvf ../basic256_$VERSION.orig.tar ../basic256-$VERSION
+gzip ../basic256_$VERSION.orig.tar

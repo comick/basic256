@@ -1,0 +1,22 @@
+HOWTO_debian.
+
+2014-01-24 - J.M. Reneau
+
+How to build and upload the "Launchpad" source for ppa.
+
+in ./trunk/debian/changelog insert new version information
+ - be sure this follows the format EXACTLY
+ - check username is exactly the same as output of gpg --list-secret-keys
+ 
+in ./trunk execute ./ziplinuxsource.sh
+ - be sure the version was changed in trunk/Version.h before running this
+ - this will create a folder ../basic256-VERSION
+ - and a file ../basic256_VERSION.orig.tar.gz
+
+in ./basic256-VERSION execute debuild -S -sa
+ - you will need your gpg passphrase (twice)
+
+in . execute dput ppa:basic256/basic256 basic256_VERSION_source.changes
+ - this will upload your changes to the server where the build will be queued
+
+

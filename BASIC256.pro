@@ -125,7 +125,7 @@ unix:!macx {
 	INSTALLS				+=	transFiles
 
 	# main program executable
-	target.path				=	/usr/local/bin
+	target.path				=	/usr/bin
 	INSTALLS				+=	target
 
 }
