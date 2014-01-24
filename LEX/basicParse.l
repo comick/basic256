@@ -186,7 +186,6 @@ error_nosuchvariable [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Vv][Aa][Rr]
 error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
 error_strneglen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Nn][Ee][Gg][Ll][Ee][Nn]
 error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
-error_strend [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ee][Nn][Dd]
 error_nonnumeric [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
 error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
 error_putbitformat [Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]
@@ -549,7 +548,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_arrayindex} { count(); return B256ERROR_ARRAYINDEX; }
 {error_strneglen} { count(); return B256ERROR_STRNEGLEN; }
 {error_strstart} { count(); return B256ERROR_STRSTART; }
-{error_strend} { count(); return B256ERROR_STREND; }
 {error_nonnumeric} { count(); return B256ERROR_NONNUMERIC; }
 {error_rgb} { count(); return B256ERROR_RGB; }
 {error_putbitformat} { count(); return B256ERROR_PUTBITFORMAT; }

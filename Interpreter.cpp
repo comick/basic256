@@ -500,9 +500,6 @@ QString Interpreter::getErrorMessage(int e) {
         case ERROR_STRSTART:
             errormessage = tr("Starting position less than zero");
             break;
-        case ERROR_STREND:
-            errormessage = tr("String not long enough for given starting character");
-            break;
         case ERROR_NONNUMERIC:
             errormessage = tr("Non-numeric value in numeric expression");
             break;
@@ -2297,8 +2294,7 @@ Interpreter::execByteCode() {
                             stack.pushint(0);
                         } else {
                             if ((pos < 1) || (pos > (int) qtemp.length())) {
-                                errornum = ERROR_STREND;
-                                stack.pushint(0);
+                                stack.pushstring(QString(""));
                             } else {
                                 stack.pushstring(qtemp.mid(pos-1,len));
                             }
@@ -2894,7 +2890,7 @@ Interpreter::execByteCode() {
                     }
                     if (x1val >= 0 && y1val >= 0) {
                         ian->drawLine(x0val, y0val, x1val, y1val);
-                    }
+                     }
 
                     if (!printing) {
                         ian->end();
@@ -2917,13 +2913,32 @@ Interpreter::execByteCode() {
                         ian = new QPainter(graphwin->image);
                     }
 
+                    if(x1val<0) {
+                        x0val+=x1val;
+                        x1val*=-1;
+                    }
+                    if(y1val<0) {
+                        y0val+=y1val;
+                        y1val*=-1;
+                    }
+
                     ian->setBrush(drawingbrush);
                     ian->setPen(drawingpen);
                     if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
                         ian->setCompositionMode(QPainter::CompositionMode_Clear);
                     }
-                    if (x1val > 0 && y1val > 0) {
-                        ian->drawRect(x0val, y0val, x1val - 1, y1val - 1);
+
+                    if (x1val > 1 && y1val > 1) {
+                        ian->drawRect(x0val, y0val, x1val-1, y1val-1);
+                    } else if (x1val==1 && y1val==1) {
+                        // rect 1x1 is actually a point
+                        ian->drawPoint(x0val, y0val);
+                    } else if (x1val==1 && y1val!=0) {
+                        // rect 1xn is actually a line
+                        ian->drawLine(x0val, y0val, x0val, y0val+y1val);
+                    } else if (x1val!=0 && y1val==1) {
+                        // rect nx1 is actually a line
+                        ian->drawLine(x0val, y0val, x0val + x1val, y0val);
                     }
 
                     if (!printing) {

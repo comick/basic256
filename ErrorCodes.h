@@ -55,7 +55,6 @@
 #define ERROR_ARRAYINDEX 				15
 #define ERROR_STRNEGLEN 				16
 #define ERROR_STRSTART 					17
-#define ERROR_STREND 					18
 #define ERROR_NONNUMERIC 				19
 #define ERROR_RGB 						20
 #define ERROR_PUTBITFORMAT 				21
