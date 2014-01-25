@@ -1,7 +1,7 @@
 QT_VERSION=$$[QT_VERSION]
 
 TEMPLATE					=	app
-TARGET						=	BASIC256
+TARGET						=	basic256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
