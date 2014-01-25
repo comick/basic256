@@ -1,3 +1,9 @@
+basic256 (1.0.0.9901-1) unstable; urgency=low
+
+  * Fixed deb build - changed exe name to basic256
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Fri, 24 Jan 2014 19:55:00 -0500
+
 basic256 (1.0.0.99-1) unstable; urgency=low
 
   * Added to Upstream trunk maintained code
