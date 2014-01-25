@@ -13,6 +13,13 @@ in ./trunk execute ./ziplinuxsource.sh
  - this will create a folder ../basic256-VERSION
  - and a file ../basic256_VERSION.orig.tar.gz
 
+test the config by
+ - in ./basic256_VERSION execute debuild -us -uc
+ - install the .deb file using the package installer
+ - check the menu and execution
+ - uninstall
+ - delete files ./basic256_VERSION-*
+
 in ./basic256-VERSION execute debuild -S -sa
  - you will need your gpg passphrase (twice)
 
