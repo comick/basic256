@@ -1,3 +1,33 @@
+basic256 (1.0.0.9906-1~ppa1~saucy1) saucy; urgency=low
+
+  * added logic to debian/rules to handle 32 vs 64 bit qmake location
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Sun, 26 Jan 2014 01:03:00 -0500
+
+basic256 (1.0.0.9904-1~ppa1~saucy1) saucy; urgency=low
+
+  * removed dependency - hopefully this will build
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 19:59:00 -0500
+
+basic256 (1.0.0.9902-1~ppa1~saucy1) saucy; urgency=low
+
+  * removed dependency - hopefully this will build
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 13:11:00 -0500
+
+basic256 (1.0.0.9902-1~ppa1~precise1) precise; urgency=low
+
+  * removed dependency - hopefully this will build
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 13:11:00 -0500
+
+basic256 (1.0.0.9901-1~ppa1~precise1) precise; urgency=low
+
+  * Backported to Precise
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 12:10:00 -0500
+
 basic256 (1.0.0.9901-1) unstable; urgency=low
 
   * Fixed deb build - changed exe name to basic256

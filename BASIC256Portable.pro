@@ -30,7 +30,6 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_fr.ts \
 								Translations/basic256_pt.ts \
 								Translations/basic256_nl.ts
-LIBS						+= -lsqlite3
 
 DESTDIR = BASIC256Portable/App/BASIC256
 

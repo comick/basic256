@@ -26,7 +26,6 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_fr.ts \
 								Translations/basic256_pt.ts \
 								Translations/basic256_nl.ts
-LIBS						+= -lsqlite3
 
 win32 {
 	DEFINES 				+=	WIN32
