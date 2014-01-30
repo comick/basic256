@@ -1,50 +1,10 @@
-basic256 (1.0.0.9908-1) unstable; urgency=low
+basic256 (1.1.0.0-1) unstable; urgency=low
 
   * cleaned up flex and added single line if/then/else
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Thu, 30 Jan 2014 08:12:00 -0500
-
-basic256 (1.0.0.9906-1~ppa1~saucy1) saucy; urgency=low
-
   * added logic to debian/rules to handle 32 vs 64 bit qmake location
+  * removed and fixed dependencies
 
- -- James M. Reneau (renejm) <jim@renejm.com>  Sun, 26 Jan 2014 01:03:00 -0500
-
-basic256 (1.0.0.9904-1~ppa1~saucy1) saucy; urgency=low
-
-  * removed dependency - hopefully this will build
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 19:59:00 -0500
-
-basic256 (1.0.0.9902-1~ppa1~saucy1) saucy; urgency=low
-
-  * removed dependency - hopefully this will build
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 13:11:00 -0500
-
-basic256 (1.0.0.9902-1~ppa1~precise1) precise; urgency=low
-
-  * removed dependency - hopefully this will build
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 13:11:00 -0500
-
-basic256 (1.0.0.9901-1~ppa1~precise1) precise; urgency=low
-
-  * Backported to Precise
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Sat, 25 Jan 2014 12:10:00 -0500
-
-basic256 (1.0.0.9901-1) unstable; urgency=low
-
-  * Fixed deb build - changed exe name to basic256
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Fri, 24 Jan 2014 19:55:00 -0500
-
-basic256 (1.0.0.99-1) unstable; urgency=low
-
-  * Added to Upstream trunk maintained code
-
- -- James M. Reneau (renejm) <jim@renejm.com>  Thu, 23 Jan 2014 14:47:22 -0500
+ -- James M. Reneau (renejm) <jim@renejm.com>  Thu, 30 Jan 2014 09:20:00 -0500
 
 basic256 (0.9.6.59-1~ppa1~maverick1) maverick; urgency=low
 
