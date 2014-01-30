@@ -95,16 +95,21 @@ unix:!macx {
 	# Sound - Option 0 - /dev/dsp
 	#DEFINES				+=	SOUND_DSP
 
-	# Sound - Option 1 - SDL Mixer
-	#DEFINES					+=	SOUND_SDL
-	#LIBS					+=	-lSDL
-	#LIBS					+=	-lSDL_mixer
+	equals(QT_MAJOR_VERSION, 4) {
+		# in QT4 the multimedia kit is not as complete so
+		# use the old SDL hack
+		DEFINES					+=	SOUND_SDL
+		LIBS					+=	-lSDL
+		LIBS					+=	-lSDL_mixer
+	}
 
-	# Sound - Option 2 - QT Mobility Multimedia AudioOut
-	DEFINES					+=	SOUND_QMOBILITY
-    QT						+=	multimedia
-    INCLUDEPATH				+=	QtMultimediaKit
-	INCLUDEPATH				+=	QtMobility
+	equals(QT_MAJOR_VERSION, 5) {
+		# Sound - QT Mobility Multimedia AudioOut
+		DEFINES					+=	SOUND_QMOBILITY
+		QT						+=	multimedia
+		INCLUDEPATH				+=	QtMultimediaKit
+		INCLUDEPATH				+=	QtMobility
+	} 
 
 
 

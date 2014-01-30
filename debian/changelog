@@ -1,3 +1,9 @@
+basic256 (1.0.0.9908-1) unstable; urgency=low
+
+  * cleaned up flex and added single line if/then/else
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Thu, 30 Jan 2014 08:12:00 -0500
+
 basic256 (1.0.0.9906-1~ppa1~saucy1) saucy; urgency=low
 
   * added logic to debian/rules to handle 32 vs 64 bit qmake location
