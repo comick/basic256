@@ -48,7 +48,6 @@ int *wordCode = NULL;
 unsigned int maxwordoffset = 0;		// size of the current wordCode array
 unsigned int wordOffset = 0;		// current location on the WordCode array
 
-unsigned int lastLineOffset = 0; // store the word offset for the end of the last line - use in loops
 unsigned int listlen = 0;
 
 int functionDefSymbol = -1;	// if in a function definition (what is the symbol number) -1 = not in fundef
@@ -406,1305 +405,1498 @@ void addStringOp(int op, char *data) {
 
 %%
 
-program: program '\n' validline
-	| validline
-;
+program: 		program '\n' validline
+				| validline
+				;
 
-validline: label validstatement { lastLineOffset = wordOffset; addIntOp(OP_CURRLINE, linenumber); }
-	| validstatement { lastLineOffset = wordOffset; addIntOp(OP_CURRLINE, linenumber); }
-;
+validline: 		label validstatement {
+					addIntOp(OP_CURRLINE, linenumber);
+				}
+				| validstatement {
+					addIntOp(OP_CURRLINE, linenumber);
+				}
+				;
 
-label: B256LABEL {
-	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
-		errorcode = COMPERR_FUNCTIONGOTO;
-		return -1;
-	}
-	labeltable[$1] = wordOffset; 
-}
-;
+label:			B256LABEL {
+					if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+						errorcode = COMPERR_FUNCTIONGOTO;
+						return -1;
+					}
+					labeltable[$1] = wordOffset; 
+				}
+				;
 
-validstatement: compoundifstmt
-	| ifstmt
-	| elsestmt
-	| endifstmt
-	| begincasestmt
-	| casestmt
-	| endcasestmt
-	| whilestmt
-	| endwhilestmt
-	| dostmt
-	| untilstmt
-	| compoundstmt
-	| functionstmt
-	| endfunctionstmt
-	| subroutinestmt
-	| endsubroutinestmt
-	| trystmt
-	| catchstmt
-	| endtrystmt
-	| /*empty*/
-;
+validstatement:	
+				compoundifelsestmt
+				| compoundifstmt
+				| compoundstmt
+				| functionstmt
+				| endfunctionstmt
+				| subroutinestmt
+				| endsubroutinestmt
+				| /*empty*/
+				;
 
-functionstmt: B256FUNCTION B256VARIABLE functionvariablelist {
-		if (numifs>0) {
-			errorcode = COMPERR_FUNCTIONNOTHERE;
-			return -1;
-		}
-		//
-		// $2 is the symbol for the function - add the start to the label table
-		functionDefSymbol = $2;
-		functionType = FUNCTIONTYPEFLOAT;
-		//
-		// create jump around function definition (use nextifid and 0 for jump after)
-		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		//
-		// create the new if frame for this function
-		labeltable[$2] = wordOffset;
-		lastLineOffset = wordOffset;
-		newIf(linenumber, IFTABLETYPEFUNCTION);
-		//
-		// initialize return variable
-		addIntOp(OP_PUSHINT, 0);
-		addIntOp(OP_NUMASSIGN, $2);
-		//
-		// check to see if there are enough values on the stack
-		addIntOp(OP_PUSHINT, numargs);
-		addOp(OP_ARGUMENTCOUNTTEST);
-		//
-		// add the assigns of the function arguments
-		addOp(OP_INCREASERECURSE);
-		{ 	int t;
-			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-			}
-		}
-		numargs=0;	// clear the list for next function
-	}
-	|
-	B256FUNCTION B256STRINGVAR functionvariablelist {
-		if (numifs>0) {
-			errorcode = COMPERR_FUNCTIONNOTHERE;
-			return -1;
-		}
-		//
-		// $2 is the symbol for the function - add the start to the label table
-		functionDefSymbol = $2;
-		functionType = FUNCTIONTYPESTRING;
-		//
-		// create jump around function definition (use nextifid and 0 for jump after)
-		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		//
-		// create the new if frame for this function
-		labeltable[$2] = wordOffset;
-		lastLineOffset = wordOffset;
-		newIf(linenumber, IFTABLETYPEFUNCTION);
-		// 
-		// initialize return variable
-		addStringOp(OP_PUSHSTRING, "");
-		addIntOp(OP_STRINGASSIGN, $2);
-		//
-		// check to see if there are enough values on the stack
-		addIntOp(OP_PUSHINT, numargs);
-		addOp(OP_ARGUMENTCOUNTTEST);
-		//
-		// add the assigns of the function arguments
-		addOp(OP_INCREASERECURSE);
-		{ 	int t;
-			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-			}
-		}
-		numargs=0;	// clear the list for next function
-	}
-;
-
-subroutinestmt: B256SUBROUTINE B256VARIABLE functionvariablelist {
-		if (numifs>0) {
-			errorcode = COMPERR_FUNCTIONNOTHERE;
-			return -1;
-		}
-		//
-		// $2 is the symbol for the subroutine - add the start to the label table
-		subroutineDefSymbol = $2;
-		//
-		// create jump around subroutine definition (use nextifid and 0 for jump after)
-		addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		// 
-		// create the new if frame for this subroutine
-		labeltable[$2] = wordOffset;
-		lastLineOffset = wordOffset;
-		newIf(linenumber, IFTABLETYPEFUNCTION);
-		//
-		// check to see if there are enough values on the stack
-		addIntOp(OP_PUSHINT, numargs);
-		addOp(OP_ARGUMENTCOUNTTEST);
-		//
-		// add the assigns of the function arguments
-		addOp(OP_INCREASERECURSE);
-		{ 	int t;
-			for(t=numargs-1;t>=0;t--) {
-				if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-				if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-			}
-		}
-		numargs=0;	// clear the list for next function
-	}
-;
-
-functionvariablelist: '(' ')' | '(' functionvariables ')'
-;
-
-
-functionvariables: B256VARIABLE {
-		args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
-		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-	}
-	| B256STRINGVAR {
-		args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
-		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-	}
-	| B256REF '(' B256VARIABLE ')' {
-		args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
-		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-	}
-	| B256REF '(' B256STRINGVAR ')' {
-		args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
-		//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-	}
-	| functionvariables ',' functionvariables
-;
-
-
-endfunctionstmt: B256ENDFUNCTION {
-		if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
-			//
-			// add return if there is not one
-			addIntOp(OP_FUNCRETURN, functionDefSymbol);
-			addOp(OP_DECREASERECURSE);
-			addOp(OP_RETURN);
-			//
-			// add address for jump around function definition
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			functionDefSymbol = -1; 
-			//
-			numifs--;
-		// 
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDFUNCTION;
-		return -1;
-	}
-}
-;
-
-endsubroutinestmt: B256ENDSUBROUTINE {
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
-			addOp(OP_DECREASERECURSE);
-			addOp(OP_RETURN);
-			//
-			// add address for jump around function definition
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			subroutineDefSymbol = -1; 
-			//
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDFUNCTION;
-		return -1;
-	}
-}
-;
-
-compoundifstmt: ifexpr B256THEN compoundstmt
-	{
-	// if there is an if branch or jump on the iftable stack get where it is
-	// in the wordcode array and then resolve the lable
-	if (numifs>0) {
-		labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-		numifs--;
-	}
-}
-;
-
-ifstmt: ifexpr B256THEN
-	{
-		// there is nothing to do with a multi line if (ifexp handles it)
-	}
-;
-
-elsestmt: B256ELSE
-	{
-	//
-	// create jump around from end of the THEN to end of the ELSE
-	addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-	//
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEIF) {
-			//
-			// resolve the label on the if to the current location
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-			//
-			// put new if on the frame for the else
-			newIf(linenumber, IFTABLETYPEELSE);
-		} else if (iftabletype[numifs-1]==IFTABLETYPECASE) {
-			if (numifs>1) {
-				if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
+functionstmt:	B256FUNCTION B256VARIABLE functionvariablelist {
+					if (numifs>0) {
+						errorcode = COMPERR_FUNCTIONNOTHERE;
+						return -1;
+					}
 					//
-					// create jump around from end of the CASE to end of the END CASE
-					addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
+					// $2 is the symbol for the function - add the start to the label table
+					functionDefSymbol = $2;
+					functionType = FUNCTIONTYPEFLOAT;
+					//
+					// create jump around function definition (use nextifid and 0 for jump after)
+					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+					//
+					// create the new if frame for this function
+					labeltable[$2] = wordOffset;
+					newIf(linenumber, IFTABLETYPEFUNCTION);
+					//
+					// initialize return variable
+					addIntOp(OP_PUSHINT, 0);
+					addIntOp(OP_NUMASSIGN, $2);
+					//
+					// check to see if there are enough values on the stack
+					addIntOp(OP_PUSHINT, numargs);
+					addOp(OP_ARGUMENTCOUNTTEST);
+					//
+					// add the assigns of the function arguments
+					addOp(OP_INCREASERECURSE);
+					{ 	int t;
+						for(t=numargs-1;t>=0;t--) {
+							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+						}
+					}
+					numargs=0;	// clear the list for next function
+				}
+				| B256FUNCTION B256STRINGVAR functionvariablelist {
+					if (numifs>0) {
+						errorcode = COMPERR_FUNCTIONNOTHERE;
+						return -1;
+					}
+					//
+					// $2 is the symbol for the function - add the start to the label table
+					functionDefSymbol = $2;
+					functionType = FUNCTIONTYPESTRING;
+					//
+					// create jump around function definition (use nextifid and 0 for jump after)
+					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+					//
+					// create the new if frame for this function
+					labeltable[$2] = wordOffset;
+					newIf(linenumber, IFTABLETYPEFUNCTION);
+					// 
+					// initialize return variable
+					addStringOp(OP_PUSHSTRING, "");
+					addIntOp(OP_STRINGASSIGN, $2);
+					//
+					// check to see if there are enough values on the stack
+					addIntOp(OP_PUSHINT, numargs);
+					addOp(OP_ARGUMENTCOUNTTEST);
+					//
+					// add the assigns of the function arguments
+					addOp(OP_INCREASERECURSE);
+					{ 	int t;
+						for(t=numargs-1;t>=0;t--) {
+							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+						}
+					}
+					numargs=0;	// clear the list for next function
+				}
+				;
+
+subroutinestmt:
+				B256SUBROUTINE B256VARIABLE functionvariablelist {
+					if (numifs>0) {
+						errorcode = COMPERR_FUNCTIONNOTHERE;
+						return -1;
+					}
+					//
+					// $2 is the symbol for the subroutine - add the start to the label table
+					subroutineDefSymbol = $2;
+					//
+					// create jump around subroutine definition (use nextifid and 0 for jump after)
+					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+					// 
+					// create the new if frame for this subroutine
+					labeltable[$2] = wordOffset;
+					newIf(linenumber, IFTABLETYPEFUNCTION);
+					//
+					// check to see if there are enough values on the stack
+					addIntOp(OP_PUSHINT, numargs);
+					addOp(OP_ARGUMENTCOUNTTEST);
+					//
+					// add the assigns of the function arguments
+					addOp(OP_INCREASERECURSE);
+					{ 	int t;
+						for(t=numargs-1;t>=0;t--) {
+							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+						}
+					}
+					numargs=0;	// clear the list for next function
+				}
+				;
+
+functionvariablelist:
+				'(' ')'
+				| '(' functionvariables ')'
+				;
+
+
+functionvariables:
+				B256VARIABLE {
+					args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
+					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				}
+				| B256STRINGVAR {
+					args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
+					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				}
+				| B256REF '(' B256VARIABLE ')' {
+					args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
+					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				}
+				| B256REF '(' B256STRINGVAR ')' {
+					args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
+					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				}
+				| functionvariables ',' functionvariables
+				;
+
+
+endfunctionstmt:
+				B256ENDFUNCTION {
+					if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+						//
+						// add return if there is not one
+						addIntOp(OP_FUNCRETURN, functionDefSymbol);
+						addOp(OP_DECREASERECURSE);
+						addOp(OP_RETURN);
+						//
+						// add address for jump around function definition
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						functionDefSymbol = -1; 
+						//
+						numifs--;
+					// 
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
 				} else {
-					errorcode = COMPERR_ENDBEGINCASE;
-					linenumber = iftablesourceline[numifs-1];
+					errorcode = COMPERR_ENDFUNCTION;
 					return -1;
 				}
+			}
+			;
+
+endsubroutinestmt:
+			B256ENDSUBROUTINE {
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+						addOp(OP_DECREASERECURSE);
+						addOp(OP_RETURN);
+						//
+						// add address for jump around function definition
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						subroutineDefSymbol = -1; 
+						//
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDFUNCTION;
+					return -1;
+				}
+			}
+			;
+
+compoundifelsestmt:
+			compoundifelse compoundstmt {
 				//
-				// resolve branchfalse from previous case
+				// resolve the label on the else to the current location
 				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-				//
 				numifs--;
+			}
+			;
+
+compoundifelse:
+			ifexpr B256THEN compoundstmt B256ELSE {
+				//
+				// create jump around from end of the THEN to end of the ELSE
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// jump point for else
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				numifs--;
+				//
 				// put new if on the frame for the else
 				newIf(linenumber, IFTABLETYPEELSE);
 			}
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ELSE;
-		return -1;
-	}
-}
-;
+			;
 
-
-endifstmt: B256ENDIF
-	{
-	// if there is an if branch or jump on the iftable stack get where it is
-	// in the wordcode array and then put the current wordcode address there
-	// - so we can jump over code
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
-			//
-			// resolve the label on the if/else to the current location
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDIF;
-		return -1;
-	}
-}
-;
-
-begincasestmt: B256BEGINCASE
-	{
-	// start a case block
-	newIf(linenumber, IFTABLETYPEBEGINCASE);
-}
-;
-
-caseexpr: B256CASE
-	{
-	// if not first case then add jump to to "endcase" and resolve the branchfalse
-	if (numifs>1) {
-		if (iftabletype[numifs-1]==IFTABLETYPECASE) {
-			if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
-				//
-				// create jump around from end of the CASE to end of the END CASE
-				addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
-			} else {
-				errorcode = COMPERR_ENDBEGINCASE;
-				linenumber = iftablesourceline[numifs-1];
-				return -1;
+compoundifstmt: 
+			ifexpr B256THEN compoundstmt {
+				// if there is an if branch or jump on the iftable stack get where it is
+				// in the wordcode array and then resolve the lable
+				if (numifs>0) {
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+					numifs--;
+				}
 			}
-			//
-			// resolve branchfalse from previous case
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			//
-			numifs--;
-		}
-	}
-	//
-}
-;
+			;
 
-casestmt: caseexpr floatexpr
-	{
-		//
-		// add branch to the end if false
-		addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		//
-		// put new CASE on the frame for the IF
-		newIf(linenumber, IFTABLETYPECASE);
-}
-;
+compoundstmt:
+			statement
+			| compoundstmt ':' statement
+			;
 
-
-endcasestmt: B256ENDCASE
-	{
-	// add label for last case branchfalse to jump to
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPECASE || iftabletype[numifs-1]==IFTABLETYPEELSE) {
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-		} else {
-			errorcode = COMPERR_ENDENDCASE;
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDENDCASE;
-		return -1;
-	}
-	// add label for all cases to jump to after execution
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) {
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDENDCASEBEGIN;
-		return -1;
-	}
-}
-;
-	
-whilestmt: B256WHILE floatexpr
-	{
-	//
-	// create internal symbol and add to the label table for the top of the loop
-	labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = lastLineOffset; 
-	//
-	// add branch to end if false
-	addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-	//
-	// add to if frame
-	newIf(linenumber, IFTABLETYPEWHILE);
-}
-;
-
-endwhilestmt: B256ENDWHILE
-	{
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
-			//
-			// jump to the top
-			addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE));
-			//
-			// resolve the label to the bottom
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			//
-			// remove the single placeholder from the if frame
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDWHILE;
-		return -1;
-	}
-}
-;
-
-dostmt: B256DO
-	{
-	//
-	// create internal symbol and add to the label table for the top of the loop
-	labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = lastLineOffset; 
-	//
-	// add to if frame
-	newIf(linenumber, IFTABLETYPEDO);
-	}
-;
-
-untilstmt: B256UNTIL floatexpr
-	{
-	// create temp
-	//if If false, go to to the corresponding do.
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPEDO) {
-			//
-			// create label for CONTINUE DO
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = lastLineOffset; 
-			//
-			// branch back to top if condition holds
-			addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
-			//
-			// create label for EXIT DO
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_UNTIL;
-		return -1;
-	}
-}
-
-trystmt: B256TRY
-	{
-		//
-		// add on error branch
-		addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		//
-		// put new if on the frame for the TRY
-		newIf(linenumber, IFTABLETYPETRY);
-	}
-;
-
-catchstmt: B256CATCH
-	{
-	//
-	// create jump around from end of the TRY to end of the CATCH
-	addOp(OP_OFFERROR);
-	addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-	//
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPETRY) {
-			//
-			// resolve the try onerrorcatch to the catch address
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-			//
-			// put new if on the frame for the catch
-			newIf(linenumber, IFTABLETYPECATCH);
-			addOp(OP_OFFERROR);
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_CATCH;
-		return -1;
-	}
-}
-;
-
-endtrystmt: B256ENDTRY
-	{
-	// if there is an if branch or jump on the iftable stack get where it is
-	// in the wordcode array and then put the current wordcode address there
-	// - so we can jump over code
-	if (numifs>0) {
-		if (iftabletype[numifs-1]==IFTABLETYPECATCH) {
-			//
-			// resolve the label on the Catch to the current location
-			labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-			numifs--;
-		} else {
-			errorcode = testIfOnTableError(numincludes);
-			linenumber = testIfOnTable(numincludes);
-			return -1;
-		}
-	} else {
-		errorcode = COMPERR_ENDTRY;
-		return -1;
-	}
-}
-;
+statement:
+			alertstmt
+			| arcstmt
+			| begincasestmt
+			| callstmt
+			| casestmt
+			| catchstmt
+			| changedirstmt
+			| chordstmt
+			| circlestmt
+			| clearstmt
+			| clickclearstmt
+			| closestmt
+			| colorstmt
+			| continuedostmt
+			| continueforstmt
+			| continuewhilestmt
+			| dbclosesetstmt
+			| dbclosestmt
+			| dbexecutestmt
+			| dbopensetstmt
+			| dbopenstmt
+			| dimstmt
+			| dostmt
+			| editvisiblestmt
+			| elsestmt
+			| endcasestmt
+			| endifstmt
+			| endstmt
+			| endtrystmt	
+			| endwhilestmt
+			| exitdostmt
+			| exitforstmt
+			| exitwhilestmt
+			| fastgraphicsstmt
+			| fontstmt
+			| forstmt
+			| globalstmt
+			| gosubstmt
+			| gotostmt
+			| graphsizestmt
+			| graphvisiblestmt
+			| ifstmt
+			| imgloadstmt
+			| imgsavestmt
+			| inputstmt
+			| killstmt
+			| letstmt
+			| linestmt
+			| netclosestmt
+			| netconnectstmt
+			| netlistenstmt
+			| netwritestmt
+			| nextstmt
+			| offerrorstmt
+			| onerrorstmt
+			| openstmt
+			| outputvisiblestmt
+			| pausestmt
+			| penwidthstmt
+			| piestmt
+			| plotstmt
+			| polystmt
+			| portoutstmt
+			| printercancelstmt
+			| printeroffstmt
+			| printeronstmt
+			| printerpagestmt
+			| printstmt
+			| putslicestmt
+			| rectstmt
+			| redimstmt
+			| refreshstmt
+			| resetstmt
+			| returnstmt
+			| saystmt
+			| seekstmt
+			| setsettingstmt
+			| soundstmt
+			| spritedimstmt
+			| spritehidestmt
+			| spriteloadstmt
+			| spritemovestmt
+			| spriteplacestmt
+			| spritepolystmt
+			| spriteshowstmt
+			| spriteslicestmt
+			| stampstmt
+			| systemstmt
+			| textstmt
+			| throwerrorstmt
+			| trystmt
+			| untilstmt
+			| volumestmt
+			| wavplaystmt
+			| wavstopstmt
+			| wavwaitstmt
+			| whilestmt
+			| writebytestmt
+			| writelinestmt
+			| writestmt
+			;
 
 
-compoundstmt: statement | compoundstmt ':' statement
-;
+begincasestmt:
+			B256BEGINCASE {
+				// start a case block
+				newIf(linenumber, IFTABLETYPEBEGINCASE);
+			}
+			;
 
-statement: letstmt
-	| gotostmt
-	| gosubstmt
-	| callstmt
-	| offerrorstmt
-	| onerrorstmt
-	| returnstmt
-	| printstmt
-	| plotstmt
-	| circlestmt
-	| rectstmt
-	| polystmt
-	| stampstmt
-	| linestmt
-	| forstmt
-	| nextstmt
-	| colorstmt
-	| inputstmt
-	| endstmt
-	| clearstmt
-	| refreshstmt
-	| fastgraphicsstmt
-	| graphsizestmt
-	| dimstmt
-	| redimstmt
-	| pausestmt
-	| openstmt
-	| writestmt
-	| writelinestmt
-	| writebytestmt
-	| closestmt
-	| resetstmt
-	| killstmt
-	| soundstmt
-	| textstmt
-	| fontstmt
-	| saystmt
-	| systemstmt
-	| volumestmt
-	| wavplaystmt
-	| wavstopstmt
-	| wavwaitstmt
-	| putslicestmt
-	| imgloadstmt
-	| spritedimstmt
-	| spriteloadstmt
-	| spriteslicestmt
-	| spritepolystmt
-	| spriteplacestmt
-	| spritemovestmt
-	| spritehidestmt
-	| spriteshowstmt
-	| seekstmt
-	| clickclearstmt
-	| changedirstmt
-	| dbopenstmt
-	| dbclosestmt
-	| dbexecutestmt
-	| dbopensetstmt
-	| dbclosesetstmt
-	| netlistenstmt
-	| netconnectstmt
-	| netwritestmt
-	| netclosestmt
-	| setsettingstmt
-	| portoutstmt
-	| imgsavestmt
-	| editvisiblestmt
-	| graphvisiblestmt
-	| outputvisiblestmt
-	| globalstmt
-	| throwerrorstmt
-	| arcstmt
-	| chordstmt
-	| piestmt
-	| penwidthstmt
-	| alertstmt
-	| continuedostmt
-	| continueforstmt
-	| continuewhilestmt
-	| exitdostmt
-	| exitforstmt
-	| exitwhilestmt
-	| printercancelstmt
-	| printeroffstmt
-	| printeronstmt
-	| printerpagestmt
-	
-;
+caseexpr:	B256CASE {
+				// if not first case then add jump to to "endcase" and resolve the branchfalse
+				if (numifs>1) {
+					if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+						if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
+							//
+							// create jump around from end of the CASE to end of the END CASE
+							addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
+						} else {
+							errorcode = COMPERR_ENDBEGINCASE;
+							linenumber = iftablesourceline[numifs-1];
+							return -1;
+						}
+						//
+						// resolve branchfalse from previous case
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						//
+						numifs--;
+					}
+				}
+				//
+			}
+			;
 
-letstmt: 
-	B256LET numassign
-	| B256LET stringassign
-	| B256LET arrayassign
-	| B256LET strarrayassign
-	| numassign
-	| stringassign
-	| arrayassign
-	| strarrayassign
-;
+casestmt:	caseexpr floatexpr {
+				//
+				// add branch to the end if false
+				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// put new CASE on the frame for the IF
+				newIf(linenumber, IFTABLETYPECASE);
+			}
+			;
 
-dimstmt: B256DIM B256VARIABLE floatexpr {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_DIM, $2);
-	}
-	| B256DIM B256STRINGVAR floatexpr {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_DIMSTR, $2);
-	}
-	| B256DIM B256VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIM, $2); }
-	| B256DIM B256STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_DIMSTR, $2); }
-	| B256DIM B256VARIABLE '[' floatexpr ']' {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_DIM, $2);
-	}
-	| B256DIM B256STRINGVAR '[' floatexpr ']' {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_DIMSTR, $2);
-	}
-	| B256DIM B256VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DIM, $2); }
-	| B256DIM B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_DIMSTR, $2); }
+catchstmt: 	B256CATCH {
+				//
+				// create jump around from end of the TRY to end of the CATCH
+				addOp(OP_OFFERROR);
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPETRY) {
+						//
+						// resolve the try onerrorcatch to the catch address
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+						//
+						// put new if on the frame for the catch
+						newIf(linenumber, IFTABLETYPECATCH);
+						addOp(OP_OFFERROR);
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_CATCH;
+					return -1;
+				}
+			}
+			;
 
-;
+dostmt: 	B256DO {
+				//
+				// create internal symbol and add to the label table for the top of the loop
+				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset; 
+				//
+				// add to if frame
+				newIf(linenumber, IFTABLETYPEDO);
+			}
+			;
 
-redimstmt: B256REDIM B256VARIABLE floatexpr {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_REDIM, $2);
-	}
-	| B256REDIM B256STRINGVAR floatexpr {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_REDIMSTR, $2);
-	}
-	| B256REDIM B256VARIABLE '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIM, $2); }
-	| B256REDIM B256STRINGVAR '(' floatexpr ',' floatexpr ')' { addIntOp(OP_REDIMSTR, $2); }
-	| B256REDIM B256VARIABLE '[' floatexpr ']' {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_REDIM, $2);
-	}
-	| B256REDIM B256STRINGVAR '[' floatexpr ']' {
-		addIntOp(OP_PUSHINT, 1);
-		addIntOp(OP_REDIMSTR, $2);
-	}
-	| B256REDIM B256VARIABLE '[' floatexpr ',' floatexpr ']' { addIntOp(OP_REDIM, $2); }
-	| B256REDIM B256STRINGVAR '[' floatexpr ',' floatexpr ']' { addIntOp(OP_REDIMSTR, $2); }
-;
+elsestmt:	B256ELSE {
+				//
+				// create jump around from end of the THEN to end of the ELSE
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEIF) {
+						//
+						// resolve the label on the if to the current location
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+						//
+						// put new if on the frame for the else
+						newIf(linenumber, IFTABLETYPEELSE);
+					} else if (iftabletype[numifs-1]==IFTABLETYPECASE) {
+						if (numifs>1) {
+							if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
+								//
+								// create jump around from end of the CASE to end of the END CASE
+								addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-2],INTERNALSYMBOLEXIT));
+							} else {
+								errorcode = COMPERR_ENDBEGINCASE;
+								linenumber = iftablesourceline[numifs-1];
+								return -1;
+							}
+							//
+							// resolve branchfalse from previous case
+							labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+							//
+							numifs--;
+							// put new if on the frame for the else
+							newIf(linenumber, IFTABLETYPEELSE);
+						}
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ELSE;
+					return -1;
+				}
+			}
+			;
 
-pausestmt: B256PAUSE floatexpr { addOp(OP_PAUSE); }
-;
+endcasestmt:
+			B256ENDCASE {
+				// add label for last case branchfalse to jump to
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPECASE || iftabletype[numifs-1]==IFTABLETYPEELSE) {
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+					} else {
+						errorcode = COMPERR_ENDENDCASE;
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDENDCASE;
+					return -1;
+				}
+				// add label for all cases to jump to after execution
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) {
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDENDCASEBEGIN;
+					return -1;
+				}
+			}
+			;
 
-throwerrorstmt: B256THROWERROR floatexpr { addOp(OP_THROWERROR); }
-;
+endifstmt:	B256ENDIF {
+				// if there is an if branch or jump on the iftable stack get where it is
+				// in the wordcode array and then put the current wordcode address there
+				// - so we can jump over code
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
+						//
+						// resolve the label on the if/else to the current location
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDIF;
+					return -1;
+				}
+			}
+			;
 
-clearstmt: B256CLS { addOp(OP_CLS); }
-	| B256CLG { addOp(OP_CLG); } 
-;
+endtrystmt:	B256ENDTRY {
+				// if there is an if branch or jump on the iftable stack get where it is
+				// in the wordcode array and then put the current wordcode address there
+				// - so we can jump over code
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPECATCH) {
+						//
+						// resolve the label on the Catch to the current location
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDTRY;
+					return -1;
+				}
+			}
+			;
 
-fastgraphicsstmt: B256FASTGRAPHICS { addOp(OP_FASTGRAPHICS); }
-;
+endwhilestmt:
+			B256ENDWHILE {
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEWHILE) {
+						//
+						// jump to the top
+						addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE));
+						//
+						// resolve the label to the bottom
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						//
+						// remove the single placeholder from the if frame
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_ENDWHILE;
+					return -1;
+				}
+			}
+			;
 
-graphsizestmt: B256GRAPHSIZE floatexpr ',' floatexpr { addOp(OP_GRAPHSIZE); }
-	| B256GRAPHSIZE '(' floatexpr ',' floatexpr ')' { addOp(OP_GRAPHSIZE); }
-;
+ifstmt:		ifexpr B256THEN {
+				// there is nothing to do with a multi line if (ifexp handles it)
+			}
+			;
 
-refreshstmt: B256REFRESH { addOp(OP_REFRESH); }
-;
+trystmt: 	B256TRY	{
+				//
+				// add on error branch
+				addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// put new if on the frame for the TRY
+				newIf(linenumber, IFTABLETYPETRY);
+			}
+			;
 
-endstmt: B256END { addOp(OP_END); }
-;
+until:		B256UNTIL {
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEDO) {
+						//
+						// create label for CONTINUE DO
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset; 
+						//
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_UNTIL;
+					return -1;
+				}
+			}
+			;
 
-ifexpr: B256IF floatexpr
-	{
-		//
-		// add branch to the end if false
-		addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-		//
-		// put new if on the frame for the IF
-		newIf(linenumber, IFTABLETYPEIF);
-	}
-;
-
-strarrayassign: B256STRINGVAR '[' floatexpr ']' '=' expr { addIntOp(OP_STRARRAYASSIGN, $1); }
-	| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL expr {
-		// a$[n] += s$
-		addOp(OP_STACKSWAP);
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_CONCAT);
-		addIntOp(OP_STRARRAYASSIGN, $1);
-	}
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr {
-		addIntOp(OP_STRARRAYASSIGN2D, $1);
-	}
-	| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL expr {
-		// a$[b,c] += s$
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKSWAP2);
-		addOp(OP_STACKSWAP);
-		addOp(OP_CONCAT);
-		addIntOp(OP_STRARRAYASSIGN2D, $1);
-	}
-	| B256STRINGVAR '=' immediatestrlist {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen = 0;
-		addIntOp(OP_STRARRAYLISTASSIGN, $1);
-	}
-	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' {
-		addIntOp(OP_EXPLODESTR, $1);
-	}
-	| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
-		addIntOp(OP_EXPLODESTR_C, $1);
-	}
-	| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
-		addIntOp(OP_EXPLODEXSTR, $1);
-	}
-;
-
-arrayassignerrors:
-	B256VARIABLE '[' floatexpr ']' '=' stringexpr
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' stringexpr
-	| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ']' B256MULEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL stringexpr
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL stringexpr
-	| B256VARIABLE '=' immediatestrlist
-;
-
-
-arrayassign:
-	B256VARIABLE '[' floatexpr ']' '=' floatexpr {
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256ADD1 {
-		// a[n]++ (Statement)
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_ADD);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256SUB1 {
-		// a[n]-- (Statement)
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_SUB);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL floatexpr {
-		// a[n] += n
-		addOp(OP_STACKSWAP);
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_ADD);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL floatexpr {
-		// a[n] -= n
-		addOp(OP_STACKSWAP);
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_SUB);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256MULEQUAL floatexpr {
-		// a[n] *= n
-		addOp(OP_STACKSWAP);
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_MUL);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL floatexpr {
-		// a[n] /= n
-		addOp(OP_STACKSWAP);
-		addOp(OP_STACKDUP);
-		addIntOp(OP_DEREF,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_DIV);
-		addIntOp(OP_ARRAYASSIGN, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' floatexpr {
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADD1 {
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_ADD);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUB1 {
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_SUB);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL floatexpr {
-		// a[b,c] += n
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKSWAP2);
-		addOp(OP_ADD);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL floatexpr {
-		// a[b,c] -= n
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKSWAP2);
-		addOp(OP_STACKSWAP);
-		addOp(OP_SUB);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL floatexpr {
-		// a[b,c] *= n
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKSWAP2);
-		addOp(OP_MUL);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL floatexpr {
-		// a[b,c] /= n
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF2D,$1);
-		addOp(OP_STACKTOPTO2);
-		addOp(OP_STACKSWAP2);
-		addOp(OP_STACKSWAP);
-		addOp(OP_DIV);
-		addIntOp(OP_ARRAYASSIGN2D, $1);
-	}
-	| B256VARIABLE '=' immediatelist {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen = 0;
-		addIntOp(OP_ARRAYLISTASSIGN, $1);
-	}
-	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
-		addIntOp(OP_EXPLODE, $1);
-	}
-	| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
-		addIntOp(OP_EXPLODE_C, $1);
-	}
-	| B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
-		addIntOp(OP_EXPLODEX, $1);
-	}
-	| arrayassignerrors {
-		errorcode = COMPERR_ASSIGNS2N;
-		return -1;
-	}
-;
-
-numassignerrors:
-	B256VARIABLE '=' stringexpr
-	| B256VARIABLE B256ADDEQUAL stringexpr
-	| B256VARIABLE B256SUBEQUAL stringexpr
-	| B256VARIABLE B256MULEQUAL stringexpr
-	| B256VARIABLE B256DIVEQUAL stringexpr
-;
-
-
-numassign: 
-	B256VARIABLE '=' floatexpr { addIntOp(OP_NUMASSIGN, $1); }
-	| B256VARIABLE B256ADD1 {
-		addIntOp(OP_PUSHVAR,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_ADD);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| B256VARIABLE B256SUB1 {
-		addIntOp(OP_PUSHVAR,$1);
-		addIntOp(OP_PUSHINT,1);
-		addOp(OP_SUB);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| B256VARIABLE B256ADDEQUAL floatexpr {
-		addIntOp(OP_PUSHVAR,$1);
-		addOp(OP_ADD);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| B256VARIABLE B256SUBEQUAL floatexpr {
-		addIntOp(OP_PUSHVAR,$1);
-		addOp(OP_STACKSWAP);
-		addOp(OP_SUB);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| B256VARIABLE B256MULEQUAL floatexpr {
-		addIntOp(OP_PUSHVAR,$1);
-		addOp(OP_MUL);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| B256VARIABLE B256DIVEQUAL floatexpr {
-		addIntOp(OP_PUSHVAR,$1);
-		addOp(OP_STACKSWAP);
-		addOp(OP_DIV);
-		addIntOp(OP_NUMASSIGN, $1);
-	}
-	| numassignerrors {
-		errorcode = COMPERR_ASSIGNS2N;
-		return -1;
-	}
-
-;
-
-stringassign:
-	B256STRINGVAR '=' expr { addIntOp(OP_STRINGASSIGN, $1); }
-	| B256STRINGVAR B256ADDEQUAL expr {
-		addIntOp(OP_PUSHVAR,$1);
-		addOp(OP_STACKSWAP);
-		addOp(OP_CONCAT);
-		addIntOp(OP_STRINGASSIGN, $1);
-	}
-;
-
-forstmt: B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr
-	{
-		addIntOp(OP_PUSHINT, 1); //step
-		addIntOp(OP_FOR, $2);
-		// add to iftable to make sure it is not broken with an if
-		// do, while, else, and to report if it is
-		// next ed before end of program
-		newIf(linenumber, IFTABLETYPEFOR);
-	}
-	| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr
-	{
-		addIntOp(OP_FOR, $2);
-		// add to iftable to make sure it is not broken with an if
-		// do, while, else, and to report if it is
-		// next ed before end of program
-		newIf(linenumber, IFTABLETYPEFOR);
-	}
-;
-
-nextstmt: B256NEXT B256VARIABLE
-	{
-		if (numifs>0) {
-			if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset; 
-				addIntOp(OP_NEXT, $2);
+untilstmt:	until floatexpr {
+				//
+				// branch back to top if condition holds
+				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
+				//
+				// create label for EXIT DO
 				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
 				numifs--;
-			} else {
-				errorcode = testIfOnTableError(numincludes);
-				linenumber = testIfOnTable(numincludes);
+			}
+			;
+
+while: 		B256WHILE {
+				//
+				// create internal symbol and add to the label table for the top of the loop
+				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset; 
+			}
+			;
+
+whilestmt: 	while floatexpr {
+				//
+				// add branch to end if false
+				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// add to if frame
+				newIf(linenumber, IFTABLETYPEWHILE);
+			};
+
+letstmt:	B256LET numassign
+			| B256LET stringassign
+			| B256LET arrayassign
+			| B256LET strarrayassign
+			| numassign
+			| stringassign
+			| arrayassign
+			| strarrayassign
+			;
+
+dimstmt: 	B256DIM B256VARIABLE floatexpr {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_DIM, $2);
+			}
+			| B256DIM B256STRINGVAR floatexpr {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_DIMSTR, $2);
+			}
+			| B256DIM B256VARIABLE '(' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_DIM, $2);
+			}
+			| B256DIM B256STRINGVAR '(' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_DIMSTR, $2);
+			}
+			| B256DIM B256VARIABLE '[' floatexpr ']' {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_DIM, $2);
+			}
+			| B256DIM B256STRINGVAR '[' floatexpr ']' {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_DIMSTR, $2);
+			}
+			| B256DIM B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+				addIntOp(OP_DIM, $2);
+			}
+			| B256DIM B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+				addIntOp(OP_DIMSTR, $2);
+			}
+			;
+
+redimstmt:	B256REDIM B256VARIABLE floatexpr {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_REDIM, $2);
+			}
+			| B256REDIM B256STRINGVAR floatexpr {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_REDIMSTR, $2);
+			}
+			| B256REDIM B256VARIABLE '(' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_REDIM, $2);
+			}
+			| B256REDIM B256STRINGVAR '(' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_REDIMSTR, $2);
+			}
+			| B256REDIM B256VARIABLE '[' floatexpr ']' {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_REDIM, $2);
+			}
+			| B256REDIM B256STRINGVAR '[' floatexpr ']' {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_REDIMSTR, $2);
+			}
+			| B256REDIM B256VARIABLE '[' floatexpr ',' floatexpr ']' {
+				addIntOp(OP_REDIM, $2);
+			}
+			| B256REDIM B256STRINGVAR '[' floatexpr ',' floatexpr ']' {
+				addIntOp(OP_REDIMSTR, $2);
+			}
+			;
+
+pausestmt:	B256PAUSE floatexpr {
+				addOp(OP_PAUSE);
+			}
+			;
+
+throwerrorstmt:
+			B256THROWERROR floatexpr {
+				addOp(OP_THROWERROR);
+			}
+			;
+
+clearstmt:	B256CLS {
+				addOp(OP_CLS);
+			}
+			| B256CLG {
+				addOp(OP_CLG);
+			} 
+			;
+
+fastgraphicsstmt:
+			B256FASTGRAPHICS {
+				addOp(OP_FASTGRAPHICS);
+			}
+			;
+
+graphsizestmt:
+			B256GRAPHSIZE floatexpr ',' floatexpr {
+				addOp(OP_GRAPHSIZE);
+			}
+			| B256GRAPHSIZE '(' floatexpr ',' floatexpr ')' {
+				addOp(OP_GRAPHSIZE);
+			}
+			;
+
+refreshstmt:
+			B256REFRESH {
+				addOp(OP_REFRESH);
+			}
+			;
+
+endstmt: 	B256END {
+				addOp(OP_END);
+			}
+			;
+
+ifexpr:		B256IF floatexpr {
+				//
+				// add branch to the end if false
+				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// put new if on the frame for the IF
+				newIf(linenumber, IFTABLETYPEIF);
+			}
+			;
+
+strarrayassign:
+			B256STRINGVAR '[' floatexpr ']' '=' expr {
+				addIntOp(OP_STRARRAYASSIGN, $1);
+			}
+			| B256STRINGVAR '[' floatexpr ']' B256ADDEQUAL expr {
+				// a$[n] += s$
+				addOp(OP_STACKSWAP);
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_CONCAT);
+				addIntOp(OP_STRARRAYASSIGN, $1);
+			}
+			| B256STRINGVAR '[' floatexpr ',' floatexpr ']' '=' expr {
+				addIntOp(OP_STRARRAYASSIGN2D, $1);
+			}
+			| B256STRINGVAR '[' floatexpr ',' floatexpr ']' B256ADDEQUAL expr {
+				// a$[b,c] += s$
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_STACKSWAP);
+				addOp(OP_CONCAT);
+				addIntOp(OP_STRARRAYASSIGN2D, $1);
+			}
+			| B256STRINGVAR '=' immediatestrlist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen = 0;
+				addIntOp(OP_STRARRAYLISTASSIGN, $1);
+			}
+			| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' {
+				addIntOp(OP_EXPLODESTR, $1);
+			}
+			| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
+				addIntOp(OP_EXPLODESTR_C, $1);
+			}
+			| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
+				addIntOp(OP_EXPLODEXSTR, $1);
+			}
+			;
+
+arrayassignerrors:
+			B256VARIABLE '[' floatexpr ']' '=' stringexpr
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' stringexpr
+			| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ']' B256MULEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL stringexpr
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL stringexpr
+			| B256VARIABLE '=' immediatestrlist
+			;
+
+arrayassign:
+			B256VARIABLE '[' floatexpr ']' '=' floatexpr {
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256ADD1 {
+				// a[n]++ (Statement)
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_ADD);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256SUB1 {
+				// a[n]-- (Statement)
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_SUB);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256ADDEQUAL floatexpr {
+				// a[n] += n
+				addOp(OP_STACKSWAP);
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_ADD);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256SUBEQUAL floatexpr {
+				// a[n] -= n
+				addOp(OP_STACKSWAP);
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_SUB);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256MULEQUAL floatexpr {
+				// a[n] *= n
+				addOp(OP_STACKSWAP);
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_MUL);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ']' B256DIVEQUAL floatexpr {
+				// a[n] /= n
+				addOp(OP_STACKSWAP);
+				addOp(OP_STACKDUP);
+				addIntOp(OP_DEREF,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_DIV);
+				addIntOp(OP_ARRAYASSIGN, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' '=' floatexpr {
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADD1 {
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_ADD);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUB1 {
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_SUB);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256ADDEQUAL floatexpr {
+				// a[b,c] += n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_ADD);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256SUBEQUAL floatexpr {
+				// a[b,c] -= n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_STACKSWAP);
+				addOp(OP_SUB);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256MULEQUAL floatexpr {
+				// a[b,c] *= n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_MUL);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '[' floatexpr ',' floatexpr ']' B256DIVEQUAL floatexpr {
+				// a[b,c] /= n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF2D,$1);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_STACKSWAP);
+				addOp(OP_DIV);
+				addIntOp(OP_ARRAYASSIGN2D, $1);
+			}
+			| B256VARIABLE '=' immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen = 0;
+				addIntOp(OP_ARRAYLISTASSIGN, $1);
+			}
+			| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
+				addIntOp(OP_EXPLODE, $1);
+			}
+			| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
+				addIntOp(OP_EXPLODE_C, $1);
+			}
+			| B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
+				addIntOp(OP_EXPLODEX, $1);
+			}
+			| arrayassignerrors {
+				errorcode = COMPERR_ASSIGNS2N;
 				return -1;
 			}
-		} else {
-			errorcode = COMPERR_NEXT;
-			return -1;
-		}
-	}
-;
+			;
 
-gotostmt: B256GOTO B256VARIABLE {
-	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
-		errorcode = COMPERR_FUNCTIONGOTO;
-		return -1;
-	}
-	addIntOp(OP_GOTO, $2);
-}
-;
+numassignerrors:
+			B256VARIABLE '=' stringexpr
+			| B256VARIABLE B256ADDEQUAL stringexpr
+			| B256VARIABLE B256SUBEQUAL stringexpr
+			| B256VARIABLE B256MULEQUAL stringexpr
+			| B256VARIABLE B256DIVEQUAL stringexpr
+			;
 
-gosubstmt: B256GOSUB B256VARIABLE {
-	if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
-		errorcode = COMPERR_FUNCTIONGOTO;
-		return -1;
-	}
-	addIntOp(OP_GOSUB, $2);
-}
-;
+numassign: 
+			B256VARIABLE '=' floatexpr {
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256ADD1 {
+				addIntOp(OP_PUSHVAR,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_ADD);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256SUB1 {
+				addIntOp(OP_PUSHVAR,$1);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_SUB);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256ADDEQUAL floatexpr {
+				addIntOp(OP_PUSHVAR,$1);
+				addOp(OP_ADD);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256SUBEQUAL floatexpr {
+				addIntOp(OP_PUSHVAR,$1);
+				addOp(OP_STACKSWAP);
+				addOp(OP_SUB);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256MULEQUAL floatexpr {
+				addIntOp(OP_PUSHVAR,$1);
+				addOp(OP_MUL);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| B256VARIABLE B256DIVEQUAL floatexpr {
+				addIntOp(OP_PUSHVAR,$1);
+				addOp(OP_STACKSWAP);
+				addOp(OP_DIV);
+				addIntOp(OP_NUMASSIGN, $1);
+			}
+			| numassignerrors {
+				errorcode = COMPERR_ASSIGNS2N;
+				return -1;
+			}
+			;
 
-callstmt: B256CALL B256VARIABLE  { addIntOp(OP_GOSUB, $2); }
-	| B256CALL B256VARIABLE '(' ')'  { addIntOp(OP_GOSUB, $2); }
-	| B256CALL B256VARIABLE '(' explist ')'  { addIntOp(OP_GOSUB, $2); }
-;
+stringassign:
+			B256STRINGVAR '=' expr {
+				addIntOp(OP_STRINGASSIGN, $1);
+			}
+			| B256STRINGVAR B256ADDEQUAL expr {
+				addIntOp(OP_PUSHVAR,$1);
+				addOp(OP_STACKSWAP);
+				addOp(OP_CONCAT);
+				addIntOp(OP_STRINGASSIGN, $1);
+			}
+			;
 
-offerrorstmt: B256OFFERROR { 
-	int i;
-	for(i=0; i < numifs; i++) {
-		if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
-			errorcode = COMPERR_NOTINTRYCATCH;
-			return -1;
-		}
-	}
-	addOp(OP_OFFERROR); }
-;
+forstmt: 	B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr {
+				addIntOp(OP_PUSHINT, 1); //step
+				addIntOp(OP_FOR, $2);
+				// add to iftable to make sure it is not broken with an if
+				// do, while, else, and to report if it is
+				// next ed before end of program
+				newIf(linenumber, IFTABLETYPEFOR);
+			}
+			| B256FOR B256VARIABLE '=' floatexpr B256TO floatexpr B256STEP floatexpr {
+				addIntOp(OP_FOR, $2);
+				// add to iftable to make sure it is not broken with an if
+				// do, while, else, and to report if it is
+				// next ed before end of program
+				newIf(linenumber, IFTABLETYPEFOR);
+			}
+			;
 
-onerrorstmt: B256ONERROR B256VARIABLE {
-	int i;
-	for(i=0; i < numifs; i++) {
-		if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
-			errorcode = COMPERR_NOTINTRYCATCH;
-			return -1;
-		}
-	}
-	addIntOp(OP_ONERRORGOSUB, $2); }
-;
+nextstmt:	B256NEXT B256VARIABLE {
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset; 
+						addIntOp(OP_NEXT, $2);
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						numifs--;
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_NEXT;
+					return -1;
+				}
+			}
+			;
 
-returnstmt: B256RETURN { 
-		if (functionDefSymbol!=-1) {
-			// if we are defining a function return pushes a variable value
-			addIntOp(OP_FUNCRETURN, functionDefSymbol);
-			addOp(OP_DECREASERECURSE);
-		}
-		if (subroutineDefSymbol!=-1) {
-			// if we are defining a subroutine
-			addOp(OP_DECREASERECURSE);
-		}
-		addOp(OP_RETURN);
-	}
-	| B256RETURN floatexpr { 
-		if (functionDefSymbol!=-1) {
-			if (functionType==FUNCTIONTYPEFLOAT) {
-				// value on stack gets returned
-				addOp(OP_DECREASERECURSE);
+gotostmt:	B256GOTO B256VARIABLE {
+				if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+					errorcode = COMPERR_FUNCTIONGOTO;
+					return -1;
+				}
+				addIntOp(OP_GOTO, $2);
+			}
+			;
+
+gosubstmt:	B256GOSUB B256VARIABLE {
+				if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+					errorcode = COMPERR_FUNCTIONGOTO;
+					return -1;
+				}
+				addIntOp(OP_GOSUB, $2);
+			}
+			;
+
+callstmt:	B256CALL B256VARIABLE  {
+				addIntOp(OP_GOSUB, $2);
+			}
+			| B256CALL B256VARIABLE '(' ')'  {
+				addIntOp(OP_GOSUB, $2);
+			}
+			| B256CALL B256VARIABLE '(' explist ')'  {
+				addIntOp(OP_GOSUB, $2);
+			}
+			;
+
+offerrorstmt:
+			B256OFFERROR { 
+				int i;
+				for(i=0; i < numifs; i++) {
+					if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
+						errorcode = COMPERR_NOTINTRYCATCH;
+						return -1;
+					}
+				}
+				addOp(OP_OFFERROR);
+			}
+			;
+
+onerrorstmt:
+			B256ONERROR B256VARIABLE {
+				int i;
+				for(i=0; i < numifs; i++) {
+					if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
+						errorcode = COMPERR_NOTINTRYCATCH;
+						return -1;
+					}
+				}
+				addIntOp(OP_ONERRORGOSUB, $2);
+			}
+			;
+
+returnstmt:	B256RETURN { 
+				if (functionDefSymbol!=-1) {
+					// if we are defining a function return pushes a variable value
+					addIntOp(OP_FUNCRETURN, functionDefSymbol);
+					addOp(OP_DECREASERECURSE);
+				}
+				if (subroutineDefSymbol!=-1) {
+					// if we are defining a subroutine
+					addOp(OP_DECREASERECURSE);
+				}
 				addOp(OP_RETURN);
-			} else {
-				errorcode = COMPERR_RETURNTYPE;
-				return -1;
 			}
-		} else {
-			errorcode = COMPERR_RETURNVALUE;
-			return -1;
-		}
-	}
-	| B256RETURN stringexpr { 
-		if (functionDefSymbol!=-1) {
-			if (functionType==FUNCTIONTYPESTRING) {
-				// value on stack gets returned
-				addOp(OP_DECREASERECURSE);
-				addOp(OP_RETURN);
-			} else {
-				errorcode = COMPERR_RETURNTYPE;
-				return -1;
+			| B256RETURN floatexpr { 
+				if (functionDefSymbol!=-1) {
+					if (functionType==FUNCTIONTYPEFLOAT) {
+						// value on stack gets returned
+						addOp(OP_DECREASERECURSE);
+						addOp(OP_RETURN);
+					} else {
+						errorcode = COMPERR_RETURNTYPE;
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_RETURNVALUE;
+					return -1;
+				}
 			}
-		} else {
-			errorcode = COMPERR_RETURNVALUE;
-			return -1;
-		}
-	}
-;
+			| B256RETURN stringexpr { 
+				if (functionDefSymbol!=-1) {
+					if (functionType==FUNCTIONTYPESTRING) {
+						// value on stack gets returned
+						addOp(OP_DECREASERECURSE);
+						addOp(OP_RETURN);
+					} else {
+						errorcode = COMPERR_RETURNTYPE;
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_RETURNVALUE;
+					return -1;
+				}
+			}
+			;
 
-colorstmt: B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
-		addIntOp(OP_PUSHINT, 255); 
-		addOp(OP_RGB);
-		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLOR);
-		newParseWarning(COMPWARNING_DEPRECATED_FORM);
-	}
-	| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' {
-		addIntOp(OP_PUSHINT, 255); 
-		addOp(OP_RGB);
-		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLOR);
-		newParseWarning(COMPWARNING_DEPRECATED_FORM);
-	}
-	| B256SETCOLOR floatexpr {
-		addOp(OP_STACKDUP);
-		addOp(OP_SETCOLOR);
-	}
-	| B256SETCOLOR floatexpr ',' floatexpr  { addOp(OP_SETCOLOR); }
-	| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  { addOp(OP_SETCOLOR); }
-;
+colorstmt:	B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
+				addIntOp(OP_PUSHINT, 255); 
+				addOp(OP_RGB);
+				addOp(OP_STACKDUP);
+				addOp(OP_SETCOLOR);
+				newParseWarning(COMPWARNING_DEPRECATED_FORM);
+			}
+			| B256SETCOLOR '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_PUSHINT, 255); 
+				addOp(OP_RGB);
+				addOp(OP_STACKDUP);
+				addOp(OP_SETCOLOR);
+				newParseWarning(COMPWARNING_DEPRECATED_FORM);
+			}
+			| B256SETCOLOR floatexpr {
+				addOp(OP_STACKDUP);
+				addOp(OP_SETCOLOR);
+			}
+			| B256SETCOLOR floatexpr ',' floatexpr  {
+				addOp(OP_SETCOLOR);
+			}
+			| B256SETCOLOR '(' floatexpr ',' floatexpr ')'  {
+				addOp(OP_SETCOLOR);
+			}
+			;
 
-soundstmt: B256SOUND '(' B256VARIABLE ')' { addIntOp(OP_ARRAY2STACK,$3); addOp(OP_SOUND_LIST); }
-	| B256SOUND B256VARIABLE { addIntOp(OP_ARRAY2STACK,$2); addOp(OP_SOUND_LIST); }
-	| B256SOUND immediatelist { addIntOp(OP_PUSHINT, listlen); listlen = 0; addOp(OP_SOUND_LIST); }
-	| B256SOUND '(' floatexpr ',' floatexpr ')' { addIntOp(OP_PUSHINT, 2); addOp(OP_SOUND_LIST); }
-	| B256SOUND floatexpr ',' floatexpr { addIntOp(OP_PUSHINT, 2); addOp(OP_SOUND_LIST); }
-;
+soundstmt:	B256SOUND '(' B256VARIABLE ')' {
+				addIntOp(OP_ARRAY2STACK,$3);
+				addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND B256VARIABLE {
+				addIntOp(OP_ARRAY2STACK,$2);
+				addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen = 0;
+				addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND '(' floatexpr ',' floatexpr ')' {
+				addIntOp(OP_PUSHINT, 2);
+				addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND floatexpr ',' floatexpr {
+				addIntOp(OP_PUSHINT, 2);
+				addOp(OP_SOUND_LIST);
+			}
+			;
 
-plotstmt: B256PLOT floatexpr ',' floatexpr { addOp(OP_PLOT); }
-	| B256PLOT '(' floatexpr ',' floatexpr ')' { addOp(OP_PLOT); }
-;
+plotstmt: 	B256PLOT floatexpr ',' floatexpr {
+				addOp(OP_PLOT);
+			}
+			| B256PLOT '(' floatexpr ',' floatexpr ')' {
+				addOp(OP_PLOT);
+			}
+			;
 
-linestmt: B256LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_LINE); }
-	| B256LINE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_LINE); }
-;
+linestmt:	B256LINE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_LINE);
+			}
+			| B256LINE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_LINE);
+			}
+			;
 
 
-circlestmt: B256CIRCLE floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CIRCLE); }
-	| B256CIRCLE '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_CIRCLE); }
-;
+circlestmt:
+			B256CIRCLE floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_CIRCLE);
+			}
+			| B256CIRCLE '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_CIRCLE);
+			}
+			;
 
-arcstmt: B256ARC floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_ARC); }
-	| B256ARC '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_ARC); }
-;
+arcstmt: 	B256ARC floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_ARC);
+			}
+			| B256ARC '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_ARC);
+			}
+			;
 
-chordstmt: B256CHORD floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_CHORD); }
-	| B256CHORD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_CHORD); }
-;
+chordstmt:	
+			B256CHORD floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_CHORD);
+			}
+			| B256CHORD '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_CHORD);
+			}
+			;
 
-piestmt: B256PIE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_PIE); }
-	| B256PIE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_PIE); }
-;
+piestmt:
+			B256PIE floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_PIE);
+			}
+			| B256PIE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_PIE);
+			}
+			;
 
-rectstmt: B256RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr { addOp(OP_RECT); }
-	| B256RECT '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_RECT); }
-;
+rectstmt:
+			B256RECT floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_RECT);
+			}
+			| B256RECT '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_RECT);
+			}
+			;
 
-textstmt: B256TEXT floatexpr ',' floatexpr ',' stringexpr { addOp(OP_TEXT); }
-	| B256TEXT '(' floatexpr ',' floatexpr ',' stringexpr ')' { addOp(OP_TEXT); }
-	| B256TEXT floatexpr ',' floatexpr ',' floatexpr { addOp(OP_TEXT); }
-	| B256TEXT '(' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_TEXT); }
-;
+textstmt: 
+			B256TEXT floatexpr ',' floatexpr ',' stringexpr {
+				addOp(OP_TEXT);
+			}
+			| B256TEXT '(' floatexpr ',' floatexpr ',' stringexpr ')' {
+				addOp(OP_TEXT);
+			}
+			| B256TEXT floatexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_TEXT);
+			}
+			| B256TEXT '(' floatexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_TEXT);
+			}
+			;
 
-fontstmt: B256FONT stringexpr ',' floatexpr ',' floatexpr { addOp(OP_FONT); }
-	| B256FONT '(' stringexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_FONT); }
-;
+fontstmt:
+			B256FONT stringexpr ',' floatexpr ',' floatexpr {
+				addOp(OP_FONT);
+			}
+			| B256FONT '(' stringexpr ',' floatexpr ',' floatexpr ')' {
+				addOp(OP_FONT);
+			}
+			;
 
-saystmt: B256SAY expr { addOp(OP_SAY); }
-;
+saystmt: 	B256SAY expr {
+				addOp(OP_SAY);
+			}
+			;
 
-systemstmt: B256SYSTEM stringexpr { addOp(OP_SYSTEM); }
-;
+systemstmt:
+			B256SYSTEM stringexpr {
+				addOp(OP_SYSTEM);
+			}
+			;
 
-volumestmt: B256VOLUME floatexpr { addOp(OP_VOLUME); } // parens added by single floatexpr
-;
+volumestmt:
+			B256VOLUME floatexpr {
+				addOp(OP_VOLUME);
+			}
+			;
 
-polystmt: B256POLY B256VARIABLE { addIntOp(OP_ARRAY2STACK, $2); addOp(OP_POLY_LIST); }
-	| B256POLY '(' B256VARIABLE ')' { addIntOp(OP_ARRAY2STACK, $3); addOp(OP_POLY_LIST); }
-	| B256POLY immediatelist {  addIntOp(OP_PUSHINT, listlen); listlen=0; addOp(OP_POLY_LIST);  }
-;
+polystmt: 
+			B256POLY B256VARIABLE {
+				addIntOp(OP_ARRAY2STACK, $2);
+				addOp(OP_POLY_LIST);
+			}
+			| B256POLY '(' B256VARIABLE ')' {
+				addIntOp(OP_ARRAY2STACK, $3);
+				addOp(OP_POLY_LIST);
+			}
+			| B256POLY immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_POLY_LIST); 
+			}
+			;
 
-stampstmt: B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE {
-		addIntOp(OP_ARRAY2STACK, $8);
-		addOp(OP_STAMP_S_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addIntOp(OP_ARRAY2STACK, $9);
-		addOp(OP_STAMP_S_LIST);
-	}
-	| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_S_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_S_LIST);
-	}
-	| B256STAMP floatexpr ',' floatexpr ',' B256VARIABLE {
-		addIntOp(OP_ARRAY2STACK, $6);
-		addOp(OP_STAMP_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addIntOp(OP_ARRAY2STACK, $7);
-		addOp(OP_STAMP_LIST);
-	}
-	| B256STAMP floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_LIST);
-	}
-	| B256STAMP floatexpr ',' floatexpr ','  floatexpr ',' floatexpr ',' B256VARIABLE {
-		addIntOp(OP_ARRAY2STACK, $10);
-		addOp(OP_STAMP_SR_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
-		addIntOp(OP_ARRAY2STACK, $11);
-		addOp(OP_STAMP_SR_LIST);
-	}
-	| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_SR_LIST);
-	}
-	| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
-		addIntOp(OP_PUSHINT, listlen);
-		listlen=0;
-		addOp(OP_STAMP_SR_LIST);
-	}
-;
+stampstmt: 	B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE {
+				addIntOp(OP_ARRAY2STACK, $8);
+				addOp(OP_STAMP_S_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
+				addIntOp(OP_ARRAY2STACK, $9);
+				addOp(OP_STAMP_S_LIST);
+			}
+			| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_S_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_S_LIST);
+			}
+			| B256STAMP floatexpr ',' floatexpr ',' B256VARIABLE {
+				addIntOp(OP_ARRAY2STACK, $6);
+				addOp(OP_STAMP_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
+				addIntOp(OP_ARRAY2STACK, $7);
+				addOp(OP_STAMP_LIST);
+			}
+			| B256STAMP floatexpr ',' floatexpr ',' immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' immediatelist ')' {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_LIST);
+			}
+			| B256STAMP floatexpr ',' floatexpr ','  floatexpr ',' floatexpr ',' B256VARIABLE {
+				addIntOp(OP_ARRAY2STACK, $10);
+				addOp(OP_STAMP_SR_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' B256VARIABLE ')' {
+				addIntOp(OP_ARRAY2STACK, $11);
+				addOp(OP_STAMP_SR_LIST);
+			}
+			| B256STAMP floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_SR_LIST);
+			}
+			| B256STAMP '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' immediatelist ')' {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_STAMP_SR_LIST);
+			}
+			;
 
-openstmt: B256OPEN stringexpr  {
-		addIntOp(OP_PUSHINT, 0); // file number zero
-		addOp(OP_STACKSWAP);
-		addIntOp(OP_PUSHINT, 0); // not binary
-		addOp(OP_OPEN);
-	}
-	| B256OPEN '(' floatexpr ',' stringexpr ')' {
-		addIntOp(OP_PUSHINT, 0); // not binary
-		addOp(OP_OPEN);
-	} 
-	| B256OPEN floatexpr ',' stringexpr {
-		addIntOp(OP_PUSHINT, 0); // not binary
-		addOp(OP_OPEN);
-	}
-	| B256OPENB stringexpr  {
-		addIntOp(OP_PUSHINT, 0); // file number zero
-		addOp(OP_STACKSWAP);
-		addIntOp(OP_PUSHINT, 1); // binary
-		addOp(OP_OPEN);
-	}
-	| B256OPENB '(' floatexpr ',' stringexpr ')' {
-		addIntOp(OP_PUSHINT, 1); // binary
-		addOp(OP_OPEN);
-	} 
-	| B256OPENB floatexpr ',' stringexpr {
-		addIntOp(OP_PUSHINT, 1); // binary
-		addOp(OP_OPEN);
-	}
-;
+openstmt:	B256OPEN stringexpr  {
+				addIntOp(OP_PUSHINT, 0); // file number zero
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_PUSHINT, 0); // not binary
+				addOp(OP_OPEN);
+			}
+			| B256OPEN '(' floatexpr ',' stringexpr ')' {
+				addIntOp(OP_PUSHINT, 0); // not binary
+				addOp(OP_OPEN);
+			} 
+			| B256OPEN floatexpr ',' stringexpr {
+				addIntOp(OP_PUSHINT, 0); // not binary
+				addOp(OP_OPEN);
+			}
+			| B256OPENB stringexpr  {
+				addIntOp(OP_PUSHINT, 0); // file number zero
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_PUSHINT, 1); // binary
+				addOp(OP_OPEN);
+			}
+			| B256OPENB '(' floatexpr ',' stringexpr ')' {
+				addIntOp(OP_PUSHINT, 1); // binary
+				addOp(OP_OPEN);
+			} 
+			| B256OPENB floatexpr ',' stringexpr {
+				addIntOp(OP_PUSHINT, 1); // binary
+				addOp(OP_OPEN);
+			}
+			;
 
-writestmt: B256WRITE stringexpr {
-		addIntOp(OP_PUSHINT, 0);  // file number zero
-		addOp(OP_STACKSWAP);
-		addOp(OP_WRITE);
-	}
-	| B256WRITE '(' floatexpr ','stringexpr ')' {
-		addOp(OP_WRITE);
-	}
-	| B256WRITE floatexpr ','stringexpr {
-		addOp(OP_WRITE);
-	}
-;
+writestmt:	B256WRITE stringexpr {
+				addIntOp(OP_PUSHINT, 0);  // file number zero
+				addOp(OP_STACKSWAP);
+				addOp(OP_WRITE);
+			}
+			| B256WRITE '(' floatexpr ','stringexpr ')' {
+				addOp(OP_WRITE);
+			}
+			| B256WRITE floatexpr ','stringexpr {
+				addOp(OP_WRITE);
+			}
+			;
+	
+writelinestmt:
+			B256WRITELINE stringexpr {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_STACKSWAP);
+				addOp(OP_WRITELINE);
+			}
+			| B256WRITELINE '(' floatexpr ',' stringexpr ')' {
+				addOp(OP_WRITELINE);
+			}
+			| B256WRITELINE floatexpr ',' stringexpr {
+				addOp(OP_WRITELINE);
+			}
+			;
 
-writelinestmt: B256WRITELINE stringexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITELINE); }
-	| B256WRITELINE '(' floatexpr ',' stringexpr ')' { addOp(OP_WRITELINE); }
-	| B256WRITELINE floatexpr ',' stringexpr { addOp(OP_WRITELINE); }
-;
+writebytestmt:
+			B256WRITEBYTE floatexpr {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_STACKSWAP);
+				addOp(OP_WRITEBYTE);
+			}
+			| B256WRITEBYTE '(' floatexpr ',' floatexpr ')' {
+				addOp(OP_WRITEBYTE);
+			}
+			| B256WRITEBYTE floatexpr ',' floatexpr {
+				addOp(OP_WRITEBYTE);
+			}
+			;
 
-writebytestmt: B256WRITEBYTE floatexpr { addIntOp(OP_PUSHINT, 0); addOp(OP_STACKSWAP); addOp(OP_WRITEBYTE); }
-	| B256WRITEBYTE '(' floatexpr ',' floatexpr ')' { addOp(OP_WRITEBYTE); }
-	| B256WRITEBYTE floatexpr ',' floatexpr { addOp(OP_WRITEBYTE); }
-;
+closestmt:	B256CLOSE {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_CLOSE);
+			}
+			| B256CLOSE '(' ')' {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_CLOSE);
+			}
+			| B256CLOSE floatexpr {
+				addOp(OP_CLOSE);
+			}
+			;
 
-closestmt: B256CLOSE { addIntOp(OP_PUSHINT, 0); addOp(OP_CLOSE); }
-	| B256CLOSE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_CLOSE); }
-	| B256CLOSE floatexpr { addOp(OP_CLOSE); }
-;
-
-resetstmt: B256RESET { addIntOp(OP_PUSHINT, 0); addOp(OP_RESET); }
-	| B256RESET '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_RESET); }
-	| B256RESET floatexpr { addOp(OP_RESET); }
-;
+resetstmt:	B256RESET {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_RESET);
+			}
+			| B256RESET '(' ')' {
+				addIntOp(OP_PUSHINT, 0);
+				addOp(OP_RESET);
+			}
+			| B256RESET floatexpr {
+				addOp(OP_RESET);
+			}
+			;
 
 seekstmt: B256SEEK floatexpr  {
 		addIntOp(OP_PUSHINT, 0);

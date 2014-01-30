@@ -15,7 +15,11 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
+/** For statements without arguments you NEED to create rules like {stmt}":" that push back the
+ ** colon.  this is so that if the stmt with a : and no space between them is not interperted
+ ** as a label- flex is greedy and will match the stmt: first
+ **/
+ 
 %{
 #include "basicParse.tab.h"
 #include "../CompileErrors.h"
@@ -61,7 +65,6 @@ extern int yyparse();
 //extern YYLTYPE yylloc;
 extern int errorcode;
 extern int wordOffset;
-extern int lastLineOffset;
 extern int functionDefSymbol;
 extern int subroutineDefSymbol;
 
@@ -419,34 +422,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 %%
 
-{label} {
-	char *temp;
-	char *c, *d;
-
-	count();
-	temp = strdup(yytext);
-	// strip whitespace
-	c = temp;
-	while(*c == ' ' || *c == '\t') {
-		c++;
-	}
-	if (c!=temp) {
-		d = temp;
-		while(*c!=0x00) {
-			*d++ = *c++;
-		}
-		*d = 0x00;
-	}
-	// strip :
-	c = temp;
-	while (*c != ':') c++;
-	*c = 0x0;
-	//
-	yylval.number = getSymbol(temp); // get existing or create new
-	free(temp);
-	//
-	return B256LABEL;
-}
 {integer}	{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
 {floatnum}	{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
 {binaryinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
@@ -477,6 +452,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {call}		{ count(); return B256CALL; }
 {case}		{ count(); return B256CASE; }
 {catch}		{ count(); return B256CATCH; }
+{catch}":"		{ unput(':'); count(); return B256CATCH; }
 {ceil}		{ count(); return B256CEIL; }
 {changedir}	{ count(); return B256CHANGEDIR; }
 {chord}		{ count(); return B256CHORD; }
@@ -484,19 +460,25 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {circle}	{ count(); return B256CIRCLE; }
 {clear}		{ count(); return B256CLEAR; }
 {clg}		{ count(); return B256CLG; }
+{clg}":"		{ unput(':'); count(); return B256CLG; }
 {clickb}	{ count(); return B256CLICKB; }
 {clickclear}	{ count(); return B256CLICKCLEAR; }
+{clickclear}":"	{ unput(':'); count(); return B256CLICKCLEAR; }
 {clickx}	{ count(); return B256CLICKX; }
 {clicky}	{ count(); return B256CLICKY; }
 {close}		{ count(); return B256CLOSE; }
 {cls}		{ count(); return B256CLS; }
+{cls}":"		{ unput(':'); count(); return B256CLS; }
 {color}		{ count(); return B256SETCOLOR; }
 {colour}	{ count(); return B256SETCOLOR; }
 {confirm}	{ count(); return B256CONFIRM; }
 {cos}		{ count(); return B256COS; }
 {continuedo}	{ count(); return B256CONTINUEDO; }
+{continuedo}":"	{ unput(':'); count(); return B256CONTINUEDO; }
 {continuefor}	{ count(); return B256CONTINUEFOR; }
+{continuefor}":"	{ unput(':'); count(); return B256CONTINUEFOR; }
 {continuewhile}	{ count(); return B256CONTINUEWHILE; }
+{continuewhile}":"	{ unput(':'); count(); return B256CONTINUEWHILE; }
 {count}	{ count(); return B256COUNT; }
 {countx}	{ count(); return B256COUNTX; }
 {currentdir}	{ count(); return B256CURRENTDIR; }
@@ -511,7 +493,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {dark}{yellow}	{ count(); return B256DARKYELLOW; }
 {day}		{ count(); return B256DAY; }
 {dbclose}	{ count(); return B256DBCLOSE; }
+{dbclose}":"	{ unput(':'); count(); return B256DBCLOSE; }
 {dbcloseset}	{ count(); return B256DBCLOSESET; }
+{dbcloseset}":"	{ unput(':'); count(); return B256DBCLOSESET; }
 {dbexecute}	{ count(); return B256DBEXECUTE; }
 {dbfloat}	{ count(); return B256DBFLOAT; }
 {dbint}		{ count(); return B256DBINT; }
@@ -523,17 +507,21 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {debuginfo}	{ count(); return B256DEBUGINFO; }
 {degrees}	{ count(); return B256DEGREES; }
 {dim}		{ count(); return B256DIM; }
-{dir}	{ count(); return B256DIR; }
+{dir}	{ unput(':'); count(); return B256DIR; }
 {do}		{ count(); return B256DO; }
+{do}":"		{ unput(':'); count(); return B256DO; }
 {editvisible}	{ count(); return B256EDITVISIBLE; }
 {else}		{ count(); return B256ELSE; }
 {end}		{ count(); return B256END; }
+{end}":"		{ unput(':'); count(); return B256END; }
 {endcase}		{ count(); return B256ENDCASE; }
 {endfunction}	{ count(); return B256ENDFUNCTION; }
 {endif}		{ count(); return B256ENDIF; }
 {endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
 {endtry}	{ count(); return B256ENDTRY; }
+{endtry}":"	{ unput(':'); count(); return B256ENDTRY; }
 {endwhile}	{ count(); return B256ENDWHILE; }
+{endwhile}":"	{ unput(':'); count(); return B256ENDWHILE; }
 {error_none} { count(); return B256ERROR_NONE; }
 {error_for1} { count(); return B256ERROR_FOR1; }
 {error_for2} { count(); return B256ERROR_FOR2; }
@@ -603,12 +591,16 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_notimplemented} { count(); return B256ERROR_NOTIMPLEMENTED; }
 {exists}	{ count(); return B256EXISTS; }
 {exitdo}	{ count(); return B256EXITDO; }
+{exitdo}":"	{ unput(':'); count(); return B256EXITDO; }
 {exitfor}	{ count(); return B256EXITFOR; }
+{exitfor}":"	{ unput(':'); count(); return B256EXITFOR; }
 {exitwhile}	{ count(); return B256EXITWHILE; }
+{exitwhile}":"	{ unput(':'); count(); return B256EXITWHILE; }
 {exp}		{ count(); return B256EXP; }
 {explode}	{ count(); return B256EXPLODE; }
 {explodex}	{ count(); return B256EXPLODEX; }
 {fastgraphics}	{ count(); return B256FASTGRAPHICS; }
+{fastgraphics}":"	{ unput(':'); count(); return B256FASTGRAPHICS; }
 {floor}		{ count(); return B256FLOOR; }
 {font}		{ count(); return B256FONT; }
 {for}		{ count(); return B256FOR; }
@@ -669,6 +661,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {msec}		{ count(); return B256MSEC; }
 {netaddress}	{ count(); return B256NETADDRESS; }
 {netclose}	{ count(); return B256NETCLOSE; }
+{netclose}":"	{ unput(':'); count(); return B256NETCLOSE; }
 {netconnect}	{ count(); return B256NETCONNECT; }
 {netdata}	{ count(); return B256NETDATA; }
 {netlisten}	{ count(); return B256NETLISTEN; }
@@ -677,6 +670,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {next}		{ count(); return B256NEXT; }
 {not}		{ count(); return B256NOT; }
 {offerror}	{ count(); return B256OFFERROR; }
+{offerror}":"	{ unput(':'); count(); return B256OFFERROR; }
 {onerror}	{ count(); return B256ONERROR; }
 {open}		{ count(); return B256OPEN; }
 {openb}		{ count(); return B256OPENB; }
@@ -694,10 +688,15 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {portin}	{ count(); return B256PORTIN; }
 {portout}	{ count(); return B256PORTOUT; }
 {print}		{ count(); return B256PRINT; }
+{print}":"		{ unput(':'); count(); return B256PRINT; }
 {printercancel}		{ count(); return B256PRINTERCANCEL; }
+{printercancel}":"		{ unput(':'); count(); return B256PRINTERCANCEL; }
 {printeroff}		{ count(); return B256PRINTEROFF; }
+{printeroff}":"		{ unput(':'); count(); return B256PRINTEROFF; }
 {printeron}		{ count(); return B256PRINTERON; }
+{printeron}":"		{ unput(':'); count(); return B256PRINTERON; }
 {printerpage}		{ count(); return B256PRINTERPAGE; }
+{printerpage}":"		{ unput(':'); count(); return B256PRINTERPAGE; }
 {prompt}	{ count(); return B256PROMPT; }
 {purple}	{ count(); return B256PURPLE; }
 {putslice}	{ count(); return B256PUTSLICE; }
@@ -711,13 +710,16 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {redim}		{ count(); return B256REDIM; }
 {ref}		{ count(); return B256REF; }
 {refresh}	{ count(); return B256REFRESH; }
+{refresh}":"	{ unput(':'); count(); return B256REFRESH; }
 {rem}		{ count(); return '\n'; }
 {remalt}	{ count(); return '\n'; }
 {remeol}	{ count(); return '\n'; }
 {replace}	{ count(); return B256REPLACE; }
 {replacex}	{ count(); return B256REPLACEX; }
 {reset}		{ count(); return B256RESET; }
+{reset}":"		{ unput(':'); count(); return B256RESET; }
 {return}	{ count(); return B256RETURN; }
+{return}":"	{ unput(':'); count(); return B256RETURN; }
 {rgb}		{ count(); return B256RGB; }
 {right}		{ count(); return B256RIGHT; }
 {say}		{ count(); return B256SAY; }
@@ -764,13 +766,16 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {toradix}		{ count(); return B256TORADIX; }
 {tostring}	{ count(); return B256TOSTRING; }
 {try}	{ count(); return B256TRY; }
+{try}":"	{ unput(':'); count(); return B256TRY; }
 {until}		{ count(); return B256UNTIL; }
 {upper}		{ count(); return B256UPPER; }
 {version}		{ count(); return B256VERSION; }
 {volume}	{ count(); return B256VOLUME; }
 {wavplay}	{ count(); return B256WAVPLAY; }
 {wavstop}	{ count(); return B256WAVSTOP; }
+{wavstop}":"	{ unput(':'); count(); return B256WAVSTOP; }
 {wavwait}	{ count(); return B256WAVWAIT; }
+{wavwait}":"	{ unput(':'); count(); return B256WAVWAIT; }
 {while}		{ count(); return B256WHILE; }
 {white}		{ count(); return B256WHITE; }
 {write}		{ count(); return B256WRITE; }
@@ -812,6 +817,34 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 "["		{ count(); return '['; }
 "]"		{ count(); return ']'; }
 
+{label} {
+	char *temp;
+	char *c, *d;
+
+	count();
+	temp = strdup(yytext);
+	// strip whitespace
+	c = temp;
+	while(*c == ' ' || *c == '\t') {
+		c++;
+	}
+	if (c!=temp) {
+		d = temp;
+		while(*c!=0x00) {
+			*d++ = *c++;
+		}
+		*d = 0x00;
+	}
+	// strip :
+	c = temp;
+	while (*c != ':') c++;
+	*c = 0x0;
+	//
+	yylval.number = getSymbol(temp); // get existing or create new
+	free(temp);
+	//
+	return B256LABEL;
+}
 	
 {variable} {
 	count();
@@ -934,7 +967,6 @@ basicParse(char *code) {
 	clearIfTable();
 
 	linenumber = 1;
-	lastLineOffset = 0;
 	column = 0;
 	errorcode = COMPERR_NONE;
 	functionDefSymbol = -1;

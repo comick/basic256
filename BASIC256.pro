@@ -96,15 +96,15 @@ unix:!macx {
 	#DEFINES				+=	SOUND_DSP
 
 	# Sound - Option 1 - SDL Mixer
-	DEFINES					+=	SOUND_SDL
-	LIBS					+=	-lSDL
-	LIBS					+=	-lSDL_mixer
+	#DEFINES					+=	SOUND_SDL
+	#LIBS					+=	-lSDL
+	#LIBS					+=	-lSDL_mixer
 
 	# Sound - Option 2 - QT Mobility Multimedia AudioOut
-	#DEFINES					+=	SOUND_QMOBILITY
-    #QT						+=	multimedia
-    #INCLUDEPATH				+=	QtMultimediaKit
-	#INCLUDEPATH				+=	QtMobility
+	DEFINES					+=	SOUND_QMOBILITY
+    QT						+=	multimedia
+    INCLUDEPATH				+=	QtMultimediaKit
+	INCLUDEPATH				+=	QtMobility
 
 
 
