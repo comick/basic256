@@ -405,11 +405,11 @@ void addStringOp(int op, char *data) {
 
 %%
 
-program: 		program '\n' validline
-				| validline
+program: 		program '\n' programline
+				| programline
 				;
 
-validline: 		label validstatement {
+programline: 	label validstatement {
 					addIntOp(OP_CURRLINE, linenumber);
 				}
 				| validstatement {
@@ -555,6 +555,11 @@ functionvariablelist:
 
 
 functionvariables:
+				functionvariable
+				| functionvariable ',' functionvariables
+				;
+
+functionvariable:
 				B256VARIABLE {
 					args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
 					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
@@ -571,7 +576,6 @@ functionvariables:
 					args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
 					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
 				}
-				| functionvariables ',' functionvariables
 				;
 
 
@@ -637,7 +641,7 @@ compoundifelsestmt:
 			;
 
 compoundifelse:
-			ifexpr B256THEN compoundstmt B256ELSE {
+			ifstmt compoundstmt B256ELSE {
 				//
 				// create jump around from end of the THEN to end of the ELSE
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -652,7 +656,7 @@ compoundifelse:
 			;
 
 compoundifstmt: 
-			ifexpr B256THEN compoundstmt {
+			ifstmt compoundstmt {
 				// if there is an if branch or jump on the iftable stack get where it is
 				// in the wordcode array and then resolve the lable
 				if (numifs>0) {
@@ -664,7 +668,7 @@ compoundifstmt:
 
 compoundstmt:
 			statement
-			| compoundstmt ':' statement
+			| statement ':' compoundstmt
 			;
 
 statement:
@@ -996,8 +1000,13 @@ endwhilestmt:
 			}
 			;
 
-ifstmt:		ifexpr B256THEN {
-				// there is nothing to do with a multi line if (ifexp handles it)
+ifstmt:		B256IF floatexpr B256THEN {
+					//
+					// add branch to the end if false
+					addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+					//
+					// put new if on the frame for the IF
+					newIf(linenumber, IFTABLETYPEIF);
 			}
 			;
 
@@ -1169,16 +1178,6 @@ refreshstmt:
 
 endstmt: 	B256END {
 				addOp(OP_END);
-			}
-			;
-
-ifexpr:		B256IF floatexpr {
-				//
-				// add branch to the end if false
-				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				//
-				// put new if on the frame for the IF
-				newIf(linenumber, IFTABLETYPEIF);
 			}
 			;
 
@@ -1604,11 +1603,7 @@ colorstmt:	B256SETCOLOR floatexpr ',' floatexpr ',' floatexpr {
 			}
 			;
 
-soundstmt:	B256SOUND '(' B256VARIABLE ')' {
-				addIntOp(OP_ARRAY2STACK,$3);
-				addOp(OP_SOUND_LIST);
-			}
-			| B256SOUND B256VARIABLE {
+soundstmt:	B256SOUND B256VARIABLE {
 				addIntOp(OP_ARRAY2STACK,$2);
 				addOp(OP_SOUND_LIST);
 			}
@@ -2563,7 +2558,7 @@ stringlist:
 
 explist:
 			expr { listlen = 1; }
-			| explist ',' explist {listlen++;}
+			| expr ',' explist {listlen++;}
 			;
 
 expr:

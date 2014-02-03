@@ -423,7 +423,7 @@ void EditSyntaxHighlighter::initComments() {
 
     m_commentFmt.setForeground(Qt::darkGreen);
     m_commentFmt.setFontItalic(true);
-    rule.pattern = QRegExp("(([Rr][Ee][Mm][ ].+)|([Rr][Ee][Mm])|#.*)$");
+    rule.pattern = QRegExp("(([Rr][Ee][Mm][ :\t].+)|([Rr][Ee][Mm][ :\t]?)|#.*)$");
     rule.format = m_commentFmt;
     m_standardRules.append(rule);
 }

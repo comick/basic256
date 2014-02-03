@@ -351,9 +351,8 @@ red [Rr][Ee][Dd]
 redim [Rr][Ee][Dd][Ii][Mm]
 ref [Rr][Ee][Ff]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
-rem [Rr][Ee][Mm][ ].+$
-remalt #.*$
-remeol [Rr][Ee][Mm]$
+rem (:[ \t]*)?[Rr][Ee][Mm](([ \t:].+)|([ \t:]*))$
+remalt (:[ \t]*)?#.*$
 replace [Rr][Ee][Pp][Ll][Aa][Cc][Ee]
 replacex [Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]
 reset [Rr][Ee][Ss][Ee][Tt]
@@ -713,7 +712,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {refresh}":"	{ unput(':'); count(); return B256REFRESH; }
 {rem}		{ count(); return '\n'; }
 {remalt}	{ count(); return '\n'; }
-{remeol}	{ count(); return '\n'; }
 {replace}	{ count(); return B256REPLACE; }
 {replacex}	{ count(); return B256REPLACEX; }
 {reset}		{ count(); return B256RESET; }
