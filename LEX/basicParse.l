@@ -710,8 +710,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {ref}		{ count(); return B256REF; }
 {refresh}	{ count(); return B256REFRESH; }
 {refresh}":"	{ unput(':'); count(); return B256REFRESH; }
-{rem}		{ count(); return '\n'; }
-{remalt}	{ count(); return '\n'; }
+{rem}		{ count(); return B256REM; }
+{remalt}	{ count(); return B256REM; }
 {replace}	{ count(); return B256REPLACE; }
 {replacex}	{ count(); return B256REPLACEX; }
 {reset}		{ count(); return B256RESET; }
@@ -856,10 +856,18 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	return B256STRINGVAR;
 }
 
-"\n"	{ count(); linenumber++; return '\n'; }
+"\n"	{ return '\n'; }
 
-{whitespace} /* ignore whitespace */
-. 	{ count(); return yytext[0]; }
+{whitespace}	{
+	/* eat the whitespace at the begining of a token - but count */
+	count();
+}
+
+.	{
+	/* we have a single character - count it and send it through */
+ 	column++;
+ 	return yytext[0];
+}
 
 <INCLUDE>[ \t]*  	{
     // eat the whitespace before the file
@@ -909,7 +917,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 		// check for unclosed if and other structures
 		if (testIfOnTable(numincludes)!=-1) {
-			linenumber = testIfOnTable(numincludes)+1;
+			linenumber = testIfOnTable(numincludes);
 			return testIfOnTableError(numincludes);
 		}
 
@@ -939,10 +947,8 @@ count() {
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
-			column = 0;
-		else if (yytext[i] == '\t')
-			column += 8 - (column % 8);
+		if (yytext[i] == '\t')
+			column += 5 - (column % 5);
 		else
 			column++;
 }
@@ -981,7 +987,7 @@ basicParse(char *code) {
 	
 
 	if (testIfOnTable(0)!=-1 && errorcode==COMPERR_NONE) {
-		linenumber = testIfOnTable(0)+1;
+		linenumber = testIfOnTable(0);
 		errorcode = testIfOnTableError(0);
 	}
 

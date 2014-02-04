@@ -28,10 +28,12 @@
 # 20131125	j.m.reneau	added try/catch error trapping
 # 20140103	j.m.reneau	moved to own folder and split file and database
 #				out to own include so that they can be run independently
+# 20140203	j.m.reneau	added testsuite_if_include to test new if/then/else
+#				and begin case/case/end case
 
 include "testsuite_common_include.kbs"
 
-call versiontest(1000002)
+call versiontest(1010002)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -688,6 +690,11 @@ include "testsuite_fileio_include.kbs"
 call section("Database")
 ###################################################
 include "testsuite_database_include.kbs"
+
+###################################################
+call section("If")
+###################################################
+include "testsuite_if_include.kbs"
 
 ###################################################
 call section("Test Random and fastgraphics")

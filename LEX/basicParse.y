@@ -405,16 +405,26 @@ void addStringOp(int op, char *data) {
 
 %%
 
-program: 		program '\n' programline
+program: 		programline programnewline program
 				| programline
 				;
 
-programline: 	label validstatement {
+programnewline:
+				'\n' {
+					linenumber++;
+					column=0;
 					addIntOp(OP_CURRLINE, linenumber);
 				}
-				| validstatement {
-					addIntOp(OP_CURRLINE, linenumber);
-				}
+				;
+				
+programline: 	label compoundstmt
+				| label compoundstmt B256REM
+				| compoundstmt
+				| compoundstmt B256REM
+				| label 
+				| label B256REM
+				| B256REM
+				| /* empty */
 				;
 
 label:			B256LABEL {
@@ -426,127 +436,24 @@ label:			B256LABEL {
 				}
 				;
 
-validstatement:	
-				compoundifelsestmt
-				| compoundifstmt
-				| compoundstmt
-				| functionstmt
-				| endfunctionstmt
-				| subroutinestmt
-				| endsubroutinestmt
-				| /*empty*/
-				;
-
-functionstmt:	B256FUNCTION B256VARIABLE functionvariablelist {
-					if (numifs>0) {
-						errorcode = COMPERR_FUNCTIONNOTHERE;
-						return -1;
-					}
-					//
-					// $2 is the symbol for the function - add the start to the label table
-					functionDefSymbol = $2;
-					functionType = FUNCTIONTYPEFLOAT;
-					//
-					// create jump around function definition (use nextifid and 0 for jump after)
-					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-					//
-					// create the new if frame for this function
-					labeltable[$2] = wordOffset;
-					newIf(linenumber, IFTABLETYPEFUNCTION);
-					//
-					// initialize return variable
-					addIntOp(OP_PUSHINT, 0);
-					addIntOp(OP_NUMASSIGN, $2);
-					//
-					// check to see if there are enough values on the stack
-					addIntOp(OP_PUSHINT, numargs);
-					addOp(OP_ARGUMENTCOUNTTEST);
-					//
-					// add the assigns of the function arguments
-					addOp(OP_INCREASERECURSE);
-					{ 	int t;
-						for(t=numargs-1;t>=0;t--) {
-							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-						}
-					}
-					numargs=0;	// clear the list for next function
-				}
-				| B256FUNCTION B256STRINGVAR functionvariablelist {
-					if (numifs>0) {
-						errorcode = COMPERR_FUNCTIONNOTHERE;
-						return -1;
-					}
-					//
-					// $2 is the symbol for the function - add the start to the label table
-					functionDefSymbol = $2;
-					functionType = FUNCTIONTYPESTRING;
-					//
-					// create jump around function definition (use nextifid and 0 for jump after)
-					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-					//
-					// create the new if frame for this function
-					labeltable[$2] = wordOffset;
-					newIf(linenumber, IFTABLETYPEFUNCTION);
-					// 
-					// initialize return variable
-					addStringOp(OP_PUSHSTRING, "");
-					addIntOp(OP_STRINGASSIGN, $2);
-					//
-					// check to see if there are enough values on the stack
-					addIntOp(OP_PUSHINT, numargs);
-					addOp(OP_ARGUMENTCOUNTTEST);
-					//
-					// add the assigns of the function arguments
-					addOp(OP_INCREASERECURSE);
-					{ 	int t;
-						for(t=numargs-1;t>=0;t--) {
-							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-						}
-					}
-					numargs=0;	// clear the list for next function
-				}
-				;
-
-subroutinestmt:
-				B256SUBROUTINE B256VARIABLE functionvariablelist {
-					if (numifs>0) {
-						errorcode = COMPERR_FUNCTIONNOTHERE;
-						return -1;
-					}
-					//
-					// $2 is the symbol for the subroutine - add the start to the label table
-					subroutineDefSymbol = $2;
-					//
-					// create jump around subroutine definition (use nextifid and 0 for jump after)
-					addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-					// 
-					// create the new if frame for this subroutine
-					labeltable[$2] = wordOffset;
-					newIf(linenumber, IFTABLETYPEFUNCTION);
-					//
-					// check to see if there are enough values on the stack
-					addIntOp(OP_PUSHINT, numargs);
-					addOp(OP_ARGUMENTCOUNTTEST);
-					//
-					// add the assigns of the function arguments
-					addOp(OP_INCREASERECURSE);
-					{ 	int t;
-						for(t=numargs-1;t>=0;t--) {
-							if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
-							if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
-						}
-					}
-					numargs=0;	// clear the list for next function
-				}
-				;
+functionvariable:
+			B256VARIABLE {
+				args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+			}
+			| B256STRINGVAR {
+				args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+			}
+			| B256REF '(' B256VARIABLE ')' {
+				args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+			}
+			| B256REF '(' B256STRINGVAR ')' {
+				args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+			}
+			;
 
 functionvariablelist:
 				'(' ')'
@@ -558,113 +465,6 @@ functionvariables:
 				functionvariable
 				| functionvariable ',' functionvariables
 				;
-
-functionvariable:
-				B256VARIABLE {
-					args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
-					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-				}
-				| B256STRINGVAR {
-					args[numargs] = $1; argstype[numargs] = ARGSTYPESTR; numargs++;
-					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-				}
-				| B256REF '(' B256VARIABLE ')' {
-					args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
-					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-				}
-				| B256REF '(' B256STRINGVAR ')' {
-					args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREFSTR; numargs++;
-					//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
-				}
-				;
-
-
-endfunctionstmt:
-				B256ENDFUNCTION {
-					if (numifs>0) {
-					if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
-						//
-						// add return if there is not one
-						addIntOp(OP_FUNCRETURN, functionDefSymbol);
-						addOp(OP_DECREASERECURSE);
-						addOp(OP_RETURN);
-						//
-						// add address for jump around function definition
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-						functionDefSymbol = -1; 
-						//
-						numifs--;
-					// 
-					} else {
-						errorcode = testIfOnTableError(numincludes);
-						linenumber = testIfOnTable(numincludes);
-						return -1;
-					}
-				} else {
-					errorcode = COMPERR_ENDFUNCTION;
-					return -1;
-				}
-			}
-			;
-
-endsubroutinestmt:
-			B256ENDSUBROUTINE {
-				if (numifs>0) {
-					if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
-						addOp(OP_DECREASERECURSE);
-						addOp(OP_RETURN);
-						//
-						// add address for jump around function definition
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-						subroutineDefSymbol = -1; 
-						//
-						numifs--;
-					} else {
-						errorcode = testIfOnTableError(numincludes);
-						linenumber = testIfOnTable(numincludes);
-						return -1;
-					}
-				} else {
-					errorcode = COMPERR_ENDFUNCTION;
-					return -1;
-				}
-			}
-			;
-
-compoundifelsestmt:
-			compoundifelse compoundstmt {
-				//
-				// resolve the label on the else to the current location
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-				numifs--;
-			}
-			;
-
-compoundifelse:
-			ifstmt compoundstmt B256ELSE {
-				//
-				// create jump around from end of the THEN to end of the ELSE
-				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				//
-				// jump point for else
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-				numifs--;
-				//
-				// put new if on the frame for the else
-				newIf(linenumber, IFTABLETYPEELSE);
-			}
-			;
-
-compoundifstmt: 
-			ifstmt compoundstmt {
-				// if there is an if branch or jump on the iftable stack get where it is
-				// in the wordcode array and then resolve the lable
-				if (numifs>0) {
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-					numifs--;
-				}
-			}
-			;
 
 compoundstmt:
 			statement
@@ -698,8 +498,10 @@ statement:
 			| editvisiblestmt
 			| elsestmt
 			| endcasestmt
+			| endfunctionstmt
 			| endifstmt
 			| endstmt
+			| endsubroutinestmt
 			| endtrystmt	
 			| endwhilestmt
 			| exitdostmt
@@ -708,12 +510,15 @@ statement:
 			| fastgraphicsstmt
 			| fontstmt
 			| forstmt
+			| functionstmt
 			| globalstmt
 			| gosubstmt
 			| gotostmt
 			| graphsizestmt
 			| graphvisiblestmt
 			| ifstmt
+			| ifthenstmt
+			| ifthenelsestmt
 			| imgloadstmt
 			| imgsavestmt
 			| inputstmt
@@ -759,6 +564,7 @@ statement:
 			| spriteshowstmt
 			| spriteslicestmt
 			| stampstmt
+			| subroutinestmt
 			| systemstmt
 			| textstmt
 			| throwerrorstmt
@@ -1007,6 +813,41 @@ ifstmt:		B256IF floatexpr B256THEN {
 					//
 					// put new if on the frame for the IF
 					newIf(linenumber, IFTABLETYPEIF);
+			}
+			;
+
+ifthenstmt: 
+			ifstmt compoundstmt {
+				// if there is an if branch or jump on the iftable stack get where it is
+				// in the wordcode array and then resolve the lable
+				if (numifs>0) {
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+					numifs--;
+				}
+			}
+			;
+			
+ifthenelsestmt:
+			ifthenelse compoundstmt {
+				//
+				// resolve the label on the else to the current location
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				numifs--;
+			}
+			;
+
+ifthenelse:
+			ifstmt compoundstmt B256ELSE {
+				//
+				// create jump around from end of the THEN to end of the ELSE
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// jump point for else
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				numifs--;
+				//
+				// put new if on the frame for the else
+				newIf(linenumber, IFTABLETYPEELSE);
 			}
 			;
 
@@ -2530,6 +2371,171 @@ printerpagestmt:
 				addOp(OP_PRINTERPAGE);
 			}
 			;
+
+functionstmt:
+			B256FUNCTION B256VARIABLE functionvariablelist {
+				if (numifs>0) {
+					errorcode = COMPERR_FUNCTIONNOTHERE;
+					return -1;
+				}
+				//
+				// $2 is the symbol for the function - add the start to the label table
+				functionDefSymbol = $2;
+				functionType = FUNCTIONTYPEFLOAT;
+				//
+				// create jump around function definition (use nextifid and 0 for jump after)
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// create the new if frame for this function
+				labeltable[$2] = wordOffset;
+				newIf(linenumber, IFTABLETYPEFUNCTION);
+				//
+				// initialize return variable
+				addIntOp(OP_PUSHINT, 0);
+				addIntOp(OP_NUMASSIGN, $2);
+				//
+				// check to see if there are enough values on the stack
+				addIntOp(OP_PUSHINT, numargs);
+				addOp(OP_ARGUMENTCOUNTTEST);
+				//
+				// add the assigns of the function arguments
+				addOp(OP_INCREASERECURSE);
+				{ 	int t;
+					for(t=numargs-1;t>=0;t--) {
+						if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+					}
+				}
+				numargs=0;	// clear the list for next function
+			}
+			| B256FUNCTION B256STRINGVAR functionvariablelist {
+				if (numifs>0) {
+					errorcode = COMPERR_FUNCTIONNOTHERE;
+					return -1;
+				}
+				//
+				// $2 is the symbol for the function - add the start to the label table
+				functionDefSymbol = $2;
+				functionType = FUNCTIONTYPESTRING;
+				//
+				// create jump around function definition (use nextifid and 0 for jump after)
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				//
+				// create the new if frame for this function
+				labeltable[$2] = wordOffset;
+				newIf(linenumber, IFTABLETYPEFUNCTION);
+				// 
+				// initialize return variable
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_STRINGASSIGN, $2);
+				//
+				// check to see if there are enough values on the stack
+				addIntOp(OP_PUSHINT, numargs);
+				addOp(OP_ARGUMENTCOUNTTEST);
+				//
+				// add the assigns of the function arguments
+				addOp(OP_INCREASERECURSE);
+				{ 	int t;
+					for(t=numargs-1;t>=0;t--) {
+						if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+					}
+				}
+				numargs=0;	// clear the list for next function
+			}
+			;
+
+subroutinestmt:
+			B256SUBROUTINE B256VARIABLE functionvariablelist {
+				if (numifs>0) {
+					errorcode = COMPERR_FUNCTIONNOTHERE;
+					return -1;
+				}
+				//
+				// $2 is the symbol for the subroutine - add the start to the label table
+				subroutineDefSymbol = $2;
+				//
+				// create jump around subroutine definition (use nextifid and 0 for jump after)
+				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				// 
+				// create the new if frame for this subroutine
+				labeltable[$2] = wordOffset;
+				newIf(linenumber, IFTABLETYPEFUNCTION);
+				//
+				// check to see if there are enough values on the stack
+				addIntOp(OP_PUSHINT, numargs);
+				addOp(OP_ARGUMENTCOUNTTEST);
+				//
+				// add the assigns of the function arguments
+				addOp(OP_INCREASERECURSE);
+				{ 	int t;
+					for(t=numargs-1;t>=0;t--) {
+						if (argstype[t]==ARGSTYPEINT) addIntOp(OP_NUMASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPESTR) addIntOp(OP_STRINGASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVARREFSTR) addIntOp(OP_VARREFSTRASSIGN, args[t]);
+					}
+				}
+				numargs=0;	// clear the list for next function
+			}
+			;
+
+endfunctionstmt:
+			B256ENDFUNCTION {
+				if (numifs>0) {
+				if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+					//
+					// add return if there is not one
+					addIntOp(OP_FUNCRETURN, functionDefSymbol);
+					addOp(OP_DECREASERECURSE);
+					addOp(OP_RETURN);
+					//
+					// add address for jump around function definition
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+					functionDefSymbol = -1; 
+					//
+					numifs--;
+				// 
+				} else {
+					errorcode = testIfOnTableError(numincludes);
+					linenumber = testIfOnTable(numincludes);
+					return -1;
+				}
+			} else {
+				errorcode = COMPERR_ENDFUNCTION;
+				return -1;
+			}
+		}
+		;
+
+endsubroutinestmt:
+		B256ENDSUBROUTINE {
+			if (numifs>0) {
+				if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+					addOp(OP_DECREASERECURSE);
+					addOp(OP_RETURN);
+					//
+					// add address for jump around function definition
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+					subroutineDefSymbol = -1; 
+					//
+					numifs--;
+				} else {
+					errorcode = testIfOnTableError(numincludes);
+					linenumber = testIfOnTable(numincludes);
+					return -1;
+				}
+			} else {
+				errorcode = COMPERR_ENDFUNCTION;
+				return -1;
+			}
+		}
+		;
+
 
 
 

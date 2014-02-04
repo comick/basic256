@@ -858,9 +858,9 @@ Interpreter::compileProgram(char *code) {
         if (strlen(parsewarningtablelexingfilename[i])!=0) {
             msg += tr(" in included file ") + QString(parsewarningtablelexingfilename[i]);
         } else {
-            emit(goToLine(parsewarningtablelinenumber[i]-(parsewarningtablecolumn[i]==0?1:0)));
+            emit(goToLine(parsewarningtablelinenumber[i]));
         }
-        msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]-(parsewarningtablecolumn[i]==0?1:0)) + tr(": ");
+        msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]) + tr(": ");
         switch(parsewarningtable[i]) {
             case COMPWARNING_MAXIMUMWARNINGS:
                 msg += tr("The maximum number of compiler warnings have been displayed");
@@ -884,9 +884,9 @@ Interpreter::compileProgram(char *code) {
         if (strlen(lexingfilename)!=0) {
             msg += tr(" in included file ") + QString(lexingfilename);
         } else {
-            emit(goToLine(linenumber-(column==0?1:0)));
+            emit(goToLine(linenumber));
         }
-        msg += tr(" on line ") + QString::number(linenumber-(column==0?1:0)) + tr(": ");
+        msg += tr(" on line ") + QString::number(linenumber) + tr(": ");
         switch(result) {
             case COMPERR_ASSIGNS2N:
                 msg += tr("Error assigning a string to a numeric variable");
@@ -1002,7 +1002,7 @@ Interpreter::compileProgram(char *code) {
 
             default:
                 if(column==0) {
-                    msg += tr("Syntax error around end of line");
+                    msg += tr("Syntax error around beginning line");
                 } else {
                     msg += tr("Syntax error around column ") + QString::number(column);
                 }
