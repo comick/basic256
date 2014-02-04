@@ -1,0 +1,52 @@
+# testsuite_mouse_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20140204	j.m.reneau	added all of the various forms of remark
+
+# macos and android do not have 3 button mouses
+
+rightbutton = ostype=0 or ostype=1
+centerbutton = ostype=0 or ostype=1
+
+clg
+penwidth 1
+color blue
+rect 100,100,20,20
+color red
+rect 100,130,20,20
+color green
+circle 110,170,10
+color black
+circle 110,220,10
+refresh
+
+print "left click on the blue rectangle"
+clickclear
+while clickb <> 1
+   pause .01
+end while
+call n("left click blue",pixel(clickx, clicky),blue)
+
+if rightbutton then
+print "RIGHT click on the green circle"
+clickclear
+while clickb <> 2
+   pause .01
+end while
+call n("right click green",pixel(clickx, clicky),green)
+endif
+
+if centerbutton then
+   print "CENTER click on the RED rectangle"
+   clickclear
+   while clickb <> 4
+      pause .01
+   end while
+   call n("center click red",pixel(clickx, clicky),red)
+end if
+
+print "move mouse over black dot"
+while pixel(mousex, mousey)<> black
+   pause .01
+end while

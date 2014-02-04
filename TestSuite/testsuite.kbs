@@ -167,26 +167,31 @@ input "input the string 'abcd' ?", a
 call n("input prompt bad #",a,0)
 input "Press enter?", a
 call s("input enter #",a,0)
-print "Press the space bar"
-# debounce
-do
-   a = key
-until a = 0
-# get key
-do
-   a = key
-until a <> 0
-call n("key space",a,32)
-print "Press the shift key."
-# debounce
-do
-   a = key
-until a = 0
-# get key
-do
-   a = key
-until a <> 0
-call n("key shift",a,16777248)
+
+## key
+if ostype() <> 3 then
+   print "Press the space bar"
+   # debounce
+   do
+      a = key
+   until a = 0
+   # get key
+   do
+      a = key
+   until a <> 0
+   call n("key space",a,32)
+   print "Press the shift key."
+   # debounce
+   do
+      a = key
+   until a = 0
+   # get key
+   do
+      a = key
+   until a <> 0
+   call n("key shift",a,16777248)
+end if
+
 a$=prompt("Click OK to accept the default","abcd")
 call s("prompt dialog default",a$,"abcd")
 a$=prompt("Change the value and click cancel","abcd")
@@ -369,41 +374,7 @@ call q("stamp growing and rotating black triangle red border?")
 ###################################################
 call section("Mouse Functionality")
 ###################################################
-clg
-penwidth 1
-color blue
-rect 100,100,20,20
-color red
-rect 100,130,20,20
-color green
-circle 110,170,10
-color black
-circle 110,220,10
-refresh
-print "left click on the blue rectangle"
-clickclear
-while clickb <> 1
-   pause .01
-end while
-call n("left click blue",pixel(clickx, clicky),blue)
-print "RIGHT click on the green circle"
-clickclear
-while clickb <> 2
-   pause .01
-end while
-call n("right click green",pixel(clickx, clicky),green)
-if ostype()<>2 then
-   print "CENTER click on the RED rectangle"
-   clickclear
-   while clickb <> 4
-      pause .01
-   end while
-   call n("center click red",pixel(clickx, clicky),red)
-end if
-print "move mouse over black dot"
-while pixel(mousex, mousey)<> black
-   pause .01
-end while
+include "testsuite_mouse_include.kbs"
 
 
 
@@ -697,6 +668,11 @@ call section("If")
 include "testsuite_if_include.kbs"
 
 ###################################################
+call section("remark")
+###################################################
+include "testsuite_remark_include.kbs"
+
+###################################################
 call section("Test Random and fastgraphics")
 ###################################################
 clg
@@ -743,7 +719,7 @@ call n("FOR - Exit and Continue", total, 103)
 total = 0
 t = 0
 do
-t++
+   t++
    if t = 3 or t = 4 or t = 10 then
       print "continue do = skip " + t
       continue do
@@ -760,7 +736,7 @@ call n("DO - Exit and Continue", total, 103)
 total = 0
 t = 0
 while true
-t++
+   t++
    if t = 3 or t = 4 or t = 10 then
       print "continue while = skip " + t
       continue while
@@ -780,14 +756,14 @@ call section("Epsilon - Integer to Float Compare")
 ###################################################
 total = 0
 for t=1 to 10 step .00001
-if t=int(t) then print t;: total+= t
+   if t=int(t) then print t;: total+= t
 next t
 print " " + total
 call n("EPSILON - For INT", total, 55)
 #
 total = 0
 for t=10 to 1 step -.00001
-if t=int(t) then print t;: total+= t
+   if t=int(t) then print t;: total+= t
 next t
 print " " + total
 call n("EPSILON - For Backwards INT", total, 55)
