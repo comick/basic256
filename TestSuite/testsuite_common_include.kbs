@@ -60,4 +60,15 @@ subroutine s(message$,a$,b$)
    end if
 end subroutine
 
+subroutine sne(message$,a$,b$)
+   # test that a$ and b$ are not the same string
+   print "testing " + message$ + " not('" + a$ + "','" + b$ + "') ";
+   if a$ <> b$ then
+      print "pass"
+   else
+      print "fail"
+      end
+   end if
+end subroutine
+
 

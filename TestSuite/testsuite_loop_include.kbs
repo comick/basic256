@@ -1,0 +1,70 @@
+# testsuite_loop_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20140204	j.m.reneau	added crazy if structures when if/then/else
+#				moved to a statement and not a stand alone line (1010002)
+
+#test for
+total = 0
+for t = 1 to 100
+   if t = 3 or t = 4 or t = 10 then
+      print "continue for = skip " + t;
+      continuefor
+   end if
+   total = total + t
+   print t + " " + total;
+   if total > 100 then
+      print "exit for";
+      exit for
+   end if
+next t
+print
+call n("FOR - Exit and Continue", total, 103)
+
+#test for compound
+total = 0:for t = 1 to 100:if t = 3 or t = 4 or t = 10 then print "continue for = skip " + t;: continuefor
+total = total + t:print t + " " + total:if total > 100 then print "exit for";: exit for
+next t: print:call n("FOR compound - Exit and Continue", total, 103)
+
+# test do
+total = 0
+t = 0
+do
+   t++
+   if t = 3 or t = 4 or t = 10 then
+      print "continue do = skip " + t;
+      continue do
+   end if
+   total = total + t
+   print t + " " + total
+   if total > 100 then
+      print "exit do"
+      exit do
+   end if
+until t >= 100
+call n("DO - Exit and Continue", total, 103)
+
+# test do compound (single line showing off)
+total = 0:t = 0:do:t++:if t = 3 or t = 4 or t = 10 then :print "continue do = skip " + t:continue do: endif: total = total + t:print t + " " + total:if total > 100 then : print "exit do": exit do: endif: until t >= 100:call n("DO compound - Exit and Continue", total, 103)
+
+# test while
+total = 0
+t = 0
+while true
+   t++
+   if t = 3 or t = 4 or t = 10 then
+      print "continue while = skip " + t
+      continue while
+   end if
+   total = total + t
+   print t + " " + total
+   if total > 100 then
+      print "exit while"
+      exit while
+   end if
+end while
+call n("WHILE - Exit and Continue", total, 103)
+
+# test while comound
+total = 0:t = 0:while true:t++:if t = 3 or t = 4 or t = 10 then:print "continue while = skip " + t:continue while:end if:total = total + t:print t + " " + total:if total > 100 then:print "exit while":exit while:end if:end while:call n("WHILE compound - Exit and Continue", total, 103)

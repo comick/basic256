@@ -30,6 +30,7 @@
 #				out to own include so that they can be run independently
 # 20140203	j.m.reneau	added testsuite_if_include to test new if/then/else
 #				and begin case/case/end case
+# 20140204	j.m.reneau	updated to 1.1.0.2
 
 include "testsuite_common_include.kbs"
 
@@ -270,7 +271,7 @@ color darkgreen
 font "Tahoma",10,100
 text 10,200,"This is Tahoma!"
 call q("Font - Times and Tahoma")
-# need image load, stamp, and sprite tests
+
 
 
 ###################################################
@@ -281,53 +282,6 @@ say 3 + 7: call q("say ten")
 sound 440,500: call q("half second sound")
 sound {440,100,220,100,300,200} : call q("three sounds from list")
 # need wavplay
-
-###################################################
-call section("Sprites")
-###################################################
-spritedim 5
-clg
-# make the sprites from polys using the subroutine polysprite
-penwidth 3
-# two big right triangles
-points =  {0,0,200,0,100,100}
-penwidth 1
-color black,red
-spritepoly 0, {0,0,200,0,100,100}
-color black,green
-spritepoly 1, {0,0,200,0,100,100}
-# two small right triangles
-points =  {200,0,200,100,150,50}
-color black, blue
-spritepoly 2,{200,0,200,100,150,50}
-color black,yellow
-spritepoly 3,{50,0,50,100,0,50}
-# one medium triangle
-points =  {100,0,100,100,0,100}
-penwidth 2
-color black, cyan
-spritepoly 4, {100,0,100,100,0,100}
-color white
-rect 0,0,graphwidth, graphheight
-color black
-penwidth 1
-for t = 0 to graphwidth step 10
-   line 0,t,graphwidth,t
-   line t,0,t,graphheight
-next t
-refresh
-for t = 0 to 4
-   spriteshow t
-next t
-# move the sprites randomly scaled and rotated
-for t = 1 to 500
-   spriteplace int(rand*5), int(rand*graphwidth) , int(rand*graphheight),rand*2,int(2*pi*rand)
-   refresh
-next t
-for t = 0 to 4
-   spritehide t
-next t
-call q("sprite test - is the screen a clean grid?")
 
 ###################################################
 call section("IMGSave, IMGLoad, Kill and Exists")
@@ -400,152 +354,9 @@ include "testsuite_mouse_include.kbs"
 ###################################################
 
 ###################################################
-call section("Numeric Assignment")
+call section("String Assignment/Operations/Functions")
 ###################################################
-a = 1 : call n("a=1",a,1)
-call n("a=1 during a++",a++,1)
-call n("a=2 after a++",a,2)
-call n("a = 3 after ++a",++a,3)
-a += 7 : call n("a=10 after a+=7",a,10)
-a -= 7 : call n("a=3 after a-=7",a,3)
-a *= 7 : call n("a=21 after a*=7",a,21)
-a /= 2 : call n("a=10.5 after a/=2",a,10.5)
-
-###################################################
-call section("String Assignment")
-###################################################
-b$ = "string" : call s('b$ = "string"', b$, "string")
-b$ = 'string' : call s("b$ = 'string'", b$, 'string')
-b$ = 2.75 : call s("b$ = 2.75", b$, "2.75")
-b$ += "." : call s("b$ = '2.75.' after b+='.'", b$, "2.75.")
-b$ += 9 : call s("b$ = '2.75.9' after b+=9", b$, "2.75.9")
-
-###################################################
-call section("Strings")
-###################################################
-call n("asc('a')", asc("a"), 97)
-call n("chr(98)='b'", chr(98), "b")
-call n('count("Hello", "lo")', count("Hello", "lo"), 1)
-call n('count("Buffalo buffalo buffalo.","BUFFALO",true)', count("Buffalo buffalo buffalo.","BUFFALO",true), 3)
-call n('countx("Buffalo buffalo buffalo.","[Bb][u]")', countx("Buffalo buffalo buffalo.","[Bb][u]"), 3)
-c$ = Explode("How now brown cow"," ")
-call s("implode-", implode(c$,"-"), "How-now-brown-cow")
-call s("implode", implode(c$), "Hownowbrowncow")
-c = Explode("1,2,3.33,4.44,5.55",",")
-call s("implode, ", implode(c,", "), "1, 2, 3.33, 4.44, 5.55")
-call s("implode", implode(c), "123.334.445.55")
-call s("upper", upper('upper'), "UPPER")
-call s("lower", lower('LOWER'), "lower")
-call n('instr("Hello", "lo")',instr("Hello", "lo"),4)
-call n('instr("Hello", "xx")',instr("Hello", "xx"),0)
-call n('instr("101,222,333",",",5)',instr("101,222,333",",",5),8)
-call n('instrx("HeLLo", "[Ll]o")',instrx("HeLLo", "[Ll]o"),4)
-call n('instrx("Hello, Kitti","[Ii]",10)',instrx("Hello, Kitti","[Ii]",10),12)
-call s('left("Hello", 2)',left("Hello", 2),"He")
-call s('left("Hello", 999)',left("Hello", 999),"Hello")
-call s('left("Hello", 0)',left("Hello", 0),"")
-call s('right("Hello", 2)',right("Hello", 2),"lo")
-call s('right("Hello", 999)',right("Hello", 999),"Hello")
-call s('right("Hello", 0)',right("Hello", 0),"")
-call n('length("Hello")',length("Hello"),5)
-call n('length("")',length(""),0)
-call s('MD5("Something")',MD5("Something"),"73f9977556584a369800e775b48f3dbe")
-call s('MD5("something")',MD5("something"),"437b930db84b8079c2dd804a71936b5f")
-call s('mid("Hello", 2, 3)',mid("Hello", 2, 3),"ell")
-call s('mid("Hello", 2, 0)',mid("Hello", 2, 0),"")
-call s('mid("Hello", 2, 9999)',mid("Hello", 2, 9999),"ello")
-call s('replace("abababba","a","c")',replace("abababba","a","c"),"cbcbcbbc")
-call s('replace("abababba","q","c")',replace("abababba","q","c"),"abababba")
-call s('replace("abababba","ab","c")',replace("abababba","ab","c"),"cccba")
-b$ = "We all live in a yellow submarine, yellow submarine, yellow submarine."
-call s('Replacex(b$,"ye.*ow","blue")',Replacex(b$,"ye.*ow","blue"),"We all live in a blue submarine.")
-call s('Replacex(b$, "[wW]e", "Beatles")',Replacex(b$, "[wW]e", "Beatles"),"Beatles all live in a yellow submarine, yellow submarine, yellow submarine.")
-
-###################################################
-call section("Numeric Operations")
-###################################################
-call n("1+2", 1+2, 3)
-call n("2+1", 2+1, 3)
-call n("1-2", 1-2, -1)
-call n("2-1", 2-1, 1)
-call n("1*2", 1*2, 2)
-call n("2*1", 2*1, 2)
-call n("10/4", 10/4, 2.5)
-call n("4/10", 4/10, 0.4)
-call n("5%3", 5%3, 2)
-call n("3%5", 3%5, 3)
-call n("10\4", 10\4, 2)
-call n("4\10", 4\10, 0)
-call n("5.5%2.5", 5.5%2.5, .5)
-call n("5.5\2.5", 5.5\2.5, 2)
-
-###################################################
-call section("Order of Numeric Operations")
-###################################################
-call n("1+10/2", 1 + 10 / 2, 6)
-call n("(1+10)/2", (1+10) / 2, 5.5)
-call n("1-10*2", 1 - 10 * 2, -19)
-call n("(1-10)*2", (1-10) * 2, -18)
-
-###################################################
-call section("Integer Comparison")
-###################################################
-call n("1=1", 1=1, true)
-call n("1=2", 1=2, false)
-call n("1<>1", 1<>1, false)
-call n("1<>2", 1<>2, true)
-call n("1>0", 1>0, true)
-call n("1>1", 1>1, false)
-call n("1>2", 1>2, false)
-call n("1>=0", 1>=0, true)
-call n("1>=1", 1>=1, true)
-call n("1>=2", 1>=2, false)
-call n("1<0", 1<0, false)
-call n("1<1", 1<1, false)
-call n("1<2", 1<2, true)
-call n("1<=0", 1<=0, false)
-call n("1<=1", 1<=1, true)
-call n("1<=2", 1<=2, true)
-
-###################################################
-call section("Float Comparison")
-###################################################
-call n("1.34=1.34", 1.34=1.34, true)
-call n("1.34=3.56", 1.34=3.56, false)
-call n("1.34<>1.34", 1.34<>1.34, false)
-call n("1.34<>3.56", 1.34<>3.56, true)
-call n("1.34>0.78", 1.34>0.78, true)
-call n("1.34>1.34", 1.34>1.34, false)
-call n("1.34>3.56", 1.34>3.56, false)
-call n("1.34>=0.78", 1.34>=0.78, true)
-call n("1.34>=1.34", 1.34>=1.34, true)
-call n("1.34>=3.56", 1.34>=3.56, false)
-call n("1.34<0.78", 1.34<0.78, false)
-call n("1.34<1.34", 1.34<1.34, false)
-call n("1.34<3.56", 1.34<3.56, true)
-call n("1.34<=0.78", 1.34<=0.78, false)
-call n("1.34<=1.34", 1.34<=1.34, true)
-call n("1.34<=3.56", 1.34<=3.56, true)
-
-###################################################
-call section("String Comparison")
-###################################################
-call n("'bb'='bb'", "bb"="bb", true)
-call n("'bb'='cc'", "bb"="cc", false)
-call n("'bb'<>'bb'", "bb"<>"bb", false)
-call n("'bb'<>'cc'", "bb"<>"cc", true)
-call n("'bb'>'aa'", "bb">"aa", true)
-call n("'bb'>'bb'", "bb">"bb", false)
-call n("'bb'>'cc'", "bb">"cc", false)
-call n("'bb'>='aa'", "bb">="aa", true)
-call n("'bb'>='bb'", "bb">="bb", true)
-call n("'bb'>='cc'", "bb">="cc", false)
-call n("'bb'<'aa'", "bb"<"aa", false)
-call n("'bb'<'bb'", "bb"<"bb", false)
-call n("'bb'<'cc'", "bb"<"cc", true)
-call n("'bb'<='aa'", "bb"<="aa", false)
-call n("'bb'<='bb'", "bb"<="bb", true)
-call n("'bb'<='cc'", "bb"<="cc", true)
+include "testsuite_string_include.kbs"
 
 ###################################################
 call section("RADIX Conversion")
@@ -560,6 +371,25 @@ call n("22 (36) -> 74", fromradix("22",36), 74)
 ###################################################
 call section("Functions and Subroutines")
 ###################################################
+function funone(a, ref(b), c$, ref(d$))
+   # old way of returning (prev to 0.9.9.21)
+   a *= 2
+   funone = a + b
+   c$ = funtwo$(ref(b), ref(d$))
+end function
+
+function funtwo$(ref(r), ref(s$))
+   r *=3
+   s$ += s$
+   return "squiggy"
+end function
+
+subroutine subone(a, b$)
+   # set globals
+   globala += a
+   globalb$ += b$
+end subroutine
+
 global globala, globalb$
 globala = 99
 globalb$ = "globalb"
@@ -574,83 +404,14 @@ call n("a=27 return from funone",a,27)
 call s("b$='hihi' return from funone",b$,"hihi")
 
 ###################################################
-call section("Error Trapping - ONERROR")
+call section("Error Trapping - OnError and Try/Catch")
 ###################################################
-onerror errortrap
-print 8 / 0
-call n("trap div zero", lasterror, 50)
-throwerror 888
-call n("trap throw 888", lasterror, 888)
-offerror
+include "testsuite_error_include.kbs"
 
 ###################################################
-call section("Error Trapping - Try Catch")
+call section("Integer/Float/Math")
 ###################################################
-onerror trycatchtest
-a = 0
-try
-   a = a + 1
-   try
-      a = a + 16
-      throwerror 9999
-      a = a + 32
-   catch
-      a = a + 64
-      #error in catch actually back at previous level
-      throwerror 9999
-      a = a + 8
-   end try
-   a = a + 2
-catch
-   a = a + 4
-   try
-      a = a + 128
-      throwerror 9999
-      a = a + 256
-   catch
-      a = a + 512
-      # error in catch/catch back in onerror
-      throwerror 9999
-      a = a + 1024
-   end try
-   a = a + 8
-end try
-offerror
-call n("a=3805 try/catch",a,3805)
-
-###################################################
-call section("Math Functions")
-###################################################
-call n("abs(-9)", abs(-9), 9)
-call n("abs(-9.8)", abs(-9.8), 9.8)
-call n("abs(5.4)", abs(5.4), 5.4)
-call nclose("acos(1)", acos(1), 0)
-call nclose("acos(0)", acos(0), pi/2)
-call nclose("asin(1)", asin(1), pi/2)
-call nclose("asin(0)", asin(0), 0)
-call nclose("atan(1)", atan(1), pi/4)
-call nclose("atab(0)", atan(0), 0)
-call n("ceil(9.1)", ceil(9.1), 10)
-call n("ceil(-5.4)", ceil(-5.4), -5)
-call nclose("cos(pi/2)", cos(pi/2), 0)
-call nclose("cos(0)", cos(0),1)
-call nclose("sin(pi/2)", sin(pi/2), 1)
-call nclose("sin(0)", sin(0), 0)
-call nclose("tan(pi/4)", tan(pi/4), 1)
-call nclose("tab(0)", tan(0), 0)
-call nclose("exp(1)", exp(1), 2.718282)
-call nclose("exp(log(10))", exp(log(10)), 10)
-call nclose("log10(100)", log10(100), 2)
-call nclose("radians(0)", radians(0), 0)
-call nclose("radians(180)", radians(180), pi)
-call nclose("degrees(0)", degrees(0), 0)
-call nclose("degrees(pi)", degrees(pi), 180)
-call nclose("sqr(2)=2^.5",sqr(2),2^.5)
-call nclose("sqrt(5)=5^.5",sqrt(5),5^.5)
-call n("int(-9)", int(-9), -9)
-call n("int(-9.8)", int(-9.9), -9)
-call n("int(5.4)", int(5.4), 5)
-call n("int(0)", int(0), 0)
+include "testsuite_math_include.kbs"
 
 ###################################################
 call section("File I/O")
@@ -701,72 +462,12 @@ call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
 ###################################################
 call section("Loops with Exit and Continue")
 ###################################################
-total = 0
-for t = 1 to 100
-   if t = 3 or t = 4 or t = 10 then
-      print "continue for = skip " + t
-      continuefor
-   end if
-   total = total + t
-   print t + " " + total
-   if total > 100 then
-      print "exit for"
-      exit for
-   end if
-next t
-call n("FOR - Exit and Continue", total, 103)
-# test do
-total = 0
-t = 0
-do
-   t++
-   if t = 3 or t = 4 or t = 10 then
-      print "continue do = skip " + t
-      continue do
-   end if
-   total = total + t
-   print t + " " + total
-   if total > 100 then
-      print "exit do"
-      exit do
-   end if
-until t >= 100
-call n("DO - Exit and Continue", total, 103)
-# test while
-total = 0
-t = 0
-while true
-   t++
-   if t = 3 or t = 4 or t = 10 then
-      print "continue while = skip " + t
-      continue while
-   end if
-   total = total + t
-   print t + " " + total
-   if total > 100 then
-      print "exit while"
-      exit while
-   end if
-end while
-call n("WHILE - Exit and Continue", total, 103)
-
+include "testsuite_loop_include.kbs"
 
 ###################################################
-call section("Epsilon - Integer to Float Compare")
+call section("Sprites")
 ###################################################
-total = 0
-for t=1 to 10 step .00001
-   if t=int(t) then print t;: total+= t
-next t
-print " " + total
-call n("EPSILON - For INT", total, 55)
-#
-total = 0
-for t=10 to 1 step -.00001
-   if t=int(t) then print t;: total+= t
-next t
-print " " + total
-call n("EPSILON - For Backwards INT", total, 55)
+include "testsuite_sprite_include.kbs"
 
 
 
@@ -788,29 +489,4 @@ alert "All tests passed"
 end
 
 
-trycatchtest: # error trap for trycatch
-a+= 2048
-return
 
-subroutine errortrap()
-   # do nothing but return so I can see error
-end subroutine
-
-function funone(a, ref(b), c$, ref(d$))
-   # old way of returning (prev to 0.9.9.21)
-   a *= 2
-   funone = a + b
-   c$ = funtwo$(ref(b), ref(d$))
-end function
-
-function funtwo$(ref(r), ref(s$))
-   r *=3
-   s$ += s$
-   return "squiggy"
-end function
-
-subroutine subone(a, b$)
-   # set globals
-   globala += a
-   globalb$ += b$
-end subroutine

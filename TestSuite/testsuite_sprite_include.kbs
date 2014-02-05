@@ -1,0 +1,65 @@
+# testsuite_sprite_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20140204	j.m.reneau	added crazy if structures when if/then/else
+#				moved to a statement and not a stand alone line (1010002)
+
+spritedim 5
+clg
+# make the sprites from polys using the subroutine polysprite
+penwidth 3
+# two big right triangles
+points =  {0,0,200,0,100,100}
+penwidth 1
+color black,red
+spritepoly 0, {0,0,200,0,100,100}
+color black,green
+spritepoly 1, {0,0,200,0,100,100}
+# two small right triangles
+points =  {200,0,200,100,150,50}
+color black, blue
+spritepoly 2,{200,0,200,100,150,50}
+color black,yellow
+spritepoly 3,{50,0,50,100,0,50}
+# one medium triangle
+points =  {100,0,100,100,0,100}
+penwidth 2
+color black, cyan
+spritepoly 4, {100,0,100,100,0,100}
+
+# draw a black and white pattern on the screen for under the sprites
+color white
+rect 0,0,graphwidth, graphheight
+color black
+penwidth 1
+for t = 0 to graphwidth step 10
+   line 0,t,graphwidth,t
+   line t,0,t,graphheight
+next t
+refresh
+
+# calculate the md5 hash of the screen
+originalscreen$ = md5(getslice(0,0,graphwidth, graphheight))
+
+for t = 0 to 4
+   spriteshow t
+next t
+
+# move the sprites randomly scaled and rotated
+for t = 1 to 500
+   spriteplace int(rand*5), int(rand*graphwidth) , int(rand*graphheight),rand*2,int(2*pi*rand)
+refresh
+next t
+
+newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
+call sne("Screen different with sprites",originalscreen$,newscreen$)
+
+for t = 0 to 4
+   spritehide t
+next t
+
+# calculate the md5 hash of the screen
+newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
+
+call s("Screen same after sprites",originalscreen$,newscreen$)
