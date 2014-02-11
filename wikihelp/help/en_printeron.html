@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>en:printeron [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-02-08T19:38:32-0700"/>
+<meta name="keywords" content="en,printeron"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/en:printeron&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:printeron"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:printeron"/>
+<link rel="canonical" href="./en_printeron.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_printeron.html" class="wikilink1" title="en:printeron">printeron</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>en:printeron</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="printeron_statement">PrinterOn (Statement)</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+<strong>printeron</strong><br/>
+
+<strong>printer on</strong>
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Turns printing on.  Once printing is on the graphics commands <a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a>, <a href="./en_color.html" class="wikilink1" title="en:color">Color</a>, <a href="./en_imgload.html" class="wikilink1" title="en:imgload">Imgload</a>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_penwidth.html" class="wikilink1" title="en:penwidth">PenWidth</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>, and <a href="./en_text.html" class="wikilink1" title="en:text">Text</a>  will draw on the printer page and not the graphics area of the screen. <a href="./en_graphheight.html" class="wikilink1" title="en:graphheight">Graphheight</a>, <a href="./en_graphwidth.html" class="wikilink1" title="en:graphwidth">Graphwidth</a>, <a href="./en_textheight.html" class="wikilink1" title="en:textheight">TextHeight</a>, and <a href="./en_textwidth.html" class="wikilink1" title="en:textwidth">TextWidth</a> also reports information about the printer graphical page.
+</p>
+
+<p>
+Once the printer pages are rendered the <a href="./en_printeroff.html" class="wikilink1" title="en:printeroff">printeroff</a> statement sends the print document to the selected printer or to a PDF file.  The device and device options can be setup from the Edit/Printer Preferences menu option.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code">printer on
+font &quot;Arial&quot;, 20, 50
+for l = 0 to 10
+   text 0,l*textheight(), &quot;line &quot; + l
+next l
+printer off</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="see_also">See Also</h3>
+<div class="level3">
+
+</div>
+<div class="plugin_include_content plugin_include__en:start">
+<div class="level3">
+
+<p>
+<a href="./en_printercancel.html" class="wikilink1" title="en:printercancel">Printercancel</a>, <a href="./en_printeroff.html" class="wikilink1" title="en:printeroff">Printeroff</a>, <span class="curid"><a href="./en_printeron.html" class="wikilink1" title="en:printeron">Printeron</a></span>, <a href="./en_printerpage.html" class="wikilink1" title="en:printerpage">Printerpage</a>
+</p>
+
+</div>
+
+</div>
+<div class="level3">
+
+</div>
+
+<h3 class="sectionedit9" id="history">History</h3>
+<div class="level3">
+<div class="table sectionedit10"><table class="inline">
+	<tr class="row0">
+		<td class="col0">0.9.9.70</td><td class="col1">New To Version</td>
+	</tr>
+</table></div>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>en/printeron.txt</bdi> · Last modified: 2014/02/08 19:38 by <bdi>admin</bdi></div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

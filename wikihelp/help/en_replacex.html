@@ -2,32 +2,30 @@
 <html lang="en" dir="ltr" class="no-js">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
     <title>en:replacex [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-18T12:20:16-0700"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-02-09T20:49:59-0700"/>
 <meta name="keywords" content="en,replacex"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
 <link rel="contents" href="http://doc.basic256.org/en:replacex&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:replacex"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:replacex"/>
 <link rel="canonical" href="./en_replacex.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
     </head>
 
 <body>
     <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top"
-        class="dokuwiki site mode_show  ">
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
 
         
 <!-- ********** HEADER ********** -->
@@ -49,7 +47,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_replacex.html" class="wikilink1" title="en:replacex">replacex</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_replacex.html" class="wikilink1" title="en:replacex">replacex</a></span></bdi></div>
 
     
     
@@ -67,7 +65,7 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
 
-<h2 class="sectionedit1" id="replacex">Replacex</h2>
+<h2 class="sectionedit1" id="replacex_function">Replacex (Function)</h2>
 <div class="level2">
 
 </div>
@@ -76,7 +74,11 @@
 <div class="level3">
 
 <p>
-<strong>replacex</strong> ( <em>haystack</em> , <em>regex</em> , <em>tostring</em> )
+<strong>replacex</strong> ( <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr<span class="tooltip">string expression to search in</span></a></em> , <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr<span class="tooltip">string containing a regular expression </span></a></em> , <em><a class="explain" href="./en_expressions.html#string_expressions">string_expr<span class="tooltip">string expression</span></a></em> )
+</p>
+
+<p>
+returns <em><a class="explain" href="./en_replacex.html">string_value<span class="tooltip">a string of zero or more characters</span></a></em>
 </p>
 
 </div>
@@ -85,7 +87,7 @@
 <div class="level3">
 
 <p>
-Return a new string where all occurrences of substrings matching the regular expression <em>regex</em> are replaced by <em>tostring</em> in the string <em>haystack</em>.
+Return a new string where all occurrences of substrings matching the regular expression <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr<span class="tooltip">string containing a regular expression </span></a></em> are replaced by <em><a class="explain" href="./en_expressions.html#string_expressions">string_expr<span class="tooltip">string expression</span></a></em> in the string <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr<span class="tooltip">string expression to search in</span></a></em>.
 </p>
 
 </div>
@@ -104,19 +106,38 @@ Ouvi sopa e saí da sopa</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="new_to_version">New to Version</h3>
+<h3 class="sectionedit5" id="see_also">See Also</h3>
+<div class="level3">
+
+</div>
+<div class="plugin_include_content plugin_include__en:start">
 <div class="level3">
 
 <p>
-0.9.6.56
+<a href="./en_asc.html" class="wikilink1" title="en:asc">Asc</a>, <a href="./en_chr.html" class="wikilink1" title="en:chr">Chr</a>, <a href="./en_count.html" class="wikilink1" title="en:count">Count</a>, <a href="./en_countx.html" class="wikilink1" title="en:countx">Countx</a>, <a href="./en_explode.html" class="wikilink1" title="en:explode">Explode</a>, <a href="./en_explodex.html" class="wikilink1" title="en:explodex">Explodex</a>, <a href="./en_implode.html" class="wikilink1" title="en:implode">Implode</a>, <a href="./en_instr.html" class="wikilink1" title="en:instr">Instr</a>, <a href="./en_instrx.html" class="wikilink1" title="en:instrx">Instrx</a>, <a href="./en_left.html" class="wikilink1" title="en:left">Left</a>, <a href="./en_length.html" class="wikilink1" title="en:length">Length</a>, <a href="./en_lower.html" class="wikilink1" title="en:lower">Lower</a>, <a href="./en_md5.html" class="wikilink1" title="en:md5">MD5</a>, <a href="./en_mid.html" class="wikilink1" title="en:mid">Mid</a>, <a href="./en_replace.html" class="wikilink1" title="en:replace">Replace</a>, <span class="curid"><a href="./en_replacex.html" class="wikilink1" title="en:replacex">Replacex</a></span>, <a href="./en_right.html" class="wikilink1" title="en:right">Right</a>, <a href="./en_string.html" class="wikilink1" title="en:string">String</a>, <a href="./en_upper.html" class="wikilink1" title="en:upper">Upper</a>
 </p>
+
+</div>
+
+</div>
+<div class="level3">
+
+</div>
+
+<h3 class="sectionedit9" id="history">History</h3>
+<div class="level3">
+<div class="table sectionedit10"><table class="inline">
+	<tr class="row0">
+		<td class="col0">0.9.6.56</td><td class="col1">New to Version</td>
+	</tr>
+</table></div>
 
 </div>
 
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/replacex.txt · Last modified: 2012/12/18 12:20 by m_santos</div>
+                <div class="docInfo"><bdi>en/replacex.txt</bdi> · Last modified: 2014/02/09 20:49 by <bdi>admin</bdi></div>
 
                             </div></div><!-- /content -->
 
@@ -126,13 +147,10 @@ Ouvi sopa e saí da sopa</pre>
 
         </div><!-- /wrapper -->
 
-<form class="button" method="get" action="en_replacex.html">
-
-</form>
         
 <!-- ********** FOOTER ********** -->
 <div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
 
 </div></div><!-- /footer -->
 

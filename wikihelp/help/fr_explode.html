@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>fr:explode [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-08-29T12:45:06-0700"/>
+<meta name="keywords" content="fr,explode"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/fr:explode&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:explode"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:explode"/>
+<link rel="canonical" href="./fr_explode.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="./fr_explode.html" class="wikilink1" title="fr:explode">explode</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>fr:explode</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="explode">Explode</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+stringarrayvariable$ = <strong>explode</strong> ( <em>string</em> , <em>delimiter</em> )<br/>
+
+stringarrayvariable$ = <strong>explode</strong> ( <em>string</em> , <em>delimiter</em> , <em>caseinsensitive</em> )<br/>
+
+arrayvariable$ = <strong>explode</strong> ( <em>string</em> , <em>delimiter</em> )<br/>
+
+arrayvariable$ = <strong>explode</strong> ( <em>string</em> , <em>delimiter</em> , <em>caseinsensitive</em> )
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Découpe la chaîne de caractères <em>string</em> en plusieurs sous-chaînes, la séparation des sous-chaînes est détecté par <em>delimiter</em>. Les sous-chaînes sont renvoyées dans un tableau numérique ou de de chaînes de caractères. Le tableau sera automatiquement redimensionné pour loger le nombre exacte de sous-chaînes disponibles.<br/>
+
+Il est possible de spécifier un troisième paramètre (à vrai: <em>true</em>) pour indiquer que la recherche ne tiens pas compte de la casse.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
+<div class="level3">
+<pre class="code"># Sépare à chaque espace
+a$ = &quot;We all live in a yellow submarine.&quot;
+print a$
+w$ = explode(a$,&quot; &quot;)
+for t = 0 to w$[?]-1
+   print &quot;w$[&quot;+t+&quot;]=&quot; + w$[t]
+next t
+
+# Sépare à chaque A ou a
+a$ = &quot;klj;lkjalkjAlkj;&quot;
+print a$
+w$ = explode(a$,&quot;A&quot;,true)
+for t = 0 to w$[?]-1
+   print &quot;w$[&quot;+t+&quot;]=&quot; + w$[t]
+next t
+
+# Sépare chaque nombre à chaque virgule
+a$=&quot;1,2,3,77,foo,9.987,6.45&quot;
+print a$
+n = explode(a$,&quot;,&quot;)
+for t = 0 to n[?]-1
+   print &quot;n[&quot;+t+&quot;]=&quot; + n[t]
+next t</pre>
+
+<p>
+Affichera :
+</p>
+<pre class="code">We all live in a yellow submarine.
+w$[0]=We
+w$[1]=all
+w$[2]=live
+w$[3]=in
+w$[4]=a
+w$[5]=yellow
+w$[6]=submarine.
+klj;lkjalkjAlkj;
+w$[0]=klj;lkj
+w$[1]=lkj
+w$[2]=lkj;
+1,2,3,77,foo,9.987,6.45
+n[0]=1
+n[1]=2
+n[2]=3
+n[3]=77
+n[4]=0
+n[5]=9.987
+n[6]=6.45</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="disponible_depuis_la_version">Disponible depuis la version</h3>
+<div class="level3">
+
+<p>
+0.9.6.55
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>fr/explode.txt</bdi> · Last modified: 2013/08/29 12:45 by <bdi>philrich123</bdi></div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

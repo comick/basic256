@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>fr:arc [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-08-20T05:30:56-0700"/>
+<meta name="keywords" content="fr,arc"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/fr:arc&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:arc"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:arc"/>
+<link rel="canonical" href="./fr_arc.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="./fr_arc.html" class="wikilink1" title="fr:arc">arc</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>fr:arc</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="arc">Arc</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+<strong>arc</strong> <em>x</em>,<em>y</em>,<em>largeur</em>,<em>hauteur</em>,<em>angledebut</em>,<em>angleouverture</em><br/>
+
+<strong>arc</strong> ( <em>x</em>,<em>y</em>,<em>largeur</em>,<em>hauteur</em>,<em>angledebut</em>,<em>angleouverture</em> )
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Trace un arc de cercle ou d&#039;ellipse (partie de cercle ou d&#039;ellipse) dans le rectangle défini par <em>x</em>, <em>y</em>, <em>largeur</em>, <em>hauteur</em>. Le centre du cercle/ellipse est le centre du rectangle. Les angles sont définis depuis la position 12h00 et dans le sens des aiguilles d&#039;une montre en radian.
+</p>
+
+<p>
+Arc peut également être utilisé pour tracer un cercle ou une ellipse non remplie (vide) en passant 2*pi comme dernier paramètre et ainsi définir un arc faisant un tour complet.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code"># arc_example.kbs
+# 2012-12-29 j.m.reneau
+#
+# example of arc statement added on 0.9.9.25
+
+clg
+color black
+for t = 1 to 100 step 3
+   arc 150-t,150-t,t*2,t*2,0,pi*2*t/100
+next t</pre>
+
+<p>
+produira à l&#039;écran:<br/>
+
+<a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_arc&amp;media=arc_example.png" class="media" title="arc_example.png"><img src="lib/exe/arc_example.png" class="media" title="arc_example" alt="arc_example" /></a>
+</p>
+
+</div>
+
+<h3 class="sectionedit5" id="disponible_depuis_la_version">Disponible depuis la version</h3>
+<div class="level3">
+
+<p>
+0.9.9.25
+</p>
+
+</div>
+
+<h3 class="sectionedit6" id="see_also">See Also</h3>
+<div class="level3">
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>fr/arc.txt</bdi> · Last modified: 2013/08/20 05:30 by <bdi>philrich123</bdi></div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

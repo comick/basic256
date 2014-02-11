@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>fr:global [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2013-08-31T05:14:04-0700"/>
+<meta name="keywords" content="fr,global"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/fr:global&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:global"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:global"/>
+<link rel="canonical" href="./fr_global.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="./fr_global.html" class="wikilink1" title="fr:global">global</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>fr:global</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="global">Global</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+<strong>global</strong> <em>variable list</em><br/>
+
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+<strong>Global</strong> défini une liste de une ou plusieurs variables séparés par des virgules qui seront modifiables dans les sous-programmes <a href="./fr_subroutine.html" class="wikilink1" title="fr:subroutine">Subroutine</a> et les fonctions <a href="./fr_function.html" class="wikilink1" title="fr:function">Function</a>.Ces variables peuvent être des variables simples ou des tableaux.<br/>
+
+Les variables globales ne peuvent être définies qu&#039;en dehors de tout bloque et avant toute utilisation de <a href="./fr_function.html" class="wikilink1" title="fr:function">Function</a> ou <a href="./fr_subroutine.html" class="wikilink1" title="fr:subroutine">Subroutine</a>.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="exemple">Exemple</h3>
+<div class="level3">
+<pre class="code">global a, name$
+dim a(10)
+dim name$(10)
+a = {1,4,6,8,45,34,76,98,43,12}
+name$ = {&quot;Bob&quot;,&quot;Sue&quot;,&quot;Sam&quot;,&quot;Jim&quot;,&quot;Luis&quot;,&quot;Guido&quot;,&quot;Steve&quot;,&quot;Angela&quot;,&quot;Joe&quot;,&quot;Paul&quot;} 
+t = 99
+call printnames()
+print t + &quot; was unchanged - not global&quot;
+end
+
+subroutine printnames()
+  for t = 0 to name$[?] -1
+    print a[t] + &quot; &quot; + name$[t]
+  next t
+end subroutine</pre>
+
+<p>
+Affichera :<br/>
+
+</p>
+<pre class="code">1 Bob
+4 Sue
+6 Sam
+8 Jim
+45 Luis
+34 Guido
+76 Steve
+98 Angela
+43 Joe
+12 Paul
+99 was unchanged - not global</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
+<div class="level3">
+
+</div>
+<div class="plugin_include_content plugin_include__fr:start">
+<div class="level3">
+
+<p>
+<a href="./fr_call.html" class="wikilink1" title="fr:call">Call</a>, <a href="./fr_dountil.html" class="wikilink1" title="fr:dountil">Do / Until</a>, <a href="./fr_end.html" class="wikilink1" title="fr:end">End</a>, <a href="./fr_fornext.html" class="wikilink1" title="fr:fornext">For / Next</a>, <a href="./fr_function.html" class="wikilink1" title="fr:function">Function</a>, <span class="curid"><a href="./fr_global.html" class="wikilink1" title="fr:global">Global</a></span>, <a href="./fr_goto.html" class="wikilink1" title="fr:goto">Goto</a>, <a href="./fr_gosub.html" class="wikilink1" title="fr:gosub">Gosub</a>, <a href="./fr_ifthen.html" class="wikilink1" title="fr:ifthen">If / Then</a>, <a href="./fr_pause.html" class="wikilink1" title="fr:pause">Pause</a>, <a href="./fr_ref.html" class="wikilink1" title="fr:ref">Ref</a>, <a href="./fr_rem.html" class="wikilink1" title="fr:rem">Rem</a>, <a href="./fr_return.html" class="wikilink1" title="fr:return">Return</a>, <a href="./fr_subroutine.html" class="wikilink1" title="fr:subroutine">Subroutine</a>, <a href="./fr_whileendwhile.html" class="wikilink1" title="fr:whileendwhile">While / End While</a>
+</p>
+
+</div>
+
+</div>
+<div class="level3">
+
+</div>
+
+<h3 class="sectionedit9" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
+<div class="level3">
+
+<p>
+0.9.9.1
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>fr/global.txt</bdi> · Last modified: 2013/08/31 05:14 by <bdi>philrich123</bdi></div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

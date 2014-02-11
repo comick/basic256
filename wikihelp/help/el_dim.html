@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>el:dim [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2014-01-14T14:22:04-0700"/>
+<meta name="keywords" content="el,dim"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/el:dim&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:dim"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:dim"/>
+<link rel="canonical" href="./el_dim.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_dim.html" class="wikilink1" title="el:dim">dim</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>el:dim</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="dim">Dim</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3>
+<div class="level3">
+
+<p>
+<strong>dim</strong> <em>αριθμητικήΜεταβλητή</em> ( <em>ακέραιος</em> )<br/>
+
+<strong>dim</strong> <em>αλφαριθμητικήΜεταβλητή$</em> ( <em>ακέραιος</em> )<br/>
+
+<strong>dim</strong> <em>αριθμητικήΜεταβλητή</em> ( <em>σειρές</em> , <em>στήλες</em> )<br/>
+
+<strong>dim</strong> <em>αλφαριθμητικήΜεταβλητή$</em> ( <em>σειρές</em> , <em>στήλες</em> )
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3>
+<div class="level3">
+
+<p>
+Δημιουργεί έναν νέο μονοδιάστατο πίνακα μήκους <em>ακέραιος</em> ή έναν δισδιάστατο που μπορεί να προσπελαστεί με την χρήση των <em>σειρά</em> και <em>στήλη</em>. Αναλόγως της χρησιμοποιούμενης μεταβλητής δημιουργείται ένας αλφαριθμητικός ή αριθμητικός πίνακας.<br/>
+
+Το πρώτο στοιχείο ενός πίνακα έχει τον δείκτη 0 (μηδέν). Οι δείκτες έχουν τιμές από 0 έως (μήκος πίνακα)-1.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="δες_επίσης">Δες επίσης</h3>
+<div class="level3">
+
+</div>
+<div class="plugin_include_content plugin_include__en:start">
+<div class="level3">
+
+<p>
+<a href="./en_dim.html" class="wikilink1" title="en:dim">Dim</a>, <a href="./en_redim.html" class="wikilink1" title="en:redim">Redim</a>
+</p>
+
+</div>
+
+</div>
+<div class="level3">
+
+</div>
+
+<h3 class="sectionedit8" id="παράδειγμα">Παράδειγμα</h3>
+<div class="level3">
+<pre class="code">dim z(5)
+z = {1, 2, 3, 4, 5}
+print z[0] + &quot; &quot; + z[4]</pre>
+
+<p>
+θα απεικονίσει
+</p>
+<pre class="code">1 5</pre>
+
+</div>
+
+<h3 class="sectionedit9" id="παράδειγμα_δεύτερο">Παράδειγμα δεύτερο</h3>
+<div class="level3">
+<pre class="code">dim c$(4)
+c$ = {&quot;cow&quot;, &quot;brow&quot;, &quot;how&quot;, &quot;now&quot;}
+print c$[2] + &quot; &quot; + c$[3] + &quot; &quot;;
+print c$[1] + &quot; &quot; + c$[0] + &quot;?&quot;</pre>
+
+<p>
+θα απεικονίσει
+</p>
+<pre class="code">how now brown cow?</pre>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>el/dim.txt</bdi> · Last modified: 2014/01/14 14:22 by <bdi>apollyon</bdi></div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

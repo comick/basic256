@@ -1936,6 +1936,11 @@ spritepolystmt:
 				listlen=0;
 				addOp(OP_SPRITEPOLY_LIST);
 			}
+			| B256SPRITEPOLY '(' floatexpr ',' immediatelist ')' {
+				addIntOp(OP_PUSHINT, listlen);
+				listlen=0;
+				addOp(OP_SPRITEPOLY_LIST);
+			}
 			;
 
 spriteplacestmt: 

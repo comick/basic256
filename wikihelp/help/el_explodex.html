@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>el:explodex [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2014-01-11T23:26:27-0700"/>
+<meta name="keywords" content="el,explodex"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/el:explodex&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:explodex"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:explodex"/>
+<link rel="canonical" href="./el_explodex.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_explodex.html" class="wikilink1" title="el:explodex">explodex</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>el:explodex</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="explodex">Explodex</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+stringarrayvariable$ = <strong>explodex</strong> ( <em>string</em> , <em>regex</em> )<br/>
+
+arrayvariable$ = <strong>explodex</strong> ( <em>string</em> , <em>regex</em> )
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Splits up <em>string</em> into substrings wherever the regular expression <em>regex</em> occurs.  Substrings are stored in either the string or numeric array defined in the assignment statement.  The array will be re-dimensioned to the exact size to store all of the substrings. Unlike ExPLODE, EXPLODEX allows ignoring specific variations (case sentive, spelling etc), see example below ”[Aa][Nn][Dd]”.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="example">Example</h3>
+<div class="level3">
+<pre class="code"># explode on regex //[,]* //
+a$ = &quot;We all live in a yellow submarine, yellow submarine, yellow, submarine.&quot;
+w$ = explodex(a$,&quot;[,]* &quot;)
+for t = 0 to w$[?]-1
+   print &quot;w$[&quot;+t+&quot;]=&quot; + w$[t]
+next t
+
+# explode on regex //[Aa][Nn][Dd]//
+a$=&quot;1 and 2 AND 3 and 5 aND 99 AND 8.88 aNd 6.45&quot;
+n = explodex(a$,&quot;[Aa][Nn][Dd]&quot;)
+for t = 0 to n[?]-1
+   print &quot;n[&quot;+t+&quot;]=&quot; + n[t]
+next t</pre>
+
+<p>
+will display
+</p>
+<pre class="code">We all live in a yellow submarine.
+w$[0]=We
+w$[1]=all
+w$[2]=live
+w$[3]=in
+w$[4]=a
+w$[5]=yellow
+w$[6]=submarine
+w$[7]=yellow
+w$[8]=submarine
+w$[9]=yellow
+w$[10]=submarine.
+n[0]=1
+n[1]=2
+n[2]=3
+n[3]=5
+n[4]=99
+n[5]=8.88
+n[6]=6.45</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="new_to_version">New to Version</h3>
+<div class="level3">
+
+<p>
+0.9.6.56
+</p>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>el/explodex.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

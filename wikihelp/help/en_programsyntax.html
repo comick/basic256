@@ -2,32 +2,30 @@
 <html lang="en" dir="ltr" class="no-js">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
     <title>en:programsyntax [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-18T13:46:46-0700"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-02-06T11:32:39-0700"/>
 <meta name="keywords" content="en,programsyntax"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
 <link rel="contents" href="http://doc.basic256.org/en:programsyntax&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:programsyntax"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:programsyntax"/>
 <link rel="canonical" href="./en_programsyntax.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
     </head>
 
 <body>
     <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top"
-        class="dokuwiki site mode_show  ">
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
 
         
 <!-- ********** HEADER ********** -->
@@ -49,7 +47,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_programsyntax.html" class="wikilink1" title="en:programsyntax">programsyntax</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_programsyntax.html" class="wikilink1" title="en:programsyntax">programsyntax</a></span></bdi></div>
 
     
     
@@ -71,15 +69,32 @@
 <div class="level2">
 
 <p>
-BASIC-256 programs consist of a series of statements separated by newlines, which are executed in order.
+BASIC-256 programs consist of a series of statements separated by newlines, which are executed in order.  A line may optional begin with a label followed without a space with a colon to be used as a destination of a <a href="./en_goto.html" class="wikilink1" title="en:goto">goto</a>, <a href="./en_gosub.html" class="wikilink1" title="en:gosub">gosub</a>, or <a href="./en_onerror.html" class="wikilink1" title="en:onerror">onerror</a>.
 </p>
+
+<p>
+Multiple statements may be included on a single line by separating then with a : (colon).  Special care should be taken when including <a href="./en_if.html" class="wikilink1" title="en:if">if/then</a> statements in a compound line:
+</p>
+
+<p>
+The following is a sample program that shows single line statements, compound statements, and use of a label.
+</p>
+<pre class="code">print &quot;hello &quot;;
+gosub world
+end
+
+world: ### print out world
+print &quot;w&quot;;
+print &quot;o&quot;;: print &quot;r&quot;;: print chr(asc(&quot;a&quot;)+11);
+print right(&#039;Dd&#039;,1)
+return</pre>
 
 </div>
 
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/programsyntax.txt · Last modified: 2012/12/18 13:46 by m_santos</div>
+                <div class="docInfo"><bdi>en/programsyntax.txt</bdi> · Last modified: 2014/02/06 11:32 by <bdi>admin</bdi></div>
 
                             </div></div><!-- /content -->
 
@@ -89,13 +104,10 @@ BASIC-256 programs consist of a series of statements separated by newlines, whic
 
         </div><!-- /wrapper -->
 
-<form class="button" method="get" action="en_programsyntax.html">
-
-</form>
         
 <!-- ********** FOOTER ********** -->
 <div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
 
 </div></div><!-- /footer -->
 

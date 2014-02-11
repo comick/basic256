@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
+    <title>el:key [BASIC 256 - Language Documentation]</title>
+    
+    <meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="date" content="2014-01-11T23:26:32-0700"/>
+<meta name="keywords" content="el,key"/>
+<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
+<link rel="start" href="index.html"/>
+<link rel="contents" href="http://doc.basic256.org/el:key&amp;do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:key"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:key"/>
+<link rel="canonical" href="./el_key.html"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
+    </head>
+
+<body>
+    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
+
+        
+<!-- ********** HEADER ********** -->
+<div id="dokuwiki__header"><div class="pad group">
+
+    
+    <div class="headings group">
+
+        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
+            </div>
+
+    <div class="tools group">
+        <!-- USER TOOLS -->
+
+        
+        <!-- SITE TOOLS -->
+
+    </div>
+
+    <!-- BREADCRUMBS -->
+            <div class="breadcrumbs">
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_key.html" class="wikilink1" title="el:key">key</a></span></bdi></div>
+
+    
+    
+    <hr class="a11y" />
+</div></div><!-- /header -->
+
+        <div class="wrapper group">
+
+            
+            <!-- ********** CONTENT ********** -->
+            <div id="dokuwiki__content"><div class="pad group">
+
+                <div class="pageId"><span>el:key</span></div>
+
+                <div class="page group">
+                                                            <!-- wikipage start -->
+
+<h2 class="sectionedit1" id="key">Key</h2>
+<div class="level2">
+
+</div>
+
+<h3 class="sectionedit2" id="format">Format</h3>
+<div class="level3">
+
+<p>
+key<br/>
+
+key()
+</p>
+
+</div>
+
+<h3 class="sectionedit3" id="description">Description</h3>
+<div class="level3">
+
+<p>
+Immediately returns an integer value corresponding to the currently pressed keyboard key.  If no key has been pressed since the last call to the <strong>key</strong> function then the number zero (0) will be returned.  This function returns the code for the key pressed not always the <abbr title="American Standard Code for Information Interchange">ASCII</abbr> value of the character.
+</p>
+
+</div>
+
+<h3 class="sectionedit4" id="note">Note</h3>
+<div class="level3">
+<pre class="code">if key = 47 then print key</pre>
+
+<p>
+will not display the desired results, because it&#039;s calling key twice in succession, and will return different values each time.  This code will do what you want:
+</p>
+<pre class="code">a = key
+if a = 47 then print a</pre>
+
+</div>
+
+<h3 class="sectionedit5" id="partial_list_of_keys">Partial List of Keys</h3>
+<div class="level3">
+<div class="table sectionedit6"><table class="inline">
+	<tr class="row0">
+		<td class="col0">ESC=16777216</td><td class="col1" colspan="7">Space=32</td>
+	</tr>
+	<tr class="row1">
+		<td class="col0">0=48</td><td class="col1">1=49</td><td class="col2">2=50</td><td class="col3">3=51</td><td class="col4">4=52</td><td class="col5">5=53</td><td class="col6">6=54</td><td class="col7">7=55</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">8=56</td><td class="col1" colspan="7">9=57</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">A=65</td><td class="col1">B=66</td><td class="col2">C=67</td><td class="col3">D=68</td><td class="col4">E=69</td><td class="col5">F=70</td><td class="col6">G=71</td><td class="col7">H=72</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">I=73</td><td class="col1">J=74</td><td class="col2">K=75</td><td class="col3">L=76</td><td class="col4">M=77</td><td class="col5">N=78</td><td class="col6">O=79</td><td class="col7">P=80</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">Q=81</td><td class="col1">R=82</td><td class="col2">S=83</td><td class="col3">T=84</td><td class="col4">U=85</td><td class="col5">V=86</td><td class="col6">W=87</td><td class="col7">X=88</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">Y=89</td><td class="col1" colspan="7">Z=90</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">Down Arrow=16777237</td><td class="col1">Up Arrow=16777235</td><td class="col2">Left Arrow=16777234</td><td class="col3" colspan="4">Right Arrow=16777236</td><td class="col7"></td>
+	</tr>
+</table></div>
+
+<p>
+<a href="http://qt-project.org/doc/qt-4.8/qt.html#Key-enum" class="urlextern" title="http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"  rel="nofollow">Click here for a complete list of key values</a>
+</p>
+
+</div>
+
+<h3 class="sectionedit7" id="example">Example</h3>
+<div class="level3">
+<pre class="code">#press any keys
+loop:
+pause 1
+a = key
+print a+&quot;  &quot;+chr(a)
+goto loop</pre>
+
+</div>
+
+                    <!-- wikipage stop -->
+                                    </div>
+
+                <div class="docInfo"><bdi>el/key.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
+
+                            </div></div><!-- /content -->
+
+            <hr class="a11y" />
+
+            <!-- PAGE ACTIONS -->
+
+        </div><!-- /wrapper -->
+
+        
+<!-- ********** FOOTER ********** -->
+<div id="dokuwiki__footer"><div class="pad">
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
+
+</div></div><!-- /footer -->
+
+    </div></div><!-- /site -->
+
+</body>
+</html>

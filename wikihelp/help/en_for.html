@@ -2,32 +2,30 @@
 <html lang="en" dir="ltr" class="no-js">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
     <title>en:for [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2013-01-28T19:59:29-0700"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-02-07T12:48:21-0700"/>
 <meta name="keywords" content="en,for"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
 <link rel="contents" href="http://doc.basic256.org/en:for&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:for"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:for"/>
 <link rel="canonical" href="./en_for.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
     </head>
 
 <body>
     <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top"
-        class="dokuwiki site mode_show  ">
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
 
         
 <!-- ********** HEADER ********** -->
@@ -49,7 +47,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_for.html" class="wikilink1" title="en:for">for</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_for.html" class="wikilink1" title="en:for">for</a></span></bdi></div>
 
     
     
@@ -67,7 +65,7 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
 
-<h2 class="sectionedit1" id="for_next">For / Next</h2>
+<h2 class="sectionedit1" id="for_next_statement">For / Next (Statement)</h2>
 <div class="level2">
 
 </div>
@@ -76,11 +74,11 @@
 <div class="level3">
 
 <p>
-<strong>for</strong> <em>variable</em> =  <em>expression1</em> <strong>to</strong> <em>expression2</em> [ <strong>step</strong> <em>expression3</em> ] <br/>
+<strong>for</strong> <em><a class="explain" href="./en_variables.html">numeric_variable<span class="tooltip">variable used to store numbers</span></a></em> =  <em><a class="explain" href="./en_expressions.html#numeric_expressions">start_expr<span class="tooltip">numeric expression representing start of for loop or starting location in string</span></a></em> <strong>to</strong> <em>stop_expr</em> [ <strong>step</strong> <em><a class="explain" href="./en_expressions.html#numeric_expressions">step_expr<span class="tooltip">numeric expression representing the step size of for loop</span></a></em> ] <br/>
 
-<em>statement(s)</em><br/>
+&nbsp;&nbsp;&nbsp;<em><a class="explain" href="./en_programsyntax.html">statement(s)<span class="tooltip">statement or multiple lines of statements</span></a></em><br/>
 
-<strong>next</strong> <em>variable</em>
+<strong>next</strong> <em><a class="explain" href="./en_variables.html">numeric_variable<span class="tooltip">variable used to store numbers</span></a></em>
 </p>
 
 </div>
@@ -89,9 +87,9 @@
 <div class="level3">
 
 <p>
-The FOR and NEXT commands are used in conjunction to execute a command or group of commands a specified number of times. When the FOR command is first encountered, the <em>variable</em> is set to <em>expresssion1</em>.<br/>
+The FOR and NEXT commands are used in conjunction to execute a command or group of commands a specified number of times. When the FOR command is first encountered, the <em><a class="explain" href="./en_variables.html">numeric_variable<span class="tooltip">variable used to store numbers</span></a></em> is set to <em><a class="explain" href="./en_expressions.html#numeric_expressions">start_expr<span class="tooltip">numeric expression representing start of for loop or starting location in string</span></a></em>.<br/>
 
-After each NEXT command, <em>variable</em> is incremented by 1 (the default), or by <em>expression3</em> if the optional STEP is used, until <em>variable</em> is greater than or equal to <em>expression2</em> for positive step values, or less than or equal to <em>expression2</em> for negative step values.
+After each NEXT command, <em><a class="explain" href="./en_variables.html">numeric_variable<span class="tooltip">variable used to store numbers</span></a></em> is incremented by 1 (the default), or by <em><a class="explain" href="./en_expressions.html#numeric_expressions">step_expr<span class="tooltip">numeric expression representing the step size of for loop</span></a></em> if the optional STEP is used, until <em><a class="explain" href="./en_variables.html">numeric_variable<span class="tooltip">variable used to store numbers</span></a></em> is greater than or equal to <em>stop_expr</em> for positive step values, or less than or equal to <em>stop_expr</em> for negative step values.
 </p>
 
 </div>
@@ -104,7 +102,7 @@ After each NEXT command, <em>variable</em> is incremented by 1 (the default), or
 <div class="level3">
 
 <p>
-<a href="./en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="./en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="./en_continuefor.html" class="wikilink2" title="en:continuefor" rel="nofollow">Continue For</a>, <a href="./en_continuewhile.html" class="wikilink2" title="en:continuewhile" rel="nofollow">Continue While</a>, <a href="./en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="./en_end.html" class="wikilink1" title="en:end">End</a>, <a href="./en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="./en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="./en_exitwhile.html" class="wikilink2" title="en:exitwhile" rel="nofollow">Exit While</a>, <span class="curid"><a href="./en_for.html" class="wikilink1" title="en:for">For / Next</a></span>, <a href="./en_function.html" class="wikilink1" title="en:function">Function</a>, <a href="./en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="./en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="./en_ifthen.html" class="wikilink1" title="en:ifthen">If / Then</a>, <a href="./en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="./en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="./en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="./en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="./en_while.html" class="wikilink1" title="en:while">While / End While</a>
+<a href="./en_case.html" class="wikilink1" title="en:case">Begin Case / Case / End Case</a>, <a href="./en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="./en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="./en_continuefor.html" class="wikilink1" title="en:continuefor">Continue For</a>, <a href="./en_continuewhile.html" class="wikilink1" title="en:continuewhile">Continue While</a>, <a href="./en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="./en_end.html" class="wikilink1" title="en:end">End</a>, <a href="./en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="./en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="./en_exitwhile.html" class="wikilink1" title="en:exitwhile">Exit While</a>, <span class="curid"><a href="./en_for.html" class="wikilink1" title="en:for">For / Next</a></span>, <a href="./en_function.html" class="wikilink1" title="en:function">Function</a>, <a href="./en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="./en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="./en_ifthen.html" class="wikilink1" title="en:ifthen">If Then</a>, <a href="./en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="./en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="./en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="./en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="./en_while.html" class="wikilink1" title="en:while">While / End While</a>
 </p>
 
 </div>
@@ -117,7 +115,7 @@ After each NEXT command, <em>variable</em> is incremented by 1 (the default), or
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/for.txt · Last modified: 2013/01/28 19:59 by admin</div>
+                <div class="docInfo"><bdi>en/for.txt</bdi> · Last modified: 2014/02/07 12:48 by <bdi>admin</bdi></div>
 
                             </div></div><!-- /content -->
 
@@ -127,13 +125,10 @@ After each NEXT command, <em>variable</em> is incremented by 1 (the default), or
 
         </div><!-- /wrapper -->
 
-<form class="button" method="get" action="en_for.html">
-
-</form>
         
 <!-- ********** FOOTER ********** -->
 <div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
 
 </div></div><!-- /footer -->
 

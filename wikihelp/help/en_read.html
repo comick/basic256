@@ -2,32 +2,30 @@
 <html lang="en" dir="ltr" class="no-js">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
     <title>en:read [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-11-01T09:12:54-0700"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-02-08T22:35:49-0700"/>
 <meta name="keywords" content="en,read"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
 <link rel="contents" href="http://doc.basic256.org/en:read&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
 <link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:read"/>
 <link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:read"/>
 <link rel="canonical" href="./en_read.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css1364650667.css"/>
+<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
 
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="http://doc.basic256.org/lib/tpl/dokuwiki/images/apple-touch-icon.ico" />
+<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
     </head>
 
 <body>
     <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top"
-        class="dokuwiki site mode_show  ">
+    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
 
         
 <!-- ********** HEADER ********** -->
@@ -49,7 +47,7 @@
 
     <!-- BREADCRUMBS -->
             <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><a href="./start.html" class="wikilink1" title="start">start</a> » <a href="./en_start.html" class="wikilink1" title="en:start">en</a> » <span class="curid"><a href="./en_read.html" class="wikilink1" title="en:read">read</a></span></div>
+                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_read.html" class="wikilink1" title="en:read">read</a></span></bdi></div>
 
     
     
@@ -67,7 +65,7 @@
                 <div class="page group">
                                                             <!-- wikipage start -->
 
-<h2 class="sectionedit1" id="read">Read</h2>
+<h2 class="sectionedit1" id="read_function">Read (Function)</h2>
 <div class="level2">
 
 </div>
@@ -78,9 +76,13 @@
 <p>
 <strong>read</strong><br/>
 
-<strong>read</strong>()<br/>
+<strong>read</strong> ( )<br/>
 
-<strong>read</strong>(<em>filenumber</em>)
+<strong>read</strong> ( <em><a class="explain" href="./en_read.html">file_number<span class="tooltip">integer expression representing one of the current file handles</span></a></em> )
+</p>
+
+<p>
+returns <em><a class="explain" href="./en_read.html">string_value<span class="tooltip">a string of zero or more characters</span></a></em>
 </p>
 
 </div>
@@ -97,16 +99,35 @@ Reads and returns a token from an open file.  A token is any string of character
 <h3 class="sectionedit4" id="see_also">See Also</h3>
 <div class="level3">
 
+</div>
+<div class="plugin_include_content plugin_include__en:start">
+<div class="level3">
+
 <p>
-<a href="./en_close.html" class="wikilink1" title="en:close">Close</a>, <a href="./en_eof.html" class="wikilink1" title="en:eof">Eof</a>, <a href="./en_open.html" class="wikilink1" title="en:open">Open</a>, <a href="./en_readbyte.html" class="wikilink1" title="en:readbyte">ReadByte</a>, <a href="./en_readline.html" class="wikilink1" title="en:readline">Readline</a>, <a href="./en_reset.html" class="wikilink1" title="en:reset">Reset</a>, <a href="./en_write.html" class="wikilink1" title="en:write">Write</a>, <a href="./en_writeline.html" class="wikilink1" title="en:writeline">Writeline</a>, <a href="./en_exists.html" class="wikilink1" title="en:exists">Exists</a>, <a href="./en_seek.html" class="wikilink1" title="en:seek">Seek</a>, <a href="./en_size.html" class="wikilink1" title="en:size">Size</a>
+<a href="./en_changedir.html" class="wikilink1" title="en:changedir">Changedir</a>, <a href="./en_close.html" class="wikilink1" title="en:close">Close</a>, <a href="./en_currentdir.html" class="wikilink1" title="en:currentdir">Currentdir</a>, <a href="./en_dir.html" class="wikilink1" title="en:dir">Dir</a>, <a href="./en_eof.html" class="wikilink1" title="en:eof">Eof</a>, <a href="./en_exists.html" class="wikilink1" title="en:exists">Exists</a>, <a href="./en_freefile.html" class="wikilink1" title="en:freefile">Freefile</a>, <a href="./en_kill.html" class="wikilink1" title="en:kill">Kill</a>, <a href="./en_open.html" class="wikilink1" title="en:open">Open</a>, <a href="./en_open.html" class="wikilink1" title="en:open">Openb</a>, <span class="curid"><a href="./en_read.html" class="wikilink1" title="en:read">Read</a></span>, <a href="./en_readbyte.html" class="wikilink1" title="en:readbyte">Readbyte</a>, <a href="./en_readline.html" class="wikilink1" title="en:readline">Readline</a>, <a href="./en_reset.html" class="wikilink1" title="en:reset">Reset</a>, <a href="./en_seek.html" class="wikilink1" title="en:seek">Seek</a>, <a href="./en_size.html" class="wikilink1" title="en:size">Size</a>, <a href="./en_write.html" class="wikilink1" title="en:write">Write</a>, <a href="./en_writebyte.html" class="wikilink1" title="en:writebyte">Writebyte</a>, <a href="./en_writeline.html" class="wikilink1" title="en:writeline">Writeline</a>
 </p>
+
+</div>
+
+</div>
+<div class="level3">
+
+</div>
+
+<h3 class="sectionedit8" id="history">History</h3>
+<div class="level3">
+<div class="table sectionedit9"><table class="inline">
+	<tr class="row0">
+		
+	</tr>
+</table></div>
 
 </div>
 
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo">en/read.txt · Last modified: 2012/11/01 09:12 by admin</div>
+                <div class="docInfo"><bdi>en/read.txt</bdi> · Last modified: 2014/02/08 22:35 by <bdi>admin</bdi></div>
 
                             </div></div><!-- /content -->
 
@@ -116,13 +137,10 @@ Reads and returns a token from an open file.  A token is any string of character
 
         </div><!-- /wrapper -->
 
-<form class="button" method="get" action="en_read.html">
-
-</form>
         
 <!-- ********** FOOTER ********** -->
 <div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></div>
+    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
 
 </div></div><!-- /footer -->
 
