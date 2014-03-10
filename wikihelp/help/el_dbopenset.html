@@ -6,7 +6,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:23-0700"/>
+<meta name="date" content="2014-02-22T06:12:26-0700"/>
 <meta name="keywords" content="el,dbopenset"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -70,45 +70,45 @@
 
 </div>
 
-<h3 class="sectionedit2" id="format">Format</h3>
+<h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3>
 <div class="level3">
 
 <p>
-<strong>dbopenset</strong> <em>SqlStatement</em><br/>
+<strong>dbopenset</strong> <em>ΕντολήSql</em><br/>
 
-<strong>dbopenset</strong> ( <em>SqlStatement</em> )<br/>
+<strong>dbopenset</strong> ( <em>ΕντολήSql</em> )<br/>
 
-<strong>dbopenset</strong> <em>DatabaseNumber</em> , <em>SqlStatement</em><br/>
+<strong>dbopenset</strong> <em>ΑριθμόςΒάσηςΔεδομένων</em> , <em>ΕντολήSql</em><br/>
 
-<strong>dbopenset</strong> ( <em>DatabaseNumber</em> , <em>SqlStatement</em> )<br/>
+<strong>dbopenset</strong> ( <em>ΑριθμόςΒάσηςΔεδομένων</em> , <em>ΕντολήSql</em> )<br/>
 
-<strong>dbopenset</strong> <em>DatabaseNumber</em> , <em>DataSetNumber</em> , <em>SqlStatement</em><br/>
+<strong>dbopenset</strong> <em>ΑριθμόςΒάσηςΔεδομένων</em> , <em>ΑριθμόςΠίνακα</em> , <em>ΕντολήSql</em><br/>
 
-<strong>dbopenset</strong> ( <em>DatabaseNumber</em> , <em>DataSetNumber</em> , <em>SqlStatement</em> )<br/>
+<strong>dbopenset</strong> ( <em>ΑριθμόςΒάσηςΔεδομένων</em> , <em>ΑριθμόςΠίνακα</em> , <em>ΕντολήSql</em> )<br/>
 
 </p>
 
 </div>
 
-<h3 class="sectionedit3" id="description">Description</h3>
+<h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3>
 <div class="level3">
 
 <p>
-Perform an SQL statement and create a record set so that the program may loop through and use the results.
+Εκτελεί μια εντολή SQL και δημιουργεί μια εγγραφή η οποία μπορεί να προσπελαστεί από το πρόγραμμα και να χρησιμοποιηθούν τα απότελέσματα.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="παράδειγμα">Παράδειγμα</h3>
 <div class="level3">
 
 <p>
-See example of usage on <a href="./el_dbopen.html" class="wikilink1" title="el:dbopen">DBOpen</a> page.
+Δες πως μπορείς να χρησιμοποιήσεις την εντολή στην σελίδα <a href="./el_dbopen.html" class="wikilink1" title="el:dbopen">DBOpen</a>.
 </p>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="δες_επίσης">Δες επίσης</h3>
 <div class="level3">
 
 </div>
@@ -126,22 +126,23 @@ See example of usage on <a href="./el_dbopen.html" class="wikilink1" title="el:d
 
 </div>
 
-<h3 class="sectionedit9" id="external_links">External Links</h3>
+<h3 class="sectionedit9" id="εξωτερικοί_σύνδεσμοι">Εξωτερικοί σύνδεσμοι</h3>
 <div class="level3">
 
 <p>
-More information about databases in general and SQLite specifically can be found at <a href="http://sqlite.org" class="urlextern" title="http://sqlite.org"  rel="nofollow">SQLite Home Page</a> and <a href="http://en.wikipedia.org/wiki/SQL" class="urlextern" title="http://en.wikipedia.org/wiki/SQL"  rel="nofollow">SQL at Wikipedia</a>.
+Περισσότερες πληροφορίες σχετικά με τις βάσεις δεδομένων και την SQLite μπορείς να βρεις  στις σελίδες <a href="http://sqlite.org" class="urlextern" title="http://sqlite.org"  rel="nofollow">SQLite Home Page</a> και <a href="http://el.wikipedia.org/wiki/SQL" class="urlextern" title="http://el.wikipedia.org/wiki/SQL"  rel="nofollow">SQL στην Βικιπαίδεια</a>.
 </p>
 
 </div>
 
-<h3 class="sectionedit10" id="history">History</h3>
+<h3 class="sectionedit10" id="ιστορικό">Ιστορικό</h3>
 <div class="level3">
 
 <p>
-0.9.6y - New<br/>
+0.9.6y - Εισαγωγή<br/>
 
-0.9.9.19 - Added ability to have 8 database connections with 8 open data sets
+0.9.9.19 - Προσθήκη ικανότητας για μέχρι 8 βάσεις δεδομένων ανοιχτές ταυτόχρονα, κάθε μία με 8 πίνακες<br/>
+
 </p>
 
 </div>
@@ -149,7 +150,7 @@ More information about databases in general and SQLite specifically can be found
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"><bdi>el/dbopenset.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
+                <div class="docInfo"><bdi>el/dbopenset.txt</bdi> · Last modified: 2014/02/22 06:12 by <bdi>apollyon</bdi></div>
 
                             </div></div><!-- /content -->
 

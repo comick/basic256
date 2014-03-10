@@ -6,8 +6,9 @@
 # samlt         20110221 original coding from https://www.dokuwiki.org/tips:offline-dokuwiki.sh
 # j.m.reneau    20121127 added logic to clean up downloaded file names and links
 # j.m.reneau    20121129 restructured to only change the files that need changing (nice to svn)
+# j.m.reneau    20140309 added rule to strip span with class of tooltip
 #
-# tested and designed for docuwiki site running 2012-09-10 "Adora Belle RC1"
+# tested and designed for docuwiki site running 2013-12-18 "Blinky"
 # will need to change DEF_DEPTH to 1 and test with future versions
 # 
 
@@ -50,10 +51,10 @@ wget  --no-verbose \
 echo
 echo "[SED] fixing links(href...) in the HTML sources"
 sed -i -e 's#href="\([^:]\+:\)#href="./\1#g' \
-       -e "s#\(indexmenu_\S\+\.config\.urlbase='\)[^']\+'#\1./'#" \
-       -e "s#\(indexmenu_\S\+\.add('[^']\+\)#\1.html#" \
-       -e "s#\(indexmenu_\S\+\.add([^,]\+,[^,]\+,[^,]\+,[^,]\+,'\)\([^']\+\)'#\1./\2.html'#" \
-       ${PREFIX}/doku.*.html
+	-e "s#\(indexmenu_\S\+\.config\.urlbase='\)[^']\+'#\1./'#" \
+	-e "s#\(indexmenu_\S\+\.add('[^']\+\)#\1.html#" \
+	-e "s#\(indexmenu_\S\+\.add([^,]\+,[^,]\+,[^,]\+,[^,]\+,'\)\([^']\+\)'#\1./\2.html'#" \
+	${PREFIX}/doku.*.html
 
 echo
 echo "[SED] stripping outwanted divs, tags, script, extra blank lines, rename links, utf encoding, and fix external links"
@@ -72,14 +73,15 @@ sed -i -e "/<div id=\"dokuwiki__usertools\">/,/<\/div>/g" \
 	-e "/<ul class=\"a11y skip\">/,/<\/ul>/g" \
 	-e '/<!-- TOC START -->/,/<!-- TOC END -->/g' \
 	-e '/./,/^$/!d' \
-   -e "s/href=\"doku\.php/href=\"\.\/doku.php/g" \
+	-e "s/href=\"doku\.php/href=\"\.\/doku.php/g" \
 	-e "s/doku\.php.id=//g" \
 	-e "s/fetch\.php.*media=//g" \
 	-e "s/css\.php.*tseed=/css/g" \
 	-e "s/js\.php.*tseed=/js/g" \
 	-e "s/%3A/_/g" \
 	-e "s/%253A/_/g" \
-   -e "s/<meta charset/<meta http-equiv=\"Content-Type\" content=\"text\/html; charset=UTF-8\" \/><meta charset/g" \
+	-e "s/<span class=\"tooltip\">.*<\/span>/g" \
+	-e "s/<meta charset/<meta http-equiv=\"Content-Type\" content=\"text\/html; charset=UTF-8\" \/><meta charset/g" \
 	       ${PREFIX}/doku.php*.html
 
 echo

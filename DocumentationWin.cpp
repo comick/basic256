@@ -75,13 +75,17 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 void DocumentationWin::go(QString word) {
 
     if (word == "") {
-        docs->setSource(QUrl(indexfile));
+        QString u = localecode.left(2) + "_" + indexfile;
+        docs->setSource(QUrl(u.toLower()));
         if(docs->toPlainText().length() == 0) {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Off-line help does not appear to be installed.  Please use on-line help."));
-            msgBox.setStandardButtons(QMessageBox::Ok);
-            msgBox.setDefaultButton(QMessageBox::Ok);
-            msgBox.exec();
+			docs->setSource(QUrl(indexfile));
+			if(docs->toPlainText().length() == 0) {
+				QMessageBox msgBox;
+				msgBox.setText(tr("Off-line help does not appear to be installed.  Please use on-line help."));
+				msgBox.setStandardButtons(QMessageBox::Ok);
+				msgBox.setDefaultButton(QMessageBox::Ok);
+				msgBox.exec();
+			}
         }
     } else {
         QString u = localecode.left(2) + "_" + word + ".html";

@@ -27,26 +27,45 @@
 
 	// main window
 	#define SETTINGSVISIBLE "Main/Visible"
-	#define SETTINGSSIZE "Main/Size"
 	#define SETTINGSPOS "Main/Pos"
+	#define SETTINGSDEFAULT_X 100
+	#define SETTINGSDEFAULT_Y 100
+	#define SETTINGSSIZE "Main/Size"
+	#define SETTINGSDEFAULT_W 800
+	#define SETTINGSDEFAULT_H 600
     #define SETTINGSFONT "Main/Font"
     #define SETTINGSTOOLBAR "Main/Toolbar"
     #define SETTINGSFONTDEFAULT "Courier,10,-1,5,50,0,0,0,0,0"
+
     #define SETTINGSOUTVISIBLE "OutDock/Visible"
     #define SETTINGSOUTFLOAT "OutDock/Float"
     #define SETTINGSOUTPOS "OutDock/Pos"
+	#define SETTINGSOUTDEFAULT_X 100
+	#define SETTINGSOUTDEFAULT_Y 100
     #define SETTINGSOUTSIZE "OutDock/Size"
+	#define SETTINGSOUTDEFAULT_W 400
+	#define SETTINGSOUTDEFAULT_H 400
     #define SETTINGSOUTTOOLBAR "OutDock/Toolbar"
+
     #define SETTINGSGRAPHVISIBLE "GraphDock/Visible"
     #define SETTINGSGRAPHFLOAT "GraphDock/Float"
     #define SETTINGSGRAPHPOS "GraphDock/Pos"
+	#define SETTINGSGRAPHDEFAULT_X 100
+	#define SETTINGSGRAPHDEFAULT_Y 100
     #define SETTINGSGRAPHSIZE "GraphDock/Size"
+	#define SETTINGSGRAPHDEFAULT_W 400
+	#define SETTINGSGRAPHDEFAULT_H 400
     #define SETTINGSGRAPHTOOLBAR "GraphDock/Toolbar"
     #define SETTINGSGRAPHGRIDLINES "GraphDock/GridLines"
+
     #define SETTINGSVARVISIBLE "VarDock/Visible"
     #define SETTINGSVARFLOAT "VarDock/Float"
     #define SETTINGSVARPOS "VarDock/Pos"
+	#define SETTINGSVARDEFAULT_X 100
+	#define SETTINGSVARDEFAULT_Y 100
     #define SETTINGSVARSIZE "VarDock/Size"
+	#define SETTINGSVARDEFAULT_W 400
+	#define SETTINGSVARDEFAULT_H 400
     
 	// other IDE preferences
 	#define SETTINGSIDESAVEONRUN "IDE/SaveOnRun"

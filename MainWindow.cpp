@@ -110,12 +110,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     graphwin->setObjectName( "goutput" );
     graphwinwgt = new BasicWidget(QObject::tr("Graphics Output"));
     graphwinwgt->setViewWidget(graphwin);
+    graphscroll = new QScrollArea();
+	graphscroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+ 	graphscroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	graphscroll->setWidget(graphwin);
     graphdock = new DockWidget();
     graphdock->setObjectName( "graphdock" );
     graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    graphdock->setWidget(graphwinwgt);
+    graphdock->setWidget(graphscroll);
     graphdock->setWindowTitle(QObject::tr("Graphics Output"));
-
 
     varwin = new VariableWin();
     varwinwgt = new BasicWidget(QObject::tr("Variable Watch"));
@@ -388,53 +391,65 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
     // position where the docks and main window were last on screen
     // unless the position is off the screen
+    // NOT android - Android - FULL screen
 
 #ifndef ANDROID
 
     QDesktopWidget *screen = QApplication::desktop();
     QPoint l;
     QSize z;
+    bool floating;
 
-    l = settings.value(SETTINGSPOS, QPoint(100, 100)).toPoint();
-    if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
-    if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+    // move the main window to it's previous location and size
+    // mainwindow may not be here absoutely as the docked widgets sizes may force 
+    // qt to move the window and increase size
+    
+    // if position is off of the screen then return to default location
+    l = settings.value(SETTINGSPOS, QPoint(SETTINGSDEFAULT_X, SETTINGSDEFAULT_Y)).toPoint();
+    if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(SETTINGSDEFAULT_X);
+    if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(SETTINGSDEFAULT_Y);
     move(l);
-    z = settings.value(SETTINGSSIZE, QSize(800, 600)).toSize();
+    // get last size and if it was larger then the screen then reduce to fit
+    z = settings.value(SETTINGSSIZE, QSize(SETTINGSDEFAULT_W, SETTINGSDEFAULT_H)).toSize();
     if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
     if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
     resize(z);
 
-    graphdock->setFloating(settings.value(SETTINGSGRAPHFLOAT, false).toBool());
-    if (settings.contains(SETTINGSGRAPHPOS)) {
-        l = settings.value(SETTINGSGRAPHPOS, QPoint(100, 100)).toPoint();
-        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
-        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+    // position and size the graphics dock and basicgraph
+    floating = settings.value(SETTINGSGRAPHFLOAT, false).toBool();
+    graphdock->setFloating(floating);
+    if (floating) {
+        l = settings.value(SETTINGSGRAPHPOS, QPoint(SETTINGSGRAPHDEFAULT_X, SETTINGSGRAPHDEFAULT_Y)).toPoint();
+        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(SETTINGSGRAPHDEFAULT_X);
+        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(SETTINGSGRAPHDEFAULT_Y);
         graphdock->move(l);
-        z = settings.value(SETTINGSGRAPHSIZE, QSize(400, 400)).toSize();
-        if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
-        if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
-        graphdock->resize(z);
-    }
-
+	}
+	z = settings.value(SETTINGSGRAPHSIZE, QSize(SETTINGSGRAPHDEFAULT_W, SETTINGSGRAPHDEFAULT_H)).toSize();
+    if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
+    if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
+    graphwinwgt->resize(z);
+ 
+    // position the output text dock
     outdock->setFloating(settings.value(SETTINGSOUTFLOAT, false).toBool());
     if (settings.contains(SETTINGSOUTPOS)) {
-        l = settings.value(SETTINGSOUTPOS, QPoint(100, 100)).toPoint();
-        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
-        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+        l = settings.value(SETTINGSOUTPOS, QPoint(SETTINGSOUTDEFAULT_X, SETTINGSOUTDEFAULT_Y)).toPoint();
+        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(SETTINGSOUTDEFAULT_X);
+        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(SETTINGSOUTDEFAULT_Y);
         outdock->move(l);
-        z = settings.value(SETTINGSOUTSIZE, QSize(400, 400)).toSize();
+        z = settings.value(SETTINGSOUTSIZE, QSize(SETTINGSOUTDEFAULT_W, SETTINGSOUTDEFAULT_H)).toSize();
         if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
         if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
         outdock->resize(z);
     }
 
+    // positon the variable dock
     vardock->setFloating(settings.value(SETTINGSVARFLOAT, false).toBool());
     if (settings.contains(SETTINGSVARPOS)) {
-        l = settings.value(SETTINGSVARPOS, QPoint(100, 100)).toPoint();
-        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(100);
-        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(100);
+        l = settings.value(SETTINGSVARPOS, QPoint(SETTINGSVARDEFAULT_X, SETTINGSVARDEFAULT_Y)).toPoint();
+        if (l.x() >= screen->width() || l.x() <= 0 ) l.setX(SETTINGSVARDEFAULT_X);
+        if (l.y() >= screen->height() || l.y() <= 0 ) l.setY(SETTINGSVARDEFAULT_Y);
         vardock->move(l);
-        z = settings.value(SETTINGSVARSIZE, QSize(400, 400)).toSize();
+        z = settings.value(SETTINGSVARSIZE, QSize(SETTINGSVARDEFAULT_W, SETTINGSVARDEFAULT_H)).toSize();
         if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
         if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
         vardock->resize(z);
@@ -576,7 +591,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
         settings.setValue(SETTINGSOUTTOOLBAR, outwinwgt->isVisibleToolBar());
         settings.setValue(SETTINGSGRAPHVISIBLE, graphdock->isVisible());
         settings.setValue(SETTINGSGRAPHFLOAT, graphdock->isFloating());
-        settings.setValue(SETTINGSGRAPHSIZE, graphdock->size());
+        settings.setValue(SETTINGSGRAPHSIZE, graphwinwgt->size());
         settings.setValue(SETTINGSGRAPHPOS, graphdock->pos());
         settings.setValue(SETTINGSGRAPHTOOLBAR, graphwinwgt->isVisibleToolBar());
         settings.setValue(SETTINGSGRAPHGRIDLINES, graphwin->isVisibleGridLines());

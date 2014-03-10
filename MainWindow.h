@@ -27,12 +27,14 @@
 	#include <QtWidgets/QAction>
 	#include <QtWidgets/QMessageBox>
 	#include <QtWidgets/QShortcut>
+	#include <QtWidgets/QScrollArea>
 #else
 	#include <QMainWindow>
 	#include <QGridLayout>
 	#include <QAction>
 	#include <QMessageBox>
 	#include <QShortcut>
+	#include <QScrollArea>
 #endif
 
 
@@ -123,6 +125,7 @@ private:
 
 	DockWidget * outdock;
 	DockWidget * graphdock;
+	QScrollArea * graphscroll;
 	DockWidget * vardock;
 
 	QToolBar *maintbar;

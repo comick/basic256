@@ -5,8 +5,8 @@
     <title>el:freefile [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:28-0700"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="date" content="2014-03-09T03:29:47-0700"/>
 <meta name="keywords" content="el,freefile"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -70,7 +70,7 @@
 
 </div>
 
-<h3 class="sectionedit2" id="format">Format</h3>
+<h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3>
 <div class="level3">
 
 <p>
@@ -81,18 +81,18 @@
 
 </div>
 
-<h3 class="sectionedit3" id="description">Description</h3>
+<h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3>
 <div class="level3">
 
 <p>
-BASIC256 allows for multiple files to be opened at a single time.  The <strong>freefile</strong> function returns a free file number that you can use in your next <a href="./el_open.html" class="wikilink1" title="el:open">Open</a> or <a href="./el_open.html" class="wikilink1" title="el:open">Openb</a>.  Once a file is closed, <strong>freefile</strong> will return that file number to the list of available file numbers and may reissue that number.
+Η BASIC256 επιτρέπει το ύπαρξη πολλαπλών ανοιχτών αρχείων ταυτόχρονα.  Η συνάρτηση <strong>freefile</strong> επιστρέφει έναν διαθέσιμο αριθμό αρχείου που μπορείς να χρησιμοποιήσεις στην επόμενη <a href="./el_open.html" class="wikilink1" title="el:open">Open</a> ή <a href="./el_open.html" class="wikilink1" title="el:open">Openb</a> εντολή. Μόλις κλείσει ένα αρχείο, η <strong>freefile</strong> θα επιστρέψει τον αριθμό του στην λίστα των διαθέσιμων αριθμών αρχείου και μπορεί να ξαναδώσει τον ίδιο αριθμό.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="παράδειγμα">Παράδειγμα</h3>
 <div class="level3">
-<pre class="code"># copy one binary file to another
+<pre class="code"># αντιγραφή του περιεχομένου ενός αρχείου σε ένα άλλο
 k = 0
 source = freefile
 openb source,&quot;file.pdf&quot;
@@ -105,20 +105,15 @@ while not eof(source)
 end while
 close dest
 close source
-print k + &quot; bytes copied.&quot;</pre>
+print k + &quot; bytes αντιγράφηκαν.&quot;</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
-<div class="level3">
-
-</div>
-
-<h3 class="sectionedit6" id="history">History</h3>
+<h3 class="sectionedit5" id="ιστορικό">Ιστορικό</h3>
 <div class="level3">
 
 <p>
-0.9.9.17 - New<br/>
+0.9.9.17 - Εισαγωγή<br/>
 
 </p>
 
@@ -127,7 +122,7 @@ print k + &quot; bytes copied.&quot;</pre>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"><bdi>el/freefile.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
+                <div class="docInfo"><bdi>el/freefile.txt</bdi> · Last modified: 2014/03/09 03:29 by <bdi>apollyon</bdi></div>
 
                             </div></div><!-- /content -->
 

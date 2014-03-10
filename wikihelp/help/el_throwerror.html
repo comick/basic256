@@ -6,7 +6,7 @@
     
     <meta name="generator" content="DokuWiki"/>
 <meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:48-0700"/>
+<meta name="date" content="2014-02-18T04:31:41-0700"/>
 <meta name="keywords" content="el,throwerror"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
 <link rel="start" href="index.html"/>
@@ -70,49 +70,49 @@
 
 </div>
 
-<h3 class="sectionedit2" id="format">Format</h3>
+<h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3>
 <div class="level3">
 
 <p>
-<strong>throwerror</strong> ( <em>integer</em> )<br/>
+<strong>throwerror</strong> ( <em>ακέραιος</em> )<br/>
 
-<strong>throwerror</strong> <em>integer</em>
+<strong>throwerror</strong> <em>ακέραιος</em>
 </p>
 
 </div>
 
-<h3 class="sectionedit3" id="description">Description</h3>
+<h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3>
 <div class="level3">
 
 <p>
-Cause a runtime error to occour.  These errors may be trapped with the <a href="./el_onerror.html" class="wikilink1" title="el:onerror">Onerror</a> statement.
+Προκαλεί ένα σφάλμα εκτέλεσης. Τα σφάλματα αυτά μπορούν να ανιχνευθούν με την εντολή <a href="./el_onerror.html" class="wikilink1" title="el:onerror">Onerror</a>.
 </p>
 
 </div>
 
-<h3 class="sectionedit4" id="example">Example</h3>
+<h3 class="sectionedit4" id="παράδειγμα">Παράδειγμα</h3>
 <div class="level3">
 <pre class="code">onerror errortrap
-print &quot;before error&quot;
+print &quot;prin to sfalma&quot;
 throwerror 99
-print &quot;after error&quot;
+print &quot;meta to sfalma&quot;
 end
 
 subroutine errortrap()
-print &quot;error &quot; + lasterror + &quot; happened&quot;
+print &quot;Synevh to sfalma &quot; + lasterror
 end subroutine</pre>
 
 <p>
-will display<br/>
+θα απεικονίσει<br/>
 
 </p>
-<pre class="code">before error
-error 99 happened
-after error</pre>
+<pre class="code">prin to sfalma
+Synevh to sfalma 99
+meta to sfalma</pre>
 
 </div>
 
-<h3 class="sectionedit5" id="see_also">See Also</h3>
+<h3 class="sectionedit5" id="δες_επίσης">Δες επίσης</h3>
 <div class="level3">
 
 </div>
@@ -130,7 +130,7 @@ after error</pre>
 
 </div>
 
-<h3 class="sectionedit9" id="new_to_version">New To Version</h3>
+<h3 class="sectionedit9" id="εισήχθηκε_με_την_έκδοση">Εισήχθηκε με την έκδοση</h3>
 <div class="level3">
 
 <p>
@@ -142,7 +142,7 @@ after error</pre>
                     <!-- wikipage stop -->
                                     </div>
 
-                <div class="docInfo"><bdi>el/throwerror.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
+                <div class="docInfo"><bdi>el/throwerror.txt</bdi> · Last modified: 2014/02/18 04:31 by <bdi>apollyon</bdi></div>
 
                             </div></div><!-- /content -->
 

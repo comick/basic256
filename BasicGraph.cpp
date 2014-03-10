@@ -29,14 +29,17 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QScrollArea>
 #else
 #include <QAction>
 #include <QApplication>
 #include <QMessageBox>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QScrollArea>
 #endif
 
+#include "BasicWidget.h"
 #include "BasicGraph.h"
 
 extern QMutex *mymutex;
@@ -56,6 +59,7 @@ BasicGraph::resize(int width, int height) {
     }
     gwidth  = width;
     gheight = height;
+    setMinimumSize(gwidth, gheight);
     delete image;
     image = new QImage(width, height, QImage::Format_ARGB32);
 
@@ -74,7 +78,18 @@ BasicGraph::resize(int width, int height) {
     clickY = 0;
     clickB = 0;
     setMouseTracking(true);
-}
+    
+    // make sure the graphics are visible in the center of the graphscroll
+    BasicWidget * w = (BasicWidget *) parentWidget();
+    if (w) {
+		QScrollArea * sa = (QScrollArea *) w->parentWidget();
+		if(sa) {
+			sa->ensureWidgetVisible(this, width/2, height/2);
+		}
+	}
+
+
+ }
 
 bool BasicGraph::isVisibleGridLines() {
     return gridlines;

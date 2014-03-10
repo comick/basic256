@@ -5,7 +5,7 @@
     <title>en:instrx [BASIC 256 - Language Documentation]</title>
     
     <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="noindex,nofollow"/>
+<meta name="robots" content="index,follow"/>
 <meta name="date" content="2014-02-09T20:48:19-0700"/>
 <meta name="keywords" content="en,instrx"/>
 <link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
@@ -74,9 +74,9 @@
 <div class="level3">
 
 <p>
-<strong>instrx</strong> ( <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr<span class="tooltip">string expression to search in</span></a></em> , <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr<span class="tooltip">string containing a regular expression </span></a></em> )<br/>
+<strong>instrx</strong> ( <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr</a></em> )<br/>
 
-<strong>instrx</strong> ( <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr<span class="tooltip">string expression to search in</span></a></em> , <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr<span class="tooltip">string containing a regular expression </span></a></em> , <em><a class="explain" href="./en_expressions.html#numeric_expressions">start_expr<span class="tooltip">numeric expression representing start of for loop or starting location in string</span></a></em> )
+<strong>instrx</strong> ( <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr</a></em> )
 </p>
 
 <p>
@@ -89,7 +89,7 @@ returns <em>positive_integer_expr</em>
 <div class="level3">
 
 <p>
-Check to see if the text represented by the regular expression <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr<span class="tooltip">string containing a regular expression </span></a></em> is contained in the string <em><a class="explain" href="./en_expressions.html#string_expressions">haystack_expr<span class="tooltip">string expression to search in</span></a></em>.  If it is, then this function will return the index of starting character of the first place where <em><a class="explain" href="./en_expressions.html#string_expressions">needle_expr<span class="tooltip">string expression to search for</span></a></em> occurs.  Otherwise, this function will return 0.  You may also specify an optional starting location for the search to begin <em><a class="explain" href="./en_expressions.html#numeric_expressions">start_expr<span class="tooltip">numeric expression representing start of for loop or starting location in string</span></a></em>. Unlike INSTR, INSTRX allows ignoring specific variations (case sentive, spelling etc).
+Check to see if the text represented by the regular expression <em><a class="explain" href="./en_expressions.html#string_expressions">regex_expr</a></em>. Unlike INSTR, INSTRX allows ignoring specific variations (case sentive, spelling etc).
 </p>
 
 </div>
