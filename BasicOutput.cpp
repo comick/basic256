@@ -43,6 +43,7 @@ extern QMutex *mymutex;
 extern int currentKey;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
+    setInputMethodHints(Qt::ImhNoPredictiveText);
     setFocusPolicy(Qt::StrongFocus);
     setAcceptRichText(false);
     gettingInput = false;

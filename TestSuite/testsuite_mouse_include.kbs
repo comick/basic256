@@ -2,7 +2,7 @@
 
 # Modification History
 # date		programmer	description
-# 20140204	j.m.reneau	added all of the various forms of remark
+# 20140406	j.m.reneau	made spots larger for android testing
 
 # macos and android do not have 3 button mouses
 
@@ -12,13 +12,13 @@ centerbutton = ostype=0 or ostype=1
 clg
 penwidth 1
 color blue
-rect 100,100,20,20
+rect 50,10,200,50
 color red
-rect 100,130,20,20
+rect 50,80,200,50
 color green
-circle 110,170,10
+rect 50,150,200,50
 color black
-circle 110,220,10
+circle 150,250,40
 refresh
 
 print "left click on the blue rectangle"

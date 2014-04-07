@@ -52,6 +52,7 @@ extern MainWindow * mainwin;
 
 BasicEdit::BasicEdit() {
 
+    this->setInputMethodHints(Qt::ImhNoPredictiveText);
     currentMaxLine = 10;
     currentLine = 1;
     startPos = this->textCursor().position();
