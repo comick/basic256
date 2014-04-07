@@ -1,12 +1,13 @@
-print "Generate BASIC256 icon"
+print "Generate BASIC256 icon - for Google Store"
+print "2014-04-07"
 
-graphsize 512, 512
+graphsize 180, 120
 
 rem set up initial ball position and speed
 x = 20 * graphheight / 300
 y = 100 * graphheight / 300
-r = 20
-rw = 3
+r = 5
+rw = 2
 yvel = -1.0 * graphheight / 300
 xvel = 1.10 * graphwidth / 300
 yacc = .0098 * graphwidth / 300
@@ -32,7 +33,7 @@ rem draw the ball
 gosub drawBall
 if xvel * xvel < 0.0001 then
    refresh
-   imgsave "basic256_icon.png"
+   imgsave "basic256_icon_googlePlay.png"
    end
 end if
 goto loop1
