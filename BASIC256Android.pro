@@ -68,8 +68,6 @@ TRANSLATIONS                                    =	Translations/basic256_en.ts \
                                                         Translations/basic256_pt.ts \
                                                         Translations/basic256_nl.ts
 
-DEFINES                         		+=	USEQSOUND
-
 	########
 	# TTS control - How Say statement works
         # in Android the ANDROID define handles this setting

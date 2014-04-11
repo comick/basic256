@@ -1,1 +1,17 @@
 wavplay "boing_poing.wav"
+#wavplay "dial-up-modem-01.mp3"
+pause .2
+wavpause
+print "state = " + wavstate
+pause 1
+wavseek 0
+wavpause
+print "state = " + wavstate
+k=10
+while k
+   print msec + " " + wavstate() + " " + wavpos() + " " + wavlength()
+   k--
+end while
+wavwait
+print msec + " " + wavstate() + " " + wavpos() + " " + wavlength()
+print "done"

@@ -29,7 +29,7 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 
 win32 {
 	DEFINES 				+=	WIN32
-	DEFINES 				+=	USEQSOUND
+	DEFINES 				+=	USEQMEDIAPLAYER
 	LIBS					+=	-lole32 \
 								-lws2_32 \
 								-lwinmm

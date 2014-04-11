@@ -35,7 +35,6 @@ DESTDIR = BASIC256Portable/App/BASIC256
 
 win32 {
 	DEFINES 				+=	WIN32
-	DEFINES 				+=	USEQSOUND
 	LIBS					+=	-lole32 \
 								-lws2_32 \
 								-lwinmm

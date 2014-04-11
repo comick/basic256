@@ -1,3 +1,7 @@
-Sounds in this folder from http://www.wavsource.com
+boing_poing.wav
+pacman_x.wav
+from http://www.wavsource.com converted to WAV with on-line tool from http://media.io/
 
-http://www.wavsource.com/video_games/pac-man.htm
+dial-up-modem-1.mp3
+dial-up-modem-1.wav
+from http://www.soundjay.com/dial-up-modem-sound-effect.html

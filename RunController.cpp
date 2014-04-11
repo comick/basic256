@@ -68,10 +68,15 @@ using namespace std;
 #include <sys/soundcard.h>
 #endif
 
-#ifdef USEQSOUND
-#include <QSound>
-QSound *wavsound;
-#endif
+//#ifdef USEQSOUND
+//#include <QSound>
+//QSound *wavsound;
+//#endif
+
+//#ifdef USEQMEDIAPLAYER
+//#include <QMediaPlayer>
+//QMediaPlayer *mediaplayer;
+//#endif
 
 #ifdef ESPEAK
 #include <speak_lib.h>
@@ -101,10 +106,6 @@ RunController::RunController() {
     replacewin = NULL;
     docwin = NULL;
 
-#ifdef USEQSOUND
-    wavsound = new QSound(QString(""));
-#endif
-
 #ifdef ANDROID
     androidtts = new AndroidTTS();
 #endif
@@ -122,12 +123,9 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
     QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
-    QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
     QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
-    QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
-    QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
-
+ 
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
     QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), varwin, SLOT(varAssignment(int, QString, QString, int, int)));
@@ -146,9 +144,6 @@ RunController::~RunController() {
     if(replacewin!=NULL) replacewin->close();
     if(docwin!=NULL) docwin->close();
 
-#ifdef USEQSOUND
-    delete wavsound;
-#endif
     delete i;
 
     //printf("rcdestroy\n");
@@ -240,55 +235,6 @@ RunController::executeSystem(QString text) {
     //fprintf(stderr,"system af %s\n", text);
 }
 
-void RunController::playWAV(QString file) {
-    mymutex->lock();
-#ifdef USEQSOUND
-    wavsound->play(file);
-#endif
-#ifdef USESDL
-    Mix_HaltChannel(SDL_CHAN_WAV);
-    Mix_Chunk *music;
-    music = Mix_LoadWAV((char *) file.toUtf8().data());
-    Mix_PlayChannel(SDL_CHAN_WAV,music,0);
-#endif
-    waitCond->wakeAll();
-    mymutex->unlock();
-}
-
-
-void RunController::waitWAV() {
-    mymutex->lock();
-#ifdef USEQSOUND
-    while(!wavsound->isFinished())
-#ifdef WIN32
-        Sleep(1);
-#else
-        usleep(1000);
-#endif
-#endif
-#ifdef USESDL
-    while(Mix_Playing(SDL_CHAN_WAV))
-#ifdef WIN32
-        Sleep(1);
-#else
-        usleep(1000);
-#endif
-#endif
-    waitCond->wakeAll();
-    mymutex->unlock();
-}
-
-void RunController::stopWAV() {
-    mymutex->lock();
-#ifdef USEQSOUND
-    wavsound->stop();
-#endif
-#ifdef USESDL
-    Mix_HaltChannel(SDL_CHAN_WAV);
-#endif
-    waitCond->wakeAll();
-    mymutex->unlock();
-}
 
 void
 RunController::startDebug() {
@@ -387,8 +333,6 @@ RunController::stopRun() {
     mainwin->statusBar()->showMessage(tr("Ready."));
 
     mainWindowSetRunning(0);
-
-    stopWAV();
 
     mymutex->lock();
     outwin->setReadOnly(true);

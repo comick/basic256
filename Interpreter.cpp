@@ -354,7 +354,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_SPRITEV) return QString("OP_SPRITEV");
     else if (op==OP_CHANGEDIR) return QString("OP_CHANGEDIR");
     else if (op==OP_CURRENTDIR) return QString("OP_CURRENTDIR");
-    else if (op==OP_WAVWAIT) return QString("OP_WAVWAIT");
     else if (op==OP_DBOPEN) return QString("OP_DBOPEN");
     else if (op==OP_DBCLOSE) return QString("OP_DBCLOSE");
     else if (op==OP_DBEXECUTE) return QString("OP_DBEXECUTE");
@@ -426,6 +425,11 @@ QString Interpreter::opname(int op) {
     else if (op==OP_PRINTEROFF) return QString("OP_PRINTERON");
     else if (op==OP_PRINTERON) return QString("OP_PRINTEROFF");
     else if (op==OP_DEBUGINFO) return QString("OP_DEBUGINFO");
+    else if (op==OP_WAVLENGTH) return QString("OP_WAVLENGTH");
+    else if (op==OP_WAVPOS) return QString("OP_WAVPOS");
+    else if (op==OP_WAVPAUSE) return QString("OP_WAVPAUSE");
+    else if (op==OP_WAVSEEK) return QString("OP_WAVSEEK");
+    else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
     else return QString("OP_UNKNOWN");
 }
 
@@ -671,6 +675,9 @@ QString Interpreter::getErrorMessage(int e) {
         case ERROR_TYPECONV:
             errormessage = tr("Unable to convert string to number");
             break;
+        case ERROR_WAVFILEFORMAT:
+            errormessage = tr("Media file does not exist or in an unsupported format");
+            break;
 
 
         // put ERROR new messages here
@@ -740,7 +747,33 @@ Interpreter::isStopped() {
     return false;
 }
 
-
+int Interpreter::mediaPlayerState() {
+	// this eventually needs to be removed and replaced with
+	// mediaplayer->state() call to the QT MediaPlayer object property
+	//
+	// with QT5.1 it has been observed that
+	// some media files do not report stop at the end of the file
+	// and continue to report playing forever
+	// if playing check of the position increases after a short sleep time
+	
+	// media state 0-stop, 1-play, 2-pause
+	int state = QMediaPlayer::StoppedState;
+	if (mediaplayer) {
+		state = mediaplayer->state();
+		if (state==QMediaPlayer::PlayingState) {
+			struct timespec tim, tim2;
+			qint64 starttime, endtime;
+			tim.tv_sec = 0;
+			tim.tv_nsec = 30000000L;	// 30 ms
+			starttime = mediaplayer->position();
+			nanosleep(&tim, &tim2);
+			endtime = mediaplayer->position();
+			if (starttime==endtime) state = QMediaPlayer::StoppedState; // stopped
+		}
+	}
+	return(state);
+}
+ 
 void Interpreter::clearsprites() {
     // cleanup sprites - release images and deallocate the space
     int i;
@@ -2741,18 +2774,20 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVPLAY: {
-                    mymutex->lock();
-                    emit(playWAV(stack.popstring()));
-                    waitCond->wait(mymutex);
-                    mymutex->unlock();
+					QString file = stack.popstring();
+					mediaplayer = new QMediaPlayer();
+					mediaplayer->setMedia(QUrl::fromLocalFile(file));
+					mediaplayer->play();
+					if (mediaplayer->error()!=QMediaPlayer::NoError) {
+						errornum = ERROR_WAVFILEFORMAT;
+					}
                 }
                 break;
 
                 case OP_WAVSTOP: {
-                    mymutex->lock();
-                    emit(stopWAV());
-                    waitCond->wait(mymutex);
-                    mymutex->unlock();
+					if(mediaplayer) {
+						if(mediaPlayerState()!=QMediaPlayer::StoppedState) mediaplayer->stop();
+					}
                 }
                 break;
 
@@ -3736,10 +3771,14 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVWAIT: {
-                    mymutex->lock();
-                    emit(waitWAV());
-                    waitCond->wait(mymutex);
-                    mymutex->unlock();
+					if(mediaplayer) {
+						struct timespec tim, tim2;
+						while(mediaPlayerState()==QMediaPlayer::PlayingState) {
+							tim.tv_sec = 0;
+							tim.tv_nsec = 300000000L;	// 300 ms
+							nanosleep(&tim, &tim2);
+						}
+					}
                 }
                 break;
 
@@ -4858,6 +4897,61 @@ Interpreter::execByteCode() {
                     errornum = fn;
                 }
                 break;
+
+                case OP_WAVLENGTH: {
+					// as of QT 5.1 the duration does not always return a value for
+					// media playback - we will leave this statement in the language
+					// but leave it as an UNDOCUMENTED feature until the
+					// QT Libirary gets this fixed
+					if (mediaplayer) {
+						stack.pushfloat(mediaplayer->duration()/1000.0f);
+					} else {
+						stack.pushfloat(-1);
+					}
+                }
+                break;
+
+                case OP_WAVPOS: {
+					if (mediaplayer) {
+						stack.pushfloat(mediaplayer->position()/1000.0f);
+					} else {
+						stack.pushfloat(0);
+					}
+                }
+                break;
+
+                case OP_WAVPAUSE: {
+					// media state 0-stop, 1-play, 2-pause
+					if (mediaplayer) {
+						switch (mediaPlayerState()) {
+							case QMediaPlayer::PlayingState:
+								mediaplayer->pause();
+								break;
+							case QMediaPlayer::PausedState:
+								mediaplayer->play();
+								break;
+							case QMediaPlayer::StoppedState:
+								break;
+						}
+					} else {
+					}
+                }
+                break;
+
+                case OP_WAVSEEK: {
+					float pos = stack.popfloat();
+					if (mediaplayer) {
+						mediaplayer->setPosition(pos*1000L);
+					} else {
+					}
+                }
+                break;
+
+                case OP_WAVSTATE: {
+					stack.pushint(mediaPlayerState());
+				}
+                break;
+
 
 
                     // insert additional OPTYPE_NONE operations here

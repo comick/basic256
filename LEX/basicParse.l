@@ -241,6 +241,7 @@ error_notanumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]
 error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
 error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
 error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
+error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
 error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 exitdo [Ee][Xx][Ii][Tt][ \t]?[Dd][Oo]
@@ -407,7 +408,12 @@ until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
+wavlength [Ww][Aa][Vv][Ll][Ee][Nn][Gg][Tt][Hh]
+wavpause [Ww][Aa][Vv][Pp][Aa][Uu][Ss][Ee]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
+wavpos [Ww][Aa][Vv][Pp][Oo][Ss]
+wavseek [Ww][Aa][Vv][Ss][Ee][Ee][Kk]
+wavstate [Ww][Aa][Vv][Ss][Tt][Aa][Tt][Ee]
 wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
 wavwait [Ww][Aa][Vv][Ww][Aa][Ii][Tt]
 while [Ww][Hh][Ii][Ll][Ee]
@@ -587,6 +593,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_printernoton} { count(); return B256ERROR_PRINTERNOTON; }
 {error_printernotoff} { count(); return B256ERROR_PRINTERNOTOFF; }
 {error_printeropen} { count(); return B256ERROR_PRINTEROPEN; }
+{error_wavfileformat} { count(); return B256ERROR_WAVFILEFORMAT; }
 {error_notimplemented} { count(); return B256ERROR_NOTIMPLEMENTED; }
 {exists}	{ count(); return B256EXISTS; }
 {exitdo}	{ count(); return B256EXITDO; }
@@ -769,7 +776,13 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {upper}		{ count(); return B256UPPER; }
 {version}		{ count(); return B256VERSION; }
 {volume}	{ count(); return B256VOLUME; }
+{wavlength}	{ count(); return B256WAVLENGTH; }
+{wavpause}	{ count(); return B256WAVPAUSE; }
+{wavpause}":"	{ unput(':'); count(); return B256WAVPAUSE; }
 {wavplay}	{ count(); return B256WAVPLAY; }
+{wavpos}	{ count(); return B256WAVPOS; }
+{wavseek}	{ count(); return B256WAVSEEK; }
+{wavstate}	{ count(); return B256WAVSTATE; }
 {wavstop}	{ count(); return B256WAVSTOP; }
 {wavstop}":"	{ unput(':'); count(); return B256WAVSTOP; }
 {wavwait}	{ count(); return B256WAVWAIT; }

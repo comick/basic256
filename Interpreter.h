@@ -47,6 +47,8 @@
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
 
+#include <QMediaPlayer>
+
 #ifndef M_PI
     #define M_PI 3.14159265
 #endif
@@ -139,9 +141,9 @@ class Interpreter : public QThread
   void setVolume(int);
   void executeSystem(QString);
   void speakWords(QString);
-  void playWAV(QString);
-  void waitWAV();
-  void stopWAV();
+  //void playWAV(QString);
+  //void waitWAV();
+  //void stopWAV();
   void goToLine(int);
   void highlightLine(int);
   void varAssignment(int, QString, QString, int, int);
@@ -160,6 +162,7 @@ class Interpreter : public QThread
   QString getErrorMessage(int);
   QString getWarningMessage(int);
   int netSockClose(int);
+  int mediaPlayerState();
   Variables variables;
   Stack stack;
   QFile **stream;
@@ -203,6 +206,8 @@ class Interpreter : public QThread
 
   QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
   bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
+
+  QMediaPlayer *mediaplayer;
 
 
 };

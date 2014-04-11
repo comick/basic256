@@ -285,7 +285,12 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Uu][Pp][Pp][Ee][Rr]\\b"										// upper
             << "\\b[Vv][Ee][Rr][Ss][Ii][Oo][Nn]\\b"								// version
             << "\\b[Vv][Oo][Ll][Uu][Mm][Ee]\\b"									// volume
+            << "\\b[Ww][Aa][Vv][Ll][Ee][Nn][Gg][Tt][Hh]\\b"						// wavlength
+            << "\\b[Ww][Aa][Vv][Pp][Aa][Uu][Ss][Ee]\\b"							// wavpause
+            << "\\b[Ww][Aa][Vv][Pp][Oo][Ss]\\b"									// wavpos
             << "\\b[Ww][Aa][Vv][Pp][Ll][Aa][Yy]\\b"								// wavplay
+            << "\\b[Ww][Aa][Vv][Ss][Ee][Ee][Kk]\\b"								// wavseek
+            << "\\b[Ww][Aa][Vv][Ss][Tt][Aa][Tt][Ee]\\b"							// wavstate
             << "\\b[Ww][Aa][Vv][Ss][Tt][Oo][Pp]\\b"								// wavstop
             << "\\b[Ww][Aa][Vv][Ww][Aa][Ii][Tt]\\b"								// wavwait
             << "\\b[Ww][Hh][Ii][Ll][Ee]\\b"										// while
@@ -390,6 +395,7 @@ void EditSyntaxHighlighter::initColors() {
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_NOTANUMBER
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]\\b"		// ERROR_PRINTERNOTON
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]\\b"		// ERROR_PRINTERNOTOFF
+            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]\\b"		// ERROR_WAVFILEFORMAT
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]\\b"		// ERROR_PRINTEROPEN
             ;
     for (QStringList::iterator it = colorPatterns.begin(); it != colorPatterns.end(); ++it ) {

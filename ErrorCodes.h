@@ -108,6 +108,7 @@
 #define ERROR_PRINTERNOTON				71
 #define ERROR_PRINTERNOTOFF				72
 #define ERROR_PRINTEROPEN				73
+#define ERROR_WAVFILEFORMAT				74
 
 
 // Insert new error messages here
