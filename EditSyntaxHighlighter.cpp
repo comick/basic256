@@ -395,8 +395,11 @@ void EditSyntaxHighlighter::initColors() {
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]\\b"		// ERROR_NOTANUMBER
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]\\b"		// ERROR_PRINTERNOTON
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]\\b"		// ERROR_PRINTERNOTOFF
-            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]\\b"		// ERROR_WAVFILEFORMAT
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]\\b"		// ERROR_PRINTEROPEN
+            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]\\b"		// ERROR_WAVFILEFORMAT
+            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]\\b"		// ERROR_WAVNOTOPEN
+            
+            
             ;
     for (QStringList::iterator it = colorPatterns.begin(); it != colorPatterns.end(); ++it ) {
         rule.pattern = QRegExp(*it);

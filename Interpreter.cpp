@@ -688,6 +688,12 @@ QString Interpreter::getErrorMessage(int e) {
         case WARNING_TYPECONV:
             errormessage = tr("Unable to convert string to number, zero used");
             break;
+        case WARNING_WAVNOTSEEKABLE:
+            errormessage = tr("Media file is not seekable");
+            break;
+        case WARNING_WAVNODURATION:
+            errormessage = tr("Duration is not available for media file");
+            break;
 
 
         // put WARNING new messages here
@@ -2776,7 +2782,7 @@ Interpreter::execByteCode() {
                 case OP_WAVPLAY: {
 					QString file = stack.popstring();
 					mediaplayer = new QMediaPlayer();
-					mediaplayer->setMedia(QUrl::fromLocalFile(file));
+					mediaplayer->setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
 					mediaplayer->play();
 					if (mediaplayer->error()!=QMediaPlayer::NoError) {
 						errornum = ERROR_WAVFILEFORMAT;
@@ -2787,6 +2793,8 @@ Interpreter::execByteCode() {
                 case OP_WAVSTOP: {
 					if(mediaplayer) {
 						if(mediaPlayerState()!=QMediaPlayer::StoppedState) mediaplayer->stop();
+					} else {
+						errornum = ERROR_WAVNOTOPEN;
 					}
                 }
                 break;
@@ -3778,6 +3786,8 @@ Interpreter::execByteCode() {
 							tim.tv_nsec = 300000000L;	// 300 ms
 							nanosleep(&tim, &tim2);
 						}
+					} else {
+						errornum = ERROR_WAVNOTOPEN;
 					}
                 }
                 break;
@@ -4903,20 +4913,28 @@ Interpreter::execByteCode() {
 					// media playback - we will leave this statement in the language
 					// but leave it as an UNDOCUMENTED feature until the
 					// QT Libirary gets this fixed
+					float d = 0;
 					if (mediaplayer) {
-						stack.pushfloat(mediaplayer->duration()/1000.0f);
+						if (mediaplayer->duration() > 0) {
+							d = mediaplayer->duration()/1000.0f;
+						} else {
+							errornum = WARNING_WAVNODURATION;
+						}
 					} else {
-						stack.pushfloat(-1);
+						errornum = ERROR_WAVNOTOPEN;
 					}
+					stack.pushfloat(d);
                 }
                 break;
 
                 case OP_WAVPOS: {
+					float p = 0;
 					if (mediaplayer) {
-						stack.pushfloat(mediaplayer->position()/1000.0f);
+						p = mediaplayer->position()/1000.0f;
 					} else {
-						stack.pushfloat(0);
+						errornum = ERROR_WAVNOTOPEN;
 					}
+					stack.pushfloat(p);
                 }
                 break;
 
@@ -4934,6 +4952,7 @@ Interpreter::execByteCode() {
 								break;
 						}
 					} else {
+						errornum = ERROR_WAVNOTOPEN;
 					}
                 }
                 break;
@@ -4941,13 +4960,24 @@ Interpreter::execByteCode() {
                 case OP_WAVSEEK: {
 					float pos = stack.popfloat();
 					if (mediaplayer) {
-						mediaplayer->setPosition(pos*1000L);
+						if (mediaplayer->isSeekable()) {
+							mediaplayer->setPosition(pos*1000L);
+						} else {
+							errornum = WARNING_WAVNOTSEEKABLE;
+						}
 					} else {
+						errornum = ERROR_WAVNOTOPEN;
 					}
                 }
                 break;
 
                 case OP_WAVSTATE: {
+					int s = 0;
+					if (mediaplayer) {
+						s = mediaPlayerState();
+					} else {
+						errornum = ERROR_WAVNOTOPEN;
+					}
 					stack.pushint(mediaPlayerState());
 				}
                 break;

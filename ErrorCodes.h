@@ -109,6 +109,8 @@
 #define ERROR_PRINTERNOTOFF				72
 #define ERROR_PRINTEROPEN				73
 #define ERROR_WAVFILEFORMAT				74
+#define ERROR_WAVNOTOPEN				75
+
 
 
 // Insert new error messages here
@@ -117,8 +119,9 @@
 
 // trapable WaRNINGS
 #define WARNING_START					65536
-#define WARNING_DEPRECATED_FORM			65536
-#define WARNING_TYPECONV				65537
+#define WARNING_TYPECONV				65536
+#define WARNING_WAVNOTSEEKABLE			65537
+#define WARNING_WAVNODURATION			65538
 
 
 //

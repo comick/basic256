@@ -117,11 +117,11 @@ asc [Aa][Ss][Cc]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
 begincase [Bb][Ee][Gg][Ii][Nn][ \t]?[Cc][Aa][Ss][Ee]
-black [Bb][Ll][Aa][Cc][Kk]
-blue [Bb][Ll][Uu][Ee]
+black [Bb][Ll][Aa][Cc][Kk]([ \t]*\([ \t]*\))?
+blue [Bb][Ll][Uu][Ee]([ \t]*\([ \t]*\))?
 booleof [Ee][Oo][Ff]
-boolfalse [Ff][Aa][Ll][Ss][Ee]
-booltrue [Tt][Rr][Uu][Ee]
+boolfalse [Ff][Aa][Ll][Ss][Ee]([ \t]*\([ \t]*\))?
+booltrue [Tt][Rr][Uu][Ee]([ \t]*\([ \t]*\))?
 call [Cc][Aa][Ll][Ll]
 case [Cc][Aa][Ss][Ee]
 catch [Cc][Aa][Tt][Cc][Hh]
@@ -132,10 +132,10 @@ chr [Cc][Hh][Rr]
 circle [Cc][Ii][Rr][Cc][Ll][Ee]
 clear [Cc][Ll][Ee][Aa][Rr]
 clg [Cc][Ll][Gg]
-clickb [Cc][Ll][Ii][Cc][Kk][Bb]
-clickclear [Cc][Ll][Ii][Cc][Kk][Cc][Ll][Ee][Aa][Rr]
-clickx [Cc][Ll][Ii][Cc][Kk][Xx]
-clicky [Cc][Ll][Ii][Cc][Kk][Yy]
+clickb [Cc][Ll][Ii][Cc][Kk][Bb]([ \t]*\([ \t]*\))?
+clickclear [Cc][Ll][Ii][Cc][Kk][Cc][Ll][Ee][Aa][Rr]([ \t]*\([ \t]*\))?
+clickx [Cc][Ll][Ii][Cc][Kk][Xx]([ \t]*\([ \t]*\))?
+clicky [Cc][Ll][Ii][Cc][Kk][Yy]([ \t]*\([ \t]*\))?
 close [Cc][Ll][Oo][Ss][Ee]
 cls [Cc][Ll][Ss]
 color [Cc][Oo][Ll][Oo][Rr]
@@ -148,9 +148,9 @@ cos [Cc][Oo][Ss]
 count [Cc][Oo][Uu][Nn][Tt]
 countx [Cc][Oo][Uu][Nn][Tt][Xx]
 currentdir [Cc][Uu][Rr][Rr][Ee][Nn][Tt][Dd][Ii][Rr]
-cyan [Cc][Yy][Aa][Nn]
+cyan [Cc][Yy][Aa][Nn]([ \t]*\([ \t]*\))?
 dark [Dd][Aa][Rr][Kk]
-day [Dd][Aa][Yy]
+day [Dd][Aa][Yy]([ \t]*\([ \t]*\))?
 dbclose [Dd][Bb][Cc][Ll][Oo][Ss][Ee]
 dbcloseset [Dd][Bb][Cc][Ll][Oo][Ss][Ee][Ss][Ee][Tt]
 dbexecute [Dd][Bb][Ee][Xx][Ee][Cc][Uu][Tt][Ee]
@@ -175,74 +175,75 @@ endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
 endtry [Ee][Nn][Dd][ \t]?[Tt][Rr][Yy]
 endsubroutine [Ee][Nn][Dd][ \t]?[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endwhile [Ee][Nn][Dd][ \t]?[Ww][Hh][Ii][Ll][Ee]
-error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]
-error_for1 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]
-error_for2 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]
-error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
-error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
-error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
-error_filewrite [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]
-error_filereset [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]
-error_arraysizelarge [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]
-error_arraysizesmall [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]
-error_nosuchvariable [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee]
-error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
-error_strneglen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Nn][Ee][Gg][Ll][Ee][Nn]
-error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
-error_nonnumeric [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
-error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
-error_putbitformat [Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]
-error_polyarray [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Aa][Rr][Rr][Aa][Yy]
-error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
-error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
-error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
-error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]
-error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
-error_folder [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]
-error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]
-error_dbopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Oo][Pp][Ee][Nn]
-error_dbquery [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]
-error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
-error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
-error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]
-error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]
-error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]
-error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]
-error_netread [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]
-error_netnone [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]
-error_netwrite [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
-error_netsockopt [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]
-error_netbind [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]
-error_netaccept [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]
-error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]
-error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
-error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
-error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]
-error_byref [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff]
-error_byreftype [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff][Tt][Yy][Pp][Ee]
-error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
-error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
-error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]
-error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]
-error_freedbset [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
-error_dbsetnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Ss][Ee][Tt][Nn][Uu][Mm][Bb][Ee][Rr]
-error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]
-error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
-error_colornumber [Ee][Rr][Rr][Oo][Rr][_][Cc][Oo][Ll][Oo][Rr][Nn][Uu][Mm][Bb][Ee][Rr]
-error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
-error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
-error_fontsize [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ss][Ii][Zz][Ee]
-error_fontweight [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ww][Ee][Ii][Gg][Hh][Tt]
-error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]
-error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]
-error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]
-error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
-error_notanumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]
-error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
-error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
-error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
-error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
-error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
+error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]([ \t]*\([ \t]*\))?
+error_for1 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]([ \t]*\([ \t]*\))?
+error_for2 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]([ \t]*\([ \t]*\))?
+error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_filewrite [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]([ \t]*\([ \t]*\))?
+error_filereset [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]([ \t]*\([ \t]*\))?
+error_arraysizelarge [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]([ \t]*\([ \t]*\))?
+error_arraysizesmall [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]([ \t]*\([ \t]*\))?
+error_nosuchvariable [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee]([ \t]*\([ \t]*\))?
+error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]([ \t]*\([ \t]*\))?
+error_strneglen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Nn][Ee][Gg][Ll][Ee][Nn]([ \t]*\([ \t]*\))?
+error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]([ \t]*\([ \t]*\))?
+error_nonnumeric [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Nn][Uu][Mm][Ee][Rr][Ii][Cc]([ \t]*\([ \t]*\))?
+error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]([ \t]*\([ \t]*\))?
+error_putbitformat [Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]([ \t]*\([ \t]*\))?
+error_polyarray [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Aa][Rr][Rr][Aa][Yy]([ \t]*\([ \t]*\))?
+error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]([ \t]*\([ \t]*\))?
+error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]([ \t]*\([ \t]*\))?
+error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]([ \t]*\([ \t]*\))?
+error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]([ \t]*\([ \t]*\))?
+error_folder [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]([ \t]*\([ \t]*\))?
+error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]([ \t]*\([ \t]*\))?
+error_dbopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_dbquery [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]([ \t]*\([ \t]*\))?
+error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]([ \t]*\([ \t]*\))?
+error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]([ \t]*\([ \t]*\))?
+error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]([ \t]*\([ \t]*\))?
+error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]([ \t]*\([ \t]*\))?
+error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]([ \t]*\([ \t]*\))?
+error_netread [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]([ \t]*\([ \t]*\))?
+error_netnone [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]([ \t]*\([ \t]*\))?
+error_netwrite [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]([ \t]*\([ \t]*\))?
+error_netsockopt [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]([ \t]*\([ \t]*\))?
+error_netbind [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]([ \t]*\([ \t]*\))?
+error_netaccept [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]([ \t]*\([ \t]*\))?
+error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]([ \t]*\([ \t]*\))?
+error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]([ \t]*\([ \t]*\))?
+error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]([ \t]*\([ \t]*\))?
+error_byref [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff]([ \t]*\([ \t]*\))?
+error_byreftype [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff][Tt][Yy][Pp][Ee]([ \t]*\([ \t]*\))?
+error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]([ \t]*\([ \t]*\))?
+error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]([ \t]*\([ \t]*\))?
+error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]([ \t]*\([ \t]*\))?
+error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_freedbset [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]([ \t]*\([ \t]*\))?
+error_dbsetnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Ss][Ee][Tt][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]([ \t]*\([ \t]*\))?
+error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]([ \t]*\([ \t]*\))?
+error_colornumber [Ee][Rr][Rr][Oo][Rr][_][Cc][Oo][Ll][Oo][Rr][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]([ \t]*\([ \t]*\))?
+error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]([ \t]*\([ \t]*\))?
+error_fontsize [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ss][Ii][Zz][Ee]([ \t]*\([ \t]*\))?
+error_fontweight [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ww][Ee][Ii][Gg][Hh][Tt]([ \t]*\([ \t]*\))?
+error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]([ \t]*\([ \t]*\))?
+error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]([ \t]*\([ \t]*\))?
+error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]([ \t]*\([ \t]*\))?
+error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]([ \t]*\([ \t]*\))?
+error_notanumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Nn][Uu][Mm][Bb][Ee][Rr]([ \t]*\([ \t]*\))?
+error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]([ \t]*\([ \t]*\))?
+error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]([ \t]*\([ \t]*\))?
+error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]([ \t]*\([ \t]*\))?
+error_wavnotopen [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
+error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]([ \t]*\([ \t]*\))?
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 exitdo [Ee][Xx][Ii][Tt][ \t]?[Dd][Oo]
 exitfor [Ee][Xx][Ii][Tt][ \t]?[Ff][Oo][Rr]
@@ -254,30 +255,30 @@ fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
 floor [Ff][Ll][Oo][Oo][Rr]
 font [Ff][Oo][Nn][Tt]
 for [Ff][Oo][Rr]
-freedb [Ff][Rr][Ee][Ee][Dd][Bb]
+freedb [Ff][Rr][Ee][Ee][Dd][Bb]([ \t]*\([ \t]*\))?
 freedbset [Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
-freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
-freenet [Ff][Rr][Ee][Ee][Nn][Ee][Tt]
+freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]([ \t]*\([ \t]*\))?
+freenet [Ff][Rr][Ee][Ee][Nn][Ee][Tt]([ \t]*\([ \t]*\))?
 frombinary [Ff][Rr][Oo][Mm][Bb][Ii][Nn][Aa][Rr][Yy]
 fromhex [Ff][Rr][Oo][Mm][Hh][Ee][Xx]
 fromoctal [Ff][Rr][Oo][Mm][Oo][Cc][Tt][Aa][Ll]
 fromradix [Ff][Rr][Oo][Mm][Rr][Aa][Dd][Ii][Xx]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
-getbrushcolor [Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]
-getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
-getpenwidth [Gg][Ee][Tt][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
+getbrushcolor [Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]([ \t]*\([ \t]*\))?
+getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]([ \t]*\([ \t]*\))?
+getpenwidth [Gg][Ee][Tt][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]([ \t]*\([ \t]*\))?
 getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 getslice [Gg][Ee][Tt][Ss][Ll][Ii][Cc][Ee]
 global [Gg][Ll][Oo][Bb][Aa][Ll]
 gosub [Gg][Oo][Ss][Uu][Bb]
 goto [Gg][Oo][Tt][Oo]
-graphheight [Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]
+graphheight [Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]([ \t]*\([ \t]*\))?
 graphsize [Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]
 graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
-graphwidth [Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]
-gray [Gg][Rr][AaEe][Yy]
-green [Gg][Rr][Ee][Ee][Nn]
-hour [Hh][Oo][Uu][Rr]
+graphwidth [Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]([ \t]*\([ \t]*\))?
+gray [Gg][Rr][AaEe][Yy]([ \t]*\([ \t]*\))?
+green [Gg][Rr][Ee][Ee][Nn]([ \t]*\([ \t]*\))?
+hour [Hh][Oo][Uu][Rr]([ \t]*\([ \t]*\))?
 if [Ii][Ff]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
@@ -286,13 +287,13 @@ input [Ii][Nn][Pp][Uu][Tt]
 include [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
-key [Kk][Ee][Yy]
+key [Kk][Ee][Yy]([ \t]*\([ \t]*\))?
 kill [Kk][Ii][Ll][Ll]
 label ^[ \t]*{variable}:
-lasterror [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]
-lasterrorextra [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]
-lasterrorline [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]
-lasterrormessage [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]
+lasterror [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]([ \t]*\([ \t]*\))?
+lasterrorextra [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]([ \t]*\([ \t]*\))?
+lasterrorline [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ll][Ii][Nn][Ee]([ \t]*\([ \t]*\))?
+lasterrormessage [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Mm][Ee][Ss][Ss][Aa][Gg][Ee]([ \t]*\([ \t]*\))?
 left [Ll][Ee][Ff][Tt]
 length [Ll][Ee][Nn][Gg][Tt][Hh]
 let [Ll][Ee][Tt]
@@ -302,12 +303,12 @@ logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
 md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
-minute [Mm][Ii][Nn][Uu][Tt][Ee]
-month [Mm][Oo][Nn][Tt][Hh]
-mouseb [Mm][Oo][Uu][Ss][Ee][Bb]
-mousex [Mm][Oo][Uu][Ss][Ee][Xx]
-mousey [Mm][Oo][Uu][Ss][Ee][Yy]
-msec [Mm][Ss][Ee][Cc]
+minute [Mm][Ii][Nn][Uu][Tt][Ee]([ \t]*\([ \t]*\))?
+month [Mm][Oo][Nn][Tt][Hh]([ \t]*\([ \t]*\))?
+mouseb [Mm][Oo][Uu][Ss][Ee][Bb]([ \t]*\([ \t]*\))?
+mousex [Mm][Oo][Uu][Ss][Ee][Xx]([ \t]*\([ \t]*\))?
+mousey [Mm][Oo][Uu][Ss][Ee][Yy]([ \t]*\([ \t]*\))?
+msec [Mm][Ss][Ee][Cc]([ \t]*\([ \t]*\))?
 netaddress [Nn][Ee][Tt][Aa][Dd][Dd][Rr][Ee][Ss][Ss]
 netclose [Nn][Ee][Tt][Cc][Ll][Oo][Ss][Ee]
 netconnect [Nn][Ee][Tt][Cc][Oo][Nn][Nn][Ee][Cc][Tt]
@@ -322,12 +323,12 @@ onerror [Oo][Nn][Ee][Rr][Rr][Oo][Rr]
 open [Oo][Pp][Ee][Nn]
 openb [Oo][Pp][Ee][Nn][Bb]
 or [Oo][Rr]
-orange [Oo][Rr][Aa][Nn][Gg][Ee]
-ostype [Oo][Ss][Tt][Yy][Pp][Ee]
+orange [Oo][Rr][Aa][Nn][Gg][Ee]([ \t]*\([ \t]*\))?
+ostype [Oo][Ss][Tt][Yy][Pp][Ee]([ \t]*\([ \t]*\))?
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 pause [Pp][Aa][Uu][Ss][Ee]
 penwidth [Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
-pi [Pp][Ii]
+pi [Pp][Ii]([ \t]*\([ \t]*\))?
 pie [Pp][Ii][Ee]
 pixel [Pp][Ii][Xx][Ee][Ll]
 plot [Pp][Ll][Oo][Tt]
@@ -340,15 +341,15 @@ printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Ff][Ff]
 printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Nn]
 printerpage [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Pp][Aa][Gg][Ee]
 prompt [Pp][Rr][Oo][Mm][Pp][Tt]
-purple [Pp][Uu][Rr][Pp][Ll][Ee]
+purple [Pp][Uu][Rr][Pp][Ll][Ee]([ \t]*\([ \t]*\))?
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
 radians [Rr][Aa][Dd][Ii][Aa][Nn][Ss]
-rand [Rr][Aa][Nn][Dd]
+rand [Rr][Aa][Nn][Dd]([ \t]*\([ \t]*\))?
 read [Rr][Ee][Aa][Dd]
 readbyte [Rr][Ee][Aa][Dd][Bb][Yy][Tt][Ee]
 readline [Rr][Ee][Aa][Dd][Ll][Ii][Nn][Ee]
 rect [Rr][Ee][Cc][Tt]
-red [Rr][Ee][Dd]
+red [Rr][Ee][Dd]([ \t]*\([ \t]*\))?
 redim [Rr][Ee][Dd][Ii][Mm]
 ref [Rr][Ee][Ff]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
@@ -361,7 +362,7 @@ return [Rr][Ee][Tt][Uu][Rr][Nn]
 rgb [Rr][Gg][Bb]
 right [Rr][Ii][Gg][Hh][Tt]
 say [Ss][Aa][Yy]
-second [Ss][Ee][Cc][Oo][Nn][Dd]
+second [Ss][Ee][Cc][Oo][Nn][Dd]([ \t]*\([ \t]*\))?
 seek [Ss][Ee][Ee][Kk]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 sin [Ss][Ii][Nn]
@@ -392,7 +393,7 @@ system [Ss][Yy][Ss][Tt][Ee][Mm]
 tan [Tt][Aa][Nn]
 text [Tt][Ee][Xx][Tt]
 textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
-textheight [Tt][Ee][Xx][Tt][Hh][Ee][Ii][Gg][Hh][Tt]
+textheight [Tt][Ee][Xx][Tt][Hh][Ee][Ii][Gg][Hh][Tt]([ \t]*\([ \t]*\))?
 then [Tt][Hh][Ee][Nn]
 throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 to [Tt][Oo]
@@ -406,24 +407,27 @@ tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 try [Tt][Rr][Yy]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
-version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
+version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]([ \t]*\([ \t]*\))?
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
-wavlength [Ww][Aa][Vv][Ll][Ee][Nn][Gg][Tt][Hh]
+warning_typeconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]([ \t]*\([ \t]*\))?
+warning_wavnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]([ \t]*\([ \t]*\))?
+warning_wavnoduration [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Nn][Oo][Dd][Uu][Rr][Aa][Tt][Ii][Oo][Nn]([ \t]*\([ \t]*\))?
+wavlength [Ww][Aa][Vv][Ll][Ee][Nn][Gg][Tt][Hh]([ \t]*\([ \t]*\))?
 wavpause [Ww][Aa][Vv][Pp][Aa][Uu][Ss][Ee]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
-wavpos [Ww][Aa][Vv][Pp][Oo][Ss]
+wavpos [Ww][Aa][Vv][Pp][Oo][Ss]([ \t]*\([ \t]*\))?
 wavseek [Ww][Aa][Vv][Ss][Ee][Ee][Kk]
-wavstate [Ww][Aa][Vv][Ss][Tt][Aa][Tt][Ee]
+wavstate [Ww][Aa][Vv][Ss][Tt][Aa][Tt][Ee]([ \t]*\([ \t]*\))?
 wavstop [Ww][Aa][Vv][Ss][Tt][Oo][Pp]
 wavwait [Ww][Aa][Vv][Ww][Aa][Ii][Tt]
 while [Ww][Hh][Ii][Ll][Ee]
-white [Ww][Hh][Ii][Tt][Ee]
+white [Ww][Hh][Ii][Tt][Ee]([ \t]*\([ \t]*\))?
 write [Ww][Rr][Ii][Tt][Ee]
 writebyte [Ww][Rr][Ii][Tt][Ee][Bb][Yy][Tt][Ee]
 writeline [Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]
 xor [Xx][Oo][Rr]
-year [Yy][Ee][Aa][Rr]
-yellow [Yy][Ee][Ll][Ll][Oo][Ww]
+year [Yy][Ee][Aa][Rr]([ \t]*\([ \t]*\))?
+yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 
 %%
 
@@ -594,6 +598,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_printernotoff} { count(); return B256ERROR_PRINTERNOTOFF; }
 {error_printeropen} { count(); return B256ERROR_PRINTEROPEN; }
 {error_wavfileformat} { count(); return B256ERROR_WAVFILEFORMAT; }
+{error_wavnotopen} { count(); return B256ERROR_WAVNOTOPEN; }
 {error_notimplemented} { count(); return B256ERROR_NOTIMPLEMENTED; }
 {exists}	{ count(); return B256EXISTS; }
 {exitdo}	{ count(); return B256EXITDO; }
@@ -776,6 +781,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {upper}		{ count(); return B256UPPER; }
 {version}		{ count(); return B256VERSION; }
 {volume}	{ count(); return B256VOLUME; }
+{warning_typeconv}	{ count(); return B256WARNING_TYPECONV; }
+{warning_wavnoduration}	{ count(); return B256WARNING_WAVNODURATION; }
+{warning_wavnotseekable}	{ count(); return B256WARNING_WAVNOTSEEKABLE; }
 {wavlength}	{ count(); return B256WAVLENGTH; }
 {wavpause}	{ count(); return B256WAVPAUSE; }
 {wavpause}":"	{ unput(':'); count(); return B256WAVPAUSE; }

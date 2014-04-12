@@ -369,8 +369,10 @@ void addStringOp(int op, char *data) {
 %token B256ERROR_PENWIDTH B256ERROR_COLORNUMBER B256ERROR_ARRAYINDEXMISSING B256ERROR_IMAGESCALE
 %token B256ERROR_FONTSIZE B256ERROR_FONTWEIGHT B256ERROR_RADIXSTRING B256ERROR_RADIX B256ERROR_LOGRANGE
 %token B256ERROR_STRINGMAXLEN B256ERROR_NOTANUMBER B256ERROR_PRINTERNOTON B256ERROR_PRINTERNOTOFF
-%token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT
+%token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT B256ERROR_WAVNOTOPEN
 %token B256ERROR_NOTIMPLEMENTED
+%token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE
+
 
 %union
 {
@@ -1826,9 +1828,6 @@ wavpausestmt:
 			B256WAVPAUSE {
 				addOp(OP_WAVPAUSE);
 			}
-			| B256WAVPAUSE '(' ')' {
-				addOp(OP_WAVPAUSE);
-			}
 			;
 
 wavplaystmt:
@@ -1847,16 +1846,10 @@ wavstopstmt:
 			B256WAVSTOP {
 				addOp(OP_WAVSTOP);
 			}
-			| B256WAVSTOP '(' ')' {
-				addOp(OP_WAVSTOP);
-			}
 			;
 
 wavwaitstmt:
 			B256WAVWAIT {
-				addOp(OP_WAVWAIT);
-			}
-			| B256WAVWAIT '(' ')' {
 				addOp(OP_WAVWAIT);
 			}
 			;
@@ -2028,9 +2021,6 @@ spriteshowstmt:
 
 clickclearstmt:
 			B256CLICKCLEAR  {
-				addOp(OP_CLICKCLEAR);
-			}
-			| B256CLICKCLEAR '(' ')' {
 				addOp(OP_CLICKCLEAR);
 			}
 			;
@@ -2802,13 +2792,9 @@ floatexpr:
 			| B256EXP '(' floatexpr ')' { addOp(OP_EXP); }
 			| B256ABS '(' floatexpr ')' { addOp(OP_ABS); }
 			| B256RAND { addOp(OP_RAND); }
-			| B256RAND '(' ')' { addOp(OP_RAND); }
 			| B256PI { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
-			| B256PI '(' ')' { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
 			| B256BOOLTRUE { addIntOp(OP_PUSHINT, 1); }
-			| B256BOOLTRUE '(' ')' { addIntOp(OP_PUSHINT, 1); }
 			| B256BOOLFALSE { addIntOp(OP_PUSHINT, 0); }
-			| B256BOOLFALSE '(' ')' { addIntOp(OP_PUSHINT, 0); }
 			| B256BOOLEOF {
 				addIntOp(OP_PUSHINT, 0);
 				addOp(OP_EOF);
@@ -2820,46 +2806,24 @@ floatexpr:
 			| B256BOOLEOF '(' floatexpr ')' { addOp(OP_EOF); }
 			| B256EXISTS '(' stringexpr ')' { addOp(OP_EXISTS); }
 			| B256YEAR { addOp(OP_YEAR); }
-			| B256YEAR '(' ')' { addOp(OP_YEAR); }
 			| B256MONTH { addOp(OP_MONTH); }
-			| B256MONTH '(' ')' { addOp(OP_MONTH); }
 			| B256DAY { addOp(OP_DAY); }
-			| B256DAY '(' ')' { addOp(OP_DAY); }
 			| B256HOUR { addOp(OP_HOUR); }
-			| B256HOUR '(' ')' { addOp(OP_HOUR); }
 			| B256MINUTE { addOp(OP_MINUTE); }
-			| B256MINUTE '(' ')' { addOp(OP_MINUTE); }
 			| B256SECOND { addOp(OP_SECOND); }
-			| B256SECOND '(' ')' { addOp(OP_SECOND); }
 			| B256GRAPHWIDTH { addOp(OP_GRAPHWIDTH); }
-			| B256GRAPHWIDTH '(' ')' { addOp(OP_GRAPHWIDTH); }
 			| B256GRAPHHEIGHT { addOp(OP_GRAPHHEIGHT); }
-			| B256GRAPHHEIGHT '(' ')' { addOp(OP_GRAPHHEIGHT); }
 			| B256SIZE { addIntOp(OP_PUSHINT, 0); addOp(OP_SIZE); }
 			| B256SIZE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_SIZE); }
 			| B256SIZE '(' floatexpr ')' { addOp(OP_SIZE); }
 			| B256KEY     { addOp(OP_KEY); }
-			| B256KEY '(' ')'     { addOp(OP_KEY); }
 			| B256MOUSEX { addOp(OP_MOUSEX); }
-			| B256MOUSEX '(' ')' { addOp(OP_MOUSEX); }
 			| B256MOUSEY { addOp(OP_MOUSEY); }
-			| B256MOUSEY '(' ')' { addOp(OP_MOUSEY); }
 			| B256MOUSEB { addOp(OP_MOUSEB); }
-			| B256MOUSEB '(' ')' { addOp(OP_MOUSEB); }
 			| B256CLICKX { addOp(OP_CLICKX); }
-			| B256CLICKX '(' ')' { addOp(OP_CLICKX); }
 			| B256CLICKY { addOp(OP_CLICKY); }
-			| B256CLICKY '(' ')' { addOp(OP_CLICKY); }
 			| B256CLICKB { addOp(OP_CLICKB); }
-			| B256CLICKB '(' ')' { addOp(OP_CLICKB); }
 			| B256CLEAR {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addOp(OP_RGB);
-				}
-			| B256CLEAR '(' ')' {
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x00);
@@ -2873,21 +2837,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256BLACK '(' ')' {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256WHITE {
-				addIntOp(OP_PUSHINT, 0xf8);
-				addIntOp(OP_PUSHINT, 0xf8);
-				addIntOp(OP_PUSHINT, 0xf8);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256WHITE '(' ')' {
 				addIntOp(OP_PUSHINT, 0xf8);
 				addIntOp(OP_PUSHINT, 0xf8);
 				addIntOp(OP_PUSHINT, 0xf8);
@@ -2901,21 +2851,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256RED '(' ')' {
-				addIntOp(OP_PUSHINT, 0xff);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKRED {
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKRED '(' ')' {
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x00);
@@ -2929,21 +2865,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256GREEN '(' ')' {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKGREEN {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKGREEN '(' ')' {
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x00);
@@ -2957,21 +2879,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256BLUE '(' ')' {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKBLUE {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKBLUE '(' ')' {
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x80);
@@ -2985,21 +2893,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256CYAN '(' ')' {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKCYAN {
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKCYAN '(' ')' {
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x80);
@@ -3013,21 +2907,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256PURPLE '(' ')' {
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKPURPLE {
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKPURPLE '(' ')' {
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0x80);
@@ -3041,21 +2921,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256YELLOW '(' ')' {
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKYELLOW {
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKYELLOW '(' ')' {
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x00);
@@ -3069,21 +2935,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256ORANGE '(' ')' {
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x66);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKORANGE {
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x33);
-				addIntOp(OP_PUSHINT, 0x00);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKORANGE '(' ')' {
 				addIntOp(OP_PUSHINT, 0xFF);
 				addIntOp(OP_PUSHINT, 0x33);
 				addIntOp(OP_PUSHINT, 0x00);
@@ -3097,21 +2949,7 @@ floatexpr:
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
-			| B256GREY '(' ')' {
-				addIntOp(OP_PUSHINT, 0xA4);
-				addIntOp(OP_PUSHINT, 0xA4);
-				addIntOp(OP_PUSHINT, 0xA4);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
 			| B256DARKGREY {
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0x80);
-				addIntOp(OP_PUSHINT, 0xff);
-				addOp(OP_RGB);
-				}
-			| B256DARKGREY '(' ')'{
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x80);
 				addIntOp(OP_PUSHINT, 0x80);
@@ -3127,11 +2965,8 @@ floatexpr:
 				addOp(OP_RGB);
 			}
 			| B256GETCOLOR { addOp(OP_GETCOLOR); }
-			| B256GETCOLOR '(' ')' { addOp(OP_GETCOLOR); }
 			| B256GETBRUSHCOLOR { addOp(OP_GETBRUSHCOLOR); }
-			| B256GETBRUSHCOLOR '(' ')' { addOp(OP_GETBRUSHCOLOR); }
 			| B256GETPENWIDTH { addOp(OP_GETPENWIDTH); }
-			| B256GETPENWIDTH '(' ')' { addOp(OP_GETPENWIDTH); }
 			| B256SPRITECOLLIDE '(' floatexpr ',' floatexpr ')' { addOp(OP_SPRITECOLLIDE); }
 			| B256SPRITEX '(' floatexpr ')' { addOp(OP_SPRITEX); }
 			| B256SPRITEY '(' floatexpr ')' { addOp(OP_SPRITEY); }
@@ -3230,9 +3065,7 @@ floatexpr:
 			| B256DBNULL '(' floatexpr ',' floatexpr ',' stringexpr ')' {
 				addOp(OP_DBNULLS); }
 			| B256LASTERROR { addOp(OP_LASTERROR); }
-			| B256LASTERROR '(' ')' { addOp(OP_LASTERROR); }
 			| B256LASTERRORLINE { addOp(OP_LASTERRORLINE); }
-			| B256LASTERRORLINE '(' ')' { addOp(OP_LASTERRORLINE); }
 			| B256NETDATA { addIntOp(OP_PUSHINT, 0); addOp(OP_NETDATA); }
 			| B256NETDATA '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_NETDATA); }
 			| B256NETDATA '(' floatexpr ')' { addOp(OP_NETDATA); }
@@ -3241,18 +3074,15 @@ floatexpr:
 			| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_COUNT_C); }
 			| B256COUNTX '(' stringexpr ',' stringexpr ')' { addOp(OP_COUNTX); }
 			| B256OSTYPE { addOp(OP_OSTYPE); }
-			| B256OSTYPE '(' ')' { addOp(OP_OSTYPE); }
 			| B256MSEC { addOp(OP_MSEC); }
-			| B256MSEC '(' ')' { addOp(OP_MSEC); }
 			| B256TEXTWIDTH '(' stringexpr ')' { addOp(OP_TEXTWIDTH); }
-			| B256TEXTHEIGHT '(' ')' { addOp(OP_TEXTHEIGHT); }
+			| B256TEXTHEIGHT { addOp(OP_TEXTHEIGHT); }
 			| B256READBYTE { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' floatexpr ')' { addOp(OP_READBYTE); }
 			| B256REF '(' B256VARIABLE ')' { addIntOp(OP_PUSHVARREF, $3); }
 			| B256REF '(' B256STRINGVAR ')' { addIntOp(OP_PUSHVARREFSTR, $3); }
 			| B256FREEDB { addOp(OP_FREEDB); }
-			| B256FREEDB '(' ')' { addOp(OP_FREEDB); }
 			| B256FREEDBSET {
 				addIntOp(OP_PUSHINT,0);	// default db number
 				addOp(OP_FREEDBSET);
@@ -3263,11 +3093,8 @@ floatexpr:
 			}
 			| B256FREEDBSET '(' floatexpr ')' { addOp(OP_FREEDBSET); }
 			| B256FREEFILE { addOp(OP_FREEFILE); }
-			| B256FREEFILE '(' ')' { addOp(OP_FREEFILE); }
 			| B256FREENET { addOp(OP_FREENET); }
-			| B256FREENET '(' ')' { addOp(OP_FREENET); }
 			| B256VERSION { addIntOp(OP_PUSHINT, VERSIONSIGNATURE); }
-			| B256VERSION '(' ')' { addIntOp(OP_PUSHINT, VERSIONSIGNATURE); }
 			| B256CONFIRM '(' stringexpr ')' {
 				addIntOp(OP_PUSHINT,-1);	// no default
 				addOp(OP_CONFIRM);
@@ -3291,11 +3118,9 @@ floatexpr:
 				addOp(OP_FROMRADIX);
 			}
 			| B256WAVLENGTH { addOp(OP_WAVLENGTH); }
-			| B256WAVLENGTH '(' ')' { addOp(OP_WAVLENGTH); }
 			| B256WAVPOS { addOp(OP_WAVPOS); }
-			| B256WAVPOS '(' ')' { addOp(OP_WAVPOS); }
 			| B256WAVSTATE { addOp(OP_WAVSTATE); }
-			| B256WAVSTATE '(' ')' { addOp(OP_WAVSTATE); }
+			
 			| B256ERROR_NONE { addIntOp(OP_PUSHINT, ERROR_NONE); }
 			| B256ERROR_FOR1 { addIntOp(OP_PUSHINT, ERROR_FOR1); }
 			| B256ERROR_FOR2 { addIntOp(OP_PUSHINT, ERROR_FOR2); }
@@ -3363,8 +3188,12 @@ floatexpr:
 			| B256ERROR_PRINTERNOTOFF { addIntOp(OP_PUSHINT, ERROR_PRINTERNOTOFF); }
 			| B256ERROR_PRINTEROPEN { addIntOp(OP_PUSHINT, ERROR_PRINTEROPEN); }
 			| B256ERROR_WAVFILEFORMAT { addIntOp(OP_PUSHINT, ERROR_WAVFILEFORMAT); }
+			| B256ERROR_WAVNOTOPEN { addIntOp(OP_PUSHINT, ERROR_WAVNOTOPEN); }
 			| B256ERROR_NOTIMPLEMENTED { addIntOp(OP_PUSHINT, ERROR_NOTIMPLEMENTED); }
 
+			| B256WARNING_TYPECONV { addIntOp(OP_PUSHINT, WARNING_TYPECONV); }
+			| B256WARNING_WAVNODURATION { addIntOp(OP_PUSHINT, WARNING_WAVNODURATION); }
+			| B256WARNING_WAVNOTSEEKABLE { addIntOp(OP_PUSHINT, WARNING_WAVNOTSEEKABLE); }
 
 			/* ###########################################
 			   ### INSERT NEW Numeric Functions BEFORE ###
