@@ -22,7 +22,7 @@
 #include <time.h>
 
 #include <QMediaPlayer>
-#include <QfileInfo>
+#include <QFileInfo>
 #include <QEventLoop>
 #include <QTimer>
 
