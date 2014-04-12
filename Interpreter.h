@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <cmath>
 #include <dirent.h>
+#include "BasicMediaPlayer.h"
 #include "BasicGraph.h"
 #include "Stack.h"
 #include "Variables.h"
@@ -46,8 +47,6 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
-
-#include <QMediaPlayer>
 
 #ifndef M_PI
     #define M_PI 3.14159265
@@ -162,7 +161,6 @@ class Interpreter : public QThread
   QString getErrorMessage(int);
   QString getWarningMessage(int);
   int netSockClose(int);
-  int mediaPlayerState();
   Variables variables;
   Stack stack;
   QFile **stream;
@@ -207,7 +205,7 @@ class Interpreter : public QThread
   QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
   bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
-  QMediaPlayer *mediaplayer;
+  BasicMediaPlayer *mediaplayer;
 
 
 };

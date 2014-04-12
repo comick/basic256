@@ -753,33 +753,7 @@ Interpreter::isStopped() {
     return false;
 }
 
-int Interpreter::mediaPlayerState() {
-	// this eventually needs to be removed and replaced with
-	// mediaplayer->state() call to the QT MediaPlayer object property
-	//
-	// with QT5.1 it has been observed that
-	// some media files do not report stop at the end of the file
-	// and continue to report playing forever
-	// if playing check of the position increases after a short sleep time
-	
-	// media state 0-stop, 1-play, 2-pause
-	int state = QMediaPlayer::StoppedState;
-	if (mediaplayer) {
-		state = mediaplayer->state();
-		if (state==QMediaPlayer::PlayingState) {
-			struct timespec tim, tim2;
-			qint64 starttime, endtime;
-			tim.tv_sec = 0;
-			tim.tv_nsec = 30000000L;	// 30 ms
-			starttime = mediaplayer->position();
-			nanosleep(&tim, &tim2);
-			endtime = mediaplayer->position();
-			if (starttime==endtime) state = QMediaPlayer::StoppedState; // stopped
-		}
-	}
-	return(state);
-}
- 
+
 void Interpreter::clearsprites() {
     // cleanup sprites - release images and deallocate the space
     int i;
@@ -2781,8 +2755,8 @@ Interpreter::execByteCode() {
 
                 case OP_WAVPLAY: {
 					QString file = stack.popstring();
-					mediaplayer = new QMediaPlayer();
-					mediaplayer->setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
+					mediaplayer = new BasicMediaPlayer();
+					mediaplayer->loadBlocking(file);
 					mediaplayer->play();
 					if (mediaplayer->error()!=QMediaPlayer::NoError) {
 						errornum = ERROR_WAVFILEFORMAT;
@@ -2792,7 +2766,7 @@ Interpreter::execByteCode() {
 
                 case OP_WAVSTOP: {
 					if(mediaplayer) {
-						if(mediaPlayerState()!=QMediaPlayer::StoppedState) mediaplayer->stop();
+						if(mediaplayer->state()!=QMediaPlayer::StoppedState) mediaplayer->stop();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
@@ -3780,12 +3754,7 @@ Interpreter::execByteCode() {
 
                 case OP_WAVWAIT: {
 					if(mediaplayer) {
-						struct timespec tim, tim2;
-						while(mediaPlayerState()==QMediaPlayer::PlayingState) {
-							tim.tv_sec = 0;
-							tim.tv_nsec = 300000000L;	// 300 ms
-							nanosleep(&tim, &tim2);
-						}
+						mediaplayer->wait();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
@@ -4941,7 +4910,7 @@ Interpreter::execByteCode() {
                 case OP_WAVPAUSE: {
 					// media state 0-stop, 1-play, 2-pause
 					if (mediaplayer) {
-						switch (mediaPlayerState()) {
+						switch (mediaplayer->state()) {
 							case QMediaPlayer::PlayingState:
 								mediaplayer->pause();
 								break;
@@ -4974,11 +4943,11 @@ Interpreter::execByteCode() {
                 case OP_WAVSTATE: {
 					int s = 0;
 					if (mediaplayer) {
-						s = mediaPlayerState();
+						s = mediaplayer->state();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
-					stack.pushint(mediaPlayerState());
+					stack.pushint(s);
 				}
                 break;
 
