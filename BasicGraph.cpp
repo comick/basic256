@@ -23,21 +23,12 @@
 #include <QMutex>
 #include <QPainter>
 
-#if QT_VERSION >= 0x050000
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrinter>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollArea>
-#else
-#include <QAction>
-#include <QApplication>
-#include <QMessageBox>
-#include <QPrintDialog>
-#include <QPrinter>
-#include <QScrollArea>
-#endif
 
 #include "BasicWidget.h"
 #include "BasicGraph.h"

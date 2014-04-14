@@ -17,13 +17,8 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QDockWidget>
-	#include <QtWidgets/QTreeWidget>
-#else
-	#include <QDockWidget>
-	#include <QTreeWidget>
-#endif
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QTreeWidget>
 
 #include "ViewWidgetIFace.h"
 

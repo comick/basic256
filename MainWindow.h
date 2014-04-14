@@ -21,22 +21,12 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QMainWindow>
-	#include <QtWidgets/QGridLayout>
-	#include <QtWidgets/QAction>
-	#include <QtWidgets/QMessageBox>
-	#include <QtWidgets/QShortcut>
-	#include <QtWidgets/QScrollArea>
-#else
-	#include <QMainWindow>
-	#include <QGridLayout>
-	#include <QAction>
-	#include <QMessageBox>
-	#include <QShortcut>
-	#include <QScrollArea>
-#endif
-
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QShortcut>
+#include <QtWidgets/QScrollArea>
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"
@@ -46,9 +36,7 @@
 #include "DocumentationWin.h"
 #include "PreferencesWin.h"
 #include "RunController.h"
-#ifndef DISABLESYNTAXHIGHLIGHT
-    #include "EditSyntaxHighlighter.h"
-#endif
+#include "EditSyntaxHighlighter.h"
 #include "Settings.h"
 #include "DockWidget.h"
 
@@ -111,9 +99,7 @@ public:
 	QAction * stopact;
 
 	RunController *rc;
-#ifndef DISABLESYNTAXHIGHLIGHT
     EditSyntaxHighlighter * editsyntax;
-#endif
 
 	QString localecode;
 

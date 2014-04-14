@@ -42,11 +42,7 @@
 // 2013-01-27
 
 #include <QPaintEvent>
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QWidget>
-#else
-#include <QWidget>
-#endif
 
 #include "BasicEdit.h"
 #include "LineNumberArea.h"

@@ -17,37 +17,20 @@
 
 #include <QObject>
 #include <QIcon>
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QMessageBox>
-	#include <QtWidgets/QWidget>
-	#include <QtWidgets/QDialog>
-	#include <QtWidgets/QGridLayout>
-	#include <QtWidgets/QToolBar>
-	#include <QtWidgets/QLabel>
-	#include <QtWidgets/QLineEdit>
-	#include <QtWidgets/QCheckBox>
-	#include <QtWidgets/QComboBox>
-	#include <QtWidgets/QPushButton>
-	#include <QtWidgets/QAction>
-	#include <QtWidgets/QTabWidget>
-	#include <QtWidgets/QGroupBox>
-	#include <QtWidgets/QRadioButton>
-#else
-	#include <QMessageBox>
-	#include <QWidget>
-	#include <QDialog>
-	#include <QGridLayout>
-	#include <QToolBar>
-	#include <QLabel>
-	#include <QLineEdit>
-	#include <QCheckBox>
-	#include <QComboBox>
-	#include <QPushButton>
-	#include <QAction>
-	#include <QTabWidget>
-	#include <QGroupBox>
-	#include <QRadioButton>
-#endif
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QRadioButton>
 
 #ifndef PREFERENCESWINH
 

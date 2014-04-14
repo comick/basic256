@@ -21,14 +21,9 @@
 
 #include <QKeyEvent>
 #include <QPaintEvent>
+#include <QtWidgets/QTextEdit>
 
 #include <qglobal.h>
-
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QTextEdit>
-#else
-	#include <QTextEdit>
-#endif
 
 #include "ViewWidgetIFace.h"
 

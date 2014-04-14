@@ -21,15 +21,9 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QTextEdit>
-	#include <QtWidgets/QPushButton>
-	#include <QtWidgets/QStatusBar>
-#else
-	#include <QTextEdit>
-	#include <QPushButton>
-	#include <QStatusBar>
-#endif
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QStatusBar>
 
 #include "BasicEdit.h"
 #include "BasicOutput.h"
@@ -82,6 +76,12 @@ class RunController : public QObject
   void dialogFontSelect();
   void mainWindowSetRunning(int);
   void mainWindowEnableCopy(bool);
+  
+#ifdef USEQSOUND
+	void playWAV(QString);
+	void stopWAV();
+	void waitWAV(); 
+#endif
 
  private:
   Interpreter *i;

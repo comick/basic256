@@ -27,26 +27,23 @@
 #include <stdio.h>
 #include <cmath>
 #include <dirent.h>
-#include "BasicMediaPlayer.h"
 #include "BasicGraph.h"
 #include "Stack.h"
 #include "Variables.h"
 #include "ErrorCodes.h"
 #include "Sound.h"
 
-
-#if QT_VERSION >= 0x050000
-    #include <QtPrintSupport/QPrinter>
-    #include <QtPrintSupport/QPrinterInfo>
-#else
-    #include <QPrinter>
-    #include <QPrinterInfo>
-#endif
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrinterInfo>
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
+
+#ifndef USEQSOUND
+	#include "BasicMediaPlayer.h"
+#endif
 
 #ifndef M_PI
     #define M_PI 3.14159265
@@ -140,9 +137,6 @@ class Interpreter : public QThread
   void setVolume(int);
   void executeSystem(QString);
   void speakWords(QString);
-  //void playWAV(QString);
-  //void waitWAV();
-  //void stopWAV();
   void goToLine(int);
   void highlightLine(int);
   void varAssignment(int, QString, QString, int, int);
@@ -151,6 +145,11 @@ class Interpreter : public QThread
   void dialogAlert(QString);
   void dialogConfirm(QString, int);
   void dialogPrompt(QString, QString);
+#if ANDROID
+  void playWAV(QString);
+  void waitWAV();
+  void stopWAV();
+#endif
 
  private:
   int optype(int op);
@@ -205,8 +204,9 @@ class Interpreter : public QThread
   QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
   bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
+#ifndef USEQSOUND
   BasicMediaPlayer *mediaplayer;
-
+#endif
 
 };
 

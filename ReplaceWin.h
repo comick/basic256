@@ -19,31 +19,17 @@
 
 #include <QObject>
 #include <QIcon>
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QMessageBox>
-	#include <QtWidgets/QWidget>
-	#include <QtWidgets/QDialog>
-	#include <QtWidgets/QGridLayout>
-	#include <QtWidgets/QToolBar>
-	#include <QtWidgets/QLabel>
-	#include <QtWidgets/QLineEdit>
-	#include <QtWidgets/QCheckBox>
-	#include <QtWidgets/QPushButton>
-	#include <QtWidgets/QAction>
-	#include <QtWidgets/QShortcut>
-#else
-	#include <QMessageBox>
-	#include <QWidget>
-	#include <QDialog>
-	#include <QGridLayout>
-	#include <QToolBar>
-	#include <QLabel>
-	#include <QLineEdit>
-	#include <QCheckBox>
-	#include <QPushButton>
-	#include <QAction>
-	#include <QShortcut>
-#endif
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QShortcut>
 
 #include "BasicEdit.h"
 

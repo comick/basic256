@@ -18,8 +18,6 @@
 
 #include "EditSyntaxHighlighter.h"
 
-#ifndef DISABLESYNTAXHIGHLIGHT
-
 EditSyntaxHighlighter::EditSyntaxHighlighter(QTextDocument *parent)
     : 	QSyntaxHighlighter(parent) {
     initKeywords();
@@ -437,4 +435,3 @@ void EditSyntaxHighlighter::initComments() {
     m_standardRules.append(rule);
 }
 
-#endif  // DISABLESYNTAXHIGHLIGHT

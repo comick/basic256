@@ -17,8 +17,6 @@
 #ifndef __EDITSYNTAXHIGHLIGHTER_H
 #define __EDITSYNTAXHIGHLIGHTER_H
 
-#ifndef DISABLESYNTAXHIGHLIGHT
-
 #include <QSyntaxHighlighter>
 //#include <QHash>
 #include <QTextCharFormat>
@@ -59,7 +57,5 @@ private:
     QTextCharFormat m_functionFmt;
     QTextCharFormat m_commentFmt;
 };
-
-#endif  // DISABLESYNTAXHIGHLIGHT
 
 #endif	// __EDITSYNTAXHIGHLIGHTER_H

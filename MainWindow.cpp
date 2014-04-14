@@ -24,7 +24,6 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMenuBar>
@@ -33,16 +32,6 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QDesktopWidget>
-#else
-#include <QApplication>
-#include <QGridLayout>
-#include <QMenuBar>
-#include <QStatusBar>
-#include <QDialog>
-#include <QLabel>
-#include <QShortcut>
-#include <QDesktopWidget>
-#endif
 
 using namespace std;
 
@@ -130,9 +119,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     vardock->setWindowTitle(QObject::tr("Variable Watch"));
 
     rc = new RunController();
-#ifndef DISABLESYNTAXHIGHLIGHT
     editsyntax = new EditSyntaxHighlighter(editwin->document());
-#endif
 
     // Main window toolbar
     maintbar = new QToolBar();
@@ -470,9 +457,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 MainWindow::~MainWindow() {
     //printf("mwdestroy\n");
     delete rc;
-#ifndef DISABLESYNTAXHIGHLIGHT
     delete editsyntax;
-#endif
     delete mymutex;
     delete waitCond;
     delete editwin;

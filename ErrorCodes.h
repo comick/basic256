@@ -110,10 +110,9 @@
 #define ERROR_PRINTEROPEN				73
 #define ERROR_WAVFILEFORMAT				74
 #define ERROR_WAVNOTOPEN				75
-
-
-
 // Insert new error messages here
+
+
 #define ERROR_NOTIMPLEMENTED 			65535
 
 

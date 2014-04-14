@@ -21,15 +21,9 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-    #include <QtWidgets/QApplication>
-    #include <QtWidgets/QPlainTextEdit>
-    #include <QtWidgets/QMainWindow>
-#else
-    #include <QApplication>
-    #include <QPlainTextEdit>
-    #include <QMainWindow>
-#endif
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QMainWindow>
 #include <QKeyEvent>
 
 #include "ViewWidgetIFace.h"

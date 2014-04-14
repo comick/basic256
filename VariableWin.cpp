@@ -21,11 +21,7 @@ using namespace std;
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QHeaderView>
-#else
-#include <QHeaderView>
-#endif
 
 //#include "VariableWin.h"
 #include "MainWindow.h"

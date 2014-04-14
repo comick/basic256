@@ -21,13 +21,8 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QVBoxLayout>
-	#include <QtWidgets/QWidget>
-#else
-	#include <QVBoxLayout>
-	#include <QWidget>
-#endif
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
 class QMenu;
 class ToolBar;

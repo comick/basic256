@@ -1,4 +1,8 @@
-QT_VERSION=$$[QT_VERSION]
+
+lessThan(QT_MAJOR_VERSION, 5) {
+  message( FATAL_ERROR "BASIC-256 requires QT 5 or better." )
+}
+
 
 TEMPLATE					=	app
 TARGET						=	basic256
@@ -12,10 +16,8 @@ MOC_DIR						=	tmp/moc
 QT						+=	webkit
 QT						+=	gui
 QT						+=	sql
-contains( QT_VERSION, "^5.*" ) {
-	QT						+=	widgets
-	QT						+=	printsupport
-}
+QT						+=	widgets
+QT						+=	printsupport
 
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc
@@ -95,22 +97,11 @@ unix:!macx {
 	# Sound - Option 0 - /dev/dsp
 	#DEFINES				+=	SOUND_DSP
 
-	equals(QT_MAJOR_VERSION, 4) {
-		# in QT4 the multimedia kit is not as complete so
-		# use the old SDL hack
-		DEFINES					+=	SOUND_SDL
-		LIBS					+=	-lSDL
-		LIBS					+=	-lSDL_mixer
-	}
-
-	equals(QT_MAJOR_VERSION, 5) {
-		# Sound - QT Mobility Multimedia AudioOut
-		DEFINES					+=	SOUND_QMOBILITY
-		QT						+=	multimedia
-		INCLUDEPATH				+=	QtMultimediaKit
-		INCLUDEPATH				+=	QtMobility
-	} 
-
+	# Sound - QT Mobility Multimedia AudioOut
+	DEFINES					+=	SOUND_QMOBILITY
+	QT						+=	multimedia
+	INCLUDEPATH				+=	QtMultimediaKit
+	INCLUDEPATH				+=	QtMobility
 
 
 	########

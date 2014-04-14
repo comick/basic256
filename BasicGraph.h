@@ -23,11 +23,7 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QWidget>
-#else
-	#include <QWidget>
-#endif
+#include <QtWidgets/QWidget>
 #include <QPainter>
 #include <QKeyEvent>
 

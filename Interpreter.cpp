@@ -61,11 +61,7 @@ InpOut32OutType Out32 = NULL;
 #include <QMutex>
 #include <QWaitCondition>
 
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QMessageBox>
-#else
-#include <QMessageBox>
-#endif
 
 using namespace std;
 
@@ -75,7 +71,9 @@ using namespace std;
 #include "Interpreter.h"
 #include "md5.h"
 #include "Settings.h"
+#include "Sleeper.h"
 #include "Sound.h"
+
 
 extern QMutex *mymutex;
 extern QMutex *mydebugmutex;
@@ -2280,8 +2278,10 @@ Interpreter::execByteCode() {
 
                 case OP_PAUSE: {
                     double val = stack.popfloat();
-                    int stime = (int) (val * 1000);
-                    if (stime > 0) msleep(stime);
+                    if (val > 0) {
+						Sleeper *sleeper = new Sleeper();
+						sleeper->sleepSeconds(val);
+					}
                 }
                 break;
 
@@ -2755,21 +2755,35 @@ Interpreter::execByteCode() {
 
                 case OP_WAVPLAY: {
 					QString file = stack.popstring();
-					mediaplayer = new BasicMediaPlayer();
-					mediaplayer->loadBlocking(file);
+#ifdef USEQSOUND
+					mymutex->lock();
+					emit(playWAV(file));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+#else
+                    mediaplayer = new BasicMediaPlayer();
+                    mediaplayer->loadFile(file);
 					mediaplayer->play();
-					if (mediaplayer->error()!=QMediaPlayer::NoError) {
+                    if (mediaplayer->error()!=0) {
 						errornum = ERROR_WAVFILEFORMAT;
 					}
+#endif
                 }
                 break;
 
                 case OP_WAVSTOP: {
+#ifdef USEQSOUND
+					mymutex->lock();
+					emit(stopWAV());
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+#else
 					if(mediaplayer) {
-						if(mediaplayer->state()!=QMediaPlayer::StoppedState) mediaplayer->stop();
+                        if(mediaplayer->state()!=0) mediaplayer->stop();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
                 }
                 break;
 
@@ -3753,11 +3767,18 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVWAIT: {
+#ifdef USEQSOUND
+					mymutex->lock();
+					emit(waitWAV());
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+#else
 					if(mediaplayer) {
 						mediaplayer->wait();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
                 }
                 break;
 
@@ -4878,11 +4899,10 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVLENGTH: {
-					// as of QT 5.1 the duration does not always return a value for
-					// media playback - we will leave this statement in the language
-					// but leave it as an UNDOCUMENTED feature until the
-					// QT Libirary gets this fixed
 					float d = 0;
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					if (mediaplayer) {
 						if (mediaplayer->duration() > 0) {
 							d = mediaplayer->duration()/1000.0f;
@@ -4892,41 +4912,52 @@ Interpreter::execByteCode() {
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
 					stack.pushfloat(d);
                 }
                 break;
 
                 case OP_WAVPOS: {
 					float p = 0;
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					if (mediaplayer) {
 						p = mediaplayer->position()/1000.0f;
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
 					stack.pushfloat(p);
                 }
                 break;
 
                 case OP_WAVPAUSE: {
-					// media state 0-stop, 1-play, 2-pause
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					if (mediaplayer) {
 						switch (mediaplayer->state()) {
-							case QMediaPlayer::PlayingState:
+                            case BasicMediaPlayer::PlayingState:
 								mediaplayer->pause();
 								break;
-							case QMediaPlayer::PausedState:
+                            case BasicMediaPlayer::PausedState:
 								mediaplayer->play();
 								break;
-							case QMediaPlayer::StoppedState:
+                            case BasicMediaPlayer::StoppedState:
 								break;
 						}
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
                 }
                 break;
 
                 case OP_WAVSEEK: {
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					float pos = stack.popfloat();
 					if (mediaplayer) {
 						if (mediaplayer->isSeekable()) {
@@ -4937,16 +4968,21 @@ Interpreter::execByteCode() {
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
                 }
                 break;
 
                 case OP_WAVSTATE: {
 					int s = 0;
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
 					if (mediaplayer) {
 						s = mediaplayer->state();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
+#endif
 					stack.pushint(s);
 				}
                 break;

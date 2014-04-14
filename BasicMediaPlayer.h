@@ -19,26 +19,29 @@
 #ifndef __BASICMEDIAPLAYER_H
 #define __BASICMEDIAPLAYER_H
 
-#include <time.h>
+#ifndef USEQSOUND
 
 #include <QMediaPlayer>
 #include <QFileInfo>
 #include <QEventLoop>
 #include <QTimer>
 
+#include "Sleeper.h"
+
 class BasicMediaPlayer : public QMediaPlayer
 {
     Q_OBJECT
 public:
 
-	void loadBlocking(QString file);
+    void loadFile(QString file);
 	int state();
-	void wait();
-	
+    void wait();
+
 public slots:
 
 private:
 
 };
 
+#endif
 #endif

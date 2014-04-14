@@ -46,7 +46,7 @@ QT       += core gui widgets printsupport sql
 DEFINES                                         +=	ANDROID
 
 DEFINES                                         +=      DISABLESQLITE
-DEFINES                                         +=      DISABLESYNTAXHIGHLIGHT
+DEFINES                                         +=      USEQSOUND
 
 TEMPLATE					=	app
 TARGET						=	BASIC256
@@ -95,13 +95,15 @@ exists( ./LEX/Makefile ) {
 
 # Input
 HEADERS 					+=	LEX/basicParse.tab.h 
-HEADERS 					+=	*.h
 HEADERS						+=	android/AndroidTTS.h
+
+HEADERS 					+= *.h
 
 SOURCES 					+=	LEX/lex.yy.c 
 SOURCES 					+=	LEX/basicParse.tab.c 
-SOURCES 					+=	*.cpp
 SOURCES 					+=	android/AndroidTTS.cpp
+
+SOURCES 					+= *.cpp
 
 OTHER_FILES += \
     android/AndroidManifest.xml \

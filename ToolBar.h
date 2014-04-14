@@ -21,11 +21,7 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-    #include <QtWidgets/QToolBar>
-#else
-    #include <QToolBar>
-#endif
+#include <QtWidgets/QToolBar>
 
 class ToolBar : public QToolBar
 {

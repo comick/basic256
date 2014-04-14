@@ -17,11 +17,7 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QMenu>
-#else
-#include <QMenu>
-#endif
 
 #include "ToolBar.h"
 #include "ViewWidgetIFace.h"

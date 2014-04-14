@@ -26,13 +26,8 @@
 
 //Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QStatusBar>
-#else
-#include <QApplication>
-#include <QStatusBar>
-#endif
 
 #include <locale.h>
 #if !defined(WIN32) || defined(__MINGW32__)

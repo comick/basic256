@@ -3,7 +3,10 @@
 # portableapps
 ######################################################################
 
-QT_VERSION=$$[QT_VERSION]
+lessThan(QT_MAJOR_VERSION, 5) {
+  message( FATAL_ERROR "BASIC-256 requires QT 5 or better." )
+}
+
 
 TEMPLATE					=	app
 TARGET						=	BASIC256

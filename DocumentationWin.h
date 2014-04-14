@@ -18,19 +18,11 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QWidget>
-	#include <QtWidgets/QDialog>
-	#include <QtWidgets/QVBoxLayout>
-	#include <QtWidgets/QToolBar>
-	#include <QtWidgets/QTextBrowser>
-#else
-	#include <QWidget>
-	#include <QDialog>
-	#include <QVBoxLayout>
-	#include <QToolBar>
-	#include <QTextBrowser>
-#endif
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QTextBrowser>
 
 #ifndef DOCUMENTATIONWINH
 

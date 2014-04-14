@@ -24,7 +24,6 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#if QT_VERSION >= 0x050000
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QStatusBar>
@@ -32,15 +31,6 @@
 #include <QtPrintSupport/QPrintDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFontDialog>
-#else
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QStatusBar>
-#include <QPrinter>
-#include <QPrintDialog>
-#include <QMessageBox>
-#include <QFontDialog>
-#endif
 using namespace std;
 
 #include "MainWindow.h"

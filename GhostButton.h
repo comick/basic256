@@ -21,11 +21,7 @@
 
 #include <qglobal.h>
 
-#if QT_VERSION >= 0x050000
-	#include <QtWidgets/QPushButton>
-#else
-	#include <QPushButton>
-#endif
+#include <QtWidgets/QPushButton>
 
 class GhostButton : public QPushButton
 {
