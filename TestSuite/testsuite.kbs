@@ -31,10 +31,11 @@
 # 20140203	j.m.reneau	added testsuite_if_include to test new if/then/else
 #				and begin case/case/end case
 # 20140204	j.m.reneau	updated to 1.1.0.2
+# 20140416	j.m.reneau	updated to 1.1.1.3 and added WAV statements
 
 include "testsuite_common_include.kbs"
 
-call versiontest(1010002)
+call versiontest(1010103)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -281,7 +282,11 @@ say "hello.": call q("say helo")
 say 3 + 7: call q("say ten")
 sound 440,500: call q("half second sound")
 sound {440,100,220,100,300,200} : call q("three sounds from list")
-# need wavplay
+
+###################################################
+call section("WAVPLAY...")
+###################################################
+include "testsuite_wav_include.kbs"
 
 ###################################################
 call section("IMGSave, IMGLoad, Kill and Exists")

@@ -1,24 +1,27 @@
-
-include "testsuite_common_include.kbs"
-
 # testsuite_wav_include section for BASIC256
 
 # Modification History
 # date		programmer	description
-# 20140414	j.m.reneau	original coding
+# 20140415	j.m.reneau	original coding
 
-# WAV file for a musical scale was downloaded from
+# WAV file for a musical scales were downloaded from
 # https://ccrma.stanford.edu/~mromaine/220a/fp/sound-examples.html
 # on 2014-04-14.
 
 file$ = "eqt-major-sc.wav"
+notes = 8
+len = 6
+#file$ = "eqt-chromo-sc.wav"
+#notes = 13
+#len = 9
+
 if ostype = 2 then
    # android does not have enhansed WAV support
    # (WAVPLAY, WAVSTOP, and WAVWAIT only)
    #
    # simple play then stop
    wavplay file$
-   pause 1.5
+   pause 2 * len/notes
    wavstop
    call q("wavstop - did the first two notes of the scale play and then stop?")
    #
@@ -31,28 +34,25 @@ else
    #
    # simple play then stop
    wavplay file$
-   pause 1.5
+   pause 2* len/notes
    wavstop
    call q("wavstop - did the first two notes of the scale play and then stop?")
    #
-   print wavpos()
    call n("wavstop - check position 0",wavpos, 0)
    #
    wavplay # play from begining
-   pause .75
+   pause len/notes
    wavpause
-   pause .75
+   pause len/notes
    wavplay
-   pause .75
+   pause len/notes
    wavpause
    call q("wavstop - did the first two notes of the scale play with a rest between them and then stop?")
    #
-   notel = wavlength() / 8
-   print notel
-   call n("wavlength - check average note length",notel>=.73 and notel<=.77, true)
+   notel = wavlength() / notes
+   call npercent("wavlength - check average note length",notel, len/notes, .10)
    #
-   print wavpos()
-   call n("wavpos - check position arround 1.5 or so",wavpos>=1.40 and wavpos()<=1.60, true)
+   call npercent("wavpos - check position 2 notes",wavpos, 2*notel, .20)
    #
    # simple reload and play to the end of the wav file
    # play scale forward
@@ -61,24 +61,21 @@ else
    wavplay
    wavwait
    timer = (msec - timer) / 1000 / wavlength()
-   print timer
-   call n("wavwait - timer 100% or so",timer>=.90 and timer<=1.10, true)
-   call q("wavwait - did the sacle play from low to high?")
+   call npercent("wavwait - timer 100%",timer, 1, .10)
+   call q("wavwait - did the scale play from low to high?")
    #
    # play scale backwards
    # sound currently at stopped state
    # should be in stop state from wavwait
-   #timer = msec
-   #wavplay
-   wavplay
-   for a = 7 to 0 step -1
+   timer = msec
+   wavplay file$
+   for a = notes-1 to 0 step -1
       wavseek a * notel
       pause notel
    next a
    wavstop
    timer = (msec - timer) / 1000 / wavlength()
-   print timer
-   call n("wavseek/wavstop - timer 100% or so",timer>=.90 and timer<=1.10, true)
-   call q("wavseek/wavstop - did the sacle play from high to low?")
+   call npercent("wavseek/wavstop - timer 100%",timer,1,.1)
+   call q("wavseek/wavstop - did the scale play from high to low?")
    
 endif

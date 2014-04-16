@@ -76,25 +76,25 @@ int BasicMediaPlayer::state() {
 void BasicMediaPlayer::stop() {
 	// force stop to reset position at the begining of the file
 	// and to totally stop
-	pause();
+	//pause();
 	setPosition(0);
 	QMediaPlayer::stop();
-	waitForState(QMediaPlayer::StoppedState, 1000);
+//	waitForState(QMediaPlayer::StoppedState, 1000);
 }
 
 void BasicMediaPlayer::wait() {
 	// wait for the media file to complete
 	Sleeper *sleeper = new Sleeper();
-    while(state()==QMediaPlayer::PlayingState) {
-		sleeper->sleepMS(300);
-	}
+    do {
+		sleeper->sleepMS(100);
+	} while (state()==QMediaPlayer::PlayingState);
 	stop();
 }
 
 bool BasicMediaPlayer::seek(double time) {
 	long int ms = time * 1000L;
-	waitForSeekable(1000);
-	//qDebug ("mediaStatus %d\n",mediaStatus()); 
+	waitForSeekable(100);
+	qDebug ("mediaStatus %d\n",mediaStatus()); 
 	if(isSeekable()) {
 		QMediaPlayer::setPosition(ms);
 		return true;
@@ -113,12 +113,12 @@ double BasicMediaPlayer::position() {
 
 void BasicMediaPlayer::play() {
 	QMediaPlayer::play();
-//	waitForState(QMediaPlayer::PlayingState, 1000);
+	waitForState(QMediaPlayer::PlayingState, 100);
 }
 
 void BasicMediaPlayer::pause() {
 	QMediaPlayer::pause();
-//	waitForState(QMediaPlayer::PausedState, 1000);
+	waitForState(QMediaPlayer::PausedState, 100);
 }
 
 int BasicMediaPlayer::error() {

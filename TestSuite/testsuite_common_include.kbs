@@ -5,6 +5,7 @@
 # Modification History
 # date		programmer	description
 # 2013-09-18	j.m.reneau	split to seperate include
+# 2014-04-16	j.m.reneau	added npercent test
 
 
 ###################################################
@@ -19,18 +20,30 @@ end subroutine
 
 subroutine q(message$)
    # ask user to press y if test worked or n if it failed
+   print "question " + message$ + " ";
    if confirm(message$, true) then
       print "pass"
    else
-      print "fail - tests ended"
+      print "fail"
       end
    end if
 end subroutine
 
 subroutine n(message$,a,b)
    # test that a and b are the same numerically (EXACTLY)
-   print "testing " + message$ + " (" + a + "," + b + ") ";
+   print "testing " + message$ + " (" + a + " = " + b + ") ";
    if a = b then
+      print "pass"
+   else
+      print "fail"
+      end
+   end if
+end subroutine
+
+subroutine npercent(message$,a,b,p)
+   # test that b-b*p <= a <= b+b*p (percent variance)
+   print "testing " + message$ + " (" + a + " = " + b + " within " + p*100 + "%) ";
+   if b-b*p <= a AND a <= b+b*p then
       print "pass"
    else
       print "fail"
@@ -40,7 +53,7 @@ end subroutine
 
 subroutine nclose(message$,a,b)
    # test that a and b are the same numerically ALMOST
-   print "testing " + message$ + " (" + a + "," + b + ") ";
+   print "testing " + message$ + " (" + a + " ~ " + b + ") ";
    if abs(a - b) < .0001 then
       print "pass"
    else
@@ -51,7 +64,7 @@ end subroutine
 
 subroutine s(message$,a$,b$)
    # test that a$ and b$ are the same string
-   print "testing " + message$ + " ('" + a$ + "','" + b$ + "') ";
+   print "testing " + message$ + " ('" + a$ + "' = '" + b$ + "') ";
    if a$ = b$ then
       print "pass"
    else
@@ -62,7 +75,7 @@ end subroutine
 
 subroutine sne(message$,a$,b$)
    # test that a$ and b$ are not the same string
-   print "testing " + message$ + " not('" + a$ + "','" + b$ + "') ";
+   print "testing " + message$ + " ('" + a$ + "' <> '" + b$ + "') ";
    if a$ <> b$ then
       print "pass"
    else
