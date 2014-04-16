@@ -1,0 +1,84 @@
+
+include "testsuite_common_include.kbs"
+
+# testsuite_wav_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20140414	j.m.reneau	original coding
+
+# WAV file for a musical scale was downloaded from
+# https://ccrma.stanford.edu/~mromaine/220a/fp/sound-examples.html
+# on 2014-04-14.
+
+file$ = "eqt-major-sc.wav"
+if ostype = 2 then
+   # android does not have enhansed WAV support
+   # (WAVPLAY, WAVSTOP, and WAVWAIT only)
+   #
+   # simple play then stop
+   wavplay file$
+   pause 1.5
+   wavstop
+   call q("wavstop - did the first two notes of the scale play and then stop?")
+   #
+   # simple play to the end of the wav file
+   wavplay file$
+   wavwait
+   call q("wavwait - did the entire 8 note scale play?")
+else
+   # other systems use Multimedia that allows for pause, seek, position and duration
+   #
+   # simple play then stop
+   wavplay file$
+   pause 1.5
+   wavstop
+   call q("wavstop - did the first two notes of the scale play and then stop?")
+   #
+   print wavpos()
+   call n("wavstop - check position 0",wavpos, 0)
+   #
+   wavplay # play from begining
+   pause .75
+   wavpause
+   pause .75
+   wavplay
+   pause .75
+   wavpause
+   call q("wavstop - did the first two notes of the scale play with a rest between them and then stop?")
+   #
+   notel = wavlength() / 8
+   print notel
+   call n("wavlength - check average note length",notel>=.73 and notel<=.77, true)
+   #
+   print wavpos()
+   call n("wavpos - check position arround 1.5 or so",wavpos>=1.40 and wavpos()<=1.60, true)
+   #
+   # simple reload and play to the end of the wav file
+   # play scale forward
+   timer = msec
+   wavseek 0
+   wavplay
+   wavwait
+   timer = (msec - timer) / 1000 / wavlength()
+   print timer
+   call n("wavwait - timer 100% or so",timer>=.90 and timer<=1.10, true)
+   call q("wavwait - did the sacle play from low to high?")
+   #
+   # play scale backwards
+   # sound currently at stopped state
+   # should be in stop state from wavwait
+   #timer = msec
+   #wavplay
+   wavplay
+   for a = 7 to 0 step -1
+      wavseek a * notel
+      pause notel
+   next a
+   wavstop
+   timer = (msec - timer) / 1000 / wavlength()
+   print timer
+   call n("wavseek/wavstop - timer 100% or so",timer>=.90 and timer<=1.10, true)
+   call q("wavseek/wavstop - did the sacle play from high to low?")
+   
+endif
