@@ -22,14 +22,29 @@
 void BasicMediaPlayer::loadFile(QString file) {
     // blocking load adapted from http://qt-project.org/wiki/seek_in_sound_file
     setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
+    waitForSeekable(2000);
+}
+
+void BasicMediaPlayer::waitForSeekable(int ms) {
+	// wait for isSeekable up to the time in ms
     if(!isSeekable()) {
 		QEventLoop loop;
 		QTimer timer;
 		timer.setSingleShot(true);
-		timer.setInterval(2000);
+		timer.setInterval(ms);
 		loop.connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()) );
         loop.connect(this, SIGNAL(seekableChanged(bool)), &loop, SLOT(quit()));
 		loop.exec();
+	}
+}
+
+void BasicMediaPlayer::waitForState(QMediaPlayer::State newstate, int ms) {
+	// if player state is not newstate then wait up to ms
+	if(state()!=newstate) {
+		// thanks http://qt-project.org/forums/viewthread/19869
+		QTimer *timer = new QTimer(this);
+		timer->start (ms);
+		connect (timer, SIGNAL (timeout()), this, SIGNAL (QMediaPlayer::stateChanged()));
 	}
 }
 
@@ -50,18 +65,66 @@ int BasicMediaPlayer::state() {
         starttime = QMediaPlayer::position();
 		sleeper->sleepMS(30);
         endtime = QMediaPlayer::position();
-		if (starttime==endtime) s = QMediaPlayer::StoppedState; // stopped
+		if (starttime==endtime) {
+			stop();
+			s = QMediaPlayer::StoppedState; // stopped
+		}
 	}
 	return(s);
 }
-		
+
+void BasicMediaPlayer::stop() {
+	// force stop to reset position at the begining of the file
+	// and to totally stop
+	pause();
+	setPosition(0);
+	QMediaPlayer::stop();
+	waitForState(QMediaPlayer::StoppedState, 1000);
+}
+
 void BasicMediaPlayer::wait() {
 	// wait for the media file to complete
 	Sleeper *sleeper = new Sleeper();
     while(state()==QMediaPlayer::PlayingState) {
 		sleeper->sleepMS(300);
 	}
+	stop();
 }
+
+bool BasicMediaPlayer::seek(double time) {
+	long int ms = time * 1000L;
+	waitForSeekable(1000);
+	//qDebug ("mediaStatus %d\n",mediaStatus()); 
+	if(isSeekable()) {
+		QMediaPlayer::setPosition(ms);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+double BasicMediaPlayer::length() {
+	return QMediaPlayer::duration() / 1000.0d;
+}
+
+double BasicMediaPlayer::position() {
+	return QMediaPlayer::position() / 1000.0d;
+}
+
+void BasicMediaPlayer::play() {
+	QMediaPlayer::play();
+//	waitForState(QMediaPlayer::PlayingState, 1000);
+}
+
+void BasicMediaPlayer::pause() {
+	QMediaPlayer::pause();
+//	waitForState(QMediaPlayer::PausedState, 1000);
+}
+
+int BasicMediaPlayer::error() {
+	return QMediaPlayer::error();
+}
+
 
 #endif
 

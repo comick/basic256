@@ -245,6 +245,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_TEXT) return QString("OP_TEXT");
     else if (op==OP_FONT) return QString("OP_FONT");
     else if (op==OP_SAY) return QString("OP_SAY");
+    else if (op==OP_WAVPAUSE) return QString("OP_WAVPAUSE");
     else if (op==OP_WAVPLAY) return QString("OP_WAVPLAY");
     else if (op==OP_WAVSTOP) return QString("OP_WAVSTOP");
     else if (op==OP_SEEK) return QString("OP_SEEK");
@@ -425,7 +426,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_DEBUGINFO) return QString("OP_DEBUGINFO");
     else if (op==OP_WAVLENGTH) return QString("OP_WAVLENGTH");
     else if (op==OP_WAVPOS) return QString("OP_WAVPOS");
-    else if (op==OP_WAVPAUSE) return QString("OP_WAVPAUSE");
     else if (op==OP_WAVSEEK) return QString("OP_WAVSEEK");
     else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
     else return QString("OP_UNKNOWN");
@@ -2756,16 +2756,30 @@ Interpreter::execByteCode() {
                 case OP_WAVPLAY: {
 					QString file = stack.popstring();
 #ifdef USEQSOUND
-					mymutex->lock();
-					emit(playWAV(file));
-					waitCond->wait(mymutex);
-					mymutex->unlock();
+					if(file.compare("")!=0) {
+						mymutex->lock();
+						emit(playWAV(file));
+						waitCond->wait(mymutex);
+						mymutex->unlock();
+					} else {
+						errornum = ERROR_NOTIMPLEMENTED;
+					}
 #else
-                    mediaplayer = new BasicMediaPlayer();
-                    mediaplayer->loadFile(file);
-					mediaplayer->play();
-                    if (mediaplayer->error()!=0) {
-						errornum = ERROR_WAVFILEFORMAT;
+					if(file.compare("")!=0) {
+						// load new file and start playback
+						mediaplayer = new BasicMediaPlayer();
+						mediaplayer->loadFile(file);
+						mediaplayer->play();
+						if (mediaplayer->error()!=0) {
+							errornum = ERROR_WAVFILEFORMAT;
+						}
+					} else {
+						// start playing an existing mediaplayer
+						if (mediaplayer) {
+							mediaplayer->play();
+						} else {
+							errornum = ERROR_WAVNOTOPEN;
+						}
 					}
 #endif
                 }
@@ -2779,7 +2793,7 @@ Interpreter::execByteCode() {
 					mymutex->unlock();
 #else
 					if(mediaplayer) {
-                        if(mediaplayer->state()!=0) mediaplayer->stop();
+                        mediaplayer->stop();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
@@ -4899,16 +4913,13 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVLENGTH: {
-					float d = 0;
+					double d = 0.0;
 #ifdef USEQSOUND
                     errornum = ERROR_NOTIMPLEMENTED;
 #else
 					if (mediaplayer) {
-						if (mediaplayer->duration() > 0) {
-							d = mediaplayer->duration()/1000.0f;
-						} else {
+						if ((d = mediaplayer->length())==0)
 							errornum = WARNING_WAVNODURATION;
-						}
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
@@ -4917,13 +4928,26 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_WAVPOS: {
-					float p = 0;
+                case OP_WAVPAUSE: {
 #ifdef USEQSOUND
                     errornum = ERROR_NOTIMPLEMENTED;
 #else
 					if (mediaplayer) {
-						p = mediaplayer->position()/1000.0f;
+						mediaplayer->pause();
+					} else {
+						errornum = ERROR_WAVNOTOPEN;
+					}
+#endif
+                }
+                break;
+
+                case OP_WAVPOS: {
+					double p = 0.0;
+#ifdef USEQSOUND
+                    errornum = ERROR_NOTIMPLEMENTED;
+#else
+					if (mediaplayer) {
+						p = mediaplayer->position();
 					} else {
 						errornum = ERROR_WAVNOTOPEN;
 					}
@@ -4932,37 +4956,13 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_WAVPAUSE: {
-#ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
-#else
-					if (mediaplayer) {
-						switch (mediaplayer->state()) {
-                            case BasicMediaPlayer::PlayingState:
-								mediaplayer->pause();
-								break;
-                            case BasicMediaPlayer::PausedState:
-								mediaplayer->play();
-								break;
-                            case BasicMediaPlayer::StoppedState:
-								break;
-						}
-					} else {
-						errornum = ERROR_WAVNOTOPEN;
-					}
-#endif
-                }
-                break;
-
                 case OP_WAVSEEK: {
 #ifdef USEQSOUND
                     errornum = ERROR_NOTIMPLEMENTED;
 #else
-					float pos = stack.popfloat();
+					double pos = stack.popfloat();
 					if (mediaplayer) {
-						if (mediaplayer->isSeekable()) {
-							mediaplayer->setPosition(pos*1000L);
-						} else {
+						if (!mediaplayer->seek(pos)) {
 							errornum = WARNING_WAVNOTSEEKABLE;
 						}
 					} else {

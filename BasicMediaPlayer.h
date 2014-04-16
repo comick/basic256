@@ -28,18 +28,28 @@
 
 #include "Sleeper.h"
 
-class BasicMediaPlayer : public QMediaPlayer
+class BasicMediaPlayer : private QMediaPlayer
 {
     Q_OBJECT
 public:
 
+
     void loadFile(QString file);
 	int state();
+    void stop();
     void wait();
-
+    void play();
+    void pause();
+    bool seek(double);
+	double position();
+	double length();
+	int error();
+	
 public slots:
 
 private:
+    void waitForSeekable(int);
+    void waitForState(QMediaPlayer::State, int);
 
 };
 

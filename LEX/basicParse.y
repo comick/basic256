@@ -1831,11 +1831,14 @@ wavpausestmt:
 			;
 
 wavplaystmt:
-			B256WAVPLAY stringexpr {
+			B256WAVPLAY {
+				addStringOp(OP_PUSHSTRING, "");
+				addOp(OP_WAVPLAY);
+			}
+			| B256WAVPLAY stringexpr {
 				addOp(OP_WAVPLAY);
 			}
 			;
-
 wavseekstmt:
 			B256WAVSEEK floatexpr {
 				addOp(OP_WAVSEEK);

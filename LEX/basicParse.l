@@ -788,6 +788,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 {wavpause}	{ count(); return B256WAVPAUSE; }
 {wavpause}":"	{ unput(':'); count(); return B256WAVPAUSE; }
 {wavplay}	{ count(); return B256WAVPLAY; }
+{wavplay}":"	{ unput(':'); count(); return B256WAVPLAY; }
 {wavpos}	{ count(); return B256WAVPOS; }
 {wavseek}	{ count(); return B256WAVSEEK; }
 {wavstate}	{ count(); return B256WAVSTATE; }
