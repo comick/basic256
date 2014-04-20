@@ -1,5 +1,5 @@
 Compiling Instructions and Dependencies
-2014-01-03 VERSION 1.0.0.7
+2014-04-18 VERSION 1.1.1.3 
 
 
 LINUX you will need:
@@ -14,19 +14,22 @@ LINUX you will need:
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
 
 
-WINDOWS (QT5.1.1)
+WINDOWS (QT5.2.1)
 
 * QT SDK with MINGW Compiler
 	** Available from:
 		http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-mingw48_opengl-x86-offline.exe
-	** add paths C:\Qt\Qt5.1.1\5.1.1\mingw48_32\bin;C:\Qt\Qt5.1.1\Tools\mingw48_32\bin; to your system environment variable
-	** in folder C:\Qt\Qt5.1.1\Tools\mingw48_32\bin
+	** BE SURE to choose the mingw compiler from tools it will be the correct version
+		for the QT binary support files
+	** add paths C:\Qt\5.2.1\mingw48_32\bin;C:\Qt\Tools\mingw48_32\bin; to your system environment variable
+	** in folder C:\Qt\Tools\mingw48_32\bin
 		copy mingw32-make.exe make.exe
 
-* MINGW and MSYS developer tools and libraries
-	**Available from:
-		http://sourceforge.net/projects/mingw/files/latest/download?source=files  
-	**install mingw Developer tools, mingw32-base, mingw32-cgg-g++, msys-base
+* MSYS developer tools and libraries
+	** Available from:
+		http://sourceforge.net/projects/mingw/files/Installer/
+	** install mingw-developer-toolkit bundle from the on-line installer
+		YOU DO NOT NEED THE c++ compiler - you already downloaded that as part of the QT bundle
 	** add paths C:\MinGW\bin;C:\MinGW\msys\1.0\bin to your system environment
   
 * libespeak - TTS Library
@@ -34,17 +37,17 @@ WINDOWS (QT5.1.1)
 		http://jarek.katowice.pl/other/forum/viewtopic.php?f=5&t=17
 	** or download binary bundle
 	** copy libspeak.dll, libportaudio-2.dll, libpthread-2.dll
-		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
+		to C:\Qt\5.2.1\mingw48_32\lib
 		and basic256/trunk/debug
 		and basic256/trunk/release
 	** copy portaudio.h and speak_lib.h
-		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\include
+		to C:\Qt\5.2.1\mingw48_32\include
 
 * inpout32 Serial Driver
 	** download version 1.500
 		from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
 	** copy the files inpout32.dll, inpout32.lib, and InstallDriver.exe
-		to C:\Qt\Qt5.1.1\5.1.1\mingw48_32\lib
+		to C:\Qt\5.2.1\mingw48_32\lib
 		and basic256/trunk/debug
 		and basic256/trunk/release
   

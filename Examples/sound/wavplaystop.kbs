@@ -5,7 +5,7 @@ wavpause
 print "state = " + wavstate
 pause 1
 wavseek 0
-wavpause
+wavplay
 print "state = " + wavstate
 k=10
 while k

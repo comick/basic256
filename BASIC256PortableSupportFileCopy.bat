@@ -5,11 +5,11 @@ REM # INCLUDED IN THE PORTABLE DISTRIBUTION
 REM # DATE...... PROGRAMMER... VERSION....	DESCRIPTION...
 REM # 2013-11-11 j.m.reneau    1.0.0		original coding
 REM # 2014-01-05 j.m.reneau    1.0.7		added qt sql
-REM # 2014-04-13 j.m.reneau    1.1.1		moved development to qt 5.2.1
+REM # 2014-04-19 j.m.reneau    1.1.1.3		moved development to qt 5.2.1
 
-set SDK_BIN=C:\Qt\Qt5.1.1\5.2.1\mingw48_32\bin
-set SDK_LIB=C:\Qt\Qt5.1.1\5.2.1\mingw48_32\lib
-set SDK_PLUGINS=C:\Qt\Qt5.1.1\5.2.1\mingw48_32\plugins
+set SDK_BIN=C:\Qt\5.2.1\mingw48_32\bin
+set SDK_LIB=C:\Qt\5.2.1\mingw48_32\lib
+set SDK_PLUGINS=C:\Qt\5.2.1\mingw48_32\plugins
 
 # folder where app will live and support files need to be
 set INSTDIR=BASIC256Portable\App\BASIC256
@@ -42,6 +42,13 @@ xcopy %SDK_PLUGINS%\printsupport\windowsprintersupport.dll %INSTDIR%\printsuppor
 mkdir %INSTDIR%\sqldrivers
 xcopy %SDK_PLUGINS%\sqldrivers\qsqlite.dll %INSTDIR%\sqldrivers
 
+mkdir %INSTDIR%\mediaservice
+xcopy %SDK_PLUGINS%\mediaservice\dsengine.dll %INSTDIR%\mediaservice
+xcopy %SDK_PLUGINS%\mediaservice\qtmedia_audioengine.dll %INSTDIR%\mediaservice
+
+mkdir %INSTDIR%\playlistformats
+xcopy %SDK_PLUGINS%\playlistformats\qtmultimedia_m3u.dll %INSTDIR%\playlistformats
+
 xcopy ChangeLog %INSTDIR%
 xcopy CONTRIBUTORS %INSTDIR%
 xcopy license.txt %INSTDIR%
@@ -55,7 +62,9 @@ xcopy %SDK_BIN%\libwinpthread-1.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Core.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Gui.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Multimedia.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5MultimediaWidgets.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Network.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5OpenGL.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5PrintSupport.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Sql.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5WebKit.dll %INSTDIR%
