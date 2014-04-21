@@ -102,7 +102,7 @@ Portable Build (Windows):
   delete all files and folders from trunk/BASIC256Portable/App/BASIC256
   BASIC256PortableSupportFileCopy.bat
   make clean
-  qmake BASIC256Portable.pro
+  qmake BASIC256Portable.pro -config release
   make release 
   
       

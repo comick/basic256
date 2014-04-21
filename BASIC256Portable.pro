@@ -13,16 +13,14 @@ TARGET						=	BASIC256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
-CONFIG						+=	 qt release
+CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
 
 QT							+=	webkit
-contains( QT_VERSION, "^5.*" ) {
-	QT						+=	widgets
-	QT						+=	printsupport
-	QT						+=	sql
-}
+QT							+=	widgets
+QT							+=	printsupport
+QT							+=	sql
 
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc
@@ -34,7 +32,11 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_pt.ts \
 								Translations/basic256_nl.ts
 
-DESTDIR = BASIC256Portable/App/BASIC256
+CONFIG(debug, debug|release) {
+	DESTDIR = BASIC256PortableDebug/App/BASIC256
+} else {
+	DESTDIR = BASIC256Portable/App/BASIC256
+}
 
 win32 {
 	DEFINES 				+=	WIN32
@@ -48,24 +50,13 @@ win32 {
 	########
 	# TTS control - How Say statement works
 	########
-	# uncomment one of the options
 
-	## TTS Option 1 - ececute 'espak' command to speak 
-	#DEFINES				+=	ESPEAK_EXECUTE
-
-	## TTS Option 2 - use the espeak library
 	DEFINES					+=	ESPEAK
 	LIBS					+=	-lespeak
 
 	########
-	# Sound class - How Sound statement works
+	# Depencencies and setup for Sound and BasicMediaPlayer classes
 	########
-	# uncomment one of the options
-
-	# Sound - Option 0 - Microsoft built in 32 bit API
-	#DEFINES				+=	SOUND_WIN32
-
-	# Sound - Option 1 - QT Mobility Multimedia AudioOut
 	DEFINES					+=	SOUND_QMOBILITY
 	QT						+=	multimedia
 	INCLUDEPATH				+=	QtMultimediaKit
