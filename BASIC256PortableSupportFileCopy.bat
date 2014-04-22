@@ -13,7 +13,10 @@ set SDK_PLUGINS=C:\Qt\5.2.1\mingw48_32\plugins
 
 # folder where app will live and support files need to be
 set INSTDIR=BASIC256Portable\App\BASIC256
-  
+
+rmdir /s /q %INSTDIR%
+mkdir %INSTDIR%
+
 mkdir %INSTDIR%\Translations
 xcopy Translations\*.qm %INSTDIR%\Translations
 
