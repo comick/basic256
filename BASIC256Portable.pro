@@ -14,8 +14,6 @@ DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
 CONFIG						+=	 qt debug_and_release
-OBJECTS_DIR					=	tmp/obj
-MOC_DIR						=	tmp/moc
 
 QT							+=	webkit
 QT							+=	widgets
@@ -34,8 +32,12 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 
 CONFIG(debug, debug|release) {
 	DESTDIR = BASIC256PortableDebug/App/BASIC256
+	OBJECTS_DIR					=	tmp_portable_debug/obj
+	MOC_DIR						=	tmp_portable_debug/moc
 } else {
 	DESTDIR = BASIC256Portable/App/BASIC256
+	OBJECTS_DIR					=	tmp_portable_release/obj
+	MOC_DIR						=	tmp_portable_debug/moc
 }
 
 win32 {

@@ -40,19 +40,21 @@ else
    #
    call n("wavstop - check position 0",wavpos, 0)
    #
-   wavplay # play from begining
-   pause len/notes
-   wavpause
-   pause len/notes
-   wavplay
-   pause len/notes
-   wavpause
-   call q("wavstop - did the first two notes of the scale play with a rest between them and then stop?")
-   #
    notel = wavlength() / notes
    call npercent("wavlength - check average note length",notel, len/notes, .10)
    #
-   call npercent("wavpos - check position 2 notes",wavpos, 2*notel, .20)
+   wavplay # play from begining
+   pause notel
+   wavpause
+   call npercent("wavpos - check position 1 note",wavpos, notel, .20)
+   pause notel
+   wavplay
+   pause notel
+   wavstop
+   call q("wavstop - did the first two notes of the scale play with a rest between them and then stop?")
+   #
+   call n("wavpos stop - check position after stop",wavpos, 0)
+   #
    #
    # simple reload and play to the end of the wav file
    # play scale forward
