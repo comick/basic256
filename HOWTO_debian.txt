@@ -1,8 +1,13 @@
 HOWTO_debian.
 
-2014-01-25 - J.M. Reneau
+2014-05-06 - J.M. Reneau
 
 How to build and upload the "Launchpad" source for ppa.
+
+Note:
+Be sure to have your ssh key (created with ssh-keygen -t rsa) and your gpg
+key (created with gpg--gen-key, registered with ubuntu) in your lanuchpad
+user configuration.
 
 1) in ./trunk execute ./ziplinuxsource.sh
  - be sure the version was changed in trunk/Version.h before running this

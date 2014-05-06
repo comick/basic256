@@ -1,3 +1,16 @@
+basic256 (1.1.2.0-1~ppa1~saucy1) saucy; urgency=low
+
+  * Backported to Saucy
+
+ -- James M. Reneau (renejm) <jim@renejm.com>  Mon, 05 May 2014 13:38:00 -0500
+
+basic256 (1.1.2.0-1) unstable; urgency=low
+
+  * re-wrote WAV* statements to use QT5 QMediaPlayer object
+  * removed support for qt4
+  
+ -- James M. Reneau (renejm) <jim@renejm.com>  Mon, 05 May 2014 13:38:00 -0500
+
 basic256 (1.1.0.0-1) unstable; urgency=low
 
   * cleaned up flex and added single line if/then/else
