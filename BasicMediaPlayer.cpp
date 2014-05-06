@@ -113,12 +113,16 @@ double BasicMediaPlayer::position() {
 
 void BasicMediaPlayer::play() {
 	QMediaPlayer::play();
-	waitForState(QMediaPlayer::PlayingState, 500);
+// not needed for w7 qt 5.2
+// need to check xp vistz ubuntu
+//waitForState(QMediaPlayer::PlayingState, 500);
 }
 
 void BasicMediaPlayer::pause() {
 	QMediaPlayer::pause();
-	waitForState(QMediaPlayer::PausedState, 500);
+// not needed for w7 qt 5.2
+// need to check xp vistz ubuntu
+//	waitForState(QMediaPlayer::PausedState, 500);
 }
 
 int BasicMediaPlayer::error() {
