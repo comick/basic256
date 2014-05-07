@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     graphscroll = new QScrollArea();
 	graphscroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
  	graphscroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	graphscroll->setWidget(graphwin);
+	graphscroll->setWidget(graphwinwgt);
     graphdock = new DockWidget();
     graphdock->setObjectName( "graphdock" );
     graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
@@ -414,7 +414,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	z = settings.value(SETTINGSGRAPHSIZE, QSize(SETTINGSGRAPHDEFAULT_W, SETTINGSGRAPHDEFAULT_H)).toSize();
     if (z.width() >= screen->width()-l.x()) z.setWidth(screen->width()-l.x());
     if (z.height() >= screen->height()-l.y()) z.setHeight(screen->height()-l.y());
-    graphwinwgt->resize(z);
+    graphscroll->resize(z);
  
     // position the output text dock
     outdock->setFloating(settings.value(SETTINGSOUTFLOAT, false).toBool());

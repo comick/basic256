@@ -70,15 +70,17 @@ BasicGraph::resize(int width, int height) {
     clickB = 0;
     setMouseTracking(true);
     
-    // make sure the graphics are visible in the center of the graphscroll
-    BasicWidget * w = (BasicWidget *) parentWidget();
-    if (w) {
-		QScrollArea * sa = (QScrollArea *) w->parentWidget();
+    // graphwinwidget is parent - force resize
+    BasicWidget * gww = (BasicWidget *) parentWidget();
+    if (gww) {
+		gww->adjustSize();
+		// now center scroll area
+		QScrollArea * sa = (QScrollArea *) gww->parentWidget();
 		if(sa) {
 			sa->ensureWidgetVisible(this, width/2, height/2);
 		}
 	}
-
+	
 
  }
 

@@ -20,9 +20,13 @@ rm ../basic256-$VERSION/*.pdf
 rm -R ../basic256-$VERSION/.*
 rm -R ../basic256-$VERSION/*~
 rm -R ../basic256-$VERSION/BASIC256
+rm -R ../basic256-$VERSION/BASIC256Portable/App/
+rm -R ../basic256-$VERSION/BASIC256PortableDebug/App/
 rm -R ../basic256-$VERSION/basic256
 rm -R ../basic256-$VERSION/debug
 rm -R ../basic256-$VERSION/tmp
+rm -R ../basic256-$VERSION/tmp_portable_debug
+rm -R ../basic256-$VERSION/tmp_portable_release
 rm -R ../basic256-$VERSION/release
 
 tar -cvf ../basic256_$VERSION.orig.tar ../basic256-$VERSION
