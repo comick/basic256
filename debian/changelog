@@ -2,6 +2,12 @@ basic256 (1.1.2.1-1~ppa1~saucy1) saucy; urgency=low
 
   * Backported to Saucy
 
+ -- James M. Reneau (renejm) <jim@renejm.com>  Mon, 09 May 2014 11:41:00 -0500
+
+basic256 (1.1.2.1-1~ppa1~trusty1) trusty; urgency=low
+
+  * Backported to Trusty
+
  -- James M. Reneau (renejm) <jim@renejm.com>  Mon, 05 May 2014 13:38:00 -0500
 
 basic256 (1.1.2.0-1) unstable; urgency=low

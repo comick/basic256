@@ -12,6 +12,7 @@ Build-Depends: debhelper (>= 7.0.50~),
  qtmultimedia5-dev,
  libqt5webkit5-dev,
  libqt5sql5-sqlite,
+ libqt5multimedia5-plugins,
  libsdl1.2-dev,
  libsdl-mixer1.2-dev
 Standards-Version: 3.9.1
