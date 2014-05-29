@@ -1015,7 +1015,7 @@ Interpreter::compileProgram(char *code) {
                 if(column==0) {
                     msg += tr("Syntax error around beginning line");
                 } else {
-                    msg += tr("Syntax error around column ") + QString::number(column);
+                    msg += tr("Syntax error around character ") + QString::number(column);
                 }
         }
         msg += tr(".\n");
@@ -4291,16 +4291,20 @@ Interpreter::execByteCode() {
                     QString app = stack.popstring();
                     SETTINGS;
                     if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
-                        settings.beginGroup(SETTINGSGROUPUSER);
-                        settings.beginGroup(app);
-                        stack.pushstring(settings.value(key, "").toString());
-                        settings.endGroup();
-                        settings.endGroup();
-                    } else {
-                        errornum = ERROR_PERMISSION;
-                        stack.pushint(0);
-                    }
-                }
+                        if(app==QString("SYSTEM")) {
+							stack.pushstring(settings.value(key, "").toString());
+						} else {
+							settings.beginGroup(SETTINGSGROUPUSER);
+							settings.beginGroup(app);
+							stack.pushstring(settings.value(key, "").toString());
+							settings.endGroup();
+							settings.endGroup();
+						}
+					} else {
+						errornum = ERROR_PERMISSION;
+						stack.pushint(0);
+					}
+				}
                 break;
 
 

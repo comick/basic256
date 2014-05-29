@@ -91,6 +91,7 @@ int numincludes=0;
 #endif
 
 void count();
+void unputcolon();
 
 %}
 
@@ -116,7 +117,7 @@ arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
-begincase [Bb][Ee][Gg][Ii][Nn][ \t]?[Cc][Aa][Ss][Ee]
+begincase [Bb][Ee][Gg][Ii][Nn][ \t]*[Cc][Aa][Ss][Ee]
 black [Bb][Ll][Aa][Cc][Kk]([ \t]*\([ \t]*\))?
 blue [Bb][Ll][Uu][Ee]([ \t]*\([ \t]*\))?
 booleof [Ee][Oo][Ff]
@@ -138,12 +139,11 @@ clickx [Cc][Ll][Ii][Cc][Kk][Xx]([ \t]*\([ \t]*\))?
 clicky [Cc][Ll][Ii][Cc][Kk][Yy]([ \t]*\([ \t]*\))?
 close [Cc][Ll][Oo][Ss][Ee]
 cls [Cc][Ll][Ss]
-color [Cc][Oo][Ll][Oo][Rr]
-colour [Cc][Oo][Ll][Oo][Uu][Rr]
+color [Cc][Oo][Ll][Oo][Uu]?[Rr]
 confirm [Cc][Oo][Nn][Ff][Ii][Rr][Mm]
-continuedo [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Dd][Oo]
-continuefor [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Ff][Oo][Rr]
-continuewhile [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]?[Ww][Hh][Ii][Ll][Ee]
+continuedo [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Dd][Oo]
+continuefor [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Ff][Oo][Rr]
+continuewhile [Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][ \t]*[Ww][Hh][Ii][Ll][Ee]
 cos [Cc][Oo][Ss]
 count [Cc][Oo][Uu][Nn][Tt]
 countx [Cc][Oo][Uu][Nn][Tt][Xx]
@@ -169,12 +169,12 @@ do [Dd][Oo]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 else [Ee][Ll][Ss][Ee]
 end [Ee][Nn][Dd]
-endcase [Ee][Nn][Dd][ \t]?[Cc][Aa][Ss][Ee]
-endfunction [Ee][Nn][Dd][ \t]?[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
-endif [Ee][Nn][Dd][ \t]?[Ii][Ff]
-endtry [Ee][Nn][Dd][ \t]?[Tt][Rr][Yy]
-endsubroutine [Ee][Nn][Dd][ \t]?[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
-endwhile [Ee][Nn][Dd][ \t]?[Ww][Hh][Ii][Ll][Ee]
+endcase [Ee][Nn][Dd][ \t]*[Cc][Aa][Ss][Ee]
+endfunction [Ee][Nn][Dd][ \t]*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+endif [Ee][Nn][Dd][ \t]*[Ii][Ff]
+endtry [Ee][Nn][Dd][ \t]*[Tt][Rr][Yy]
+endsubroutine [Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+endwhile [Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]
 error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]([ \t]*\([ \t]*\))?
 error_for1 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]([ \t]*\([ \t]*\))?
 error_for2 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]([ \t]*\([ \t]*\))?
@@ -245,9 +245,9 @@ error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][
 error_wavnotopen [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]([ \t]*\([ \t]*\))?
 error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]([ \t]*\([ \t]*\))?
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
-exitdo [Ee][Xx][Ii][Tt][ \t]?[Dd][Oo]
-exitfor [Ee][Xx][Ii][Tt][ \t]?[Ff][Oo][Rr]
-exitwhile [Ee][Xx][Ii][Tt][ \t]?[Ww][Hh][Ii][Ll][Ee]
+exitdo [Ee][Xx][Ii][Tt][ \t]*[Dd][Oo]
+exitfor [Ee][Xx][Ii][Tt][ \t]*[Ff][Oo][Rr]
+exitwhile [Ee][Xx][Ii][Tt][ \t]*[Ww][Hh][Ii][Ll][Ee]
 exp [Ee][Xx][Pp]
 explode [Ee][Xx][Pp][Ll][Oo][Dd][Ee]
 explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
@@ -336,10 +336,10 @@ poly [Pp][Oo][Ll][Yy]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 print [Pp][Rr][Ii][Nn][Tt]
-printercancel [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Cc][Aa][Nn][Cc][Ee][Ll]
-printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Ff][Ff]
-printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Oo][Nn]
-printerpage [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]?[Pp][Aa][Gg][Ee]
+printercancel [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Cc][Aa][Nn][Cc][Ee][Ll]
+printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Ff][Ff]
+printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Nn]
+printerpage [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Pp][Aa][Gg][Ee]
 prompt [Pp][Rr][Oo][Mm][Pp][Tt]
 purple [Pp][Uu][Rr][Pp][Ll][Ee]([ \t]*\([ \t]*\))?
 putslice [Pp][Uu][Tt][Ss][Ll][Ii][Cc][Ee]
@@ -431,411 +431,446 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 
 %%
 
-{integer}	{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
-{floatnum}	{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
-{binaryinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
-{hexinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
-{octalinteger}	{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
-{string}	{
-	int len;
-	count();
-	len = strlen(yytext);
-	yylval.string = strdup(yytext + 1);
-	yylval.string[len - 2] = 0;
-	return B256STRING;
-}
-{abs}		{ count(); return B256ABS; }
-{acos}		{ count(); return B256ACOS; }
-{alert}		{ count(); return B256ALERT; }
-{and}		{ count(); return B256AND; }
-{arc}		{ count(); return B256ARC; }
-{asc}		{ count(); return B256ASC; }
-{asin}		{ count(); return B256ASIN; }
-{atan}		{ count(); return B256ATAN; }
-{begincase}		{ count(); return B256BEGINCASE; }
-{black}		{ count(); return B256BLACK; }
-{blue}		{ count(); return B256BLUE; }
-{booleof}	{ count(); return B256BOOLEOF; }
-{boolfalse}	{ count(); return B256BOOLFALSE; }
-{booltrue}	{ count(); return B256BOOLTRUE; }
-{call}		{ count(); return B256CALL; }
-{case}		{ count(); return B256CASE; }
-{catch}		{ count(); return B256CATCH; }
-{catch}":"		{ unput(':'); count(); return B256CATCH; }
-{ceil}		{ count(); return B256CEIL; }
-{changedir}	{ count(); return B256CHANGEDIR; }
-{chord}		{ count(); return B256CHORD; }
-{chr}		{ count(); return B256CHR; }
-{circle}	{ count(); return B256CIRCLE; }
-{clear}		{ count(); return B256CLEAR; }
-{clg}		{ count(); return B256CLG; }
-{clg}":"		{ unput(':'); count(); return B256CLG; }
-{clickb}	{ count(); return B256CLICKB; }
-{clickclear}	{ count(); return B256CLICKCLEAR; }
-{clickclear}":"	{ unput(':'); count(); return B256CLICKCLEAR; }
-{clickx}	{ count(); return B256CLICKX; }
-{clicky}	{ count(); return B256CLICKY; }
-{close}		{ count(); return B256CLOSE; }
-{cls}		{ count(); return B256CLS; }
-{cls}":"		{ unput(':'); count(); return B256CLS; }
-{color}		{ count(); return B256SETCOLOR; }
-{colour}	{ count(); return B256SETCOLOR; }
-{confirm}	{ count(); return B256CONFIRM; }
-{cos}		{ count(); return B256COS; }
-{continuedo}	{ count(); return B256CONTINUEDO; }
-{continuedo}":"	{ unput(':'); count(); return B256CONTINUEDO; }
-{continuefor}	{ count(); return B256CONTINUEFOR; }
-{continuefor}":"	{ unput(':'); count(); return B256CONTINUEFOR; }
-{continuewhile}	{ count(); return B256CONTINUEWHILE; }
-{continuewhile}":"	{ unput(':'); count(); return B256CONTINUEWHILE; }
-{count}	{ count(); return B256COUNT; }
-{countx}	{ count(); return B256COUNTX; }
-{currentdir}	{ count(); return B256CURRENTDIR; }
-{cyan}		{ count(); return B256CYAN; }
-{dark}{blue}	{ count(); return B256DARKBLUE; }
-{dark}{cyan}	{ count(); return B256DARKCYAN; }
-{dark}{gray}	{ count(); return B256DARKGREY; }
-{dark}{green}	{ count(); return B256DARKGREEN; }
-{dark}{orange}	{ count(); return B256DARKORANGE; }
-{dark}{purple}	{ count(); return B256DARKPURPLE; }
-{dark}{red}	{ count(); return B256DARKRED; }
-{dark}{yellow}	{ count(); return B256DARKYELLOW; }
-{day}		{ count(); return B256DAY; }
-{dbclose}	{ count(); return B256DBCLOSE; }
-{dbclose}":"	{ unput(':'); count(); return B256DBCLOSE; }
-{dbcloseset}	{ count(); return B256DBCLOSESET; }
-{dbcloseset}":"	{ unput(':'); count(); return B256DBCLOSESET; }
-{dbexecute}	{ count(); return B256DBEXECUTE; }
-{dbfloat}	{ count(); return B256DBFLOAT; }
-{dbint}		{ count(); return B256DBINT; }
-{dbnull}	{ count(); return B256DBNULL; }
-{dbopen}	{ count(); return B256DBOPEN; }
-{dbopenset}	{ count(); return B256DBOPENSET; }
-{dbrow}		{ count(); return B256DBROW; }
-{dbstring}	{ count(); return B256DBSTRING; }
-{debuginfo}	{ count(); return B256DEBUGINFO; }
-{degrees}	{ count(); return B256DEGREES; }
-{dim}		{ count(); return B256DIM; }
-{dir}	{ unput(':'); count(); return B256DIR; }
-{do}		{ count(); return B256DO; }
-{do}":"		{ unput(':'); count(); return B256DO; }
-{editvisible}	{ count(); return B256EDITVISIBLE; }
-{else}		{ count(); return B256ELSE; }
-{end}		{ count(); return B256END; }
-{end}":"		{ unput(':'); count(); return B256END; }
-{endcase}		{ count(); return B256ENDCASE; }
-{endfunction}	{ count(); return B256ENDFUNCTION; }
-{endif}		{ count(); return B256ENDIF; }
-{endsubroutine}	{ count(); return B256ENDSUBROUTINE; }
-{endtry}	{ count(); return B256ENDTRY; }
-{endtry}":"	{ unput(':'); count(); return B256ENDTRY; }
-{endwhile}	{ count(); return B256ENDWHILE; }
-{endwhile}":"	{ unput(':'); count(); return B256ENDWHILE; }
-{error_none} { count(); return B256ERROR_NONE; }
-{error_for1} { count(); return B256ERROR_FOR1; }
-{error_for2} { count(); return B256ERROR_FOR2; }
-{error_filenumber} { count(); return B256ERROR_FILENUMBER; }
-{error_fileopen} { count(); return B256ERROR_FILEOPEN; }
-{error_filenotopen} { count(); return B256ERROR_FILENOTOPEN; }
-{error_filewrite} { count(); return B256ERROR_FILEWRITE; }
-{error_filereset} { count(); return B256ERROR_FILERESET; }
-{error_arraysizelarge} { count(); return B256ERROR_ARRAYSIZELARGE; }
-{error_arraysizesmall} { count(); return B256ERROR_ARRAYSIZESMALL; }
-{error_nosuchvariable} { count(); return B256ERROR_NOSUCHVARIABLE; }
-{error_arrayindex} { count(); return B256ERROR_ARRAYINDEX; }
-{error_strneglen} { count(); return B256ERROR_STRNEGLEN; }
-{error_strstart} { count(); return B256ERROR_STRSTART; }
-{error_nonnumeric} { count(); return B256ERROR_NONNUMERIC; }
-{error_rgb} { count(); return B256ERROR_RGB; }
-{error_putbitformat} { count(); return B256ERROR_PUTBITFORMAT; }
-{error_polyarray} { count(); return B256ERROR_POLYARRAY; }
-{error_polypoints} { count(); return B256ERROR_POLYPOINTS; }
-{error_imagefile} { count(); return B256ERROR_IMAGEFILE; }
-{error_spritenumber} { count(); return B256ERROR_SPRITENUMBER; }
-{error_spritena} { count(); return B256ERROR_SPRITENA; }
-{error_spriteslice} { count(); return B256ERROR_SPRITESLICE; }
-{error_folder} { count(); return B256ERROR_FOLDER; }
-{error_infinity} { count(); return B256ERROR_INFINITY; }
-{error_dbopen} { count(); return B256ERROR_DBOPEN; }
-{error_dbquery} { count(); return B256ERROR_DBQUERY; }
-{error_dbnotopen} { count(); return B256ERROR_DBNOTOPEN; }
-{error_dbcolno} { count(); return B256ERROR_DBCOLNO; }
-{error_dbnotset} { count(); return B256ERROR_DBNOTSET; }
-{error_netsock} { count(); return B256ERROR_NETSOCK; }
-{error_nethost} { count(); return B256ERROR_NETHOST; }
-{error_netconn} { count(); return B256ERROR_NETCONN; }
-{error_netread} { count(); return B256ERROR_NETREAD; }
-{error_netnone} { count(); return B256ERROR_NETNONE; }
-{error_netwrite} { count(); return B256ERROR_NETWRITE; }
-{error_netsockopt} { count(); return B256ERROR_NETSOCKOPT; }
-{error_netbind} { count(); return B256ERROR_NETBIND; }
-{error_netaccept} { count(); return B256ERROR_NETACCEPT; }
-{error_netsocknumber} { count(); return B256ERROR_NETSOCKNUMBER; }
-{error_permission} { count(); return B256ERROR_PERMISSION; }
-{error_imagesavetype} { count(); return B256ERROR_IMAGESAVETYPE; }
-{error_divzero} { count(); return B256ERROR_DIVZERO; }
-{error_byref} { count(); return B256ERROR_BYREF; }
-{error_byreftype} { count(); return B256ERROR_BYREFTYPE; }
-{error_freefile} { count(); return B256ERROR_FREEFILE; }
-{error_freenet} { count(); return B256ERROR_FREENET; }
-{error_freedb} { count(); return B256ERROR_FREEDB; }
-{error_dbconnnumber} { count(); return B256ERROR_DBCONNNUMBER; }
-{error_freedbset} { count(); return B256ERROR_FREEDBSET; }
-{error_dbsetnumber} { count(); return B256ERROR_DBSETNUMBER; }
-{error_dbnotsetrow} { count(); return B256ERROR_DBNOTSETROW; }
-{error_penwidth} { count(); return B256ERROR_PENWIDTH; }
-{error_colornumber} { count(); return B256ERROR_COLORNUMBER; }
-{error_arrayindexmissing} { count(); return B256ERROR_ARRAYINDEXMISSING; }
-{error_imagescale} { count(); return B256ERROR_IMAGESCALE; }
-{error_fontsize} { count(); return B256ERROR_FONTSIZE; }
-{error_fontweight} { count(); return B256ERROR_FONTWEIGHT; }
-{error_radixstring} { count(); return B256ERROR_RADIXSTRING; }
-{error_radix} { count(); return B256ERROR_RADIX; }
-{error_logrange} { count(); return B256ERROR_LOGRANGE; }
-{error_stringmaxlen} { count(); return B256ERROR_STRINGMAXLEN; }
-{error_notanumber} { count(); return B256ERROR_NOTANUMBER; }
-{error_printernoton} { count(); return B256ERROR_PRINTERNOTON; }
-{error_printernotoff} { count(); return B256ERROR_PRINTERNOTOFF; }
-{error_printeropen} { count(); return B256ERROR_PRINTEROPEN; }
-{error_wavfileformat} { count(); return B256ERROR_WAVFILEFORMAT; }
-{error_wavnotopen} { count(); return B256ERROR_WAVNOTOPEN; }
-{error_notimplemented} { count(); return B256ERROR_NOTIMPLEMENTED; }
-{exists}	{ count(); return B256EXISTS; }
-{exitdo}	{ count(); return B256EXITDO; }
-{exitdo}":"	{ unput(':'); count(); return B256EXITDO; }
-{exitfor}	{ count(); return B256EXITFOR; }
-{exitfor}":"	{ unput(':'); count(); return B256EXITFOR; }
-{exitwhile}	{ count(); return B256EXITWHILE; }
-{exitwhile}":"	{ unput(':'); count(); return B256EXITWHILE; }
-{exp}		{ count(); return B256EXP; }
-{explode}	{ count(); return B256EXPLODE; }
-{explodex}	{ count(); return B256EXPLODEX; }
-{fastgraphics}	{ count(); return B256FASTGRAPHICS; }
-{fastgraphics}":"	{ unput(':'); count(); return B256FASTGRAPHICS; }
-{floor}		{ count(); return B256FLOOR; }
-{font}		{ count(); return B256FONT; }
-{for}		{ count(); return B256FOR; }
-{freedb}	{ count(); return B256FREEDB; }
-{freedbset}	{ count(); return B256FREEDBSET; }
-{freefile}	{ count(); return B256FREEFILE; }
-{freenet}	{ count(); return B256FREENET; }
-{frombinary}		{ count(); return B256FROMBINARY; }
-{fromhex}		{ count(); return B256FROMHEX; }
-{fromoctal}		{ count(); return B256FROMOCTAL; }
-{fromradix}		{ count(); return B256FROMRADIX; }
-{function}	{ count(); return B256FUNCTION; }
-{getbrushcolor}		{ count(); return B256GETBRUSHCOLOR; }
-{getcolor}	{ count(); return B256GETCOLOR; }
-{getpenwidth}		{ count(); return B256GETPENWIDTH; }
-{getsetting}	{ count(); return B256GETSETTING; }
-{getslice}	{ count(); return B256GETSLICE; }
-{global}	{ count(); return B256GLOBAL; }
-{gosub}		{ count(); return B256GOSUB; }
-{goto}		{ count(); return B256GOTO; }
-{graphheight}	{ count(); return B256GRAPHHEIGHT; }
-{graphsize}	{ count(); return B256GRAPHSIZE; }
-{graphvisible}	{ count(); return B256GRAPHVISIBLE; }
-{graphwidth}	{ count(); return B256GRAPHWIDTH; }
-{gray}	        { count(); return B256GREY; }
-{green}		{ count(); return B256GREEN; }
-{hour}		{ count(); return B256HOUR; }
-{if}		{ count(); return B256IF; }
-{imgload}	{ count(); return B256IMGLOAD; }
-{imgsave}	{ count(); return B256IMGSAVE; }
-{implode}	{ count(); return B256IMPLODE; }
-{include} 	{ count();
-				BEGIN(INCLUDE);
-			}
-{input}		{ count(); return B256INPUT; }
-{instr}		{ count(); return B256INSTR; }
-{instrx}		{ count(); return B256INSTRX; }
-{key}		{ count(); return B256KEY; }
-{kill}		{ count(); return B256KILL; }
-{lasterror}	{ count(); return B256LASTERROR; }
-{lasterrorextra} { count(); return B256LASTERROREXTRA; }
-{lasterrorline}	{ count(); return B256LASTERRORLINE; }
-{lasterrormessage} { count(); return B256LASTERRORMESSAGE; }
-{left}		{ count(); return B256LEFT; }
-{length}	{ count(); return B256LENGTH; }
-{let}		{ count(); return B256LET; }
-{line}		{ count(); return B256LINE; }
-{log}		{ count(); return B256LOG; }
-{logten}	{ count(); return B256LOGTEN; }
-{lower}		{ count(); return B256LOWER; }
-{md5}		{ count(); return B256MD5; }
-{mid}		{ count(); return B256MID; }
-{minute}	{ count(); return B256MINUTE; }
-{month}		{ count(); return B256MONTH; }
-{mouseb}	{ count(); return B256MOUSEB; }
-{mousex}	{ count(); return B256MOUSEX; }
-{mousey}	{ count(); return B256MOUSEY; }
-{msec}		{ count(); return B256MSEC; }
-{netaddress}	{ count(); return B256NETADDRESS; }
-{netclose}	{ count(); return B256NETCLOSE; }
-{netclose}":"	{ unput(':'); count(); return B256NETCLOSE; }
-{netconnect}	{ count(); return B256NETCONNECT; }
-{netdata}	{ count(); return B256NETDATA; }
-{netlisten}	{ count(); return B256NETLISTEN; }
-{netread}	{ count(); return B256NETREAD; }
-{netwrite}	{ count(); return B256NETWRITE; }
-{next}		{ count(); return B256NEXT; }
-{not}		{ count(); return B256NOT; }
-{offerror}	{ count(); return B256OFFERROR; }
-{offerror}":"	{ unput(':'); count(); return B256OFFERROR; }
-{onerror}	{ count(); return B256ONERROR; }
-{open}		{ count(); return B256OPEN; }
-{openb}		{ count(); return B256OPENB; }
-{or}		{ count(); return B256OR; }
-{orange}	{ count(); return B256ORANGE; }
-{ostype}	{ count(); return B256OSTYPE; }
-{outputvisible}	{ count(); return B256OUTPUTVISIBLE; }
-{pause}		{ count(); return B256PAUSE; }
-{penwidth}		{ count(); return B256PENWIDTH; }
-{pi}		{ count(); return B256PI; }
-{pie}		{ count(); return B256PIE; }
-{pixel}		{ count(); return B256PIXEL; }
-{plot}		{ count(); return B256PLOT; }
-{poly}		{ count(); return B256POLY; }
-{portin}	{ count(); return B256PORTIN; }
-{portout}	{ count(); return B256PORTOUT; }
-{print}		{ count(); return B256PRINT; }
-{print}":"		{ unput(':'); count(); return B256PRINT; }
-{printercancel}		{ count(); return B256PRINTERCANCEL; }
-{printercancel}":"		{ unput(':'); count(); return B256PRINTERCANCEL; }
-{printeroff}		{ count(); return B256PRINTEROFF; }
-{printeroff}":"		{ unput(':'); count(); return B256PRINTEROFF; }
-{printeron}		{ count(); return B256PRINTERON; }
-{printeron}":"		{ unput(':'); count(); return B256PRINTERON; }
-{printerpage}		{ count(); return B256PRINTERPAGE; }
-{printerpage}":"		{ unput(':'); count(); return B256PRINTERPAGE; }
-{prompt}	{ count(); return B256PROMPT; }
-{purple}	{ count(); return B256PURPLE; }
-{putslice}	{ count(); return B256PUTSLICE; }
-{radians}	{ count(); return B256RADIANS; }
-{rand}		{ count(); return B256RAND; }
-{read}		{ count(); return B256READ; }
-{readbyte}	{ count(); return B256READBYTE; }
-{readline}	{ count(); return B256READLINE; }
-{rect}		{ count(); return B256RECT; }
-{red}		{ count(); return B256RED; }
-{redim}		{ count(); return B256REDIM; }
-{ref}		{ count(); return B256REF; }
-{refresh}	{ count(); return B256REFRESH; }
-{refresh}":"	{ unput(':'); count(); return B256REFRESH; }
-{rem}		{ count(); return B256REM; }
-{remalt}	{ count(); return B256REM; }
-{replace}	{ count(); return B256REPLACE; }
-{replacex}	{ count(); return B256REPLACEX; }
-{reset}		{ count(); return B256RESET; }
-{reset}":"		{ unput(':'); count(); return B256RESET; }
-{return}	{ count(); return B256RETURN; }
-{return}":"	{ unput(':'); count(); return B256RETURN; }
-{rgb}		{ count(); return B256RGB; }
-{right}		{ count(); return B256RIGHT; }
-{say}		{ count(); return B256SAY; }
-{second}	{ count(); return B256SECOND; }
-{seek}		{ count(); return B256SEEK; }
-{setsetting}	{ count(); return B256SETSETTING; }
-{sin}		{ count(); return B256SIN; }
-{size}		{ count(); return B256SIZE; }
-{sound}		{ count(); return B256SOUND; }
-{spritecollide}	{ count(); return B256SPRITECOLLIDE; }
-{spritedim}	{ count(); return B256SPRITEDIM; }
-{spriteh}	{ count(); return B256SPRITEH; }
-{spritehide}	{ count(); return B256SPRITEHIDE; }
-{spriteload}	{ count(); return B256SPRITELOAD; }
-{spritemove}	{ count(); return B256SPRITEMOVE; }
-{spriteplace}	{ count(); return B256SPRITEPLACE; }
-{spritepoly}		{ count(); return B256SPRITEPOLY; }
-{spriter}	{ count(); return B256SPRITER; }
-{sprites}	{ count(); return B256SPRITES; }
-{spriteshow}	{ count(); return B256SPRITESHOW; }
-{spriteslice}	{ count(); return B256SPRITESLICE; }
-{spritev}	{ count(); return B256SPRITEV; }
-{spritew}	{ count(); return B256SPRITEW; }
-{spritex}	{ count(); return B256SPRITEX; }
-{spritey}	{ count(); return B256SPRITEY; }
-{sqr}		{ count(); return B256SQR; }
-{sqrt}		{ count(); return B256SQR; }
-{stamp}		{ count(); return B256STAMP; }
-{step}		{ count(); return B256STEP; }
-{subroutine}	{ count(); return B256SUBROUTINE; }
-{system}	{ count(); return B256SYSTEM; }
-{tan}		{ count(); return B256TAN; }
-{text}		{ count(); return B256TEXT; }
-{textwidth}		{ count(); return B256TEXTWIDTH; }
-{textheight}		{ count(); return B256TEXTHEIGHT; }
-{then}		{ count(); return B256THEN; }
-{throwerror}	{ count(); return B256THROWERROR; }
-{to}		{ count(); return B256TO; }
-{tobinary}		{ count(); return B256TOBINARY; }
-{tofloat}	{ count(); return B256TOFLOAT; }
-{tohex}		{ count(); return B256TOHEX; }
-{toint}		{ count(); return B256TOINT; }
-{tooctal}		{ count(); return B256TOOCTAL; }
-{toradix}		{ count(); return B256TORADIX; }
-{tostring}	{ count(); return B256TOSTRING; }
-{try}	{ count(); return B256TRY; }
-{try}":"	{ unput(':'); count(); return B256TRY; }
-{until}		{ count(); return B256UNTIL; }
-{upper}		{ count(); return B256UPPER; }
-{version}		{ count(); return B256VERSION; }
-{volume}	{ count(); return B256VOLUME; }
-{warning_typeconv}	{ count(); return B256WARNING_TYPECONV; }
-{warning_wavnoduration}	{ count(); return B256WARNING_WAVNODURATION; }
-{warning_wavnotseekable}	{ count(); return B256WARNING_WAVNOTSEEKABLE; }
-{wavlength}	{ count(); return B256WAVLENGTH; }
-{wavpause}	{ count(); return B256WAVPAUSE; }
-{wavpause}":"	{ unput(':'); count(); return B256WAVPAUSE; }
-{wavplay}	{ count(); return B256WAVPLAY; }
-{wavplay}":"	{ unput(':'); count(); return B256WAVPLAY; }
-{wavpos}	{ count(); return B256WAVPOS; }
-{wavseek}	{ count(); return B256WAVSEEK; }
-{wavstate}	{ count(); return B256WAVSTATE; }
-{wavstop}	{ count(); return B256WAVSTOP; }
-{wavstop}":"	{ unput(':'); count(); return B256WAVSTOP; }
-{wavwait}	{ count(); return B256WAVWAIT; }
-{wavwait}":"	{ unput(':'); count(); return B256WAVWAIT; }
-{while}		{ count(); return B256WHILE; }
-{white}		{ count(); return B256WHITE; }
-{write}		{ count(); return B256WRITE; }
-{writebyte}	{ count(); return B256WRITEBYTE; }
-{writeline}	{ count(); return B256WRITELINE; }
-{xor}		{ count(); return B256XOR; }
-{year}		{ count(); return B256YEAR; }
-{yellow}	{ count(); return B256YELLOW; }
+ /**********************************************************************/
+ /* data type rules                                                    */
+ /**********************************************************************/
 
-">="		{ count(); return B256GTE; }
-"<="		{ count(); return B256LTE; }
-"<>"		{ count(); return B256NE; }
-"+"		{ count(); return '+'; }
-"++"		{ count(); return B256ADD1; }
-"+="		{ count(); return B256ADDEQUAL; }
-"-"		{ count(); return '-'; }
-"--"		{ count(); return B256SUB1; }
-"-="		{ count(); return B256SUBEQUAL; }
-"*"		{ count(); return '*'; }
-"*="		{ count(); return B256MULEQUAL; }
-"\\"		{ count(); return B256INTDIV; }
-"\%"		{ count(); return B256MOD; }
-"|"		{ count(); return B256BINARYOR; }
-"&"		{ count(); return B256BINARYAND; }
-"~"		{ count(); return B256BINARYNOT; }
-"/"		{ count(); return '/'; }
-"/="		{ count(); return B256DIVEQUAL; }
-"^"		{ count(); return '^'; }
-"="		{ count(); return '='; }
-"<"		{ count(); return '<'; }
-">"		{ count(); return '>'; }
-","		{ count(); return ','; }
-";"		{ count(); return ';'; }
-":"		{ count(); return ':'; }
-"("		{ count(); return '('; }
-")"		{ count(); return ')'; }
-"{"		{ count(); return '{'; }
-"}"		{ count(); return '}'; }
-"["		{ count(); return '['; }
-"]"		{ count(); return ']'; }
+{boolfalse}					{ count(); return B256BOOLFALSE; }
+{booltrue}					{ count(); return B256BOOLTRUE; }
+{integer}					{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
+{floatnum}					{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
+{binaryinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
+{hexinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
+{octalinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
+{string}					{
+								int len;
+								count();
+								len = strlen(yytext);
+								yylval.string = strdup(yytext + 1);
+								yylval.string[len - 2] = 0;
+								return B256STRING;
+}
+
+ /**********************************************************************/
+ /* compile time rules */
+ /**********************************************************************/
+
+{include} 					{ 
+								count();
+								BEGIN(INCLUDE);
+							}
+
+ /**********************************************************************/
+ /* functions and constants rules                                      */
+ /**********************************************************************/
+
+{abs}						{ count(); return B256ABS; }
+{acos}						{ count(); return B256ACOS; }
+{arc}						{ count(); return B256ARC; }
+{asc}						{ count(); return B256ASC; }
+{asin}						{ count(); return B256ASIN; }
+{atan}						{ count(); return B256ATAN; }
+{black}						{ count(); return B256BLACK; }
+{blue}						{ count(); return B256BLUE; }
+{booleof}					{ count(); return B256BOOLEOF; }
+{ceil}						{ count(); return B256CEIL; }
+{chr}						{ count(); return B256CHR; }
+{clear}						{ count(); return B256CLEAR; }
+{clickb}					{ count(); return B256CLICKB; }
+{clickx}					{ count(); return B256CLICKX; }
+{clicky}					{ count(); return B256CLICKY; }
+{confirm}					{ count(); return B256CONFIRM; }
+{cos}						{ count(); return B256COS; }
+{count}						{ count(); return B256COUNT; }
+{countx}					{ count(); return B256COUNTX; }
+{currentdir}				{ count(); return B256CURRENTDIR; }
+{cyan}						{ count(); return B256CYAN; }
+{dark}{blue}				{ count(); return B256DARKBLUE; }
+{dark}{cyan}				{ count(); return B256DARKCYAN; }
+{dark}{gray}				{ count(); return B256DARKGREY; }
+{dark}{green}				{ count(); return B256DARKGREEN; }
+{dark}{orange}				{ count(); return B256DARKORANGE; }
+{dark}{purple}				{ count(); return B256DARKPURPLE; }
+{dark}{red}					{ count(); return B256DARKRED; }
+{dark}{yellow}				{ count(); return B256DARKYELLOW; }
+{day}						{ count(); return B256DAY; }
+{dbfloat}					{ count(); return B256DBFLOAT; }
+{dbint}						{ count(); return B256DBINT; }
+{dbnull}					{ count(); return B256DBNULL; }
+{dbrow}						{ count(); return B256DBROW; }
+{dbstring}					{ count(); return B256DBSTRING; }
+{debuginfo}					{ count(); return B256DEBUGINFO; }
+{degrees}					{ count(); return B256DEGREES; }
+{dir}						{ count(); return B256DIR; }
+{error_none}				{ count(); return B256ERROR_NONE; }
+{error_for1} 				{ count(); return B256ERROR_FOR1; }
+{error_for2}				{ count(); return B256ERROR_FOR2; }
+{error_filenumber}			{ count(); return B256ERROR_FILENUMBER; }
+{error_fileopen}			{ count(); return B256ERROR_FILEOPEN; }
+{error_filenotopen}			{ count(); return B256ERROR_FILENOTOPEN; }
+{error_filewrite}			{ count(); return B256ERROR_FILEWRITE; }
+{error_filereset}			{ count(); return B256ERROR_FILERESET; }
+{error_arraysizelarge}		{ count(); return B256ERROR_ARRAYSIZELARGE; }
+{error_arraysizesmall}		{ count(); return B256ERROR_ARRAYSIZESMALL; }
+{error_nosuchvariable}		{ count(); return B256ERROR_NOSUCHVARIABLE; }
+{error_arrayindex}			{ count(); return B256ERROR_ARRAYINDEX; }
+{error_strneglen}			{ count(); return B256ERROR_STRNEGLEN; }
+{error_strstart}			{ count(); return B256ERROR_STRSTART; }
+{error_nonnumeric}			{ count(); return B256ERROR_NONNUMERIC; }
+{error_rgb}					{ count(); return B256ERROR_RGB; }
+{error_putbitformat}		{ count(); return B256ERROR_PUTBITFORMAT; }
+{error_polyarray}			{ count(); return B256ERROR_POLYARRAY; }
+{error_polypoints}			{ count(); return B256ERROR_POLYPOINTS; }
+{error_imagefile}			{ count(); return B256ERROR_IMAGEFILE; }
+{error_spritenumber}		{ count(); return B256ERROR_SPRITENUMBER; }
+{error_spritena}			{ count(); return B256ERROR_SPRITENA; }
+{error_spriteslice}			{ count(); return B256ERROR_SPRITESLICE; }
+{error_folder}				{ count(); return B256ERROR_FOLDER; }
+{error_infinity}			{ count(); return B256ERROR_INFINITY; }
+{error_dbopen}				{ count(); return B256ERROR_DBOPEN; }
+{error_dbquery}				{ count(); return B256ERROR_DBQUERY; }
+{error_dbnotopen}			{ count(); return B256ERROR_DBNOTOPEN; }
+{error_dbcolno}				{ count(); return B256ERROR_DBCOLNO; }
+{error_dbnotset}			{ count(); return B256ERROR_DBNOTSET; }
+{error_netsock}				{ count(); return B256ERROR_NETSOCK; }
+{error_nethost}				{ count(); return B256ERROR_NETHOST; }
+{error_netconn}				{ count(); return B256ERROR_NETCONN; }
+{error_netread}				{ count(); return B256ERROR_NETREAD; }
+{error_netnone}				{ count(); return B256ERROR_NETNONE; }
+{error_netwrite}			{ count(); return B256ERROR_NETWRITE; }
+{error_netsockopt}			{ count(); return B256ERROR_NETSOCKOPT; }
+{error_netbind}				{ count(); return B256ERROR_NETBIND; }
+{error_netaccept}			{ count(); return B256ERROR_NETACCEPT; }
+{error_netsocknumber}		{ count(); return B256ERROR_NETSOCKNUMBER; }
+{error_permission}			{ count(); return B256ERROR_PERMISSION; }
+{error_imagesavetype}		{ count(); return B256ERROR_IMAGESAVETYPE; }
+{error_divzero}				{ count(); return B256ERROR_DIVZERO; }
+{error_byref}				{ count(); return B256ERROR_BYREF; }
+{error_byreftype}			{ count(); return B256ERROR_BYREFTYPE; }
+{error_freefile}			{ count(); return B256ERROR_FREEFILE; }
+{error_freenet}				{ count(); return B256ERROR_FREENET; }
+{error_freedb}				{ count(); return B256ERROR_FREEDB; }
+{error_dbconnnumber}		{ count(); return B256ERROR_DBCONNNUMBER; }
+{error_freedbset}			{ count(); return B256ERROR_FREEDBSET; }
+{error_dbsetnumber}			{ count(); return B256ERROR_DBSETNUMBER; }
+{error_dbnotsetrow}			{ count(); return B256ERROR_DBNOTSETROW; }
+{error_penwidth}			{ count(); return B256ERROR_PENWIDTH; }
+{error_colornumber}			{ count(); return B256ERROR_COLORNUMBER; }
+{error_arrayindexmissing}	{ count(); return B256ERROR_ARRAYINDEXMISSING; }
+{error_imagescale}			{ count(); return B256ERROR_IMAGESCALE; }
+{error_fontsize}			{ count(); return B256ERROR_FONTSIZE; }
+{error_fontweight}			{ count(); return B256ERROR_FONTWEIGHT; }
+{error_radixstring}			{ count(); return B256ERROR_RADIXSTRING; }
+{error_radix}				{ count(); return B256ERROR_RADIX; }
+{error_logrange}			{ count(); return B256ERROR_LOGRANGE; }
+{error_stringmaxlen}		{ count(); return B256ERROR_STRINGMAXLEN; }
+{error_notanumber}			{ count(); return B256ERROR_NOTANUMBER; }
+{error_printernoton}		{ count(); return B256ERROR_PRINTERNOTON; }
+{error_printernotoff}		{ count(); return B256ERROR_PRINTERNOTOFF; }
+{error_printeropen}			{ count(); return B256ERROR_PRINTEROPEN; }
+{error_wavfileformat}		{ count(); return B256ERROR_WAVFILEFORMAT; }
+{error_wavnotopen}			{ count(); return B256ERROR_WAVNOTOPEN; }
+{error_notimplemented}		{ count(); return B256ERROR_NOTIMPLEMENTED; }
+{exists}					{ count(); return B256EXISTS; }
+{exp}						{ count(); return B256EXP; }
+{explode}					{ count(); return B256EXPLODE; }
+{explodex}					{ count(); return B256EXPLODEX; }
+{floor}						{ count(); return B256FLOOR; }
+{freedb}					{ count(); return B256FREEDB; }
+{freedbset}					{ count(); return B256FREEDBSET; }
+{freefile}					{ count(); return B256FREEFILE; }
+{freenet}					{ count(); return B256FREENET; }
+{frombinary}				{ count(); return B256FROMBINARY; }
+{fromhex}					{ count(); return B256FROMHEX; }
+{fromoctal}					{ count(); return B256FROMOCTAL; }
+{fromradix}					{ count(); return B256FROMRADIX; }
+{getbrushcolor}				{ count(); return B256GETBRUSHCOLOR; }
+{getcolor}					{ count(); return B256GETCOLOR; }
+{getpenwidth}				{ count(); return B256GETPENWIDTH; }
+{getsetting}				{ count(); return B256GETSETTING; }
+{getslice}					{ count(); return B256GETSLICE; }
+{graphheight}				{ count(); return B256GRAPHHEIGHT; }
+{graphwidth}				{ count(); return B256GRAPHWIDTH; }
+{gray}						{ count(); return B256GREY; }
+{green}						{ count(); return B256GREEN; }
+{hour}						{ count(); return B256HOUR; }
+{implode}					{ count(); return B256IMPLODE; }
+{instr}						{ count(); return B256INSTR; }
+{instrx}					{ count(); return B256INSTRX; }
+{key}						{ count(); return B256KEY; }
+{lasterror}					{ count(); return B256LASTERROR; }
+{lasterrorextra} 			{ count(); return B256LASTERROREXTRA; }
+{lasterrorline}				{ count(); return B256LASTERRORLINE; }
+{lasterrormessage}			{ count(); return B256LASTERRORMESSAGE; }
+{left}						{ count(); return B256LEFT; }
+{length}					{ count(); return B256LENGTH; }
+{log}						{ count(); return B256LOG; }
+{logten}					{ count(); return B256LOGTEN; }
+{lower}						{ count(); return B256LOWER; }
+{md5}						{ count(); return B256MD5; }
+{mid}						{ count(); return B256MID; }
+{minute}					{ count(); return B256MINUTE; }
+{month}						{ count(); return B256MONTH; }
+{mouseb}					{ count(); return B256MOUSEB; }
+{mousex}					{ count(); return B256MOUSEX; }
+{mousey}					{ count(); return B256MOUSEY; }
+{msec}						{ count(); return B256MSEC; }
+{netaddress}				{ count(); return B256NETADDRESS; }
+{netdata}					{ count(); return B256NETDATA; }
+{netread}					{ count(); return B256NETREAD; }
+{orange}					{ count(); return B256ORANGE; }
+{ostype}					{ count(); return B256OSTYPE; }
+{pi}						{ count(); return B256PI; }
+{pixel}						{ count(); return B256PIXEL; }
+{portin}					{ count(); return B256PORTIN; }
+{purple}					{ count(); return B256PURPLE; }
+{radians}					{ count(); return B256RADIANS; }
+{rand}						{ count(); return B256RAND; }
+{read}						{ count(); return B256READ; }
+{readbyte}					{ count(); return B256READBYTE; }
+{readline}					{ count(); return B256READLINE; }
+{red}						{ count(); return B256RED; }
+{ref}						{ count(); return B256REF; }
+{replace}					{ count(); return B256REPLACE; }
+{replacex}					{ count(); return B256REPLACEX; }
+{rgb}						{ count(); return B256RGB; }
+{right}						{ count(); return B256RIGHT; }
+{second}					{ count(); return B256SECOND; }
+{sin}						{ count(); return B256SIN; }
+{size}						{ count(); return B256SIZE; }
+{spritecollide}				{ count(); return B256SPRITECOLLIDE; }
+{spriteh}					{ count(); return B256SPRITEH; }
+{spriter}					{ count(); return B256SPRITER; }
+{sprites}					{ count(); return B256SPRITES; }
+{spritev}					{ count(); return B256SPRITEV; }
+{spritew}					{ count(); return B256SPRITEW; }
+{spritex}					{ count(); return B256SPRITEX; }
+{spritey}					{ count(); return B256SPRITEY; }
+{sqr}						{ count(); return B256SQR; }
+{sqrt}						{ count(); return B256SQR; }
+{tan}						{ count(); return B256TAN; }
+{textwidth}					{ count(); return B256TEXTWIDTH; }
+{textheight}				{ count(); return B256TEXTHEIGHT; }
+{tobinary}					{ count(); return B256TOBINARY; }
+{tofloat}					{ count(); return B256TOFLOAT; }
+{tohex}						{ count(); return B256TOHEX; }
+{toint}						{ count(); return B256TOINT; }
+{tooctal}					{ count(); return B256TOOCTAL; }
+{toradix}					{ count(); return B256TORADIX; }
+{tostring}					{ count(); return B256TOSTRING; }
+{upper}						{ count(); return B256UPPER; }
+{version}					{ count(); return B256VERSION; }
+{warning_typeconv}			{ count(); return B256WARNING_TYPECONV; }
+{warning_wavnoduration}		{ count(); return B256WARNING_WAVNODURATION; }
+{warning_wavnotseekable}	{ count(); return B256WARNING_WAVNOTSEEKABLE; }
+{wavlength}					{ count(); return B256WAVLENGTH; }
+{wavpos}					{ count(); return B256WAVPOS; }
+{wavstate}					{ count(); return B256WAVSTATE; }
+{white}						{ count(); return B256WHITE; }
+{year}						{ count(); return B256YEAR; }
+{yellow}					{ count(); return B256YELLOW; }
+
+ /**********************************************************************/
+ /* statement rules                                                    */
+ /* For statements with no arguments (or optionally with no arguments) */
+ /* you NEED to include a version with a ':' on the end that unputs    */
+ /* the ':' - multiple statements on a line and confusion with labels  */
+ /* require this.                                                      */
+ /**********************************************************************/
+
+{alert}						{ count(); return B256ALERT; }
+{begincase}					{ count(); return B256BEGINCASE; }
+{begincase}":"				{ count(); unputcolon(); return B256BEGINCASE; }
+{call}						{ count(); return B256CALL; }
+{case}						{ count(); return B256CASE; }
+{catch}						{ count(); return B256CATCH; }
+{catch}":"					{ count(); unputcolon(); return B256CATCH; }
+{changedir}					{ count(); return B256CHANGEDIR; }
+{chord}						{ count(); return B256CHORD; }
+{circle}					{ count(); return B256CIRCLE; }
+{clg}						{ count(); return B256CLG; }
+{clg}":"					{ count(); unputcolon(); return B256CLG; }
+{clickclear}				{ count(); return B256CLICKCLEAR; }
+{clickclear}":"				{ count(); unputcolon(); return B256CLICKCLEAR; }
+{close}						{ count(); return B256CLOSE; }
+{close}":"					{ count(); unputcolon(); return B256CLOSE; }
+{cls}						{ count(); return B256CLS; }
+{cls}":"					{ count(); unputcolon(); return B256CLS; }
+{color}						{ count(); return B256SETCOLOR; }
+{continuedo}				{ count(); return B256CONTINUEDO; }
+{continuedo}":"				{ count(); unputcolon(); return B256CONTINUEDO; }
+{continuefor}				{ count(); return B256CONTINUEFOR; }
+{continuefor}":"			{ count(); unputcolon(); return B256CONTINUEFOR; }
+{continuewhile}				{ count(); return B256CONTINUEWHILE; }
+{continuewhile}":"			{ count(); unputcolon(); return B256CONTINUEWHILE; }
+{dbclose}					{ count(); return B256DBCLOSE; }
+{dbclose}":"				{ count(); unputcolon(); return B256DBCLOSE; }
+{dbcloseset}				{ count(); return B256DBCLOSESET; }
+{dbcloseset}":"				{ count(); unputcolon(); return B256DBCLOSESET; }
+{dbexecute}					{ count(); return B256DBEXECUTE; }
+{dbopen}					{ count(); return B256DBOPEN; }
+{dbopenset}					{ count(); return B256DBOPENSET; }
+{dim}						{ count(); return B256DIM; }
+{do}						{ count(); return B256DO; }
+{do}":"						{ count(); unputcolon(); return B256DO; }
+{editvisible}				{ count(); return B256EDITVISIBLE; }
+{else}						{ count(); return B256ELSE; }
+{else}":"					{ count(); unputcolon(); return B256ELSE; }
+{end}						{ count(); return B256END; }
+{end}":"					{ count(); unputcolon(); return B256END; }
+{endcase}					{ count(); return B256ENDCASE; }
+{endcase}":"				{ count(); unputcolon(); return B256ENDCASE; }
+{endfunction}				{ count(); return B256ENDFUNCTION; }
+{endfunction}":"			{ count(); unputcolon(); return B256ENDFUNCTION; }
+{endif}						{ count(); return B256ENDIF; }
+{endif}":"					{ count(); unputcolon(); return B256ENDIF; }
+{endsubroutine}				{ count(); return B256ENDSUBROUTINE; }
+{endsubroutine}":"			{ count(); unputcolon(); return B256ENDSUBROUTINE; }
+{endtry}					{ count(); return B256ENDTRY; }
+{endtry}":"					{ count(); unputcolon(); return B256ENDTRY; }
+{endwhile}					{ count(); return B256ENDWHILE; }
+{endwhile}":"				{ count(); unputcolon(); return B256ENDWHILE; }
+{exitdo}					{ count(); return B256EXITDO; }
+{exitdo}":"					{ count(); unputcolon(); return B256EXITDO; }
+{exitfor}					{ count(); return B256EXITFOR; }
+{exitfor}":"				{ count(); unputcolon(); return B256EXITFOR; }
+{exitwhile}					{ count(); return B256EXITWHILE; }
+{exitwhile}":"				{ count(); unputcolon(); return B256EXITWHILE; }
+{fastgraphics}				{ count(); return B256FASTGRAPHICS; }
+{fastgraphics}":"			{ count(); unputcolon(); return B256FASTGRAPHICS; }
+{font}						{ count(); return B256FONT; }
+{for}						{ count(); return B256FOR; }
+{function}					{ count(); return B256FUNCTION; }
+{global}					{ count(); return B256GLOBAL; }
+{gosub}						{ count(); return B256GOSUB; }
+{goto}						{ count(); return B256GOTO; }
+{graphsize}					{ count(); return B256GRAPHSIZE; }
+{graphvisible}				{ count(); return B256GRAPHVISIBLE; }
+{if}						{ count(); return B256IF; }
+{imgload}					{ count(); return B256IMGLOAD; }
+{imgsave}					{ count(); return B256IMGSAVE; }
+{input}						{ count(); return B256INPUT; }
+{kill}						{ count(); return B256KILL; }
+{let}						{ count(); return B256LET; }
+{line}						{ count(); return B256LINE; }
+{netclose}					{ count(); return B256NETCLOSE; }
+{netclose}":"				{ count(); unputcolon(); return B256NETCLOSE; }
+{netconnect}				{ count(); return B256NETCONNECT; }
+{netlisten}					{ count(); return B256NETLISTEN; }
+{netwrite}					{ count(); return B256NETWRITE; }
+{next}						{ count(); return B256NEXT; }
+{offerror}					{ count(); return B256OFFERROR; }
+{offerror}":"				{ count(); unputcolon(); return B256OFFERROR; }
+{onerror}					{ count(); return B256ONERROR; }
+{open}						{ count(); return B256OPEN; }
+{openb}						{ count(); return B256OPENB; }
+{outputvisible}				{ count(); return B256OUTPUTVISIBLE; }
+{pause}						{ count(); return B256PAUSE; }
+{penwidth}					{ count(); return B256PENWIDTH; }
+{pie}						{ count(); return B256PIE; }
+{plot}						{ count(); return B256PLOT; }
+{poly}						{ count(); return B256POLY; }
+{portout}					{ count(); return B256PORTOUT; }
+{print}						{ count(); return B256PRINT; }
+{print}":"					{ count(); unputcolon(); return B256PRINT; }
+{printercancel}				{ count(); return B256PRINTERCANCEL; }
+{printercancel}":"			{ count(); unputcolon(); return B256PRINTERCANCEL; }
+{printeroff}				{ count(); return B256PRINTEROFF; }
+{printeroff}":"				{ count(); unputcolon(); return B256PRINTEROFF; }
+{printeron}					{ count(); return B256PRINTERON; }
+{printeron}":"				{ count(); unputcolon(); return B256PRINTERON; }
+{printerpage}				{ count(); return B256PRINTERPAGE; }
+{printerpage}":"			{ count(); unputcolon(); return B256PRINTERPAGE; }
+{prompt}					{ count(); return B256PROMPT; }
+{putslice}					{ count(); return B256PUTSLICE; }
+{rect}						{ count(); return B256RECT; }
+{redim}						{ count(); return B256REDIM; }
+{refresh}					{ count(); return B256REFRESH; }
+{refresh}":"				{ count(); unputcolon(); return B256REFRESH; }
+{rem}						{ count(); return B256REM; }
+{remalt}					{ count(); return B256REM; }
+{reset}						{ count(); return B256RESET; }
+{reset}":"					{ count(); unputcolon(); return B256RESET; }
+{return}					{ count(); return B256RETURN; }
+{return}":"					{ count(); unputcolon(); return B256RETURN; }
+{say}						{ count(); return B256SAY; }
+{seek}						{ count(); return B256SEEK; }
+{setsetting}				{ count(); return B256SETSETTING; }
+{sound}						{ count(); return B256SOUND; }
+{spritedim}					{ count(); return B256SPRITEDIM; }
+{spritehide}				{ count(); return B256SPRITEHIDE; }
+{spriteload}				{ count(); return B256SPRITELOAD; }
+{spritemove}				{ count(); return B256SPRITEMOVE; }
+{spriteplace}				{ count(); return B256SPRITEPLACE; }
+{spritepoly}				{ count(); return B256SPRITEPOLY; }
+{spriteshow}				{ count(); return B256SPRITESHOW; }
+{spriteslice}				{ count(); return B256SPRITESLICE; }
+{stamp}						{ count(); return B256STAMP; }
+{step}						{ count(); return B256STEP; }
+{subroutine}				{ count(); return B256SUBROUTINE; }
+{system}					{ count(); return B256SYSTEM; }
+{text}						{ count(); return B256TEXT; }
+{then}						{ count(); return B256THEN; }
+{then}":"					{ count(); unputcolon(); return B256THEN; }
+{throwerror}				{ count(); return B256THROWERROR; }
+{to}						{ count(); return B256TO; }
+{try}						{ count(); return B256TRY; }
+{try}":"					{ count(); unputcolon(); return B256TRY; }
+{until}						{ count(); return B256UNTIL; }
+{volume}					{ count(); return B256VOLUME; }
+{wavpause}					{ count(); return B256WAVPAUSE; }
+{wavpause}":"				{ count(); unputcolon(); return B256WAVPAUSE; }
+{wavplay}					{ count(); return B256WAVPLAY; }
+{wavplay}":"				{ count(); unputcolon(); return B256WAVPLAY; }
+{wavseek}					{ count(); return B256WAVSEEK; }
+{wavstop}					{ count(); return B256WAVSTOP; }
+{wavstop}":"				{ count(); unputcolon(); return B256WAVSTOP; }
+{wavwait}					{ count(); return B256WAVWAIT; }
+{wavwait}":"				{ count(); unputcolon(); return B256WAVWAIT; }
+{while}						{ count(); return B256WHILE; }
+{write}						{ count(); return B256WRITE; }
+{writebyte}					{ count(); return B256WRITEBYTE; }
+{writeline}					{ count(); return B256WRITELINE; }
+
+ /**********************************************************************/
+ /* operator rules                                                     */
+ /**********************************************************************/
+
+{and}						{ count(); return B256AND; }
+{not}						{ count(); return B256NOT; }
+{or}						{ count(); return B256OR; }
+{xor}						{ count(); return B256XOR; }
+">="						{ count(); return B256GTE; }
+"<="						{ count(); return B256LTE; }
+"<>"						{ count(); return B256NE; }
+"+"							{ count(); return '+'; }
+"++"						{ count(); return B256ADD1; }
+"+="						{ count(); return B256ADDEQUAL; }
+"-"							{ count(); return '-'; }
+"--"						{ count(); return B256SUB1; }
+"-="						{ count(); return B256SUBEQUAL; }
+"*"							{ count(); return '*'; }
+"*="						{ count(); return B256MULEQUAL; }
+"\\"						{ count(); return B256INTDIV; }
+"\%"						{ count(); return B256MOD; }
+"|"							{ count(); return B256BINARYOR; }
+"&"							{ count(); return B256BINARYAND; }
+"~"							{ count(); return B256BINARYNOT; }
+"/"							{ count(); return '/'; }
+"/="						{ count(); return B256DIVEQUAL; }
+"^"							{ count(); return '^'; }
+"="							{ count(); return '='; }
+"<"							{ count(); return '<'; }
+">"							{ count(); return '>'; }
+","							{ count(); return ','; }
+";"							{ count(); return ';'; }
+":"							{ count(); return ':'; }
+"("							{ count(); return '('; }
+")"							{ count(); return ')'; }
+"{"							{ count(); return '{'; }
+"}"							{ count(); return '}'; }
+"["							{ count(); return '['; }
+"]"							{ count(); return ']'; }
 
 {label} {
 	char *temp;
@@ -964,19 +999,20 @@ yywrap(void) {
 	return 1;
 }
 
-void
-count() {
+void unputcolon() {
+	unput(':');
+	if (column>0) column--;
+}
+
+void count() {
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\t')
-			column += 5 - (column % 5);
-		else
-			column++;
+		column++;
+	// printf("\"%s\" %i\n", yytext, column);
 }
 
-int
-basicParse(char *code) {
+int basicParse(char *code) {
 
 	//int t;
 	//for(t=0;t<MAX_INCLUDE_DEPTH;t++) {

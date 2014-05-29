@@ -1,0 +1,78 @@
+# testsuite_graphics_include for BASIC256
+
+# Modification History
+# date		programmer	description
+# 2012????	j.m.reneau	original coding
+# 20140529	j.m.reneau	split to own include
+
+# test the basic graphics statements
+
+clg
+color blue
+rect 10,10,20,20
+call q("Blue rectangle")
+call n("is 20,20 blue",pixel(20,20), blue)
+#
+clg
+color red
+call n("is current color red",getcolor, red)
+circle 30,30,10
+call q("red circle")
+#
+clg
+for t = 1 to 10
+   color rgb(rand*256,rand*256,rand*256), rgb(rand*256,rand*256,rand*256)
+   circle rand*300,rand*300,rand*10+10
+next t
+call q("10 random circles")
+#
+clg
+color black
+for t = 0 to 300 step 3
+   line 0,0,t,300
+   line 0,0,300,t
+next t
+call q("morie pattern std size")
+#
+graphsize 200,150
+clg
+color black
+for t = 0 to 1 step .01
+   line 0,0,t*graphwidth,graphheight
+   line 0,0,graphwidth,t*graphheight
+next t
+call q("morie pattern odd size")
+graphsize 300,300
+#
+clg
+color black
+for x = 0 to 10 step .1
+   y = (100- x^2)^.5
+   plot 150-x, 150-y
+   plot 150-x, 150+y
+   plot 150+x, 150-y
+   plot 150+x, 150+y
+next x
+call q("circle using x^2+y^2=r^2")
+#
+clg
+penwidth 10
+color green, blue
+redim c(1)
+c = {100, 100, 200, 200, 100, 200}
+poly c
+penwidth 5
+color orange, black
+poly {100, 100, 200, 200, 200, 100}
+call q("poly - orange/black and green/blue triangles with different fill and pen")
+penwidth 0
+#
+clg
+color red
+font "Times New Roman",18,50
+text 10,100,"This is Times New Roman"
+color darkgreen
+font "Tahoma",10,100
+text 10,200,"This is Tahoma!"
+call q("Font - Times and Tahoma")
+

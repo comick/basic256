@@ -54,6 +54,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   void highlightLine(int);
   void slotPrint();
   void beautifyProgram();
+  void slotWhitespace(bool);
   void loadRecent0();
   void loadRecent1();
   void loadRecent2();

@@ -37,6 +37,9 @@
     #define SETTINGSTOOLBAR "Main/Toolbar"
     #define SETTINGSFONTDEFAULT "Courier,10,-1,5,50,0,0,0,0,0"
 
+    #define SETTINGSEDITWHITESPACE "Edit/Whitespace"
+    #define SETTINGSEDITWHITESPACEDEFAULT false
+    
     #define SETTINGSOUTVISIBLE "OutDock/Visible"
     #define SETTINGSOUTFLOAT "OutDock/Float"
     #define SETTINGSOUTPOS "OutDock/Pos"

@@ -66,12 +66,11 @@ BasicOutput::keyPressEvent(QKeyEvent *e) {
         if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
             QTextCursor t(textCursor());
             t.setPosition(startPos, QTextCursor::KeepAnchor);
-            emit(inputEntered(t.selectedText()));
-
+            emit(inputEntered(t.selectedText())); // send the string back to the interperter and run controller
             insertPlainText("\n");
             gettingInput = false;
             setReadOnly(true);
-        } else if (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Left) {
+       } else if (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Left) {
             QTextCursor t(textCursor());
             t.movePosition(QTextCursor::PreviousCharacter);
             if (t.position() >= startPos)

@@ -94,7 +94,7 @@ void BasicMediaPlayer::wait() {
 bool BasicMediaPlayer::seek(double time) {
 	long int ms = time * 1000L;
 	waitForSeekable(500);
-	qDebug ("mediaStatus %d\n",mediaStatus()); 
+	//qDebug ("mediaStatus %d\n",mediaStatus()); 
 	if(isSeekable()) {
 		QMediaPlayer::setPosition(ms);
 		return true;

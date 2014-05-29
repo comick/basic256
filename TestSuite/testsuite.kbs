@@ -2,11 +2,6 @@
 
 # This program will test most of the basic256 language compiler and interperter
 
-###
-### assumes "Runtime handling of bad type conversions"
-### settings to ignore or warn
-###
-
 # Modification History
 # date		programmer	description
 # 20121103	j.m.reneau	added strings, file io, '' strings
@@ -32,10 +27,17 @@
 #				and begin case/case/end case
 # 20140204	j.m.reneau	updated to 1.1.0.2
 # 20140416	j.m.reneau	updated to 1.1.1.3 and added WAV statements
+# 20140529	j.m.reneau	added testsuite_complete_include to report on missing statements
+#				added dir include
+#				added printer include
+#				added time include
 
 include "testsuite_common_include.kbs"
 
-call versiontest(1010103)
+###################################################
+## Test MINIMUM Version - BE SURE TO SET BELOW
+###################################################
+call versiontest(1010204)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -45,6 +47,12 @@ subroutine versiontest(needed)
       end
    end if
 end subroutine
+
+###################################################
+## Test Settings
+###################################################
+call sne("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"0")
+
 
 # create arrays to use
 dim c(10)
@@ -61,6 +69,11 @@ dim twod(10,10)
 editvisible 1
 graphvisible 1
 outputvisible 1
+
+###################################################
+call section("TestSuite Completeness Check")
+###################################################
+include "testsuite_complete_include.kbs"
 
 ###################################################
 call section("1D Numeric Array")
@@ -125,6 +138,9 @@ call s("c$[4]=E",c$[4],"E")
 call s("c$[5]=F",c$[5],"F")
 #
 input "input string 'able' >", c$[5]
+for x = 1 to length(c$[5])
+print x + '"' + mid(c$[5],x,1) + '"' + " " + asc(mid(c$[5],x,1))
+next x
 call s("c$[5]='able'",c$[5],"able")
 #
 redim c$(5,2)
@@ -204,76 +220,7 @@ call s("prompt dialog",a$,"able")
 ###################################################
 call section("Basic Graphics")
 ###################################################
-clg
-color blue
-rect 10,10,20,20
-call q("Blue rectangle")
-call n("is 20,20 blue",pixel(20,20), blue)
-#
-clg
-color red
-call n("is current color red",getcolor, red)
-circle 30,30,10
-call q("red circle")
-#
-clg
-for t = 1 to 10
-   color rgb(rand*256,rand*256,rand*256), rgb(rand*256,rand*256,rand*256)
-   circle rand*300,rand*300,rand*10+10
-next t
-call q("10 random circles")
-#
-clg
-color black
-for t = 0 to 300 step 3
-   line 0,0,t,300
-   line 0,0,300,t
-next t
-call q("morie pattern std size")
-#
-graphsize 200,150
-clg
-color black
-for t = 0 to 1 step .01
-   line 0,0,t*graphwidth,graphheight
-   line 0,0,graphwidth,t*graphheight
-next t
-call q("morie pattern odd size")
-graphsize 300,300
-#
-clg
-color black
-for x = 0 to 10 step .1
-   y = (100- x^2)^.5
-   plot 150-x, 150-y
-   plot 150-x, 150+y
-   plot 150+x, 150-y
-   plot 150+x, 150+y
-next x
-call q("circle using x^2+y^2=r^2")
-#
-clg
-penwidth 10
-color green, blue
-redim c(1)
-c = {100, 100, 200, 200, 100, 200}
-poly c
-penwidth 5
-color orange, black
-poly {100, 100, 200, 200, 200, 100}
-call q("poly - orange/black and green/blue triangles with different fill and pen")
-penwidth 0
-#
-clg
-color red
-font "Times New Roman",18,50
-text 10,100,"This is Times New Roman"
-color darkgreen
-font "Tahoma",10,100
-text 10,200,"This is Tahoma!"
-call q("Font - Times and Tahoma")
-
-
+include "testsuite_graphics_include.kbs"
 
 ###################################################
 call section("Sound")
@@ -334,6 +281,16 @@ call q("stamp growing and rotating black triangle red border?")
 call section("Mouse Functionality")
 ###################################################
 include "testsuite_mouse_include.kbs"
+
+###################################################
+call section("Date, Time, Pause, and Durations")
+###################################################
+include "testsuite_time_include.kbs"
+
+###################################################
+call section("Printing - To PDF")
+###################################################
+include "testsuite_printer_include.kbs"
 
 
 
@@ -474,6 +431,10 @@ call section("Sprites")
 ###################################################
 include "testsuite_sprite_include.kbs"
 
+###################################################
+call section("Directory and File-System Checks")
+###################################################
+include "testsuite_dir_include.kbs"
 
 
 

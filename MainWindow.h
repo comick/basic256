@@ -88,6 +88,7 @@ public:
 	QAction *textWinVisibleAct;
 	QAction *graphWinVisibleAct;
 	QAction *variableWinVisibleAct;
+	QAction *editWhitespaceAct;
 	QAction *graphGridVisibleAct;
 	QAction *fontact;
 

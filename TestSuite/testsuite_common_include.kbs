@@ -6,11 +6,14 @@
 # date		programmer	description
 # 2013-09-18	j.m.reneau	split to seperate include
 # 2014-04-16	j.m.reneau	added npercent test
-
+# 2014-05-29	j.m.reneau	added unattended global - set to true for no stopping
 
 ###################################################
 ## TEST SYSTEM FUNCTIONS
 ###################################################
+
+global unattended
+unattended = false
 
 subroutine section(sec$)
    print "###########"
@@ -21,12 +24,14 @@ end subroutine
 subroutine q(message$)
    # ask user to press y if test worked or n if it failed
    print "question " + message$ + " ";
-   if confirm(message$, true) then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
+   if not unattended then
+      if confirm(message$, true) then
+         print "pass"
+      else
+         print "fail"
+         end
+      end if
+   endif
 end subroutine
 
 subroutine n(message$,a,b)

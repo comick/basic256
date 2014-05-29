@@ -269,10 +269,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), graphdock, SLOT(setVisible(bool)));
     QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
-    // Editor and Output font
+    // Editor and Output font and Editor settings
     viewmenu->addSeparator();
     fontact = viewmenu->addAction(QObject::tr("&Font"));
     QObject::connect(fontact, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
+    editWhitespaceAct = viewmenu->addAction(QObject::tr("Show &Whitespace Characters"));
+    editWhitespaceAct->setCheckable(true);
+    v = settings.value(SETTINGSEDITWHITESPACE, SETTINGSEDITWHITESPACEDEFAULT).toBool();
+    editWhitespaceAct->setChecked(v);
+    editwin->slotWhitespace(v);
+    QObject::connect(editWhitespaceAct, SIGNAL(toggled(bool)), editwin, SLOT(slotWhitespace(bool)));
 
     // Graphics Grid Lines
     viewmenu->addSeparator();
@@ -574,7 +580,8 @@ void MainWindow::closeEvent(QCloseEvent *e) {
         settings.setValue(SETTINGSOUTSIZE, outdock->size());
         settings.setValue(SETTINGSOUTPOS, outdock->pos());
         settings.setValue(SETTINGSOUTTOOLBAR, outwinwgt->isVisibleToolBar());
-        settings.setValue(SETTINGSGRAPHVISIBLE, graphdock->isVisible());
+        settings.setValue(SETTINGSEDITWHITESPACE, editWhitespaceAct->isChecked());
+		settings.setValue(SETTINGSGRAPHVISIBLE, graphdock->isVisible());
         settings.setValue(SETTINGSGRAPHFLOAT, graphdock->isFloating());
         settings.setValue(SETTINGSGRAPHSIZE, graphwinwgt->size());
         settings.setValue(SETTINGSGRAPHPOS, graphdock->pos());

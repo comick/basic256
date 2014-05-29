@@ -63,7 +63,7 @@ void
 BasicEdit::cursorMove() {
     QTextCursor t(textCursor());
     emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
-                         + tr(" Column: ") + QString::number(t.positionInBlock())));
+                         + tr(" Character: ") + QString::number(t.positionInBlock())));
 }
 
 void
@@ -77,6 +77,19 @@ BasicEdit::highlightLine(int hline) {
     }
     t.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor, 1);
     setTextCursor(t);
+}
+
+void BasicEdit::slotWhitespace(bool checked) {
+	// toggle the display of whitespace characters
+	// http://www.qtcentre.org/threads/27245-Printing-white-spaces-in-QPlainTextEdit-the-QtCreator-way
+	QTextOption option = document()->defaultTextOption();
+	if (checked) {
+		option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
+	} else {
+		option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
+	}
+	option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+	document()->setDefaultTextOption(option);
 }
 
 void

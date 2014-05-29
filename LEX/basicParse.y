@@ -3274,6 +3274,7 @@ stringexpr:
 			| B256GETSETTING '(' expr ',' expr ')' { addOp(OP_GETSETTING); }
 			| B256DIR '(' stringexpr ')' { addOp(OP_DIR); }
 			| B256DIR '(' ')' { addStringOp(OP_PUSHSTRING, ""); addOp(OP_DIR); }
+			| B256DIR { addStringOp(OP_PUSHSTRING, ""); addOp(OP_DIR); }
 			| B256REPLACE '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACE '(' expr ',' expr ',' expr ',' floatexpr ')' { addOp(OP_REPLACE_C); }
 			| B256REPLACEX '(' expr ',' stringexpr ',' expr ')' { addOp(OP_REPLACEX); }

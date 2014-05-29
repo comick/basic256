@@ -127,8 +127,8 @@ RunController::RunController() {
     QObject::connect(this, SIGNAL(runResumed()), i, SLOT(runResumed()));
     QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
 
-    QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputEntered(QString)));
     QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(inputEntered(QString)));
+    QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputEntered(QString)));
 
 
 }
