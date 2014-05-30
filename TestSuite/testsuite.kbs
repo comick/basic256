@@ -31,6 +31,7 @@
 #				added dir include
 #				added printer include
 #				added time include
+# 20140530	j.m.reneau	added network include
 
 include "testsuite_common_include.kbs"
 
@@ -292,6 +293,11 @@ call section("Printing - To PDF")
 ###################################################
 include "testsuite_printer_include.kbs"
 
+###################################################
+call section("Networking")
+###################################################
+include "testsuite_network_include.kbs"
+
 
 
 
@@ -323,12 +329,7 @@ include "testsuite_string_include.kbs"
 ###################################################
 call section("RADIX Conversion")
 ###################################################
-call s("255 -> 11111111 bin", tobinary(255), "11111111")
-call n("11111111 bin -> 255", frombinary("11111111"), 255)
-call s("255 -> ff hex", tohex(255), "ff")
-call n("ff hex -> 255", fromhex("FF"), 255)
-call s("36 -> 10 (36)", toradix(36,36), "10")
-call n("22 (36) -> 74", fromradix("22",36), 74)
+include "testsuite_radix_include.kbs"
 
 ###################################################
 call section("Functions and Subroutines")

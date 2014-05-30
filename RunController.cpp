@@ -441,7 +441,6 @@ RunController::mainWindowsResize(int w, int width, int height) {
     mymutex->lock();
     if (w==1) {
         graphwin->resize(width, height);
-        graphwin->setMinimumSize(graphwin->image->width(), graphwin->image->height());
     }
     waitCond->wakeAll();
     mymutex->unlock();

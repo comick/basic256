@@ -34,6 +34,17 @@ subroutine q(message$)
    endif
 end subroutine
 
+function yn(message$)
+   # ask user to press y to continue or n to fail
+   # return true for yes / false for no
+   print "question " + message$ + " ";
+   if not unattended then
+      return confirm(message$, true)
+   else
+      return true
+   endif
+end function
+
 subroutine n(message$,a,b)
    # test that a and b are the same numerically (EXACTLY)
    print "testing " + message$ + " (" + a + " = " + b + ") ";

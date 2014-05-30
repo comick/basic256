@@ -71,14 +71,13 @@ if exists("../LEX/basicParse.l") then
       file$ = dir()
    endwhile
    #
-   print "testsuite not testing for the following tokens"
+   a$ = "TestSuite not testing for the following tokens: "
    for n = 0 to ntoken-1
       if kount[n]=0 then
-         print token$[n] + " ";
+         a$+=token$[n] + " "
       endif
    next n
-   print
-   input "press enter to continue? ", l$
+   if not yn(a$) then end
    print
 else
    print "testsuite unable to list tokens not being tested for - Source not available"

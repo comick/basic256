@@ -3,6 +3,7 @@
 # Modification History
 # date		programmer	description
 # 20140406	j.m.reneau	made spots larger for android testing
+# 20140530	j.m.reneau	added mouseb statement test
 
 # macos and android do not have 3 button mouses
 
@@ -29,12 +30,12 @@ end while
 call n("left click blue",pixel(clickx, clicky),blue)
 
 if rightbutton then
-print "RIGHT click on the green circle"
-clickclear
-while clickb <> 2
-   pause .01
-end while
-call n("right click green",pixel(clickx, clicky),green)
+   print "RIGHT click on the green rectangle"
+   clickclear
+   while clickb <> 2
+      pause .01
+   end while
+   call n("right click green",pixel(clickx, clicky),green)
 endif
 
 if centerbutton then
@@ -50,3 +51,15 @@ print "move mouse over black dot"
 while pixel(mousex, mousey)<> black
    pause .01
 end while
+
+print "click right mouse button"
+a = msec
+while mouseb <> 1
+   pause .01
+end while
+print (msec - a) + " you took ms to press the button"
+a = msec
+while mouseb = 1
+   pause .01
+end while
+print (msec - a) + " you presss the button for ms"
