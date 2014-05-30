@@ -51,17 +51,12 @@ BasicGraph::resize(int width, int height) {
     gwidth  = width;
     gheight = height;
     setMinimumSize(gwidth, gheight);
+    
+    // delete the old image and then create a new one the right size
     delete image;
     image = new QImage(width, height, QImage::Format_ARGB32);
-
-    // clear the new image
-    QPainter ian(image);
-    ian.setPen(QColor(0,0,0,0));
-    ian.setBrush(QColor(0,0,0,0));
-    ian.setCompositionMode(QPainter::CompositionMode_Clear);
-    ian.drawRect(0, 0, width, height);
-    ian.end();
-
+	image->fill(QColor(0,0,0,0));
+    
     mouseX = 0;
     mouseY = 0;
     mouseB = 0;

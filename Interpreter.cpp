@@ -775,20 +775,22 @@ void Interpreter::clearsprites() {
 void Interpreter::spriteundraw(int n) {
     // undraw all visible sprites >= n
     int x, y, i;
-    QPainter ian(graphwin->image);
+    QPainter *ian;
+    ian = new QPainter(graphwin->image);
     i = nsprites-1;
     while(i>=n) {
         if (sprites[i].underimage && sprites[i].visible) {
             x = sprites[i].x - (sprites[i].underimage->width()/2);
             y = sprites[i].y - (sprites[i].underimage->height()/2);
-            ian.setCompositionMode(QPainter::CompositionMode_Clear);
-            ian.drawImage(x, y, *(sprites[i].underimage));
-            ian.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            ian.drawImage(x, y, *(sprites[i].underimage));
+            ian->setCompositionMode(QPainter::CompositionMode_Clear);
+            ian->drawImage(x, y, *(sprites[i].underimage));
+            ian->setCompositionMode(QPainter::CompositionMode_SourceOver);
+            ian->drawImage(x, y, *(sprites[i].underimage));
         }
         i--;
     }
-    ian.end();
+    ian->end();
+    delete ian;
 }
 
 void Interpreter::spriteredraw(int n) {
@@ -797,7 +799,8 @@ void Interpreter::spriteredraw(int n) {
     i = n;
     while(i<nsprites) {
         if (sprites[i].image && sprites[i].visible) {
-            QPainter ian(graphwin->image);
+			QPainter *ian;
+			ian = new QPainter(graphwin->image);
             if (sprites[i].r==0 && sprites[i].s==1) {
                 if (sprites[i].underimage) {
                     delete sprites[i].underimage;
@@ -807,7 +810,7 @@ void Interpreter::spriteredraw(int n) {
                     x = sprites[i].x - (sprites[i].image->width()/2);
                     y = sprites[i].y - (sprites[i].image->height()/2);
                     sprites[i].underimage = new QImage(graphwin->image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
-                    ian.drawImage(x, y, *(sprites[i].image));
+                    ian->drawImage(x, y, *(sprites[i].image));
                 }
             } else {
                 QTransform transform = QTransform().translate(0,0).rotateRadians(sprites[i].r).scale(sprites[i].s,sprites[i].s);;
@@ -820,10 +823,11 @@ void Interpreter::spriteredraw(int n) {
                     x = sprites[i].x - (rotated.width()/2);
                     y = sprites[i].y - (rotated.height()/2);
                     sprites[i].underimage = new QImage(graphwin->image->copy(x, y, rotated.width(), rotated.height()));
-                    ian.drawImage(x, y, rotated);
+                    ian->drawImage(x, y, rotated);
                 }
             }
-            ian.end();
+            ian->end();
+            delete ian;
         }
         i++;
     }
@@ -1123,6 +1127,7 @@ Interpreter::cleanup() {
     if (printing) {
         printing = false;
         printdocumentpainter->end();
+        delete printdocumentpainter;
     }
 }
 
@@ -2905,6 +2910,7 @@ Interpreter::execByteCode() {
                             }
                             if (!printing) {
                                 ian->end();
+                                delete ian;
                                 if (!fastgraphics) waitForGraphics();
                             }
                         }
@@ -2939,6 +2945,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -2988,6 +2995,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -3028,6 +3036,7 @@ Interpreter::execByteCode() {
 
                         if(!printing) {
                             poly->end();
+                            delete poly;
                             if (!fastgraphics) waitForGraphics();
                         }
 
@@ -3099,6 +3108,7 @@ Interpreter::execByteCode() {
 
                             if (!printing) {
                                 poly->end();
+                                delete poly;
                                 if (!fastgraphics) waitForGraphics();
                             }
 
@@ -3132,6 +3142,7 @@ Interpreter::execByteCode() {
 
                     if(!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -3171,6 +3182,7 @@ Interpreter::execByteCode() {
                             }
                             if (!printing) {
                                 ian->end();
+                                delete ian;
                                 if (!fastgraphics) waitForGraphics();
                             }
                         }
@@ -3202,6 +3214,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -3235,13 +3248,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_CLG: {
-                    QPainter ian(graphwin->image);
-                    ian.setPen(QColor(0,0,0,0));
-                    ian.setBrush(QColor(0,0,0,0));
-                    ian.setCompositionMode(QPainter::CompositionMode_Clear);
-                    ian.drawRect(0, 0, graphwin->image->width(), graphwin->image->height());
-                    ian.end();
-
+                    graphwin->image->fill(QColor(0,0,0,0));
                     if (!fastgraphics) waitForGraphics();
                 }
                 break;
@@ -3265,6 +3272,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -3540,15 +3548,16 @@ Interpreter::execByteCode() {
                             }
                             sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32);
                             sprites[n].image->fill(Qt::transparent);
-                            QPainter poly(sprites[n].image);
-                            poly.setPen(drawingpen);
-                            poly.setBrush(drawingbrush);
+                            QPainter *poly = new QPainter(sprites[n].image);
+                            poly->setPen(drawingpen);
+                            poly->setBrush(drawingbrush);
                             if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
-                                poly.setCompositionMode(QPainter::CompositionMode_Clear);
+                                poly->setCompositionMode(QPainter::CompositionMode_Clear);
                             }
-                            poly.drawPolygon(points, pairs);
-                            poly.end();
-
+                            poly->drawPolygon(points, pairs);
+                            poly->end();
+							delete poly;
+							
                             if (sprites[n].underimage) {
                                 // free previous underimage before replacing
                                 delete sprites[n].underimage;
@@ -4523,6 +4532,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                     }
                     stack.pushint((int) (v));
                 }
@@ -4636,6 +4646,7 @@ Interpreter::execByteCode() {
 
                     if (!printing) {
                         ian->end();
+                        delete ian;
                         if (!fastgraphics) waitForGraphics();
                     }
                 }
@@ -4733,6 +4744,7 @@ Interpreter::execByteCode() {
                     if (printing) {
                         printing = false;
                         printdocumentpainter->end();
+                        delete printdocumentpainter;
                     } else {
                         errornum = ERROR_PRINTERNOTON;
                     }
