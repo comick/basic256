@@ -4745,6 +4745,7 @@ Interpreter::execByteCode() {
                         printing = false;
                         printdocumentpainter->end();
                         delete printdocumentpainter;
+                        delete printdocument;
                     } else {
                         errornum = ERROR_PRINTERNOTON;
                     }
@@ -4799,7 +4800,10 @@ Interpreter::execByteCode() {
                 case OP_PRINTERCANCEL: {
                     if (printing) {
                         printing = false;
+                        printdocumentpainter->end();
+                        delete printdocumentpainter;
                         printdocument->abort();
+                        delete printdocument;
                     } else {
                         errornum = ERROR_PRINTERNOTON;
                     }

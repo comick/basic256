@@ -4,13 +4,13 @@
 # date		programmer	description
 # 20140529	j.m.reneau	original coding
 
-if ostype() = 1 or ostype = 2 or ostype = 3 then
+if ostype() = 0 or ostype = 1 or ostype = 2 then
    call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
    
    #
    a$ = getsetting("SYSTEM","Printer/PDFFile")
    call sne("Printer - PDF setting", a$, "")
-   
+
    printer on
    font "Arial", 20, 50
    for p = 1 to 3
@@ -20,7 +20,7 @@ if ostype() = 1 or ostype = 2 or ostype = 3 then
       printer page
    next p
    printer cancel
-   
+
    printer on
    font "Times New Roman", 20, 50
    for p = 1 to 3
@@ -37,7 +37,7 @@ if ostype() = 1 or ostype = 2 or ostype = 3 then
    
    begin case
       case ostype = 0
-         system "start " + a$
+         system "cmd /c start " + a$
       case ostype = 1
          system "gnome-open " + a$
       case ostype = 2
