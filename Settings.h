@@ -23,7 +23,7 @@
 	#define SETTINGSH
 	#define SETTINGSORG "BASIC-256 Consortium"
 	#define SETTINGSAPP "BASIC-256 IDE"
-	#define SETTINGSPORTABLEINI	"Data/settings/BASIC256_IDE.ini"
+	#define SETTINGSPORTABLEINI	"BASIC256_IDE.ini"
 
 	// main window
 	#define SETTINGSVISIBLE "Main/Visible"
@@ -134,7 +134,8 @@
     // You need an SETTINGS; statement when you are using settings in a function
     // this defines a QSettings variable named "setings" for your use
     #ifdef WIN32PORTABLE
-        #define SETTINGS QSettings settings(SETTINGSPORTABLEINI, QSettings::IniFormat)
+		#include <QCoreApplication>
+        #define SETTINGS QSettings settings( QCoreApplication::applicationDirPath() + "/../../Data/settings/"  + SETTINGSPORTABLEINI, QSettings::IniFormat );
     #else
         #define SETTINGS QSettings settings(SETTINGSORG, SETTINGSAPP);
     #endif

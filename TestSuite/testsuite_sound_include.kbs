@@ -1,0 +1,17 @@
+# testsuite_sound_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20140606	j.m.reneau	split from test suite
+
+say "hello."
+call q("did the computer say 'hello'")
+
+say 3 + 7
+call q("did the computer say 'ten'")
+
+sound 440,500
+call q("did a half second sound play")
+
+sound {440,200,220,100,300,200}
+call q("did three sounds play from a list")

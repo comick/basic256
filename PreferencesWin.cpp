@@ -280,6 +280,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     connect(savebutton, SIGNAL(clicked()), this, SLOT (clickSaveButton()));
     mainlayout->addWidget(cancelbutton,1,2,1,1);
     mainlayout->addWidget(savebutton,1,3,1,1);
+    savebutton->setDefault(true);
 
     this->setLayout(mainlayout);
 

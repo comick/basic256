@@ -36,7 +36,7 @@
 include "testsuite_common_include.kbs"
 
 ###################################################
-## Test MINIMUM Version - BE SURE TO SET BELOW
+call section("Runtime Version")
 ###################################################
 call versiontest(1010204)
 function versiontestgood(needed)
@@ -50,10 +50,19 @@ subroutine versiontest(needed)
 end subroutine
 
 ###################################################
-## Test Settings
+call section("Runtime Preferences")
 ###################################################
-call sne("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"0")
-
+print "It is required for this suite to run that a few preferences be set in advance"
+print "On the 'User' tab"
+print "  'Runtime Handling of bad type conversion' must set to Warn"
+print "On the 'Printing' tab"
+print "  'Printer' must set to PDF File Output"
+print "  'PDF FileName' must be set to a name of a temporary file with the pdf extension"
+print 
+call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
+# make sure printer setting are correct
+call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
+call sne("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
 
 # create arrays to use
 dim c(10)
@@ -218,19 +227,19 @@ call s("prompt dialog cancel default",a$,"abcd")
 a$=prompt("Change the value to 'able' and click OK")
 call s("prompt dialog",a$,"able")
 
+section_graphics:
 ###################################################
 call section("Basic Graphics")
 ###################################################
 include "testsuite_graphics_include.kbs"
 
+section_sound:
 ###################################################
-call section("Sound")
+call section("TTS and Sound")
 ###################################################
-say "hello.": call q("say helo")
-say 3 + 7: call q("say ten")
-sound 440,500: call q("half second sound")
-sound {440,100,220,100,300,200} : call q("three sounds from list")
+include "testsuite_sound_include.kbs"
 
+section_wav:
 ###################################################
 call section("WAVPLAY...")
 ###################################################
@@ -278,21 +287,25 @@ for t = 0 to 2 * pi step .1
 next t
 call q("stamp growing and rotating black triangle red border?")
 
+section_mouse:
 ###################################################
 call section("Mouse Functionality")
 ###################################################
 include "testsuite_mouse_include.kbs"
 
+section_time:
 ###################################################
 call section("Date, Time, Pause, and Durations")
 ###################################################
 include "testsuite_time_include.kbs"
 
+section_printer:
 ###################################################
 call section("Printing - To PDF")
 ###################################################
 include "testsuite_printer_include.kbs"
 
+section_network:
 ###################################################
 call section("Networking")
 ###################################################
@@ -321,11 +334,13 @@ include "testsuite_network_include.kbs"
 ###################################################
 ###################################################
 
+section_string:
 ###################################################
 call section("String Assignment/Operations/Functions")
 ###################################################
 include "testsuite_string_include.kbs"
 
+section_radix:
 ###################################################
 call section("RADIX Conversion")
 ###################################################
@@ -366,31 +381,37 @@ call n("return from funone",c,23)
 call n("a=27 return from funone",a,27)
 call s("b$='hihi' return from funone",b$,"hihi")
 
+section_error:
 ###################################################
 call section("Error Trapping - OnError and Try/Catch")
 ###################################################
 include "testsuite_error_include.kbs"
 
+section_math:
 ###################################################
 call section("Integer/Float/Math")
 ###################################################
 include "testsuite_math_include.kbs"
 
+section_fileio:
 ###################################################
 call section("File I/O")
 ###################################################
 include "testsuite_fileio_include.kbs"
 
+section_database:
 ###################################################
 call section("Database")
 ###################################################
 include "testsuite_database_include.kbs"
 
+section_if:
 ###################################################
 call section("If")
 ###################################################
 include "testsuite_if_include.kbs"
 
+section_remark:
 ###################################################
 call section("remark")
 ###################################################
@@ -422,16 +443,19 @@ call n("rand max "+max+"< 1", max < 1, true)
 call n("rand avg "+tot+" ~ .5", tot>=.49 and tot<=.51, true)
 
 
+section_loop:
 ###################################################
 call section("Loops with Exit and Continue")
 ###################################################
 include "testsuite_loop_include.kbs"
 
+section_sprites:
 ###################################################
 call section("Sprites")
 ###################################################
 include "testsuite_sprite_include.kbs"
 
+section_dir:
 ###################################################
 call section("Directory and File-System Checks")
 ###################################################

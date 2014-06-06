@@ -16,16 +16,18 @@
 # keep echoing until the word end is sent from other process
 
 print "wait for connection on " + netaddress()
-netlisten 9999
+n = freenet
+print "network connection " + n
+netlisten n, 9999
 print "got connection"
 do
-   while not netdata
+   while not netdata(n)
       pause .1
       print ".";
    end while
-   n$ = netread
+   n$ = netread(n)
    print n$
-   netwrite "++" + n$ + "++"
+   netwrite n, "++" + n$ + "++"
 until n$ = "end"
 netclose 
 
