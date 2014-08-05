@@ -3,17 +3,11 @@
 # Modification History
 # date		programmer	description
 # 20140415	j.m.reneau	original coding
+# 2014-08-04	j.m.reneau	rewrote using spoken number sound file
 
-# WAV file for a musical scales were downloaded from
-# https://ccrma.stanford.edu/~mromaine/220a/fp/sound-examples.html
-# on 2014-04-14.
-
-file$ = "eqt-major-sc.wav"
-notes = 8
+file$ = "jim_saying_numbers.mp3"
+notes = 5
 len = 6
-#file$ = "eqt-chromo-sc.wav"
-#notes = 13
-#len = 9
 
 if ostype = 2 then
    # android does not have enhansed WAV support
@@ -23,12 +17,12 @@ if ostype = 2 then
    wavplay file$
    pause 2 * len/notes
    wavstop
-   call q("wavstop - did the first two notes of the scale play and then stop?")
+   call q("wavstop - were the words 'one' and 'two' played and then stop?")
    #
    # simple play to the end of the wav file
    wavplay file$
    wavwait
-   call q("wavwait - did the entire 8 note scale play?")
+   call q("wavwait - Were the words 'one', 'two', 'three', 'four', and 'five' played?")
 else
    # other systems use Multimedia that allows for pause, seek, position and duration
    #
@@ -36,7 +30,7 @@ else
    wavplay file$
    pause 2* len/notes
    wavstop
-   call q("wavstop - did the first two notes of the scale play and then stop?")
+   call q("wavstop - were the words 'one' and 'two' played and then stop?")
    #
    call n("wavstop - check position 0",wavpos, 0)
    #
@@ -51,7 +45,7 @@ else
    wavplay
    pause notel
    wavstop
-   call q("wavstop - did the first two notes of the scale play with a rest between them and then stop?")
+   call q("wavstop - were the words 'one' and 'two' played with a rest between them and then stop?")
    #
    call n("wavpos stop - check position after stop",wavpos, 0)
    #
@@ -64,7 +58,7 @@ else
    wavwait
    timer = (msec - timer) / 1000 / wavlength()
    call npercent("wavwait - timer 100%",timer, 1, .10)
-   call q("wavwait - did the scale play from low to high?")
+   call q("wavwait - Were the words 'one', 'two', 'three', 'four', and 'five'played in order?")
    #
    # play scale backwards
    # sound currently at stopped state
@@ -78,6 +72,6 @@ else
    wavstop
    timer = (msec - timer) / 1000 / wavlength()
    call npercent("wavseek/wavstop - timer 100%",timer,1,.1)
-   call q("wavseek/wavstop - did the scale play from high to low?")
+   call q("wavseek/wavstop - were the numbers 1 to 5 counted from high to low?")
    
 endif

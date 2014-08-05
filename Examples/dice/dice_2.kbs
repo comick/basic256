@@ -9,18 +9,17 @@ cls
 color black
 rect 1,1,graphwidth,graphheight
 
-# Sound file from freesound.org
-# contributed by Freegle - Sample 44061
-wavplay "dicewood.wav"
+# Sound file from http://soundbible.com/183-Shake-Dice.html
+wavplay "shakedice.mp3"
 
-for t = 1 to 6
+for t = 1 to 10
    total = 0
    for die = 1 to 2
       r = roll()
       total = total + r
       call showroll(die,r)
    next die
-   pause rand * .2
+   pause rand * .4
 next t
 print "You Rolled " + total
 pause 1	# let the sound finish
