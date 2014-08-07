@@ -186,6 +186,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Ll][Oo][Ww][Ee][Rr]\\b"										// lower
             << "\\b[Mm][Dd][5]\\b"												// md5
             << "\\b[Mm][Ii][Dd]\\b"												// mid
+            << "\\b[Mm][Ii][Dd][Xx]\\b"											// midx
             << "\\b[Mm][Ii][Nn][Uu][Tt][Ee]\\b"									// minute
             << "\\b[Mm][Oo][Nn][Tt][Hh]\\b"										// month
             << "\\b[Mm][Oo][Uu][Ss][Ee][Bb]\\b"									// mouseb
@@ -231,6 +232,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Rr][Ee][Cc][Tt]\\b"											// rect
             << "\\b[Rr][Ee][Dd][Ii][Mm]\\b"										// redim
             << "\\b[Rr][Ee][Ff][Rr][Ee][Ss][Hh]\\b"								// refresh
+            << "\\b[Rr][Ee][Gg][Ee][Xx][Mm][Ii][Nn][Ii][Mm][Aa][Ll]\\b"			// regexminimal
             << "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee]\\b"								// replace
             << "\\b[Rr][Ee][Pp][Ll][Aa][Cc][Ee][Xx]\\b"							// replacex
             << "\\b[Rr][Ee][Ss][Ee][Tt]\\b"										// reset

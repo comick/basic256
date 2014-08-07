@@ -1,256 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:color [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:21-0700"/>
-<meta name="keywords" content="el,color"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:color&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:color"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:color"/>
-<link rel="canonical" href="./el_color.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_color.html" class="wikilink1" title="el:color">color</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:color</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="color">Color</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>color</strong> <em>colorname</em><br/>
-
-<strong>color</strong> ( <em>colorname</em> )<br/>
-
-<strong>color</strong> <em>rgb_value</em><br/>
-
-<strong>color</strong> ( <em>rgb_value</em> )<br/>
-
-<strong>color</strong> <em>pen_colorname</em> , <em>brush_colorname</em><br/>
-
-<strong>color</strong> ( <em>pen_colorname</em> , <em>brush_colorname</em> )<br/>
-
-<strong>color</strong> <em>pen_rgb_value</em> , <em>brush_rgb_value</em><br/>
-
-<strong>color</strong> ( <em>pen_rgb_value</em> , <em>brush_rgb_value</em> )
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Sets the current drawing color to <em>colorname</em> or to an ARGB value where ( (a * 256 + r) * 256 + b) * 256 + g.  If a single color is specified both the pen and the brush will be set to the same color.
-</p>
-
-<p>
-When drawing solid shapes (<a href="./el_chord.html" class="wikilink1" title="el:chord">Chord</a>,<a href="./el_circle.html" class="wikilink1" title="el:circle">Circle</a>,<a href="./el_pie.html" class="wikilink1" title="el:pie">Pie</a>,<a href="./el_poly.html" class="wikilink1" title="el:poly">Poly</a>,<a href="./el_rect.html" class="wikilink1" title="el:rect">Rect</a>, and <a href="./el_stamp.html" class="wikilink1" title="el:stamp">Stamp</a>) the border of the shape will be drawn with the pen color and the shape itself will be filled with the brush color.  A brush color of CLEAR is used to not fill a closed shape.
-</p>
-
-<p>
-If the current pen and brush are both set to CLEAR the pixels or shapes drawn will clear the pixels of the graphics output area and make them transparent.  This is especially useful when creating sprites using the Spriteslice command.<br/>
-
-</p>
-<div class="table sectionedit4"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Color names and RGB values</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Color Name</th><th class="col1">ARGB Values</th><th class="col2" colspan="2">Integer</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">black</td><td class="col1">255, 0, 0, 0</td><td class="col2">4278190080</td><td class="col3"><span style="background-color: #000000">        </span></td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">white</td><td class="col1">255, 255, 255, 255</td><td class="col2">4294506744</td><td class="col3"><span style="background-color: #FFFFFF">        </span></td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">red</td><td class="col1">255, 255, 0, 0</td><td class="col2">4294901760</td><td class="col3"><span style="background-color: #FF0000">        </span></td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">darkred</td><td class="col1">255, 128, 0, 0</td><td class="col2">4286578688</td><td class="col3"><span style="background-color: #800000">        </span></td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">green</td><td class="col1">255, 0, 255, 0</td><td class="col2">4278255360</td><td class="col3"><span style="background-color: #00FF00">        </span></td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">darkgreen</td><td class="col1">255, 0, 128, 0</td><td class="col2">4278222848</td><td class="col3"><span style="background-color: #008000">        </span></td>
-	</tr>
-	<tr class="row8">
-		<td class="col0">blue</td><td class="col1">255, 0, 0, 255</td><td class="col2">4278190335</td><td class="col3"><span style="background-color: #0000FF">        </span></td>
-	</tr>
-	<tr class="row9">
-		<td class="col0">darkblue</td><td class="col1">255, 0, 0, 128</td><td class="col2">4278190208</td><td class="col3"><span style="background-color: #000080">        </span></td>
-	</tr>
-	<tr class="row10">
-		<td class="col0">cyan</td><td class="col1">255, 0, 255, 255</td><td class="col2">4278255615</td><td class="col3"><span style="background-color: #00FFFF">        </span></td>
-	</tr>
-	<tr class="row11">
-		<td class="col0">darkcyan</td><td class="col1">255, 0, 128, 128</td><td class="col2">4278222976</td><td class="col3"><span style="background-color: #008080">        </span></td>
-	</tr>
-	<tr class="row12">
-		<td class="col0">purple</td><td class="col1">255, 255, 0, 255</td><td class="col2">4294902015</td><td class="col3"><span style="background-color: #FF00FF">        </span></td>
-	</tr>
-	<tr class="row13">
-		<td class="col0">darkpurple</td><td class="col1">255, 128, 0, 128</td><td class="col2">4286578816</td><td class="col3"><span style="background-color: #800080">        </span></td>
-	</tr>
-	<tr class="row14">
-		<td class="col0">yellow</td><td class="col1">255, 255, 255, 0</td><td class="col2">4294967040</td><td class="col3"><span style="background-color: #FFFF00">        </span></td>
-	</tr>
-	<tr class="row15">
-		<td class="col0">darkyellow</td><td class="col1">255, 128, 128 ,0</td><td class="col2">4286611456</td><td class="col3"><span style="background-color: #808000">        </span></td>
-	</tr>
-	<tr class="row16">
-		<td class="col0">orange</td><td class="col1">255, 255, 102, 0</td><td class="col2">4294927872</td><td class="col3"><span style="background-color: #FF6600">        </span></td>
-	</tr>
-	<tr class="row17">
-		<td class="col0">darkorange</td><td class="col1">255, 176, 61 ,0</td><td class="col2">4289344256</td><td class="col3"><span style="background-color: #B03D00">        </span></td>
-	</tr>
-	<tr class="row18">
-		<td class="col0">grey</td><td class="col1">255, 164, 164 ,164</td><td class="col2">4288980132</td><td class="col3"><span style="background-color: #A4A4A4">        </span></td>
-	</tr>
-	<tr class="row19">
-		<td class="col0">darkgrey</td><td class="col1">255, 128, 128 ,128</td><td class="col2">4286611584</td><td class="col3"><span style="background-color: #808080">        </span></td>
-	</tr>
-	<tr class="row20">
-		<td class="col0">clear</td><td class="col1">0, 0, 0, 0</td><td class="col2">0</td><td class="col3"> </td>
-	</tr>
-</table></div>
-
-</div>
-
-<h3 class="sectionedit5" id="deprecated_form">Deprecated Form</h3>
-<div class="level3">
-
-<p>
-In version 0.9.9.26 the statement form “<strong>color</strong> <em>red</em>, <em>blue</em>, <em>green</em>” or “<strong>color</strong> ( <em>red</em>, <em>blue</em>, <em>green</em> )” was deprecated and a warning will be displayed when it is encountered.  It should be replaced with “<strong>color</strong> <strong>rgb</strong> ( <em>red</em>, <em>blue</em>, <em>green</em> )”.
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="see_also">See Also</h3>
-<div class="level3">
-
-<p>
-<a href="./el_rgb.html" class="wikilink1" title="el:rgb">Rgb</a>, <a href="./el_getbrushcolor.html" class="wikilink1" title="el:getbrushcolor">GetBrushColor</a> <a href="./el_getcolor.html" class="wikilink1" title="el:getcolor">GetColor</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit7" id="example">Example</h3>
-<div class="level3">
-<pre class="code">clg
-color rgb(128,128,128)
-rect 0,0,graphwidth, graphheight
-
-penwidth 5
-color green,red
-circle 100,100,50
-
-penwidth 1
-color rgb(255,160,160)
-circle 100,100,25</pre>
-
-<p>
-Will draw a grey rectangle with a green circle filled with red and then a pink circle inside it.<br/>
-
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=el_color&amp;media=color.png" class="media" title="color.png"><img src="lib/exe/color.png" class="media" title="Color" alt="Color" /></a>
-</p>
-
-</div>
-
-<h3 class="sectionedit8" id="history">History</h3>
-<div class="level3">
-
-<p>
-0.9.5m - added “COLOR r,g,b” form and numeric representation of color names<br/>
-
-0.9.9.26 - Added brush color and deprecated the “COLOR r,g,b”.<br/>
-
-0.9.9.28 - Changed color values to include Alpha (transparency) and changed color constants to new ARGB values.
-0.9.9.45 - changed values to positive numbers following formula as documented.
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/color.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:color [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_color.html" class="wikilink1" title="el:color">color</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:color</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="el_color.html#color">Color</a></div><ul class="toc"><li class="level3"><div class="li"><a href="el_color.html#σύνταξη">Σύνταξη</a></div></li><li class="level3"><div class="li"><a href="el_color.html#περιγραφή">Περιγραφή</a></div></li><li class="level3"><div class="li"><a href="el_color.html#απαρχαιωμένη_μορφή">Απαρχαιωμένη μορφή</a></div></li><li class="level3"><div class="li"><a href="el_color.html#δες_επίσης">Δες επίσης</a></div></li><li class="level3"><div class="li"><a href="el_color.html#παράδειγμα">Παράδειγμα</a></div></li><li class="level3"><div class="li"><a href="el_color.html#ιστορικό">Ιστορικό</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="color">Color</h2><div class="level2"></div><h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3><div class="level3"><p><strong>color</strong> <em>ΌνομαΧρώματος</em><br/><strong>color</strong> ( <em>ΌνομαΧρώματος</em> )<br/><strong>color</strong> <em>Τιμή rgb</em><br/><strong>color</strong> ( <em>Τιμή rgb</em> )<br/><strong>color</strong> <em>ΧρώμαΣτυλού</em> , <em>ΧρώμαΠινέλου</em><br/><strong>color</strong> ( <em>ΧρώμαΣτυλού</em> , <em>ΧρώμαΠινέλου</em> )<br/><strong>color</strong> <em>rgbΣτυλού</em> , <em>rgbΠινέλου</em><br/><strong>color</strong> ( <em>rgbΣτυλού</em> , <em>rgbΠινέλου</em> )</p></div><h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3><div class="level3"><p>Θέτει το τρέχον χρώμα σχεδίασης ως <em>ΌνομαΧρώματος</em> ή μια τιμή ARGB όπου ( (a * 256 + r) * 256 + b) * 256 + g.  Εάν δοθεί ένα χρώμα μόνο τότε το ίδιο θα χρησιμοποιηθεί και για τον στυλό και για το πινέλο.</p><p>Όταν σχεδιάζονται σχήματα (<a href="el_chord.html" class="wikilink1" title="el:chord">Τόξο</a>,<a href="el_circle.html" class="wikilink1" title="el:circle">Κύκλος</a>,<a href="el_pie.html" class="wikilink1" title="el:pie">Πίτα</a>,<a href="el_poly.html" class="wikilink1" title="el:poly">Πολύγωνο</a>,<a href="el_rect.html" class="wikilink1" title="el:rect">Ορθογώνιο</a>, και <a href="el_stamp.html" class="wikilink1" title="el:stamp">Σφραγίδα</a>), τα περιγράμματα των σχημάτων θα έχουν το χρώμα του στυλού και το εσωτερικό των σχημάτων το χρώμα του πινέλου. Το πινέλο με την τιμή CLEAR χρησιμοποιείται για να σχεδιαστούν μόνο τα περιγράμματα.</p><p>Εάν έχουν και ο στυλός και το πινέλο την τιμή CLEAR τότε τα σχεδιαζόμενα εικονοστοιχεία ή σχήματα θα σβήνουν τα ήδη υπάρχοντα γραφικά. Αυτό είναι εξαιρετικά χρήσιμο όταν δημιουργούνται sprites με χρήση της εντολής Spriteslice.<br/></p><div class="table sectionedit4"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Ονόματα χρωμάτων και τιμές RGB</th>	</tr>	<tr class="row1">		<th class="col0">Όνομα χρώματος</th><th class="col1">Τιμή ARGB</th><th class="col2" colspan="2">Αναπαράσταση ως ακέραιος</th>	</tr>	<tr class="row2">		<td class="col0">black</td><td class="col1">255, 0, 0, 0</td><td class="col2">4278190080</td><td class="col3"><span style="background-color: #000000">        </span></td>	</tr>	<tr class="row3">		<td class="col0">white</td><td class="col1">255, 255, 255, 255</td><td class="col2">4294506744</td><td class="col3"><span style="background-color: #FFFFFF">        </span></td>	</tr>	<tr class="row4">		<td class="col0">red</td><td class="col1">255, 255, 0, 0</td><td class="col2">4294901760</td><td class="col3"><span style="background-color: #FF0000">        </span></td>	</tr>	<tr class="row5">		<td class="col0">darkred</td><td class="col1">255, 128, 0, 0</td><td class="col2">4286578688</td><td class="col3"><span style="background-color: #800000">        </span></td>	</tr>	<tr class="row6">		<td class="col0">green</td><td class="col1">255, 0, 255, 0</td><td class="col2">4278255360</td><td class="col3"><span style="background-color: #00FF00">        </span></td>	</tr>	<tr class="row7">		<td class="col0">darkgreen</td><td class="col1">255, 0, 128, 0</td><td class="col2">4278222848</td><td class="col3"><span style="background-color: #008000">        </span></td>	</tr>	<tr class="row8">		<td class="col0">blue</td><td class="col1">255, 0, 0, 255</td><td class="col2">4278190335</td><td class="col3"><span style="background-color: #0000FF">        </span></td>	</tr>	<tr class="row9">		<td class="col0">darkblue</td><td class="col1">255, 0, 0, 128</td><td class="col2">4278190208</td><td class="col3"><span style="background-color: #000080">        </span></td>	</tr>	<tr class="row10">		<td class="col0">cyan</td><td class="col1">255, 0, 255, 255</td><td class="col2">4278255615</td><td class="col3"><span style="background-color: #00FFFF">        </span></td>	</tr>	<tr class="row11">		<td class="col0">darkcyan</td><td class="col1">255, 0, 128, 128</td><td class="col2">4278222976</td><td class="col3"><span style="background-color: #008080">        </span></td>	</tr>	<tr class="row12">		<td class="col0">purple</td><td class="col1">255, 255, 0, 255</td><td class="col2">4294902015</td><td class="col3"><span style="background-color: #FF00FF">        </span></td>	</tr>	<tr class="row13">		<td class="col0">darkpurple</td><td class="col1">255, 128, 0, 128</td><td class="col2">4286578816</td><td class="col3"><span style="background-color: #800080">        </span></td>	</tr>	<tr class="row14">		<td class="col0">yellow</td><td class="col1">255, 255, 255, 0</td><td class="col2">4294967040</td><td class="col3"><span style="background-color: #FFFF00">        </span></td>	</tr>	<tr class="row15">		<td class="col0">darkyellow</td><td class="col1">255, 128, 128 ,0</td><td class="col2">4286611456</td><td class="col3"><span style="background-color: #808000">        </span></td>	</tr>	<tr class="row16">		<td class="col0">orange</td><td class="col1">255, 255, 102, 0</td><td class="col2">4294927872</td><td class="col3"><span style="background-color: #FF6600">        </span></td>	</tr>	<tr class="row17">		<td class="col0">darkorange</td><td class="col1">255, 176, 61 ,0</td><td class="col2">4289344256</td><td class="col3"><span style="background-color: #B03D00">        </span></td>	</tr>	<tr class="row18">		<td class="col0">grey</td><td class="col1">255, 164, 164 ,164</td><td class="col2">4288980132</td><td class="col3"><span style="background-color: #A4A4A4">        </span></td>	</tr>	<tr class="row19">		<td class="col0">darkgrey</td><td class="col1">255, 128, 128 ,128</td><td class="col2">4286611584</td><td class="col3"><span style="background-color: #808080">        </span></td>	</tr>	<tr class="row20">		<td class="col0">clear</td><td class="col1">0, 0, 0, 0</td><td class="col2">0</td><td class="col3"> </td>	</tr></table></div></div><h3 class="sectionedit5" id="απαρχαιωμένη_μορφή">Απαρχαιωμένη μορφή</h3><div class="level3"><p>Από την έκδοση 0.9.9.26 η σύνταξη “<strong>color</strong> <em>red</em>, <em>blue</em>, <em>green</em>” ή “<strong>color</strong> ( <em>red</em>, <em>blue</em>, <em>green</em> )” θεωρείται πεπαλαιωμένη και θα εμφανίζεται μια προειδοποίηση κάθε φορά που απαντάται στον κώδικα.  Θα πρέπει να αντικαθίσταται με την σύνταξη “<strong>color</strong> <strong>rgb</strong> ( <em>red</em>, <em>blue</em>, <em>green</em> )”.</p></div><h3 class="sectionedit6" id="δες_επίσης">Δες επίσης</h3><div class="level3"><p><a href="el_rgb.html" class="wikilink1" title="el:rgb">Rgb</a>, <a href="el_getbrushcolor.html" class="wikilink1" title="el:getbrushcolor">GetBrushColor</a> <a href="el_getcolor.html" class="wikilink1" title="el:getcolor">GetColor</a></p></div><h3 class="sectionedit7" id="παράδειγμα">Παράδειγμα</h3><div class="level3"><pre class="code">clgcolor rgb(128,128,128)rect 0,0,graphwidth, graphheightpenwidth 5color green,redcircle 100,100,50penwidth 1color rgb(255,160,160)circle 100,100,25</pre><p>Θα ζωγραφίσει ένα γκρι ορθογώνιο με έναν πράσινο κύκλο που εμπεριέχει έναν κόκκινο και έναν ροζ κύκλο.<br/><a href="http://doc.basic256.org/lib/exe/detail.php?id=el_color&amp;media=color.png" class="media" title="color.png"><img src="lib/exe/color.png" class="media" title="Color" alt="Color" /></a></p></div><h3 class="sectionedit8" id="ιστορικό">Ιστορικό</h3><div class="level3"><p>0.9.5m - Προσθήκη σύνταξης “COLOR r,g,b” και αριθμητικής αναπαράστασης χρωμάτων<br/>0.9.9.26 - Προσθήκη πινέλου και πεπαλαίωση της σύνταξης “COLOR r,g,b”.<br/>0.9.9.28 - Τροποποίηση χρωματικών τιμών για συμπερίληψη τιμής Alpha (διαφάνεια) και μετατροπή χρωματικών σταθερών σε νέες τιμές ARGB.<br/>0.9.9.45 - Μετατροπή τιμών σε θετικούς αριθμούς προς πιστή ακολούθηση του τύπου.</p></div>                                    </div>                <div class="docInfo"><bdi>el/color.txt</bdi> · Last modified: 2014/04/20 08:48 by <bdi>apollyon</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

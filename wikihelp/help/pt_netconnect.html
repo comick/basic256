@@ -1,215 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>pt:netconnect [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-19T07:18:45-0700"/>
-<meta name="keywords" content="pt,netconnect"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/pt:netconnect&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:netconnect"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:netconnect"/>
-<link rel="canonical" href="./pt_netconnect.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="./pt_netconnect.html" class="wikilink1" title="pt:netconnect">netconnect</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>pt:netconnect</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="netconnect">NetConnect</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="formato">Formato</h3>
-<div class="level3">
-
-<p>
-<strong>netconnect</strong> <em>server_name</em>, <em>port_number</em><br/>
-
-<strong>netconnect</strong> ( <em>server_name</em>, <em>port_number</em> )<br/>
-
-<strong>netconnect</strong> <em><a class="explain" href="./pt_netconnect.html">socket_number</a></em>, <em>server_name</em>, <em>port_number</em><br/>
-
-<strong>netconnect</strong> ( <em><a class="explain" href="./pt_netconnect.html">socket_number</a></em>, <em>server_name</em>, <em>port_number</em> )
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="descricao">Descrição</h3>
-<div class="level3">
-
-<p>
-Abre uma ligação em rede (client) com um servidor.  O endereço IP ou nome do servidor são especificados em <em>server_name</em> argument, e o número da entrada (port) em <em>port_number</em>.  Se o número da ligação <em><a class="explain" href="./pt_netconnect.html">socket_number</a></em> não for especificado então o (0) será usado.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="exemplo">Exemplo</h3>
-<div class="level3">
-
-<p>
-Abra duas instâncias de Basic 256 no mesmo computador.  Copie o código “servidor” para um e o código “cliente” para outro.  Corra primeiro o servidor e depois o cliente.  Note como as duas instancias do programa comunicam.
-</p>
-
-</div>
-
-<h4 id="servidor">Servidor</h4>
-<div class="level4">
-<pre class="code"># get a message and send back success
-print &quot;wait for connection on &quot; + netaddress()
-netlisten 9997
-print &quot;got connection&quot;
-do
-   while not netdata
-      pause .1
-      print &quot;.&quot;;
-   end while
-   n$ = netread
-   print n$
-   netwrite &quot;I got &#039;&quot; + n$ + &quot;&#039;.&quot;
-until n$ = &quot;end&quot;
-netclose</pre>
-
-<p>
-will display (where xxx.xxx.xxx.xxx is the IPv4 address of your computer)
-</p>
-<pre class="code">wait for connection on xxx.xxx.xxx.xxx
-got connection
-.1 Hi There
-....2 Hi There
-........3 Hi There
-..........4 Hi There
-.....5 Hi There
-.......6 Hi There
-....7 Hi There
-..........8 Hi There
-....9 Hi There
-.....10 Hi There
-.end</pre>
-
-</div>
-
-<h4 id="cliente">Cliente</h4>
-<div class="level4">
-<pre class="code"># have the user enter a message and send it to the server
-input &quot;enter message?&quot;, m$
-netconnect &quot;127.0.0.1&quot;, 9997
-for t = 1 to 10
-   pause rand
-   netwrite t + &quot; &quot; + m$
-   print netread
-next t
-netwrite &quot;end&quot;
-print netread
-netclose</pre>
-
-<p>
-will display
-</p>
-<pre class="code">enter message?Hi There
-I got &#039;1 Hi There&#039;.
-I got &#039;2 Hi There&#039;.
-I got &#039;3 Hi There&#039;.
-I got &#039;4 Hi There&#039;.
-I got &#039;5 Hi There&#039;.
-I got &#039;6 Hi There&#039;.
-I got &#039;7 Hi There&#039;.
-I got &#039;8 Hi There&#039;.
-I got &#039;9 Hi There&#039;.
-I got &#039;10 Hi There&#039;.
-I got &#039;end&#039;.</pre>
-
-</div>
-
-<h3 class="sectionedit5" id="ver_tambem">Ver também</h3>
-<div class="level3">
-
-<p>
-<a href="./pt_netaddress.html" class="wikilink1" title="pt:netaddress">NetAddress</a>, <a href="./pt_netclose.html" class="wikilink1" title="pt:netclose">NetClose</a>, <a href="./pt_netdata.html" class="wikilink1" title="pt:netdata">NetData</a>, <a href="./pt_netlisten.html" class="wikilink1" title="pt:netlisten">NetListen</a>, <a href="./pt_netread.html" class="wikilink1" title="pt:netread">NetRead</a>, <a href="./pt_netwrite.html" class="wikilink1" title="pt:netwrite">NetWrite</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="desde">Desde</h3>
-<div class="level3">
-
-<p>
-0.9.6.31
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>pt/netconnect.txt</bdi> · Last modified: 2012/12/19 07:18 by <bdi>m_santos</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>pt:netconnect [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="pt_netconnect.html" class="wikilink1" title="pt:netconnect">netconnect</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>pt:netconnect</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="pt_netconnect.html#netconnect">NetConnect</a></div><ul class="toc"><li class="level3"><div class="li"><a href="pt_netconnect.html#formato">Formato</a></div></li><li class="level3"><div class="li"><a href="pt_netconnect.html#descricao">Descrição</a></div></li><li class="level3"><div class="li"><a href="pt_netconnect.html#exemplo">Exemplo</a></div></li><li class="level3"><div class="li"><a href="pt_netconnect.html#ver_tambem">Ver também</a></div></li><li class="level3"><div class="li"><a href="pt_netconnect.html#desde">Desde</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="netconnect">NetConnect</h2><div class="level2"></div><h3 class="sectionedit2" id="formato">Formato</h3><div class="level3"><p><strong>netconnect</strong> <em>server_name</em>, <em>port_number</em><br/><strong>netconnect</strong> ( <em>server_name</em>, <em>port_number</em> )<br/><strong>netconnect</strong> <em><a class="explain" href="pt_netconnect.html">socket_number</a></em>, <em>server_name</em>, <em>port_number</em><br/><strong>netconnect</strong> ( <em><a class="explain" href="pt_netconnect.html">socket_number</a></em>, <em>server_name</em>, <em>port_number</em> )</p></div><h3 class="sectionedit3" id="descricao">Descrição</h3><div class="level3"><p>Abre uma ligação em rede (client) com um servidor.  O endereço IP ou nome do servidor são especificados em <em>server_name</em> argument, e o número da entrada (port) em <em>port_number</em>.  Se o número da ligação <em><a class="explain" href="pt_netconnect.html">socket_number</a></em> não for especificado então o (0) será usado.</p></div><h3 class="sectionedit4" id="exemplo">Exemplo</h3><div class="level3"><p>Abra duas instâncias de Basic 256 no mesmo computador.  Copie o código “servidor” para um e o código “cliente” para outro.  Corra primeiro o servidor e depois o cliente.  Note como as duas instancias do programa comunicam.</p></div><h4 id="servidor">Servidor</h4><div class="level4"><pre class="code"># get a message and send back successprint &quot;wait for connection on &quot; + netaddress()netlisten 9997print &quot;got connection&quot;do   while not netdata      pause .1      print &quot;.&quot;;   end while   n$ = netread   print n$   netwrite &quot;I got &#039;&quot; + n$ + &quot;&#039;.&quot;until n$ = &quot;end&quot;netclose</pre><p>will display (where xxx.xxx.xxx.xxx is the IPv4 address of your computer)</p><pre class="code">wait for connection on xxx.xxx.xxx.xxxgot connection.1 Hi There....2 Hi There........3 Hi There..........4 Hi There.....5 Hi There.......6 Hi There....7 Hi There..........8 Hi There....9 Hi There.....10 Hi There.end</pre></div><h4 id="cliente">Cliente</h4><div class="level4"><pre class="code"># have the user enter a message and send it to the serverinput &quot;enter message?&quot;, m$netconnect &quot;127.0.0.1&quot;, 9997for t = 1 to 10   pause rand   netwrite t + &quot; &quot; + m$   print netreadnext tnetwrite &quot;end&quot;print netreadnetclose</pre><p>will display</p><pre class="code">enter message?Hi ThereI got &#039;1 Hi There&#039;.I got &#039;2 Hi There&#039;.I got &#039;3 Hi There&#039;.I got &#039;4 Hi There&#039;.I got &#039;5 Hi There&#039;.I got &#039;6 Hi There&#039;.I got &#039;7 Hi There&#039;.I got &#039;8 Hi There&#039;.I got &#039;9 Hi There&#039;.I got &#039;10 Hi There&#039;.I got &#039;end&#039;.</pre></div><h3 class="sectionedit5" id="ver_tambem">Ver também</h3><div class="level3"><p><a href="pt_netaddress.html" class="wikilink1" title="pt:netaddress">NetAddress</a>, <a href="pt_netclose.html" class="wikilink1" title="pt:netclose">NetClose</a>, <a href="pt_netdata.html" class="wikilink1" title="pt:netdata">NetData</a>, <a href="pt_netlisten.html" class="wikilink1" title="pt:netlisten">NetListen</a>, <a href="pt_netread.html" class="wikilink1" title="pt:netread">NetRead</a>, <a href="pt_netwrite.html" class="wikilink1" title="pt:netwrite">NetWrite</a></p></div><h3 class="sectionedit6" id="desde">Desde</h3><div class="level3"><p>0.9.6.31</p></div>                                    </div>                <div class="docInfo"><bdi>pt/netconnect.txt</bdi> · Last modified: 2012/12/19 07:18 by <bdi>m_santos</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

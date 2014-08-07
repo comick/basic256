@@ -1,147 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:variables [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-13T15:40:31-0700"/>
-<meta name="keywords" content="el,variables"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:variables&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:variables"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:variables"/>
-<link rel="canonical" href="./el_variables.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_variables.html" class="wikilink1" title="el:variables">variables</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:variables</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-                    
-<h2 class="sectionedit1" id="μεταβλητές">Μεταβλητές</h2>
-<div class="level2">
-
-<p>
-Τα ονόματα των μεταβλητών που περιέχουν αριθμούς πρέπει να ξεκινούν με ένα γράμμα, και έπειτα μπορούν να ακολουθηθούν από οποιονδήποτε αριθμό γραμμάτων ή αριθμητικών χαρακτήρων. Η ύπαρξη κεφαλαίων ή πεζών γράμματων έχει σημασία. Οι αριθμητικές μεταβλητές μπορούν να χρησιμοποιηθούν στην θέση αριθμών.<br/>
-
-<br/>
-
-Η ονομασία των μεταβλητών που περιέχουν συμβολοσειρές ακολουθεί τους ίδιους κανόνες με τις αριθμητικές μεταβλητές, άλλα το όνομα πρέπει επιπλέον να τελειώνει με το σήμα του δολλαρίου ($). Μπορούν να χρησιμοποιηθούν αντί συμβολοσειρών.
-<br/>
-
-Όταν εκχωρείς έναν αριθμό σε μια αλφαριθμητική μεταβλητή ή προσθέτεις έναν αριθμό σε μια συμβολοσειρά (συνένωση), τότε ο αριθμός αυτόματα μετατρέπεται σε συμβολοσειρά προτού ολοκληρωθεί η πράξη. Μια συμβολοσειρά δεν μπορεί να εκχωρηθεί σε μια αριθμητική μεταβλητή πριν την μετατροπή του τύπου της με χρήση των συναρτήσεων <a href="./el_int.html" class="wikilink1" title="el:int">Int</a> ή <a href="./el_float.html" class="wikilink1" title="el:float">Float</a>.  
-<br/>
-
-</p>
-<div class="table sectionedit2"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Εκχωρισμός μεταβλητών</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Τελεστής</th><th class="col1">Περιγραφή</th><th class="col2">Παράδειγμα</th><th class="col3">Σχόλια</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">=</td><td class="col1">Εκχώρηση αριθμού σε αριθμητική μεταβλητή</td><td class="col2">a = 9</td><td class="col3"> </td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">=</td><td class="col1">Εκχώρηση συμβολοσειράς σε αλφαριθμητική μεταβλητή</td><td class="col2">z$ = “Hola.”</td><td class="col3"> </td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">=</td><td class="col1">Εκχώρηση αριθμού σε αλφαριθμητική μεταβλητή</td><td class="col2">q$ = 9.9</td><td class="col3"> </td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">+=</td><td class="col1">Πρόσθεση με αριθμητική μεταβλητή</td><td class="col2">a += 7</td><td class="col3">Ίδιο με a = a + 7 <sup>1</sup></td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">+=</td><td class="col1">Συνένωση με αλφαριθμητική μεταβλητή</td><td class="col2">f$ += ”.”</td><td class="col3">Ίδιο με f$ = f$ + ”.”  <sup>1</sup></td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">-=</td><td class="col1">Αφαίρεση από αριθμητική μεταβλητή</td><td class="col2">a -= 9</td><td class="col3">Ίδιο με a = a - 9 <sup>1</sup></td>
-	</tr>
-	<tr class="row8">
-		<td class="col0">*=</td><td class="col1">Πολλαπλασιασμός αριθμητικής μεταβλητής με</td><td class="col2">a *= 2</td><td class="col3">Ίδιο με a = a * 2 <sup>1</sup></td>
-	</tr>
-	<tr class="row9">
-		<td class="col0">/=</td><td class="col1">Διαίρεση αριθμητικής μεταβλητής με</td><td class="col2">a /= 8</td><td class="col3">Ίδιο με a = a / 8 <sup>1</sup></td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-<sup>1</sup> προστέθηκε με την έκδοση 0.9.9.10
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/variables.txt</bdi> · Last modified: 2014/01/13 15:40 by <bdi>apollyon</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:variables [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_variables.html" class="wikilink1" title="el:variables">variables</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:variables</span></div>                <div class="page group"><h2 class="sectionedit1" id="μεταβλητές">Μεταβλητές</h2><div class="level2"><p>Τα ονόματα των μεταβλητών που περιέχουν αριθμούς πρέπει να ξεκινούν με ένα γράμμα, και έπειτα μπορούν να ακολουθηθούν από οποιονδήποτε αριθμό γραμμάτων ή αριθμητικών χαρακτήρων. Η ύπαρξη κεφαλαίων ή πεζών γράμματων έχει σημασία. Οι αριθμητικές μεταβλητές μπορούν να χρησιμοποιηθούν στην θέση αριθμών.<br/><br/>Η ονομασία των μεταβλητών που περιέχουν συμβολοσειρές ακολουθεί τους ίδιους κανόνες με τις αριθμητικές μεταβλητές, άλλα το όνομα πρέπει επιπλέον να τελειώνει με το σήμα του δολλαρίου ($). Μπορούν να χρησιμοποιηθούν αντί συμβολοσειρών.<br/>Όταν εκχωρείς έναν αριθμό σε μια αλφαριθμητική μεταβλητή ή προσθέτεις έναν αριθμό σε μια συμβολοσειρά (συνένωση), τότε ο αριθμός αυτόματα μετατρέπεται σε συμβολοσειρά προτού ολοκληρωθεί η πράξη. Μια συμβολοσειρά δεν μπορεί να εκχωρηθεί σε μια αριθμητική μεταβλητή πριν την μετατροπή του τύπου της με χρήση των συναρτήσεων <a href="el_int.html" class="wikilink1" title="el:int">Int</a> ή <a href="el_float.html" class="wikilink1" title="el:float">Float</a>.<br/></p><div class="table sectionedit2"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Εκχωρισμός μεταβλητών</th>	</tr>	<tr class="row1">		<th class="col0">Τελεστής</th><th class="col1">Περιγραφή</th><th class="col2">Παράδειγμα</th><th class="col3">Σχόλια</th>	</tr>	<tr class="row2">		<td class="col0">=</td><td class="col1">Εκχώρηση αριθμού σε αριθμητική μεταβλητή</td><td class="col2">a = 9</td><td class="col3"> </td>	</tr>	<tr class="row3">		<td class="col0">=</td><td class="col1">Εκχώρηση συμβολοσειράς σε αλφαριθμητική μεταβλητή</td><td class="col2">z$ = “Hola.”</td><td class="col3"> </td>	</tr>	<tr class="row4">		<td class="col0">=</td><td class="col1">Εκχώρηση αριθμού σε αλφαριθμητική μεταβλητή</td><td class="col2">q$ = 9.9</td><td class="col3"> </td>	</tr>	<tr class="row5">		<td class="col0">+=</td><td class="col1">Πρόσθεση με αριθμητική μεταβλητή</td><td class="col2">a += 7</td><td class="col3">Ίδιο με a = a + 7 <sup>1</sup></td>	</tr>	<tr class="row6">		<td class="col0">+=</td><td class="col1">Συνένωση με αλφαριθμητική μεταβλητή</td><td class="col2">f$ += ”.”</td><td class="col3">Ίδιο με f$ = f$ + ”.”  <sup>1</sup></td>	</tr>	<tr class="row7">		<td class="col0">-=</td><td class="col1">Αφαίρεση από αριθμητική μεταβλητή</td><td class="col2">a -= 9</td><td class="col3">Ίδιο με a = a - 9 <sup>1</sup></td>	</tr>	<tr class="row8">		<td class="col0">*=</td><td class="col1">Πολλαπλασιασμός αριθμητικής μεταβλητής με</td><td class="col2">a *= 2</td><td class="col3">Ίδιο με a = a * 2 <sup>1</sup></td>	</tr>	<tr class="row9">		<td class="col0">/=</td><td class="col1">Διαίρεση αριθμητικής μεταβλητής με</td><td class="col2">a /= 8</td><td class="col3">Ίδιο με a = a / 8 <sup>1</sup></td>	</tr></table></div><p><br/><sup>1</sup> προστέθηκε με την έκδοση 0.9.9.10</p></div>                                    </div>                <div class="docInfo"><bdi>el/variables.txt</bdi> · Last modified: 2014/01/13 15:40 by <bdi>apollyon</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

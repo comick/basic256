@@ -1,169 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>en:implode [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-02-09T20:47:55-0700"/>
-<meta name="keywords" content="en,implode"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/en:implode&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:implode"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:implode"/>
-<link rel="canonical" href="./en_implode.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_implode.html" class="wikilink1" title="en:implode">implode</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>en:implode</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="implode_function">Implode (Function)</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>implode</strong> ( <em><a class="explain" href="./en_arrays.html">array_variable</a></em> )<br/>
-
-<strong>implode</strong> ( <em><a class="explain" href="./en_arrays.html">array_variable</a></em> )
-</p>
-
-<p>
-returns <em><a class="explain" href="./en_implode.html">string_value</a></em>
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Append the elements in an array into a string.  Optionally placing the <em><a class="explain" href="./en_expressions.html#string_expressions">delimiter_expr</a></em> between the elements.  This is functionally the opposite of the <a href="./en_explode.html" class="wikilink1" title="en:explode">Explode</a> function.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="example">Example</h3>
-<div class="level3">
-<pre class="code">dim a$(1)
-dim b(1)
-a$ = Explode(&quot;How now brown cow&quot;,&quot; &quot;)
-print implode(a$,&quot;-&quot;)
-print implode(a$)
-b = Explode(&quot;1,2,3.33,4.44,5.55&quot;,&quot;,&quot;)
-print implode(b,&quot;, &quot;)
-print implode(b)</pre>
-
-<p>
-will display
-</p>
-<pre class="code">How-now-brown-cow
-Hownowbrowncow
-1, 2, 3.33, 4.44, 5.55
-123.334.445.55</pre>
-
-</div>
-
-<h3 class="sectionedit5" id="see_also">See Also</h3>
-<div class="level3">
-
-</div>
-<div class="plugin_include_content plugin_include__en:start">
-<div class="level3">
-
-<p>
-<a href="./en_asc.html" class="wikilink1" title="en:asc">Asc</a>, <a href="./en_chr.html" class="wikilink1" title="en:chr">Chr</a>, <a href="./en_count.html" class="wikilink1" title="en:count">Count</a>, <a href="./en_countx.html" class="wikilink1" title="en:countx">Countx</a>, <a href="./en_explode.html" class="wikilink1" title="en:explode">Explode</a>, <a href="./en_explodex.html" class="wikilink1" title="en:explodex">Explodex</a>, <span class="curid"><a href="./en_implode.html" class="wikilink1" title="en:implode">Implode</a></span>, <a href="./en_instr.html" class="wikilink1" title="en:instr">Instr</a>, <a href="./en_instrx.html" class="wikilink1" title="en:instrx">Instrx</a>, <a href="./en_left.html" class="wikilink1" title="en:left">Left</a>, <a href="./en_length.html" class="wikilink1" title="en:length">Length</a>, <a href="./en_lower.html" class="wikilink1" title="en:lower">Lower</a>, <a href="./en_md5.html" class="wikilink1" title="en:md5">MD5</a>, <a href="./en_mid.html" class="wikilink1" title="en:mid">Mid</a>, <a href="./en_replace.html" class="wikilink1" title="en:replace">Replace</a>, <a href="./en_replacex.html" class="wikilink1" title="en:replacex">Replacex</a>, <a href="./en_right.html" class="wikilink1" title="en:right">Right</a>, <a href="./en_string.html" class="wikilink1" title="en:string">String</a>, <a href="./en_upper.html" class="wikilink1" title="en:upper">Upper</a>
-</p>
-
-</div>
-
-</div>
-<div class="level3">
-
-</div>
-
-<h3 class="sectionedit9" id="history">History</h3>
-<div class="level3">
-<div class="table sectionedit10"><table class="inline">
-	<tr class="row0">
-		<td class="col0">0.9.6.57</td><td class="col1">New to Version</td>
-	</tr>
-</table></div>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>en/implode.txt</bdi> · Last modified: 2014/02/09 20:47 by <bdi>admin</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>en:implode [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="en_implode.html" class="wikilink1" title="en:implode">implode</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>en:implode</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="en_implode.html#implode_function">Implode (Function)</a></div><ul class="toc"><li class="level3"><div class="li"><a href="en_implode.html#format">Format</a></div></li><li class="level3"><div class="li"><a href="en_implode.html#description">Description</a></div></li><li class="level3"><div class="li"><a href="en_implode.html#example">Example</a></div></li><li class="level3"><div class="li"><a href="en_implode.html#see_also">See Also</a></div></li><li class="level3"><div class="li"><a href="en_implode.html#history">History</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="implode_function">Implode (Function)</h2><div class="level2"></div><h3 class="sectionedit2" id="format">Format</h3><div class="level3"><p><strong>implode</strong> ( <em><a class="explain" href="en_arrays.html">array_variable</a></em> )<br/><strong>implode</strong> ( <em><a class="explain" href="en_arrays.html">array_variable</a></em> , <em><a class="explain" href="en_expressions.html#string_expressions">delimiter_expr</a></em> )</p><p>returns <em><a class="explain" href="en_implode.html">string_value</a></em></p></div><h3 class="sectionedit3" id="description">Description</h3><div class="level3"><p>Append the elements in an array into a string.  Optionally placing the <em><a class="explain" href="en_expressions.html#string_expressions">delimiter_expr</a></em> between the elements.  This is functionally the opposite of the <a href="en_explode.html" class="wikilink1" title="en:explode">Explode</a> function.</p></div><h3 class="sectionedit4" id="example">Example</h3><div class="level3"><pre class="code">dim a$(1)dim b(1)a$ = Explode(&quot;How now brown cow&quot;,&quot; &quot;)print implode(a$,&quot;-&quot;)print implode(a$)b = Explode(&quot;1,2,3.33,4.44,5.55&quot;,&quot;,&quot;)print implode(b,&quot;, &quot;)print implode(b)</pre><p>will display</p><pre class="code">How-now-brown-cowHownowbrowncow1, 2, 3.33, 4.44, 5.55123.334.445.55</pre></div><h3 class="sectionedit5" id="see_also">See Also</h3><div class="level3"></div><div class="plugin_include_content plugin_include__en:start"><div class="level3"><p><a href="en_asc.html" class="wikilink1" title="en:asc">Asc</a>, <a href="en_chr.html" class="wikilink1" title="en:chr">Chr</a>, <a href="en_count.html" class="wikilink1" title="en:count">Count</a>, <a href="en_countx.html" class="wikilink1" title="en:countx">Countx</a>, <a href="en_explode.html" class="wikilink1" title="en:explode">Explode</a>, <a href="en_explodex.html" class="wikilink1" title="en:explodex">Explodex</a>, <span class="curid"><a href="en_implode.html" class="wikilink1" title="en:implode">Implode</a></span>, <a href="en_instr.html" class="wikilink1" title="en:instr">Instr</a>, <a href="en_instrx.html" class="wikilink1" title="en:instrx">Instrx</a>, <a href="en_left.html" class="wikilink1" title="en:left">Left</a>, <a href="en_length.html" class="wikilink1" title="en:length">Length</a>, <a href="en_lower.html" class="wikilink1" title="en:lower">Lower</a>, <a href="en_md5.html" class="wikilink1" title="en:md5">MD5</a>, <a href="en_mid.html" class="wikilink1" title="en:mid">Mid</a>, <a href="en_replace.html" class="wikilink1" title="en:replace">Replace</a>, <a href="en_replacex.html" class="wikilink1" title="en:replacex">Replacex</a>, <a href="en_right.html" class="wikilink1" title="en:right">Right</a>, <a href="en_string.html" class="wikilink1" title="en:string">String</a>, <a href="en_upper.html" class="wikilink1" title="en:upper">Upper</a></p></div></div><div class="level3"></div><h3 class="sectionedit9" id="history">History</h3><div class="level3"><div class="table sectionedit10"><table class="inline">	<tr class="row0">		<td class="col0">0.9.6.57</td><td class="col1">New to Version</td>	</tr></table></div></div>                                    </div>                <div class="docInfo"><bdi>en/implode.txt</bdi> · Last modified: 2014/02/09 20:47 by <bdi>admin</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

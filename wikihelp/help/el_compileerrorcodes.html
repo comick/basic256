@@ -1,164 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:compileerrorcodes [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:21-0700"/>
-<meta name="keywords" content="el,compileerrorcodes"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:compileerrorcodes&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:compileerrorcodes"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:compileerrorcodes"/>
-<link rel="canonical" href="./el_compileerrorcodes.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_compileerrorcodes.html" class="wikilink1" title="el:compileerrorcodes">compileerrorcodes</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:compileerrorcodes</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-                    
-<h2 class="sectionedit1" id="compiler_error_codes">Compiler Error Codes</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="description">Description</h3>
-<div class="level3">
-
-<p>
-This is a list of errors that will be reported when a program is run.  Once an error is encountered compiling is stopped and the program will not be executed.
-</p>
-<div class="table sectionedit3"><table class="inline">
-	<tr class="row0">
-		<th class="col0">Error #</th><th class="col1">Error Message</th><th class="col2">Description</th>
-	</tr>
-	<tr class="row1">
-		<td class="col0">-1</td><td class="col1">Syntax Error</td><td class="col2">General compiler message when a statement is not formatted correctly.</td>
-	</tr>
-	<tr class="row2">
-		<td class="col0">-2</td><td class="col1">END IF without matching IF</td><td class="col2"> </td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">-3</td><td class="col1">ELSE without matching IF</td><td class="col2"> </td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">-4</td><td class="col1">END WHILE without matching WHILE</td><td class="col2"> </td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">-5</td><td class="col1">UNTIL without matching DO</td><td class="col2"> </td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">-6</td><td class="col1">NEXT without matching FOR</td><td class="col2"> </td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">-7</td><td class="col1">IF without matching END IF or ELSE statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row8">
-		<td class="col0">-8</td><td class="col1">ELSE without matching END IF statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row9">
-		<td class="col0">-9</td><td class="col1">WHILE without matching END WHILE statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row10">
-		<td class="col0">-10</td><td class="col1">DO without matching UNTIL statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row11">
-		<td class="col0">-11</td><td class="col1">FOR without matching NEXT statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row12">
-		<td class="col0">-12</td><td class="col1">FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement</td><td class="col2"> </td>
-	</tr>
-	<tr class="row13">
-		<td class="col0">-13</td><td class="col1">END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE</td><td class="col2"> </td>
-	</tr>
-	<tr class="row14">
-		<td class="col0">-14</td><td class="col1">You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE</td><td class="col2"> </td>
-	</tr>
-	<tr class="row15">
-		<td class="col0">-15</td><td class="col1">You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE</td><td class="col2"> </td>
-	</tr>
-	<tr class="row16">
-		<td class="col0">-16</td><td class="col1">You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration</td><td class="col2"> </td>
-	</tr>
-	<tr class="row17">
-		<td class="col0">-17</td><td class="col1">Error assigning a number to a string variable</td><td class="col2"> </td>
-	</tr>
-	<tr class="row18">
-		<td class="col0">-18</td><td class="col1">Error assigning a string to a numeric variable</td><td class="col2"> </td>
-	</tr>
-</table></div>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/compileerrorcodes.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:compileerrorcodes [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_compileerrorcodes.html" class="wikilink1" title="el:compileerrorcodes">compileerrorcodes</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:compileerrorcodes</span></div>                <div class="page group"><h2 class="sectionedit1" id="compiler_error_codes">Compiler Error Codes</h2><div class="level2"></div><h3 class="sectionedit2" id="description">Description</h3><div class="level3"><p>This is a list of errors that will be reported when a program is run.  Once an error is encountered compiling is stopped and the program will not be executed.</p><div class="table sectionedit3"><table class="inline">	<tr class="row0">		<th class="col0">Error #</th><th class="col1">Error Message</th><th class="col2">Description</th>	</tr>	<tr class="row1">		<td class="col0">-1</td><td class="col1">Syntax Error</td><td class="col2">General compiler message when a statement is not formatted correctly.</td>	</tr>	<tr class="row2">		<td class="col0">-2</td><td class="col1">END IF without matching IF</td><td class="col2"> </td>	</tr>	<tr class="row3">		<td class="col0">-3</td><td class="col1">ELSE without matching IF</td><td class="col2"> </td>	</tr>	<tr class="row4">		<td class="col0">-4</td><td class="col1">END WHILE without matching WHILE</td><td class="col2"> </td>	</tr>	<tr class="row5">		<td class="col0">-5</td><td class="col1">UNTIL without matching DO</td><td class="col2"> </td>	</tr>	<tr class="row6">		<td class="col0">-6</td><td class="col1">NEXT without matching FOR</td><td class="col2"> </td>	</tr>	<tr class="row7">		<td class="col0">-7</td><td class="col1">IF without matching END IF or ELSE statement</td><td class="col2"> </td>	</tr>	<tr class="row8">		<td class="col0">-8</td><td class="col1">ELSE without matching END IF statement</td><td class="col2"> </td>	</tr>	<tr class="row9">		<td class="col0">-9</td><td class="col1">WHILE without matching END WHILE statement</td><td class="col2"> </td>	</tr>	<tr class="row10">		<td class="col0">-10</td><td class="col1">DO without matching UNTIL statement</td><td class="col2"> </td>	</tr>	<tr class="row11">		<td class="col0">-11</td><td class="col1">FOR without matching NEXT statement</td><td class="col2"> </td>	</tr>	<tr class="row12">		<td class="col0">-12</td><td class="col1">FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement</td><td class="col2"> </td>	</tr>	<tr class="row13">		<td class="col0">-13</td><td class="col1">END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE</td><td class="col2"> </td>	</tr>	<tr class="row14">		<td class="col0">-14</td><td class="col1">You may not define a FUNCTION/SUBROUTINE inside an IF, loop, or other FUNCTION/SUBROUTINE</td><td class="col2"> </td>	</tr>	<tr class="row15">		<td class="col0">-15</td><td class="col1">You may not define GLOBAL variable(s) inside an IF, loop, or FUNCTION/SUBROUTINE</td><td class="col2"> </td>	</tr>	<tr class="row16">		<td class="col0">-16</td><td class="col1">You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration</td><td class="col2"> </td>	</tr>	<tr class="row17">		<td class="col0">-17</td><td class="col1">Error assigning a number to a string variable</td><td class="col2"> </td>	</tr>	<tr class="row18">		<td class="col0">-18</td><td class="col1">Error assigning a string to a numeric variable</td><td class="col2"> </td>	</tr></table></div></div>                                    </div>                <div class="docInfo"><bdi>el/compileerrorcodes.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

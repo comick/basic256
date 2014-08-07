@@ -196,6 +196,7 @@ class Interpreter : public QThread
   QTime runtimer;				// used by MSEC function
   Sound sound;
   QString currentIncludeFile;	// set to current included file name for runtime error messages
+  bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
 
   bool printing;
   QPrinter *printdocument;

@@ -1,167 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>nl:poly [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-02-07T15:38:37-0700"/>
-<meta name="keywords" content="nl,poly"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/nl:poly&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=nl"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=nl:poly"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=nl:poly"/>
-<link rel="canonical" href="./nl_poly.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./nl_start.html" class="wikilink1" title="nl:start">nl</a></bdi> » <bdi><span class="curid"><a href="./nl_poly.html" class="wikilink1" title="nl:poly">poly</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>nl:poly</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="poly">Poly</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="formaat">Formaat</h3>
-<div class="level3">
-
-<p>
-<strong>poly</strong> <em>numerieke array variabele</em><br/>
-
-<strong>poly</strong> {x<sub>1</sub>, y<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub>, x<sub>3</sub>, y<sub>3</sub> …}
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="beschrijving">Beschrijving</h3>
-<div class="level3">
-
-<p>
-De functie tekent een veelhoek ( polygoon).<br/>
-
-De hoeken van de veelhoek worden vastgelegd dankzij de (x,y) coördinaten die in de <em>numerieke array variabele</em> worden meegegeven. De array moet dus telkens een even aantal getallen bevatten !!!!<br/>
-
-</p>
-
-<p>
-Je kan de coördinaten ook onmiddellijk meegeven met de <span class="curid"><a href="./nl_poly.html" class="wikilink1" title="nl:poly">poly</a></span> functie door de haakjes { }.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="opmerking">Opmerking</h3>
-<div class="level3">
-
-<p>
-Het aantal punten werd als parameter van het poly statement weggenomen sinds de versie 0.9.4
-</p>
-
-</div>
-
-<h3 class="sectionedit5" id="zie_ook">Zie Ook</h3>
-<div class="level3">
-
-<p>
-<a href="./nl_stamp.html" class="wikilink1" title="nl:stamp">Stamp</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="voorbeeld">Voorbeeld</h3>
-<div class="level3">
-<pre class="code basic4gl"><span class="kw2">color</span> blue
-rect <span class="nu0">0</span>,<span class="nu0">0</span>,<span class="nu0">300</span>,<span class="nu0">300</span>
-<span class="kw2">color</span> green
-<span class="kw3">dim</span> driehoek<span class="br0">&#40;</span><span class="nu0">6</span><span class="br0">&#41;</span> # met <span class="nu0">3</span> maal <span class="nu0">2</span> <span class="sy0">=</span> <span class="nu0">6</span> getallen
-driehoek <span class="sy0">=</span> <span class="br0">&#123;</span><span class="nu0">100</span>, <span class="nu0">180</span>, <span class="nu0">150</span>, <span class="nu0">80</span>, <span class="nu0">200</span>,<span class="nu0">180</span><span class="br0">&#125;</span>
-poly driehoek</pre>
-<pre class="code basic4gl"><span class="kw2">color</span> blue
-rect <span class="nu0">0</span>,<span class="nu0">0</span>,<span class="nu0">300</span>,<span class="nu0">300</span>
-<span class="kw2">color</span> green
-poly <span class="br0">&#123;</span><span class="nu0">100</span>, <span class="nu0">180</span>, <span class="nu0">150</span>, <span class="nu0">80</span>, <span class="nu0">200</span>,<span class="nu0">180</span><span class="br0">&#125;</span></pre>
-
-<p>
-Beide programma&#039;s tonen hetzelfde resultaat:<br/>
-
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=nl_poly&amp;media=nl:poly.png" class="media" title="nl:poly.png"><img src="lib/exe/nl_poly.png" class="media" alt="" /></a>
-</p>
-<hr />
-
-<p>
-<a href="./nl_plot.html" class="wikilink1" title="nl:plot">vorige</a> | <a href="./nl_a_real_dali.html" class="wikilink1" title="nl:a_real_dali">Tekenen en kleuren</a> | <a href="./nl_rect.html" class="wikilink1" title="nl:rect">volgende</a>
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>nl/poly.txt</bdi> · Last modified: 2012/02/07 15:38 by <bdi>tlesseliers</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>nl:poly [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="nl_start.html" class="wikilink1" title="nl:start">nl</a></bdi> » <bdi><span class="curid"><a href="nl_poly.html" class="wikilink1" title="nl:poly">poly</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>nl:poly</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="nl_poly.html#poly">Poly</a></div><ul class="toc"><li class="level3"><div class="li"><a href="nl_poly.html#formaat">Formaat</a></div></li><li class="level3"><div class="li"><a href="nl_poly.html#beschrijving">Beschrijving</a></div></li><li class="level3"><div class="li"><a href="nl_poly.html#opmerking">Opmerking</a></div></li><li class="level3"><div class="li"><a href="nl_poly.html#zie_ook">Zie Ook</a></div></li><li class="level3"><div class="li"><a href="nl_poly.html#voorbeeld">Voorbeeld</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="poly">Poly</h2><div class="level2"></div><h3 class="sectionedit2" id="formaat">Formaat</h3><div class="level3"><p><strong>poly</strong> <em>numerieke array variabele</em><br/><strong>poly</strong> {x<sub>1</sub>, y<sub>1</sub>, x<sub>2</sub>, y<sub>2</sub>, x<sub>3</sub>, y<sub>3</sub> …}</p></div><h3 class="sectionedit3" id="beschrijving">Beschrijving</h3><div class="level3"><p>De functie tekent een veelhoek ( polygoon).<br/>De hoeken van de veelhoek worden vastgelegd dankzij de (x,y) coördinaten die in de <em>numerieke array variabele</em> worden meegegeven. De array moet dus telkens een even aantal getallen bevatten !!!!<br/></p><p>Je kan de coördinaten ook onmiddellijk meegeven met de <span class="curid"><a href="nl_poly.html" class="wikilink1" title="nl:poly">poly</a></span> functie door de haakjes { }.</p></div><h3 class="sectionedit4" id="opmerking">Opmerking</h3><div class="level3"><p>Het aantal punten werd als parameter van het poly statement weggenomen sinds de versie 0.9.4</p></div><h3 class="sectionedit5" id="zie_ook">Zie Ook</h3><div class="level3"><p><a href="nl_stamp.html" class="wikilink1" title="nl:stamp">Stamp</a></p></div><h3 class="sectionedit6" id="voorbeeld">Voorbeeld</h3><div class="level3"><pre class="code basic4gl"><span class="kw2">color</span> bluerect <span class="nu0">0</span>,<span class="nu0">0</span>,<span class="nu0">300</span>,<span class="nu0">300</span><span class="kw2">color</span> green<span class="kw3">dim</span> driehoek<span class="br0">&#40;</span><span class="nu0">6</span><span class="br0">&#41;</span> # met <span class="nu0">3</span> maal <span class="nu0">2</span> <span class="sy0">=</span> <span class="nu0">6</span> getallendriehoek <span class="sy0">=</span> <span class="br0">&#123;</span><span class="nu0">100</span>, <span class="nu0">180</span>, <span class="nu0">150</span>, <span class="nu0">80</span>, <span class="nu0">200</span>,<span class="nu0">180</span><span class="br0">&#125;</span>poly driehoek</pre><pre class="code basic4gl"><span class="kw2">color</span> bluerect <span class="nu0">0</span>,<span class="nu0">0</span>,<span class="nu0">300</span>,<span class="nu0">300</span><span class="kw2">color</span> greenpoly <span class="br0">&#123;</span><span class="nu0">100</span>, <span class="nu0">180</span>, <span class="nu0">150</span>, <span class="nu0">80</span>, <span class="nu0">200</span>,<span class="nu0">180</span><span class="br0">&#125;</span></pre><p>Beide programma&#039;s tonen hetzelfde resultaat:<br/><a href="http://doc.basic256.org/lib/exe/detail.php?id=nl_poly&amp;media=nl:poly.png" class="media" title="nl:poly.png"><img src="lib/exe/nl_poly.png" class="media" alt="" /></a></p><hr /><p><a href="nl_plot.html" class="wikilink1" title="nl:plot">vorige</a> | <a href="nl_a_real_dali.html" class="wikilink1" title="nl:a_real_dali">Tekenen en kleuren</a> | <a href="nl_rect.html" class="wikilink1" title="nl:rect">volgende</a></p></div>                                    </div>                <div class="docInfo"><bdi>nl/poly.txt</bdi> · Last modified: 2012/02/07 15:38 by <bdi>tlesseliers</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

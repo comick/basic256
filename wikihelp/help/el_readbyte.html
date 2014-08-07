@@ -1,180 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:readbyte [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:39-0700"/>
-<meta name="keywords" content="el,readbyte"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:readbyte&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:readbyte"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:readbyte"/>
-<link rel="canonical" href="./el_readbyte.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_readbyte.html" class="wikilink1" title="el:readbyte">readbyte</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:readbyte</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="readbyte">ReadByte</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>readbyte</strong><br/>
-
-<strong>readbyte</strong>()<br/>
-
-<strong>readbyte</strong>(<em>filenumber</em>)
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Reads and returns the next byte (8 bits) as a number 0-255 from an open file.  If the file number is not specified file number zero (0) will be used.
-<br/>
-
-File should be opened with the <a href="./el_open.html" class="wikilink1" title="el:open">Openb</a> statement so that <abbr title="American Standard Code for Information Interchange">ASCII</abbr> CR/LF translation does not happen.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="example">Example</h3>
-<div class="level3">
-<pre class="code">cls
-f$ = &quot;binary.dat&quot;
-
-print &quot;new file&quot;
-openb f$
-reset
-for t = 1 to 20
-   n = r()
-   print n+&quot; &quot;;
-   writebyte n
-next t
-print
-close
-
-print &quot;open and read&quot;
-openb f$
-while not eof
-   print readbyte()+&quot; &quot;;
-end while
-print
-
-print &quot;position to 10 and read&quot;
-seek 10
-while not eof
-   print readbyte()+&quot; &quot;;
-end while
-print
-
-close
-
-end
-
-function r()
-   r = int(rand*256)
-end function</pre>
-
-<p>
-will display something like
-</p>
-<pre class="code">new file
-181 163 155 23 46 93 122 212 178 225 1 62 113 130 202 52 185 51 37 165 
-open and read
-181 163 155 23 46 93 122 212 178 225 1 62 113 130 202 52 185 51 37 165 
-position to 10 and read
-1 62 113 130 202 52 185 51 37 165 </pre>
-
-</div>
-
-<h3 class="sectionedit5" id="see_also">See Also</h3>
-<div class="level3">
-
-<p>
-<a href="./el_close.html" class="wikilink1" title="el:close">Close</a>, <a href="./el_eof.html" class="wikilink1" title="el:eof">Eof</a>, <a href="./el_open.html" class="wikilink1" title="el:open">Open</a>, <a href="./el_open.html" class="wikilink1" title="el:open">Openb</a>, <span class="curid"><a href="./el_readbyte.html" class="wikilink1" title="el:readbyte">ReadByte</a></span>, <a href="./el_readline.html" class="wikilink1" title="el:readline">Readline</a>, <a href="./el_reset.html" class="wikilink1" title="el:reset">Reset</a>, <a href="./el_write.html" class="wikilink1" title="el:write">Write</a>, <a href="./el_writebyte.html" class="wikilink1" title="el:writebyte">Writebyte</a>, <a href="./el_writeline.html" class="wikilink1" title="el:writeline">Writeline</a>, <a href="./el_exists.html" class="wikilink1" title="el:exists">Exists</a>, <a href="./el_seek.html" class="wikilink1" title="el:seek">Seek</a>, <a href="./el_size.html" class="wikilink1" title="el:size">Size</a>
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/readbyte.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:readbyte [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_readbyte.html" class="wikilink1" title="el:readbyte">readbyte</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:readbyte</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="el_readbyte.html#readbyte">ReadByte</a></div><ul class="toc"><li class="level3"><div class="li"><a href="el_readbyte.html#σύνταξη">Σύνταξη</a></div></li><li class="level3"><div class="li"><a href="el_readbyte.html#περιγραφή">Περιγραφή</a></div></li><li class="level3"><div class="li"><a href="el_readbyte.html#παράδειγμα">Παράδειγμα</a></div></li><li class="level3"><div class="li"><a href="el_readbyte.html#δες_επίσης">Δες επίσης</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="readbyte">ReadByte</h2><div class="level2"></div><h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3><div class="level3"><p><strong>readbyte</strong><br/><strong>readbyte</strong>()<br/><strong>readbyte</strong>(<em>ΑριθμόςΑρχείου</em>)</p></div><h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3><div class="level3"><p>Επιστρέφει το επόμενο byte (8 δυαδικά ψηφία) ως έναν ακέραιο 0-255 από ένα ανοιχτό αρχείο. Εάν δεν προσδιορισθεί αριθμός αρχείου τότε θα χρησιμοποιηθεί ο αριθμός μηδέν (0).<br/>Το αρχείο θα πρέπει να ανοιχθεί με την εντολή <a href="el_open.html" class="wikilink1" title="el:open">Openb</a> ώστε να αποφευχθεί η λανθασμένη αναγνώριση ενός byte ως χαρακτήρα αλλαγής γραμμής.</p></div><h3 class="sectionedit4" id="παράδειγμα">Παράδειγμα</h3><div class="level3"><pre class="code">clsf$ = &quot;binary.dat&quot;print &quot;neo arxeio&quot;openb f$resetfor t = 1 to 20   n = r()   print n+&quot; &quot;;   writebyte nnext tprintcloseprint &quot;anoigma kai anagnosi&quot;openb f$while not eof   print readbyte()+&quot; &quot;;end whileprintprint &quot;metakinisi stin thesi 10 kai anagnosi&quot;seek 10while not eof   print readbyte()+&quot; &quot;;end whileprintcloseendfunction r()   r = int(rand*256)end function</pre><p>θα απεικονίσει κάτι παρόμοιο με</p><pre class="code">neo arxeio181 163 155 23 46 93 122 212 178 225 1 62 113 130 202 52 185 51 37 165anoigma kai anagnosi181 163 155 23 46 93 122 212 178 225 1 62 113 130 202 52 185 51 37 165metakinisi stin thesi 10 kai anagnosi1 62 113 130 202 52 185 51 37 165 </pre></div><h3 class="sectionedit5" id="δες_επίσης">Δες επίσης</h3><div class="level3"><p><a href="el_close.html" class="wikilink1" title="el:close">Close</a>, <a href="el_eof.html" class="wikilink1" title="el:eof">Eof</a>, <a href="el_open.html" class="wikilink1" title="el:open">Open</a>, <a href="el_open.html" class="wikilink1" title="el:open">Openb</a>, <span class="curid"><a href="el_readbyte.html" class="wikilink1" title="el:readbyte">ReadByte</a></span>, <a href="el_readline.html" class="wikilink1" title="el:readline">Readline</a>, <a href="el_reset.html" class="wikilink1" title="el:reset">Reset</a>, <a href="el_write.html" class="wikilink1" title="el:write">Write</a>, <a href="el_writebyte.html" class="wikilink1" title="el:writebyte">Writebyte</a>, <a href="el_writeline.html" class="wikilink1" title="el:writeline">Writeline</a>, <a href="el_exists.html" class="wikilink1" title="el:exists">Exists</a>, <a href="el_seek.html" class="wikilink1" title="el:seek">Seek</a>, <a href="el_size.html" class="wikilink1" title="el:size">Size</a></p></div>                                    </div>                <div class="docInfo"><bdi>el/readbyte.txt</bdi> · Last modified: 2014/03/27 05:44 by <bdi>apollyon</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

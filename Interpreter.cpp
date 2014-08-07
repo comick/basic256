@@ -211,11 +211,11 @@ QString Interpreter::opname(int op) {
     else if (op==OP_PAUSE) return QString("OP_PAUSE");
     else if (op==OP_LENGTH) return QString("OP_LENGTH");
     else if (op==OP_MID) return QString("OP_MID");
+    else if (op==OP_MIDX) return QString("OP_MIDX");
     else if (op==OP_INSTR) return QString("OP_INSTR");
     else if (op==OP_INSTR_S) return QString("OP_INSTR_S");
     else if (op==OP_INSTR_SC) return QString("OP_INSTR_SC");
     else if (op==OP_INSTRX) return QString("OP_INSTRX");
-    else if (op==OP_INSTRX_S) return QString("OP_INSTRX_S");
     else if (op==OP_OPEN) return QString("OP_OPEN");
     else if (op==OP_READ) return QString("OP_READ");
     else if (op==OP_WRITE) return QString("OP_WRITE");
@@ -389,7 +389,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_REPLACE_C) return QString("OP_REPLACE_C");
     else if (op==OP_REPLACEX) return QString("OP_REPLACEX");
     else if (op==OP_COUNT) return QString("OP_COUNT");
-    else if (op==OP_COUNT_C) return QString("OP_COUNT_C");
     else if (op==OP_COUNTX) return QString("OP_COUNTX");
     else if (op==OP_OSTYPE) return QString("OP_OSTYPE");
     else if (op==OP_MSEC) return QString("OP_MSEC");
@@ -428,6 +427,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_WAVPOS) return QString("OP_WAVPOS");
     else if (op==OP_WAVSEEK) return QString("OP_WAVSEEK");
     else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
+    else if (op==OP_REGEXMINIMAL) return QString("OP_REGEXMINIMAL");
     else return QString("OP_UNKNOWN");
 }
 
@@ -1061,6 +1061,7 @@ Interpreter::initialize() {
     fontweight = 0;
     nsprites = 0;
     printing = false;
+    regexMinimal = false;
     runtimer.start();
     // clickclear mouse status
     graphwin->clickX = 0;
@@ -1455,7 +1456,9 @@ Interpreter::execByteCode() {
                     if(opcode==OP_EXPLODE || opcode==OP_EXPLODE_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODESTR_C) {
                         list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
                     } else {
-                        list = qhaystack.split(QRegExp(qneedle), QString::KeepEmptyParts);
+						QRegExp expr = QRegExp(qneedle);
+						expr.setMinimal(regexMinimal);
+                        list = qhaystack.split(expr, QString::KeepEmptyParts);
                     }
 
                     if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
@@ -2321,6 +2324,35 @@ Interpreter::execByteCode() {
                 }
                 break;
 
+               case OP_MIDX: {
+					// regex section string (MID regeX)
+					int start = stack.popint();
+					QRegExp expr = QRegExp(stack.popstring());
+					expr.setMinimal(regexMinimal);
+					QString qtemp = stack.popstring();
+
+
+					if(start < 1) {
+						errornum = ERROR_STRSTART;
+						stack.pushstring(QString(""));
+					} else {
+						int pos;
+						if (start==1) {
+							pos = expr.indexIn(qtemp);
+						} else {
+							pos = expr.indexIn(qtemp.mid(start-1));
+						}
+						if (pos==-1) {
+							// did not find it - return ""
+							stack.pushstring(QString(""));
+						} else {
+							QStringList stuff = expr.capturedTexts();
+							stack.pushstring(stuff[0]);
+						}
+					}
+				}
+				break;
+
 
                 case OP_LEFT:
                 case OP_RIGHT: {
@@ -2378,9 +2410,7 @@ Interpreter::execByteCode() {
 
                 case OP_INSTR:
                 case OP_INSTR_S:
-                case OP_INSTR_SC:
-                case OP_INSTRX:
-                case OP_INSTRX_S: {
+                case OP_INSTR_SC: {
                     // unicode safe instr function
 
                     Qt::CaseSensitivity casesens = Qt::CaseSensitive;
@@ -2389,7 +2419,7 @@ Interpreter::execByteCode() {
                     }
 
                     int start = 1;
-                    if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC || opcode==OP_INSTRX_S) {
+                    if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
                         start = stack.popfloat();
                     }
 
@@ -2401,16 +2431,32 @@ Interpreter::execByteCode() {
                         errornum = ERROR_STRSTART;
                     } else {
 						if (start <= qhay.length()) {
-							if(opcode==OP_INSTR || opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
-								pos = qhay.indexOf(qstr, start-1, casesens)+1;
-							} else {
-								pos = qhay.indexOf(QRegExp(qstr), start-1)+1;
-							}
+							pos = qhay.indexOf(qstr, start-1, casesens)+1;
 						}
                     }
                     stack.pushint(pos);
                 }
                 break;
+                
+                
+                
+				case OP_INSTRX: {
+					// regex instr
+					int start = stack.popint();
+					QRegExp expr = QRegExp(stack.popstring());
+					expr.setMinimal(regexMinimal);
+					QString qtemp = stack.popstring();
+					
+					int pos=0;
+
+					if(start < 1) {
+						errornum = ERROR_STRSTART;
+					} else {
+						pos = expr.indexIn(qtemp,start-1)+1;
+					}
+					stack.pushint(pos);
+				}
+				break;
 
                 case OP_SIN:
                 case OP_COS:
@@ -4430,8 +4476,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_REPLACE:
-                case OP_REPLACE_C:
-                case OP_REPLACEX: {
+                case OP_REPLACE_C: {
                     // unicode safe replace function
 
                     Qt::CaseSensitivity casesens = Qt::CaseSensitive;
@@ -4443,32 +4488,43 @@ Interpreter::execByteCode() {
                     QString qfrom = stack.popstring();
                     QString qhaystack = stack.popstring();
 
-                    if(opcode==OP_REPLACE || opcode==OP_REPLACE_C) {
-                        stack.pushstring(qhaystack.replace(qfrom, qto, casesens));
-                    } else {
-                        stack.pushstring(qhaystack.replace(QRegExp(qfrom), qto));
-                    }
+                    stack.pushstring(qhaystack.replace(qfrom, qto, casesens));
                 }
                 break;
 
-                case OP_COUNT:
-                case OP_COUNT_C:
-                case OP_COUNTX: {
+                case OP_REPLACEX: {
+                    // regex replace function
+
+                    QString qto = stack.popstring();
+                    QRegExp expr = QRegExp(stack.popstring());
+					expr.setMinimal(regexMinimal);
+					QString qhaystack = stack.popstring();
+
+					stack.pushstring(qhaystack.replace(expr, qto));
+                }
+                break;
+
+                case OP_COUNT: {
                     // unicode safe count function
 
-                    Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-                    if(opcode==OP_COUNT_C) {
-                        if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
-                    }
-
+                    // 0 sensitive (default) - opposite of QT
+                    Qt::CaseSensitivity casesens = (stack.popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    
                     QString qneedle = stack.popstring();
                     QString qhaystack = stack.popstring();
 
-                    if(opcode==OP_COUNT || opcode==OP_COUNT_C) {
-                        stack.pushint((int) (qhaystack.count(qneedle, casesens)));
-                    } else {
-                        stack.pushint((int) (qhaystack.count(QRegExp(qneedle))));
-                    }
+					stack.pushint((int) (qhaystack.count(qneedle, casesens)));
+                }
+                break;
+
+                case OP_COUNTX: {
+                    // regex count function
+
+                    QRegExp expr = QRegExp(stack.popstring());
+					expr.setMinimal(regexMinimal);
+                    QString qhaystack = stack.popstring();
+
+                    stack.pushint((int) (qhaystack.count(expr)));
                 }
                 break;
 
@@ -4504,6 +4560,12 @@ Interpreter::execByteCode() {
                     if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
                     if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
                     if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
+                }
+                break;
+
+                case OP_REGEXMINIMAL: {
+					// set the regular expression minimal flag (true = not greedy)
+                    regexMinimal = stack.popint()!=0;
                 }
                 break;
 

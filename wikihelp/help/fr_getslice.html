@@ -1,156 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>fr:getslice [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2013-08-20T18:05:17-0700"/>
-<meta name="keywords" content="fr,getslice"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/fr:getslice&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:getslice"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:getslice"/>
-<link rel="canonical" href="./fr_getslice.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="./fr_getslice.html" class="wikilink1" title="fr:getslice">getslice</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>fr:getslice</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="getslice">GetSlice</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-getslice(<em>x</em>, <em>y</em>, <em>largeur</em>, <em>hauteur</em>)
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Retourne une chaîne de caractères qui contient la représentation hexadécimale du rectangle définit par le paramètres. La chaîne est formatée comme suit :<br/>
-
-</p>
-<div class="table sectionedit4"><table class="inline">
-	<tr class="row0">
-		<td class="col0">Taille</td><td class="col1">Description</td>
-	</tr>
-	<tr class="row1">
-		<td class="col0">4 octets</td><td class="col1">Largeur</td>
-	</tr>
-	<tr class="row2">
-		<td class="col0">4 octets</td><td class="col1">Hauteur</td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">6 octets</td><td class="col1">1er pixel (valeur RGB)</td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">6 octets</td><td class="col1">2ème pixel (valeur RGB)</td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">….</td><td class="col1">….</td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">6 octets</td><td class="col1">(largeur*hauteur)ième pixel (valeur RGB)</td>
-	</tr>
-</table></div>
-
-</div>
-
-<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
-<div class="level3">
-
-<p>
-<a href="./fr_putslice.html" class="wikilink1" title="fr:putslice">PutSlice</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3>
-<div class="level3">
-
-<p>
-0.9.6b
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>fr/getslice.txt</bdi> · Last modified: 2013/08/20 18:05 by <bdi>philrich123</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>fr:getslice [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="fr_getslice.html" class="wikilink1" title="fr:getslice">getslice</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>fr:getslice</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="fr_getslice.html#getslice">GetSlice</a></div><ul class="toc"><li class="level3"><div class="li"><a href="fr_getslice.html#format">Format</a></div></li><li class="level3"><div class="li"><a href="fr_getslice.html#description">Description</a></div></li><li class="level3"><div class="li"><a href="fr_getslice.html#voir_aussi">Voir Aussi</a></div></li><li class="level3"><div class="li"><a href="fr_getslice.html#disponible_a_partir_de_la_version">Disponible à partir de la version</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="getslice">GetSlice</h2><div class="level2"></div><h3 class="sectionedit2" id="format">Format</h3><div class="level3"><p>getslice(<em>x</em>, <em>y</em>, <em>largeur</em>, <em>hauteur</em>)</p></div><h3 class="sectionedit3" id="description">Description</h3><div class="level3"><p>Retourne une chaîne de caractères qui contient la représentation hexadécimale du rectangle définit par le paramètres. La chaîne est formatée comme suit :<br/></p><div class="table sectionedit4"><table class="inline">	<tr class="row0">		<td class="col0">Taille</td><td class="col1">Description</td>	</tr>	<tr class="row1">		<td class="col0">4 octets</td><td class="col1">Largeur</td>	</tr>	<tr class="row2">		<td class="col0">4 octets</td><td class="col1">Hauteur</td>	</tr>	<tr class="row3">		<td class="col0">6 octets</td><td class="col1">1er pixel (valeur RGB)</td>	</tr>	<tr class="row4">		<td class="col0">6 octets</td><td class="col1">2ème pixel (valeur RGB)</td>	</tr>	<tr class="row5">		<td class="col0">….</td><td class="col1">….</td>	</tr>	<tr class="row6">		<td class="col0">6 octets</td><td class="col1">(largeur*hauteur)ième pixel (valeur RGB)</td>	</tr></table></div></div><h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3><div class="level3"><p><a href="fr_putslice.html" class="wikilink1" title="fr:putslice">PutSlice</a></p></div><h3 class="sectionedit6" id="disponible_a_partir_de_la_version">Disponible à partir de la version</h3><div class="level3"><p>0.9.6b</p></div>                                    </div>                <div class="docInfo"><bdi>fr/getslice.txt</bdi> · Last modified: 2013/08/20 18:05 by <bdi>philrich123</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

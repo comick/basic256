@@ -1,176 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>pt:ref [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-20T01:22:47-0700"/>
-<meta name="keywords" content="pt,ref"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/pt:ref&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:ref"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:ref"/>
-<link rel="canonical" href="./pt_ref.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="./pt_ref.html" class="wikilink1" title="pt:ref">ref</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>pt:ref</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="ref">Ref</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="formato">Formato</h3>
-<div class="level3">
-
-<p>
-subroutine subroutinename ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>
-
-call subroutinename ( <em> ref(variable),variable</em> )<br/>
-
-<br/>
-
-function functionname ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>
-
-functionname ( <em>ref(variable),variable</em> )<br/>
-
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="descricao">Descrição</h3>
-<div class="level3">
-
-<p>
-Por norma os parâmetros são passados ​​para as sub-rotinas e funções por valor. Isso significa que o valor especificado ao chamar a sub-rotina é totalmente local para esta.
-REF() permite que se passe uma referência a uma variável ou um array para a rotina. Quando a rotina de alterar o valor da variável de referência, a alteração é realmente feita para a variável original usada na chamada de rotina.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="exemplo">Exemplo</h3>
-<div class="level3">
-<pre class="code">dim a(5)
-
-# atribui valores a cada elemento to array
-for t = 0 to 4
-a[t]= int(rand*6)
-print a[t]
-next t
-
-print &quot;Soma=&quot;+total(ref(a),5)
-end
-
-# soma todos os valores do array
-function total(ref(array),comprimento)
-   total= 0
-   for t = 0 to comprimento-1
-      total= total+array[t]
-   next t
-end function </pre>
-
-<p>
-mostra qualquer coisa como<br/>
-
-</p>
-<pre class="code">1
-5
-4
-2
-2
-Soma=14</pre>
-
-</div>
-
-<h3 class="sectionedit5" id="ver_tambem">Ver também</h3>
-<div class="level3">
-
-<p>
-<a href="./pt_call.html" class="wikilink1" title="pt:call">Call</a>, <a href="./pt_function.html" class="wikilink1" title="pt:function">Function</a>, <a href="./pt_global.html" class="wikilink1" title="pt:global">Global</a>, <a href="./pt_return.html" class="wikilink1" title="pt:return">Return</a>, <a href="./pt_subroutine.html" class="wikilink1" title="pt:subroutine">Subroutine</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="desde">Desde</h3>
-<div class="level3">
-
-<p>
-0.9.9.13
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>pt/ref.txt</bdi> · Last modified: 2012/12/20 01:22 by <bdi>m_santos</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>pt:ref [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="pt_ref.html" class="wikilink1" title="pt:ref">ref</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>pt:ref</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="pt_ref.html#ref">Ref</a></div><ul class="toc"><li class="level3"><div class="li"><a href="pt_ref.html#formato">Formato</a></div></li><li class="level3"><div class="li"><a href="pt_ref.html#descricao">Descrição</a></div></li><li class="level3"><div class="li"><a href="pt_ref.html#exemplo">Exemplo</a></div></li><li class="level3"><div class="li"><a href="pt_ref.html#ver_tambem">Ver também</a></div></li><li class="level3"><div class="li"><a href="pt_ref.html#desde">Desde</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="ref">Ref</h2><div class="level2"></div><h3 class="sectionedit2" id="formato">Formato</h3><div class="level3"><p>subroutine subroutinename ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>call subroutinename ( <em> ref(variable),variable</em> )<br/><br/>function functionname ( <em><strong>ref(</strong>variable<strong>)</strong>,variable</em> )<br/>functionname ( <em>ref(variable),variable</em> )<br/></p></div><h3 class="sectionedit3" id="descricao">Descrição</h3><div class="level3"><p>Por norma os parâmetros são passados ​​para as sub-rotinas e funções por valor. Isso significa que o valor especificado ao chamar a sub-rotina é totalmente local para esta.REF() permite que se passe uma referência a uma variável ou um array para a rotina. Quando a rotina de alterar o valor da variável de referência, a alteração é realmente feita para a variável original usada na chamada de rotina.</p></div><h3 class="sectionedit4" id="exemplo">Exemplo</h3><div class="level3"><pre class="code">dim a(5)# atribui valores a cada elemento to arrayfor t = 0 to 4a[t]= int(rand*6)print a[t]next tprint &quot;Soma=&quot;+total(ref(a),5)end# soma todos os valores do arrayfunction total(ref(array),comprimento)   total= 0   for t = 0 to comprimento-1      total= total+array[t]   next tend function </pre><p>mostra qualquer coisa como<br/></p><pre class="code">15422Soma=14</pre></div><h3 class="sectionedit5" id="ver_tambem">Ver também</h3><div class="level3"><p><a href="pt_call.html" class="wikilink1" title="pt:call">Call</a>, <a href="pt_function.html" class="wikilink1" title="pt:function">Function</a>, <a href="pt_global.html" class="wikilink1" title="pt:global">Global</a>, <a href="pt_return.html" class="wikilink1" title="pt:return">Return</a>, <a href="pt_subroutine.html" class="wikilink1" title="pt:subroutine">Subroutine</a></p></div><h3 class="sectionedit6" id="desde">Desde</h3><div class="level3"><p>0.9.9.13</p></div>                                    </div>                <div class="docInfo"><bdi>pt/ref.txt</bdi> · Last modified: 2012/12/20 01:22 by <bdi>m_santos</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

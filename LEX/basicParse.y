@@ -312,7 +312,7 @@ void addStringOp(int op, char *data) {
 %token B256GOTO B256GOSUB B256RETURN B256REM B256END B256SETCOLOR
 %token B256GTE B256LTE B256NE
 %token B256DIM B256REDIM B256NOP
-%token B256TOINT B256TOSTRING B256LENGTH B256MID B256LEFT B256RIGHT B256UPPER B256LOWER B256INSTR B256INSTRX
+%token B256TOINT B256TOSTRING B256LENGTH B256MID B256LEFT B256RIGHT B256UPPER B256LOWER B256INSTR B256INSTRX B256MIDX
 %token B256CEIL B256FLOOR B256RAND B256SIN B256COS B256TAN B256ASIN B256ACOS B256ATAN B256ABS B256PI B256DEGREES B256RADIANS B256LOG B256LOGTEN B256SQR B256EXP
 %token B256AND B256OR B256XOR B256NOT
 %token B256PAUSE B256SOUND
@@ -372,6 +372,7 @@ void addStringOp(int op, char *data) {
 %token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT B256ERROR_WAVNOTOPEN
 %token B256ERROR_NOTIMPLEMENTED
 %token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE
+%token B256REGEXMINIMAL
 
 
 %union
@@ -551,6 +552,7 @@ statement:
 			| rectstmt
 			| redimstmt
 			| refreshstmt
+			| regexminimalstmt
 			| resetstmt
 			| returnstmt
 			| saystmt
@@ -2551,6 +2553,12 @@ endsubroutinestmt:
 		}
 		;
 
+regexminimalstmt:
+			B256REGEXMINIMAL floatexpr {
+				addOp(OP_REGEXMINIMAL);
+			}
+			;
+
 
 
 
@@ -2777,8 +2785,8 @@ floatexpr:
 			| B256INSTR '(' expr ',' expr ')' { addOp(OP_INSTR); }
 			| B256INSTR '(' expr ',' expr ',' floatexpr ')' { addOp(OP_INSTR_S); }
 			| B256INSTR '(' expr ',' expr ',' floatexpr ',' floatexpr')' { addOp(OP_INSTR_SC); }
-			| B256INSTRX '(' expr ',' stringexpr ')' { addOp(OP_INSTRX); }
-			| B256INSTRX '(' expr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTRX_S); }
+			| B256INSTRX '(' expr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 1); addOp(OP_INSTRX); }
+			| B256INSTRX '(' expr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTRX); }
 			| B256CEIL '(' floatexpr ')' { addOp(OP_CEIL); }
 			| B256FLOOR '(' floatexpr ')' { addOp(OP_FLOOR); }
 			| B256SIN '(' floatexpr ')' { addOp(OP_SIN); }
@@ -3073,8 +3081,8 @@ floatexpr:
 			| B256NETDATA '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_NETDATA); }
 			| B256NETDATA '(' floatexpr ')' { addOp(OP_NETDATA); }
 			| B256PORTIN '(' floatexpr ')' { addOp(OP_PORTIN); }
-			| B256COUNT '(' stringexpr ',' stringexpr ')' { addOp(OP_COUNT); }
-			| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_COUNT_C); }
+			| B256COUNT '(' stringexpr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_COUNT); }
+			| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_COUNT); }
 			| B256COUNTX '(' stringexpr ',' stringexpr ')' { addOp(OP_COUNTX); }
 			| B256OSTYPE { addOp(OP_OSTYPE); }
 			| B256MSEC { addOp(OP_MSEC); }
@@ -3226,6 +3234,8 @@ stringexpr:
 			| B256UPPER '(' expr ')' { addOp(OP_UPPER); }
 			| B256LOWER '(' expr ')' { addOp(OP_LOWER); }
 			| B256MID '(' expr ',' floatexpr ',' floatexpr ')' { addOp(OP_MID); }
+			| B256MIDX '(' expr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 1); addOp(OP_MIDX); }
+			| B256MIDX '(' expr ',' stringexpr ',' floatexpr ')' { addOp(OP_MIDX); }
 			| B256LEFT '(' expr ',' floatexpr ')' { addOp(OP_LEFT); }
 			| B256RIGHT '(' expr ',' floatexpr ')' { addOp(OP_RIGHT); }
 			| B256GETSLICE '(' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' { addOp(OP_GETSLICE); }

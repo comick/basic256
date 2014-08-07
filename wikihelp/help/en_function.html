@@ -1,191 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>en:function [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-02-08T22:50:10-0700"/>
-<meta name="keywords" content="en,function"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/en:function&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=en"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=en:function"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=en:function"/>
-<link rel="canonical" href="./en_function.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="./en_function.html" class="wikilink1" title="en:function">function</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>en:function</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="function_statement">Function (Statement)</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>function</strong> function_name ( <em><a class="explain" href="./en_expressions.html">variable_list</a></em> )<br/>
-
-&nbsp;&nbsp;&nbsp;<em>statements</em><br/>
-
-<strong>end function</strong>
-</p>
-
-<p>
-<strong>function</strong> function_name$ ( <em><a class="explain" href="./en_expressions.html">variable_list</a></em> )<br/>
-
-&nbsp;&nbsp;&nbsp;<em>statements</em><br/>
-
-<strong>end function</strong>
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Create a function that will receive zero or more values, process those values and return either a numeric or string value.  Return values are set by assigning the name of the function and executing a <a href="./en_return.html" class="wikilink1" title="en:return">Return</a> statement or allowing the <em>End Function</em> statement to be executed.  All variables used within the function will be local to the function and will not change the values in the calling code.
-</p>
-
-<p>
-In many structured languages the return value of a function is set using the <a href="./en_return.html" class="wikilink1" title="en:return">Return</a> statement.  In BASIC-256 the returned value of a function is set by assigning the function name the value and either executing the <a href="./en_return.html" class="wikilink1" title="en:return">Return</a> statement or reaching the end of the function.  A numeric function has the default return value of zero (0) and a string function has the default value of a zero length string (””).
-</p>
-
-<p>
-Subroutine variables may a list of zero or more, comma separated, numeric or string variables.  Arrays and variables may be passed by reference using the <a href="./en_ref.html" class="wikilink1" title="en:ref">Ref</a> definition.
-</p>
-
-<p>
-Functions should be defined at the bottom of your program, and can not be defined within another function, <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a> or control block (<a href="./en_if.html" class="wikilink1" title="en:if">If/Then</a>, <a href="./en_do.html" class="wikilink1" title="en:do">Do/Until</a>, …)
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="example">Example</h3>
-<div class="level3">
-<pre class="code">print double$(&quot;Hello&quot;)
-print triple(3)
-end
-
-function double$(a$)
-   double$ = a$ + a$
-end function
-
-function triple(b)
-   triple = b * 3
-   return
-   triple = 9999	# code never gets executed
-end function</pre>
-
-<p>
-will display<br/>
-
-</p>
-<pre class="code">HelloHello
-9</pre>
-
-</div>
-
-<h3 class="sectionedit5" id="see_also">See Also</h3>
-<div class="level3">
-
-</div>
-<div class="plugin_include_content plugin_include__en:start">
-<div class="level3">
-
-<p>
-<a href="./en_case.html" class="wikilink1" title="en:case">Begin Case / Case / End Case</a>, <a href="./en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="./en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="./en_continuefor.html" class="wikilink1" title="en:continuefor">Continue For</a>, <a href="./en_continuewhile.html" class="wikilink1" title="en:continuewhile">Continue While</a>, <a href="./en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="./en_end.html" class="wikilink1" title="en:end">End</a>, <a href="./en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="./en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="./en_exitwhile.html" class="wikilink1" title="en:exitwhile">Exit While</a>, <a href="./en_for.html" class="wikilink1" title="en:for">For / Next</a>, <span class="curid"><a href="./en_function.html" class="wikilink1" title="en:function">Function</a></span>, <a href="./en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="./en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="./en_ifthen.html" class="wikilink1" title="en:ifthen">If Then</a>, <a href="./en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="./en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="./en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="./en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="./en_while.html" class="wikilink1" title="en:while">While / End While</a>
-</p>
-
-</div>
-
-</div>
-<div class="level3">
-
-</div>
-
-<h3 class="sectionedit9" id="history">History</h3>
-<div class="level3">
-<div class="table sectionedit10"><table class="inline">
-	<tr class="row0">
-		<td class="col0">0.9.9.1</td><td class="col1">New To Version</td>
-	</tr>
-</table></div>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>en/function.txt</bdi> · Last modified: 2014/02/08 22:50 by <bdi>admin</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>en:function [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="en_start.html" class="wikilink1" title="en:start">en</a></bdi> » <bdi><span class="curid"><a href="en_function.html" class="wikilink1" title="en:function">function</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>en:function</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="en_function.html#function_statement">Function (Statement)</a></div><ul class="toc"><li class="level3"><div class="li"><a href="en_function.html#format">Format</a></div></li><li class="level3"><div class="li"><a href="en_function.html#description">Description</a></div></li><li class="level3"><div class="li"><a href="en_function.html#example">Example</a></div></li><li class="level3"><div class="li"><a href="en_function.html#see_also">See Also</a></div></li><li class="level3"><div class="li"><a href="en_function.html#history">History</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="function_statement">Function (Statement)</h2><div class="level2"></div><h3 class="sectionedit2" id="format">Format</h3><div class="level3"><p><strong>function</strong> function_name ( <em><a class="explain" href="en_expressions.html">variable_list</a></em> )<br/>&nbsp;&nbsp;&nbsp;<em>statements</em><br/><strong>end function</strong></p><p><strong>function</strong> function_name$ ( <em><a class="explain" href="en_expressions.html">variable_list</a></em> )<br/>&nbsp;&nbsp;&nbsp;<em>statements</em><br/><strong>end function</strong></p></div><h3 class="sectionedit3" id="description">Description</h3><div class="level3"><p>Create a function that will receive zero or more values, process those values and return either a numeric or string value.  Return values are set by assigning the name of the function and executing a <a href="en_return.html" class="wikilink1" title="en:return">Return</a> statement or allowing the <em>End Function</em> statement to be executed.  All variables used within the function will be local to the function and will not change the values in the calling code.</p><p>In many structured languages the return value of a function is set using the <a href="en_return.html" class="wikilink1" title="en:return">Return</a> statement.  In BASIC-256 the returned value of a function is set by assigning the function name the value and either executing the <a href="en_return.html" class="wikilink1" title="en:return">Return</a> statement or reaching the end of the function.  A numeric function has the default return value of zero (0) and a string function has the default value of a zero length string (””).</p><p>Subroutine variables may a list of zero or more, comma separated, numeric or string variables.  Arrays and variables may be passed by reference using the <a href="en_ref.html" class="wikilink1" title="en:ref">Ref</a> definition.</p><p>Functions should be defined at the bottom of your program, and can not be defined within another function, <a href="en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a> or control block (<a href="en_if.html" class="wikilink1" title="en:if">If/Then</a>, <a href="en_do.html" class="wikilink1" title="en:do">Do/Until</a>, …)</p></div><h3 class="sectionedit4" id="example">Example</h3><div class="level3"><pre class="code">print double$(&quot;Hello&quot;)print triple(3)endfunction double$(a$)   double$ = a$ + a$end functionfunction triple(b)   triple = b * 3   return   triple = 9999	# code never gets executedend function</pre><p>will display<br/></p><pre class="code">HelloHello9</pre></div><h3 class="sectionedit5" id="see_also">See Also</h3><div class="level3"></div><div class="plugin_include_content plugin_include__en:start"><div class="level3"><p><a href="en_case.html" class="wikilink1" title="en:case">Begin Case / Case / End Case</a>, <a href="en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="en_continuefor.html" class="wikilink1" title="en:continuefor">Continue For</a>, <a href="en_continuewhile.html" class="wikilink1" title="en:continuewhile">Continue While</a>, <a href="en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="en_end.html" class="wikilink1" title="en:end">End</a>, <a href="en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="en_exitwhile.html" class="wikilink1" title="en:exitwhile">Exit While</a>, <a href="en_for.html" class="wikilink1" title="en:for">For / Next</a>, <span class="curid"><a href="en_function.html" class="wikilink1" title="en:function">Function</a></span>, <a href="en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="en_ifthen.html" class="wikilink1" title="en:ifthen">If Then</a>, <a href="en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="en_while.html" class="wikilink1" title="en:while">While / End While</a></p></div></div><div class="level3"></div><h3 class="sectionedit9" id="history">History</h3><div class="level3"><div class="table sectionedit10"><table class="inline">	<tr class="row0">		<td class="col0">0.9.9.1</td><td class="col1">New To Version</td>	</tr></table></div></div>                                    </div>                <div class="docInfo"><bdi>en/function.txt</bdi> · Last modified: 2014/02/08 22:50 by <bdi>admin</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

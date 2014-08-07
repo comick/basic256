@@ -1,298 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>pt:operators [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2012-12-06T06:31:35-0700"/>
-<meta name="keywords" content="pt,operators"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/pt:operators&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=pt"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=pt:operators"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=pt:operators"/>
-<link rel="canonical" href="./pt_operators.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="./pt_operators.html" class="wikilink1" title="pt:operators">operators</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>pt:operators</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-                    
-<h2 class="sectionedit1" id="operadores">Operadores</h2>
-<div class="level2">
-
-<p>
-Os operadores +, -, *, /, and ^ são usados para as respectivas operações, com números ou variaveis<br/>
-
-<br/>
-
-Os operadores %, \, &amp;, |, and ~ são usados para modulo, divisão inteira, conjunção, disjunção e negação.<br/>
-
-<br/>
-
-O operador = pode ser conforme o contexto, atributivo (a=1) ou comparativo (if a=1 then …..). O operador + pode ser usado para concatenar cadeias alfanuméricas (a$=“ele”+“fante”).  O operador : pode ser usado para separar instruções sem mudar de linha. O operador; entre duas intruções PRINT evita a mudança de linha . REM e # são equivalentes e são usados para deixar comentários no código.<br/>
-
-<br/>
-
-</p>
-<div class="table sectionedit2"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Operadores aritméticos</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">+</td><td class="col1">Adição</td><td class="col2">c= a + b</td><td class="col3">soma as variáveis a e b (devolve à variavel c) </td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">-</td><td class="col1">Subtração</td><td class="col2">a - b</td><td class="col3">subtrai dois valores numéricos</td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">*</td><td class="col1">Multiplicação</td><td class="col2">a * b</td><td class="col3"> multiplica dois valores numéricos</td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">/</td><td class="col1">Divisão</td><td class="col2">a / b</td><td class="col3">Devolve a divisão decimal.</td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">\</td><td class="col1">Divisão inteira</td><td class="col2">a  b</td><td class="col3">Devolve o número (inteiro) de vezes que b cabe em a completamente.</td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">%</td><td class="col1">Modulo</td><td class="col2">a % b</td><td class="col3">Devolve o resto da divisão entre a e b.</td>
-	</tr>
-	<tr class="row8">
-		<td class="col0">++</td><td class="col1">Incremento à priori</td><td class="col2">++a</td><td class="col3">Devolve a variavel a incerementada em 1 (mesmo que a=a+1)   <sup>1</sup></td>
-	</tr>
-	<tr class="row9">
-		<td class="col0">++</td><td class="col1">Incremento à posteriori</td><td class="col2">a++</td><td class="col3">Devolve a variavel a e depois incrementa-a em 1 unidade <sup>1</sup></td>
-	</tr>
-	<tr class="row10">
-		<td class="col0">–</td><td class="col1">Decremento à priori</td><td class="col2">–a</td><td class="col3">Subtrai uma unidade à variavél e devolve esse valor.  <sup>1</sup></td>
-	</tr>
-	<tr class="row11">
-		<td class="col0">–</td><td class="col1">Decremento à posteriori</td><td class="col2">a–</td><td class="col3">Devolve a variavel a e depois decrementa-a em 1 unidade. <sup>1</sup></td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-</p>
-<div class="table sectionedit3"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Operadores comparativos</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentários</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">=</td><td class="col1">Igual</td><td class="col2">if a = b then <em>(código)</em> </td><td class="col3"> Executa o código se a = b</td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">&lt;</td><td class="col1">Menor que</td><td class="col2">if a &lt; b then <em>(código)</em></td><td class="col3"> Executa o codigo se a &lt; b</td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">&gt;</td><td class="col1">Maior que</td><td class="col2">if a &gt; b then <em>(código)</em></td><td class="col3"> Executa o codigo se a &gt; b</td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">&lt;=</td><td class="col1">Menor ou igual a</td><td class="col2">if a &lt;= b then <em>(código)</em></td><td class="col3"> Executa o código se a é menor ou igual que b</td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">&gt;=</td><td class="col1">Maior ou igual a</td><td class="col2">a &gt;= b</td><td class="col3">Executa o código se a é maior ou igual que b </td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">&lt;&gt;</td><td class="col1">Diferente de</td><td class="col2">a &lt;&gt; b</td><td class="col3"> Executa o código se a é diferente de b</td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-</p>
-<div class="table sectionedit4"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Operadores lógicos</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">NOT</td><td class="col1">Negação lógica</td><td class="col2">if NOT (a=1) then <em>(código)</em></td><td class="col3">Executa o código se a não for igual a 1 </td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">AND</td><td class="col1">Conjunção lógica</td><td class="col2">a AND b</td><td class="col3"> </td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">OR</td><td class="col1">Disjunção lógica</td><td class="col2">a OR b</td><td class="col3"> </td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">XOR</td><td class="col1">Disjunção exclusiva lógica</td><td class="col2">a XOR b</td><td class="col3"> </td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-</p>
-<div class="table sectionedit5"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Operadpres binários</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">~</td><td class="col1">Negação binária</td><td class="col2">~a</td><td class="col3"> </td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">&amp;</td><td class="col1">Conjunção binária</td><td class="col2">a &amp; b</td><td class="col3"> </td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">|</td><td class="col1">Disjunção binária</td><td class="col2">a | b</td><td class="col3">Returns the bits of integer a or integer b.</td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-</p>
-<div class="table sectionedit6"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="4">Operadores de cadeias alfanuméricas</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentários</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">+</td><td class="col1">Concatenação</td><td class="col2">a$ + b$</td><td class="col3"> b$ é apenso após a$.</td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-</p>
-<div class="table sectionedit7"><table class="inline">
-	<tr class="row0">
-		<th class="col0" colspan="3">Ordem das Operações</th>
-	</tr>
-	<tr class="row1">
-		<th class="col0">Ordem</th><th class="col1">Operador</th><th class="col2">Categoria/Descrição</th>
-	</tr>
-	<tr class="row2">
-		<td class="col0">1</td><td class="col1">( )</td><td class="col2">Parentesis</td>
-	</tr>
-	<tr class="row3">
-		<td class="col0">2</td><td class="col1">^</td><td class="col2">Expoentes</td>
-	</tr>
-	<tr class="row4">
-		<td class="col0">3</td><td class="col1">- ~</td><td class="col2">Subtração e negação binárias (NOT)</td>
-	</tr>
-	<tr class="row5">
-		<td class="col0">4</td><td class="col1">* / \</td><td class="col2">Multiplicação and Divisão</td>
-	</tr>
-	<tr class="row6">
-		<td class="col0">5</td><td class="col1">%</td><td class="col2">Resto inteiro (Mod)</td>
-	</tr>
-	<tr class="row7">
-		<td class="col0">6</td><td class="col1">+ -</td><td class="col2">Adição, Concatenação, e Subtração</td>
-	</tr>
-	<tr class="row8">
-		<td class="col0">7</td><td class="col1">&amp; |</td><td class="col2">“e”,”ou” binários</td>
-	</tr>
-	<tr class="row9">
-		<td class="col0">8</td><td class="col1">&lt; ⇐ &gt; &gt;= = &lt;&gt;</td><td class="col2">Comparação (Numérica e alfanumérica)</td>
-	</tr>
-	<tr class="row10">
-		<td class="col0">9</td><td class="col1">NOT</td><td class="col2">Unary Not</td>
-	</tr>
-	<tr class="row11">
-		<td class="col0">10</td><td class="col1">AND</td><td class="col2">“e” lógico</td>
-	</tr>
-	<tr class="row12">
-		<td class="col0">11</td><td class="col1">OR</td><td class="col2">“ou” lógico</td>
-	</tr>
-	<tr class="row13">
-		<td class="col0">12</td><td class="col1">XOR</td><td class="col2">“ou exclusivo” lógico</td>
-	</tr>
-</table></div>
-
-<p>
-<br/>
-
-<sup>1</sup> new with version 0.9.9.10
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>pt/operators.txt</bdi> · Last modified: 2012/12/06 06:31 by <bdi>m_santos</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>pt:operators [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="pt_start.html" class="wikilink1" title="pt:start">pt</a></bdi> » <bdi><span class="curid"><a href="pt_operators.html" class="wikilink1" title="pt:operators">operators</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>pt:operators</span></div>                <div class="page group"><h2 class="sectionedit1" id="operadores">Operadores</h2><div class="level2"><p>Os operadores +, -, *, /, and ^ são usados para as respectivas operações, com números ou variaveis<br/><br/>Os operadores %, \, &amp;, |, and ~ são usados para modulo, divisão inteira, conjunção, disjunção e negação.<br/><br/>O operador = pode ser conforme o contexto, atributivo (a=1) ou comparativo (if a=1 then …..). O operador + pode ser usado para concatenar cadeias alfanuméricas (a$=“ele”+“fante”).  O operador : pode ser usado para separar instruções sem mudar de linha. O operador; entre duas intruções PRINT evita a mudança de linha . REM e # são equivalentes e são usados para deixar comentários no código.<br/><br/></p><div class="table sectionedit2"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Operadores aritméticos</th>	</tr>	<tr class="row1">		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>	</tr>	<tr class="row2">		<td class="col0">+</td><td class="col1">Adição</td><td class="col2">c= a + b</td><td class="col3">soma as variáveis a e b (devolve à variavel c) </td>	</tr>	<tr class="row3">		<td class="col0">-</td><td class="col1">Subtração</td><td class="col2">a - b</td><td class="col3">subtrai dois valores numéricos</td>	</tr>	<tr class="row4">		<td class="col0">*</td><td class="col1">Multiplicação</td><td class="col2">a * b</td><td class="col3"> multiplica dois valores numéricos</td>	</tr>	<tr class="row5">		<td class="col0">/</td><td class="col1">Divisão</td><td class="col2">a / b</td><td class="col3">Devolve a divisão decimal.</td>	</tr>	<tr class="row6">		<td class="col0">\</td><td class="col1">Divisão inteira</td><td class="col2">a  b</td><td class="col3">Devolve o número (inteiro) de vezes que b cabe em a completamente.</td>	</tr>	<tr class="row7">		<td class="col0">%</td><td class="col1">Modulo</td><td class="col2">a % b</td><td class="col3">Devolve o resto da divisão entre a e b.</td>	</tr>	<tr class="row8">		<td class="col0">++</td><td class="col1">Incremento à priori</td><td class="col2">++a</td><td class="col3">Devolve a variavel a incerementada em 1 (mesmo que a=a+1)   <sup>1</sup></td>	</tr>	<tr class="row9">		<td class="col0">++</td><td class="col1">Incremento à posteriori</td><td class="col2">a++</td><td class="col3">Devolve a variavel a e depois incrementa-a em 1 unidade <sup>1</sup></td>	</tr>	<tr class="row10">		<td class="col0">–</td><td class="col1">Decremento à priori</td><td class="col2">–a</td><td class="col3">Subtrai uma unidade à variavél e devolve esse valor.  <sup>1</sup></td>	</tr>	<tr class="row11">		<td class="col0">–</td><td class="col1">Decremento à posteriori</td><td class="col2">a–</td><td class="col3">Devolve a variavel a e depois decrementa-a em 1 unidade. <sup>1</sup></td>	</tr></table></div><p><br/></p><div class="table sectionedit3"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Operadores comparativos</th>	</tr>	<tr class="row1">		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentários</th>	</tr>	<tr class="row2">		<td class="col0">=</td><td class="col1">Igual</td><td class="col2">if a = b then <em>(código)</em> </td><td class="col3"> Executa o código se a = b</td>	</tr>	<tr class="row3">		<td class="col0">&lt;</td><td class="col1">Menor que</td><td class="col2">if a &lt; b then <em>(código)</em></td><td class="col3"> Executa o codigo se a &lt; b</td>	</tr>	<tr class="row4">		<td class="col0">&gt;</td><td class="col1">Maior que</td><td class="col2">if a &gt; b then <em>(código)</em></td><td class="col3"> Executa o codigo se a &gt; b</td>	</tr>	<tr class="row5">		<td class="col0">&lt;=</td><td class="col1">Menor ou igual a</td><td class="col2">if a &lt;= b then <em>(código)</em></td><td class="col3"> Executa o código se a é menor ou igual que b</td>	</tr>	<tr class="row6">		<td class="col0">&gt;=</td><td class="col1">Maior ou igual a</td><td class="col2">a &gt;= b</td><td class="col3">Executa o código se a é maior ou igual que b </td>	</tr>	<tr class="row7">		<td class="col0">&lt;&gt;</td><td class="col1">Diferente de</td><td class="col2">a &lt;&gt; b</td><td class="col3"> Executa o código se a é diferente de b</td>	</tr></table></div><p><br/></p><div class="table sectionedit4"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Operadores lógicos</th>	</tr>	<tr class="row1">		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>	</tr>	<tr class="row2">		<td class="col0">NOT</td><td class="col1">Negação lógica</td><td class="col2">if NOT (a=1) then <em>(código)</em></td><td class="col3">Executa o código se a não for igual a 1 </td>	</tr>	<tr class="row3">		<td class="col0">AND</td><td class="col1">Conjunção lógica</td><td class="col2">a AND b</td><td class="col3"> </td>	</tr>	<tr class="row4">		<td class="col0">OR</td><td class="col1">Disjunção lógica</td><td class="col2">a OR b</td><td class="col3"> </td>	</tr>	<tr class="row5">		<td class="col0">XOR</td><td class="col1">Disjunção exclusiva lógica</td><td class="col2">a XOR b</td><td class="col3"> </td>	</tr></table></div><p><br/></p><div class="table sectionedit5"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Operadpres binários</th>	</tr>	<tr class="row1">		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentário</th>	</tr>	<tr class="row2">		<td class="col0">~</td><td class="col1">Negação binária</td><td class="col2">~a</td><td class="col3"> </td>	</tr>	<tr class="row3">		<td class="col0">&amp;</td><td class="col1">Conjunção binária</td><td class="col2">a &amp; b</td><td class="col3"> </td>	</tr>	<tr class="row4">		<td class="col0">|</td><td class="col1">Disjunção binária</td><td class="col2">a | b</td><td class="col3">Returns the bits of integer a or integer b.</td>	</tr></table></div><p><br/></p><div class="table sectionedit6"><table class="inline">	<tr class="row0">		<th class="col0" colspan="4">Operadores de cadeias alfanuméricas</th>	</tr>	<tr class="row1">		<th class="col0">Operador</th><th class="col1">Nome</th><th class="col2">Exemplo</th><th class="col3">Comentários</th>	</tr>	<tr class="row2">		<td class="col0">+</td><td class="col1">Concatenação</td><td class="col2">a$ + b$</td><td class="col3"> b$ é apenso após a$.</td>	</tr></table></div><p><br/></p><div class="table sectionedit7"><table class="inline">	<tr class="row0">		<th class="col0" colspan="3">Ordem das Operações</th>	</tr>	<tr class="row1">		<th class="col0">Ordem</th><th class="col1">Operador</th><th class="col2">Categoria/Descrição</th>	</tr>	<tr class="row2">		<td class="col0">1</td><td class="col1">( )</td><td class="col2">Parentesis</td>	</tr>	<tr class="row3">		<td class="col0">2</td><td class="col1">^</td><td class="col2">Expoentes</td>	</tr>	<tr class="row4">		<td class="col0">3</td><td class="col1">- ~</td><td class="col2">Subtração e negação binárias (NOT)</td>	</tr>	<tr class="row5">		<td class="col0">4</td><td class="col1">* / \</td><td class="col2">Multiplicação and Divisão</td>	</tr>	<tr class="row6">		<td class="col0">5</td><td class="col1">%</td><td class="col2">Resto inteiro (Mod)</td>	</tr>	<tr class="row7">		<td class="col0">6</td><td class="col1">+ -</td><td class="col2">Adição, Concatenação, e Subtração</td>	</tr>	<tr class="row8">		<td class="col0">7</td><td class="col1">&amp; |</td><td class="col2">“e”,”ou” binários</td>	</tr>	<tr class="row9">		<td class="col0">8</td><td class="col1">&lt; ⇐ &gt; &gt;= = &lt;&gt;</td><td class="col2">Comparação (Numérica e alfanumérica)</td>	</tr>	<tr class="row10">		<td class="col0">9</td><td class="col1">NOT</td><td class="col2">Unary Not</td>	</tr>	<tr class="row11">		<td class="col0">10</td><td class="col1">AND</td><td class="col2">“e” lógico</td>	</tr>	<tr class="row12">		<td class="col0">11</td><td class="col1">OR</td><td class="col2">“ou” lógico</td>	</tr>	<tr class="row13">		<td class="col0">12</td><td class="col1">XOR</td><td class="col2">“ou exclusivo” lógico</td>	</tr></table></div><p><br/><sup>1</sup> new with version 0.9.9.10</p></div>                                    </div>                <div class="docInfo"><bdi>pt/operators.txt</bdi> · Last modified: 2012/12/06 06:31 by <bdi>m_santos</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

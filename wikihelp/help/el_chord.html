@@ -1,172 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:chord [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:20-0700"/>
-<meta name="keywords" content="el,chord"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:chord&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:chord"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:chord"/>
-<link rel="canonical" href="./el_chord.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_chord.html" class="wikilink1" title="el:chord">chord</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:chord</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="chord">Chord</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>chord</strong> <em>x</em>,<em>y</em>,<em>width</em>,<em>height</em>,<em>startangle</em>,<em>widthangle</em><br/>
-
-<strong>chord</strong> ( <em>x</em>,<em>y</em>,<em>width</em>,<em>height</em>,<em>startangle</em>,<em>widthangle</em> )
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Draws an area bounded by an arc and chord (segment) of the circle or ellipse inside the bounding rectangle defined by <em>x</em>, <em>y</em>, <em>width</em>, and <em>height</em>.  The center of the circle/ellipse will be in the center of the rectangle.  The angles are defined from the 12 o&#039;clock position in a clockwise direction in radians. 
-</p>
-
-<p>
-As seen in the example below a chord may be used to draw a filled circle or an ellipse by defining the angular width to go all the way around (2*pi).
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="example">Example</h3>
-<div class="level3">
-<pre class="code"># chord_example.kbs
-# 2012-12-29 j.m.reneau
-#
-# example of chord statement added on 0.9.9.25
-
-clg
-color black
-rect 140,50,20,150
-color blue
-chord 0,0,300,200,radians(-60), radians(120)
-chord 100,175,60,50,radians(90),radians(180)
-
-color green
-chord 200,200,25,75,0,pi*2</pre>
-
-<p>
-draws<br/>
-
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=el_chord&amp;media=chord_example.png" class="media" title="chord_example.png"><img src="lib/exe/chord_example.png" class="media" title="chord_example" alt="chord_example" /></a>
-</p>
-
-</div>
-
-<h3 class="sectionedit5" id="new_to_version">New To Version</h3>
-<div class="level3">
-
-<p>
-0.9.9.25
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="see_also">See Also</h3>
-<div class="level3">
-
-</div>
-<div class="plugin_include_content plugin_include__en:start">
-<div class="level3">
-
-<p>
-<a href="./en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="./en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <a href="./en_circle.html" class="wikilink1" title="en:circle">Circle</a>, <a href="./en_getpenwidth.html" class="wikilink1" title="en:getpenwidth">GetPenWidth</a>, <a href="./en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="./en_penwidth.html" class="wikilink1" title="en:penwidth">PenWidth</a>, <a href="./en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="./en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="./en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <a href="./en_rect.html" class="wikilink1" title="en:rect">Rect</a>, <a href="./en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a>
-</p>
-
-</div>
-
-</div>
-<div class="level3">
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/chord.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:chord [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_chord.html" class="wikilink1" title="el:chord">chord</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:chord</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="el_chord.html#chord">Chord</a></div><ul class="toc"><li class="level3"><div class="li"><a href="el_chord.html#σύνταξη">Σύνταξη</a></div></li><li class="level3"><div class="li"><a href="el_chord.html#περιγραφή">Περιγραφή</a></div></li><li class="level3"><div class="li"><a href="el_chord.html#παράδειγμα">Παράδειγμα</a></div></li><li class="level3"><div class="li"><a href="el_chord.html#εισήχθηκε_με_την_έκδοση">Εισήχθηκε με την έκδοση</a></div></li><li class="level3"><div class="li"><a href="el_chord.html#δες_επίσης">Δες επίσης</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="chord">Chord</h2><div class="level2"></div><h3 class="sectionedit2" id="σύνταξη">Σύνταξη</h3><div class="level3"><p><strong>chord</strong> <em>x</em>,<em>y</em>,<em>πλάτος</em>,<em>ύψος</em>,<em>γωνίαΕκκίνησης</em>,<em>μήκοςΓωνίας</em><br/><strong>chord</strong> ( <em>x</em>,<em>y</em>,<em>πλάτος</em>,<em>ύψος</em>,<em>γωνίαΕκκίνησης</em>,<em>μήκοςΓωνίας</em> )</p></div><h3 class="sectionedit3" id="περιγραφή">Περιγραφή</h3><div class="level3"><p>Σχεδιάζει μια περιοχή που ορίζεται από ένα τόξο και μια χορδή (segment) του κύκλου ή της έλλειψης μέσα στο περικλείον ορθογώνιο, που ορίζεται από τα x, y, πλάτος, και ύψος. Το κέντρο του κύκλου/της έλλειψης είναι το κέντρο του ορθογωνίου. Οι γωνίες ξεκινάνε από τον βορρά και αναπτύσσονται με την φορά του ρολογιού.</p><p>Όπως και στο παρακάτω παράδειγμα μια χορδή μπορεί επίσης να χρησιμοποιηθεί για τον σχεδιασμό ενός γεμισμένου κύκλου ή έλλειψης προσδιορίζοντας το μήκος γωνίας ως 2*pi.</p></div><h3 class="sectionedit4" id="παράδειγμα">Παράδειγμα</h3><div class="level3"><pre class="code"># chord_example.kbs# 2012-12-29 j.m.reneau## paradeigma entolhs chord prostethike sthn ekdosh 0.9.9.25clgcolor blackrect 140,50,20,150color bluechord 0,0,300,200,radians(-60), radians(120)chord 100,175,60,50,radians(90),radians(180)color greenchord 200,200,25,75,0,pi*2</pre><p>θα ζωγραφίσει<br/><a href="http://doc.basic256.org/lib/exe/detail.php?id=el_chord&amp;media=chord_example.png" class="media" title="chord_example.png"><img src="lib/exe/chord_example.png" class="media" title="chord_example" alt="chord_example" /></a></p></div><h3 class="sectionedit5" id="εισήχθηκε_με_την_έκδοση">Εισήχθηκε με την έκδοση</h3><div class="level3"><p>0.9.9.25</p></div><h3 class="sectionedit6" id="δες_επίσης">Δες επίσης</h3><div class="level3"></div><div class="plugin_include_content plugin_include__en:start"><div class="level3"><p><a href="en_arc.html" class="wikilink1" title="en:arc">Arc</a>, <a href="en_chord.html" class="wikilink1" title="en:chord">Chord</a>, <a href="en_circle.html" class="wikilink1" title="en:circle">Circle</a>, <a href="en_getpenwidth.html" class="wikilink1" title="en:getpenwidth">GetPenWidth</a>, <a href="en_line.html" class="wikilink1" title="en:line">Line</a>, <a href="en_penwidth.html" class="wikilink1" title="en:penwidth">PenWidth</a>, <a href="en_pie.html" class="wikilink1" title="en:pie">Pie</a>, <a href="en_plot.html" class="wikilink1" title="en:plot">Plot</a>, <a href="en_poly.html" class="wikilink1" title="en:poly">Poly</a>, <a href="en_rect.html" class="wikilink1" title="en:rect">Rect</a>, <a href="en_stamp.html" class="wikilink1" title="en:stamp">Stamp</a></p></div></div><div class="level3"></div>                                    </div>                <div class="docInfo"><bdi>el/chord.txt</bdi> · Last modified: 2014/04/21 11:13 by <bdi>apollyon</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

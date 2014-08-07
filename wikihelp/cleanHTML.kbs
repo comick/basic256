@@ -1,0 +1,138 @@
+# cleanHTML.kbs - Clean the HTML downloaded from the documentation WIKI
+#
+# modification History
+# date...... programmer... description
+# 2014-08-06 j.m.reneau    original coding
+#
+# READ THE README file in this folder to describe the use of this
+# utility
+#
+## BE SURE THE WGET COMPLETED BEFORE RUNNING THIS PROGRAM
+
+
+if version() < 1010207 then
+   print "requires version 1.1.2.7 or higher"
+endif
+debug = false
+
+# d$ regular expressoions to remove from the downloaded HTML files
+# remove an expression if it does not contain any other of the
+# expressions.  This way nested tags get removed in a better
+# order using simple regex.
+#
+# These regex statements require the minimal (non-greedy)
+# setting in the QRegExp libraty (see regexminimal statement)
+#
+dim d$[100]
+nd=-1
+nd++: d$[nd]= '<!--.*-->'
+nd++: d$[nd]= 'doku\.php@id='
+nd++: d$[nd]= '<form.*<\/form>'
+nd++: d$[nd]= '<script.*<\/script>'
+nd++: d$[nd]= '<div class=\"no\".*<\/div>'
+nd++: d$[nd]= '<div id=\"dokuwiki__usertools\">.*<\/div>'
+nd++: d$[nd]= '<div id=\"dokuwiki__sitetools\">.*<\/div>'
+nd++: d$[nd]= '<div id=\"dokuwiki__pagetools\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"tools group\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"mobileTools\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"trace\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"tools\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"buttons\">.*<\/div>'
+nd++: d$[nd]= '<div class=\"inclmeta.*<\/div>'
+nd++: d$[nd]= '<ul class=\"a11y skip\">.*<\/ul>'
+nd++: d$[nd]= '<span class=\"tooltip\">.*<\/span>'
+nd++: d$[nd]= '<meta name=\".*>'
+nd++: d$[nd]= '<link rel=\"search.*>'
+nd++: d$[nd]= '<link rel=\"alternate.*>'
+nd++: d$[nd]= '<link rel=\"canonical.*>'
+nd++: d$[nd]= '<link rel=\"start.*>'
+nd++: d$[nd]= '<link rel=\"contents.*>'
+nd++: d$[nd]= '<link rel=\"shortcut.*>'
+nd++: d$[nd]= '<link rel=\"apple-touch.*>'
+nd++: d$[nd]= 'fetch\.php.*media='
+nd++: d$[nd]= '\.php.*tseed='
+nd++: d$[nd]= '<a href=\"http:\/\/www\.dokuwiki\.org.*<\/a>'
+nd++: d$[nd]= '<a href=\"http:\/\/www\.php\.net.*<\/a>'
+nd++: d$[nd]= '<a href=\"http:\/\/validator.*<\/a>'
+nd++: d$[nd]= '<a href=\"http:\/\/jigsaw.*<\/a>'
+nd++: d$[nd]= '<a href=\"http:\/\/dokuwiki\.org.*<\/a>'
+
+file$ = dir('./wiki')
+while file$ <> ""
+   if instrx(file$,"^doku.*html$") <> 0 then
+      print "processing " + file$
+      # read in file into string
+      open "./wiki/" + file$
+      html$ = ""
+      while not eof
+         line$ = readline
+         while(asc(right(line$,1))) < 32
+         line$ = left(line$,length(line$)-1)
+         if line$ = "" then exit while
+      end while
+      html$ += line$ + chr(13)
+   end while
+   close
+   print length(html$); 
+   #
+   # find all occurrences of the expressions in the d$ array
+   # and delete them - if one contains another skip it until the
+   # inner expressions are deleted
+   #
+   regexminimal true
+   #
+   do
+      needchange = false
+      for t = 0 to nd
+         pos = instrx(html$,d$[t])
+         while pos <> 0
+            part$ = midx(html$, d$[t], pos)
+            if debug then print pos + " " + d$[t] + " " + left(part$,10) + "..." + right(part$,10) + " " + length(part$)
+            needchange = true
+            doit = true
+            for u = 0 to nd
+               if u <> t then
+                  if instrx(part$,d$[u]) <> 0 then
+                     doit = false
+                     exit for
+                  endif
+               endif
+            next u
+            if doit then
+               if debug then print "doing " + t + " " + left(part$,10) + "..." + right(part$,10) + " " + length(part$)
+               html$ = replace(html$,part$,"")
+               pos = instrx(html$, d$[t], pos)
+               if instr(html$,"stylesheet") = 0 then end
+            else
+               if debug then print "skipping " + left(part$,10) + "..." + right(part$,10) + " " + length(part$) + " rule " + u
+               pos = instrx(html$, d$[t], pos+1)
+            endif
+         end while
+      next t
+   until not needchange
+   #
+   # do some character translations and cleaning up
+   html$ = replace(html$,"%3A","_")
+   html$ = replace(html$,"%253A","_")
+   while instr(html$, " "+chr(13)) <> 0
+      html$ = replace(html$," "+chr(13),chr(13))
+   end while
+   while instr(html$, chr(13)+chr(13)) <> 0
+      html$ = replace(html$,chr(13)+chr(13),chr(13))
+   end while
+   #
+   # write file out into HTML FOLDER with good name
+   print " " + length(html$)
+   f$ = mid(file$,13,999)
+   f$ = replace(f$,"%3A","_")
+   f$ = replace(f$,"%253A","_")
+   print f$
+   open "./help/" + f$
+   reset
+   write html$
+   close
+   #
+endif
+file$ = dir()
+
+end while

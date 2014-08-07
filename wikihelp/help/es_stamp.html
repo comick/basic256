@@ -1,175 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>es:stamp [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2011-03-29T11:56:18-0700"/>
-<meta name="keywords" content="es,stamp"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/es:stamp&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=es"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=es:stamp"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=es:stamp"/>
-<link rel="canonical" href="./es_stamp.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./es_start.html" class="wikilink1" title="es:start">es</a></bdi> » <bdi><span class="curid"><a href="./es_stamp.html" class="wikilink1" title="es:stamp">stamp</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>es:stamp</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="stamp">Stamp</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="formato">Formato</h3>
-<div class="level3">
-
-<p>
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>array</em><br/>
-
-<strong>stamp</strong> <em>x</em>, <em>y</em>, {x1, y1, x2, y2, x3, y3 …}<br/>
-
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>array</em><br/>
-
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, {x1, y1, x2, y2, x3, y3 …}<br/>
-
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>rotación</em>, <em>array</em><br/>
-
-<strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>rotación</em>, {x1, y1, x2, y2, x3, y3 …}
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="descripcion">Descripción</h3>
-<div class="level3">
-
-<p>
-Dibuja un polígono con la esquina superior izquierda (origen) en x,y. De manera opcional, el tamaño del polígono puede ser definido por <em>escala</em> (1=tamaño normal). También se puede rotar la imagen de acuerdo con un ángulo especificado ( en radianes, en sentido de las agujas del reloj) en torno al origen. Los lados del polígono son definidos por los valores almacenados en el array, el cual debe contener pares x,y secuencialmente. La (longitud del array/2) dará el número de puntos. El polígono puede también especificarse usando una lista de pares x,y encerrada entre llaves {}.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="ver_tambien">Ver también</h3>
-<div class="level3">
-
-<p>
-<a href="./es_poly.html" class="wikilink1" title="es:poly">Poly</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit5" id="ejemplo">Ejemplo</h3>
-<div class="level3">
-
-<p>
-Los dos bloques de código que aparecen a continuación dibujan un par de triángulos verdes en el área de gráficos:
-</p>
-<pre class="code">clg
-color blue
-rect 0,0,300,300
-color green
-dim tri(6)
-tri = {0, 0, 100, 100, 0, 100}
-# dibuja el triángulo en 0,0 (tamaño normal)
-stamp 100, 100, tri
-# dibuja el triángulo en 200,100 (mitad del tamaño)
-stamp 200, 100, .5, tri</pre>
-<pre class="code">clg
-color blue
-rect 0,0,300,300
-color green
-# dibuja el triángulo en 0,0 (tamaño normal)
-stamp 100, 100, {0, 0, 100, 100, 0, 100}
-# dibuja el triángulo en 200,100 (mitad del tamaño)
-stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}</pre>
-
-<p>
-Ambos programas mostrarán:<br/>
-
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=es_stamp&amp;media=en:stamp.png" class="media" title="en:stamp.png"><img src="lib/exe/en_stamp.png" class="media" alt="" /></a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="disponible_desde_la_version">Disponible desde la versión</h3>
-<div class="level3">
-
-<p>
-0.9.4
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>es/stamp.txt</bdi> · Last modified: 2011/03/29 11:56 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>es:stamp [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="es_start.html" class="wikilink1" title="es:start">es</a></bdi> » <bdi><span class="curid"><a href="es_stamp.html" class="wikilink1" title="es:stamp">stamp</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>es:stamp</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="es_stamp.html#stamp">Stamp</a></div><ul class="toc"><li class="level3"><div class="li"><a href="es_stamp.html#formato">Formato</a></div></li><li class="level3"><div class="li"><a href="es_stamp.html#descripcion">Descripción</a></div></li><li class="level3"><div class="li"><a href="es_stamp.html#ver_tambien">Ver también</a></div></li><li class="level3"><div class="li"><a href="es_stamp.html#ejemplo">Ejemplo</a></div></li><li class="level3"><div class="li"><a href="es_stamp.html#disponible_desde_la_version">Disponible desde la versión</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="stamp">Stamp</h2><div class="level2"></div><h3 class="sectionedit2" id="formato">Formato</h3><div class="level3"><p><strong>stamp</strong> <em>x</em>, <em>y</em>, <em>array</em><br/><strong>stamp</strong> <em>x</em>, <em>y</em>, {x1, y1, x2, y2, x3, y3 …}<br/><strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>array</em><br/><strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, {x1, y1, x2, y2, x3, y3 …}<br/><strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>rotación</em>, <em>array</em><br/><strong>stamp</strong> <em>x</em>, <em>y</em>, <em>escala</em>, <em>rotación</em>, {x1, y1, x2, y2, x3, y3 …}</p></div><h3 class="sectionedit3" id="descripcion">Descripción</h3><div class="level3"><p>Dibuja un polígono con la esquina superior izquierda (origen) en x,y. De manera opcional, el tamaño del polígono puede ser definido por <em>escala</em> (1=tamaño normal). También se puede rotar la imagen de acuerdo con un ángulo especificado ( en radianes, en sentido de las agujas del reloj) en torno al origen. Los lados del polígono son definidos por los valores almacenados en el array, el cual debe contener pares x,y secuencialmente. La (longitud del array/2) dará el número de puntos. El polígono puede también especificarse usando una lista de pares x,y encerrada entre llaves {}.</p></div><h3 class="sectionedit4" id="ver_tambien">Ver también</h3><div class="level3"><p><a href="es_poly.html" class="wikilink1" title="es:poly">Poly</a></p></div><h3 class="sectionedit5" id="ejemplo">Ejemplo</h3><div class="level3"><p>Los dos bloques de código que aparecen a continuación dibujan un par de triángulos verdes en el área de gráficos:</p><pre class="code">clgcolor bluerect 0,0,300,300color greendim tri(6)tri = {0, 0, 100, 100, 0, 100}# dibuja el triángulo en 0,0 (tamaño normal)stamp 100, 100, tri# dibuja el triángulo en 200,100 (mitad del tamaño)stamp 200, 100, .5, tri</pre><pre class="code">clgcolor bluerect 0,0,300,300color green# dibuja el triángulo en 0,0 (tamaño normal)stamp 100, 100, {0, 0, 100, 100, 0, 100}# dibuja el triángulo en 200,100 (mitad del tamaño)stamp 200, 100, .5, {0, 0, 100, 100, 0, 100}</pre><p>Ambos programas mostrarán:<br/><a href="http://doc.basic256.org/lib/exe/detail.php?id=es_stamp&amp;media=en:stamp.png" class="media" title="en:stamp.png"><img src="lib/exe/en_stamp.png" class="media" alt="" /></a></p></div><h3 class="sectionedit6" id="disponible_desde_la_version">Disponible desde la versión</h3><div class="level3"><p>0.9.4</p></div>                                    </div>                <div class="docInfo"><bdi>es/stamp.txt</bdi> · Last modified: 2011/03/29 11:56 (external edit)</div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

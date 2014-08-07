@@ -303,6 +303,7 @@ logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
 md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
+midx [Mm][Ii][Dd][Xx]
 minute [Mm][Ii][Nn][Uu][Tt][Ee]([ \t]*\([ \t]*\))?
 month [Mm][Oo][Nn][Tt][Hh]([ \t]*\([ \t]*\))?
 mouseb [Mm][Oo][Uu][Ss][Ee][Bb]([ \t]*\([ \t]*\))?
@@ -353,6 +354,7 @@ red [Rr][Ee][Dd]([ \t]*\([ \t]*\))?
 redim [Rr][Ee][Dd][Ii][Mm]
 ref [Rr][Ee][Ff]
 refresh [Rr][Ee][Ff][Rr][Ee][Ss][Hh]
+regexminimal [Rr][Ee][Gg][Ee][Xx][Mm][Ii][Nn][Ii][Mm][Aa][Ll]
 rem (:[ \t]*)?[Rr][Ee][Mm](([ \t:].+)|([ \t:]*))$
 remalt (:[ \t]*)?#.*$
 replace [Rr][Ee][Pp][Ll][Aa][Cc][Ee]
@@ -609,6 +611,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 {lower}						{ count(); return B256LOWER; }
 {md5}						{ count(); return B256MD5; }
 {mid}						{ count(); return B256MID; }
+{midx}						{ count(); return B256MIDX; }
 {minute}					{ count(); return B256MINUTE; }
 {month}						{ count(); return B256MONTH; }
 {mouseb}					{ count(); return B256MOUSEB; }
@@ -787,6 +790,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 {redim}						{ count(); return B256REDIM; }
 {refresh}					{ count(); return B256REFRESH; }
 {refresh}":"				{ count(); unputcolon(); return B256REFRESH; }
+{regexminimal}				{ count(); return B256REGEXMINIMAL; }
 {rem}						{ count(); return B256REM; }
 {remalt}					{ count(); return B256REM; }
 {reset}						{ count(); return B256RESET; }

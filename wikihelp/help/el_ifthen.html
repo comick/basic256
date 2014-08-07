@@ -1,182 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>el:ifthen [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2014-01-11T23:26:31-0700"/>
-<meta name="keywords" content="el,ifthen"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/el:ifthen&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=el"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=el:ifthen"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=el:ifthen"/>
-<link rel="canonical" href="./el_ifthen.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="./el_ifthen.html" class="wikilink1" title="el:ifthen">ifthen</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>el:ifthen</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="if_then">If / Then</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong> <em>statement</em>
-</p>
-<hr />
-
-<p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/>
-
-<em><a class="explain" href="./en_programsyntax.html">statement(s)</a></em><br/>
-
-<strong>end if</strong>
-</p>
-<hr />
-
-<p>
-<strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/>
-
-<em><a class="explain" href="./en_programsyntax.html">statement(s)</a></em><br/>
-
-<strong>else</strong><br/>
-
-<em><a class="explain" href="./en_programsyntax.html">statement(s)</a></em><br/>
-
-<strong>end if</strong>
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-A single line IF evaluates <em>booleanexpr</em>, when true the <em><a class="explain" href="./en_programsyntax.html">statement(s)</a></em> following the then is executed, otherwise execution continues on the next line. There are also two forms of a multi-line if statement, one with a true block and one with a true and a false block of code to execute.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="example">Example</h3>
-<div class="level3">
-<pre class="code">print &quot;Guess my letter - press a key&quot;
-# wait for the user to press a key
-do
-  a = key
-  pause .01
-until a &lt;&gt; 0
-#
-if chr(a) = &quot;Z&quot; then
-   print &quot;Yippie, you pressed the Z key!!!&quot;
-else
-   print &quot;darn, you pressed something else.&quot;
-end if
-#
-end</pre>
-
-</div>
-
-<h3 class="sectionedit5" id="see_also">See Also</h3>
-<div class="level3">
-
-</div>
-<div class="plugin_include_content plugin_include__en:start">
-<div class="level3">
-
-<p>
-<a href="./en_case.html" class="wikilink1" title="en:case">Begin Case / Case / End Case</a>, <a href="./en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="./en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="./en_continuefor.html" class="wikilink1" title="en:continuefor">Continue For</a>, <a href="./en_continuewhile.html" class="wikilink1" title="en:continuewhile">Continue While</a>, <a href="./en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="./en_end.html" class="wikilink1" title="en:end">End</a>, <a href="./en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="./en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="./en_exitwhile.html" class="wikilink1" title="en:exitwhile">Exit While</a>, <a href="./en_for.html" class="wikilink1" title="en:for">For / Next</a>, <a href="./en_function.html" class="wikilink1" title="en:function">Function</a>, <a href="./en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="./en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="./en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="./en_ifthen.html" class="wikilink1" title="en:ifthen">If Then</a>, <a href="./en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="./en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="./en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="./en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="./en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="./en_while.html" class="wikilink1" title="en:while">While / End While</a>
-</p>
-
-</div>
-
-</div>
-<div class="level3">
-
-</div>
-
-<h3 class="sectionedit9" id="new_to_version">New To Version</h3>
-<div class="level3">
-
-<p>
-0.9.4g
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>el/ifthen.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>el:ifthen [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="el_start.html" class="wikilink1" title="el:start">el</a></bdi> » <bdi><span class="curid"><a href="el_ifthen.html" class="wikilink1" title="el:ifthen">ifthen</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>el:ifthen</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="el_ifthen.html#if_then">If / Then</a></div><ul class="toc"><li class="level3"><div class="li"><a href="el_ifthen.html#format">Format</a></div></li><li class="level3"><div class="li"><a href="el_ifthen.html#description">Description</a></div></li><li class="level3"><div class="li"><a href="el_ifthen.html#example">Example</a></div></li><li class="level3"><div class="li"><a href="el_ifthen.html#see_also">See Also</a></div></li><li class="level3"><div class="li"><a href="el_ifthen.html#new_to_version">New To Version</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="if_then">If / Then</h2><div class="level2"></div><h3 class="sectionedit2" id="format">Format</h3><div class="level3"><p><strong>if</strong> <em>booleanexpr</em> <strong>then</strong> <em>statement</em></p><hr /><p><strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/><em><a class="explain" href="en_programsyntax.html">statement(s)</a></em><br/><strong>end if</strong></p><hr /><p><strong>if</strong> <em>booleanexpr</em> <strong>then</strong><br/><em><a class="explain" href="en_programsyntax.html">statement(s)</a></em><br/><strong>else</strong><br/><em><a class="explain" href="en_programsyntax.html">statement(s)</a></em><br/><strong>end if</strong></p></div><h3 class="sectionedit3" id="description">Description</h3><div class="level3"><p>A single line IF evaluates <em>booleanexpr</em>, when true the <em><a class="explain" href="en_programsyntax.html">statement(s)</a></em> following the then is executed, otherwise execution continues on the next line. There are also two forms of a multi-line if statement, one with a true block and one with a true and a false block of code to execute.</p></div><h3 class="sectionedit4" id="example">Example</h3><div class="level3"><pre class="code">print &quot;Guess my letter - press a key&quot;# wait for the user to press a keydo  a = key  pause .01until a &lt;&gt; 0#if chr(a) = &quot;Z&quot; then   print &quot;Yippie, you pressed the Z key!!!&quot;else   print &quot;darn, you pressed something else.&quot;end if#end</pre></div><h3 class="sectionedit5" id="see_also">See Also</h3><div class="level3"></div><div class="plugin_include_content plugin_include__en:start"><div class="level3"><p><a href="en_case.html" class="wikilink1" title="en:case">Begin Case / Case / End Case</a>, <a href="en_call.html" class="wikilink1" title="en:call">Call</a>, <a href="en_continuedo.html" class="wikilink1" title="en:continuedo">Continue Do</a>, <a href="en_continuefor.html" class="wikilink1" title="en:continuefor">Continue For</a>, <a href="en_continuewhile.html" class="wikilink1" title="en:continuewhile">Continue While</a>, <a href="en_do.html" class="wikilink1" title="en:do">Do / Until</a>, <a href="en_end.html" class="wikilink1" title="en:end">End</a>, <a href="en_exitdo.html" class="wikilink1" title="en:exitdo">Exit Do</a>, <a href="en_exitfor.html" class="wikilink1" title="en:exitfor">Exit For</a>, <a href="en_exitwhile.html" class="wikilink1" title="en:exitwhile">Exit While</a>, <a href="en_for.html" class="wikilink1" title="en:for">For / Next</a>, <a href="en_function.html" class="wikilink1" title="en:function">Function</a>, <a href="en_global.html" class="wikilink1" title="en:global">Global</a>, <a href="en_goto.html" class="wikilink1" title="en:goto">Goto</a>, <a href="en_gosub.html" class="wikilink1" title="en:gosub">Gosub</a>, <a href="en_ifthen.html" class="wikilink1" title="en:ifthen">If Then</a>, <a href="en_pause.html" class="wikilink1" title="en:pause">Pause</a>, <a href="en_ref.html" class="wikilink1" title="en:ref">Ref</a>, <a href="en_rem.html" class="wikilink1" title="en:rem">Rem</a>, <a href="en_return.html" class="wikilink1" title="en:return">Return</a>, <a href="en_subroutine.html" class="wikilink1" title="en:subroutine">Subroutine</a>, <a href="en_while.html" class="wikilink1" title="en:while">While / End While</a></p></div></div><div class="level3"></div><h3 class="sectionedit9" id="new_to_version">New To Version</h3><div class="level3"><p>0.9.4g</p></div>                                    </div>                <div class="docInfo"><bdi>el/ifthen.txt</bdi> · Last modified: 2014/01/11 23:26 (external edit)</div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>

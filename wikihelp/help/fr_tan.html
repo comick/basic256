@@ -1,158 +1,1 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="no-js">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta charset="utf-8" />
-    <title>fr:tan [BASIC 256 - Language Documentation]</title>
-    
-    <meta name="generator" content="DokuWiki"/>
-<meta name="robots" content="index,follow"/>
-<meta name="date" content="2013-08-20T17:37:03-0700"/>
-<meta name="keywords" content="fr,tan"/>
-<link rel="search" type="application/opensearchdescription+xml" href="lib/exe/opensearch.php" title="BASIC 256 - Language Documentation"/>
-<link rel="start" href="index.html"/>
-<link rel="contents" href="http://doc.basic256.org/fr:tan&amp;do=index" title="Sitemap"/>
-<link rel="alternate" type="application/rss+xml" title="Recent changes" href="http://doc.basic256.org/feed.php"/>
-<link rel="alternate" type="application/rss+xml" title="Current namespace" href="http://doc.basic256.org/feed.php?mode=list&amp;ns=fr"/>
-<link rel="alternate" type="text/html" title="Plain HTML" href="http://doc.basic256.org/doku.php?do=export_xhtml&amp;id=fr:tan"/>
-<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://doc.basic256.org/doku.php?do=export_raw&amp;id=fr:tan"/>
-<link rel="canonical" href="./fr_tan.html"/>
-<link rel="stylesheet" type="text/css" href="lib/exe/css0d03d48d31bb5717706fbbc1943326b5.css"/>
-
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="shortcut icon" href="lib/tpl/dokuwiki/images/favicon.ico" />
-<link rel="apple-touch-icon" href="lib/tpl/dokuwiki/images/apple-touch-icon.png" />
-    </head>
-
-<body>
-    <!--[if lte IE 7 ]><div id="IE7"><![endif]--><!--[if IE 8 ]><div id="IE8"><![endif]-->
-    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     ">
-
-        
-<!-- ********** HEADER ********** -->
-<div id="dokuwiki__header"><div class="pad group">
-
-    
-    <div class="headings group">
-
-        <h1><a href="./start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>
-            </div>
-
-    <div class="tools group">
-        <!-- USER TOOLS -->
-
-        
-        <!-- SITE TOOLS -->
-
-    </div>
-
-    <!-- BREADCRUMBS -->
-            <div class="breadcrumbs">
-                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="./start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="./fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="./fr_tan.html" class="wikilink1" title="fr:tan">tan</a></span></bdi></div>
-
-    
-    
-    <hr class="a11y" />
-</div></div><!-- /header -->
-
-        <div class="wrapper group">
-
-            
-            <!-- ********** CONTENT ********** -->
-            <div id="dokuwiki__content"><div class="pad group">
-
-                <div class="pageId"><span>fr:tan</span></div>
-
-                <div class="page group">
-                                                            <!-- wikipage start -->
-
-<h2 class="sectionedit1" id="tan">Tan</h2>
-<div class="level2">
-
-</div>
-
-<h3 class="sectionedit2" id="format">Format</h3>
-<div class="level3">
-
-<p>
-<strong>tan</strong> ( <em>expression</em> )
-</p>
-
-</div>
-
-<h3 class="sectionedit3" id="description">Description</h3>
-<div class="level3">
-
-<p>
-Calcul et retourne la tangente de <em>expression</em> qui doit être donné en radians.
-</p>
-
-</div>
-
-<h3 class="sectionedit4" id="remarque">Remarque</h3>
-<div class="level3">
-
-<p>
-La fonction tangente ne produit pas un résultat exacte.
-</p>
-
-</div>
-
-<h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3>
-<div class="level3">
-
-<p>
-<a href="./fr_acos.html" class="wikilink1" title="fr:acos">Acos</a>, <a href="./fr_asin.html" class="wikilink1" title="fr:asin">Asin</a>, <a href="./fr_atan.html" class="wikilink1" title="fr:atan">Atan</a>, <a href="./fr_sin.html" class="wikilink1" title="fr:sin">Sin</a>, <a href="./fr_cos.html" class="wikilink1" title="fr:cos">Cos</a>, <a href="./fr_degrees.html" class="wikilink1" title="fr:degrees">Degrees</a>, <a href="./fr_radians.html" class="wikilink1" title="fr:radians">Radians</a>
-</p>
-
-</div>
-
-<h3 class="sectionedit6" id="example">Example</h3>
-<div class="level3">
-<pre class="code">clg
-color black
-# On trace l&#039;axe des x
-line 0,150,300,150
-# on calcul le premier point
-lastx = 0
-lasty = tan(0) * 50 + 150
-# on trace une ligne entre chaque point de la courbe
-for x = 0 to 300 step 5
-   angle = x / 300 * 2 * pi
-   y = tan(angle) * 50 + 150
-   line lastx, lasty, x, y
-   lastx = x
-   lasty = y
-next x</pre>
-
-<p>
-Donnera le résultat suivant:<br/>
-
-<a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_tan&amp;media=fr:tan.jpg" class="media" title="fr:tan.jpg"><img src="lib/exe/fr_tan.jpg" class="media" title="tan.jpg" alt="tan.jpg" /></a>
-</p>
-
-</div>
-
-                    <!-- wikipage stop -->
-                                    </div>
-
-                <div class="docInfo"><bdi>fr/tan.txt</bdi> · Last modified: 2013/08/20 17:37 by <bdi>philrich123</bdi></div>
-
-                            </div></div><!-- /content -->
-
-            <hr class="a11y" />
-
-            <!-- PAGE ACTIONS -->
-
-        </div><!-- /wrapper -->
-
-        
-<!-- ********** FOOTER ********** -->
-<div id="dokuwiki__footer"><div class="pad">
-    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" rel="license" class="urlextern">CC Attribution-Noncommercial-Share Alike 3.0 Unported</a></bdi></div>
-
-</div></div><!-- /footer -->
-
-    </div></div><!-- /site -->
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en" dir="ltr" class="no-js"><head>    <meta charset="utf-8" />    <title>fr:tan [BASIC 256 - Language Documentation]</title><link rel="stylesheet" type="text/css" href="lib/exe/cssc171c1dfe8519125bb40a349172b001a.css"/>    </head><body>    <div id="dokuwiki__site"><div id="dokuwiki__top" class="site dokuwiki mode_show tpl_dokuwiki     "><div id="dokuwiki__header"><div class="pad group">    <div class="headings group">        <h1><a href="start.html"  accesskey="h" title="[H]"><img src="lib/tpl/dokuwiki/images/logo.png" width="64" height="64" alt="" /> <span>BASIC 256 - Language Documentation</span></a></h1>            </div>    </div>            <div class="breadcrumbs">                            <div class="youarehere"><span class="bchead">You are here: </span><span class="home"><bdi><a href="start.html" class="wikilink1" title="start">start</a></bdi></span> » <bdi><a href="fr_start.html" class="wikilink1" title="fr:start">fr</a></bdi> » <bdi><span class="curid"><a href="fr_tan.html" class="wikilink1" title="fr:tan">tan</a></span></bdi></div>                    </div>    <hr class="a11y" /></div></div>        <div class="wrapper group">            <div id="dokuwiki__content"><div class="pad group">                <div class="pageId"><span>fr:tan</span></div>                <div class="page group"><div id="dw__toc"><h3 class="toggle">Table of Contents</h3><div><ul class="toc"><li class="level2"><div class="li"><a href="fr_tan.html#tan">Tan</a></div><ul class="toc"><li class="level3"><div class="li"><a href="fr_tan.html#format">Format</a></div></li><li class="level3"><div class="li"><a href="fr_tan.html#description">Description</a></div></li><li class="level3"><div class="li"><a href="fr_tan.html#remarque">Remarque</a></div></li><li class="level3"><div class="li"><a href="fr_tan.html#voir_aussi">Voir Aussi</a></div></li><li class="level3"><div class="li"><a href="fr_tan.html#example">Example</a></div></li></ul></li></ul></div></div><h2 class="sectionedit1" id="tan">Tan</h2><div class="level2"></div><h3 class="sectionedit2" id="format">Format</h3><div class="level3"><p><strong>tan</strong> ( <em>expression</em> )</p></div><h3 class="sectionedit3" id="description">Description</h3><div class="level3"><p>Calcul et retourne la tangente de <em>expression</em> qui doit être donné en radians.</p></div><h3 class="sectionedit4" id="remarque">Remarque</h3><div class="level3"><p>La fonction tangente ne produit pas un résultat exacte.</p></div><h3 class="sectionedit5" id="voir_aussi">Voir Aussi</h3><div class="level3"><p><a href="fr_acos.html" class="wikilink1" title="fr:acos">Acos</a>, <a href="fr_asin.html" class="wikilink1" title="fr:asin">Asin</a>, <a href="fr_atan.html" class="wikilink1" title="fr:atan">Atan</a>, <a href="fr_sin.html" class="wikilink1" title="fr:sin">Sin</a>, <a href="fr_cos.html" class="wikilink1" title="fr:cos">Cos</a>, <a href="fr_degrees.html" class="wikilink1" title="fr:degrees">Degrees</a>, <a href="fr_radians.html" class="wikilink1" title="fr:radians">Radians</a></p></div><h3 class="sectionedit6" id="example">Example</h3><div class="level3"><pre class="code">clgcolor black# On trace l&#039;axe des xline 0,150,300,150# on calcul le premier pointlastx = 0lasty = tan(0) * 50 + 150# on trace une ligne entre chaque point de la courbefor x = 0 to 300 step 5   angle = x / 300 * 2 * pi   y = tan(angle) * 50 + 150   line lastx, lasty, x, y   lastx = x   lasty = ynext x</pre><p>Donnera le résultat suivant:<br/><a href="http://doc.basic256.org/lib/exe/detail.php?id=fr_tan&amp;media=fr:tan.jpg" class="media" title="fr:tan.jpg"><img src="lib/exe/fr_tan.jpg" class="media" title="tan.jpg" alt="tan.jpg" /></a></p></div>                                    </div>                <div class="docInfo"><bdi>fr/tan.txt</bdi> · Last modified: 2013/08/20 17:37 by <bdi>philrich123</bdi></div>                            </div></div>            <hr class="a11y" />        </div><div id="dokuwiki__footer"><div class="pad">    <div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div></div>    </div></div>    <div id="screen__mode" class="no"></div></body></html>
