@@ -97,6 +97,7 @@ public:
 	QAction * runact;
 	QAction * debugact;
 	QAction * stepact;
+	QAction * bpact;
 	QAction * stopact;
 
 	RunController *rc;

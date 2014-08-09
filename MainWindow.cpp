@@ -325,6 +325,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("S&tep"));
     stepact->setShortcut(Qt::Key_F11);
     stepact->setEnabled(false);
+    bpact = runmenu->addAction(QIcon(":images/break.png"), QObject::tr("Run to &Break Point"));
+    bpact->setShortcut(Qt::Key_F11 + Qt::CTRL);
+    bpact->setEnabled(false);
     stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
     stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
     stopact->setEnabled(false);
@@ -333,6 +336,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
     QObject::connect(debugact, SIGNAL(triggered()), rc, SLOT(startDebug()));
     QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
+    QObject::connect(bpact, SIGNAL(triggered()), rc, SLOT(stepBreakPoint()));
     QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
     //QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
@@ -549,6 +553,7 @@ void MainWindow::loadAndGoMode() {
     variableWinVisibleAct->setVisible(false);
     debugact->setVisible(false);
     stepact->setVisible(false);
+    bpact->setVisible(false);
 
     runact->activate(QAction::Trigger);
 }

@@ -25,6 +25,7 @@
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QMainWindow>
 #include <QKeyEvent>
+#include <QList>
 
 #include "ViewWidgetIFace.h"
 
@@ -42,7 +43,10 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   bool codeChanged;
   QString getCurrentWord();
   void lineNumberAreaPaintEvent(QPaintEvent *event);
+  void lineNumberAreaMouseClickEvent(QMouseEvent *event);
   int lineNumberAreaWidth();
+  QList<int> *breakPoints;
+  void clearBreakPoints();
 
  public slots:
   void newProgram();
@@ -84,7 +88,7 @@ signals:
   void addFileToRecentList(QString);
   void loadRecent(int);
   QWidget *lineNumberArea;
-
+  
 private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void updateLineNumberArea(const QRect &, int);

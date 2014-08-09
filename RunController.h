@@ -61,6 +61,7 @@ class RunController : public QObject
   void stopRun();
   void pauseResume();
   void stepThrough();
+  void stepBreakPoint();
   void showDocumentation();
   void showContextDocumentation();
   void showOnlineDocumentation();

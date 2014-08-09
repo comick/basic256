@@ -46,13 +46,13 @@
  class LineNumberArea : public QWidget
  {
  public:
-     LineNumberArea(BasicEdit *editor);
+	LineNumberArea(BasicEdit *editor);
 
-     QSize sizeHint();
+	 QSize sizeHint();
      
  protected:
-     void paintEvent(QPaintEvent *event);
-     
+	void paintEvent(QPaintEvent *event);
+	void mousePressEvent(QMouseEvent *event);    
  private:
-     BasicEdit *be;
+	BasicEdit *be;
  };

@@ -213,8 +213,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_MID) return QString("OP_MID");
     else if (op==OP_MIDX) return QString("OP_MIDX");
     else if (op==OP_INSTR) return QString("OP_INSTR");
-    else if (op==OP_INSTR_S) return QString("OP_INSTR_S");
-    else if (op==OP_INSTR_SC) return QString("OP_INSTR_SC");
     else if (op==OP_INSTRX) return QString("OP_INSTRX");
     else if (op==OP_OPEN) return QString("OP_OPEN");
     else if (op==OP_READ) return QString("OP_READ");
@@ -302,9 +300,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_ONERRORGOSUB) return QString("OP_ONERRORGOSUB");
     else if (op==OP_ONERRORCATCH) return QString("OP_ONERRORCATCH");
     else if (op==OP_EXPLODESTR) return QString("OP_EXPLODESTR");
-    else if (op==OP_EXPLODESTR_C) return QString("OP_EXPLODESTR_C");
     else if (op==OP_EXPLODE) return QString("OP_EXPLODE");
-    else if (op==OP_EXPLODE_C) return QString("OP_EXPLODE_C");
     else if (op==OP_EXPLODEXSTR) return QString("OP_EXPLODEXSTR");
     else if (op==OP_EXPLODEX) return QString("OP_EXPLODEX");
     else if (op==OP_IMPLODE) return QString("OP_IMPLODE");
@@ -386,7 +382,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_IMGSAVE) return QString("OP_IMGSAVE");
     else if (op==OP_DIR) return QString("OP_DIR");
     else if (op==OP_REPLACE) return QString("OP_REPLACE");
-    else if (op==OP_REPLACE_C) return QString("OP_REPLACE_C");
     else if (op==OP_REPLACEX) return QString("OP_REPLACEX");
     else if (op==OP_COUNT) return QString("OP_COUNT");
     else if (op==OP_COUNTX) return QString("OP_COUNTX");
@@ -1208,6 +1203,20 @@ int
 Interpreter::execByteCode() {
     int opcode;
 
+    while (*op == OP_CURRLINE) {
+        op++;
+        currentLine = *op;
+        op++;
+        if (debugMode != 0) {
+            emit(highlightLine(currentLine));
+            if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
+				mydebugmutex->lock();
+				waitDebugCond->wait(mydebugmutex);
+				mydebugmutex->unlock();
+			}
+        }
+    }
+
     if (status == R_INPUTREADY) {
         stack.pushstring(inputString);
         status = R_RUNNING;
@@ -1253,18 +1262,6 @@ Interpreter::execByteCode() {
         }
     }
 
-    while (*op == OP_CURRLINE) {
-        op++;
-        currentLine = *op;
-        op++;
-        if (debugMode && *op != OP_CURRLINE) {
-            emit(highlightLine(currentLine));
-            mydebugmutex->lock();
-            waitDebugCond->wait(mydebugmutex);
-            mydebugmutex->unlock();
-        }
-    }
-
     //emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack.debug() + "\n"));
 
 
@@ -1296,7 +1293,7 @@ Interpreter::execByteCode() {
 
                     variables.setfloat(i, startnum);
 
-                    if(debugMode) {
+                    if(debugMode != 0) {
                         emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.getfloat(i)), -1, -1));
                     }
 
@@ -1329,7 +1326,7 @@ Interpreter::execByteCode() {
                         val += temp->step;
                         variables.setfloat(i, val);
 
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.getfloat(i)), -1, -1));
                         }
 
@@ -1364,7 +1361,7 @@ Interpreter::execByteCode() {
                         variables.arraydim(T_STRARRAY, i, xdim, ydim, opcode == OP_REDIMSTR);
                     }
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             if (ydim==1) {
                                 emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, xdim, -1));
                             } else {
@@ -1407,7 +1404,7 @@ Interpreter::execByteCode() {
 
                     variables.arraysetstring(i, index, val);
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, index), index, -1));
                         }
                     } else {
@@ -1425,7 +1422,7 @@ Interpreter::execByteCode() {
 
                     variables.array2dsetstring(i, xindex, yindex, val);
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.array2dgetstring(i, xindex, yindex), xindex, yindex));
                         }
                     } else {
@@ -1436,24 +1433,22 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_EXPLODE:
-                case OP_EXPLODE_C:
                 case OP_EXPLODESTR:
-                case OP_EXPLODESTR_C:
                 case OP_EXPLODEX:
                 case OP_EXPLODEXSTR: {
                     // unicode safe explode a string to an array function
                     bool ok;
+                   	Qt::CaseSensitivity casesens;
 
-                    Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-                    if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODE_C) {
-                        if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
+                    if (opcode!=OP_EXPLODEX && opcode!=OP_EXPLODEXSTR ) {
+						// 0 sensitive (default) - opposite of QT
+						casesens = (stack.popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
                     }
-
                     QString qneedle = stack.popstring();
                     QString qhaystack = stack.popstring();
 
                     QStringList list;
-                    if(opcode==OP_EXPLODE || opcode==OP_EXPLODE_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODESTR_C) {
+                    if(opcode==OP_EXPLODE || opcode==OP_EXPLODESTR) {
                         list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
                     } else {
 						QRegExp expr = QRegExp(qneedle);
@@ -1461,21 +1456,24 @@ Interpreter::execByteCode() {
                         list = qhaystack.split(expr, QString::KeepEmptyParts);
                     }
 
-                    if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
+                    if(opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
+                        // create a string array
                         if (variables.arraysize(i)!=list.size()) variables.arraydim(T_STRARRAY, i, list.size(), 1, false);
                     } else {
+                        // create a numeric array
                         if (variables.arraysize(i)!=list.size()) variables.arraydim(T_ARRAY, i, list.size(), 1, false);
                     }
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, list.size(), -1));
                         }
 
                         for(int x=0; x<list.size(); x++) {
-                            if(opcode==OP_EXPLODESTR_C || opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
+                            if(opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
+                                // fill the string array
                                 variables.arraysetstring(i, x, list.at(x));
                                 if (variables.error()==ERROR_NONE) {
-                                    if(debugMode) {
+                                    if(debugMode != 0) {
                                         emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, x), x, -1));
                                     }
                                 } else {
@@ -1483,9 +1481,10 @@ Interpreter::execByteCode() {
                                     errorvarnum = variables.errorvarnum();
                                 }
                             } else {
+                                // fill the numeric array
                                 variables.arraysetfloat(i, x, list.at(x).toDouble(&ok));
                                 if (variables.error()==ERROR_NONE) {
-                                    if(debugMode) {
+                                    if(debugMode != 0) {
                                         emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, x)), x, -1));
                                     }
                                 } else {
@@ -1538,7 +1537,7 @@ Interpreter::execByteCode() {
 
                     variables.arraysetfloat(i, index, val);
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, index)), index, -1));
                         }
                     } else {
@@ -1556,7 +1555,7 @@ Interpreter::execByteCode() {
 
                     variables.array2dsetfloat(i, xindex, yindex, val);
                     if (variables.error()==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.array2dgetfloat(i, xindex, yindex)), xindex, yindex));
                         }
                     } else {
@@ -1663,7 +1662,7 @@ Interpreter::execByteCode() {
 
                     variables.setfloat(i, temp);
 
-                    if(debugMode) {
+                    if(debugMode != 0) {
                         emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.getfloat(i)), -1, -1));
                     }
                 }
@@ -1674,7 +1673,7 @@ Interpreter::execByteCode() {
                     QString q = stack.popstring();
                     variables.setstring(i, q);
 
-                    if(debugMode) {
+                    if(debugMode != 0) {
                         emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.getstring(i), -1, -1));
                     }
                 }
@@ -1770,7 +1769,7 @@ Interpreter::execByteCode() {
 
                     if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 1, false);
                     if(errornum==ERROR_NONE) {
-                        if(debugMode && errornum==ERROR_NONE) {
+                        if(debugMode != 0 && errornum==ERROR_NONE) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, -1));
                         }
 
@@ -1778,7 +1777,7 @@ Interpreter::execByteCode() {
                             double one = stack.popfloat();
                             variables.arraysetfloat(i, index, one);
                             if (variables.error()==ERROR_NONE) {
-                                if(debugMode) {
+                                if(debugMode != 0) {
                                     emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arraygetfloat(i, index)), index, -1));
                                 }
                             } else {
@@ -1801,7 +1800,7 @@ Interpreter::execByteCode() {
                     if (variables.arraysize(i)!=items) variables.arraydim(T_STRARRAY, i, items, 1, false);
 
                     if(errornum==ERROR_NONE) {
-                        if(debugMode) {
+                        if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, -1));
                         }
 
@@ -1809,7 +1808,7 @@ Interpreter::execByteCode() {
                             QString q = stack.popstring();
                             variables.arraysetstring(i, index, q);
                             if (variables.error()==ERROR_NONE) {
-                                if(debugMode) {
+                                if(debugMode != 0) {
                                     emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arraygetstring(i, index), index, -1));
                                 }
                             } else {
@@ -2408,21 +2407,12 @@ Interpreter::execByteCode() {
                 break;
 
 
-                case OP_INSTR:
-                case OP_INSTR_S:
-                case OP_INSTR_SC: {
+                case OP_INSTR: {
                     // unicode safe instr function
 
-                    Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-                    if(opcode==OP_INSTR_SC) {
-                        if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
-                    }
-
-                    int start = 1;
-                    if(opcode==OP_INSTR_S || opcode==OP_INSTR_SC) {
-                        start = stack.popfloat();
-                    }
-
+                   // 0 sensitive (default) - opposite of QT
+                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    int start = stack.popint();
                     QString qstr = stack.popstring();
                     QString qhay = stack.popstring();
 
@@ -2437,7 +2427,6 @@ Interpreter::execByteCode() {
                     stack.pushint(pos);
                 }
                 break;
-                
                 
                 
 				case OP_INSTRX: {
@@ -3543,7 +3532,7 @@ Interpreter::execByteCode() {
                         delete temp;
                     }
 
-                    if(debugMode) {
+                    if(debugMode != 0) {
                         // remove variables from variable window when we return back
                         emit(varAssignment(variables.getrecurse(),QString(""), QString(""), -1, -1));
                     }
@@ -4475,14 +4464,11 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_REPLACE:
-                case OP_REPLACE_C: {
+                case OP_REPLACE: {
                     // unicode safe replace function
 
-                    Qt::CaseSensitivity casesens = Qt::CaseSensitive;
-                    if(opcode==OP_REPLACE_C) {
-                        if(stack.popfloat()!=0) casesens = Qt::CaseInsensitive;
-                    }
+                   // 0 sensitive (default) - opposite of QT
+                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 
                     QString qto = stack.popstring();
                     QString qfrom = stack.popstring();
@@ -4508,7 +4494,7 @@ Interpreter::execByteCode() {
                     // unicode safe count function
 
                     // 0 sensitive (default) - opposite of QT
-                    Qt::CaseSensitivity casesens = (stack.popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
                     
                     QString qneedle = stack.popstring();
                     QString qhaystack = stack.popstring();

@@ -6,6 +6,9 @@ a[2] = 20
 a[3] = 20
 a[4] = 15
 a[5] = 10
+
+color red: for t=1 to 10: rect 300*rand,300*rand, 20*rand, 20*rand: next t
+
 color black
 for x = 0 to 200 step 20
     for y = 0 to 200 step 20

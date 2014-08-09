@@ -59,3 +59,8 @@ QSize LineNumberArea::sizeHint() {
 void LineNumberArea::paintEvent(QPaintEvent *event) {
     be->lineNumberAreaPaintEvent(event);
 }
+
+
+void LineNumberArea::mousePressEvent(QMouseEvent *event) {
+    be->lineNumberAreaMouseClickEvent(event);
+}

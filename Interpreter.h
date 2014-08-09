@@ -114,7 +114,8 @@ class Interpreter : public QThread
   void setInputReady();
   void cleanup();
   void run();
-  bool debugMode;
+  int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
+  QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
   QString returnString;		// return value from runcontroller emit
   int returnInt;			// return value from runcontroller emit
 
@@ -154,7 +155,6 @@ class Interpreter : public QThread
  private:
   int optype(int op);
   QString opname(int);
-  QString opxname(int);
   void waitForGraphics();
   void printError(int, QString);
   QString getErrorMessage(int);

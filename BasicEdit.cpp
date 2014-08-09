@@ -49,8 +49,9 @@ BasicEdit::BasicEdit() {
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
     codeChanged = false;
 
+    breakPoints = new QList<int>;
     lineNumberArea = new LineNumberArea(this);
-
+    
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
@@ -553,6 +554,16 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
+            // Draw breakpoints
+            if (breakPoints->contains(blockNumber)) {
+                    painter.setBrush(Qt::red);
+                    painter.setPen(Qt::red);
+                    int w = lineNumberArea->width();
+                    int bh = blockBoundingRect(block).height();
+                    int fh = fontMetrics().height();
+                    painter.drawEllipse((w-(fh-6))/2, top+(bh-(fh-6))/2, fh-6, fh-6);
+			}
+            // draw text
             if (blockNumber==t.blockNumber()) {
                 painter.setPen(Qt::blue);
             } else {
@@ -567,3 +578,33 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
         ++blockNumber;
     }
 }
+
+void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
+	// based on mouse click - set the breakpoint in the map and highlight the line
+	int line;
+	int bottom=0;
+   QTextBlock block = firstVisibleBlock();
+	line = block.blockNumber();
+	// line 0 ... (n-1) of what was clicked
+	while(block.isValid()) {
+		bottom += blockBoundingRect(block).height();
+		if (event->y() < bottom) {
+            if (breakPoints->contains(line)) {
+				breakPoints->removeAt(breakPoints->indexOf(line,0));
+			} else {
+				breakPoints->append(line);
+			}
+			lineNumberArea->repaint();
+			return;
+		}
+		block = block.next();
+		line++;
+	}
+}
+
+void BasicEdit::clearBreakPoints() {
+	// remove all breakpoints from map
+	breakPoints->clear();
+	lineNumberArea->repaint();
+}
+

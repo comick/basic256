@@ -235,12 +235,13 @@ RunController::startDebug() {
         outputClear();
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         if (result < 0) {
-            i->debugMode = false;
+            i->debugMode = 0;
             emit(runHalted());
             return;
         }
         i->initialize();
-        i->debugMode = true;
+        i->debugMode = 1;
+        i->debugBreakPoints = editwin->breakPoints;
         mainwin->statusBar()->showMessage(tr("Running"));
         graphwin->setFocus();
         i->start();
@@ -257,7 +258,7 @@ RunController::startRun() {
         outputClear();
         // Start Compile
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
-        i->debugMode = false;
+        i->debugMode = 0;
         if (result < 0) {
             emit(runHalted());
             return;
@@ -316,6 +317,15 @@ RunController::goutputReady() {
 
 void
 RunController::stepThrough() {
+	i->debugMode = 1; // step through debugging
+    mydebugmutex->lock();
+    waitDebugCond->wakeAll();
+    mydebugmutex->unlock();
+}
+void
+
+RunController::stepBreakPoint() {
+	i->debugMode = 2; // run to break point debugging
     mydebugmutex->lock();
     waitDebugCond->wakeAll();
     mydebugmutex->unlock();
@@ -333,7 +343,7 @@ RunController::stopRun() {
     mymutex->unlock();
 
     mydebugmutex->lock();
-    i->debugMode = false;
+    i->debugMode = 0;
     waitDebugCond->wakeAll();
     mydebugmutex->unlock();
 
@@ -551,6 +561,7 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->runact->setEnabled(type==0);
     mainwin->debugact->setEnabled(type==0);
     mainwin->stepact->setEnabled(type==2);
+    mainwin->bpact->setEnabled(type==2);
     mainwin->stopact->setEnabled(type!=0);
 
 }

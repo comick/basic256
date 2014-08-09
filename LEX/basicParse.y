@@ -1062,10 +1062,11 @@ strarrayassign:
 				addIntOp(OP_STRARRAYLISTASSIGN, $1);
 			}
 			| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
 				addIntOp(OP_EXPLODESTR, $1);
 			}
 			| B256STRINGVAR '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
-				addIntOp(OP_EXPLODESTR_C, $1);
+				addIntOp(OP_EXPLODESTR, $1);
 			}
 			| B256STRINGVAR '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
 				addIntOp(OP_EXPLODEXSTR, $1);
@@ -1211,10 +1212,11 @@ arrayassign:
 				addIntOp(OP_ARRAYLISTASSIGN, $1);
 			}
 			| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
 				addIntOp(OP_EXPLODE, $1);
 			}
 			| B256VARIABLE '=' B256EXPLODE '(' expr ',' expr ',' floatexpr ')' {
-				addIntOp(OP_EXPLODE_C, $1);
+				addIntOp(OP_EXPLODE, $1);
 			}
 			| B256VARIABLE '=' B256EXPLODEX '(' expr ',' stringexpr ')' {
 				addIntOp(OP_EXPLODEX, $1);
@@ -2782,10 +2784,20 @@ floatexpr:
 			| B256TOFLOAT '(' expr ')' { addOp(OP_FLOAT); }
 			| B256LENGTH '(' expr ')' { addOp(OP_LENGTH); }
 			| B256ASC '(' expr ')' { addOp(OP_ASC); }
-			| B256INSTR '(' expr ',' expr ')' { addOp(OP_INSTR); }
-			| B256INSTR '(' expr ',' expr ',' floatexpr ')' { addOp(OP_INSTR_S); }
-			| B256INSTR '(' expr ',' expr ',' floatexpr ',' floatexpr')' { addOp(OP_INSTR_SC); }
-			| B256INSTRX '(' expr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 1); addOp(OP_INSTRX); }
+			| B256INSTR '(' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 1);	// start
+				addIntOp(OP_PUSHINT, 0);	// case sens flag
+				addOp(OP_INSTR);
+			}
+			| B256INSTR '(' expr ',' expr ',' floatexpr ')' {
+				addIntOp(OP_PUSHINT, 0);	// case sens flag
+				addOp(OP_INSTR);
+			 }
+			| B256INSTR '(' expr ',' expr ',' floatexpr ',' floatexpr')' { addOp(OP_INSTR); }
+			| B256INSTRX '(' expr ',' stringexpr ')' {
+				addIntOp(OP_PUSHINT, 1);	//start
+				addOp(OP_INSTRX);
+			}
 			| B256INSTRX '(' expr ',' stringexpr ',' floatexpr ')' { addOp(OP_INSTRX); }
 			| B256CEIL '(' floatexpr ')' { addOp(OP_CEIL); }
 			| B256FLOOR '(' floatexpr ')' { addOp(OP_FLOOR); }
@@ -3081,7 +3093,10 @@ floatexpr:
 			| B256NETDATA '(' ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_NETDATA); }
 			| B256NETDATA '(' floatexpr ')' { addOp(OP_NETDATA); }
 			| B256PORTIN '(' floatexpr ')' { addOp(OP_PORTIN); }
-			| B256COUNT '(' stringexpr ',' stringexpr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_COUNT); }
+			| B256COUNT '(' stringexpr ',' stringexpr ')' {
+				addIntOp(OP_PUSHINT, 0); // case sens flag
+				addOp(OP_COUNT);
+			 }
 			| B256COUNT '(' stringexpr ',' stringexpr ',' floatexpr ')' { addOp(OP_COUNT); }
 			| B256COUNTX '(' stringexpr ',' stringexpr ')' { addOp(OP_COUNTX); }
 			| B256OSTYPE { addOp(OP_OSTYPE); }
@@ -3285,12 +3300,21 @@ stringexpr:
 			| B256DIR '(' stringexpr ')' { addOp(OP_DIR); }
 			| B256DIR '(' ')' { addStringOp(OP_PUSHSTRING, ""); addOp(OP_DIR); }
 			| B256DIR { addStringOp(OP_PUSHSTRING, ""); addOp(OP_DIR); }
-			| B256REPLACE '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
-			| B256REPLACE '(' expr ',' expr ',' expr ',' floatexpr ')' { addOp(OP_REPLACE_C); }
+			| B256REPLACE '(' expr ',' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 0);	// case sens flag
+				addOp(OP_REPLACE);
+			}
+			| B256REPLACE '(' expr ',' expr ',' expr ',' floatexpr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' stringexpr ',' expr ')' { addOp(OP_REPLACEX); }
-			| B256IMPLODE '(' B256STRINGVAR ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
+			| B256IMPLODE '(' B256STRINGVAR ')' {
+				addStringOp(OP_PUSHSTRING, ""); // no delimiter
+				addIntOp(OP_IMPLODE, $3);
+			}
 			| B256IMPLODE '(' B256STRINGVAR ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
-			| B256IMPLODE '(' B256VARIABLE ')' {  addStringOp(OP_PUSHSTRING, ""); addIntOp(OP_IMPLODE, $3); }
+			| B256IMPLODE '(' B256VARIABLE ')' {
+				addStringOp(OP_PUSHSTRING, ""); // no delimiter
+				addIntOp(OP_IMPLODE, $3);
+			}
 			| B256IMPLODE '(' B256VARIABLE ',' stringexpr ')' {  addIntOp(OP_IMPLODE, $3); }
 			| B256PROMPT '(' stringexpr ')' {
 				addStringOp(OP_PUSHSTRING, "");	
