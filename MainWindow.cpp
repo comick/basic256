@@ -325,7 +325,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("S&tep"));
     stepact->setShortcut(Qt::Key_F11);
     stepact->setEnabled(false);
-    bpact = runmenu->addAction(QIcon(":images/break.png"), QObject::tr("Run to &Break Point"));
+    bpact = runmenu->addAction(QIcon(":images/break.png"), QObject::tr("Run &to"));
     bpact->setShortcut(Qt::Key_F11 + Qt::CTRL);
     bpact->setEnabled(false);
     stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
@@ -372,6 +372,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     maintbar->addAction(runact);
     maintbar->addAction(debugact);
     maintbar->addAction(stepact);
+    maintbar->addAction(bpact);
     maintbar->addAction(stopact);
     maintbar->addSeparator();
     maintbar->addAction(undoact);

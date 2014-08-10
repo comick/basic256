@@ -245,7 +245,8 @@ int newWordCode() {
 			*(wordCode+t) = 0;
 		}
 		wordOffset = 0;
-		return 0;
+		addIntOp(OP_CURRLINE, 1);
+		return 0; 	// success in creating and filling
 	}
 	return -1;
 }

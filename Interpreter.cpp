@@ -1208,11 +1208,17 @@ Interpreter::execByteCode() {
         currentLine = *op;
         op++;
         if (debugMode != 0) {
-            emit(highlightLine(currentLine));
-            if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
-				mydebugmutex->lock();
-				waitDebugCond->wait(mydebugmutex);
-				mydebugmutex->unlock();
+			if (currentIncludeFile=="") {
+				// do debug for the main program not included parts
+				// edit needs to eventually have tabs for includes and tracing and debugging
+				// would go three dimensional - but not right now
+				emit(highlightLine(currentLine));
+				if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
+					// wait for button if we are stepping or if we are at a break point
+					mydebugmutex->lock();
+					waitDebugCond->wait(mydebugmutex);
+					mydebugmutex->unlock();
+				}
 			}
         }
     }
