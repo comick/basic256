@@ -113,6 +113,52 @@ int numparsewarnings = 0;
 int
 basicParse(char *);
 
+void checkWordMem(unsigned int addedwords) {
+	unsigned int t;
+	if (wordOffset + addedwords + 1 >= maxwordoffset) {
+		maxwordoffset += maxwordoffset + addedwords + 1024;
+		wordCode = realloc(wordCode, maxwordoffset * sizeof(int));
+		for (t=wordOffset; t<maxwordoffset; t++) {
+			*(wordCode+t) = 0;
+		}
+	}
+}
+
+int bytesToFullWords(unsigned int size) {
+	// return how many words will be needed to store "size" bytes
+	return((size + sizeof(int) - 1) / sizeof(int));
+}
+
+void addOp(int op) {
+	checkWordMem(1);
+	wordCode[wordOffset] = op;
+	wordOffset++;
+}
+
+void addIntOp(int op, int data) {
+	addOp(op);
+	addOp(data);
+}
+
+
+void addFloatOp(int op, double data) {
+	addOp(op);
+	unsigned int wlen = bytesToFullWords(sizeof(double));
+	checkWordMem(wlen);
+	double *temp = (double *) (wordCode + wordOffset);
+	*temp = data;
+	wordOffset += wlen;
+}
+
+void addStringOp(int op, char *data) {
+	addOp(op);
+	unsigned int len = strlen(data) + 1;
+	unsigned int wlen = bytesToFullWords(len);
+	checkWordMem(wlen);
+	strncpy((char *) (wordCode + wordOffset), data, len);
+	wordOffset += wlen;
+}
+
 void
 clearIfTable() {
 	int j;
@@ -252,52 +298,6 @@ int newWordCode() {
 	return -1;
 }
 
-void checkWordMem(unsigned int addedwords) {
-	unsigned int t;
-	if (wordOffset + addedwords + 1 >= maxwordoffset) {
-		maxwordoffset += maxwordoffset + addedwords + 1024;
-		wordCode = realloc(wordCode, maxwordoffset * sizeof(int));
-		for (t=wordOffset; t<maxwordoffset; t++) {
-			*(wordCode+t) = 0;
-		}
-	}
-}
-
-
-int bytesToFullWords(unsigned int size) {
-	// return how many words will be needed to store "size" bytes
-	return((size + sizeof(int) - 1) / sizeof(int));
-}
-
-void addOp(int op) {
-	checkWordMem(1);
-	wordCode[wordOffset] = op;
-	wordOffset++;
-}
-
-void addIntOp(int op, int data) {
-	addOp(op);
-	addOp(data);
-}
-
-
-void addFloatOp(int op, double data) {
-	addOp(op);
-	unsigned int wlen = bytesToFullWords(sizeof(double));
-	checkWordMem(wlen);
-	double *temp = (double *) (wordCode + wordOffset);
-	*temp = data;
-	wordOffset += wlen;
-}
-
-void addStringOp(int op, char *data) {
-	addOp(op);
-	unsigned int len = strlen(data) + 1;
-	unsigned int wlen = bytesToFullWords(len);
-	checkWordMem(wlen);
-	strncpy((char *) (wordCode + wordOffset), data, len);
-	wordOffset += wlen;
-}
 
 
 #ifdef __cplusplus

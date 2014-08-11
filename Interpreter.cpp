@@ -1457,7 +1457,7 @@ Interpreter::execByteCode() {
                 case OP_EXPLODEXSTR: {
                     // unicode safe explode a string to an array function
                     bool ok;
-                   	Qt::CaseSensitivity casesens;
+                   	Qt::CaseSensitivity casesens = Qt::CaseSensitive;
 
                     if (opcode!=OP_EXPLODEX && opcode!=OP_EXPLODEXSTR ) {
 						// 0 sensitive (default) - opposite of QT

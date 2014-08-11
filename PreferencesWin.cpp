@@ -170,7 +170,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     printertabwidget->setLayout(printertablayout);
     r=0;
     {
-        int dflt;
+        int dflt = -1;
         int setprinter;
         printerslabel = new QLabel(tr("Printer:"));
         printertablayout->addWidget(printerslabel,r,1,1,1);
