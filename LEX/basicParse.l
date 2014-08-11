@@ -963,7 +963,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 	lexingfilename = filename;
 	addStringOp(OP_INCLUDEFILE, lexingfilename);
 	linenumber = 1;  
-	addIntOp(OP_CURRLINE, linenumber);
+	addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 
 	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
     BEGIN(INITIAL);
@@ -985,7 +985,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 		// eof of an include - return to the includer
 		numincludes--;
 		linenumber=include_linenumber[numincludes];
-		addIntOp(OP_CURRLINE, linenumber);
+		addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 		
 		free(lexingfilename);
 		lexingfilename=include_filename[numincludes];

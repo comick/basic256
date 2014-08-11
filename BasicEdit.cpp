@@ -68,16 +68,28 @@ BasicEdit::cursorMove() {
 }
 
 void
-BasicEdit::highlightLine(int hline) {
-    QTextCursor t(textCursor());
-    t.setPosition(0);
-    int line = 1;
-    while (line < hline) {
-        t.movePosition(QTextCursor::NextBlock);
-        line++;
-    }
-    t.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor, 1);
-    setTextCursor(t);
+BasicEdit::seekLine(int newLine) {
+	// go to a line number and set
+	// the text cursor
+	//
+	// code should be proximal in that it should be closest to look at the curent
+	// position than to go and search the entire program from the top
+	QTextCursor t = textCursor();
+	int line = t.blockNumber()+1;	// current line number for the block
+	// go back or forward to the line from the current position
+	if (line==newLine) return;
+	if (line<newLine) {
+		// advance forward
+		while (line < newLine && t.movePosition(QTextCursor::NextBlock)) {
+			line++;
+		}
+	} else {
+		// go back to find the line
+		while (line > newLine && t.movePosition(QTextCursor::PreviousBlock)) {
+			line--;
+		}
+	}
+	setTextCursor(t);
 }
 
 void BasicEdit::slotWhitespace(bool checked) {
@@ -95,22 +107,16 @@ void BasicEdit::slotWhitespace(bool checked) {
 
 void
 BasicEdit::goToLine(int newLine) {
-    QTextCursor t(this->textCursor());
-    t.setPosition(0);
-    int line = 1;
-    while (line < newLine && t.movePosition(QTextCursor::NextBlock)) {
-        line++;
-    }
-    setTextCursor(t);
-    setFocus();
+	seekLine(newLine);
+	setFocus();
 }
 
 
 void
 BasicEdit::keyPressEvent(QKeyEvent *e) {
-    e->accept();
-    codeChanged = true;
-    QPlainTextEdit::keyPressEvent(e);
+	e->accept();
+	codeChanged = true;
+	QPlainTextEdit::keyPressEvent(e);
 }
 
 void
@@ -126,6 +132,7 @@ BasicEdit::newProgram() {
     }
     if (donew) {
         clear();
+        clearBreakPoints();
         emit(changeWindowTitle(tr("Untitled - BASIC-256")));
         filename = "";
         codeChanged = false;
@@ -275,6 +282,7 @@ BasicEdit::loadFile(QString s) {
                     emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
                     QDir::setCurrent(fi.absolutePath());
                     codeChanged = false;
+                    clearBreakPoints();
                     addFileToRecentList(s);
                     QApplication::restoreOverrideCursor();
                 } else {
@@ -516,21 +524,23 @@ void BasicEdit::updateLineNumberArea(const QRect &rect, int dy) {
 
 
 void BasicEdit::highlightCurrentLine() {
-    QList<QTextEdit::ExtraSelection> extraSelections;
+	QList<QTextEdit::ExtraSelection> extraSelections;
+	QTextEdit::ExtraSelection selection;
+	QColor lineColor;
+	
+	if (isReadOnly()) {
+		lineColor = QColor(Qt::red).lighter(175);
+	} else {
+		lineColor = QColor(Qt::yellow).lighter(175);
+	}
 
-    if (!isReadOnly()) {
-        QTextEdit::ExtraSelection selection;
+	selection.format.setBackground(lineColor);
+	selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+	selection.cursor = textCursor();
+	selection.cursor.clearSelection();
+	extraSelections.append(selection);
 
-        QColor lineColor = QColor(Qt::yellow).lighter(175);
-
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        extraSelections.append(selection);
-    }
-
-    setExtraSelections(extraSelections);
+	setExtraSelections(extraSelections);
 }
 
 
@@ -583,7 +593,7 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
 	// based on mouse click - set the breakpoint in the map and highlight the line
 	int line;
 	int bottom=0;
-   QTextBlock block = firstVisibleBlock();
+	QTextBlock block = firstVisibleBlock();
 	line = block.blockNumber();
 	// line 0 ... (n-1) of what was clicked
 	while(block.isValid()) {

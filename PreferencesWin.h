@@ -21,6 +21,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -31,6 +32,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QSlider>
 
 #ifndef PREFERENCESWINH
 
@@ -66,6 +68,8 @@ private:
 	QCheckBox *saveonruncheckbox;
 	QLabel *typeconvlabel;
 	QComboBox *typeconvcombo;
+	QLabel *debugspeedlabel;
+	QSlider *debugspeedslider;
 
 	// sound tab
 	QWidget * soundtabwidget;

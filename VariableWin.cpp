@@ -113,4 +113,5 @@ VariableWin::varAssignment(int recurse, QString name, QString value, int arrayle
             delete items[n];
         }
     }
+    repaint();
 }

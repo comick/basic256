@@ -99,7 +99,7 @@ RunController::RunController() {
 
     //signals for the Interperter (i)
     QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
-    QObject::connect(i, SIGNAL(highlightLine(int)), editwin, SLOT(highlightLine(int)));
+    QObject::connect(i, SIGNAL(seekLine(int)), editwin, SLOT(seekLine(int)));
 
     QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
     QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));

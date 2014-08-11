@@ -107,6 +107,8 @@
 	#define SETTINGSTYPECONVNONE 0
 	#define SETTINGSTYPECONVWARN 1
 	#define SETTINGSTYPECONVERROR 2
+	#define SETTINGSDEBUGSPEED "Runtime/DebugSpeed"
+	#define SETTINGSDEBUGSPEEDDEFAULT 10
 	
 	
 	// espeak language settings

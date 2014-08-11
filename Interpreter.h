@@ -139,7 +139,7 @@ class Interpreter : public QThread
   void executeSystem(QString);
   void speakWords(QString);
   void goToLine(int);
-  void highlightLine(int);
+  void seekLine(int);
   void varAssignment(int, QString, QString, int, int);
   void mainWindowsResize(int, int, int);
   void mainWindowsVisible(int, bool);

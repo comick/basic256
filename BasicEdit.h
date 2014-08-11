@@ -55,7 +55,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
   void loadProgram();
   void cursorMove();
   void goToLine(int);
-  void highlightLine(int);
+  void seekLine(int);
   void slotPrint();
   void beautifyProgram();
   void slotWhitespace(bool);

@@ -82,3 +82,7 @@ if exists("../LEX/basicParse.l") then
 else
    print "testsuite unable to list tokens not being tested for - Source not available"
 endif
+token$ = ""
+regex$ = ""
+kount = 0
+pgm$ = ""

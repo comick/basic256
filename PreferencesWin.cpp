@@ -68,6 +68,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
         advancedtablayout->addWidget(portcheckbox,r,2,1,2);
 #endif
 #endif
+        //
     }
 
 
@@ -101,6 +102,22 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     saveonruncheckbox = new QCheckBox(tr("Automatically save program when it is successfully run."),this);
     saveonruncheckbox->setChecked(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool());
     usertablayout->addWidget(saveonruncheckbox,r,2,1,2);
+	//
+	// speed of next statement in run to breakpoint
+	r++;
+	debugspeedlabel = new QLabel(tr("Debugging Speed:"),this);
+	debugspeedslider = new QSlider(Qt::Horizontal);
+	debugspeedslider->setMinimum(1);
+	debugspeedslider->setMaximum(2000);
+	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
+	QLabel *debugspeedsliderbefore = new QLabel(tr("Fast"),this);
+	QLabel *debugspeedsliderafter = new QLabel(tr("Slow"),this);
+	QHBoxLayout * debugspeedsliderlayout = new QHBoxLayout();
+	debugspeedsliderlayout->addWidget(debugspeedsliderbefore);
+	debugspeedsliderlayout->addWidget(debugspeedslider);
+	debugspeedsliderlayout->addWidget(debugspeedsliderafter);
+	usertablayout->addWidget(debugspeedlabel,r,1,1,1);
+	usertablayout->addLayout(debugspeedsliderlayout,r,2,1,2);
 
     //
     // *******************************************************************************************
@@ -344,6 +361,7 @@ void PreferencesWin::clickSaveButton() {
         if (typeconvcombo->currentIndex()!=-1) {
             settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));
         }
+        settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
 
         // *******************************************************************************************
         // sound settings

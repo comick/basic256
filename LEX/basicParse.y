@@ -245,7 +245,8 @@ int newWordCode() {
 			*(wordCode+t) = 0;
 		}
 		wordOffset = 0;
-		addIntOp(OP_CURRLINE, 1);
+		linenumber = 1;
+		addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 		return 0; 	// success in creating and filling
 	}
 	return -1;
@@ -417,7 +418,7 @@ programnewline:
 				'\n' {
 					linenumber++;
 					column=0;
-					addIntOp(OP_CURRLINE, linenumber);
+					addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 				}
 				;
 				

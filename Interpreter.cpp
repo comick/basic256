@@ -61,6 +61,7 @@ InpOut32OutType Out32 = NULL;
 #include <QMutex>
 #include <QWaitCondition>
 
+
 #include <QtWidgets/QMessageBox>
 
 using namespace std;
@@ -1173,6 +1174,10 @@ Interpreter::run() {
     lasterrormessage = "";
     lasterrorline = 0;
     onerrorstack = NULL;
+	if (debugMode!=0) {			// highlight first line correctly in debugging mode
+		emit(seekLine(2));
+		emit(seekLine(1));
+	}
     while (status != R_STOPPED && execByteCode() >= 0) {} //continue
     status = R_STOPPED;
     cleanup(); // cleanup the variables, databases, files, stack and everything
@@ -1201,27 +1206,35 @@ Interpreter::waitForGraphics() {
 
 int
 Interpreter::execByteCode() {
-    int opcode;
+	int opcode;
+	Sleeper *sleeper = new Sleeper();
+	SETTINGS;
 
-    while (*op == OP_CURRLINE) {
-        op++;
-        currentLine = *op;
-        op++;
-        if (debugMode != 0) {
-			if (currentIncludeFile=="") {
+	while (*op == OP_CURRLINE) {
+		op++;
+		// opcode currentline is a compound include level and line number
+		int includelevel = *op / 0x1000000;
+		currentLine = *op % 0x1000000;
+		op++;
+		if (debugMode != 0) {
+			if (includelevel==0) {
 				// do debug for the main program not included parts
 				// edit needs to eventually have tabs for includes and tracing and debugging
 				// would go three dimensional - but not right now
-				emit(highlightLine(currentLine));
+				emit(seekLine(currentLine));
 				if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
 					// wait for button if we are stepping or if we are at a break point
 					mydebugmutex->lock();
 					waitDebugCond->wait(mydebugmutex);
 					mydebugmutex->unlock();
+				} else {
+					// when debugging to breakpoint slow execution down so that the
+					// trace on the screen keeps caught up
+					sleeper->sleepMS(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
 				}
 			}
-        }
-    }
+		}
+	}
 
     if (status == R_INPUTREADY) {
         stack.pushstring(inputString);
@@ -2292,7 +2305,6 @@ Interpreter::execByteCode() {
                 case OP_PAUSE: {
                     double val = stack.popfloat();
                     if (val > 0) {
-						Sleeper *sleeper = new Sleeper();
 						sleeper->sleepSeconds(val);
 					}
                 }
@@ -2787,7 +2799,6 @@ Interpreter::execByteCode() {
                 case OP_SYSTEM: {
                     QString temp = stack.popstring();
 
-                    SETTINGS;
                     if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
                         mymutex->lock();
                         emit(executeSystem(temp));
@@ -4323,7 +4334,6 @@ Interpreter::execByteCode() {
                     QString stuff = stack.popstring();
                     QString key = stack.popstring();
                     QString app = stack.popstring();
-                    SETTINGS;
                     if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
                         settings.beginGroup(SETTINGSGROUPUSER);
                         settings.beginGroup(app);
@@ -4339,7 +4349,6 @@ Interpreter::execByteCode() {
                 case OP_GETSETTING: {
                     QString key = stack.popstring();
                     QString app = stack.popstring();
-                    SETTINGS;
                     if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
                         if(app==QString("SYSTEM")) {
 							stack.pushstring(settings.value(key, "").toString());
@@ -4361,7 +4370,6 @@ Interpreter::execByteCode() {
                 case OP_PORTOUT: {
                     int data = stack.popint();
                     int port = stack.popint();
-                    SETTINGS;
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
@@ -4385,7 +4393,6 @@ Interpreter::execByteCode() {
                 case OP_PORTIN: {
                     int data=0;
                     int port = stack.popint();
-                    SETTINGS;
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
@@ -4810,7 +4817,6 @@ Interpreter::execByteCode() {
                     if (printing) {
                         errornum = ERROR_PRINTERNOTOFF;
                     } else {
-                        SETTINGS;
                         int resolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
                         int printer = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
                         int paper = settings.value(SETTINGSPRINTERPAPER, SETTINGSPRINTERPAPERDEFAULT).toInt();
