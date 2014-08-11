@@ -36,6 +36,7 @@ rm -R ../basic256-$VERSION/tmp
 rm -R ../basic256-$VERSION/tmp_portable_debug
 rm -R ../basic256-$VERSION/tmp_portable_release
 rm -R ../basic256-$VERSION/release
+rm -R ../basic256-$VERSION/wikihelp/wiki
 
 # tar and zip
 tar -cvf ../basic256_$VERSION.orig.tar ../basic256-$VERSION
