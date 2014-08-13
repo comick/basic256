@@ -97,14 +97,18 @@ void unputcolon();
 
 %x INCLUDE
 
-binaryinteger 0[bB][01]+
+constinteger ([0-9]{1,9}|1[0-9]{9}|2(0[0-9]{8}|1([0-3][0-9]{7}|4([0-6][0-9]{6}|7([0-3][0-9]{5}|4([0-7][0-9]{4}|8([0-2][0-9]{3}|3([0-5][0-9]{2}|6([0-3][0-9]|4[0-7])))))))))
+constdecimal [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
+constbinary 0[bB][01]{1,32}
+consthex 0[xX][0-9a-fA-F]{1,8}
+constoctal 0[oO](([0-7]{0,10})|([0-3][0-7]{10}))
+conststring (\"[^\"\n]*\")|(\'[^\'\n]*\')
+constfalse [Ff][Aa][Ll][Ss][Ee]([ \t]*\([ \t]*\))?
+consttrue [Tt][Rr][Uu][Ee]([ \t]*\([ \t]*\))?
+
+
 blankline ^[ \t]*[\n]
-floatnum [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
-integer [0-9]+
-hexinteger 0[xX][0-9a-fA-F]+
 nws [^ \t\n]+
-octalinteger 0[oO][0-7]+
-string (\"[^\"\n]*\")|(\'[^\'\n]*\')
 stringvar [a-zA-Z][a-zA-Z0-9_]*\$
 variable [a-zA-Z][a-zA-Z0-9_]*
 whitespace [ \t]+
@@ -121,8 +125,6 @@ begincase [Bb][Ee][Gg][Ii][Nn][ \t]*[Cc][Aa][Ss][Ee]
 black [Bb][Ll][Aa][Cc][Kk]([ \t]*\([ \t]*\))?
 blue [Bb][Ll][Uu][Ee]([ \t]*\([ \t]*\))?
 booleof [Ee][Oo][Ff]
-boolfalse [Ff][Aa][Ll][Ss][Ee]([ \t]*\([ \t]*\))?
-booltrue [Tt][Rr][Uu][Ee]([ \t]*\([ \t]*\))?
 call [Cc][Aa][Ll][Ll]
 case [Cc][Aa][Ss][Ee]
 catch [Cc][Aa][Tt][Cc][Hh]
@@ -437,14 +439,14 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
  /* data type rules                                                    */
  /**********************************************************************/
 
-{boolfalse}					{ count(); return B256BOOLFALSE; }
-{booltrue}					{ count(); return B256BOOLTRUE; }
-{integer}					{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
-{floatnum}					{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
-{binaryinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
-{hexinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
-{octalinteger}				{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
-{string}					{
+{constfalse}				{ count(); return B256BOOLFALSE; }
+{consttrue}					{ count(); return B256BOOLTRUE; }
+{constinteger}				{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
+{constdecimal}				{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
+{constbinary}				{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
+{consthex}					{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
+{constoctal}				{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
+{conststring}				{
 								int len;
 								count();
 								len = strlen(yytext);
