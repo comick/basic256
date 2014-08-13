@@ -388,6 +388,9 @@ int newWordCode() {
 %token <number> B256INTEGER
 %token <floatnum> B256FLOAT 
 %token <string> B256STRING
+%token <string> B256HEXCONST
+%token <string> B256BINCONST
+%token <string> B256OCTCONST
 %token <number> B256VARIABLE
 %token <number> B256STRINGVAR
 %token <string> B256NEWVAR
@@ -3143,6 +3146,21 @@ floatexpr:
 				addOp(OP_FROMRADIX);
 			}
 			| B256FROMRADIX '(' stringexpr ',' floatexpr ')' {
+				addOp(OP_FROMRADIX);
+			}
+			| B256BINCONST {
+				addStringOp(OP_PUSHSTRING, $1);
+				addIntOp(OP_PUSHINT,2);	// radix
+				addOp(OP_FROMRADIX);
+			}
+			| B256HEXCONST {
+				addStringOp(OP_PUSHSTRING, $1);
+				addIntOp(OP_PUSHINT,16);	// radix
+				addOp(OP_FROMRADIX);
+			}
+			| B256OCTCONST {
+				addStringOp(OP_PUSHSTRING, $1);
+				addIntOp(OP_PUSHINT,8);	// radix
 				addOp(OP_FROMRADIX);
 			}
 			| B256WAVLENGTH { addOp(OP_WAVLENGTH); }

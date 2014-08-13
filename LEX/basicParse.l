@@ -443,9 +443,27 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 {consttrue}					{ count(); return B256BOOLTRUE; }
 {constinteger}				{ count(); yylval.number = atoi(yytext); return B256INTEGER; }
 {constdecimal}				{ count(); yylval.floatnum = atof(yytext); return B256FLOAT; }
-{constbinary}				{ count(); yylval.number = strtol(yytext+2, NULL, 2); return B256INTEGER; }
-{consthex}					{ count(); yylval.number = strtol(yytext+2, NULL, 16); return B256INTEGER; }
-{constoctal}				{ count(); yylval.number = strtol(yytext+2, NULL, 8); return B256INTEGER; }
+{constbinary}				{
+								int len;
+								count();
+								len = strlen(yytext);
+								yylval.string = strdup(yytext + 2);
+								return B256BINCONST;
+}
+{consthex}				{
+								int len;
+								count();
+								len = strlen(yytext);
+								yylval.string = strdup(yytext + 2);
+								return B256HEXCONST;
+}
+{constoctal}				{
+								int len;
+								count();
+								len = strlen(yytext);
+								yylval.string = strdup(yytext + 2);
+								return B256OCTCONST;
+}
 {conststring}				{
 								int len;
 								count();
