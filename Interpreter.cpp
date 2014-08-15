@@ -1300,13 +1300,13 @@ Interpreter::execByteCode() {
             switch(opcode) {
 
                 case OP_FOR: {
+                    
                     forframe *temp = new forframe;
                     double step = stack.popfloat();
                     double endnum = stack.popfloat();
                     double startnum = stack.popfloat();
 
                     temp->next = forstack;
-                    temp->prev = NULL;
                     temp->variable = i;
                     temp->recurselevel = variables.getrecurse();
 
@@ -1319,10 +1319,8 @@ Interpreter::execByteCode() {
                     temp->endNum = endnum;
                     temp->step = step;
                     temp->returnAddr = op;
-                    if (forstack) {
-                        forstack->prev = temp;
-                    }
                     forstack = temp;
+                    
                     if (temp->step > 0 && variables.getfloat(i) > temp->endNum) {
                         errornum = ERROR_FOR1;
                     } else if (temp->step < 0 && variables.getfloat(i) < temp->endNum) {
@@ -1333,10 +1331,11 @@ Interpreter::execByteCode() {
 
                 case OP_NEXT: {
                     forframe *temp = forstack;
-
+                    
                     while (temp && temp->variable != (unsigned int ) i) {
                         temp = temp->next;
                     }
+
                     if (!temp) {
                         errornum = ERROR_NEXTNOFOR;
                     } else {
@@ -1354,18 +1353,11 @@ Interpreter::execByteCode() {
                         } else if (temp->step < 0 && stack.compareFloats(val, temp->endNum)!=-1) {
                             op = temp->returnAddr;
                         } else {
-                            if (temp->next) {
-                                temp->next->prev = temp->prev;
-                            }
-                            if (temp->prev) {
-                                temp->prev->next = temp->next;
-                            }
-                            if (forstack == temp) {
-                                forstack = temp->next;
-                            }
+                            forstack = temp->next;
                             delete temp;
                         }
                     }
+
                 }
                 break;
                 case OP_DIM:

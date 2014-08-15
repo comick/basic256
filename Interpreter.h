@@ -81,7 +81,6 @@ struct onerrorframe {
 
 // structure for the nested for statements  
 struct forframe {
-  forframe *prev;
   forframe *next;
   unsigned int variable;
   int *returnAddr;
