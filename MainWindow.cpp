@@ -73,9 +73,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
     setWindowIcon(QIcon(":/images/basic256.png"));
 
-    QWidget * centerWidget = new QWidget();
-    centerWidget->setObjectName( "centerWidget" );
-
     editwin = new BasicEdit();
     editwin->setObjectName( "editor" );
     editwinwgt = new BasicWidget();
@@ -474,6 +471,8 @@ MainWindow::~MainWindow() {
     delete editwin;
     delete outwin;
     delete graphwin;
+    delete maintbar;
+    
 }
 
 void MainWindow::about() {

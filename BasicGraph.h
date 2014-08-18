@@ -39,6 +39,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   Q_OBJECT
  public:
   BasicGraph();
+  ~BasicGraph();
   QImage *image;
   bool initActions(QMenu *, ToolBar *);
   // used to store current location of mouse

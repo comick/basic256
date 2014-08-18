@@ -72,7 +72,6 @@ using namespace std;
 #include "Interpreter.h"
 #include "md5.h"
 #include "Settings.h"
-#include "Sleeper.h"
 #include "Sound.h"
 
 
@@ -114,6 +113,7 @@ Interpreter::Interpreter() {
     directorypointer=NULL;
     status = R_STOPPED;
     printing = false;
+	sleeper = new Sleeper();
     for (int t=0; t<NUMSOCKETS; t++) netsockfd[t]=-1;
     // on a windows box start winsock
 #ifdef WIN32
@@ -155,6 +155,7 @@ Interpreter::~Interpreter() {
 #ifdef WIN32
     WSACleanup();
 #endif
+	delete sleeper;
 }
 
 
@@ -1207,7 +1208,6 @@ Interpreter::waitForGraphics() {
 int
 Interpreter::execByteCode() {
 	int opcode;
-	Sleeper *sleeper = new Sleeper();
 	SETTINGS;
 
 	while (*op == OP_CURRLINE) {

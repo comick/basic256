@@ -60,6 +60,18 @@ BasicEdit::BasicEdit() {
     highlightCurrentLine();
 }
 
+
+BasicEdit::~BasicEdit() {
+	if (breakPoints) {
+		delete breakPoints;
+		breakPoints = NULL;
+	}
+	if (lineNumberArea) {
+		delete lineNumberArea;
+		lineNumberArea = NULL;
+	}
+}
+
 void
 BasicEdit::cursorMove() {
     QTextCursor t(textCursor());
@@ -328,6 +340,8 @@ void BasicEdit::slotPrint() {
         }
 
     }
+    
+    delete dialog;
 #endif
 }
 

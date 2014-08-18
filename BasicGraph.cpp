@@ -43,6 +43,13 @@ BasicGraph::BasicGraph() {
     gridlines = false;
 }
 
+BasicGraph::~BasicGraph() {
+    if (image) {
+		delete image;
+		image = NULL;
+	}
+}
+
 void
 BasicGraph::resize(int width, int height) {
     if (image != NULL && width == image->width() && height == image->height()) {
@@ -54,6 +61,7 @@ BasicGraph::resize(int width, int height) {
     
     // delete the old image and then create a new one the right size
     delete image;
+    image = NULL;;
     image = new QImage(width, height, QImage::Format_ARGB32);
 	image->fill(QColor(0,0,0,0));
     

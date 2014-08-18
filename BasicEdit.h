@@ -35,6 +35,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 
  public:
   BasicEdit();
+  ~BasicEdit();
 
   void loadFile(QString);
   void saveFile(bool);

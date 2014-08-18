@@ -32,6 +32,8 @@
 #include "Variables.h"
 #include "ErrorCodes.h"
 #include "Sound.h"
+#include "Sleeper.h"
+
 
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrinterInfo>
@@ -152,6 +154,7 @@ class Interpreter : public QThread
 #endif
 
  private:
+  Sleeper *sleeper;
   int optype(int op);
   QString opname(int);
   void waitForGraphics();

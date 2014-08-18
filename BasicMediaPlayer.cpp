@@ -70,6 +70,7 @@ int BasicMediaPlayer::state() {
 			s = QMediaPlayer::StoppedState; // stopped
 		}
 	}
+	delete sleeper;
 	return(s);
 }
 
@@ -89,6 +90,7 @@ void BasicMediaPlayer::wait() {
 	} while (state()==QMediaPlayer::PlayingState);
 	setPosition(0);
 	QMediaPlayer::pause();
+	delete sleeper;
 }
 
 bool BasicMediaPlayer::seek(double time) {
@@ -104,11 +106,11 @@ bool BasicMediaPlayer::seek(double time) {
 }
 
 double BasicMediaPlayer::length() {
-	return QMediaPlayer::duration() / 1000.0d;
+	return QMediaPlayer::duration() / (double)(1000.0);
 }
 
 double BasicMediaPlayer::position() {
-	return QMediaPlayer::position() / 1000.0d;
+	return QMediaPlayer::position() / (double)(1000.0);
 }
 
 void BasicMediaPlayer::play() {
