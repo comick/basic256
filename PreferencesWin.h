@@ -68,6 +68,8 @@ private:
 	QCheckBox *saveonruncheckbox;
 	QLabel *typeconvlabel;
 	QComboBox *typeconvcombo;
+	QLabel *decdigslabel;
+	QSlider *decdigsslider;
 	QLabel *debugspeedlabel;
 	QSlider *debugspeedslider;
 

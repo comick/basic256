@@ -103,21 +103,47 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     saveonruncheckbox->setChecked(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool());
     usertablayout->addWidget(saveonruncheckbox,r,2,1,2);
 	//
+	// decimal digits slider
+	r++;
+	decdigslabel = new QLabel(tr("Digits of Precission to Display:"),this);
+	decdigsslider = new QSlider(Qt::Horizontal);
+	decdigsslider->setMinimum(SETTINGSDECDIGSMIN);
+	decdigsslider->setMaximum(SETTINGSDECDIGSMAX);
+	QLabel *decdigsbefore = new QLabel(tr("8"),this);
+	QLabel *decdigsafter = new QLabel(tr("14"),this);
+	QLabel *decdigsvalue = new QLabel("",this);
+	connect(decdigsslider, SIGNAL(valueChanged(int)), decdigsvalue, SLOT(setNum(int)));
+	QLabel *decdigsunits = new QLabel(tr("digits"),this);
+	QHBoxLayout * decdigssliderlayout = new QHBoxLayout();
+	decdigssliderlayout->addWidget(decdigsbefore);
+	decdigssliderlayout->addWidget(decdigsslider);
+	decdigssliderlayout->addWidget(decdigsafter);
+	decdigssliderlayout->addWidget(decdigsvalue);
+	decdigssliderlayout->addWidget(decdigsunits);
+	usertablayout->addWidget(decdigslabel,r,1,1,1);
+	usertablayout->addLayout(decdigssliderlayout,r,2,1,2);
+	decdigsslider->setValue(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
+	//
 	// speed of next statement in run to breakpoint
 	r++;
 	debugspeedlabel = new QLabel(tr("Debugging Speed:"),this);
 	debugspeedslider = new QSlider(Qt::Horizontal);
-	debugspeedslider->setMinimum(1);
-	debugspeedslider->setMaximum(2000);
-	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
-	QLabel *debugspeedsliderbefore = new QLabel(tr("Fast"),this);
-	QLabel *debugspeedsliderafter = new QLabel(tr("Slow"),this);
+	debugspeedslider->setMinimum(SETTINGSDEBUGSPEEDMIN);
+	debugspeedslider->setMaximum(SETTINGSDEBUGSPEEDMAX);
+	QLabel *debugspeedbefore = new QLabel(tr("Fast"),this);
+	QLabel *debugspeedafter = new QLabel(tr("Slow"),this);
+	QLabel *debugspeedvalue = new QLabel("",this);
+	connect(debugspeedslider, SIGNAL(valueChanged(int)), debugspeedvalue, SLOT(setNum(int)));
+	QLabel *debugspeedunits = new QLabel(tr("ms"),this);
 	QHBoxLayout * debugspeedsliderlayout = new QHBoxLayout();
-	debugspeedsliderlayout->addWidget(debugspeedsliderbefore);
+	debugspeedsliderlayout->addWidget(debugspeedbefore);
 	debugspeedsliderlayout->addWidget(debugspeedslider);
-	debugspeedsliderlayout->addWidget(debugspeedsliderafter);
+	debugspeedsliderlayout->addWidget(debugspeedafter);
+	debugspeedsliderlayout->addWidget(debugspeedvalue);
+	debugspeedsliderlayout->addWidget(debugspeedunits);
 	usertablayout->addWidget(debugspeedlabel,r,1,1,1);
 	usertablayout->addLayout(debugspeedsliderlayout,r,2,1,2);
+	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
 
     //
     // *******************************************************************************************
@@ -361,6 +387,7 @@ void PreferencesWin::clickSaveButton() {
         if (typeconvcombo->currentIndex()!=-1) {
             settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));
         }
+        settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
 
         // *******************************************************************************************

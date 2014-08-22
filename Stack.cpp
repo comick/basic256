@@ -8,6 +8,7 @@
 Stack::Stack() {
     errornumber = ERROR_NONE;
     typeconverror = false;
+    decimaldigits = 12;
 }
 
 Stack::~Stack() {
@@ -66,6 +67,15 @@ void Stack::settypeconverror(int e) {
     // 1 - report problems as warning
     // 2 - report problems as an error
     typeconverror = e;
+}
+
+void Stack::setdecimaldigits(int n) {
+    // when converting a double to a string
+    // how many decinal digits will we display
+    // default 10
+    // maximum should not exceed 15 
+    // 14 to be safe
+    decimaldigits = n;
 }
 
 void
@@ -246,16 +256,11 @@ QString Stack::popstring() {
     } else if (top->type == T_VARREF || top->type == T_VARREFSTR) {
         s = QString::number(top->floatval,'f',0);
     } else if (top->type == T_FLOAT) {
-        double xp = log10(top->floatval*(top->floatval<0?-1:1));
-        if (xp<-6.0 || xp>10.0) {
-            s = QString::number(top->floatval,'g',10);
+        double xp = log10(top->floatval*(top->floatval<0?-1:1)); // size in powers of 10
+        if (xp*2<-decimaldigits || xp>decimaldigits) {
+            s = QString::number(top->floatval,'g',decimaldigits);
         } else {
-            int decimal = 12-xp;		// show up to 12 digits of precission
-            if (decimal>7) decimal=7;	// up to 7 decimal digits
-            //char buffer[64];
-            //sprintf(buffer, "%#.*f", decimal, top->floatval);
-            //QString s = QString::fromUtf8(buffer);
-            s = QString::number(top->floatval,'f',decimal);
+            s = QString::number(top->floatval,'f',decimaldigits - (xp>0?xp:0));
             //strip trailing zeros and decimal point
             while(s.endsWith("0")) s.chop(1);
             if(s.endsWith(".")) s.chop(1);

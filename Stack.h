@@ -55,10 +55,12 @@ class Stack
   int error();
   void clearerror();
   void settypeconverror(int);
+  void setdecimaldigits(int);
 
  private:
   std::list<stackdata*> stacklist;
   int errornumber;		// internal storage of last stack error
   int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
+  int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
   stackdata *popelement();
 };

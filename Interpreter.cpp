@@ -1082,6 +1082,7 @@ Interpreter::initialize() {
 
     // set settings
     stack.settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
+    stack.setdecimaldigits(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
 
 }
 
