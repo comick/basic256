@@ -261,9 +261,12 @@ QString Stack::popstring() {
             s = QString::number(top->floatval,'g',decimaldigits);
         } else {
             s = QString::number(top->floatval,'f',decimaldigits - (xp>0?xp:0));
-            //strip trailing zeros and decimal point
-            while(s.endsWith("0")) s.chop(1);
-            if(s.endsWith(".")) s.chop(1);
+            // strip trailing zeros and decimal point
+            // need to test for locales with a comma as a currency seperator
+            if (s.contains('.',Qt::CaseInsensitive)) {
+				while(s.endsWith("0")) s.chop(1);
+				if(s.endsWith(".")) s.chop(1);
+			}
         }
     }
     delete(top);
