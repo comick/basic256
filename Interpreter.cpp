@@ -3923,7 +3923,6 @@ Interpreter::execByteCode() {
                                     delete dbSet[n][set];
                                     dbSet[n][set] = NULL;
                                 }
-                                dbSetRow[n][set] = false;	// have we moved to the first row yet
                                 dbSet[n][set] = new QSqlQuery(db);
                                 bool ok = dbSet[n][set]->exec(stmt);
                                 if (!ok) {
@@ -3968,9 +3967,8 @@ Interpreter::execByteCode() {
                         if (set<0||set>=NUMDBSET) {
                             errornum = ERROR_DBSETNUMBER;
                         } else {
-                            if (dbSet[n][set]->isActive()) {
+                            if (dbSet[n][set]) {
                                 // return true if we move to a new row else false
-                                dbSetRow[n][set] = true;
                                 stack.pushint(dbSet[n][set]->next());
                             } else {
                                 errornum = ERROR_DBNOTSET;
@@ -4008,7 +4006,7 @@ Interpreter::execByteCode() {
                             if (!dbSet[n][set]->isActive()) {
                                 errornum = ERROR_DBNOTSET;
                             } else {
-                                if (!dbSetRow[n][set]) {
+                                if (!dbSet[n][set]->isValid()) {
                                     errornum = ERROR_DBNOTSETROW;
                                 } else {
                                     if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {

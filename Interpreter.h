@@ -205,7 +205,6 @@ class Interpreter : public QThread
   QPainter *printdocumentpainter;
 
   QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
-  bool dbSetRow[NUMDBCONN][NUMDBSET];			// have we moved to the first row yet?
 
 #ifndef USEQSOUND
   BasicMediaPlayer *mediaplayer;
