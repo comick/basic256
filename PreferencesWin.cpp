@@ -85,9 +85,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
         typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"));
         usertablayout->addWidget(typeconvlabel,r,1,1,1);
         typeconvcombo = new QComboBox();
-        typeconvcombo->addItem("Ignore", SETTINGSTYPECONVNONE);
-        typeconvcombo->addItem("Warn", SETTINGSTYPECONVWARN);
-        typeconvcombo->addItem("Error", SETTINGSTYPECONVERROR);
+        typeconvcombo->addItem(tr("Ignore"), SETTINGSTYPECONVNONE);
+        typeconvcombo->addItem(tr("Warn"), SETTINGSTYPECONVWARN);
+        typeconvcombo->addItem(tr("Error"), SETTINGSTYPECONVERROR);
         // set setting and select
         settypeconv = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
         int index = typeconvcombo->findData(settypeconv);

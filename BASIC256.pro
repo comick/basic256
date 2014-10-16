@@ -27,7 +27,8 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_es.ts \
 								Translations/basic256_fr.ts \
 								Translations/basic256_pt.ts \
-								Translations/basic256_nl.ts
+								Translations/basic256_nl.ts \
+								Translations/basic256_it.ts
 
 win32 {
 	DEFINES 				+=	WIN32

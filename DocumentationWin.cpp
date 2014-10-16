@@ -65,6 +65,7 @@ DocumentationWin::DocumentationWin (QWidget * parent)
     docs->setSearchPaths(QStringList()
                          <<	QApplication::applicationDirPath() + "/help/"
                          <<	"/usr/share/basic256/help/"
+                         <<	"/usr/local/share/basic256/help/"
                          <<	"./"
                          <<	QApplication::applicationDirPath() + "/../wikihelp/help/"
                          <<	QApplication::applicationDirPath() + "/wikihelp/help/"

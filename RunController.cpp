@@ -161,7 +161,10 @@ RunController::speakWords(QString text) {
 #endif
     if (samplerate!=-1) {
         QString voicename = settings.value(SETTINGSESPEAKVOICE,SETTINGSESPEAKVOICEDEFAULT).toString();
+        if (voicename == SETTINGSESPEAKVOICEDEFAULT)
+                voicename = QLocale::languageToString(QLocale::system().language());  // language of system locale
         err = espeak_SetVoiceByName(voicename.toUtf8());
+        if (err != EE_OK) err = espeak_SetVoiceByName(SETTINGSESPEAKVOICEDEFAULT);  // fallback to english if locale language not found
         if(err==EE_OK) {
             int size=text.length()+1;	// buffer length
             err = espeak_Synth(text.toUtf8(),size,0,POS_CHARACTER,0,synth_flags,NULL,NULL);

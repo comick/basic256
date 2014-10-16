@@ -484,7 +484,7 @@ void MainWindow::about() {
     title = QObject::tr("About BASIC-256") +  QObject::tr(" Android");
     message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
               QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
-              QObject::tr("Sopyright &copy; 2006-2014, The BASIC-256 Team") + "\n" +
+              QObject::tr("Copyright &copy; 2006-2014, The BASIC-256 Team") + "\n" +
               QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
               QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
               QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.");

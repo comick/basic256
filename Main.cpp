@@ -23,6 +23,7 @@
 #include <QLocale>
 #include <QFileInfo>
 #include <QtPlugin>
+#include <QLibraryInfo>
 
 //Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
     ok = qtTranslator.load("qt_" + localecode);
 #else
-    ok = qtTranslator.load("qt_" + localecode, "/usr/share/qt4/translations/");
+    ok = qtTranslator.load("qt_" + localecode, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
     qapp.installTranslator(&qtTranslator);
 
@@ -89,16 +90,17 @@ int main(int argc, char *argv[]) {
     ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
 #else
     ok = kbTranslator.load("basic256_" + localecode, "/usr/share/basic256/");
+    if (!ok) ok = kbTranslator.load("basic256_" + localecode, "/usr/local/share/basic256/");  // alternative location
 #endif
     qapp.installTranslator(&kbTranslator);
 
-    mainwin = new MainWindow();
+    MainWindow mainwin;
 
-    mainwin->setObjectName( "mainwin" );
-    mainwin->setWindowTitle(QObject::tr("Untitled - BASIC-256"));
-    mainwin->statusBar()->showMessage(QObject::tr("Ready."));
-    mainwin->localecode = localecode;
-    mainwin->show();
+    mainwin.setObjectName( "mainwin" );
+    mainwin.setWindowTitle(QObject::tr("Untitled - BASIC-256"));
+    mainwin.statusBar()->showMessage(QObject::tr("Ready."));
+    mainwin.localecode = localecode;
+    mainwin.show();
 
 #if defined(WIN32)
     // load initial file -- Win style
@@ -134,10 +136,7 @@ int main(int argc, char *argv[]) {
 
     setlocale(LC_ALL,"C");
 
-    if (loadandgo) mainwin->loadAndGoMode();
+    if (loadandgo) mainwin.loadAndGoMode();
 
-    int returnval = qapp.exec();
-
-    mainwin->~MainWindow();
-    return returnval;
+    return qapp.exec();
 }
