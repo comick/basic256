@@ -425,6 +425,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_WAVSEEK) return QString("OP_WAVSEEK");
     else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
     else if (op==OP_REGEXMINIMAL) return QString("OP_REGEXMINIMAL");
+    else if (op==OP_OPENSERIAL) return QString("OP_OPENSERIAL");
     else return QString("OP_UNKNOWN");
 }
 
@@ -672,6 +673,9 @@ QString Interpreter::getErrorMessage(int e) {
             break;
         case ERROR_WAVFILEFORMAT:
             errormessage = tr("Media file does not exist or in an unsupported format");
+            break;
+        case ERROR_FILEOPERATION:
+            errormessage = tr("Can not perform that operation on a Serial Port");
             break;
 
 
@@ -1065,7 +1069,7 @@ Interpreter::initialize() {
     graphwin->clickY = 0;
     graphwin->clickB = 0;
     // initialize files to NULL (closed)
-    stream = new QFile *[NUMFILES];
+    stream = new QIODevice *[NUMFILES];
     for (int t=0; t<NUMFILES; t++) {
         stream[t] = NULL;
     }
@@ -2014,6 +2018,43 @@ Interpreter::execByteCode() {
                 }
                 break;
 
+               case OP_OPENSERIAL: {
+                    int flow = stack.popint();
+                    QString parity = stack.popstring();
+                    int stop = stack.popint();
+                    int data = stack.popint();
+                    int baud = stack.popint();
+                    QString name = stack.popstring();
+                    int fn = stack.popint();
+
+                    if (fn<0||fn>=NUMFILES) {
+                        errornum = ERROR_FILENUMBER;
+                    } else {
+                        // close file number if open
+                        if (stream[fn] != NULL) {
+                            stream[fn]->close();
+                            stream[fn] = NULL;
+                        }
+                        // create file stream
+                        QSerialPort *p = new QSerialPort(name);
+                        if (p == NULL) {
+                            errornum = ERROR_FILEOPEN;
+                        } else {
+							p->setBaudRate(baud);
+							p->setDataBits(data);
+							p->setStopBits(stop);
+							if (parity.compare("n",0)) p->setParity(QSerialPort::NoParity);
+							if (parity.compare("e",0)) p->setParity(QSerialPort::EvenParity);
+							if (parity.compare("o",0)) p->setParity(QSerialPort::OddParity);
+							if (parity.compare("s",0)) p->setParity(QSerialPort::StopParity);
+							if (parity.compare("m",0)) p->setParity(QSerialPort::MarkParity);
+							p->setFlowControl(flow);
+							stream[fn] = p;
+                        }
+                    }
+                }
+                break;
+
 
                 case OP_READ: {
                     int fn = stack.popint();
@@ -2129,15 +2170,22 @@ Interpreter::execByteCode() {
                         if (stream[fn] == NULL) {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
-                            quint64 oldPos = stream[fn]->pos();
-                            stream[fn]->flush();
-                            stream[fn]->seek(stream[fn]->size());
-                            error = stream[fn]->write(temp.toUtf8().data());
-                            if (opcode == OP_WRITELINE) {
-                                error = stream[fn]->putChar('\n');
-                            }
-                            stream[fn]->seek(oldPos);
-                            stream[fn]->flush();
+                            if (stream[fn]->isSequential() {
+								error = stream[fn]->write(temp.toUtf8().data());
+								if (opcode == OP_WRITELINE) {
+									error = stream[fn]->putChar('\n');
+								}
+							} else {
+								quint64 oldPos = stream[fn]->pos();
+								//stream[fn]->flush();
+								stream[fn]->seek(stream[fn]->size());
+								error = stream[fn]->write(temp.toUtf8().data());
+								if (opcode == OP_WRITELINE) {
+									error = stream[fn]->putChar('\n');
+								}
+								stream[fn]->seek(oldPos);
+								//stream[fn]->flush();
+							}
                         }
                         if (error == -1) {
                             errornum = ERROR_FILEWRITE;
@@ -2166,7 +2214,6 @@ Interpreter::execByteCode() {
                 break;
 
 
-
                 case OP_CLOSE: {
                     int fn = stack.popint();
                     if (fn<0||fn>=NUMFILES) {
@@ -2191,18 +2238,22 @@ Interpreter::execByteCode() {
                         if (stream[fn] == NULL) {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
-                            if (stream[fn]->isTextModeEnabled()) {
-                                // text mode file
-                                stream[fn]->close();
-                                if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
+                            if (stream[fn]->isSequential()) {
+								errornum = ERROR_FILENOPERATION;
+ 							} else {
+								if (stream[fn]->isTextModeEnabled()) {
+									// text mode file
+									stream[fn]->close();
+									if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
+										errornum = ERROR_FILERESET;
+									}
+								} else {
+									// binary mode file
+									stream[fn]->close();
+									if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate)) {
                                     errornum = ERROR_FILERESET;
-                                }
-                            } else {
-                                // binary mode file
-                                stream[fn]->close();
-                                if (!stream[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-                                    errornum = ERROR_FILERESET;
-                                }
+									}
+								}
                             }
                         }
                     }
@@ -2216,14 +2267,17 @@ Interpreter::execByteCode() {
                         errornum = ERROR_FILENUMBER;
                         stack.pushint(0);
                     } else {
-                        int size = 0;
-                        if (stream[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
-                            stack.pushint(0);
-                        } else {
-                            size = stream[fn]->size();
-                        }
-                        stack.pushint(size);
+						int size = 0;
+						if (stream[fn] == NULL) {
+							errornum = ERROR_FILENOTOPEN;
+						} else {
+							if (stream[fn]->isSequential()) {
+								errornum = ERROR_FILEOPERATION;
+							} else {
+								size = stream[fn]->size();
+							}
+						}
+						stack.pushint(size);
                     }
                 }
                 break;
@@ -2250,8 +2304,12 @@ Interpreter::execByteCode() {
                         if (stream[fn] == NULL) {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
-                            stream[fn]->seek(pos);
-                        }
+							if (stream[fn]->isSequential()) {
+								errornum = ERROR_FILEOPERATION;
+							} else {
+								stream[fn]->seek(pos);
+							}
+						}
                     }
                 }
                 break;

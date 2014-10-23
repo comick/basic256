@@ -325,6 +325,7 @@ offerror [Oo][Ff][Ff][Ee][Rr][Rr][Oo][Rr]
 onerror [Oo][Nn][Ee][Rr][Rr][Oo][Rr]
 open [Oo][Pp][Ee][Nn]
 openb [Oo][Pp][Ee][Nn][Bb]
+openserial [Oo][Pp][Ee][Nn][Ss][Ee][Rr][Ii][Aa][Ll]
 or [Oo][Rr]
 orange [Oo][Rr][Aa][Nn][Gg][Ee]([ \t]*\([ \t]*\))?
 ostype [Oo][Ss][Tt][Yy][Pp][Ee]([ \t]*\([ \t]*\))?
@@ -781,6 +782,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]([ \t]*\([ \t]*\))?
 {onerror}					{ count(); return B256ONERROR; }
 {open}						{ count(); return B256OPEN; }
 {openb}						{ count(); return B256OPENB; }
+{openserial}				{ count(); return B256OPENSERIAL; }
 {outputvisible}				{ count(); return B256OUTPUTVISIBLE; }
 {pause}						{ count(); return B256PAUSE; }
 {penwidth}					{ count(); return B256PENWIDTH; }

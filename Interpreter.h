@@ -22,6 +22,7 @@
 #include <QImage>
 #include <QThread>
 #include <QFile>
+#include <QSerialPort>
 #include <QDir>
 #include <QTime>
 #include <stdio.h>
@@ -164,7 +165,7 @@ class Interpreter : public QThread
   int netSockClose(int);
   Variables variables;
   Stack stack;
-  QFile **stream;
+  QIODevice **stream;
   int *op;
   frame *callstack;
   forframe *forstack;

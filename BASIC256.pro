@@ -18,6 +18,7 @@ QT						+=	gui
 QT						+=	sql
 QT						+=	widgets
 QT						+=	printsupport
+QT						+=	serialport
 
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc
