@@ -111,6 +111,7 @@
 #define ERROR_WAVFILEFORMAT				74
 #define ERROR_WAVNOTOPEN				75
 #define ERROR_FILEOPERATION				76
+#define ERROR_SERIALPARAMETER			77
 // Insert new error messages here
 
 

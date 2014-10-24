@@ -1682,7 +1682,7 @@ openstmt:	B256OPEN stringexpr  {
 				addIntOp(OP_PUSHINT, 9600); // baud
 				addIntOp(OP_PUSHINT, 8); // data bits
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
@@ -1690,58 +1690,58 @@ openstmt:	B256OPEN stringexpr  {
 				addIntOp(OP_PUSHINT, 9600); // baud
 				addIntOp(OP_PUSHINT, 8); // data bits
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr {
 				addIntOp(OP_PUSHINT, 8); // data bits
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ')'{
 				addIntOp(OP_PUSHINT, 8); // data bits
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr {
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ')' {
 				addIntOp(OP_PUSHINT, 1); // stop bits
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr {
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
 			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
-				addStringOp(OP_PUSHSTRING, "N"); // parity
+				addIntOp(OP_PUSHINT, 0); // parity
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
-			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr {
+			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
-			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ')' {
+			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
 				addIntOp(OP_PUSHINT, 0); // flow
 				addOp(OP_OPENSERIAL);
 			}
-			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ',' floatexpr {
+			| B256OPENSERIAL floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr {
 				addOp(OP_OPENSERIAL);
 			}
-			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' stringexpr ',' floatexpr ')' {
+			| B256OPENSERIAL '(' floatexpr ',' stringexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ',' floatexpr ')' {
 				addOp(OP_OPENSERIAL);
 			}
 			

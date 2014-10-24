@@ -60,6 +60,7 @@ InpOut32OutType Out32 = NULL;
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QSerialPort>
 
 
 #include <QtWidgets/QMessageBox>
@@ -676,6 +677,9 @@ QString Interpreter::getErrorMessage(int e) {
             break;
         case ERROR_FILEOPERATION:
             errormessage = tr("Can not perform that operation on a Serial Port");
+            break;
+        case ERROR_SERIALPARAMETER:
+            errormessage = tr("Invalid serial port parameter");
             break;
 
 
@@ -2020,13 +2024,15 @@ Interpreter::execByteCode() {
 
                case OP_OPENSERIAL: {
                     int flow = stack.popint();
-                    QString parity = stack.popstring();
+                    int parity = stack.popint();
                     int stop = stack.popint();
                     int data = stack.popint();
                     int baud = stack.popint();
                     QString name = stack.popstring();
                     int fn = stack.popint();
-
+#ifdef ANDROID
+                    errornum = ERROR_NOTIMPLEMENTED;
+# else
                     if (fn<0||fn>=NUMFILES) {
                         errornum = ERROR_FILENUMBER;
                     } else {
@@ -2040,18 +2046,74 @@ Interpreter::execByteCode() {
                         if (p == NULL) {
                             errornum = ERROR_FILEOPEN;
                         } else {
-							p->setBaudRate(baud);
-							p->setDataBits(data);
-							p->setStopBits(stop);
-							if (parity.compare("n",0)) p->setParity(QSerialPort::NoParity);
-							if (parity.compare("e",0)) p->setParity(QSerialPort::EvenParity);
-							if (parity.compare("o",0)) p->setParity(QSerialPort::OddParity);
-							if (parity.compare("s",0)) p->setParity(QSerialPort::StopParity);
-							if (parity.compare("m",0)) p->setParity(QSerialPort::MarkParity);
-							p->setFlowControl(flow);
-							stream[fn] = p;
+							if (!p->setBaudRate(baud)) errornum = ERROR_SERIALPARAMETER;
+							switch (data) {
+								case 5:
+									if(!p->setDataBits(QSerialPort::Data5)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 6:
+									if(!p->setDataBits(QSerialPort::Data6)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 7:
+									if(!p->setDataBits(QSerialPort::Data7)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 8:
+									if(!p->setDataBits(QSerialPort::Data8)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								default: errornum = ERROR_SERIALPARAMETER;
+							}
+							switch (stop) {
+								case 1:
+									if(!p->setStopBits(QSerialPort::OneStop)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 2:
+									if(!p->setStopBits(QSerialPort::TwoStop)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								default: errornum = ERROR_SERIALPARAMETER;
+							}
+							switch (parity) {
+								case 0:
+									if(!p->setParity(QSerialPort::NoParity)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 1:
+									if(!p->setParity(QSerialPort::OddParity)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 2:
+									if(!p->setParity(QSerialPort::EvenParity)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 3:
+									if(!p->setParity(QSerialPort::SpaceParity)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 4:
+									if(!p->setParity(QSerialPort::MarkParity)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								default:
+									errornum = ERROR_SERIALPARAMETER;
+							}
+							switch (flow) {
+								case 0:
+									if(!p->setFlowControl(QSerialPort::NoFlowControl)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 1: 
+									if(!p->setFlowControl(QSerialPort::HardwareControl)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								case 2: 
+									if(!p->setFlowControl(QSerialPort::SoftwareControl)) errornum = ERROR_SERIALPARAMETER;
+									break;
+								default:
+									errornum = ERROR_SERIALPARAMETER;
+							}
+							if (errornum!=ERROR_NONE) {
+								if (!p->open(QIODevice::ReadWrite)) {
+									errornum = ERROR_FILEOPEN;
+								} else {
+									// successful open
+									stream[fn] = p;
+								}
+							}
                         }
                     }
+#endif
                 }
                 break;
 
@@ -2170,7 +2232,7 @@ Interpreter::execByteCode() {
                         if (stream[fn] == NULL) {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
-                            if (stream[fn]->isSequential() {
+                            if (stream[fn]->isSequential()) {
 								error = stream[fn]->write(temp.toUtf8().data());
 								if (opcode == OP_WRITELINE) {
 									error = stream[fn]->putChar('\n');
@@ -2239,7 +2301,7 @@ Interpreter::execByteCode() {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
                             if (stream[fn]->isSequential()) {
-								errornum = ERROR_FILENOPERATION;
+								errornum = ERROR_FILEOPERATION;
  							} else {
 								if (stream[fn]->isTextModeEnabled()) {
 									// text mode file
