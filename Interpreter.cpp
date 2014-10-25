@@ -2053,63 +2053,6 @@ Interpreter::execByteCode() {
                         } else {
 							p->setPortName(name);
 							p->setReadBufferSize(SERIALREADBUFFERSIZE);
-							if (!p->setBaudRate(baud)) errornum = ERROR_SERIALPARAMETER;
-							switch (data) {
-								case 5:
-									if(!p->setDataBits(QSerialPort::Data5)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 6:
-									if(!p->setDataBits(QSerialPort::Data6)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 7:
-									if(!p->setDataBits(QSerialPort::Data7)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 8:
-									if(!p->setDataBits(QSerialPort::Data8)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								default: errornum = ERROR_SERIALPARAMETER;
-							}
-							switch (stop) {
-								case 1:
-									if(!p->setStopBits(QSerialPort::OneStop)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 2:
-									if(!p->setStopBits(QSerialPort::TwoStop)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								default: errornum = ERROR_SERIALPARAMETER;
-							}
-							switch (parity) {
-								case 0:
-									if(!p->setParity(QSerialPort::NoParity)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 1:
-									if(!p->setParity(QSerialPort::OddParity)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 2:
-									if(!p->setParity(QSerialPort::EvenParity)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 3:
-									if(!p->setParity(QSerialPort::SpaceParity)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 4:
-									if(!p->setParity(QSerialPort::MarkParity)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								default:
-									errornum = ERROR_SERIALPARAMETER;
-							}
-							switch (flow) {
-								case 0:
-									if(!p->setFlowControl(QSerialPort::NoFlowControl)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 1: 
-									if(!p->setFlowControl(QSerialPort::HardwareControl)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								case 2: 
-									if(!p->setFlowControl(QSerialPort::SoftwareControl)) errornum = ERROR_SERIALPARAMETER;
-									break;
-								default:
-									errornum = ERROR_SERIALPARAMETER;
-							}
 							if (errornum==ERROR_NONE) {
 								if (!p->open(QIODevice::ReadWrite)) {
 									errornum = ERROR_FILEOPEN;
@@ -2117,6 +2060,64 @@ Interpreter::execByteCode() {
 									// successful open
 									filehandle[fn] = p;
 							        filehandletype[fn] = 2;
+							        // set the parameters
+									if (!p->setBaudRate(baud)) errornum = ERROR_SERIALPARAMETER;
+									switch (data) {
+										case 5:
+											if(!p->setDataBits(QSerialPort::Data5)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 6:
+											if(!p->setDataBits(QSerialPort::Data6)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 7:
+											if(!p->setDataBits(QSerialPort::Data7)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 8:
+											if(!p->setDataBits(QSerialPort::Data8)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										default: errornum = ERROR_SERIALPARAMETER;
+									}
+									switch (stop) {
+										case 1:
+											if(!p->setStopBits(QSerialPort::OneStop)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 2:
+											if(!p->setStopBits(QSerialPort::TwoStop)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										default: errornum = ERROR_SERIALPARAMETER;
+									}
+									switch (parity) {
+										case 0:
+											if(!p->setParity(QSerialPort::NoParity)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 1:
+											if(!p->setParity(QSerialPort::OddParity)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 2:
+											if(!p->setParity(QSerialPort::EvenParity)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 3:
+											if(!p->setParity(QSerialPort::SpaceParity)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 4:
+											if(!p->setParity(QSerialPort::MarkParity)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										default:
+											errornum = ERROR_SERIALPARAMETER;
+									}
+									switch (flow) {
+										case 0:
+											if(!p->setFlowControl(QSerialPort::NoFlowControl)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 1: 
+											if(!p->setFlowControl(QSerialPort::HardwareControl)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										case 2: 
+											if(!p->setFlowControl(QSerialPort::SoftwareControl)) errornum = ERROR_SERIALPARAMETER;
+											break;
+										default:
+											errornum = ERROR_SERIALPARAMETER;
+									}
 								}
 							}
                         }
