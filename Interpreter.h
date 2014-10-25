@@ -61,6 +61,10 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED}
 
 #define STRINGMAXLEN 16777216
 
+#define FILEWRITETIMEOUT		1			// on a file/serial write wait up to MS for the write to complete
+#define FILEREADTIMEOUT			1			// on a file/serial read wait up to MS for data to be there
+#define SERIALREADBUFFERSIZE	1024		// size of openserial read buffer
+
 
 struct byteCodeData
 {
@@ -165,7 +169,8 @@ class Interpreter : public QThread
   int netSockClose(int);
   Variables variables;
   Stack stack;
-  QIODevice **stream;
+  QIODevice **filehandle;
+  int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
   int *op;
   frame *callstack;
   forframe *forstack;

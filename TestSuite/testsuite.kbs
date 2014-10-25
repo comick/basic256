@@ -32,13 +32,14 @@
 #				added printer include
 #				added time include
 # 20140530	j.m.reneau	added network include
+# 20141025	j.m.reneau	added serial include
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1010207)
+call versiontest(1010400)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -310,6 +311,12 @@ section_network:
 call section("Networking")
 ###################################################
 include "testsuite_network_include.kbs"
+
+section_serial:
+###################################################
+call section("Serial Port")
+###################################################
+include "testsuite_serial_include.kbs"
 
 
 

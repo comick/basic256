@@ -38,10 +38,11 @@ open b$
 a = 0
 while not eof
    t$ = readline
-   t$ = replace(t$,chr(9)," ")
    c$ = explodex(t$,"\t| ")
    for t = 0 to c$[?]-1
-      a += int(c$[t])
+      if instrx(c$[t],"^[0123456789]+") then
+         a += int(c$[t])
+      endif
    next t
 end while
 call n("readline data sum", a, 32640)
