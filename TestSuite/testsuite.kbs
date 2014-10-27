@@ -316,7 +316,7 @@ section_serial:
 ###################################################
 call section("Serial Port")
 ###################################################
-include "testsuite_serial_include.kbs"
+include "testsuite_serialio_include.kbs"
 
 
 

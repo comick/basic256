@@ -15,10 +15,12 @@ INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
 CONFIG						+=	 qt debug_and_release
 
-QT							+=	webkit
-QT							+=	widgets
-QT							+=	printsupport
-QT							+=	sql
+QT						+=	webkit
+QT						+=	gui
+QT						+=	sql
+QT						+=	widgets
+QT						+=	printsupport
+QT						+=	serialport
 
 RESOURCES					+=	resources/resource.qrc
 RC_FILE						=	resources/basic256.rc

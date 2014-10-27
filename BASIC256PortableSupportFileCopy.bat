@@ -7,6 +7,7 @@ REM # 2013-11-11 j.m.reneau    1.0.0		original coding
 REM # 2014-01-05 j.m.reneau    1.0.7		added qt sql
 REM # 2014-04-19 j.m.reneau    1.1.1.3		moved development to qt 5.2.1
 REM # 2014-06-01 j.m.reneau    1.1.2.4      changed paths to qt 5.3
+REM # 2014-10-26 j.m.reneau    1.1.4.0      added serialport
 
 set SDK_BIN=C:\Qt\5.3\mingw482_32\bin
 set SDK_LIB=C:\Qt\5.3\mingw482_32\lib
@@ -73,6 +74,7 @@ xcopy %SDK_BIN%\Qt5MultimediaWidgets.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Network.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5OpenGL.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5PrintSupport.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5SerialPort.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Sql.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5WebKit.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Widgets.dll %INSTDIR%

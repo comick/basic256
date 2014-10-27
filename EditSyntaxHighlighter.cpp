@@ -206,6 +206,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Oo][Nn][Ee][Rr][Rr][Oo][Rr]\\b"								// onerror
             << "\\b[Oo][Pp][Ee][Nn]\\b"											// open
             << "\\b[Oo][Pp][Ee][Nn][Bb]\\b"										// openb
+            << "\\b[Oo][Pp][Ee][Nn][Ss][Ee][Rr][Ii][Aa][Ll]\\b"					// openserial
             << "\\b[Oo][Rr]\\b"													// or
             << "\\b[Oo][Ss][Tt][Yy][Pp][Ee]\\b"									// ostype
             << "\\b[Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]\\b"		// outputvisible
