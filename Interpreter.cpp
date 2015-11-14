@@ -5059,7 +5059,7 @@ Interpreter::execByteCode() {
                         {
                             for(int i=0; i<numsyms; i++) {
                                 mymutex->lock();
-                                emit(outputReady(QString("SYM %1 LOC %2\n").arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
+                                emit(outputReady(QString("SYM %1 %2 LOC %3\n").arg(i).arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
                                 waitCond->wait(mymutex);
                                 mymutex->unlock();
                             }

@@ -66,7 +66,7 @@ call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
 call sne("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
 
 # create arrays to use
-dim c(10)
+dim c[10]
 dim twod(10,10)
 
 ###################################################
