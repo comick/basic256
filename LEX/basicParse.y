@@ -482,6 +482,15 @@ compoundstmt:
 			statement ':' compoundstmt
 			| statement
 			;
+/* array reference - make everything 2d */
+
+arrayref:
+			'[' floatexpr ']' {
+				addIntOp(OP_PUSHINT, 0);
+				// addOp(OP_STACKSWAP);
+			}
+			| '[' floatexpr ',' floatexpr ']'
+			;
 
 /* statement argument paterns */
 
@@ -490,33 +499,19 @@ args_none:
 			
 /* one argument (only ones that do not have a native or need to setvarnumber) */
 
-arrayref1d:
-			'[' floatexpr ']';
 
-args_a1:
-			B256VARIABLE arrayref1d {
+args_a:
+			B256VARIABLE arrayref {
 				varnumber[nvarnumber++] = $1
 			}
 			;
 
-args_A1:
-			B256STRINGVAR arrayref1d {
+args_A:
+			B256STRINGVAR arrayref {
 				varnumber[nvarnumber++] = $1
 			}
 			;
 
-args_a2:
-			B256VARIABLE arrayref2d {
-				varnumber[nvarnumber++] = $1
-			}
-			;
-
-args_A2:
-			B256STRINGVAR arrayref2d {
-				varnumber[nvarnumber++] = $1
-			}
-			;
-			
 args_v:
 			B256VARIABLE {
 				varnumber[nvarnumber++] = $1
@@ -530,8 +525,6 @@ args_V:
 			
 /* two arguments */
 
-arrayref2d:
-			'[' floatexpr ',' floatexpr ']';
 			
 args_ee:
 			expr ',' expr
@@ -560,30 +553,18 @@ args_fv:
 			| '(' args_fv ')';
 
 	
-args_sa1:
-			stringexpr ',' B256VARIABLE arrayref1d {
+args_sa:
+			stringexpr ',' B256VARIABLE arrayref {
 				varnumber[nvarnumber++] = $3
 			}
-			|'(' args_sa1 ')';
+			|'(' args_sa ')';
 
-args_sA1:
-			stringexpr ',' B256STRINGVAR arrayref1d {
+args_sA:
+			stringexpr ',' B256STRINGVAR arrayref {
 				varnumber[nvarnumber++] = $3
 			}
-			|'(' args_sA1 ')';
+			|'(' args_sA ')';
 
-args_sa2:
-			stringexpr ',' B256VARIABLE arrayref2d {
-				varnumber[nvarnumber++] = $3
-			}
-			|'(' args_sa2 ')';
-
-args_sA2:
-			stringexpr ',' B256STRINGVAR arrayref2d {
-				varnumber[nvarnumber++] = $3
-			}
-			|'(' args_sA2 ')';
-			
 args_sf:
 			stringexpr ',' floatexpr
 			| '(' args_sf ')';
@@ -1165,60 +1146,44 @@ letstmt:	B256LET numassign
 			| strarrayassign
 			;
 
-dimstmt: 	B256DIM args_a1 {
-				addIntOp(OP_PUSHINT, 1);
+dimstmt: 	B256DIM args_a {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_A {
+				addIntOp(OP_DIMSTR, varnumber[--nvarnumber]);
 			}
 			| B256DIM args_v floatexpr {
 				addIntOp(OP_PUSHINT, 1);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
-			| B256DIM args_A1 {
-				addIntOp(OP_PUSHINT, 1);
-				addIntOp(OP_DIMSTR, varnumber[--nvarnumber]);
-			}
 			| B256DIM args_V floatexpr {
 				addIntOp(OP_PUSHINT, 1);
 				addIntOp(OP_DIMSTR, varnumber[--nvarnumber]);
 			}
-			| B256DIM args_a2 {
-				addIntOp(OP_DIM, varnumber[--nvarnumber]);
-			}
 			| B256DIM args_v args_ff {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
-			}
-			| B256DIM args_A2 {
-				addIntOp(OP_DIMSTR, varnumber[--nvarnumber]);
 			}
 			| B256DIM args_V args_ff {
 				addIntOp(OP_DIMSTR, varnumber[--nvarnumber]);
 			}
 			;
 
-redimstmt:	B256REDIM args_a1 {
-				addIntOp(OP_PUSHINT, 1);
+redimstmt:	B256REDIM args_a {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+			}
+			| B256REDIM args_A {
+				addIntOp(OP_REDIMSTR, varnumber[--nvarnumber]);
 			}
 			| B256REDIM args_v floatexpr {
 				addIntOp(OP_PUSHINT, 1);
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
-			| B256REDIM args_A1 {
-				addIntOp(OP_PUSHINT, 1);
-				addIntOp(OP_REDIMSTR, varnumber[--nvarnumber]);
-			}
 			| B256REDIM args_V floatexpr {
 				addIntOp(OP_PUSHINT, 1);
 				addIntOp(OP_REDIMSTR, varnumber[--nvarnumber]);
 			}
-			| B256REDIM args_a2 {
-				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
-			}
 			| B256REDIM args_v args_ff {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
-			}
-			| B256REDIM args_A2 {
-				addIntOp(OP_REDIMSTR, varnumber[--nvarnumber]);
 			}
 			| B256REDIM args_V args_ff {
 				addIntOp(OP_REDIMSTR, varnumber[--nvarnumber]);
@@ -1268,32 +1233,19 @@ endstmt: 	B256END args_none {
 			;
 
 strarrayassign:
-			args_A1 '=' expr {
+			args_A '=' expr {
 				addIntOp(OP_STRARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| args_A1 B256ADDEQUAL expr {
-				// a$[n] += s$
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_CONCAT);
-				addIntOp(OP_STRARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_A2 '=' expr {
-				addIntOp(OP_STRARRAYASSIGN2D, varnumber[--nvarnumber]);
-			}
-			| args_A2 B256ADDEQUAL expr {
+			| args_A B256ADDEQUAL expr {
 				// a$[b,c] += s$
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_CONCAT);
-				addIntOp(OP_STRARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_STRARRAYASSIGN, varnumber[nvarnumber]);
 			}
 			| args_V '=' immediatestrlist {
 				addIntOp(OP_PUSHINT, listlen);
@@ -1313,137 +1265,73 @@ strarrayassign:
 			;
 
 arrayassignerrors:
-			args_a1 '=' stringexpr
-			| args_a2 '=' stringexpr
-			| args_a1 B256ADDEQUAL stringexpr
-			| args_a2 B256ADDEQUAL stringexpr
-			| args_a1 B256SUBEQUAL stringexpr
-			| args_a2 B256SUBEQUAL stringexpr
-			| args_a1 B256MULEQUAL stringexpr
-			| args_a2 B256MULEQUAL stringexpr
-			| args_a1 B256DIVEQUAL stringexpr
-			| args_a2 B256DIVEQUAL stringexpr
+			args_a '=' stringexpr
+			| args_a B256ADDEQUAL stringexpr
+			| args_a B256SUBEQUAL stringexpr
+			| args_a B256MULEQUAL stringexpr
+			| args_a B256DIVEQUAL stringexpr
 			| args_v '=' immediatestrlist
 			;
 
 arrayassign:
-			args_a1 '=' floatexpr {
+			args_a '=' floatexpr {
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| args_a1 B256ADD1 {
-				// a[n]++ (Statement)
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a1 B256SUB1 {
-				// a[n]-- (Statement)
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a1 B256ADDEQUAL floatexpr {
-				// a[n] += n
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a1 B256SUBEQUAL floatexpr {
-				// a[n] -= n
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a1 B256MULEQUAL floatexpr {
-				// a[n] *= n
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_MUL);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a1 B256DIVEQUAL floatexpr {
-				// a[n] /= n
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKTOPTO2);
-				addOp(OP_DIV);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| args_a2 '=' floatexpr {
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[--nvarnumber]);
-			}
-			| args_a2 B256ADD1 {
+			| args_a B256ADD1 {
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256SUB1 {
+			| args_a B256SUB1 {
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256ADDEQUAL floatexpr {
+			| args_a B256ADDEQUAL floatexpr {
 				// a[b,c] += n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256SUBEQUAL floatexpr {
+			| args_a B256SUBEQUAL floatexpr {
 				// a[b,c] -= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256MULEQUAL floatexpr {
+			| args_a B256MULEQUAL floatexpr {
 				// a[b,c] *= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_MUL);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256DIVEQUAL floatexpr {
+			| args_a B256DIVEQUAL floatexpr {
 				// a[b,c] /= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D,varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_DIV);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
 			| args_v '=' immediatelist {
 				addIntOp(OP_PUSHINT, listlen);
@@ -1936,45 +1824,25 @@ inputstmt:	B256INPUT args_sV {
 				addOp(OP_INPUT);
 				addIntOp(OP_NUMASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_sA1 {
-				addOp(OP_STACKSWAP);		// bring prompt to top
+			| B256INPUT args_sA {
+				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addOp(OP_INPUT);
 				addIntOp(OP_STRARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_A1 {
+			| B256INPUT args_A {
 				addStringOp(OP_PUSHSTRING, "");
 				addOp(OP_INPUT);
 				addIntOp(OP_STRARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_sa1 {
-				addOp(OP_STACKSWAP);		// bring prompt to top
+			| B256INPUT args_sa {
+				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_a1 {
+			| B256INPUT args_a {
 				addStringOp(OP_PUSHSTRING, "");
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
-			}
-			| B256INPUT args_sA2 {
-				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
-				addOp(OP_INPUT);
-				addIntOp(OP_STRARRAYASSIGN2D, varnumber[--nvarnumber]);
-			}
-			| B256INPUT args_A2 {
-				addStringOp(OP_PUSHSTRING, "");
-				addOp(OP_INPUT);
-				addIntOp(OP_STRARRAYASSIGN2D, varnumber[--nvarnumber]);
-			}
-			| B256INPUT args_sa2 {
-				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
-				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[--nvarnumber]);
-			}
-			| B256INPUT args_a2 {
-				addStringOp(OP_PUSHSTRING, "");
-				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -2708,93 +2576,50 @@ floatexpr:
 			| B256STRINGVAR '[' '?' ',' ']' { addIntOp(OP_ALENX, $1); }
 			| B256VARIABLE '[' ',' '?' ']' { addIntOp(OP_ALENY, $1); }
 			| B256STRINGVAR '[' ',' '?' ']' { addIntOp(OP_ALENY, $1); }
-			| args_a1 { addIntOp(OP_DEREF, varnumber[--nvarnumber]); }
-			| args_a1 B256ADD1 {
-				// a[n]++
-				addOp(OP_STACKDUP);
+			| args_a {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a1 B256SUB1 {
-				// a[n]--
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addOp(OP_STACKSWAP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-			}
-			| B256ADD1 args_a1 {
-				// ++a[n]
-				addOp(OP_STACKDUP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-			}
-			| B256SUB1 args_a1 {
-				// --a[n]
-				addOp(OP_STACKDUP);
-				addOp(OP_STACKDUP);
-				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-			}
-			| args_a2 {
-				addIntOp(OP_DEREF2D, varnumber[--nvarnumber]);
-			}
-			| args_a2 B256ADD1 {
+			| args_a B256ADD1 {
 				// a[b,c]++
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a2 B256SUB1 {
+			| args_a B256SUB1 {
 				// a[b,c]--
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| B256ADD1 args_a2 {
+			| B256ADD1 args_a {
 				// ++a[b,c]
 				addOp(OP_STACKDUP2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
-				addIntOp(OP_DEREF2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
-			| B256SUB1 args_a2 {
+			| B256SUB1 args_a {
 				// --a[b,c]
 				addOp(OP_STACKDUP2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF2D, varnumber[--nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT,1);
 				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN2D, varnumber[nvarnumber]);
-				addIntOp(OP_DEREF2D, varnumber[nvarnumber]);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
 			| B256VARIABLE '(' exprlist ')' {
 				// function call with arguments
@@ -3290,8 +3115,7 @@ stringexpr:
 			| floatexpr '+' stringexpr { addOp(OP_CONCAT); }
 			| stringexpr '+' floatexpr { addOp(OP_CONCAT); }
 			| B256STRING { addStringOp(OP_PUSHSTRING, $1); }
-			| args_A1 { addIntOp(OP_DEREF, varnumber[--nvarnumber]); }
-			| args_A2 { addIntOp(OP_DEREF2D, varnumber[--nvarnumber]); }
+			| args_A { addIntOp(OP_DEREF, varnumber[--nvarnumber]); }
 			| B256STRINGVAR '(' exprlist ')' {
 				addIntOp(OP_GOSUB, $1);
 			}

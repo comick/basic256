@@ -58,13 +58,13 @@ VariableWin::varAssignment(int recurse, QString name, QString value, int arrayle
         if (!newArrayFlag && arraylenx > -1) {
             // if we are acessing an array element then change name to full []
             name = name + "[" + QString::number(arraylenx);
-            if (arrayleny > -1) {
+            if (arrayleny > 1) {
                 name = name + "," + QString::number(arrayleny);
             }
             name = name + "]";
         } else if (newArrayFlag) {
             value = tr("<array ") + QString::number(arraylenx);
-            if (arrayleny > -1) {
+            if (arrayleny > 1) {
                 value = value + "," + QString::number(arrayleny);
             }
             value = value + ">";
@@ -86,7 +86,7 @@ VariableWin::varAssignment(int recurse, QString name, QString value, int arrayle
 
         // add place holders for the array elements as children for a new array
         if (newArrayFlag) {
-            if (arrayleny == -1) {
+            if (arrayleny <= 1) {
                 // 1d array
                 for(int x=0; x<arraylenx; x++) {
                     QTreeWidgetItem *childItem = new QTreeWidgetItem();
