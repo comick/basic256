@@ -13,14 +13,11 @@
 #include <QString>
 
 #include "ErrorCodes.h"
-#include "Stack.h"
-
+#include "Types.h"
 
 #define VARIABLE_MAXARRAYELEMENTS 1048576
 #define MAX_RECURSE_LEVELS	1048576
   
-
-
 struct arrayvariable
 {
   b_type type;
@@ -43,8 +40,6 @@ struct variable
   double floatval; 
   VariableArrayPart *arr;
 };
-
-
 
 class Variables
 {

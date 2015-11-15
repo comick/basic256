@@ -31,8 +31,7 @@
 #define ERROR_NOTSTRINGARRAY 	-4
 #define ERROR_ARGUMENTCOUNT 	-5
 #define ERROR_MAXRECURSE 		-6
-#define ERROR_FUNCRETURN 		-7
-#define ERROR_STACKUNDERFLOW	-8
+#define ERROR_STACKUNDERFLOW	-7
 
 
 // ERRRORS and WARNINGS greater than 0 are trappable

@@ -13,12 +13,9 @@
 #include <limits>
 
 #include <QString>
+
 #include "ErrorCodes.h"
-
-#define BASIC256EPSILON 0.00000001
-
-enum b_type {T_FLOAT, T_STRING, T_BOOL, T_ARRAY, T_STRARRAY, T_UNUSED, T_VARREF, T_VARREFSTR};
-// stack types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
+#include "Types.h"
 
 struct stackdata
 {
@@ -33,17 +30,17 @@ class Stack
   Stack();
   ~Stack();
   
+  void pushelement(b_type, double, QString);
   void pushstring(QString);
   void pushint(int);
   void pushfloat(double);
-  void pushvarref(int);
-  void pushvarrefstr(int);
   void swap();
   void swap2();
   void topto2();
   void dup();
   void dup2();
   int peekType();
+  stackdata *popelement();
   int popint();
   double popfloat();
   QString popstring();
@@ -62,5 +59,4 @@ class Stack
   int errornumber;		// internal storage of last stack error
   int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
   int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
-  stackdata *popelement();
 };

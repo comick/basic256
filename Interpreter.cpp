@@ -289,10 +289,8 @@ QString Interpreter::opname(int op) {
     else if (op==OP_GOTO) return QString("OP_GOTO");
     else if (op==OP_GOSUB) return QString("OP_GOSUB");
     else if (op==OP_BRANCH) return QString("OP_BRANCH");
-    else if (op==OP_NUMASSIGN) return QString("OP_NUMASSIGN");
-    else if (op==OP_STRINGASSIGN) return QString("OP_STRINGASSIGN");
+    else if (op==OP_ASSIGN) return QString("OP_ASSIGN");
     else if (op==OP_ARRAYASSIGN) return QString("OP_ARRAYASSIGN");
-    else if (op==OP_STRARRAYASSIGN) return QString("OP_STRARRAYASSIGN");
     else if (op==OP_PUSHVAR) return QString("OP_PUSHVAR");
     else if (op==OP_PUSHINT) return QString("OP_PUSHINT");
     else if (op==OP_FOR) return QString("OP_FOR");
@@ -321,14 +319,11 @@ QString Interpreter::opname(int op) {
     else if (op==OP_ALENX) return QString("OP_ALENX");
     else if (op==OP_ALENY) return QString("OP_ALENY");
     else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
-    else if (op==OP_PUSHVARREFSTR) return QString("OP_PUSHVARREFSTR");
     else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
     else if (op==OP_VARREFSTRASSIGN) return QString("OP_VARREFSTRASSIGN");
-    else if (op==OP_FUNCRETURN) return QString("OP_FUNCRETURN");
     else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
     else if (op==OP_STRARRAYLISTASSIGN) return QString("OP_STRARRAYLISTASSIGN");
     else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
-    else if (op==OP_STRARRAY2STACK) return QString("OP_STRARRAY2STACK");
     else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
     else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
     else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
@@ -646,9 +641,6 @@ QString Interpreter::getErrorMessage(int e) {
             break;
         case ERROR_STRINGMAXLEN:
             errormessage = tr("String exceeds maximum length of 16,777,216 characters");
-            break;
-        case ERROR_FUNCRETURN:
-            errormessage = tr("Function must return a value");
             break;
         case ERROR_STACKUNDERFLOW:
             errormessage = tr("Stack Underflow Error");
@@ -1414,25 +1406,6 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_STRARRAYASSIGN: {
-					// assign a string value to an array element
-					// assumes that arrays are always two dimensional (if 1d then y=1)
-                    QString val = stack.popstring();
-                    int yindex = stack.popint();
-                    int xindex = stack.popint();
-
-                    variables.arrayset(i, xindex, yindex, T_STRING, 0, val);
-                    if (variables.error()==ERROR_NONE) {
-                        if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, xindex, yindex)->stringval, xindex, yindex));
-                        }
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
-                }
-                break;
-
                 case OP_EXPLODE:
                 case OP_EXPLODESTR:
                 case OP_EXPLODEX:
@@ -1535,15 +1508,22 @@ Interpreter::execByteCode() {
                 case OP_ARRAYASSIGN: {
 					// assign a float value to an array element
 					// assumes that arrays are always two dimensional (if 1d then y=1)
-                    double val = stack.popfloat();
+                    stackdata *e = stack.popelement();
                     int yindex = stack.popint();
                     int xindex = stack.popint();
 
-                    variables.arrayset(i, xindex, yindex, T_FLOAT, val, NULL);
+                    variables.arrayset(i, xindex, yindex, e->type, e->floatval, e->string);
+                    delete(e);
+                    
                     if (variables.error()==ERROR_NONE) {
                         if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, xindex, yindex)->floatval), xindex, yindex));
-                        }
+							arrayvariable *v = variables.arrayget(i, xindex, yindex);
+							if (v->type==T_STRING) {
+								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->stringval, xindex, yindex));
+							} else {
+								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(v->floatval), xindex, yindex));
+							}
+						}
                     } else {
                         errornum = variables.error();
                         errorvarnum = variables.errorvarnum();
@@ -1579,16 +1559,16 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PUSHVAR: {
-
-                    if (variables.get(i)->type == T_STRING) {
-                        stack.pushstring(variables.get(i)->stringval);
-                    } else if (variables.get(i)->type == T_FLOAT) {
-                        stack.pushfloat(variables.get(i)->floatval);
-                    } else if (variables.get(i)->type == T_ARRAY || variables.get(i)->type == T_STRARRAY) {
-                        errornum = ERROR_ARRAYINDEXMISSING;
-                        errorvarnum = i;
-                        stack.pushint(0);
-                    } else {
+					variable *v = variables.get(i);
+					if (v) {
+						if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+							errornum = ERROR_ARRAYINDEXMISSING;
+							errorvarnum = i;
+							stack.pushint(0);
+						} else {
+							stack.pushelement(v->type, v->floatval, v->stringval);
+						}
+					} else {
                         errornum = ERROR_NOSUCHVARIABLE;
                         errorvarnum = i;
                         stack.pushint(0);
@@ -1596,48 +1576,29 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_FUNCRETURN: {
-
-                    if (variables.get(i)->type == T_STRING) {
-                        stack.pushstring(variables.get(i)->stringval);
-                    } else if (variables.get(i)->type == T_FLOAT) {
-                        stack.pushfloat(variables.get(i)->floatval);
-                    } else {
-                        errornum = ERROR_FUNCRETURN;
-                        errorvarnum = i;
-                        stack.pushint(0);
-                    }
-                }
-                break;
 
                 case OP_PUSHVARREF: {
-                    stack.pushvarref(i);
-                }
-                break;
+					variable *v = variables.get(i);
+					if (v->type==T_STRING) {
+						stack.pushelement(T_VARREFSTR, i, NULL);
+					} else {
+						stack.pushelement(T_VARREF, i, NULL);
+					}
+				}
+				break;
 
-                case OP_PUSHVARREFSTR: {
-                    stack.pushvarrefstr(i);
-                }
-                break;
-
-                case OP_NUMASSIGN: {
-                    double temp = stack.popfloat();
-
-                    variables.set(i, T_FLOAT, temp, NULL);
-
-                    if(debugMode != 0) {
-                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->floatval), -1, -1));
-                    }
-                }
-                break;
-
-                case OP_STRINGASSIGN: {
-
-                    QString q = stack.popstring();
-                    variables.set(i, T_STRING, 0, q);
+                case OP_ASSIGN: {
+                    stackdata *e = stack.popelement();
+                    variables.set(i, e->type, e->floatval, e->string);
+                    delete(e);
 
                     if(debugMode != 0) {
-                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.get(i)->stringval, -1, -1));
+						variable *v = variables.get(i);
+						if (v->type==T_STRING) {
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.get(i)->stringval, -1, -1));
+						} else {
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->floatval), -1, -1));
+						}
                     }
                 }
                 break;
@@ -1678,35 +1639,21 @@ Interpreter::execByteCode() {
                     // Push all of the elements of an array to the stack and then push the length to the stack
                     // expects one integer - variable number
 
-                    if (variables.get(i)->type != T_ARRAY) {
-                        errornum = ERROR_POLYARRAY;
-                        stack.pushint(0);
-                    } else {
-                        int n = variables.arraysize(i);
+                    variable *v = variables.get(i);
+                    if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+                        int n = v->arr->size;
                         for (int j = 0; j < n; j++) {
-                            stack.pushfloat(variables.arrayget(i, j, 0)->floatval);
+							arrayvariable *av = variables.arrayget(i, j, 0);
+							stack.pushelement(av->type, av->floatval, av->stringval);
                         }
                         stack.pushint(n);
+                    } else {
+                        errornum = ERROR_POLYARRAY;
+                        stack.pushint(0);
                     }
                 }
                 break;
 
-                case OP_STRARRAY2STACK: {
-                    // Push all of the elements of a string array to the stack and then push the length to the stack
-                    // expects one integer - variable number
-
-                    if (variables.get(i)->type != T_ARRAY) {
-                        errornum = ERROR_POLYARRAY;
-                        stack.pushint(0);
-                    } else {
-                        int n = variables.arraysize(i);
-                        for (int j = 0; j < n; j++) {
-                            stack.pushstring(variables.arrayget(i, j, 0)->stringval);
-                        }
-                        stack.pushint(n);
-                    }
-                }
-                break;
 
             }
         }

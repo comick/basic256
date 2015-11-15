@@ -29,6 +29,7 @@
 #include <cmath>
 #include <dirent.h>
 #include "BasicGraph.h"
+#include "Types.h"
 #include "Stack.h"
 #include "Variables.h"
 #include "ErrorCodes.h"

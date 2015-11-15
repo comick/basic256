@@ -79,43 +79,27 @@ void Stack::setdecimaldigits(int n) {
 }
 
 void
-Stack::pushstring(QString string) {
+Stack::pushelement(b_type type, double floatval, QString stringval) {
     stackdata *ele = new stackdata;
-    ele->type = T_STRING;
-    ele->string = string;
+    ele->type = type;
+    ele->floatval = floatval;
+    ele->string = stringval;
     stacklist.push_front(ele);
+}
+
+void
+Stack::pushstring(QString string) {
+    pushelement(T_STRING, 0, string);
 }
 
 void
 Stack::pushint(int i) {
-    stackdata *ele = new stackdata;
-    ele->type = T_FLOAT;
-    ele->floatval = (double) i;
-    stacklist.push_front(ele);
-}
-
-void
-Stack::pushvarref(int i) {
-    stackdata *ele = new stackdata;
-    ele->type = T_VARREF;
-    ele->floatval = i;
-    stacklist.push_front(ele);
-}
-
-void
-Stack::pushvarrefstr(int i) {
-    stackdata *ele = new stackdata;
-    ele->type = T_VARREFSTR;
-    ele->floatval = i;
-    stacklist.push_front(ele);
+    pushelement(T_FLOAT, i, NULL);
 }
 
 void
 Stack::pushfloat(double d) {
-    stackdata *ele = new stackdata;
-    ele->type = T_FLOAT;
-    ele->floatval = d;
-    stacklist.push_front(ele);
+    pushelement(T_FLOAT, d, NULL);
 }
 
 int Stack::peekType() {
