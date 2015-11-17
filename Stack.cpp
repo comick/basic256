@@ -1,14 +1,15 @@
 #include "Stack.h"
+#include "Types.h"
 #include <string>
 
-// be doubly sure that when a stack element (stackdata) is popped from
+// be doubly sure that when a stack element (DataElement) is popped from
 // the stack and NOT PUT BACK it MUST be deleted to keep from causing a memory
 // leak!!!!  - 2013-03-25 j.m.reneau
 
 Stack::Stack() {
     errornumber = ERROR_NONE;
-    typeconverror = false;
-    decimaldigits = 12;
+    typeconverror = SETTINGSTYPECONVDEFAULT;
+    decimaldigits = SETTINGSDECDIGSDEFAULT;
 }
 
 Stack::~Stack() {
@@ -16,9 +17,24 @@ Stack::~Stack() {
 }
 
 
+void Stack::settypeconverror(int e) {
+// TypeConvError	0- report no errors
+// 					1 - report problems as warning
+// 					2 - report problems as an error
+	typeconverror = e;
+}
+
+
+void Stack::setdecimaldigits(int e) {
+// DecimalDigits	when converting a double to a string how many decinal
+//					digits will we display default 12 maximum should not
+//					exceed 15, 14 to be safe
+	decimaldigits = e;
+}
+
 void
 Stack::clear() {
-    stackdata *ele;
+    DataElement *ele;
     while(!stacklist.empty()) {
         ele = stacklist.front();
         stacklist.pop_front();
@@ -30,12 +46,11 @@ Stack::clear() {
 QString Stack::debug() {
     // return a string representing the stack
     QString s("");
-    stackdata *ele;
-    for (std::list<stackdata*>::iterator it = stacklist.begin(); it != stacklist.end(); it++) {
+    DataElement *ele;
+    for (std::list<DataElement*>::iterator it = stacklist.begin(); it != stacklist.end(); it++) {
         ele = *it;
         if(ele->type==T_FLOAT) s += "float(" + QString::number(ele->floatval) + ") ";
-        if(ele->type==T_STRING) s += "string(" + ele->string + ") ";
-        if(ele->type==T_BOOL) s += "bool=" + QString::number(ele->floatval) + " ";
+        if(ele->type==T_STRING) s += "string(" + ele->stringval + ") ";
         if(ele->type==T_ARRAY) s += "array=" + QString::number(ele->floatval) + " ";
         if(ele->type==T_STRARRAY) s += "strarray=" + QString::number(ele->floatval) + " ";
         if(ele->type==T_UNUSED) s += "unused ";
@@ -61,31 +76,18 @@ void Stack::clearerror() {
     errornumber = ERROR_NONE;
 }
 
-void Stack::settypeconverror(int e) {
-    // in popint or popfloat errors
-    // if 0- report no errors
-    // 1 - report problems as warning
-    // 2 - report problems as an error
-    typeconverror = e;
-}
-
-void Stack::setdecimaldigits(int n) {
-    // when converting a double to a string
-    // how many decinal digits will we display
-    // default 10
-    // maximum should not exceed 15 
-    // 14 to be safe
-    decimaldigits = n;
-}
-
-void
-Stack::pushelement(b_type type, double floatval, QString stringval) {
-    stackdata *ele = new stackdata;
-    ele->type = type;
-    ele->floatval = floatval;
-    ele->string = stringval;
+void Stack::pushelement(b_type type, double floatval, QString stringval) {
+	// create a new data element and push to stack
+    DataElement *ele = new DataElement(type, floatval, stringval);
     stacklist.push_front(ele);
 }
+
+void Stack::pushelement(DataElement *source) {
+	// create a new data element and push to stack
+    DataElement *ele = new DataElement(source);
+    stacklist.push_front(ele);
+}
+
 
 void
 Stack::pushstring(QString string) {
@@ -107,15 +109,15 @@ int Stack::peekType() {
         errornumber = ERROR_STACKUNDERFLOW;
         return T_FLOAT;
     } else {
-        stackdata *ele = stacklist.front();
+        DataElement *ele = stacklist.front();
         return ele->type;
     }
 }
 
-stackdata *Stack::popelement() {
+DataElement *Stack::popelement() {
     // pop an element but if there is not one on the stack
     // pop a zero and set the error to underflow
-    stackdata *e;
+    DataElement *e;
     if (stacklist.empty()) {
         errornumber = ERROR_STACKUNDERFLOW;
         pushint(0);
@@ -127,10 +129,10 @@ stackdata *Stack::popelement() {
 
 void Stack::swap2() {
     // swap top two pairs of elements
-    stackdata *zero = popelement();
-    stackdata *one = popelement();
-    stackdata *two = popelement();
-    stackdata *three = popelement();
+    DataElement *zero = popelement();
+    DataElement *one = popelement();
+    DataElement *two = popelement();
+    DataElement *three = popelement();
 
     stacklist.push_front(one);
     stacklist.push_front(zero);
@@ -140,8 +142,8 @@ void Stack::swap2() {
 
 void Stack::swap() {
     // swap top two elements
-    stackdata *zero = popelement();
-    stackdata *one = popelement();
+    DataElement *zero = popelement();
+    DataElement *one = popelement();
     stacklist.push_front(zero);
     stacklist.push_front(one);
 }
@@ -150,9 +152,9 @@ void
 Stack::topto2() {
     // move the top of the stack under the next two
     // 0, 1, 2, 3...  becomes 1, 2, 0, 3...
-    stackdata *zero = popelement();
-    stackdata *one = popelement();
-    stackdata *two = popelement();
+    DataElement *zero = popelement();
+    DataElement *one = popelement();
+    DataElement *two = popelement();
     stacklist.push_front(zero);
     stacklist.push_front(two);
     stacklist.push_front(one);
@@ -160,99 +162,51 @@ Stack::topto2() {
 
 void Stack::dup() {
     // make copy of top
-    stackdata *zero = popelement();
-    stackdata *ele = new stackdata;
-    ele->type = zero->type;
-    ele->floatval = zero->floatval;
-    ele->string = zero->string;
+    DataElement *zero = popelement();
+    DataElement *ele = new DataElement(zero);
     stacklist.push_front(ele);
     stacklist.push_front(zero);
 }
 
 void Stack::dup2() {
-    stackdata *zero = popelement();
-    stackdata *one = popelement();
+    DataElement *zero = popelement();
+    DataElement *one = popelement();
     stacklist.push_front(one);
     stacklist.push_front(zero);
     // make copies of one and zero to dup
-    stackdata *ele = new stackdata;
-    ele->type = one->type;
-    ele->floatval = one->floatval;
-    ele->string = one->string;
+    DataElement *ele = new DataElement(one);
     stacklist.push_front(ele);
-    ele = new stackdata;
-    ele->type = zero->type;
-    ele->floatval = zero->floatval;
-    ele->string = zero->string;
+    ele = new DataElement(zero);
     stacklist.push_front(ele);
 }
 
-int
-Stack::popint() {
-    int i=0;
-    stackdata *top=popelement();
-
-    if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
-        i = (int) (top->floatval + (top->floatval>0?BASIC256EPSILON:-BASIC256EPSILON));
-    } else if (top->type == T_STRING) {
-        bool ok;
-        i = top->string.toInt(&ok);
-        if (!ok && typeconverror) {
-            if (typeconverror==1) {
-                errornumber = WARNING_TYPECONV;
-            } else {
-                errornumber = ERROR_TYPECONV;
-            }
-        }
-    }
+int Stack::popint() {
+	bool ok;
+    DataElement *top=popelement();
+	int i = top->getint(&ok);
+	if(!ok) {
+		if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+		if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+	}
     delete(top);
     return i;
 }
 
-double
-Stack::popfloat() {
-    double f=0;
-    stackdata *top=popelement();
-
-    if (top->type == T_FLOAT || top->type == T_VARREF || top->type == T_VARREFSTR) {
-        f = top->floatval;
-    } else if (top->type == T_STRING) {
-        bool ok;
-        f = top->string.toDouble(&ok);
-        if (!ok && typeconverror) {
-            if (typeconverror==1) {
-                errornumber = WARNING_TYPECONV;
-            } else {
-                errornumber = ERROR_TYPECONV;
-            }
-        }
-    }
-    delete(top);
-    return f;
+double Stack::popfloat() {
+	bool ok;
+    DataElement *top=popelement();
+	double f = top->getfloat(&ok);
+ 	if(!ok) {
+		if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+		if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+	}
+   delete(top);
+   return f;
 }
 
 QString Stack::popstring() {
-    stackdata *top=popelement();
-    QString s;
-
-    if (top->type == T_STRING) {
-        s = top->string;
-    } else if (top->type == T_VARREF || top->type == T_VARREFSTR) {
-        s = QString::number(top->floatval,'f',0);
-    } else if (top->type == T_FLOAT) {
-        double xp = log10(top->floatval*(top->floatval<0?-1:1)); // size in powers of 10
-        if (xp*2<-decimaldigits || xp>decimaldigits) {
-            s = QString::number(top->floatval,'g',decimaldigits);
-        } else {
-            s = QString::number(top->floatval,'f',decimaldigits - (xp>0?xp:0));
-            // strip trailing zeros and decimal point
-            // need to test for locales with a comma as a currency seperator
-            if (s.contains('.',Qt::CaseInsensitive)) {
-				while(s.endsWith("0")) s.chop(1);
-				if(s.endsWith(".")) s.chop(1);
-			}
-        }
-    }
+    DataElement *top=popelement();
+    QString s = top->getstring(NULL, decimaldigits);
     delete(top);
     return s;
 }
@@ -271,23 +225,20 @@ int Stack::compareTopTwo() {
     // complex compare logic - compare two stack types with each other
     // return 1 if one>two  0 if one==two or -1 if one<two
     //
-    stackdata *two = popelement();
-    stackdata *one = popelement();
-    stacklist.push_front(one);
-    stacklist.push_front(two);
-
+    DataElement *two = popelement();
+    DataElement *one = popelement();
     if (one->type == T_STRING || two->type == T_STRING) {
         // one or both strings - [compare them as strings] strcmp
-        QString stwo = popstring();
-        QString sone = popstring();
+        QString stwo = two->getstring(NULL,decimaldigits);
+        QString sone = one->getstring(NULL,decimaldigits);
         int ans = sone.compare(stwo);
         if (ans==0) return 0;
         else if (ans<0) return -1;
         else return 1;
     } else {
         // anything else - compare them as doubles
-        double ftwo = popfloat();
-        double fone = popfloat();
+        double ftwo = two->getfloat();
+        double fone = one->getfloat();
         return compareFloats(fone, ftwo);
     }
 }

@@ -16,13 +16,9 @@
 
 #include "ErrorCodes.h"
 #include "Types.h"
+#include "Settings.h"
 
-struct stackdata
-{
-  b_type type;
-  QString string;
-  double floatval; 
-};
+
 
 class Stack
 {
@@ -31,6 +27,7 @@ class Stack
   ~Stack();
   
   void pushelement(b_type, double, QString);
+  void pushelement(DataElement*);
   void pushstring(QString);
   void pushint(int);
   void pushfloat(double);
@@ -40,7 +37,7 @@ class Stack
   void dup();
   void dup2();
   int peekType();
-  stackdata *popelement();
+  DataElement *popelement();
   int popint();
   double popfloat();
   QString popstring();
@@ -55,7 +52,7 @@ class Stack
   void setdecimaldigits(int);
 
  private:
-  std::list<stackdata*> stacklist;
+  std::list<DataElement*> stacklist;
   int errornumber;		// internal storage of last stack error
   int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
   int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid

@@ -17,28 +17,21 @@
 
 #define VARIABLE_MAXARRAYELEMENTS 1048576
 #define MAX_RECURSE_LEVELS	1048576
-  
-struct arrayvariable
-{
-  b_type type;
-  QString stringval;
-  double floatval; 
-};
-  
-typedef struct VariableArrayPart
-{
-  int xdim;
-  int ydim;
-  int size;
-  std::map<int,arrayvariable*> datamap;
-} VariableArrayPart;
 
-struct variable
+  
+class VariableArrayPart
 {
-  b_type type;
-  QString stringval;
-  double floatval; 
-  VariableArrayPart *arr;
+	public:
+		int xdim;
+		int ydim;
+		int size;
+		std::map<int,DataElement*> datamap;
+};
+
+class Variable : public DataElement
+{
+	public:
+		VariableArrayPart *arr;
 };
 
 class Variables
@@ -56,11 +49,11 @@ class Variables
 		int error();
 		int errorvarnum();
 		//
-		variable* get(int);
+		Variable* get(int);
 		void set(int, b_type, double, QString);
  		//
 		void arraydim(b_type, int, int, int, bool);
-		arrayvariable* arrayget(int, int, int);
+		DataElement* arrayget(int, int, int);
 		void arrayset(int, int, int, b_type, double, QString);
 		//
 		int arraysize(int);
@@ -74,9 +67,9 @@ class Variables
 		int lasterror;
 		int lasterrorvar;
 		int recurselevel;
-		std::map<int, std::map<int,variable*> > varmap;
+		std::map<int, std::map<int,Variable*> > varmap;
 		std::map<int, bool> globals;
-		void clearvariable(variable*);
+		void clearvariable(Variable*);
 		bool isglobal(int);
 
 };

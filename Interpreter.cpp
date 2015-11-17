@@ -1313,7 +1313,7 @@ Interpreter::execByteCode() {
                     variables.set(i, T_FLOAT, startnum, NULL);
 
                     if(debugMode != 0) {
-                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->floatval), -1, -1));
+                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->getfloat()), -1, -1));
                     }
 
                     temp->endNum = endnum;
@@ -1321,9 +1321,9 @@ Interpreter::execByteCode() {
                     temp->returnAddr = op;
                     forstack = temp;
                     
-                    if (temp->step > 0 && variables.get(i)->floatval > temp->endNum) {
+                    if (temp->step > 0 && variables.get(i)->getfloat() > temp->endNum) {
                         errornum = ERROR_FOR1;
-                    } else if (temp->step < 0 && variables.get(i)->floatval < temp->endNum) {
+                    } else if (temp->step < 0 && variables.get(i)->getfloat() < temp->endNum) {
                         errornum = ERROR_FOR2;
                     }
                 }
@@ -1340,12 +1340,12 @@ Interpreter::execByteCode() {
                         errornum = ERROR_NEXTNOFOR;
                     } else {
 
-                        double val = variables.get(i)->floatval;
+                        double val = variables.get(i)->getfloat();
                         val += temp->step;
                         variables.set(i, T_FLOAT, val, NULL);
 
                         if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->floatval), -1, -1));
+                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->getfloat()), -1, -1));
                         }
 
                         if (temp->step > 0 && stack.compareFloats(val, temp->endNum)!=1) {
@@ -1448,7 +1448,7 @@ Interpreter::execByteCode() {
                                 variables.arrayset(i, x, 0, T_STRING, 0, list.at(x));
                                 if (variables.error()==ERROR_NONE) {
                                     if(debugMode != 0) {
-                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, x, 0)->stringval, x, 0));
+                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, x, 0)->getstring(), x, 0));
                                     }
                                 } else {
                                     errornum = variables.error();
@@ -1459,7 +1459,7 @@ Interpreter::execByteCode() {
                                 variables.arrayset(i, x, 0, T_FLOAT, list.at(x).toDouble(&ok), NULL);
                                 if (variables.error()==ERROR_NONE) {
                                     if(debugMode != 0) {
-                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, x, 0)->floatval), x, 0));
+                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, x, 0)->getfloat()), x, 0));
                                     }
                                 } else {
                                     errornum = variables.error();
@@ -1485,9 +1485,9 @@ Interpreter::execByteCode() {
                         for(int n=0; n<kount; n++) {
                             if (n>0) stuff.append(qdelim);
                             if (variables.get(i)->type == T_STRARRAY) {
-                                stuff.append(variables.arrayget(i, n, 0)->stringval);
+                                stuff.append(variables.arrayget(i, n, 0)->getstring());
                             } else {
-                                stack.pushfloat(variables.arrayget(i, n, 0)->floatval);
+                                stack.pushfloat(variables.arrayget(i, n, 0)->getfloat());
                                 stuff.append(stack.popstring());
                             }
                         }
@@ -1508,21 +1508,17 @@ Interpreter::execByteCode() {
                 case OP_ARRAYASSIGN: {
 					// assign a float value to an array element
 					// assumes that arrays are always two dimensional (if 1d then y=1)
-                    stackdata *e = stack.popelement();
+                    DataElement *e = stack.popelement();
                     int yindex = stack.popint();
                     int xindex = stack.popint();
 
-                    variables.arrayset(i, xindex, yindex, e->type, e->floatval, e->string);
+                    variables.arrayset(i, xindex, yindex, e->type, e->floatval, e->stringval);
                     delete(e);
                     
                     if (variables.error()==ERROR_NONE) {
                         if(debugMode != 0) {
-							arrayvariable *v = variables.arrayget(i, xindex, yindex);
-							if (v->type==T_STRING) {
-								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->stringval, xindex, yindex));
-							} else {
-								emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(v->floatval), xindex, yindex));
-							}
+							DataElement *v = variables.arrayget(i, xindex, yindex);
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->getstring(), xindex, yindex));
 						}
                     } else {
                         errornum = variables.error();
@@ -1539,13 +1535,13 @@ Interpreter::execByteCode() {
                     int xindex = stack.popint();
 
                     if (variables.get(i)->type == T_STRARRAY) {
-                        stack.pushstring(variables.arrayget(i, xindex, yindex)->stringval);
+                        stack.pushstring(variables.arrayget(i, xindex, yindex)->getstring());
                         if (variables.error()!=ERROR_NONE) {
                             errornum = variables.error();
                             errorvarnum = variables.errorvarnum();
                         }
                     } else if (variables.get(i)->type == T_ARRAY) {
-                        stack.pushfloat(variables.arrayget(i, xindex, yindex)->floatval);
+                        stack.pushfloat(variables.arrayget(i, xindex, yindex)->getfloat());
                         if (variables.error()!=ERROR_NONE) {
                             errornum = variables.error();
                             errorvarnum = variables.errorvarnum();
@@ -1559,14 +1555,14 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PUSHVAR: {
-					variable *v = variables.get(i);
+					Variable *v = variables.get(i);
 					if (v) {
 						if (v->type == T_ARRAY || v->type == T_STRARRAY) {
 							errornum = ERROR_ARRAYINDEXMISSING;
 							errorvarnum = i;
 							stack.pushint(0);
 						} else {
-							stack.pushelement(v->type, v->floatval, v->stringval);
+							stack.pushelement(v);
 						}
 					} else {
                         errornum = ERROR_NOSUCHVARIABLE;
@@ -1576,10 +1572,9 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-
                 case OP_PUSHVARREF: {
-					variable *v = variables.get(i);
-					if (v->type==T_STRING) {
+					Variable *v = variables.get(i);
+					if (v->type==T_STRING || v->type==T_STRARRAY) {
 						stack.pushelement(T_VARREFSTR, i, NULL);
 					} else {
 						stack.pushelement(T_VARREF, i, NULL);
@@ -1588,17 +1583,13 @@ Interpreter::execByteCode() {
 				break;
 
                 case OP_ASSIGN: {
-                    stackdata *e = stack.popelement();
-                    variables.set(i, e->type, e->floatval, e->string);
+                    DataElement *e = stack.popelement();
+                    variables.set(i, e->type, e->floatval, e->stringval);
                     delete(e);
 
                     if(debugMode != 0) {
-						variable *v = variables.get(i);
-						if (v->type==T_STRING) {
-							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.get(i)->stringval, -1, -1));
-						} else {
-							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->floatval), -1, -1));
-						}
+						Variable *v = variables.get(i);
+						emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->getstring(), -1, -1));
                     }
                 }
                 break;
@@ -1639,12 +1630,12 @@ Interpreter::execByteCode() {
                     // Push all of the elements of an array to the stack and then push the length to the stack
                     // expects one integer - variable number
 
-                    variable *v = variables.get(i);
+                    Variable *v = variables.get(i);
                     if (v->type == T_ARRAY || v->type == T_STRARRAY) {
                         int n = v->arr->size;
                         for (int j = 0; j < n; j++) {
-							arrayvariable *av = variables.arrayget(i, j, 0);
-							stack.pushelement(av->type, av->floatval, av->stringval);
+							DataElement *av = variables.arrayget(i, j, 0);
+							stack.pushelement(av);
                         }
                         stack.pushint(n);
                     } else {
@@ -1688,7 +1679,7 @@ Interpreter::execByteCode() {
 							variables.arrayset(i, index, 0, T_FLOAT, one, NULL);
                             if (variables.error()==ERROR_NONE) {
                                 if(debugMode != 0) {
-                                    emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, index, 0)->floatval), index, 0));
+                                    emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, index, 0)->getfloat()), index, 0));
                                 }
                             } else {
                                 errornum = variables.error();
@@ -1720,7 +1711,7 @@ Interpreter::execByteCode() {
                             variables.arrayset(i, index, 0, T_STRING, 0, q);
                             if (variables.error()==ERROR_NONE) {
                                 if(debugMode != 0) {
-                                     emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, index, 0)->stringval, index, 0));
+                                     emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, index, 0)->getstring(), index, 0));
                                 }
                             } else {
                                 errornum = variables.error();

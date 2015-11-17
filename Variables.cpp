@@ -34,9 +34,9 @@ Variables::clear() {
     lasterror = ERROR_NONE;
     // erase all variables and delete them
     while(!varmap.empty()) {
-        std::map<int, std::map<int,variable*> >::iterator i=varmap.begin();
+        std::map<int, std::map<int,Variable*> >::iterator i=varmap.begin();
         while(!(*i).second.empty()) {
-            std::map<int,variable*>::iterator j=(*i).second.begin();
+            std::map<int,Variable*>::iterator j=(*i).second.begin();
             clearvariable((*j).second);
             delete((*j).second);						// delete the variable object
             (*i).second.erase((*j).first);
@@ -71,7 +71,7 @@ Variables::decreaserecurse() {
         // to the previous level
         if(varmap.find(recurselevel)!=varmap.end()) {
             while(!varmap[recurselevel].empty()) {
-                std::map<int,variable*>::iterator j=varmap[recurselevel].begin();
+                std::map<int,Variable*>::iterator j=varmap[recurselevel].begin();
                 clearvariable((*j).second);
                 delete((*j).second);						// delete the variable object
                 varmap[recurselevel].erase((*j).first);		// delete it from the recurse map
@@ -83,12 +83,12 @@ Variables::decreaserecurse() {
     }
 }
 
-void Variables::clearvariable(variable* v) {
+void Variables::clearvariable(Variable* v) {
     // free a variable's current value to allow it to be reassigned
     // but do not delete it
     if (v->type == T_ARRAY || v->type == T_STRARRAY)	{
         while(!v->arr->datamap.empty()) {
-            std::map<int,arrayvariable*>::iterator j=v->arr->datamap.begin();
+            std::map<int,DataElement*>::iterator j=v->arr->datamap.begin();
             delete((*j).second);					// delete the array element object
             v->arr->datamap.erase((*j).first);		// delete it from the map
         }
@@ -98,10 +98,10 @@ void Variables::clearvariable(variable* v) {
     v->type = T_UNUSED;
 }
 
-variable* Variables::get(int varnum) {
+Variable* Variables::get(int varnum) {
     // get v from map else make a new one if not exist
     // followref - follow variable reference
-    variable *v;
+    Variable *v;
     int level=recurselevel;
     if (isglobal(varnum)) {
         level = 0;
@@ -114,10 +114,7 @@ variable* Variables::get(int varnum) {
             recurselevel++;
         }
     } else {
-        v = new variable;
-        v->type = T_UNUSED;
-        v->floatval = 0;
-        v->stringval = QString("");
+        v = new Variable();
         v->arr = NULL;
         varmap[level][varnum] = v;
         //printf("lastvar=%i size=%i\n", varnum, varmap.size());
@@ -127,7 +124,7 @@ variable* Variables::get(int varnum) {
 
 void Variables::set(int varnum, b_type type, double value, QString stringval) {
     // pass string pointer - copied when put on stack so this is a good pointer
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     if (v) {
 		clearvariable(v);
 		v->type = type;
@@ -138,7 +135,7 @@ void Variables::set(int varnum, b_type type, double value, QString stringval) {
 }
 
 void Variables::arraydim(b_type type, int varnum, int xdim, int ydim, bool redim) {
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     int size = xdim * ydim;
 
     lasterror = ERROR_NONE;
@@ -167,7 +164,7 @@ void Variables::arraydim(b_type type, int varnum, int xdim, int ydim, bool redim
 int Variables::arraysize(int varnum) {
     // return length of array as if it was a one dimensional array - 0 = not an array
     lasterror = ERROR_NONE;
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     if(v) {
         if (v->type == T_ARRAY || v->type == T_STRARRAY) {
             return(v->arr->size);
@@ -185,7 +182,7 @@ int Variables::arraysize(int varnum) {
 int Variables::arraysizex(int varnum) {
     // return number of columns of array as if it was a two dimensional array - 0 = not an array
     lasterror = ERROR_NONE;
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     if(v) {
         if (v->type == T_ARRAY || v->type == T_STRARRAY) {
             return(v->arr->xdim);
@@ -203,7 +200,7 @@ int Variables::arraysizex(int varnum) {
 int Variables::arraysizey(int varnum) {
     // return number of rows of array as if it was a two dimensional array - 0 = not an array
     lasterror = ERROR_NONE;
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     if(v) {
         if (v->type == T_ARRAY || v->type == T_STRARRAY) {
             return(v->arr->ydim);
@@ -218,11 +215,11 @@ int Variables::arraysizey(int varnum) {
     return(0);
 }
 
-arrayvariable* Variables::arrayget(int varnum, int x, int y) {
+DataElement* Variables::arrayget(int varnum, int x, int y) {
     // get variable from array elements in v from map	arraydata *d;
-    arrayvariable *d;
+    DataElement *d;
     lasterror = ERROR_NONE;
-    variable *v = get(varnum);
+    Variable *v = get(varnum);
     if(v) {
         if (v->type == T_ARRAY || v->type == T_STRARRAY) {
 			if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
@@ -230,10 +227,7 @@ arrayvariable* Variables::arrayget(int varnum, int x, int y) {
 				if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 					d = v->arr->datamap[i];
 				} else {
-					d = new arrayvariable;
-					d->type = T_UNUSED;
-					d->floatval = 0;
-					d->stringval = QString("");
+					d = new DataElement();
 					v->arr->datamap[i] = d;
 				}
            } else {
@@ -254,7 +248,7 @@ arrayvariable* Variables::arrayget(int varnum, int x, int y) {
 
 void Variables::arrayset(int varnum, int x, int y, b_type type, double value, QString stringval) {
     lasterror = ERROR_NONE;
-    arrayvariable *d = arrayget(varnum, x, y);
+    DataElement *d = arrayget(varnum, x, y);
     if(d) {
 		d->type = type;
 		d->floatval = value;
