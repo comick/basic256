@@ -35,11 +35,16 @@ class DataElement
 		DataElement(b_type , double , QString);
 		
 		int getint();
-		int getint(bool*);
+		int getint(int*);
 		double getfloat();
-		double getfloat(bool*);
+		double getfloat(int*);
 		QString getstring();
-		QString getstring(bool*);
-		QString getstring(bool*, int);
+		QString getstring(int*);
+		QString getstring(int*, int);
 		QString debug();
+		
+		static const int STATUSOK = 0;
+		static const int STATUSERROR = 1;
+		static const int STATUSUNUSED = 2;
+		
 };

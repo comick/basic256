@@ -49,6 +49,7 @@ class Stack
   int error();
   void clearerror();
   void settypeconverror(int);
+  int gettypeconverror();
   void setdecimaldigits(int);
 
  private:

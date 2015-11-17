@@ -29,6 +29,22 @@ int Variables::errorvarnum() {
     return(lasterrorvar);
 }
 
+QString Variables::debug() {
+	// return a string representing the variables
+	QString s("");
+	if(!varmap.empty()) {
+		for(std::map<int, std::map<int, Variable*> >::iterator i = varmap.begin(); i != varmap.end(); ++i) {
+			s += "recurse Level " + QString::number(i->first);
+			for(std::map<int, Variable*>::iterator j = i->second.begin(); j != i->second.end(); ++j) {
+				s += " varnum " + QString::number(j->first);
+				s += " " + j->second->debug() + "\n";
+			}
+			s += "\n";  
+		}
+	}
+	return s;
+}
+
 void
 Variables::clear() {
     lasterror = ERROR_NONE;
@@ -227,7 +243,7 @@ DataElement* Variables::arrayget(int varnum, int x, int y) {
 				if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 					d = v->arr->datamap[i];
 				} else {
-					d = new DataElement();
+					d = new DataElement(T_UNUSED, 0, NULL);
 					v->arr->datamap[i] = d;
 				}
            } else {

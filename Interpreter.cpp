@@ -669,6 +669,9 @@ QString Interpreter::getErrorMessage(int e) {
         case ERROR_SERIALPARAMETER:
             errormessage = tr("Invalid serial port parameter");
             break;
+        case ERROR_VARNOTASSIGNED:
+            errormessage = tr("Variable has not been assigned a value.");
+            break;
 
 
         // put ERROR new messages here
@@ -684,6 +687,9 @@ QString Interpreter::getErrorMessage(int e) {
             break;
         case WARNING_WAVNODURATION:
             errormessage = tr("Duration is not available for media file");
+            break;
+        case WARNING_VARNOTASSIGNED:
+            errormessage = tr("Variable has not been assigned a value.");
             break;
 
 
@@ -1533,15 +1539,36 @@ Interpreter::execByteCode() {
 					// assumes that arrays are always two dimensional (if 1d then y=1)
                     int yindex = stack.popint();
                     int xindex = stack.popint();
-
+					int status;	 // code from the actual conversion 
+					
                     if (variables.get(i)->type == T_STRARRAY) {
-                        stack.pushstring(variables.arrayget(i, xindex, yindex)->getstring());
+                        stack.pushstring(variables.arrayget(i, xindex, yindex)->getstring(&status));
+						if(status!=DataElement::STATUSOK) {
+							if (status!=DataElement::STATUSERROR) {
+								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+							}
+							if (status!=DataElement::STATUSUNUSED) {
+								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
+								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
+							}
+						}
                         if (variables.error()!=ERROR_NONE) {
                             errornum = variables.error();
                             errorvarnum = variables.errorvarnum();
                         }
                     } else if (variables.get(i)->type == T_ARRAY) {
-                        stack.pushfloat(variables.arrayget(i, xindex, yindex)->getfloat());
+                        stack.pushfloat(variables.arrayget(i, xindex, yindex)->getfloat(&status));
+						if(status!=DataElement::STATUSOK) {
+							if (status!=DataElement::STATUSERROR) {
+								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+							}
+							if (status!=DataElement::STATUSUNUSED) {
+								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
+								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
+							}
+						}
                         if (variables.error()!=ERROR_NONE) {
                             errornum = variables.error();
                             errorvarnum = variables.errorvarnum();
@@ -4926,7 +4953,11 @@ Interpreter::execByteCode() {
                     int what = stack.popint();
                     switch (what) {
                         case 1:
-                            // stack height
+                            // stack height and content
+                            mymutex->lock();
+                            emit(outputReady(stack.debug()));
+                            waitCond->wait(mymutex);
+                            mymutex->unlock();
                             stack.pushint(stack.height());
                             break;
                         case 2:
@@ -4935,55 +4966,65 @@ Interpreter::execByteCode() {
                             break;
                         case 3:
                             // number of symbols - display them to output area
-                        {
-                            for(int i=0; i<numsyms; i++) {
-                                mymutex->lock();
-                                emit(outputReady(QString("SYM %1 %2 LOC %3\n").arg(i).arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
-                                waitCond->wait(mymutex);
-                                mymutex->unlock();
-                            }
-                            stack.pushint(numsyms);
-                        }
-                        break;
+							{
+								for(int i=0; i<numsyms; i++) {
+									mymutex->lock();
+									emit(outputReady(QString("SYM %1 %2 LOC %3\n").arg(i).arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
+									waitCond->wait(mymutex);
+									mymutex->unlock();
+								}
+								stack.pushint(numsyms);
+							}
+							break;
                         case 4:
                             // dump the program object code
-                        {
-                            int *o = wordCode;
-                            while (o <= wordCode + wordOffset) {
-                                mymutex->lock();
-                                unsigned int offset = o-wordCode;
-                                int currentop = *o;
-                                o++;
-                                if (optype(currentop) == OPTYPE_NONE)	{
-                                    emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20)));
-                                } else if (optype(currentop) == OPTYPE_INT) {
-                                    //op has one Int arg
-                                    emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o)));
-                                    o++;
-                                } else if (optype(currentop) == OPTYPE_VARIABLE) {
-                                    //op has one Int arg
-                                    emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtable[(int) *o])));
-                                    o++;
-                                } else if (optype(currentop) == OPTYPE_LABEL) {
-                                    //op has one Int arg (label - lookup the address from the labeltable
-                                    emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(labeltable[(int) *o],8,16,QChar('0')).arg(symtable[(int) *o])));
-                                    o++;
-                                } else if (optype(currentop) == OPTYPE_FLOAT) {
-                                    // op has a single double arg
-                                    emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((double) *o)));
-                                    o += bytesToFullWords(sizeof(double));
-                                } else if (optype(currentop) == OPTYPE_STRING) {
-                                    // op has a single null terminated String arg
-                                    emit(outputReady(QString("%1 %2 \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((char*) o)));
-                                    int len = bytesToFullWords(strlen((char*) o) + 1);
-                                    o += len;
-                                }
-                                waitCond->wait(mymutex);
-                                mymutex->unlock();
-                            }
-                        }
-                        stack.pushint(0);
-                        break;
+							{
+								int *o = wordCode;
+								while (o <= wordCode + wordOffset) {
+									mymutex->lock();
+									unsigned int offset = o-wordCode;
+									int currentop = *o;
+									o++;
+									if (optype(currentop) == OPTYPE_NONE)	{
+										emit(outputReady(QString("%1 %2\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20)));
+									} else if (optype(currentop) == OPTYPE_INT) {
+										//op has one Int arg
+										emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o)));
+										o++;
+									} else if (optype(currentop) == OPTYPE_VARIABLE) {
+										//op has one Int arg
+										emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtable[(int) *o])));
+										o++;
+									} else if (optype(currentop) == OPTYPE_LABEL) {
+										//op has one Int arg (label - lookup the address from the labeltable
+										emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(labeltable[(int) *o],8,16,QChar('0')).arg(symtable[(int) *o])));
+										o++;
+									} else if (optype(currentop) == OPTYPE_FLOAT) {
+										// op has a single double arg
+										emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((double) *o)));
+										o += bytesToFullWords(sizeof(double));
+									} else if (optype(currentop) == OPTYPE_STRING) {
+										// op has a single null terminated String arg
+										emit(outputReady(QString("%1 %2 \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((char*) o)));
+										int len = bytesToFullWords(strlen((char*) o) + 1);
+										o += len;
+									}
+									waitCond->wait(mymutex);
+									mymutex->unlock();
+								}
+							}
+							stack.pushint(0);
+							break;
+                        case 5:
+                            // dump the variables
+							{
+								mymutex->lock();
+								emit(outputReady(variables.debug()));
+								waitCond->wait(mymutex);
+								mymutex->unlock();
+							}
+							stack.pushint(0);
+							break;
 
                         default:
                             stack.pushstring("");

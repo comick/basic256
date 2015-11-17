@@ -37,15 +37,19 @@ int DataElement::getint() {
 	return getint(NULL);
 }
 
-int DataElement::getint(bool *ok) {
+int DataElement::getint(int *status) {
     int i=0;
-    if (ok) *ok = true;
+	if (status) *status=STATUSOK;
     if (type == T_FLOAT || type == T_VARREF || type == T_VARREFSTR) {
         i = (int) (floatval + (floatval>0?BASIC256EPSILON:-BASIC256EPSILON));
     } else if (type == T_STRING) {
-        i = stringval.toInt(&*ok);
+        bool ok;
+        i = stringval.toInt(&ok);
+        if(!ok) {
+			if (status) *status=STATUSERROR;
+		}
     } else if (type==T_UNUSED) {
-		if (ok) *ok = false;
+		if (status) *status=STATUSUNUSED;
     }
     return i;
 }
@@ -54,16 +58,20 @@ double DataElement::getfloat() {
 		return getfloat(NULL);
 }
 
-double DataElement::getfloat(bool *ok) {
+double DataElement::getfloat(int *status) {
     double f=0;
-    if (ok) *ok = true;
+	if (status) *status=STATUSOK;
     if (type == T_FLOAT || type == T_VARREF || type == T_VARREFSTR) {
         f = floatval;
     } else if (type == T_STRING) {
-        f = stringval.toDouble(&*ok);
+		bool ok;
+        f = stringval.toDouble(&ok);
+        if(!ok) {
+			if (status) *status=STATUSERROR;
+		}
     } else if (type==T_UNUSED) {
-		if (ok) *ok = false;
-	}
+		if (status) *status=STATUSUNUSED;
+    }
     return f;
 }
 
@@ -71,13 +79,13 @@ QString DataElement::getstring() {
 	return getstring(NULL, SETTINGSDECDIGSDEFAULT);
 }
 
-QString DataElement::getstring(bool *ok) {
-	return getstring(&*ok, SETTINGSDECDIGSDEFAULT);
+QString DataElement::getstring(int *status) {
+	return getstring(&*status, SETTINGSDECDIGSDEFAULT);
 }
 
-QString DataElement::getstring(bool *ok, int decimaldigits) {
+QString DataElement::getstring(int *status, int decimaldigits) {
     QString s;
-	if (ok) *ok=true;
+	if (status) *status=STATUSOK;
     if (type == T_STRING) {
         s = stringval;
     } else if (type == T_VARREF || type == T_VARREFSTR) {
@@ -96,8 +104,8 @@ QString DataElement::getstring(bool *ok, int decimaldigits) {
 			}
         }
     } else if (type==T_UNUSED) {
-		s = "unused";
-		if (ok) *ok = false;
+		s = "";
+		if (status) *status = STATUSUNUSED;
     }
     return s;
 }

@@ -40,6 +40,7 @@ class Variables
 		Variables();
 		~Variables();
 		//
+		QString debug();
 		void clear();
 		void increaserecurse();
 		void decreaserecurse();

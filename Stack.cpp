@@ -32,6 +32,10 @@ void Stack::setdecimaldigits(int e) {
 	decimaldigits = e;
 }
 
+int Stack::gettypeconverror() {
+	return typeconverror;
+}
+
 void
 Stack::clear() {
     DataElement *ele;
@@ -49,13 +53,7 @@ QString Stack::debug() {
     DataElement *ele;
     for (std::list<DataElement*>::iterator it = stacklist.begin(); it != stacklist.end(); it++) {
         ele = *it;
-        if(ele->type==T_FLOAT) s += "float(" + QString::number(ele->floatval) + ") ";
-        if(ele->type==T_STRING) s += "string(" + ele->stringval + ") ";
-        if(ele->type==T_ARRAY) s += "array=" + QString::number(ele->floatval) + " ";
-        if(ele->type==T_STRARRAY) s += "strarray=" + QString::number(ele->floatval) + " ";
-        if(ele->type==T_UNUSED) s += "unused ";
-        if(ele->type==T_VARREF) s += "varref=" + QString::number(ele->floatval) + " ";
-        if(ele->type==T_VARREFSTR) s += "varrefstr=" + QString::number(ele->floatval) + " ";
+        s += ele->debug() +  " ";
     }
     return s;
 }
@@ -181,34 +179,57 @@ void Stack::dup2() {
 }
 
 int Stack::popint() {
-	bool ok;
-    DataElement *top=popelement();
-	int i = top->getint(&ok);
-	if(!ok) {
-		if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-		if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+	int status;
+	DataElement *top=popelement();
+	int i = top->getint(&status);
+	if(status!=DataElement::STATUSOK) {
+		if (status!=DataElement::STATUSERROR) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+		}
+		if (status!=DataElement::STATUSUNUSED) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
+		}
 	}
-    delete(top);
-    return i;
+	delete(top);
+	return i;
 }
 
 double Stack::popfloat() {
-	bool ok;
-    DataElement *top=popelement();
-	double f = top->getfloat(&ok);
- 	if(!ok) {
-		if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-		if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+	int status;
+	DataElement *top=popelement();
+	double f = top->getfloat(&status);
+	if(status!=DataElement::STATUSOK) {
+		if (status==DataElement::STATUSERROR) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+		}
+		if (status==DataElement::STATUSUNUSED) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
+		}
 	}
-   delete(top);
-   return f;
+	delete(top);
+	return f;
 }
 
 QString Stack::popstring() {
-    DataElement *top=popelement();
-    QString s = top->getstring(NULL, decimaldigits);
-    delete(top);
-    return s;
+	int status;
+	DataElement *top=popelement();
+	QString s = top->getstring(&status, decimaldigits);
+	if(status!=DataElement::STATUSOK) {
+		if (status==DataElement::STATUSERROR) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
+		}
+		if (status==DataElement::STATUSUNUSED) {
+			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
+			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
+		}
+	}
+	delete(top);
+	return s;
 }
 
 int Stack::compareFloats(double one, double two) {
