@@ -60,7 +60,6 @@ InpOut32OutType Out32 = NULL;
 #include <QTime>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QSerialPort>
 #include <QCoreApplication>
 
 
@@ -1911,6 +1910,13 @@ Interpreter::execByteCode() {
                     QString name = stack.popstring();
                     int fn = stack.popint();
 #ifdef ANDROID
+                    (void)flow;
+                    (void)parity;
+                    (void)stop;
+                    (void)data;
+                    (void)baud;
+                    (void)name;
+                    (void)fn;
                     errornum = ERROR_NOTIMPLEMENTED;
 # else
                     if (fn<0||fn>=NUMFILES) {
@@ -4418,15 +4424,21 @@ Interpreter::execByteCode() {
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
+                        (void) data;
+                        (void) port;
                         errornum = ERROR_NOTIMPLEMENTED;
 # else
                         if (Out32==NULL) {
+                            (void) data;
+                            (void) port;
                             errornum = ERROR_NOTIMPLEMENTED;
                         } else {
                             Out32(port, data);
                         }
 #endif
 #else
+                        (void) data;
+                        (void) port;
                         errornum = ERROR_NOTIMPLEMENTED;
 #endif
                     } else {
@@ -4441,15 +4453,18 @@ Interpreter::execByteCode() {
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
+                        (void) port;
                         errornum = ERROR_NOTIMPLEMENTED;
 # else
                         if (Inp32==NULL) {
+                            (void) port;
                             errornum = ERROR_NOTIMPLEMENTED;
                         } else {
                             data = Inp32(port);
                         }
 #endif
 #else
+                        (void) port;
                         errornum = ERROR_NOTIMPLEMENTED;
 #endif
                     } else {

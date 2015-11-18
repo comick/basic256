@@ -157,10 +157,10 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     {
 #ifdef WIN32
         // use program install folder
-        int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
+        espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
 #else
         // use default path for espeak-data
-        int samplerate = espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
+        espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
 #endif
 
         QString setvoice;
@@ -431,6 +431,7 @@ void PreferencesWin::clickSaveButton() {
 }
 
 void PreferencesWin::closeEvent(QCloseEvent *e) {
+    (void) e;
     // save current screen posision
     SETTINGS;
     //settings.setValue(SETTINGSPREFSIZE, size());

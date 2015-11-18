@@ -287,6 +287,7 @@ RunController::startRun() {
 
 void
 RunController::inputEntered(QString text) {
+    (void) text;
     graphwin->setFocus();
     mymutex->lock();
     waitCond->wakeAll();

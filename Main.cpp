@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
     QApplication qapp(argc, argv);
     char *lang = NULL;		// locale code passed with argument -l on command line
     bool loadandgo = false;		// if -r option then run code in loadandgo mode
-    bool ok;
     QString localecode;		// either lang or the system localle - stored on mainwin for help display
 
 #if !defined(WIN32) || defined(__MINGW32__)
@@ -79,16 +78,17 @@ int main(int argc, char *argv[]) {
 
     QTranslator qtTranslator;
 #ifdef WIN32
-    ok = qtTranslator.load("qt_" + localecode);
+    qtTranslator.load("qt_" + localecode);
 #else
-    ok = qtTranslator.load("qt_" + localecode, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    qtTranslator.load("qt_" + localecode, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
     qapp.installTranslator(&qtTranslator);
 
     QTranslator kbTranslator;
 #ifdef WIN32
-    ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
+    kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
 #else
+    bool ok;
     ok = kbTranslator.load("basic256_" + localecode, "/usr/share/basic256/");
     if (!ok) ok = kbTranslator.load("basic256_" + localecode, "/usr/local/share/basic256/");  // alternative location
 #endif

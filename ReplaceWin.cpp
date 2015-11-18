@@ -135,6 +135,7 @@ void ReplaceWin::clickReplaceAllButton() {
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {
+    (void) e;
     saveSettings();
 }
 

@@ -3229,6 +3229,7 @@ stringexpr:
 
 int
 yyerror(const char *msg) {
+	(void) msg;
 	errorcode = COMPERR_SYNTAX;
 	return -1;
 }

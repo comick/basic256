@@ -104,10 +104,12 @@ void DocumentationWin::go(QString word) {
 
 
 void DocumentationWin::resizeEvent(QResizeEvent *e) {
+    (void) e;
     this->resize(size());
 }
 
 void DocumentationWin::closeEvent(QCloseEvent *e) {
+    (void) e;
     SETTINGS;
     settings.setValue(SETTINGSDOCSIZE, size());
     settings.setValue(SETTINGSDOCPOS, pos());

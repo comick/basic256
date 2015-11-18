@@ -45,6 +45,7 @@ void AndroidTTS::say(QString text) {
     }
     jstring str = env->NewString(reinterpret_cast<const jchar*>(text.constData()), text.length());
     jboolean res = env->CallBooleanMethod(m_ttsHelperObject, s_ttsHelperSayMethodID, str);
+    (void) res;
     env->DeleteLocalRef(str);
     s_javaVM->DetachCurrentThread();
     return;

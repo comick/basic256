@@ -22,7 +22,6 @@
 #include <QImage>
 #include <QThread>
 #include <QFile>
-#include <QSerialPort>
 #include <QDir>
 #include <QTime>
 #include <stdio.h>
@@ -44,6 +43,11 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
+
+#ifndef ANDROID
+	// includes for all ports EXCEPT android
+	#include <QSerialPort>
+#endif
 
 #ifndef USEQSOUND
 	#include "BasicMediaPlayer.h"
