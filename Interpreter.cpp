@@ -1216,32 +1216,6 @@ Interpreter::execByteCode() {
 	int opcode;
 	SETTINGS;
 
-	while (*op == OP_CURRLINE) {
-		op++;
-		// opcode currentline is a compound include level and line number
-		int includelevel = *op / 0x1000000;
-		currentLine = *op % 0x1000000;
-		op++;
-		if (debugMode != 0) {
-			if (includelevel==0) {
-				// do debug for the main program not included parts
-				// edit needs to eventually have tabs for includes and tracing and debugging
-				// would go three dimensional - but not right now
-				emit(seekLine(currentLine));
-				if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
-					// wait for button if we are stepping or if we are at a break point
-					mydebugmutex->lock();
-					waitDebugCond->wait(mydebugmutex);
-					mydebugmutex->unlock();
-				} else {
-					// when debugging to breakpoint slow execution down so that the
-					// trace on the screen keeps caught up
-					sleeper->sleepMS(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
-				}
-			}
-		}
-	}
-
     if (status == R_INPUTREADY) {
         stack.pushstring(inputString);
         status = R_RUNNING;
@@ -1537,49 +1511,19 @@ Interpreter::execByteCode() {
                 case OP_DEREF: {
 					// get a value from an array and push it to the stack
 					// assumes that arrays are always two dimensional (if 1d then y=1)
-                    int yindex = stack.popint();
-                    int xindex = stack.popint();
-					int status;	 // code from the actual conversion 
+					int yindex = stack.popint();
+					int xindex = stack.popint();
+					Variable *v = variables.get(i);
 					
-                    if (variables.get(i)->type == T_STRARRAY) {
-                        stack.pushstring(variables.arrayget(i, xindex, yindex)->getstring(&status));
-						if(status!=DataElement::STATUSOK) {
-							if (status!=DataElement::STATUSERROR) {
-								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
-							}
-							if (status!=DataElement::STATUSUNUSED) {
-								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
-								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
-							}
-						}
-                        if (variables.error()!=ERROR_NONE) {
-                            errornum = variables.error();
-                            errorvarnum = variables.errorvarnum();
-                        }
-                    } else if (variables.get(i)->type == T_ARRAY) {
-                        stack.pushfloat(variables.arrayget(i, xindex, yindex)->getfloat(&status));
-						if(status!=DataElement::STATUSOK) {
-							if (status!=DataElement::STATUSERROR) {
-								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
-							}
-							if (status!=DataElement::STATUSUNUSED) {
-								if (stack.gettypeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
-								if (stack.gettypeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
-							}
-						}
-                        if (variables.error()!=ERROR_NONE) {
-                            errornum = variables.error();
-                            errorvarnum = variables.errorvarnum();
-                        }
-                    } else {
-                        errornum = ERROR_NOTARRAY;
-                        errorvarnum = i;
-                        stack.pushint(0);
-                    }
-                }
-                break;
+					if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+						stack.pushelement(variables.arrayget(i, xindex, yindex));
+					} else {
+						errornum = ERROR_NOTARRAY;
+						errorvarnum = i;
+						stack.pushint(0);
+					}
+				}
+				break;
 
                 case OP_PUSHVAR: {
 					Variable *v = variables.get(i);
@@ -1685,11 +1629,36 @@ Interpreter::execByteCode() {
             int i = *op;  // integer for opcodes of this type
             op++;
             switch(opcode) {
+				
+				case OP_CURRLINE: {
+					// opcode currentline is compound and includes level and line number
+					int includelevel = i / 0x1000000;
+					currentLine = i % 0x1000000;
+					if (debugMode != 0) {
+						if (includelevel==0) {
+							// do debug for the main program not included parts
+							// edit needs to eventually have tabs for includes and tracing and debugging
+							// would go three dimensional - but not right now
+							emit(seekLine(currentLine));
+							if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
+								// wait for button if we are stepping or if we are at a break point
+								mydebugmutex->lock();
+								waitDebugCond->wait(mydebugmutex);
+								mydebugmutex->unlock();
+							} else {
+								// when debugging to breakpoint slow execution down so that the
+								// trace on the screen keeps caught up
+								sleeper->sleepMS(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
+							}
+						}
+					}
+				}
+				break;
 
-                case OP_PUSHINT: {
-                    stack.pushint(i);
-                }
-                break;
+				case OP_PUSHINT: {
+					stack.pushint(i);
+				}
+				break;
 
                 case OP_ARRAYLISTASSIGN: {
 
@@ -2315,16 +2284,16 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_SEEK: {
-                    // move file pointer to a specific loaction in file
-                    long pos = stack.popint();
-                    int fn = stack.popint();
-                    if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                    } else {
-                        if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
-                        } else {
+				case OP_SEEK: {
+					// move file pointer to a specific loaction in file
+					long pos = stack.popint();
+					int fn = stack.popint();
+					if (fn<0||fn>=NUMFILES) {
+						errornum = ERROR_FILENUMBER;
+					} else {
+						if (filehandle[fn] == NULL) {
+							errornum = ERROR_FILENOTOPEN;
+						} else {
 							switch(filehandletype[fn]) {
 								case 0:
 								case 1:
@@ -2337,87 +2306,87 @@ Interpreter::execByteCode() {
 									break;
 							}
 						}
-                    }
-                }
-                break;
+					}
+				}
+				break;
 
-                case OP_INT: {
-                    // bigger integer safe (trim floating point off of a float)
-                    double val = stack.popfloat();
-                    double intpart;
-                    val = modf(val + (val>0?BASIC256EPSILON:-BASIC256EPSILON), &intpart);
-                    stack.pushfloat(intpart);
-                }
-                break;
+				case OP_INT: {
+					// bigger integer safe (trim floating point off of a float)
+					double val = stack.popfloat();
+					double intpart;
+					val = modf(val + (val>0?BASIC256EPSILON:-BASIC256EPSILON), &intpart);
+					stack.pushfloat(intpart);
+				}
+				break;
 
 
-                case OP_FLOAT: {
-                    double val = stack.popfloat();
-                    stack.pushfloat(val);
-                }
-                break;
+				case OP_FLOAT: {
+					double val = stack.popfloat();
+					stack.pushfloat(val);
+				}
+				break;
 
-                case OP_STRING: {
-                    stack.pushstring(stack.popstring());
-                }
-                break;
+				case OP_STRING: {
+					stack.pushstring(stack.popstring());
+				}
+				break;
 
-                case OP_RAND: {
-                    double r = 1.0;
-                    double ra;
-                    double rx;
-                    if (once) {
-                        int ms = 999 + QTime::currentTime().msec();
-                        once = false;
-                        srand(time(NULL) * ms);
-                    }
-                    while(r == 1.0) {
-                        ra = (double) rand() * (double) RAND_MAX + (double) rand();
-                        rx = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
-                        r = ra/rx;
-                    }
-                    stack.pushfloat(r);
-                }
-                break;
+				case OP_RAND: {
+					double r = 1.0;
+					double ra;
+					double rx;
+					if (once) {
+						int ms = 999 + QTime::currentTime().msec();
+						once = false;
+						srand(time(NULL) * ms);
+					}
+					while(r == 1.0) {
+						ra = (double) rand() * (double) RAND_MAX + (double) rand();
+						rx = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
+						r = ra/rx;
+					}
+					stack.pushfloat(r);
+				}
+				break;
 
-                case OP_PAUSE: {
-                    double val = stack.popfloat();
-                    if (val > 0) {
+				case OP_PAUSE: {
+					double val = stack.popfloat();
+					if (val > 0) {
 						sleeper->sleepSeconds(val);
 					}
-                }
-                break;
+				}
+				break;
 
-                case OP_LENGTH: {
-                    // unicode length
-                    stack.pushint(stack.popstring().length());
-                }
-                break;
+				case OP_LENGTH: {
+					// unicode length
+					stack.pushint(stack.popstring().length());
+				}
+				break;
 
 
-                case OP_MID: {
-                    // unicode safe mid string
-                    int len = stack.popint();
-                    int pos = stack.popint();
-                    QString qtemp = stack.popstring();
+				case OP_MID: {
+					// unicode safe mid string
+					int len = stack.popint();
+					int pos = stack.popint();
+					QString qtemp = stack.popstring();
 
-                    if ((len < 0)) {
-                        errornum = ERROR_STRNEGLEN;
-                        stack.pushint(0);
-                    } else {
-                        if ((pos < 1)) {
-                            errornum = ERROR_STRSTART;
-                            stack.pushint(0);
-                        } else {
-                            if ((pos < 1) || (pos > (int) qtemp.length())) {
-                                stack.pushstring(QString(""));
-                            } else {
-                                stack.pushstring(qtemp.mid(pos-1,len));
-                            }
-                        }
-                    }
-                }
-                break;
+					if ((len < 0)) {
+						errornum = ERROR_STRNEGLEN;
+						stack.pushint(0);
+					} else {
+						if ((pos < 1)) {
+							errornum = ERROR_STRSTART;
+							stack.pushint(0);
+						} else {
+							if ((pos < 1) || (pos > (int) qtemp.length())) {
+								stack.pushstring(QString(""));
+							} else {
+								stack.pushstring(qtemp.mid(pos-1,len));
+							}
+						}
+					}
+				}
+				break;
 
                case OP_MIDX: {
 					// regex section string (MID regeX)
