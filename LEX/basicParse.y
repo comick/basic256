@@ -371,7 +371,7 @@ int newWordCode() {
 %token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT B256ERROR_WAVNOTOPEN B256ERROR_VARNOTASSIGNED
 %token B256ERROR_NOTIMPLEMENTED
 %token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE B256WARNING_VARNOTASSIGNED
-%token B256REGEXMINIMAL
+%token B256REGEXMINIMAL B256TYPEOF
 
 
 %union anytype
@@ -1200,6 +1200,7 @@ assign:
 			}
 			| args_v B256ADDEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addOp(OP_STACKSWAP);
 				addOp(OP_ADD);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
@@ -2767,7 +2768,9 @@ expression:
 			| B256WARNING_WAVNODURATION args_none { addIntOp(OP_PUSHINT, WARNING_WAVNODURATION); }
 			| B256WARNING_WAVNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, WARNING_WAVNOTSEEKABLE); }
 			| B256WARNING_VARNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_VARNOTASSIGNED); }
-
+			| B256TYPEOF '(' expr ')' {
+				addOp(OP_TYPEOF);
+			}
 			/* ###########################################
 			   ### INSERT NEW Numeric Functions BEFORE ###
 			   ########################################### */

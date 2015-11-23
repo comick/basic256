@@ -410,6 +410,7 @@ tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
 toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 try [Tt][Rr][Yy]
+typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
@@ -678,6 +679,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {tooctal}					{ count(); return B256TOOCTAL; }
 {toradix}					{ count(); return B256TORADIX; }
 {tostring}					{ count(); return B256TOSTRING; }
+{typeof}					{ count(); return B256TYPEOF; }
 {upper}						{ count(); return B256UPPER; }
 {version}					{ count(); return B256VERSION; }
 {warning_typeconv}			{ count(); return B256WARNING_TYPECONV; }

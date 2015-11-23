@@ -195,20 +195,27 @@ void Stack::dup2() {
     stacklist.push_front(ele);
 }
 
-int Stack::popint() {
-	int status;
-	DataElement *top=popelement();
-	int i = top->getint(&status);
+void Stack::seterror(int status) {
+	// take status from DataElement.get* and set the stack error/warning as needed
+	// PRIVATE
 	if(status!=DataElement::STATUSOK) {
-		if (status!=DataElement::STATUSERROR) {
+		if (status==DataElement::STATUSERROR) {
 			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
 			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
 		}
-		if (status!=DataElement::STATUSUNUSED) {
+		if (status==DataElement::STATUSUNUSED) {
 			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
 			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
 		}
 	}
+}
+
+
+int Stack::popint() {
+	int status;
+	DataElement *top=popelement();
+	int i = top->getint(&status);
+	seterror(status);
 	delete(top);
 	return i;
 }
@@ -217,16 +224,7 @@ double Stack::popfloat() {
 	int status;
 	DataElement *top=popelement();
 	double f = top->getfloat(&status);
-	if(status!=DataElement::STATUSOK) {
-		if (status==DataElement::STATUSERROR) {
-			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
-		}
-		if (status==DataElement::STATUSUNUSED) {
-			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
-			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
-		}
-	}
+	seterror(status);
 	delete(top);
 	return f;
 }
@@ -235,16 +233,7 @@ QString Stack::popstring() {
 	int status;
 	DataElement *top=popelement();
 	QString s = top->getstring(&status, decimaldigits);
-	if(status!=DataElement::STATUSOK) {
-		if (status==DataElement::STATUSERROR) {
-			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_TYPECONV;
-			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_TYPECONV;
-		}
-		if (status==DataElement::STATUSUNUSED) {
-			if (typeconverror==SETTINGSTYPECONVWARN) errornumber = WARNING_VARNOTASSIGNED;
-			if (typeconverror==SETTINGSTYPECONVERROR) errornumber = ERROR_VARNOTASSIGNED;
-		}
-	}
+	seterror(status);
 	delete(top);
 	return s;
 }
@@ -260,23 +249,28 @@ int Stack::compareFloats(double one, double two) {
 }
 
 int Stack::compareTopTwo() {
-    // complex compare logic - compare two stack types with each other
-    // return 1 if one>two  0 if one==two or -1 if one<two
-    //
-    DataElement *two = popelement();
-    DataElement *one = popelement();
-    if (one->type == T_STRING || two->type == T_STRING) {
-        // one or both strings - [compare them as strings] strcmp
-        QString stwo = two->getstring(NULL,decimaldigits);
-        QString sone = one->getstring(NULL,decimaldigits);
-        int ans = sone.compare(stwo);
-        if (ans==0) return 0;
-        else if (ans<0) return -1;
-        else return 1;
-    } else {
-        // anything else - compare them as doubles
-        double ftwo = two->getfloat();
-        double fone = one->getfloat();
-        return compareFloats(fone, ftwo);
-    }
+	// complex compare logic - compare two stack types with each other
+	// return 1 if one>two  0 if one==two or -1 if one<two
+	//
+	int status;
+	DataElement *two = popelement();
+	DataElement *one = popelement();
+	if (one->type == T_STRING && two->type == T_STRING) {
+		// if both are strings - [compare them as strings] strcmp
+		QString stwo = two->getstring(&status,decimaldigits);
+		seterror(status);
+		QString sone = one->getstring(&status,decimaldigits);
+		seterror(status);
+		int ans = sone.compare(stwo);
+		if (ans==0) return 0;
+		else if (ans<0) return -1;
+		else return 1;
+	} else {
+		// if either a number then compare as numbers
+		double ftwo = two->getfloat(&status);
+		seterror(status);
+		double fone = one->getfloat(&status);
+		seterror(status);
+		return compareFloats(fone, ftwo);
+	}
 }

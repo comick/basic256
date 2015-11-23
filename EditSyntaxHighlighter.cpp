@@ -282,6 +282,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Tt][Oo][Oc][Cc][Tt][Aa][Ll]\\b"								// tooctal
             << "\\b[Tt][Oo][Rr][Aa][Dd][Ii][Xx]\\b"								// toradix
             << "\\b[Tt][Rr][Yy]\\b"												// try
+            << "\\b[Tt][Yy][Pp][Ee][Oo][Ff]\\b"									// typeof
             << "\\b[Uu][Nn][Tt][Ii][Ll]\\b"										// until
             << "\\b[Uu][Pp][Pp][Ee][Rr]\\b"										// upper
             << "\\b[Vv][Ee][Rr][Ss][Ii][Oo][Nn]\\b"								// version

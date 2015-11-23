@@ -1603,7 +1603,7 @@ Interpreter::execByteCode() {
 
                     int items = stack.popint();
                     
-                    if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 0, false);
+                    if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 1, false);
                     if(errornum==ERROR_NONE) {
                         if(debugMode != 0 && errornum==ERROR_NONE) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, 1));
@@ -2059,24 +2059,12 @@ Interpreter::execByteCode() {
                         if (filehandle[fn] == NULL) {
                             errornum = ERROR_FILENOTOPEN;
                         } else {
-                            if (filehandle[fn]->isSequential()) {
-								// sequential file (serialPort)
-								error = filehandle[fn]->write(temp.toUtf8().data());
-								if (opcode == OP_WRITELINE) {
-									error = filehandle[fn]->putChar('\n');
-								}
+ 							error = filehandle[fn]->write(temp.toUtf8().data());
+							if (opcode == OP_WRITELINE) {
+								error = filehandle[fn]->putChar('\n');
+							}
+                           if (filehandle[fn]->isSequential()) {
 								filehandle[fn]->waitForBytesWritten(FILEWRITETIMEOUT);
-							} else {
-								quint64 oldPos;
-								// advance to the end but save where we are so we can go back
-								oldPos = filehandle[fn]->pos();
-								filehandle[fn]->seek(filehandle[fn]->size());
-								error = filehandle[fn]->write(temp.toUtf8().data());
-								if (opcode == OP_WRITELINE) {
-									error = filehandle[fn]->putChar('\n');
-								}
-								// after append go back to the original location
-								filehandle[fn]->seek(oldPos);
 							}
                         }
                         if (error == -1) {
@@ -2531,10 +2519,10 @@ Interpreter::execByteCode() {
 					int tone =stack.peekType(0);
 					int ttwo =stack.peekType(1);
 					if (tone==T_STRING || ttwo==T_STRING) {
-						// concatenate
+						// concatenate (if either are a string then we concatenate)
 						QString one = stack.popstring();
 						QString two = stack.popstring();
-						unsigned int l = one.length() + two.length();
+						unsigned int l = two.length() + one.length();
 						if (l>STRINGMAXLEN) {
 							errornum = ERROR_STRINGMAXLEN;
 							stack.pushint(0);
@@ -5047,6 +5035,13 @@ Interpreter::execByteCode() {
 					}
 #endif
 					stack.pushint(s);
+				}
+                break;
+
+                case OP_TYPEOF: {
+					DataElement *e = stack.popelement();
+					stack.pushint(e->type);
+					delete(e);
 				}
                 break;
 
