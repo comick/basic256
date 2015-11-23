@@ -170,7 +170,6 @@ QString Interpreter::opname(int op) {
     if (op==OP_END) return QString("OP_END");
     else if (op==OP_NOP) return QString("OP_NOP");
     else if (op==OP_RETURN) return QString("OP_RETURN");
-    else if (op==OP_CONCAT) return QString("OP_CONCAT");
     else if (op==OP_EQUAL) return QString("OP_EQUAL");
     else if (op==OP_NEQUAL) return QString("OP_NEQUAL");
     else if (op==OP_GT) return QString("OP_GT");
@@ -296,12 +295,9 @@ QString Interpreter::opname(int op) {
     else if (op==OP_NEXT) return QString("OP_NEXT");
     else if (op==OP_CURRLINE) return QString("OP_CURRLINE");
     else if (op==OP_DIM) return QString("OP_DIM");
-    else if (op==OP_DIMSTR) return QString("OP_DIMSTR");
     else if (op==OP_ONERRORGOSUB) return QString("OP_ONERRORGOSUB");
     else if (op==OP_ONERRORCATCH) return QString("OP_ONERRORCATCH");
-    else if (op==OP_EXPLODESTR) return QString("OP_EXPLODESTR");
     else if (op==OP_EXPLODE) return QString("OP_EXPLODE");
-    else if (op==OP_EXPLODEXSTR) return QString("OP_EXPLODEXSTR");
     else if (op==OP_EXPLODEX) return QString("OP_EXPLODEX");
     else if (op==OP_IMPLODE) return QString("OP_IMPLODE");
     else if (op==OP_GLOBAL) return QString("OP_GLOBAL");
@@ -313,15 +309,12 @@ QString Interpreter::opname(int op) {
     else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
     else if (op==OP_DEREF) return QString("OP_DEREF");
     else if (op==OP_REDIM) return QString("OP_REDIM");
-    else if (op==OP_REDIMSTR) return QString("OP_REDIMSTR");
     else if (op==OP_ALEN) return QString("OP_ALEN");
     else if (op==OP_ALENX) return QString("OP_ALENX");
     else if (op==OP_ALENY) return QString("OP_ALENY");
     else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
     else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
-    else if (op==OP_VARREFSTRASSIGN) return QString("OP_VARREFSTRASSIGN");
     else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
-    else if (op==OP_STRARRAYLISTASSIGN) return QString("OP_STRARRAYLISTASSIGN");
     else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
     else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
     else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
@@ -391,9 +384,6 @@ QString Interpreter::opname(int op) {
     else if (op==OP_FREENET) return QString("OP_FREENET");
     else if (op==OP_FREEDB) return QString("OP_FREEDB");
     else if (op==OP_FREEDBSET) return QString("OP_FREEDBSET");
-    else if (op==OP_DBINTS) return QString("OP_DBINTS");
-    else if (op==OP_DBFLOATS) return QString("OP_DBFLOATS");
-    else if (op==OP_DBSTRINGS) return QString("OP_DBSTRINGS");
     else if (op==OP_DBNULL) return QString("OP_DBNULL");
     else if (op==OP_DBNULLS) return QString("OP_DBNULLS");
     else if (op==OP_ARC) return QString("OP_ARC");
@@ -1340,17 +1330,11 @@ Interpreter::execByteCode() {
                 }
                 break;
                 case OP_DIM:
-                case OP_REDIM:
-                case OP_DIMSTR:
-                case OP_REDIMSTR: {
+                case OP_REDIM: {
                     int ydim = stack.popint();
                     int xdim = stack.popint();
                     if (ydim<=0) ydim=1; // need to dimension as 1d
-                    if (opcode==OP_DIM || opcode == OP_REDIM) {
-                        variables.arraydim(T_ARRAY, i, xdim, ydim, opcode == OP_REDIM);
-                    } else {
-                        variables.arraydim(T_STRARRAY, i, xdim, ydim, opcode == OP_REDIMSTR);
-                    }
+                    variables.arraydim(T_ARRAY, i, xdim, ydim, opcode == OP_REDIM);
                     if (variables.error()==ERROR_NONE) {
                         if(debugMode != 0) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, xdim, ydim));
@@ -1386,97 +1370,67 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_EXPLODE:
-                case OP_EXPLODESTR:
-                case OP_EXPLODEX:
-                case OP_EXPLODEXSTR: {
-                    // unicode safe explode a string to an array function
-                    bool ok;
-                   	Qt::CaseSensitivity casesens = Qt::CaseSensitive;
+                case OP_EXPLODEX: {
+					// unicode safe explode a string to an array function
+					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
 
-                    if (opcode!=OP_EXPLODEX && opcode!=OP_EXPLODEXSTR ) {
+					if (opcode!=OP_EXPLODEX) {
 						// 0 sensitive (default) - opposite of QT
 						casesens = (stack.popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
-                    }
-                    QString qneedle = stack.popstring();
-                    QString qhaystack = stack.popstring();
+					}
+					QString qneedle = stack.popstring();
+					QString qhaystack = stack.popstring();
 
-                    QStringList list;
-                    if(opcode==OP_EXPLODE || opcode==OP_EXPLODESTR) {
-                        list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
-                    } else {
+					QStringList list;
+					if(opcode==OP_EXPLODE) {
+						list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
+					} else {
 						QRegExp expr = QRegExp(qneedle);
 						expr.setMinimal(regexMinimal);
-                        list = qhaystack.split(expr, QString::KeepEmptyParts);
-                    }
+						list = qhaystack.split(expr, QString::KeepEmptyParts);
+					}
+					// create an array
+					if (variables.arraysize(i)!=list.size()) variables.arraydim(T_ARRAY, i, list.size(), 1, false);
+					if (variables.error()==ERROR_NONE) {
+						if(debugMode != 0) {
+							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
+						}
 
-                    if(opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-                        // create a string array
-                        if (variables.arraysize(i)!=list.size()) variables.arraydim(T_STRARRAY, i, list.size(), 1, false);
-                    } else {
-                        // create a numeric array
-                        if (variables.arraysize(i)!=list.size()) variables.arraydim(T_ARRAY, i, list.size(), 1, false);
-                    }
-                    if (variables.error()==ERROR_NONE) {
-                        if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
-                        }
+						for(int x=0; x<list.size(); x++) {
+							// fill the string array
+							variables.arrayset(i, x, 0, T_STRING, 0, list.at(x));
+							if (variables.error()==ERROR_NONE) {
+								if(debugMode != 0) {
+									emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, x, 0)->getstring(), x, 0));
+								}
+							} else {
+								errornum = variables.error();
+								errorvarnum = variables.errorvarnum();
+							}
+						}
+					} else {
+						errornum = variables.error();
+						errorvarnum = variables.errorvarnum();
+					}
+				}
+				break;
 
-                        for(int x=0; x<list.size(); x++) {
-                            if(opcode==OP_EXPLODESTR || opcode==OP_EXPLODEXSTR) {
-                                // fill the string array
-                                variables.arrayset(i, x, 0, T_STRING, 0, list.at(x));
-                                if (variables.error()==ERROR_NONE) {
-                                    if(debugMode != 0) {
-                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, x, 0)->getstring(), x, 0));
-                                    }
-                                } else {
-                                    errornum = variables.error();
-                                    errorvarnum = variables.errorvarnum();
-                                }
-                            } else {
-                                // fill the numeric array
-                                variables.arrayset(i, x, 0, T_FLOAT, list.at(x).toDouble(&ok), NULL);
-                                if (variables.error()==ERROR_NONE) {
-                                    if(debugMode != 0) {
-                                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, x, 0)->getfloat()), x, 0));
-                                    }
-                                } else {
-                                    errornum = variables.error();
-                                    errorvarnum = variables.errorvarnum();
-                                }
-                            }
-                        }
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
-                }
-                break;
-
-                case OP_IMPLODE: {
-
-                    QString qdelim = stack.popstring();
-
-                    QString stuff = "";
-
-                    if (variables.get(i)->type == T_STRARRAY || variables.get(i)->type == T_ARRAY) {
-                        int kount = variables.arraysize(i);
-                        for(int n=0; n<kount; n++) {
-                            if (n>0) stuff.append(qdelim);
-                            if (variables.get(i)->type == T_STRARRAY) {
-                                stuff.append(variables.arrayget(i, n, 0)->getstring());
-                            } else {
-                                stack.pushfloat(variables.arrayget(i, n, 0)->getfloat());
-                                stuff.append(stack.popstring());
-                            }
-                        }
-                    } else {
-                        errornum = ERROR_NOTARRAY;
-                        errorvarnum = i;
-                    }
-                    stack.pushstring(stuff);
-                }
-                break;
+				case OP_IMPLODE: {
+					QString qdelim = stack.popstring();
+					QString stuff = "";
+					if (variables.get(i)->type == T_ARRAY) {
+						int kount = variables.arraysize(i);
+						for(int n=0; n<kount; n++) {
+							if (n>0) stuff.append(qdelim);
+							stuff.append(variables.arrayget(i, n, 0)->getstring());
+						}
+					} else {
+						errornum = ERROR_NOTARRAY;
+						errorvarnum = i;
+					}
+					stack.pushstring(stuff);
+				}
+				break;
 
                 case OP_GLOBAL: {
                     // make a variable number a global variable
@@ -1514,8 +1468,14 @@ Interpreter::execByteCode() {
 					int xindex = stack.popint();
 					Variable *v = variables.get(i);
 					
-					if (v->type == T_ARRAY || v->type == T_STRARRAY) {
-						stack.pushelement(variables.arrayget(i, xindex, yindex));
+					if (v->type == T_ARRAY) {
+						DataElement *v = variables.arrayget(i, xindex, yindex);
+						if (variables.error()==ERROR_NONE) {
+							stack.pushelement(v);
+						} else {
+							errornum = variables.error();
+							errorvarnum = variables.errorvarnum();
+						}
 					} else {
 						errornum = ERROR_NOTARRAY;
 						errorvarnum = i;
@@ -1527,7 +1487,7 @@ Interpreter::execByteCode() {
                 case OP_PUSHVAR: {
 					Variable *v = variables.get(i);
 					if (v) {
-						if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+						if (v->type == T_ARRAY) {
 							errornum = ERROR_ARRAYINDEXMISSING;
 							errorvarnum = i;
 							stack.pushint(0);
@@ -1543,12 +1503,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PUSHVARREF: {
-					Variable *v = variables.get(i);
-					if (v->type==T_STRING || v->type==T_STRARRAY) {
-						stack.pushelement(T_VARREFSTR, i, NULL);
-					} else {
-						stack.pushelement(T_VARREF, i, NULL);
-					}
+					stack.pushelement(T_VARREF, i, QString());
 				}
 				break;
 
@@ -1565,55 +1520,40 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_VARREFASSIGN: {
-                    // assign a numeric variable reference
+                    // assign a variable reference
                     int type = stack.peekType();
                     int value = stack.popint();
                     if (type==T_VARREF) {
                         variables.set(i, T_VARREF, value, NULL);
                     } else {
-                        if (type==T_VARREFSTR) {
-                            errornum = ERROR_BYREFTYPE;
-                        } else {
-                            errornum = ERROR_BYREF;
-                        }
+                        errornum = ERROR_BYREF;
                     }
                 }
                 break;
 
-                case OP_VARREFSTRASSIGN: {
-                    // assign a string variable reference
-                    int type = stack.peekType();
-                    int value = stack.popint();
-                    if (type==T_VARREFSTR) {
-                        variables.set(i, T_VARREFSTR, value, NULL);
-                    } else {
-                        if (type==T_VARREF) {
-                            errornum = ERROR_BYREFTYPE;
-                        } else {
-                            errornum = ERROR_BYREF;
-                        }
-                    }
-                }
-                break;
+				case OP_ARRAY2STACK: {
+					// Push all of the elements of an array to the stack and then push the length to the stack
+					// expects one integer - variable number
 
-                case OP_ARRAY2STACK: {
-                    // Push all of the elements of an array to the stack and then push the length to the stack
-                    // expects one integer - variable number
-
-                    Variable *v = variables.get(i);
-                    if (v->type == T_ARRAY || v->type == T_STRARRAY) {
-                        int n = v->arr->size;
-                        for (int j = 0; j < n; j++) {
+					Variable *v = variables.get(i);
+					if (v->type == T_ARRAY) {
+						int n = v->arr->size;
+						for (int j = 0; j < n; j++) {
 							DataElement *av = variables.arrayget(i, j, 0);
-							stack.pushelement(av);
-                        }
-                        stack.pushint(n);
-                    } else {
-                        errornum = ERROR_POLYARRAY;
-                        stack.pushint(0);
-                    }
-                }
-                break;
+							if (variables.error()==ERROR_NONE) {
+								stack.pushelement(av);
+							} else {
+								errornum = variables.error();
+								errorvarnum = variables.errorvarnum();
+							}
+						}
+						stack.pushint(n);
+					} else {
+						errornum = ERROR_POLYARRAY;
+						stack.pushint(0);
+					}
+				}
+				break;
 
 
             }
@@ -1663,18 +1603,19 @@ Interpreter::execByteCode() {
 
                     int items = stack.popint();
                     
-                    if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 1, false);
+                    if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 0, false);
                     if(errornum==ERROR_NONE) {
                         if(debugMode != 0 && errornum==ERROR_NONE) {
                             emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, 1));
                         }
 
                         for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--) {
-                            double one = stack.popfloat();
-							variables.arrayset(i, index, 0, T_FLOAT, one, NULL);
+							DataElement *e = stack.popelement();
+							variables.arrayset(i, index, 0, e->type, e->floatval, e->stringval);
+							delete(e);
                             if (variables.error()==ERROR_NONE) {
                                 if(debugMode != 0) {
-                                    emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.arrayget(i, index, 0)->getfloat()), index, 0));
+                                    emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, index, 0)->getstring(), index, 0));
                                 }
                             } else {
                                 errornum = variables.error();
@@ -1690,36 +1631,6 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_STRARRAYLISTASSIGN: {
-
-                    int items = stack.popint();
-
-                    if (variables.arraysize(i)!=items) variables.arraydim(T_STRARRAY, i, items, 1, false);
-
-                    if(errornum==ERROR_NONE) {
-                        if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, 1));
-                        }
-
-                        for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--) {
-                            QString q = stack.popstring();
-                            variables.arrayset(i, index, 0, T_STRING, 0, q);
-                            if (variables.error()==ERROR_NONE) {
-                                if(debugMode != 0) {
-                                     emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, index, 0)->getstring(), index, 0));
-                                }
-                            } else {
-                                errornum = variables.error();
-                                errorvarnum = variables.errorvarnum();
-                                break;  // exit for
-                            }
-                        }
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
-                }
-                break;
 
             }
         }
@@ -2616,18 +2527,34 @@ Interpreter::execByteCode() {
                 break;
 
 
-                case OP_ADD: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
-                    double ans = twoval + oneval;
-                    if (isinf(ans)) {
-                        errornum = ERROR_INFINITY;
-                        stack.pushint(0);
-                    } else {
-                        stack.pushfloat(ans);
-                    }
-                    break;
-                }
+				case OP_ADD: {
+					int tone =stack.peekType(0);
+					int ttwo =stack.peekType(1);
+					if (tone==T_STRING || ttwo==T_STRING) {
+						// concatenate
+						QString one = stack.popstring();
+						QString two = stack.popstring();
+						unsigned int l = one.length() + two.length();
+						if (l>STRINGMAXLEN) {
+							errornum = ERROR_STRINGMAXLEN;
+							stack.pushint(0);
+						} else {
+							stack.pushstring(two + one);
+						}
+					} else {
+						// numeric add
+						double oneval = stack.popfloat();
+						double twoval = stack.popfloat();
+						double ans = twoval + oneval;
+						if (isinf(ans)) {
+							errornum = ERROR_INFINITY;
+							stack.pushint(0);
+						} else {
+							stack.pushfloat(ans);
+						}
+					}
+					break;
+				}
 
                 case OP_SUB: {
                     double oneval = stack.popfloat();
@@ -3495,18 +3422,6 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_CONCAT: {
-                    QString one = stack.popstring();
-                    QString two = stack.popstring();
-                    unsigned int l = one.length() + two.length();
-                    if (l<=STRINGMAXLEN) {
-                        stack.pushstring(two + one);
-                    } else {
-                        errornum = ERROR_STRINGMAXLEN;
-                        stack.pushint(0);
-                    }
-                }
-                break;
 
                 case OP_YEAR:
                 case OP_MONTH:
@@ -4039,20 +3954,18 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_DBINT:
-                case OP_DBINTS:
                 case OP_DBFLOAT:
-                case OP_DBFLOATS:
                 case OP_DBNULL:
-                case OP_DBNULLS:
-                case OP_DBSTRING:
-                case OP_DBSTRINGS: {
+                case OP_DBSTRING: {
 
                     int col = -1, set, n;
                     QString colname;
-                    // get a column data (integer)
-                    if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
+                    bool usename;
+                    if (stack.peekType()==T_STRING) {
+						usename = true;
                         colname = stack.popstring();
                     } else {
+						usename = false;
                         col = stack.popint();
                     }
                     set = stack.popint();
@@ -4069,7 +3982,7 @@ Interpreter::execByteCode() {
                                 if (!dbSet[n][set]->isValid()) {
                                     errornum = ERROR_DBNOTSETROW;
                                 } else {
-                                    if (opcode == OP_DBINTS || opcode == OP_DBFLOATS || opcode == OP_DBNULLS || opcode == OP_DBSTRINGS) {
+                                    if (usename) {
                                         col = dbSet[n][set]->record().indexOf(colname);
                                     }
                                     if (col < 0 || col >= dbSet[n][set]->record().count()) {
@@ -4077,19 +3990,15 @@ Interpreter::execByteCode() {
                                     } else {
                                         switch(opcode) {
                                             case OP_DBINT:
-                                            case OP_DBINTS:
                                                 stack.pushint(dbSet[n][set]->record().value(col).toInt());
                                                 break;
                                             case OP_DBFLOAT:
-                                            case OP_DBFLOATS:
                                                 stack.pushfloat(dbSet[n][set]->record().value(col).toDouble());
                                                 break;
                                             case OP_DBNULL:
-                                            case OP_DBNULLS:
                                                 stack.pushint(dbSet[n][set]->record().value(col).isNull());
                                                 break;
                                             case OP_DBSTRING:
-                                            case OP_DBSTRINGS:
                                                 stack.pushstring(dbSet[n][set]->record().value(col).toString());
                                                 break;
                                         }

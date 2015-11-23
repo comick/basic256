@@ -20,8 +20,8 @@
 
 #define BASIC256EPSILON 0.00000001
 
-// stack and variable types T_VARREF, T_VARREFSTR are to pass a variable reference to a subroutine or function (BYREF passing)
-enum b_type {T_UNUSED, T_FLOAT, T_STRING, T_ARRAY, T_STRARRAY, T_VARREF, T_VARREFSTR};
+// stack and variable type T_VARREF used to pass a variable reference to a subroutine or function (BYREF passing)
+enum b_type {T_UNUSED, T_FLOAT, T_STRING, T_ARRAY, T_VARREF};
 
 class DataElement
 {

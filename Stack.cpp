@@ -94,22 +94,39 @@ Stack::pushstring(QString string) {
 
 void
 Stack::pushint(int i) {
-    pushelement(T_FLOAT, i, NULL);
+    pushelement(T_FLOAT, i, QString());
 }
 
 void
 Stack::pushfloat(double d) {
-    pushelement(T_FLOAT, d, NULL);
+    pushelement(T_FLOAT, d, QString());
 }
 
 int Stack::peekType() {
-    if (stacklist.empty()) {
-        errornumber = ERROR_STACKUNDERFLOW;
-        return T_FLOAT;
-    } else {
-        DataElement *ele = stacklist.front();
-        return ele->type;
-    }
+	return peekType(0);
+}
+
+int Stack::peekType(int i) {
+	if (stacklist.empty()) {
+		errornumber = ERROR_STACKUNDERFLOW;
+		return T_UNUSED;
+	}
+	if (i>0) {
+		// need to iterate down the stack to peek out value
+		std::list<DataElement*>::iterator it = stacklist.begin();
+		while(i>0) {
+			i--;
+			it++;
+			if ( it == stacklist.end()) {
+				errornumber = ERROR_STACKUNDERFLOW;
+				return T_UNUSED;
+			}
+		}
+		return (*it)->type;
+	} else {
+		// peek at top element
+		return stacklist.front()->type;
+	}
 }
 
 DataElement *Stack::popelement() {

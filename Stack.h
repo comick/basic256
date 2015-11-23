@@ -37,6 +37,7 @@ class Stack
   void dup();
   void dup2();
   int peekType();
+  int peekType(int);
   DataElement *popelement();
   int popint();
   double popfloat();

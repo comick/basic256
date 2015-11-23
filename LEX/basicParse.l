@@ -109,8 +109,7 @@ consttrue [Tt][Rr][Uu][Ee]
 
 blankline ^[ \t]*[\n]
 nws [^ \t\n]+
-stringvar [a-zA-Z][a-zA-Z0-9_]*\$
-variable [a-zA-Z][a-zA-Z0-9_]*
+variable [a-zA-Z][a-zA-Z0-9_\$]*
 whitespace [ \t]+
 
 abs [Aa][Bb][Ss]
@@ -931,11 +930,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 	return B256VARIABLE;
 }
 
-{stringvar} {
-	count();
-	yylval.number = getSymbol(yytext);
-	return B256STRINGVAR;
-}
 
 "\n"	{ return '\n'; }
 

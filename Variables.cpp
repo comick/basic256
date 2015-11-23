@@ -4,10 +4,9 @@
 
 // manage storage of variables
 
-// variables are limited to the following types (defined in Stack.h):
-// T_UNUSED, T_FLOAT, T_STRING, T_ARRAY, T_STRARRAY, T_VARREF, and T_VARREFSTR
+// variables are limited to types (defined in Types.h):
 
-// T_VARREF[STR] is a variable number in the previous recursion level
+// T_VARREF is a variable number in the previous recursion level
 
 Variables::Variables() {
     lasterror = ERROR_NONE;
@@ -102,7 +101,7 @@ Variables::decreaserecurse() {
 void Variables::clearvariable(Variable* v) {
     // free a variable's current value to allow it to be reassigned
     // but do not delete it
-    if (v->type == T_ARRAY || v->type == T_STRARRAY)	{
+    if (v->type == T_ARRAY)	{
         while(!v->arr->datamap.empty()) {
             std::map<int,DataElement*>::iterator j=v->arr->datamap.begin();
             delete((*j).second);					// delete the array element object
@@ -124,7 +123,7 @@ Variable* Variables::get(int varnum) {
     }
     if (varmap.find(level) != varmap.end() && varmap[level].find(varnum) != varmap[level].end()) {
         v = varmap[level][varnum];
-        if ((v->type==T_VARREF || v->type==T_VARREFSTR) && recurselevel>0) {
+        if (v->type==T_VARREF && recurselevel>0) {
             recurselevel--;
             v = get((int) v->floatval);
             recurselevel++;
@@ -182,7 +181,7 @@ int Variables::arraysize(int varnum) {
     lasterror = ERROR_NONE;
     Variable *v = get(varnum);
     if(v) {
-        if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+        if (v->type == T_ARRAY) {
             return(v->arr->size);
         } else {
             lasterror = ERROR_NOTARRAY;
@@ -200,7 +199,7 @@ int Variables::arraysizex(int varnum) {
     lasterror = ERROR_NONE;
     Variable *v = get(varnum);
     if(v) {
-        if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+        if (v->type == T_ARRAY) {
             return(v->arr->xdim);
         } else {
             lasterror = ERROR_NOTARRAY;
@@ -218,7 +217,7 @@ int Variables::arraysizey(int varnum) {
     lasterror = ERROR_NONE;
     Variable *v = get(varnum);
     if(v) {
-        if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+        if (v->type == T_ARRAY) {
             return(v->arr->ydim);
         } else {
             lasterror = ERROR_NOTARRAY;
@@ -237,13 +236,13 @@ DataElement* Variables::arrayget(int varnum, int x, int y) {
     lasterror = ERROR_NONE;
     Variable *v = get(varnum);
     if(v) {
-        if (v->type == T_ARRAY || v->type == T_STRARRAY) {
+        if (v->type == T_ARRAY) {
 			if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 				int i = x * v->arr->ydim + y;
 				if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 					d = v->arr->datamap[i];
 				} else {
-					d = new DataElement(T_UNUSED, 0, NULL);
+					d = new DataElement(T_UNUSED, 0, QString());
 					v->arr->datamap[i] = d;
 				}
            } else {
@@ -268,7 +267,7 @@ void Variables::arrayset(int varnum, int x, int y, b_type type, double value, QS
     if(d) {
 		d->type = type;
 		d->floatval = value;
-		d->stringval = stringval;
+		if (!stringval.isNull()) d->stringval = stringval;
  	}
 }
 
