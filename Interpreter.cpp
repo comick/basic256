@@ -424,9 +424,9 @@ QString Interpreter::opname(int op) {
 }
 
 
-void Interpreter::printError(int e, int ev, QString message) {
+void Interpreter::printError() {
     QString msg;
-    if (error->isFatal(e)) {
+    if (error->isFatal()) {
         msg = tr("ERROR");
     } else {
         msg = tr("WARNING");
@@ -434,8 +434,8 @@ void Interpreter::printError(int e, int ev, QString message) {
     if (currentIncludeFile!="") {
         msg += tr(" in included file ") + currentIncludeFile;
     }
-    msg += tr(" on line ") + QString::number(currentLine) + tr(": ") + error->getErrorMessage(e, ev, symtable);
-    if (message!="") msg+= " " + message;
+    msg += tr(" on line ") + QString::number(error->line) + tr(": ") + error->getErrorMessage(symtable);
+    if (error->extra!="") msg+= " " + error->extra;
     msg += ".\n";
     emit(outputReady(msg));
 }
@@ -954,8 +954,7 @@ Interpreter::execByteCode() {
 
     // if errnum is set then handle the last thrown error
     if (error->pending()) {
-        error->process();
-        lasterrorline = currentLine;
+        error->process(currentLine);
         if(onerrorstack && error->e > 0) {
             // progess call to subroutine for error handling
             // or jump to the catch label
@@ -969,11 +968,11 @@ Interpreter::execByteCode() {
             return 0;
         } else {
             // no error handler defined or FATAL error - display message
-            printError(error->e, error->var, error->extra);
+            printError();
             // if error number less than the start of warnings then
             // highlight the current line AND die
             if (error->isFatal()) {
-                if (currentIncludeFile!="") emit(goToLine(currentLine));
+                if (currentIncludeFile!="") emit(goToLine(error->line));
                 return -1;
             }
         }
@@ -1387,8 +1386,8 @@ Interpreter::execByteCode() {
             if (labeltable[i] >=0) {
                 i = labeltable[i];
             } else {
-                printError(ERROR_NOSUCHLABEL, i, "");
-                return -1;
+                error->q(ERROR_NOSUCHLABEL, i);
+                break;
             }
 
             switch(opcode) {
@@ -3683,7 +3682,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_LASTERRORLINE: {
-                    stack->pushint(lasterrorline);
+                    stack->pushint(error->line);
                 }
                 break;
 

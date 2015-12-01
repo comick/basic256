@@ -169,13 +169,12 @@ class Interpreter : public QThread
   int optype(int op);
   QString opname(int);
   void waitForGraphics();
-  void printError(int, int, QString);
+  void printError();
   int netSockClose(int);
   Variables *variables;
   Stack *stack;
   Error *error;
   Convert *convert;
-  int lasterrorline;
   QIODevice **filehandle;
   int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
   int *op;

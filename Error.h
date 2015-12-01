@@ -18,6 +18,7 @@ class Error
 		int e;
 		int var;
 		QString extra;
+		int line;
 		int newe;
 		int newvar;
 		QString newextra;
@@ -26,7 +27,7 @@ class Error
 		
 		bool pending();
 
-		void process();
+		void process(int);
 		
 		void q(int);
 		void q(int, int);

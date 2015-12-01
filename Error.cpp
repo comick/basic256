@@ -7,6 +7,7 @@ Error::Error() {
 	e = ERROR_NONE;
 	var = -1;
 	extra = "";
+	line = 0;
 	newe = ERROR_NONE;
 	newvar = -1;
 	newextra = "";
@@ -17,12 +18,13 @@ bool Error::pending() {
 	return newe != ERROR_NONE;
 }
 
-void Error::process() {
+void Error::process(int currentlinenumber) {
 	// move the new error into the current error for
 	// reporting
 	e = newe;
 	var = newvar;
 	extra = newextra;
+	line = currentlinenumber;
 	newe = ERROR_NONE;
 	newvar = -1;
 	newextra = "";
@@ -288,7 +290,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Invalid serial port parameter");
             break;
         case ERROR_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value.");
+            errormessage = tr("Variable has not been assigned a value");
             break;
 
 
@@ -307,7 +309,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Duration is not available for media file");
             break;
         case WARNING_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value.");
+            errormessage = tr("Variable has not been assigned a value");
             break;
 
 
