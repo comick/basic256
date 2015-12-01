@@ -29,9 +29,10 @@
 #include <dirent.h>
 #include "BasicGraph.h"
 #include "Types.h"
+#include "Error.h"
+#include "Convert.h"
 #include "Stack.h"
 #include "Variables.h"
-#include "ErrorCodes.h"
 #include "Sound.h"
 #include "Sleeper.h"
 
@@ -168,12 +169,13 @@ class Interpreter : public QThread
   int optype(int op);
   QString opname(int);
   void waitForGraphics();
-  void printError(int, QString);
-  QString getErrorMessage(int);
-  QString getWarningMessage(int);
+  void printError(int, int, QString);
   int netSockClose(int);
-  Variables variables;
-  Stack stack;
+  Variables *variables;
+  Stack *stack;
+  Error *error;
+  Convert *convert;
+  int lasterrorline;
   QIODevice **filehandle;
   int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
   int *op;
@@ -198,12 +200,7 @@ class Interpreter : public QThread
   sprite *sprites;
   int nsprites;
   void closeDatabase(int);
-  int errornum;
-  int errorvarnum;
-  QString errormessage;
-  int lasterrornum;
-  QString lasterrormessage;
-  int lasterrorline;
+
   int netsockfd[NUMSOCKETS];
   DIR *directorypointer;		// used by DIR function
   QTime runtimer;				// used by MSEC function

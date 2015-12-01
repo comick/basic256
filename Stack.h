@@ -14,7 +14,8 @@
 
 #include <QString>
 
-#include "ErrorCodes.h"
+#include "Error.h"
+#include "Convert.h"
 #include "Types.h"
 #include "Settings.h"
 
@@ -23,9 +24,11 @@
 class Stack
 {
  public:
-  Stack();
+  Stack(Error *, Convert *);
   ~Stack();
   
+  Error *error;
+  Convert *convert;
   void pushelement(b_type, double, QString);
   void pushelement(DataElement*);
   void pushstring(QString);
@@ -45,18 +48,8 @@ class Stack
   void clear();
   QString debug();
   int height();
-  int compareTopTwo();
-  int compareFloats(double, double);
-  int error();
-  void clearerror();
-  void settypeconverror(int);
-  int gettypeconverror();
-  void setdecimaldigits(int);
+
 
  private:
   std::list<DataElement*> stacklist;
-  void seterror(int);
-  int errornumber;		// internal storage of last stack error
-  int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
-  int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
 };

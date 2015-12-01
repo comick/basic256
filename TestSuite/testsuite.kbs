@@ -33,13 +33,15 @@
 #				added time include
 # 20140530	j.m.reneau	added network include
 # 20141025	j.m.reneau	added serial include
+# 20151114	j.m.reneau	added types include
+# 20151127	j.m.reneau	moved requirement to 1.99.99.2
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1010400)
+call versiontest(1999902)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -163,8 +165,7 @@ call s("c$[2,0]=E",c$[2,0],"E")
 call s("c$[2,1]=able",c$[2,1],"able")
 call s("c$[3,0]=''",c$[3,0],"")
 call s("c$[3,1]=''",c$[3,1],"")
-call s("c$[4,0]=''",c$[3,0],"")
-call s("c$[4,1]=''",c$[3,1],"")
+
 # switch
 t$ = c$[0,1]
 c$[0,1]=c$[0,0]
@@ -447,9 +448,11 @@ call section("Directory and File-System Checks")
 ###################################################
 include "testsuite_dir_include.kbs"
 
-
-
-
+section_types:
+###################################################
+call section("Variable and Stack Types Tests")
+###################################################
+include "testsuite_types_include.kbs"
 
 
 

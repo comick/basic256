@@ -115,6 +115,18 @@ Interpreter::Interpreter() {
     status = R_STOPPED;
     printing = false;
 	sleeper = new Sleeper();
+	// create the error handling object
+	error = new Error();
+	// create the convert and comparer object
+	convert = new Convert(error);
+	SETTINGS;
+	convert->settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
+	convert->setdecimaldigits(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
+	// now build tghe new stack object
+	stack = new Stack(error, convert);
+	// now create the variable storage
+	variables = new Variables(error);
+	// initialize the sockets to nothing
     for (int t=0; t<NUMSOCKETS; t++) netsockfd[t]=-1;
     // on a windows box start winsock
 #ifdef WIN32
@@ -407,13 +419,14 @@ QString Interpreter::opname(int op) {
     else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
     else if (op==OP_REGEXMINIMAL) return QString("OP_REGEXMINIMAL");
     else if (op==OP_OPENSERIAL) return QString("OP_OPENSERIAL");
+    else if (op==OP_TYPEOF) return QString("OP_TYPEOF");
     else return QString("OP_UNKNOWN");
 }
 
 
-void Interpreter::printError(int e, QString message) {
+void Interpreter::printError(int e, int ev, QString message) {
     QString msg;
-    if (e<WARNING_START) {
+    if (error->isFatal(e)) {
         msg = tr("ERROR");
     } else {
         msg = tr("WARNING");
@@ -421,279 +434,12 @@ void Interpreter::printError(int e, QString message) {
     if (currentIncludeFile!="") {
         msg += tr(" in included file ") + currentIncludeFile;
     }
-    msg += tr(" on line ") + QString::number(currentLine) + tr(": ") + getErrorMessage(e);
+    msg += tr(" on line ") + QString::number(currentLine) + tr(": ") + error->getErrorMessage(e, ev, symtable);
     if (message!="") msg+= " " + message;
     msg += ".\n";
     emit(outputReady(msg));
 }
 
-QString Interpreter::getErrorMessage(int e) {
-    QString errormessage("");
-    switch(e) {
-        case ERROR_NOSUCHLABEL:
-            errormessage = tr("No such label %VARNAME%");
-            break;
-        case ERROR_FOR1:
-            errormessage = tr("Illegal FOR -- start number > end number");
-            break;
-        case ERROR_FOR2 :
-            errormessage = tr("Illegal FOR -- start number < end number");
-            break;
-        case ERROR_NEXTNOFOR:
-            errormessage = tr("Next without FOR");
-            break;
-        case ERROR_FILENUMBER:
-            errormessage = tr("Invalid File Number");
-            break;
-        case ERROR_FILEOPEN:
-            errormessage = tr("Unable to open file");
-            break;
-        case ERROR_FILENOTOPEN:
-            errormessage = tr("File not open");
-            break;
-        case ERROR_FILEWRITE:
-            errormessage = tr("Unable to write to file");
-            break;
-        case ERROR_FILERESET:
-            errormessage = tr("Unable to reset file");
-            break;
-        case ERROR_ARRAYSIZELARGE:
-            errormessage = tr("Array %VARNAME% dimension too large");
-            break;
-        case ERROR_ARRAYSIZESMALL:
-            errormessage = tr("Array %VARNAME% dimension too small");
-            break;
-        case ERROR_NOSUCHVARIABLE:
-            errormessage = tr("Unknown variable %VARNAME%");
-            break;
-        case ERROR_NOTARRAY:
-            errormessage = tr("Variable %VARNAME% is not an array");
-            break;
-        case ERROR_NOTSTRINGARRAY:
-            errormessage = tr("Variable %VARNAME% is not a string array");
-            break;
-        case ERROR_ARRAYINDEX:
-            errormessage = tr("Array %VARNAME% index out of bounds");
-            break;
-        case ERROR_STRNEGLEN:
-            errormessage = tr("Substring length less that zero");
-            break;
-        case ERROR_STRSTART:
-            errormessage = tr("Starting position less than zero");
-            break;
-        case ERROR_NONNUMERIC:
-            errormessage = tr("Non-numeric value in numeric expression");
-            break;
-        case ERROR_RGB:
-            errormessage = tr("RGB Color values must be in the range of 0 to 255");
-            break;
-        case ERROR_PUTBITFORMAT:
-            errormessage = tr("String input to putbit incorrect");
-            break;
-        case ERROR_POLYARRAY:
-            errormessage = tr("Argument not an array for poly()/stamp()");
-            break;
-        case ERROR_POLYPOINTS:
-            errormessage = tr("Not enough points in array for poly()/stamp()");
-            break;
-        case ERROR_IMAGEFILE:
-            errormessage = tr("Unable to load image file");
-            break;
-        case ERROR_SPRITENUMBER:
-            errormessage = tr("Sprite number out of range");
-            break;
-        case ERROR_SPRITENA:
-            errormessage = tr("Sprite has not been assigned");
-            break;
-        case ERROR_SPRITESLICE:
-            errormessage = tr("Unable to slice image");
-            break;
-        case ERROR_FOLDER:
-            errormessage = tr("Invalid directory name");
-            break;
-        case ERROR_INFINITY:
-            errormessage = tr("Operation returned infinity");
-            break;
-        case ERROR_DBOPEN:
-            errormessage = tr("Unable to open SQLITE database");
-            break;
-        case ERROR_DBQUERY:
-            errormessage = tr("Database query error (message follows)");
-            break;
-        case ERROR_DBNOTOPEN:
-            errormessage = tr("Database must be opened first");
-            break;
-        case ERROR_DBCOLNO:
-            errormessage = tr("Column number out of range or column name not in data set");
-            break;
-        case ERROR_DBNOTSET:
-            errormessage = tr("Record set must be opened first");
-            break;
-        case ERROR_NETSOCK:
-            errormessage = tr("Error opening network socket");
-            break;
-        case ERROR_NETHOST:
-            errormessage = tr("Error finding network host");
-            break;
-        case ERROR_NETCONN:
-            errormessage = tr("Unable to connect to network host");
-            break;
-        case ERROR_NETREAD:
-            errormessage = tr("Unable to read from network connection");
-            break;
-        case ERROR_NETNONE:
-            errormessage = tr("Network connection has not been opened");
-            break;
-        case ERROR_NETWRITE:
-            errormessage = tr("Unable to write to network connection");
-            break;
-        case ERROR_NETSOCKOPT:
-            errormessage = tr("Unable to set network socket options");
-            break;
-        case ERROR_NETBIND:
-            errormessage = tr("Unable to bind network socket");
-            break;
-        case ERROR_NETACCEPT:
-            errormessage = tr("Unable to accept network connection");
-            break;
-        case ERROR_NETSOCKNUMBER:
-            errormessage = tr("Invalid Socket Number");
-            break;
-        case ERROR_PERMISSION:
-            errormessage = tr("You do not have permission to use this statement/function");
-            break;
-        case ERROR_IMAGESAVETYPE:
-            errormessage = tr("Invalid image save type");
-            break;
-        case ERROR_ARGUMENTCOUNT:
-            errormessage = tr("Number of arguments passed does not match FUNCTION/SUBROUTINE definition");
-            break;
-        case ERROR_MAXRECURSE:
-            errormessage = tr("Maximum levels of recursion exceeded");
-            break;
-        case ERROR_DIVZERO:
-            errormessage = tr("Division by zero");
-            break;
-        case ERROR_BYREF:
-            errormessage = tr("Function/Subroutine expecting variable reference in call");
-            break;
-        case ERROR_BYREFTYPE:
-            errormessage = tr("Function/Subroutine variable incorrect reference type in call");
-            break;
-        case ERROR_FREEFILE:
-            errormessage = tr("There are no free file numbers to allocate");
-            break;
-        case ERROR_FREENET:
-            errormessage = tr("There are no free network connections to allocate");
-            break;
-        case ERROR_FREEDB:
-            errormessage = tr("There are no free database connections to allocate");
-            break;
-        case ERROR_DBCONNNUMBER:
-            errormessage = tr("Invalid Database Connection Number");
-            break;
-        case ERROR_FREEDBSET:
-            errormessage = tr("There are no free data sets to allocate for that database connection");
-            break;
-        case ERROR_DBSETNUMBER:
-            errormessage = tr("Invalid data set number");
-            break;
-        case ERROR_DBNOTSETROW:
-            errormessage = tr("You must advance the data set using DBROW before you can read data from it");
-            break;
-        case ERROR_PENWIDTH:
-            errormessage = tr("Drawing pen width must be a non-negative number");
-            break;
-        case ERROR_COLORNUMBER:
-            errormessage = tr("Color values must be in the range of -1 to 16,777,215");
-            break;
-        case ERROR_ARRAYINDEXMISSING:
-            errormessage = tr("Array variable %VARNAME% has no value without an index");
-            break;
-        case ERROR_IMAGESCALE:
-            errormessage = tr("Image scale must be greater than or equal to zero");
-            break;
-        case ERROR_FONTSIZE:
-            errormessage = tr("Font size, in points, must be greater than or equal to zero");
-            break;
-        case ERROR_FONTWEIGHT:
-            errormessage = tr("Font weight must be greater than or equal to zero");
-            break;
-        case ERROR_RADIXSTRING:
-            errormessage = tr("Unable to convert radix string back to a decimal number");
-            break;
-        case ERROR_RADIX:
-            errormessage = tr("Radix conversion base muse be between 2 and 36");
-            break;
-        case ERROR_LOGRANGE:
-            errormessage = tr("Unable to calculate the logarithm or root of a negative number");
-            break;
-        case ERROR_STRINGMAXLEN:
-            errormessage = tr("String exceeds maximum length of 16,777,216 characters");
-            break;
-        case ERROR_STACKUNDERFLOW:
-            errormessage = tr("Stack Underflow Error");
-            break;
-        case ERROR_NOTANUMBER:
-            errormessage = tr("Mathematical operation returned an undefined value");
-            break;
-        case ERROR_PRINTERNOTON:
-            errormessage = tr("Printer is not on");
-            break;
-        case ERROR_PRINTERNOTOFF:
-            errormessage = tr("Printing is already on");
-            break;
-        case ERROR_PRINTEROPEN:
-            errormessage = tr("Unable to open printer");
-            break;
-        case ERROR_TYPECONV:
-            errormessage = tr("Unable to convert string to number");
-            break;
-        case ERROR_WAVFILEFORMAT:
-            errormessage = tr("Media file does not exist or in an unsupported format");
-            break;
-        case ERROR_FILEOPERATION:
-            errormessage = tr("Can not perform that operation on a Serial Port");
-            break;
-        case ERROR_SERIALPARAMETER:
-            errormessage = tr("Invalid serial port parameter");
-            break;
-        case ERROR_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value.");
-            break;
-
-
-        // put ERROR new messages here
-        case ERROR_NOTIMPLEMENTED:
-            errormessage = tr("Feature not implemented in this environment");
-            break;
-        // warnings
-        case WARNING_TYPECONV:
-            errormessage = tr("Unable to convert string to number, zero used");
-            break;
-        case WARNING_WAVNOTSEEKABLE:
-            errormessage = tr("Media file is not seekable");
-            break;
-        case WARNING_WAVNODURATION:
-            errormessage = tr("Duration is not available for media file");
-            break;
-        case WARNING_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value.");
-            break;
-
-
-        // put WARNING new messages here
-        default:
-            errormessage = tr("User thrown error number");
-
-    }
-    if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
-        if (symtable[errorvarnum]) {
-            errormessage.replace(QString("%VARNAME%"),QString(symtable[errorvarnum]),Qt::CaseInsensitive);
-        }
-    }
-    return errormessage;
-}
 
 int Interpreter::netSockClose(int fd) {
     // tidy up a network socket and return NULL to assign to the
@@ -847,7 +593,7 @@ bool Interpreter::spritecollide(int n1, int n2) {
 
 int
 Interpreter::compileProgram(char *code) {
-    variables.clear();
+    variables->clear();
     if (newWordCode() < 0) {
         return -1;
     }
@@ -1030,7 +776,6 @@ Interpreter::compileProgram(char *code) {
 
 void
 Interpreter::initialize() {
-    SETTINGS;
 
     op = wordCode;
     callstack = NULL;
@@ -1073,10 +818,6 @@ Interpreter::initialize() {
     }
 
 
-    // set settings
-    stack.settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
-    stack.setdecimaldigits(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
-
 }
 
 
@@ -1085,9 +826,9 @@ Interpreter::cleanup() {
     // called by run() once the run is terminated
     //
     // Clean up stack
-    stack.clear();
+    stack->clear();
     // Clean up variables
-    variables.clear();
+    variables->clear();
     // Clean up sprites
     clearsprites();
     // Clean up, for frames, etc.
@@ -1164,11 +905,6 @@ Interpreter::runHalted() {
 
 void
 Interpreter::run() {
-    errornum = ERROR_NONE;
-    errormessage = "";
-    lasterrornum = ERROR_NONE;
-    lasterrormessage = "";
-    lasterrorline = 0;
     onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
 		emit(seekLine(2));
@@ -1206,7 +942,7 @@ Interpreter::execByteCode() {
 	SETTINGS;
 
     if (status == R_INPUTREADY) {
-        stack.pushstring(inputString);
+        stack->pushstring(inputString);
         status = R_RUNNING;
         return 0;
     } else if (status == R_PAUSED) {
@@ -1217,17 +953,10 @@ Interpreter::execByteCode() {
     }
 
     // if errnum is set then handle the last thrown error
-    if (stack.error()!=ERROR_NONE) {
-        errornum = stack.error();
-        stack.clearerror();
-    }
-    if (errornum!=ERROR_NONE) {
-        lasterrornum = errornum;
-        lasterrormessage = errormessage;
+    if (error->pending()) {
+        error->process();
         lasterrorline = currentLine;
-        errornum = ERROR_NONE;
-        errormessage = "";
-        if(onerrorstack && lasterrornum > 0) {
+        if(onerrorstack && error->e > 0) {
             // progess call to subroutine for error handling
             // or jump to the catch label
             if (onerrorstack->onerrorgosub) {
@@ -1240,17 +969,17 @@ Interpreter::execByteCode() {
             return 0;
         } else {
             // no error handler defined or FATAL error - display message
-            printError(lasterrornum, lasterrormessage);
+            printError(error->e, error->var, error->extra);
             // if error number less than the start of warnings then
             // highlight the current line AND die
-            if (lasterrornum<WARNING_START) {
+            if (error->isFatal()) {
                 if (currentIncludeFile!="") emit(goToLine(currentLine));
                 return -1;
             }
         }
     }
 
-    //emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack.debug() + "\n"));
+    //emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack->debug() + "\n"));
 
 
     opcode = *op;
@@ -1271,18 +1000,18 @@ Interpreter::execByteCode() {
                 case OP_FOR: {
                     
                     forframe *temp = new forframe;
-                    double step = stack.popfloat();
-                    double endnum = stack.popfloat();
-                    double startnum = stack.popfloat();
+                    double step = stack->popfloat();
+                    double endnum = stack->popfloat();
+                    double startnum = stack->popfloat();
 
                     temp->next = forstack;
                     temp->variable = i;
-                    temp->recurselevel = variables.getrecurse();
+                    temp->recurselevel = variables->getrecurse();
 
-                    variables.set(i, T_FLOAT, startnum, NULL);
+                    variables->set(i, T_FLOAT, startnum, NULL);
 
                     if(debugMode != 0) {
-                        emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->getfloat()), -1, -1));
+                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->get(i)), -1, -1));
                     }
 
                     temp->endNum = endnum;
@@ -1290,10 +1019,10 @@ Interpreter::execByteCode() {
                     temp->returnAddr = op;
                     forstack = temp;
                     
-                    if (temp->step > 0 && variables.get(i)->getfloat() > temp->endNum) {
-                        errornum = ERROR_FOR1;
-                    } else if (temp->step < 0 && variables.get(i)->getfloat() < temp->endNum) {
-                        errornum = ERROR_FOR2;
+                    if (temp->step > 0 && convert->getFloat(variables->get(i)) > temp->endNum) {
+                        error->q(ERROR_FOR1);
+                    } else if (temp->step < 0 && convert->getFloat(variables->get(i)) < temp->endNum) {
+                        error->q(ERROR_FOR2);
                     }
                 }
                 break;
@@ -1306,20 +1035,20 @@ Interpreter::execByteCode() {
                     }
 
                     if (!temp) {
-                        errornum = ERROR_NEXTNOFOR;
+                        error->q(ERROR_NEXTNOFOR);
                     } else {
 
-                        double val = variables.get(i)->getfloat();
+                        double val = convert->getFloat(variables->get(i));
                         val += temp->step;
-                        variables.set(i, T_FLOAT, val, NULL);
+                        variables->set(i, T_FLOAT, val, NULL);
 
                         if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), QString::number(variables.get(i)->getfloat()), -1, -1));
+                            emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->get(i)), -1, -1));
                         }
 
-                        if (temp->step > 0 && stack.compareFloats(val, temp->endNum)!=1) {
+                        if (temp->step > 0 && convert->compareFloats(val, temp->endNum)!=1) {
                             op = temp->returnAddr;
-                        } else if (temp->step < 0 && stack.compareFloats(val, temp->endNum)!=-1) {
+                        } else if (temp->step < 0 && convert->compareFloats(val, temp->endNum)!=-1) {
                             op = temp->returnAddr;
                         } else {
                             forstack = temp->next;
@@ -1331,17 +1060,12 @@ Interpreter::execByteCode() {
                 break;
                 case OP_DIM:
                 case OP_REDIM: {
-                    int ydim = stack.popint();
-                    int xdim = stack.popint();
+                    int ydim = stack->popint();
+                    int xdim = stack->popint();
                     if (ydim<=0) ydim=1; // need to dimension as 1d
-                    variables.arraydim(T_ARRAY, i, xdim, ydim, opcode == OP_REDIM);
-                    if (variables.error()==ERROR_NONE) {
-                        if(debugMode != 0) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, xdim, ydim));
-                        }
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
+                    variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
+                    if(debugMode != 0 && !error->pending()) {
+                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xdim, ydim));
                     }
                 }
                 break;
@@ -1352,19 +1076,14 @@ Interpreter::execByteCode() {
                     // return array lengths
                     switch(opcode) {
                         case OP_ALEN:
-                            stack.pushint(variables.arraysize(i));
+                            stack->pushint(variables->arraysize(i));
                             break;
                         case OP_ALENX:
-                            stack.pushint(variables.arraysizex(i));
+                            stack->pushint(variables->arraysizex(i));
                             break;
                         case OP_ALENY:
-                            stack.pushint(variables.arraysizey(i));
+                            stack->pushint(variables->arraysizey(i));
                             break;
-                    }
-                    if (variables.error()!=ERROR_NONE) {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                        stack.pushint(0);	// unknown
                     }
                 }
                 break;
@@ -1376,10 +1095,10 @@ Interpreter::execByteCode() {
 
 					if (opcode!=OP_EXPLODEX) {
 						// 0 sensitive (default) - opposite of QT
-						casesens = (stack.popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+						casesens = (stack->popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 					}
-					QString qneedle = stack.popstring();
-					QString qhaystack = stack.popstring();
+					QString qneedle = stack->popstring();
+					QString qhaystack = stack->popstring();
 
 					QStringList list;
 					if(opcode==OP_EXPLODE) {
@@ -1390,143 +1109,120 @@ Interpreter::execByteCode() {
 						list = qhaystack.split(expr, QString::KeepEmptyParts);
 					}
 					// create an array
-					if (variables.arraysize(i)!=list.size()) variables.arraydim(T_ARRAY, i, list.size(), 1, false);
-					if (variables.error()==ERROR_NONE) {
+					if (variables->arraysize(i)!=list.size()) variables->arraydim(i, list.size(), 1, false);
+					if (!error->pending()) {
 						if(debugMode != 0) {
-							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
 						}
 
 						for(int x=0; x<list.size(); x++) {
 							// fill the string array
-							variables.arrayset(i, x, 0, T_STRING, 0, list.at(x));
-							if (variables.error()==ERROR_NONE) {
+							variables->arrayset(i, x, 0, T_STRING, 0, list.at(x));
+							if (!error->pending()) {
 								if(debugMode != 0) {
-									emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, x, 0)->getstring(), x, 0));
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arrayget(i, x, 0)), x, 0));
 								}
-							} else {
-								errornum = variables.error();
-								errorvarnum = variables.errorvarnum();
 							}
 						}
-					} else {
-						errornum = variables.error();
-						errorvarnum = variables.errorvarnum();
 					}
 				}
 				break;
 
 				case OP_IMPLODE: {
-					QString qdelim = stack.popstring();
+					QString qdelim = stack->popstring();
 					QString stuff = "";
-					if (variables.get(i)->type == T_ARRAY) {
-						int kount = variables.arraysize(i);
+					if (variables->get(i)->type == T_ARRAY) {
+						int kount = variables->arraysize(i);
 						for(int n=0; n<kount; n++) {
 							if (n>0) stuff.append(qdelim);
-							stuff.append(variables.arrayget(i, n, 0)->getstring());
+							stuff.append(convert->getString(variables->arrayget(i, n, 0)));
 						}
 					} else {
-						errornum = ERROR_NOTARRAY;
-						errorvarnum = i;
+						error->q(ERROR_NOTARRAY, i);
 					}
-					stack.pushstring(stuff);
+					stack->pushstring(stuff);
 				}
 				break;
 
                 case OP_GLOBAL: {
                     // make a variable number a global variable
-                    variables.makeglobal(i);
+                    variables->makeglobal(i);
                 }
                 break;
 
                 case OP_ARRAYASSIGN: {
-					// assign a float value to an array element
+					// assign a value to an array element
 					// assumes that arrays are always two dimensional (if 1d then y=1)
-                    DataElement *e = stack.popelement();
-                    int yindex = stack.popint();
-                    int xindex = stack.popint();
-
-                    variables.arrayset(i, xindex, yindex, e->type, e->floatval, e->stringval);
-                    delete(e);
-                    
-                    if (variables.error()==ERROR_NONE) {
-                        if(debugMode != 0) {
-							DataElement *v = variables.arrayget(i, xindex, yindex);
-							emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->getstring(), xindex, yindex));
+					DataElement *e = stack->popelement();
+					int yindex = stack->popint();
+					int xindex = stack->popint();
+					if (e->type==T_UNUSED) {
+						error->q(ERROR_VARNOTASSIGNED);
+					} else if (e->type==T_ARRAY) {
+						error->q(ERROR_ARRAYINDEXMISSING);
+					} else {
+						variables->arrayset(i, xindex, yindex, e->type, e->floatval, e->stringval);
+						if (!error->pending()) {
+							if(debugMode != 0) {
+								DataElement *v = variables->arrayget(i, xindex, yindex);
+								emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(v), xindex, yindex));
+							}
 						}
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
+					}
+					delete(e);
                 }
                 break;
 
 
                 case OP_DEREF: {
 					// get a value from an array and push it to the stack
-					// assumes that arrays are always two dimensional (if 1d then y=1)
-					int yindex = stack.popint();
-					int xindex = stack.popint();
-					Variable *v = variables.get(i);
-					
-					if (v->type == T_ARRAY) {
-						DataElement *v = variables.arrayget(i, xindex, yindex);
-						if (variables.error()==ERROR_NONE) {
-							stack.pushelement(v);
-						} else {
-							errornum = variables.error();
-							errorvarnum = variables.errorvarnum();
-						}
-					} else {
-						errornum = ERROR_NOTARRAY;
-						errorvarnum = i;
-						stack.pushint(0);
+					// assumes that arrays are always two dimensional (if 1d then y=0)
+					int yindex = stack->popint();
+					int xindex = stack->popint();
+					DataElement *v = variables->arrayget(i, xindex, yindex);
+					if (v) {
+						stack->pushelement(v);
 					}
 				}
 				break;
 
                 case OP_PUSHVAR: {
-					Variable *v = variables.get(i);
+					Variable *v = variables->get(i);
 					if (v) {
-						if (v->type == T_ARRAY) {
-							errornum = ERROR_ARRAYINDEXMISSING;
-							errorvarnum = i;
-							stack.pushint(0);
-						} else {
-							stack.pushelement(v);
-						}
-					} else {
-                        errornum = ERROR_NOSUCHVARIABLE;
-                        errorvarnum = i;
-                        stack.pushint(0);
-                    }
+						stack->pushelement(v);
+					}
                 }
                 break;
 
                 case OP_PUSHVARREF: {
-					stack.pushelement(T_VARREF, i, QString());
+					stack->pushelement(T_VARREF, i, QString());
 				}
 				break;
 
-                case OP_ASSIGN: {
-                    DataElement *e = stack.popelement();
-                    variables.set(i, e->type, e->floatval, e->stringval);
-                    delete(e);
+				case OP_ASSIGN: {
+					DataElement *e = stack->popelement();
+					if (e->type==T_ARRAY) {
+						error->q(ERROR_ARRAYINDEXMISSING);
+					} else {
+						variables->set(i, e->type, e->floatval, e->stringval);
+						if(debugMode != 0) {
+							Variable *v = variables->get(i);
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(v), -1, -1));
+						}
+					}
+					delete(e);
 
-                    if(debugMode != 0) {
-						Variable *v = variables.get(i);
-						emit(varAssignment(variables.getrecurse(),QString(symtable[i]), v->getstring(), -1, -1));
-                    }
                 }
                 break;
 
                 case OP_VARREFASSIGN: {
                     // assign a variable reference
-                    int type = stack.peekType();
-                    int value = stack.popint();
+                    int type = stack->peekType();
+                    int value = stack->popint();
                     if (type==T_VARREF) {
-                        variables.set(i, T_VARREF, value, NULL);
+                        variables->set(i, T_VARREF, value, NULL);
                     } else {
-                        errornum = ERROR_BYREF;
+                        error->q(ERROR_BYREF);
                     }
                 }
                 break;
@@ -1535,26 +1231,24 @@ Interpreter::execByteCode() {
 					// Push all of the elements of an array to the stack and then push the length to the stack
 					// expects one integer - variable number
 
-					Variable *v = variables.get(i);
+					Variable *v = variables->get(i);
 					if (v->type == T_ARRAY) {
 						int n = v->arr->size;
 						for (int j = 0; j < n; j++) {
-							DataElement *av = variables.arrayget(i, j, 0);
-							if (variables.error()==ERROR_NONE) {
-								stack.pushelement(av);
+							DataElement *av = variables->arrayget(i, j, 0);
+							if (!error->pending()) {
+								stack->pushelement(av);
 							} else {
-								errornum = variables.error();
-								errorvarnum = variables.errorvarnum();
+								stack->pushint(0);
 							}
 						}
-						stack.pushint(n);
+						stack->pushint(n);
 					} else {
-						errornum = ERROR_POLYARRAY;
-						stack.pushint(0);
+						error->q(ERROR_POLYARRAY);
+						stack->pushint(0);
 					}
 				}
 				break;
-
 
             }
         }
@@ -1595,41 +1289,38 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PUSHINT: {
-					stack.pushint(i);
+					stack->pushint(i);
 				}
 				break;
 
-                case OP_ARRAYLISTASSIGN: {
+				case OP_ARRAYLISTASSIGN: {
 
-                    int items = stack.popint();
-                    
-                    if (variables.arraysize(i)!=items) variables.arraydim(T_ARRAY, i, items, 1, false);
-                    if(errornum==ERROR_NONE) {
-                        if(debugMode != 0 && errornum==ERROR_NONE) {
-                            emit(varAssignment(variables.getrecurse(),QString(symtable[i]), NULL, items, 1));
-                        }
+					int items = stack->popint();
+					
+					variables->arraydim(i, items, 1, false);
+					if(!error->pending()) {
+						if(debugMode != 0) {
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, items, 1));
+						}
 
-                        for (int index = items - 1; index >= 0 && errornum==ERROR_NONE; index--) {
-							DataElement *e = stack.popelement();
-							variables.arrayset(i, index, 0, e->type, e->floatval, e->stringval);
-							delete(e);
-                            if (variables.error()==ERROR_NONE) {
-                                if(debugMode != 0) {
-                                    emit(varAssignment(variables.getrecurse(),QString(symtable[i]), variables.arrayget(i, index, 0)->getstring(), index, 0));
-                                }
-                            } else {
-                                errornum = variables.error();
-                                errorvarnum = variables.errorvarnum();
-                                break;  // exit for
-                            }
-                        }
-                    } else {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
+						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
+							DataElement *e = stack->popelement();
+							if (e->type==T_UNUSED) {
+								error->q(ERROR_VARNOTASSIGNED);
+							} else if (e->type==T_ARRAY) {
+								error->q(ERROR_ARRAYINDEXMISSING);
+							} else {
+								variables->arrayset(i, index, 0, e->type, e->floatval, e->stringval);
+								if(debugMode != 0 && !error->pending()) {
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arrayget(i, index, 0)), index, 0));
+								}
+							}
+ 							delete(e);
+						}
+					}
 
-                }
-                break;
+				}
+				break;
 
 
             }
@@ -1646,7 +1337,7 @@ Interpreter::execByteCode() {
             switch(opcode) {
 
                 case OP_PUSHFLOAT: {
-                    stack.pushfloat(*d);
+                    stack->pushfloat(*d);
                 }
                 break;
 
@@ -1667,7 +1358,7 @@ Interpreter::execByteCode() {
             switch(opcode) {
                 case OP_PUSHSTRING: {
                     // push string from compiled bytecode
-                    stack.pushstring(s);
+                    stack->pushstring(s);
                 }
                 break;
 
@@ -1696,8 +1387,7 @@ Interpreter::execByteCode() {
             if (labeltable[i] >=0) {
                 i = labeltable[i];
             } else {
-                errorvarnum = i;
-                printError(ERROR_NOSUCHLABEL,"");
+                printError(ERROR_NOSUCHLABEL, i, "");
                 return -1;
             }
 
@@ -1709,7 +1399,7 @@ Interpreter::execByteCode() {
 
                 case OP_BRANCH: {
                     // goto if true
-                    int val = stack.popint();
+                    int val = stack->popint();
 
                     if (val == 0) { // go to next line on false, otherwise execute rest of line.
                         op = wordCode + i;
@@ -1778,12 +1468,12 @@ Interpreter::execByteCode() {
 
 
                 case OP_OPEN: {
-                    int type = stack.popint();	// 0 text 1 binary
-                    QString name = stack.popstring();
-                    int fn = stack.popint();
+                    int type = stack->popint();	// 0 text 1 binary
+                    QString name = stack->popstring();
+                    int fn = stack->popint();
 
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
                         // close file number if open
                         if (filehandle[fn] != NULL) {
@@ -1793,18 +1483,18 @@ Interpreter::execByteCode() {
                         // create filehandle
                         filehandle[fn] = new QFile(name);
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILEOPEN;
+                            error->q(ERROR_FILEOPEN);
                         } else {
 					        filehandletype[fn] = type;
                             if (type==0) {
                                 // text file (type 0)
                                 if (!filehandle[fn]->open(QIODevice::ReadWrite | QIODevice::Text)) {
-                                    errornum = ERROR_FILEOPEN;
+                                    error->q(ERROR_FILEOPEN);
                                 }
                             } else {
                                 // binary file (type 1)
                                 if (!filehandle[fn]->open(QIODevice::ReadWrite)) {
-                                    errornum = ERROR_FILEOPEN;
+                                    error->q(ERROR_FILEOPEN);
                                 }
                             }
                         }
@@ -1813,13 +1503,13 @@ Interpreter::execByteCode() {
                 break;
 
                case OP_OPENSERIAL: {
-                    int flow = stack.popint();
-                    int parity = stack.popint();
-                    int stop = stack.popint();
-                    int data = stack.popint();
-                    int baud = stack.popint();
-                    QString name = stack.popstring();
-                    int fn = stack.popint();
+                    int flow = stack->popint();
+                    int parity = stack->popint();
+                    int stop = stack->popint();
+                    int data = stack->popint();
+                    int baud = stack->popint();
+                    QString name = stack->popstring();
+                    int fn = stack->popint();
 #ifdef ANDROID
                     (void)flow;
                     (void)parity;
@@ -1828,10 +1518,10 @@ Interpreter::execByteCode() {
                     (void)baud;
                     (void)name;
                     (void)fn;
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 # else
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
                         // close file number if open
                         if (filehandle[fn] != NULL) {
@@ -1841,74 +1531,74 @@ Interpreter::execByteCode() {
                         // create file filehandle
                         QSerialPort *p = new QSerialPort();
                         if (p == NULL) {
-                            errornum = ERROR_FILEOPEN;
+                            error->q(ERROR_FILEOPEN);
                         } else {
 							p->setPortName(name);
 							p->setReadBufferSize(SERIALREADBUFFERSIZE);
-							if (errornum==ERROR_NONE) {
+							if (!error->pending()) {
 								if (!p->open(QIODevice::ReadWrite)) {
-									errornum = ERROR_FILEOPEN;
+									error->q(ERROR_FILEOPEN);
 								} else {
 									// successful open
 									filehandle[fn] = p;
 							        filehandletype[fn] = 2;
 							        // set the parameters
-									if (!p->setBaudRate(baud)) errornum = ERROR_SERIALPARAMETER;
+									if (!p->setBaudRate(baud)) error->q(ERROR_SERIALPARAMETER);
 									switch (data) {
 										case 5:
-											if(!p->setDataBits(QSerialPort::Data5)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setDataBits(QSerialPort::Data5)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 6:
-											if(!p->setDataBits(QSerialPort::Data6)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setDataBits(QSerialPort::Data6)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 7:
-											if(!p->setDataBits(QSerialPort::Data7)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setDataBits(QSerialPort::Data7)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 8:
-											if(!p->setDataBits(QSerialPort::Data8)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setDataBits(QSerialPort::Data8)) error->q(ERROR_SERIALPARAMETER);
 											break;
-										default: errornum = ERROR_SERIALPARAMETER;
+										default: error->q(ERROR_SERIALPARAMETER);
 									}
 									switch (stop) {
 										case 1:
-											if(!p->setStopBits(QSerialPort::OneStop)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setStopBits(QSerialPort::OneStop)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 2:
-											if(!p->setStopBits(QSerialPort::TwoStop)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setStopBits(QSerialPort::TwoStop)) error->q(ERROR_SERIALPARAMETER);
 											break;
-										default: errornum = ERROR_SERIALPARAMETER;
+										default: error->q(ERROR_SERIALPARAMETER);
 									}
 									switch (parity) {
 										case 0:
-											if(!p->setParity(QSerialPort::NoParity)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setParity(QSerialPort::NoParity)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 1:
-											if(!p->setParity(QSerialPort::OddParity)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setParity(QSerialPort::OddParity)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 2:
-											if(!p->setParity(QSerialPort::EvenParity)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setParity(QSerialPort::EvenParity)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 3:
-											if(!p->setParity(QSerialPort::SpaceParity)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setParity(QSerialPort::SpaceParity)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 4:
-											if(!p->setParity(QSerialPort::MarkParity)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setParity(QSerialPort::MarkParity)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										default:
-											errornum = ERROR_SERIALPARAMETER;
+											error->q(ERROR_SERIALPARAMETER);
 									}
 									switch (flow) {
 										case 0:
-											if(!p->setFlowControl(QSerialPort::NoFlowControl)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setFlowControl(QSerialPort::NoFlowControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 1: 
-											if(!p->setFlowControl(QSerialPort::HardwareControl)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setFlowControl(QSerialPort::HardwareControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										case 2: 
-											if(!p->setFlowControl(QSerialPort::SoftwareControl)) errornum = ERROR_SERIALPARAMETER;
+											if(!p->setFlowControl(QSerialPort::SoftwareControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										default:
-											errornum = ERROR_SERIALPARAMETER;
+											error->q(ERROR_SERIALPARAMETER);
 									}
 								}
 							}
@@ -1920,15 +1610,15 @@ Interpreter::execByteCode() {
 
 
                 case OP_READ: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_FILENUMBER);
+                        stack->pushint(0);
                     } else {
                         char c = ' ';
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
-                            stack.pushint(0);
+                            error->q(ERROR_FILENOTOPEN);
+                            stack->pushint(0);
                         } else {
                             int maxsize = 256;
                             char * strarray = (char *) malloc(maxsize);
@@ -1937,7 +1627,7 @@ Interpreter::execByteCode() {
                             do {
 								filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
 								if (!filehandle[fn]->getChar(&c)) {
-                                    stack.pushstring(QString::fromUtf8(strarray));
+                                    stack->pushstring(QString::fromUtf8(strarray));
                                     free(strarray);
                                     return 0;
                                 }
@@ -1959,14 +1649,14 @@ Interpreter::execByteCode() {
 								if (!filehandle[fn]->getChar(&c)) {
 									// no more to get - finish the string and push to stack
 									strarray[offset] = 0;
-                                    stack.pushstring(QString::fromUtf8(strarray));
+                                    stack->pushstring(QString::fromUtf8(strarray));
                                     free(strarray);
                                     return 0;  //nextop
                                 }
                             } while (c != ' ' && c != '\t' && c != '\n');
 							// found a delimiter - finish the string and push to stack
 							strarray[offset] = 0;
-                            stack.pushstring(QString::fromUtf8(strarray));
+                            stack->pushstring(QString::fromUtf8(strarray));
                             free(strarray);
                             return 0;	// nextop
                         }
@@ -1976,36 +1666,36 @@ Interpreter::execByteCode() {
 
 
                 case OP_READLINE: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_FILENUMBER);
+                        stack->pushint(0);
                     } else {
 
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
-                            stack.pushint(0);
+                            error->q(ERROR_FILENOTOPEN);
+                            stack->pushint(0);
                         } else {
                             //read entire line
 							filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
-                            stack.pushstring(filehandle[fn]->readLine());
+                            stack->pushstring(filehandle[fn]->readLine());
                         }
                     }
                 }
                 break;
 
                 case OP_READBYTE: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_FILENUMBER);
+                        stack->pushint(0);
                     } else {
                         char c = ' ';
                         filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
                         if (filehandle[fn]->getChar(&c)) {
-                            stack.pushint((int) (unsigned char) c);
+                            stack->pushint((int) (unsigned char) c);
                         } else {
-                            stack.pushint((int) -1);
+                            stack->pushint((int) -1);
                         }
                     }
                 }
@@ -2013,32 +1703,32 @@ Interpreter::execByteCode() {
 
                 case OP_EOF: {
                     //return true to eof if error is returned
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                        stack.pushint(1);
+                        error->q(ERROR_FILENUMBER);
+                        stack->pushint(1);
                     } else {
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
-                            stack.pushint(1);
+                            error->q(ERROR_FILENOTOPEN);
+                            stack->pushint(1);
                         } else {
                             switch (filehandletype[fn]) {
 								case 0:
 								case 1:
 									// normal file eof
 									if (filehandle[fn]->atEnd()) {
-										stack.pushint(1);
+										stack->pushint(1);
 									} else {
-										stack.pushint(0);
+										stack->pushint(0);
 									}
 									break;
 								case 2:
 									// serial
 									QCoreApplication::processEvents();
 									if (filehandle[fn]->bytesAvailable()==0) {
-										stack.pushint(1);
+										stack->pushint(1);
 									} else {
-										stack.pushint(0);
+										stack->pushint(0);
 									}
 									break;
 							}
@@ -2050,44 +1740,44 @@ Interpreter::execByteCode() {
 
                 case OP_WRITE:
                 case OP_WRITELINE: {
-                    QString temp = stack.popstring();
-                    int fn = stack.popint();
+                    QString temp = stack->popstring();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
-                        int error = 0;
+                        int fileerror = 0;
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
+                            error->q(ERROR_FILENOTOPEN);
                         } else {
- 							error = filehandle[fn]->write(temp.toUtf8().data());
+ 							fileerror = filehandle[fn]->write(temp.toUtf8().data());
 							if (opcode == OP_WRITELINE) {
-								error = filehandle[fn]->putChar('\n');
+								fileerror = filehandle[fn]->putChar('\n');
 							}
                            if (filehandle[fn]->isSequential()) {
 								filehandle[fn]->waitForBytesWritten(FILEWRITETIMEOUT);
 							}
                         }
-                        if (error == -1) {
-                            errornum = ERROR_FILEWRITE;
+                        if (fileerror == -1) {
+                            error->q(ERROR_FILEWRITE);
                         }
                     }
                 }
                 break;
 
                 case OP_WRITEBYTE: {
-                    int n = stack.popint();
-                    int fn = stack.popint();
+                    int n = stack->popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
-                        int error = 0;
+                        int fileerror = 0;
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
+                            error->q(ERROR_FILENOTOPEN);
                         } else {
-                            error = filehandle[fn]->putChar((unsigned char) n);
+                            fileerror = filehandle[fn]->putChar((unsigned char) n);
 							if (filehandle[fn]->isSequential()) filehandle[fn]->waitForBytesWritten(FILEWRITETIMEOUT);
-							if (error == -1) {
-                                errornum = ERROR_FILEWRITE;
+							if (fileerror == -1) {
+                                error->q(ERROR_FILEWRITE);
                             }
                         }
                     }
@@ -2096,12 +1786,12 @@ Interpreter::execByteCode() {
 
 
                 case OP_CLOSE: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
+                            error->q(ERROR_FILENOTOPEN);
                         } else {
                             filehandle[fn]->close();
                             filehandle[fn] = NULL;
@@ -2112,34 +1802,34 @@ Interpreter::execByteCode() {
 
 
                 case OP_RESET: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
+                        error->q(ERROR_FILENUMBER);
                     } else {
                         if (filehandle[fn] == NULL) {
-                            errornum = ERROR_FILENOTOPEN;
+                            error->q(ERROR_FILENOTOPEN);
                         } else {
                             if (filehandle[fn]->isSequential()) {
-								errornum = ERROR_FILEOPERATION;
+								error->q(ERROR_FILEOPERATION);
  							} else {
 								switch (filehandletype[fn]) {
 									case 0:
 										// text mode file (close and reopen)
 										filehandle[fn]->close();
 										if (!filehandle[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
-											errornum = ERROR_FILERESET;
+											error->q(ERROR_FILERESET);
 										}
 										break;
 									case 1:
 										// binary mode file
 										filehandle[fn]->close();
 										if (!filehandle[fn]->open(QIODevice::ReadWrite | QIODevice::Truncate)) {
-											errornum = ERROR_FILERESET;
+											error->q(ERROR_FILERESET);
 										}
 										break;
 									case 2:
 										// serial pot
-										errornum = ERROR_FILEOPERATION;
+										error->q(ERROR_FILEOPERATION);
 										break;
 								}
                             }
@@ -2150,14 +1840,14 @@ Interpreter::execByteCode() {
 
                 case OP_SIZE: {
                     // push the current open file size on the stack
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMFILES) {
-                        errornum = ERROR_FILENUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_FILENUMBER);
+                        stack->pushint(0);
                     } else {
 						int size = 0;
 						if (filehandle[fn] == NULL) {
-							errornum = ERROR_FILENOTOPEN;
+							error->q(ERROR_FILENOTOPEN);
 						} else {
 							switch(filehandletype[fn]) {
 								case 0:
@@ -2172,7 +1862,7 @@ Interpreter::execByteCode() {
 									break;
 							}
 						}
-						stack.pushint(size);
+						stack->pushint(size);
                     }
                 }
                 break;
@@ -2180,24 +1870,24 @@ Interpreter::execByteCode() {
                 case OP_EXISTS: {
                     // push a 1 if file exists else zero
 
-                    QString filename = stack.popstring();
+                    QString filename = stack->popstring();
                     if (QFile::exists(filename)) {
-                        stack.pushint(1);
+                        stack->pushint(1);
                     } else {
-                        stack.pushint(0);
+                        stack->pushint(0);
                     }
                 }
                 break;
 
 				case OP_SEEK: {
 					// move file pointer to a specific loaction in file
-					long pos = stack.popint();
-					int fn = stack.popint();
+					long pos = stack->popint();
+					int fn = stack->popint();
 					if (fn<0||fn>=NUMFILES) {
-						errornum = ERROR_FILENUMBER;
+						error->q(ERROR_FILENUMBER);
 					} else {
 						if (filehandle[fn] == NULL) {
-							errornum = ERROR_FILENOTOPEN;
+							error->q(ERROR_FILENOTOPEN);
 						} else {
 							switch(filehandletype[fn]) {
 								case 0:
@@ -2207,7 +1897,7 @@ Interpreter::execByteCode() {
 									break;
 								case 2:
 									// serial
-									errornum = ERROR_FILEOPERATION;
+									error->q(ERROR_FILEOPERATION);
 									break;
 							}
 						}
@@ -2217,22 +1907,22 @@ Interpreter::execByteCode() {
 
 				case OP_INT: {
 					// bigger integer safe (trim floating point off of a float)
-					double val = stack.popfloat();
+					double val = stack->popfloat();
 					double intpart;
-					val = modf(val + (val>0?BASIC256EPSILON:-BASIC256EPSILON), &intpart);
-					stack.pushfloat(intpart);
+					val = modf(val + (val>0?convert->EPSILON:-convert->EPSILON), &intpart);
+					stack->pushfloat(intpart);
 				}
 				break;
 
 
 				case OP_FLOAT: {
-					double val = stack.popfloat();
-					stack.pushfloat(val);
+					double val = stack->popfloat();
+					stack->pushfloat(val);
 				}
 				break;
 
 				case OP_STRING: {
-					stack.pushstring(stack.popstring());
+					stack->pushstring(stack->popstring());
 				}
 				break;
 
@@ -2250,12 +1940,12 @@ Interpreter::execByteCode() {
 						rx = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
 						r = ra/rx;
 					}
-					stack.pushfloat(r);
+					stack->pushfloat(r);
 				}
 				break;
 
 				case OP_PAUSE: {
-					double val = stack.popfloat();
+					double val = stack->popfloat();
 					if (val > 0) {
 						sleeper->sleepSeconds(val);
 					}
@@ -2264,29 +1954,29 @@ Interpreter::execByteCode() {
 
 				case OP_LENGTH: {
 					// unicode length
-					stack.pushint(stack.popstring().length());
+					stack->pushint(stack->popstring().length());
 				}
 				break;
 
 
 				case OP_MID: {
 					// unicode safe mid string
-					int len = stack.popint();
-					int pos = stack.popint();
-					QString qtemp = stack.popstring();
+					int len = stack->popint();
+					int pos = stack->popint();
+					QString qtemp = stack->popstring();
 
 					if ((len < 0)) {
-						errornum = ERROR_STRNEGLEN;
-						stack.pushint(0);
+						error->q(ERROR_STRNEGLEN);
+						stack->pushint(0);
 					} else {
 						if ((pos < 1)) {
-							errornum = ERROR_STRSTART;
-							stack.pushint(0);
+							error->q(ERROR_STRSTART);
+							stack->pushint(0);
 						} else {
 							if ((pos < 1) || (pos > (int) qtemp.length())) {
-								stack.pushstring(QString(""));
+								stack->pushstring(QString(""));
 							} else {
-								stack.pushstring(qtemp.mid(pos-1,len));
+								stack->pushstring(qtemp.mid(pos-1,len));
 							}
 						}
 					}
@@ -2295,15 +1985,15 @@ Interpreter::execByteCode() {
 
                case OP_MIDX: {
 					// regex section string (MID regeX)
-					int start = stack.popint();
-					QRegExp expr = QRegExp(stack.popstring());
+					int start = stack->popint();
+					QRegExp expr = QRegExp(stack->popstring());
 					expr.setMinimal(regexMinimal);
-					QString qtemp = stack.popstring();
+					QString qtemp = stack->popstring();
 
 
 					if(start < 1) {
-						errornum = ERROR_STRSTART;
-						stack.pushstring(QString(""));
+						error->q(ERROR_STRSTART);
+						stack->pushstring(QString(""));
 					} else {
 						int pos;
 						if (start==1) {
@@ -2313,10 +2003,10 @@ Interpreter::execByteCode() {
 						}
 						if (pos==-1) {
 							// did not find it - return ""
-							stack.pushstring(QString(""));
+							stack->pushstring(QString(""));
 						} else {
 							QStringList stuff = expr.capturedTexts();
-							stack.pushstring(stuff[0]);
+							stack->pushstring(stuff[0]);
 						}
 					}
 				}
@@ -2326,19 +2016,19 @@ Interpreter::execByteCode() {
                 case OP_LEFT:
                 case OP_RIGHT: {
                     // unicode safe left/right string
-                    int len = stack.popint();
-                    QString qtemp = stack.popstring();
+                    int len = stack->popint();
+                    QString qtemp = stack->popstring();
 
                     if (len < 0) {
-                        errornum = ERROR_STRNEGLEN;
-                        stack.pushint(0);
+                        error->q(ERROR_STRNEGLEN);
+                        stack->pushint(0);
                     } else {
                         switch(opcode) {
                             case OP_LEFT:
-                                stack.pushstring(qtemp.left(len));
+                                stack->pushstring(qtemp.left(len));
                                 break;
                             case OP_RIGHT:
-                                stack.pushstring(qtemp.right(len));
+                                stack->pushstring(qtemp.right(len));
                                 break;
                         }
                     }
@@ -2347,31 +2037,31 @@ Interpreter::execByteCode() {
 
 
                 case OP_UPPER: {
-                    stack.pushstring(stack.popstring().toUpper());
+                    stack->pushstring(stack->popstring().toUpper());
                 }
                 break;
 
                 case OP_LOWER: {
-                    stack.pushstring(stack.popstring().toLower());
+                    stack->pushstring(stack->popstring().toLower());
                 }
                 break;
 
                 case OP_ASC: {
                     // unicode character sequence - return 16 bit number representing character
-                    QString qs = stack.popstring();
-                    stack.pushint((int) qs[0].unicode());
+                    QString qs = stack->popstring();
+                    stack->pushint((int) qs[0].unicode());
                 }
                 break;
 
 
                 case OP_CHR: {
                     // convert a single unicode character sequence to string in utf8
-                    int code = stack.popint();
+                    int code = stack->popint();
                     QChar temp[2];
                     temp[0] = (QChar) code;
                     temp[1] = (QChar) 0;
                     QString qs = QString(temp,1);
-                    stack.pushstring(qs);
+                    stack->pushstring(qs);
                     qs = QString::null;
                 }
                 break;
@@ -2381,39 +2071,39 @@ Interpreter::execByteCode() {
                     // unicode safe instr function
 
                    // 0 sensitive (default) - opposite of QT
-                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
-                    int start = stack.popint();
-                    QString qstr = stack.popstring();
-                    QString qhay = stack.popstring();
+                    Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    int start = stack->popint();
+                    QString qstr = stack->popstring();
+                    QString qhay = stack->popstring();
 
                     int pos = 0;
                     if(start < 1) {
-                        errornum = ERROR_STRSTART;
+                        error->q(ERROR_STRSTART);
                     } else {
 						if (start <= qhay.length()) {
 							pos = qhay.indexOf(qstr, start-1, casesens)+1;
 						}
                     }
-                    stack.pushint(pos);
+                    stack->pushint(pos);
                 }
                 break;
                 
                 
 				case OP_INSTRX: {
 					// regex instr
-					int start = stack.popint();
-					QRegExp expr = QRegExp(stack.popstring());
+					int start = stack->popint();
+					QRegExp expr = QRegExp(stack->popstring());
 					expr.setMinimal(regexMinimal);
-					QString qtemp = stack.popstring();
+					QString qtemp = stack->popstring();
 					
 					int pos=0;
 
 					if(start < 1) {
-						errornum = ERROR_STRSTART;
+						error->q(ERROR_STRSTART);
 					} else {
 						pos = expr.indexIn(qtemp,start-1)+1;
 					}
-					stack.pushint(pos);
+					stack->pushint(pos);
 				}
 				break;
 
@@ -2433,81 +2123,81 @@ Interpreter::execByteCode() {
                 case OP_SQR:
                 case OP_EXP: {
 
-                    double val = stack.popfloat();
+                    double val = stack->popfloat();
                     switch (opcode) {
                         case OP_SIN:
-                            stack.pushfloat(sin(val));
+                            stack->pushfloat(sin(val));
                             break;
                         case OP_COS:
-                            stack.pushfloat(cos(val));
+                            stack->pushfloat(cos(val));
                             break;
                         case OP_TAN:
                             val = tan(val);
                             if (isinf(val)) {
-                                errornum = ERROR_INFINITY;
-                                stack.pushint(0);
+                                error->q(ERROR_INFINITY);
+                                stack->pushint(0);
                             } else {
-                                stack.pushfloat(val);
+                                stack->pushfloat(val);
                             }
                             break;
                         case OP_ASIN:
-                            stack.pushfloat(asin(val));
+                            stack->pushfloat(asin(val));
                             break;
                         case OP_ACOS:
-                            stack.pushfloat(acos(val));
+                            stack->pushfloat(acos(val));
                             break;
                         case OP_ATAN:
-                            stack.pushfloat(atan(val));
+                            stack->pushfloat(atan(val));
                             break;
                         case OP_CEIL:
-                            stack.pushint(ceil(val));
+                            stack->pushint(ceil(val));
                             break;
                         case OP_FLOOR:
-                            stack.pushint(floor(val));
+                            stack->pushint(floor(val));
                             break;
                         case OP_ABS:
                             if (val < 0) {
                                 val = -val;
                             }
-                            stack.pushfloat(val);
+                            stack->pushfloat(val);
                             break;
                         case OP_DEGREES:
-                            stack.pushfloat(val * 180 / M_PI);
+                            stack->pushfloat(val * 180 / M_PI);
                             break;
                         case OP_RADIANS:
-                            stack.pushfloat(val * M_PI / 180);
+                            stack->pushfloat(val * M_PI / 180);
                             break;
                         case OP_LOG:
                             if (val<0) {
-                                errornum = ERROR_LOGRANGE;
-                                stack.pushint(0);
+                                error->q(ERROR_LOGRANGE);
+                                stack->pushint(0);
                             } else {
-                                stack.pushfloat(log(val));
+                                stack->pushfloat(log(val));
                             }
                             break;
                         case OP_LOGTEN:
                             if (val<0) {
-                                errornum = ERROR_LOGRANGE;
-                                stack.pushint(0);
+                                error->q(ERROR_LOGRANGE);
+                                stack->pushint(0);
                             } else {
-                                stack.pushfloat(log10(val));
+                                stack->pushfloat(log10(val));
                             }
                             break;
                         case OP_SQR:
                             if (val<0) {
-                                errornum = ERROR_LOGRANGE;
-                                stack.pushint(0);
+                                error->q(ERROR_LOGRANGE);
+                                stack->pushint(0);
                             } else {
-                                stack.pushfloat(sqrt(val));
+                                stack->pushfloat(sqrt(val));
                             }
                             break;
                         case OP_EXP:
                             val = exp(val);
                             if (isinf(val)) {
-                                errornum = ERROR_INFINITY;
-                                stack.pushint(0);
+                                error->q(ERROR_INFINITY);
+                                stack->pushint(0);
                             } else {
-                                stack.pushfloat(val);
+                                stack->pushfloat(val);
                             }
                             break;
                     }
@@ -2516,229 +2206,230 @@ Interpreter::execByteCode() {
 
 
 				case OP_ADD: {
-					int tone =stack.peekType(0);
-					int ttwo =stack.peekType(1);
+					int tone =stack->peekType(0);
+					int ttwo =stack->peekType(1);
 					if (tone==T_STRING || ttwo==T_STRING) {
 						// concatenate (if either are a string then we concatenate)
-						QString one = stack.popstring();
-						QString two = stack.popstring();
+						QString one = stack->popstring();
+						QString two = stack->popstring();
 						unsigned int l = two.length() + one.length();
 						if (l>STRINGMAXLEN) {
-							errornum = ERROR_STRINGMAXLEN;
-							stack.pushint(0);
+							error->q(ERROR_STRINGMAXLEN);
+							stack->pushint(0);
 						} else {
-							stack.pushstring(two + one);
+							stack->pushstring(two + one);
 						}
 					} else {
 						// numeric add
-						double oneval = stack.popfloat();
-						double twoval = stack.popfloat();
+						double oneval = stack->popfloat();
+						double twoval = stack->popfloat();
 						double ans = twoval + oneval;
 						if (isinf(ans)) {
-							errornum = ERROR_INFINITY;
-							stack.pushint(0);
+							error->q(ERROR_INFINITY);
+							stack->pushint(0);
 						} else {
-							stack.pushfloat(ans);
+							stack->pushfloat(ans);
 						}
 					}
 					break;
 				}
 
                 case OP_SUB: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     double ans = twoval - oneval;
                     if (isinf(ans)) {
-                        errornum = ERROR_INFINITY;
-                        stack.pushint(0);
+                        error->q(ERROR_INFINITY);
+                        stack->pushint(0);
                     } else {
-                        stack.pushfloat(ans);
+                        stack->pushfloat(ans);
                     }
                     break;
                 }
 
                 case OP_MUL: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     double ans = twoval * oneval;
                     if (isinf(ans)) {
-                        errornum = ERROR_INFINITY;
-                        stack.pushint(0);
+                        error->q(ERROR_INFINITY);
+                        stack->pushint(0);
                     } else {
-                        stack.pushfloat(ans);
+                        stack->pushfloat(ans);
                     }
                     break;
                 }
 
                 case OP_MOD: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     if (oneval==0) {
-                        errornum = ERROR_DIVZERO;
-                        stack.pushint(0);
+                        error->q(ERROR_DIVZERO);
+                        stack->pushint(0);
                     } else {
                         double ans = fmod(twoval, oneval);
                         if (isinf(ans)) {
-                            errornum = ERROR_INFINITY;
-                            stack.pushint(0);
+                            error->q(ERROR_INFINITY);
+                            stack->pushint(0);
                         } else {
-                            stack.pushfloat(ans);
+                            stack->pushfloat(ans);
                         }
                     }
                     break;
                 }
 
                 case OP_DIV: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     if (oneval==0) {
-                        errornum = ERROR_DIVZERO;
-                        stack.pushint(0);
+                        error->q(ERROR_DIVZERO);
+                        stack->pushint(0);
                     } else {
                         double ans = twoval / oneval;
                         if (isinf(ans)) {
-                            errornum = ERROR_INFINITY;
-                            stack.pushint(0);
+                            error->q(ERROR_INFINITY);
+                            stack->pushint(0);
                         } else {
-                            stack.pushfloat(ans);
+                            stack->pushfloat(ans);
                         }
                     }
                     break;
                 }
 
                 case OP_INTDIV: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     if (oneval==0) {
-                        errornum = ERROR_DIVZERO;
-                        stack.pushint(0);
+                        error->q(ERROR_DIVZERO);
+                        stack->pushint(0);
                     } else {
                         double intpart;
                         modf(twoval /oneval, &intpart);
                         if (isinf(intpart)) {
-                            errornum = ERROR_INFINITY;
-                            stack.pushint(0);
+                            error->q(ERROR_INFINITY);
+                            stack->pushint(0);
                         } else {
-                            stack.pushfloat(intpart);
+                            stack->pushfloat(intpart);
                         }
                     }
                     break;
                 }
 
                 case OP_EX: {
-                    double oneval = stack.popfloat();
-                    double twoval = stack.popfloat();
+                    double oneval = stack->popfloat();
+                    double twoval = stack->popfloat();
                     double ans = pow(twoval, oneval);
                     if (std::isnan(ans)) {
-                        errornum = ERROR_NOTANUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_NOTANUMBER);
+                        stack->pushint(0);
                     } else {
                         if (isinf(ans)) {
-                            errornum = ERROR_INFINITY;
-                            stack.pushint(0);
+                            error->q(ERROR_INFINITY);
+                            stack->pushint(0);
                         } else {
-                            stack.pushfloat(ans);
+                            stack->pushfloat(ans);
                         }
                     }
                     break;
                 }
 
                 case OP_AND: {
-                    int one = stack.popint();
-                    int two = stack.popint();
+                    int one = stack->popint();
+                    int two = stack->popint();
                     if (one && two) {
-                        stack.pushint(1);
+                        stack->pushint(1);
                     } else {
-                        stack.pushint(0);
+                        stack->pushint(0);
                     }
                 }
                 break;
 
                 case OP_OR: {
-                    int one = stack.popint();
-                    int two = stack.popint();
+                    int one = stack->popint();
+                    int two = stack->popint();
                     if (one || two)	{
-                        stack.pushint(1);
+                        stack->pushint(1);
                     } else {
-                        stack.pushint(0);
+                        stack->pushint(0);
                     }
                 }
                 break;
 
                 case OP_XOR: {
-                    int one = stack.popint();
-                    int two = stack.popint();
+                    int one = stack->popint();
+                    int two = stack->popint();
                     if (!(one && two) && (one || two)) {
-                        stack.pushint(1);
+                        stack->pushint(1);
                     } else {
-                        stack.pushint(0);
+                        stack->pushint(0);
                     }
                 }
                 break;
 
                 case OP_NOT: {
-                    int temp = stack.popint();
+                    int temp = stack->popint();
                     if (temp) {
-                        stack.pushint(0);
+                        stack->pushint(0);
                     } else {
-                        stack.pushint(1);
+                        stack->pushint(1);
                     }
                 }
                 break;
 
                 case OP_NEGATE: {
-                    double n = stack.popfloat();
-                    stack.pushfloat(n * -1);
+                    double n = stack->popfloat();
+                    stack->pushfloat(n * -1);
                 }
                 break;
 
-                case OP_EQUAL: {
-                    int ans = stack.compareTopTwo()==0;
-                    stack.pushint(ans);
-                }
-                break;
+				case OP_EQUAL:
+				case OP_NEQUAL:
+				case OP_GT:
+				case OP_LTE:
+				case OP_LT:
+				case OP_GTE:
+				{
+					DataElement *two = stack->popelement();
+					DataElement *one = stack->popelement();
+					int ans = convert->compare(one,two);
+					delete(two);
+					delete(one);
+                    switch(opcode) {
+						case OP_EQUAL:
+							ans = (ans==0);
+							break;
+						case OP_NEQUAL:
+							ans = (ans!=0);
+							break;
+						case OP_GT:
+							ans = (ans==1);
+							break;
+						case OP_LTE:
+							ans = (ans!=1);
+							break;
+						case OP_LT:
+							ans = (ans==-1);
+							break;
+						case OP_GTE:
+							ans = (ans!=-1);
+							break;
+					}
+					stack->pushint(ans);
+				}
+				break;
 
-                case OP_NEQUAL: {
-                    int ans = stack.compareTopTwo()!=0;
-                    stack.pushint(ans);
-                }
-                break;
 
-                case OP_GT: {
-                    int ans = stack.compareTopTwo()==1;
-                    stack.pushint(ans);
-
-                }
-                break;
-
-                case OP_LTE: {
-                    int ans = stack.compareTopTwo()!=1;
-                    stack.pushint(ans);
-                }
-                break;
-
-                case OP_LT: {
-                    int ans = stack.compareTopTwo()==-1;
-                    stack.pushint(ans);
-                }
-                break;
-
-                case OP_GTE: {
-                    int ans = stack.compareTopTwo()!=-1;
-                    stack.pushint(ans);
-                }
-                break;
 
                 case OP_SOUND_LIST: {
                     // play an immediate list of sounds
 
-                    int length = stack.popint();
+                    int length = stack->popint();
 
                     int* freqdur;
                     freqdur = (int*) malloc(length * sizeof(int));
 
                     for (int j = length-1; j >=0; j--) {
-                        freqdur[j] = stack.popint();
+                        freqdur[j] = stack->popint();
                     }
 
                     sound.playSounds(length / 2 , freqdur);
@@ -2749,7 +2440,7 @@ Interpreter::execByteCode() {
 
                 case OP_VOLUME: {
                     // set the wave output height (volume 0-10)
-                    int volume = stack.popint();
+                    int volume = stack->popint();
                     if (volume<0) volume = 0;
                     if (volume>10) volume = 10;
                     sound.setVolume(volume);
@@ -2758,14 +2449,14 @@ Interpreter::execByteCode() {
 
                 case OP_SAY: {
                     mymutex->lock();
-                    emit(speakWords(stack.popstring()));
+                    emit(speakWords(stack->popstring()));
                     waitCond->wait(mymutex);
                     mymutex->unlock();
                 }
                 break;
 
                 case OP_SYSTEM: {
-                    QString temp = stack.popstring();
+                    QString temp = stack->popstring();
 
                     if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
                         mymutex->lock();
@@ -2773,13 +2464,13 @@ Interpreter::execByteCode() {
                         waitCond->wait(mymutex);
                         mymutex->unlock();
                     } else {
-                        errornum = ERROR_PERMISSION;
+                        error->q(ERROR_PERMISSION);
                     }
                 }
                 break;
 
                 case OP_WAVPLAY: {
-					QString file = stack.popstring();
+					QString file = stack->popstring();
 #ifdef USEQSOUND
 					if(file.compare("")!=0) {
 						mymutex->lock();
@@ -2787,7 +2478,7 @@ Interpreter::execByteCode() {
 						waitCond->wait(mymutex);
 						mymutex->unlock();
 					} else {
-						errornum = ERROR_NOTIMPLEMENTED;
+						error->q(ERROR_NOTIMPLEMENTED);
 					}
 #else
 					if(file.compare("")!=0) {
@@ -2796,14 +2487,14 @@ Interpreter::execByteCode() {
 						mediaplayer->loadFile(file);
 						mediaplayer->play();
 						if (mediaplayer->error()!=0) {
-							errornum = ERROR_WAVFILEFORMAT;
+							error->q(ERROR_WAVFILEFORMAT);
 						}
 					} else {
 						// start playing an existing mediaplayer
 						if (mediaplayer) {
 							mediaplayer->play();
 						} else {
-							errornum = ERROR_WAVNOTOPEN;
+							error->q(ERROR_WAVNOTOPEN);
 						}
 					}
 #endif
@@ -2820,15 +2511,15 @@ Interpreter::execByteCode() {
 					if(mediaplayer) {
                         mediaplayer->stop();
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
                 }
                 break;
 
                 case OP_SETCOLOR: {
-                    unsigned int brushval = stack.popfloat();
-                    unsigned int penval = stack.popfloat();
+                    unsigned int brushval = stack->popfloat();
+                    unsigned int penval = stack->popfloat();
 
                     drawingpen.setColor(QColor::fromRgba((QRgb) penval));
                     drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
@@ -2836,41 +2527,41 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_RGB: {
-                    int aval = stack.popint();
-                    int bval = stack.popint();
-                    int gval = stack.popint();
-                    int rval = stack.popint();
+                    int aval = stack->popint();
+                    int bval = stack->popint();
+                    int gval = stack->popint();
+                    int rval = stack->popint();
                     if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
-                        errornum = ERROR_RGB;
+                        error->q(ERROR_RGB);
                     } else {
-                        stack.pushfloat( (unsigned int) QColor(rval,gval,bval,aval).rgba());
+                        stack->pushfloat( (unsigned int) QColor(rval,gval,bval,aval).rgba());
                     }
                 }
                 break;
 
                 case OP_PIXEL: {
-                    int y = stack.popint();
-                    int x = stack.popint();
+                    int y = stack->popint();
+                    int x = stack->popint();
                     QRgb rgb = graphwin->image->pixel(x,y);
-                    stack.pushfloat((unsigned int) rgb);
+                    stack->pushfloat((unsigned int) rgb);
                 }
                 break;
 
                 case OP_GETCOLOR: {
-                    stack.pushfloat((unsigned int) drawingpen.color().rgba());
+                    stack->pushfloat((unsigned int) drawingpen.color().rgba());
                 }
                 break;
 
                 case OP_GETSLICE: {
                     // slice format is 4 digit HEX width, 4 digit HEX height,
                     // and (w*h)*8 digit HEX RGB for each pixel of slice
-                    int h = stack.popint();
-                    int w = stack.popint();
-                    int y = stack.popint();
-                    int x = stack.popint();
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    int y = stack->popint();
+                    int x = stack->popint();
                     if (h*w > (STRINGMAXLEN -8)/8) {
-                        errornum = ERROR_STRINGMAXLEN;
-                        stack.pushint(0);
+                        error->q(ERROR_STRINGMAXLEN);
+                        stack->pushint(0);
                     } else {
                         QString qs;
                         QRgb rgb;
@@ -2883,7 +2574,7 @@ Interpreter::execByteCode() {
                                 qs.append(QString::number(rgb,16).rightJustified(8,'0'));
                             }
                         }
-                        stack.pushstring(qs);
+                        stack->pushstring(qs);
                     }
                 }
                 break;
@@ -2891,10 +2582,10 @@ Interpreter::execByteCode() {
                 case OP_PUTSLICE:
                 case OP_PUTSLICEMASK: {
                     QRgb mask = 0x00;	// default mask transparent - nothing gets masked
-                    if (opcode == OP_PUTSLICEMASK) mask = stack.popint();
-                    QString imagedata = stack.popstring();
-                    int y = stack.popint();
-                    int x = stack.popint();
+                    if (opcode == OP_PUTSLICEMASK) mask = stack->popint();
+                    QString imagedata = stack->popstring();
+                    int y = stack->popint();
+                    int x = stack->popint();
                     bool ok;
                     QRgb rgb, lastrgb = 0x00;
                     int th, tw;
@@ -2936,16 +2627,16 @@ Interpreter::execByteCode() {
                         }
                     }
                     if (!ok) {
-                        errornum = ERROR_PUTBITFORMAT;
+                        error->q(ERROR_PUTBITFORMAT);
                     }
                 }
                 break;
 
                 case OP_LINE: {
-                    int y1val = stack.popint();
-                    int x1val = stack.popint();
-                    int y0val = stack.popint();
-                    int x0val = stack.popint();
+                    int y1val = stack->popint();
+                    int x1val = stack->popint();
+                    int y0val = stack->popint();
+                    int x0val = stack->popint();
 
                     QPainter *ian;
                     if (printing) {
@@ -2973,10 +2664,10 @@ Interpreter::execByteCode() {
 
 
                 case OP_RECT: {
-                    int y1val = stack.popint();
-                    int x1val = stack.popint();
-                    int y0val = stack.popint();
-                    int x0val = stack.popint();
+                    int y1val = stack->popint();
+                    int x1val = stack->popint();
+                    int y0val = stack->popint();
+                    int x0val = stack->popint();
 
                     QPainter *ian;
                     if (printing) {
@@ -3026,16 +2717,16 @@ Interpreter::execByteCode() {
                     // doing a polygon from an immediate list
                     // i is a pointer to the length of the list
 
-                    int numbers = stack.popint();
+                    int numbers = stack->popint();
 
                     int pairs = numbers / 2;
                     if (pairs < 3) {
-                        errornum = ERROR_POLYPOINTS;
+                        error->q(ERROR_POLYPOINTS);
                     } else {
                         QPointF *points = new QPointF[pairs];
                         for (int j = 0; j < pairs; j++) {
-                            int ypoint = stack.popint();
-                            int xpoint = stack.popint();
+                            int ypoint = stack->popint();
+                            int xpoint = stack->popint();
                             points[j].setX(xpoint);
                             points[j].setY(ypoint);
                         }
@@ -3080,23 +2771,23 @@ Interpreter::execByteCode() {
                     double tx, ty, savetx;		// used in scaling and rotating
 
                     // pop the immediate list to uncover the location and scale
-                    int llist = stack.popint();
+                    int llist = stack->popint();
                     double *list = (double *) calloc(llist, sizeof(double));
                     for(int j = llist; j>0 ; j--) {
-                        list[j-1] = stack.popfloat();
+                        list[j-1] = stack->popfloat();
                     }
 
-                    if (opcode==OP_STAMP_SR_LIST) rotate = stack.popfloat();
-                    if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack.popfloat();
-                    int y = stack.popint();
-                    int x = stack.popint();
+                    if (opcode==OP_STAMP_SR_LIST) rotate = stack->popfloat();
+                    if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack->popfloat();
+                    int y = stack->popint();
+                    int x = stack->popint();
 
                     if (scale<0) {
-                        errornum = ERROR_IMAGESCALE;
+                        error->q(ERROR_IMAGESCALE);
                     } else {
                         int pairs = llist / 2;
                         if (pairs < 3) {
-                            errornum = ERROR_POLYPOINTS;
+                            error->q(ERROR_POLYPOINTS);
                         } else {
 
                             QPointF *points = new QPointF[pairs];
@@ -3142,9 +2833,9 @@ Interpreter::execByteCode() {
 
 
                 case OP_CIRCLE: {
-                    int rval = stack.popint();
-                    int yval = stack.popint();
-                    int xval = stack.popint();
+                    int rval = stack->popint();
+                    int yval = stack->popint();
+                    int xval = stack->popint();
 
                     QPainter *ian;
                     if (printing) {
@@ -3172,19 +2863,19 @@ Interpreter::execByteCode() {
                     // Image Load - with scale and rotate
 
                     // pop the filename to uncover the location and scale
-                    QString file = stack.popstring();
+                    QString file = stack->popstring();
 
-                    double rotate = stack.popfloat();
-                    double scale = stack.popfloat();
-                    double y = stack.popint();
-                    double x = stack.popint();
+                    double rotate = stack->popfloat();
+                    double scale = stack->popfloat();
+                    double y = stack->popint();
+                    double x = stack->popint();
 
                     if (scale<0) {
-                        errornum = ERROR_IMAGESCALE;
+                        error->q(ERROR_IMAGESCALE);
                     } else {
                         QImage i(file);
                         if(i.isNull()) {
-                            errornum = ERROR_IMAGEFILE;
+                            error->q(ERROR_IMAGEFILE);
                         } else {
                             QPainter *ian;
                             if (printing) {
@@ -3211,9 +2902,9 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_TEXT: {
-                    QString txt = stack.popstring();
-                    int y0val = stack.popint();
-                    int x0val = stack.popint();
+                    QString txt = stack->popstring();
+                    int y0val = stack->popint();
+                    int x0val = stack->popint();
 
                     QPainter *ian;
                     if (printing) {
@@ -3242,14 +2933,14 @@ Interpreter::execByteCode() {
 
 
                 case OP_FONT: {
-                    int weight = stack.popint();
-                    int point = stack.popint();
-                    QString family = stack.popstring();
+                    int weight = stack->popint();
+                    int point = stack->popint();
+                    QString family = stack->popstring();
                     if (point<0) {
-                        errornum = ERROR_FONTSIZE;
+                        error->q(ERROR_FONTSIZE);
                     } else {
                         if (weight<0) {
-                            errornum = ERROR_FONTWEIGHT;
+                            error->q(ERROR_FONTWEIGHT);
                         } else {
                             fontpoint = point;
                             fontweight = weight;
@@ -3274,8 +2965,8 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PLOT: {
-                    int oneval = stack.popint();
-                    int twoval = stack.popint();
+                    int oneval = stack->popint();
+                    int twoval = stack->popint();
 
                     QPainter *ian;
                     if (printing) {
@@ -3306,8 +2997,8 @@ Interpreter::execByteCode() {
 
                 case OP_GRAPHSIZE: {
                     int width = 300, height = 300;
-                    int oneval = stack.popint();
-                    int twoval = stack.popint();
+                    int oneval = stack->popint();
+                    int twoval = stack->popint();
                     if (oneval>0) height = oneval;
                     if (twoval>0) width = twoval;
                     if (width > 0 && height > 0) {
@@ -3321,18 +3012,18 @@ Interpreter::execByteCode() {
 
                 case OP_GRAPHWIDTH: {
                     if (printing) {
-                        stack.pushint(printdocument->width());
+                        stack->pushint(printdocument->width());
                     } else {
-                        stack.pushint((int) graphwin->image->width());
+                        stack->pushint((int) graphwin->image->width());
                     }
                 }
                 break;
 
                 case OP_GRAPHHEIGHT: {
                     if (printing) {
-                        stack.pushint(printdocument->height());
+                        stack->pushint(printdocument->height());
                     } else {
-                        stack.pushint((int) graphwin->image->height());
+                        stack->pushint((int) graphwin->image->height());
                     }
                 }
                 break;
@@ -3346,7 +3037,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_INPUT: {
-                    QString prompt = stack.popstring();
+                    QString prompt = stack->popstring();
                     if (prompt.length()>0) {
                         mymutex->lock();
                         emit(outputReady(prompt));
@@ -3370,7 +3061,7 @@ Interpreter::execByteCode() {
                     mymutex->unlock();
                     waitForGraphics();
                     //
-                    stack.pushstring(returnString);
+                    stack->pushstring(returnString);
 #else
                     // use the input status of interperter and get
                     // input from BasicOutput
@@ -3386,11 +3077,11 @@ Interpreter::execByteCode() {
 
                 case OP_KEY: {
 #ifdef ANDROID
-                    errornum = ERROR_NOTIMPLEMENTED;
-                    stack.pushint(0);
+                    error->q(ERROR_NOTIMPLEMENTED);
+                    stack->pushint(0);
 #else
                     mymutex->lock();
-                    stack.pushint(currentKey);
+                    stack->pushint(currentKey);
                     currentKey = 0;
                     mymutex->unlock();
 #endif
@@ -3399,7 +3090,7 @@ Interpreter::execByteCode() {
 
                 case OP_PRINT:
                 case OP_PRINTN: {
-                    QString p = stack.popstring();
+                    QString p = stack->popstring();
                     if (opcode == OP_PRINTN) {
                         p += "\n";
                     }
@@ -3425,39 +3116,39 @@ Interpreter::execByteCode() {
 
                     switch (opcode) {
                         case OP_YEAR:
-                            stack.pushint(timeinfo->tm_year + 1900);
+                            stack->pushint(timeinfo->tm_year + 1900);
                             break;
                         case OP_MONTH:
-                            stack.pushint(timeinfo->tm_mon);
+                            stack->pushint(timeinfo->tm_mon);
                             break;
                         case OP_DAY:
-                            stack.pushint(timeinfo->tm_mday);
+                            stack->pushint(timeinfo->tm_mday);
                             break;
                         case OP_HOUR:
-                            stack.pushint(timeinfo->tm_hour);
+                            stack->pushint(timeinfo->tm_hour);
                             break;
                         case OP_MINUTE:
-                            stack.pushint(timeinfo->tm_min);
+                            stack->pushint(timeinfo->tm_min);
                             break;
                         case OP_SECOND:
-                            stack.pushint(timeinfo->tm_sec);
+                            stack->pushint(timeinfo->tm_sec);
                             break;
                     }
                 }
                 break;
 
                 case OP_MOUSEX: {
-                    stack.pushint((int) graphwin->mouseX);
+                    stack->pushint((int) graphwin->mouseX);
                 }
                 break;
 
                 case OP_MOUSEY: {
-                    stack.pushint((int) graphwin->mouseY);
+                    stack->pushint((int) graphwin->mouseY);
                 }
                 break;
 
                 case OP_MOUSEB: {
-                    stack.pushint((int) graphwin->mouseB);
+                    stack->pushint((int) graphwin->mouseB);
                 }
                 break;
 
@@ -3469,28 +3160,24 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_CLICKX: {
-                    stack.pushint((int) graphwin->clickX);
+                    stack->pushint((int) graphwin->clickX);
                 }
                 break;
 
                 case OP_CLICKY: {
-                    stack.pushint((int) graphwin->clickY);
+                    stack->pushint((int) graphwin->clickY);
                 }
                 break;
 
                 case OP_CLICKB: {
-                    stack.pushint((int) graphwin->clickB);
+                    stack->pushint((int) graphwin->clickB);
                 }
                 break;
 
                 case OP_INCREASERECURSE:
                     // increase recursion level in variable hash
                 {
-                    variables.increaserecurse();
-                    if (variables.error()!=ERROR_NONE) {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
+                    variables->increaserecurse();
                 }
                 break;
 
@@ -3498,7 +3185,7 @@ Interpreter::execByteCode() {
                     // decrease recursion level in variable hash
                     // and pop any unfinished for statements off of forstack
                 {
-                    while (forstack&&forstack->recurselevel == variables.getrecurse()) {
+                    while (forstack&&forstack->recurselevel == variables->getrecurse()) {
                         forframe *temp = new forframe;
                         temp = forstack;
                         forstack = temp->next;
@@ -3507,16 +3194,10 @@ Interpreter::execByteCode() {
 
                     if(debugMode != 0) {
                         // remove variables from variable window when we return back
-                        emit(varAssignment(variables.getrecurse(),QString(""), QString(""), -1, -1));
+                        emit(varAssignment(variables->getrecurse(),QString(""), QString(""), -1, -1));
                     }
 
-                    variables.decreaserecurse();
-
-
-                    if (variables.error()!=ERROR_NONE) {
-                        errornum = variables.error();
-                        errorvarnum = variables.errorvarnum();
-                    }
+                    variables->decreaserecurse();
                 }
                 break;
 
@@ -3526,27 +3207,27 @@ Interpreter::execByteCode() {
                     int maxx=0, maxy=0;
                     int x,y;
 
-                    //emit(outputReady("begining of spritepoly=**" + stack.debug() + "**\n"));
+                    //emit(outputReady("begining of spritepoly=**" + stack->debug() + "**\n"));
 
-                    int i = stack.popint(); // number of numbers pushed on stack from list or array
+                    int i = stack->popint(); // number of numbers pushed on stack from list or array
 
                     int pairs = i / 2;
                     if (pairs < 3) {
-                        errornum = ERROR_POLYPOINTS;
+                        error->q(ERROR_POLYPOINTS);
                     } else {
                         QPointF *points = new QPointF[pairs];
                         for (int j = 0; j < pairs; j++) {
-                            y = stack.popint();
-                            x = stack.popint();
+                            y = stack->popint();
+                            x = stack->popint();
                             points[j].setX(x);
                             points[j].setY(y);
                             if (x>maxx) maxx=x;
                             if (y>maxy) maxy=y;
                         }
 
-                        int n = stack.popint(); // sprite number
+                        int n = stack->popint(); // sprite number
                         if(n < 0 || n >=nsprites) {
-                            errornum = ERROR_SPRITENUMBER;
+                            error->q(ERROR_SPRITENUMBER);
                         } else {
                             spriteundraw(n);
                             if (sprites[n].image) {
@@ -3583,7 +3264,7 @@ Interpreter::execByteCode() {
 
 
                 case OP_SPRITEDIM: {
-                    int n = stack.popint();
+                    int n = stack->popint();
                     // deallocate existing sprites
                     clearsprites();
                     // create new ones that are not visible, active, and are at origin
@@ -3606,11 +3287,11 @@ Interpreter::execByteCode() {
 
                 case OP_SPRITELOAD: {
 
-                    QString file = stack.popstring();
-                    int n = stack.popint();
+                    QString file = stack->popstring();
+                    int n = stack->popint();
 
                     if(n < 0 || n >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
+                        error->q(ERROR_SPRITENUMBER);
                     } else {
                         spriteundraw(n);
                         if (sprites[n].image) {
@@ -3620,7 +3301,7 @@ Interpreter::execByteCode() {
                         }
                         sprites[n].image = new QImage(file);
                         if(sprites[n].image->isNull()) {
-                            errornum = ERROR_IMAGEFILE;
+                            error->q(ERROR_IMAGEFILE);
                             sprites[n].image = NULL;
                         } else {
                             if (sprites[n].underimage) {
@@ -3637,14 +3318,14 @@ Interpreter::execByteCode() {
 
                 case OP_SPRITESLICE: {
 
-                    int h = stack.popint();
-                    int w = stack.popint();
-                    int y = stack.popint();
-                    int x = stack.popint();
-                    int n = stack.popint();
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    int y = stack->popint();
+                    int x = stack->popint();
+                    int n = stack->popint();
 
                     if(n < 0 || n >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
+                        error->q(ERROR_SPRITENUMBER);
                     } else {
                         spriteundraw(n);
                         if (sprites[n].image) {
@@ -3654,7 +3335,7 @@ Interpreter::execByteCode() {
                         }
                         sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h));
                         if(sprites[n].image->isNull()) {
-                            errornum = ERROR_SPRITESLICE;
+                            error->q(ERROR_SPRITESLICE);
                             sprites[n].image = NULL;
                         } else {
                             if (sprites[n].underimage) {
@@ -3672,20 +3353,20 @@ Interpreter::execByteCode() {
                 case OP_SPRITEMOVE:
                 case OP_SPRITEPLACE: {
 
-                    double r = stack.popfloat();
-                    double s = stack.popfloat();
-                    double y = stack.popfloat();
-                    double x = stack.popfloat();
-                    int n = stack.popint();
+                    double r = stack->popfloat();
+                    double s = stack->popfloat();
+                    double y = stack->popfloat();
+                    double x = stack->popfloat();
+                    int n = stack->popint();
 
                     if(n < 0 || n >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
+                        error->q(ERROR_SPRITENUMBER);
                     } else {
                         if (s<0) {
-                            errornum = ERROR_IMAGESCALE;
+                            error->q(ERROR_IMAGESCALE);
                         } else {
                             if(!sprites[n].image) {
-                                errornum = ERROR_SPRITENA;
+                                error->q(ERROR_SPRITENA);
                             } else {
 
                                 spriteundraw(n);
@@ -3716,14 +3397,14 @@ Interpreter::execByteCode() {
                 case OP_SPRITEHIDE:
                 case OP_SPRITESHOW: {
 
-                    int n = stack.popint();
+                    int n = stack->popint();
                     bool vis = opcode==OP_SPRITESHOW;
 
                     if(n < 0 || n >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
+                        error->q(ERROR_SPRITENUMBER);
                     } else {
                         if(!sprites[n].image) {
-                            errornum = ERROR_SPRITENA;
+                            error->q(ERROR_SPRITENA);
                         } else {
                             if (sprites[n].visible != vis) {
                                 spriteundraw(n);
@@ -3738,16 +3419,16 @@ Interpreter::execByteCode() {
 
                 case OP_SPRITECOLLIDE: {
 
-                    int n1 = stack.popint();
-                    int n2 = stack.popint();
+                    int n1 = stack->popint();
+                    int n2 = stack->popint();
 
                     if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
+                        error->q(ERROR_SPRITENUMBER);
                     } else {
                         if(!sprites[n1].image || !sprites[n2].image) {
-                            errornum = ERROR_SPRITENA;
+                            error->q(ERROR_SPRITENA);
                         } else {
-                            stack.pushint(spritecollide(n1, n2));
+                            stack->pushint(spritecollide(n1, n2));
                         }
                     }
                 }
@@ -3761,23 +3442,23 @@ Interpreter::execByteCode() {
                 case OP_SPRITER:
                 case OP_SPRITES: {
 
-                    int n = stack.popint();
+                    int n = stack->popint();
 
                     if(n < 0 || n >=nsprites) {
-                        errornum = ERROR_SPRITENUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_SPRITENUMBER);
+                        stack->pushint(0);
                     } else {
                         if(!sprites[n].image) {
-                            errornum = ERROR_SPRITENA;
-                            stack.pushint(0);
+                            error->q(ERROR_SPRITENA);
+                            stack->pushint(0);
                         } else {
-                            if (opcode==OP_SPRITEX) stack.pushfloat(sprites[n].x);
-                            if (opcode==OP_SPRITEY) stack.pushfloat(sprites[n].y);
-                            if (opcode==OP_SPRITEH) stack.pushint(sprites[n].image->height());
-                            if (opcode==OP_SPRITEW) stack.pushint(sprites[n].image->width());
-                            if (opcode==OP_SPRITEV) stack.pushint(sprites[n].visible?1:0);
-                            if (opcode==OP_SPRITER) stack.pushfloat(sprites[n].r);
-                            if (opcode==OP_SPRITES) stack.pushfloat(sprites[n].s);
+                            if (opcode==OP_SPRITEX) stack->pushfloat(sprites[n].x);
+                            if (opcode==OP_SPRITEY) stack->pushfloat(sprites[n].y);
+                            if (opcode==OP_SPRITEH) stack->pushint(sprites[n].image->height());
+                            if (opcode==OP_SPRITEW) stack->pushint(sprites[n].image->width());
+                            if (opcode==OP_SPRITEV) stack->pushint(sprites[n].visible?1:0);
+                            if (opcode==OP_SPRITER) stack->pushfloat(sprites[n].r);
+                            if (opcode==OP_SPRITES) stack->pushfloat(sprites[n].s);
                         }
                     }
                 }
@@ -3785,15 +3466,15 @@ Interpreter::execByteCode() {
 
 
                 case OP_CHANGEDIR: {
-                    QString file = stack.popstring();
+                    QString file = stack->popstring();
                     if(!QDir::setCurrent(file)) {
-                        errornum = ERROR_FOLDER;
+                        error->q(ERROR_FOLDER);
                     }
                 }
                 break;
 
                 case OP_CURRENTDIR: {
-                    stack.pushstring(QDir::currentPath());
+                    stack->pushstring(QDir::currentPath());
                 }
                 break;
 
@@ -3807,7 +3488,7 @@ Interpreter::execByteCode() {
 					if(mediaplayer) {
 						mediaplayer->wait();
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
                 }
@@ -3815,10 +3496,10 @@ Interpreter::execByteCode() {
 
                 case OP_DBOPEN: {
                     // open database connection
-                    QString file = stack.popstring();
-                    int n = stack.popint();
+                    QString file = stack->popstring();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         closeDatabase(n);
                         QString dbconnection = "DBCONNECTION" + QString::number(n);
@@ -3826,7 +3507,7 @@ Interpreter::execByteCode() {
                         db.setDatabaseName(file);
                         bool ok = db.open();
                         if (!ok) {
-                            errornum = ERROR_DBOPEN;
+                            error->q(ERROR_DBOPEN);
                             closeDatabase(n);
                         }
                     }
@@ -3834,9 +3515,9 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_DBCLOSE: {
-                    int n = stack.popint();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         closeDatabase(n);
                     }
@@ -3845,10 +3526,10 @@ Interpreter::execByteCode() {
 
                 case OP_DBEXECUTE: {
                     // execute a statement on the database
-                    QString stmt = stack.popstring();
-                    int n = stack.popint();
+                    QString stmt = stack->popstring();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         QString dbconnection = "DBCONNECTION" + QString::number(n);
                         QSqlDatabase db = QSqlDatabase::database(dbconnection);
@@ -3856,12 +3537,11 @@ Interpreter::execByteCode() {
                             QSqlQuery *q = new QSqlQuery(db);
                             bool ok = q->exec(stmt);
                             if (!ok) {
-                                errornum = ERROR_DBQUERY;
-                                errormessage = q->lastError().databaseText();
+                                error->q(ERROR_DBQUERY, 0, q->lastError().databaseText());
                             }
                             delete q;
                         } else {
-                            errornum = ERROR_DBNOTOPEN;
+                            error->q(ERROR_DBNOTOPEN);
                         }
                     }
                 }
@@ -3869,14 +3549,14 @@ Interpreter::execByteCode() {
 
                 case OP_DBOPENSET: {
                     // open recordset
-                    QString stmt = stack.popstring();
-                    int set = stack.popint();
-                    int n = stack.popint();
+                    QString stmt = stack->popstring();
+                    int set = stack->popint();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         if (set<0||set>=NUMDBSET) {
-                            errornum = ERROR_DBSETNUMBER;
+                            error->q(ERROR_DBSETNUMBER);
                         } else {
                             QString dbconnection = "DBCONNECTION" + QString::number(n);
                             QSqlDatabase db = QSqlDatabase::database(dbconnection);
@@ -3889,11 +3569,10 @@ Interpreter::execByteCode() {
                                 dbSet[n][set] = new QSqlQuery(db);
                                 bool ok = dbSet[n][set]->exec(stmt);
                                 if (!ok) {
-                                    errornum = ERROR_DBQUERY;
-                                    errormessage = dbSet[n][set]->lastError().databaseText();
+                                    error->q(ERROR_DBQUERY, 0, dbSet[n][set]->lastError().databaseText());
                                 }
                             } else {
-                                errornum = ERROR_DBNOTOPEN;
+                                error->q(ERROR_DBNOTOPEN);
                             }
                         }
                     }
@@ -3901,20 +3580,20 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_DBCLOSESET: {
-                    int set = stack.popint();
-                    int n = stack.popint();
+                    int set = stack->popint();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         if (set<0||set>=NUMDBSET) {
-                            errornum = ERROR_DBSETNUMBER;
+                            error->q(ERROR_DBSETNUMBER);
                         } else {
                             if (dbSet[n][set]) {
                                 dbSet[n][set]->clear();
                                 delete dbSet[n][set];
                                 dbSet[n][set] = NULL;
                             } else {
-                                errornum = ERROR_DBNOTSET;
+                                error->q(ERROR_DBNOTSET);
                             }
                         }
                     }
@@ -3922,19 +3601,19 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_DBROW: {
-                    int set = stack.popint();
-                    int n = stack.popint();
+                    int set = stack->popint();
+                    int n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         if (set<0||set>=NUMDBSET) {
-                            errornum = ERROR_DBSETNUMBER;
+                            error->q(ERROR_DBSETNUMBER);
                         } else {
                             if (dbSet[n][set]) {
                                 // return true if we move to a new row else false
-                                stack.pushint(dbSet[n][set]->next());
+                                stack->pushint(dbSet[n][set]->next());
                             } else {
-                                errornum = ERROR_DBNOTSET;
+                                error->q(ERROR_DBNOTSET);
                             }
                         }
                     }
@@ -3949,45 +3628,45 @@ Interpreter::execByteCode() {
                     int col = -1, set, n;
                     QString colname;
                     bool usename;
-                    if (stack.peekType()==T_STRING) {
+                    if (stack->peekType()==T_STRING) {
 						usename = true;
-                        colname = stack.popstring();
+                        colname = stack->popstring();
                     } else {
 						usename = false;
-                        col = stack.popint();
+                        col = stack->popint();
                     }
-                    set = stack.popint();
-                    n = stack.popint();
+                    set = stack->popint();
+                    n = stack->popint();
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
+                        error->q(ERROR_DBCONNNUMBER);
                     } else {
                         if (set<0||set>=NUMDBSET) {
-                            errornum = ERROR_DBSETNUMBER;
+                            error->q(ERROR_DBSETNUMBER);
                         } else {
                             if (!dbSet[n][set]->isActive()) {
-                                errornum = ERROR_DBNOTSET;
+                                error->q(ERROR_DBNOTSET);
                             } else {
                                 if (!dbSet[n][set]->isValid()) {
-                                    errornum = ERROR_DBNOTSETROW;
+                                    error->q(ERROR_DBNOTSETROW);
                                 } else {
                                     if (usename) {
                                         col = dbSet[n][set]->record().indexOf(colname);
                                     }
                                     if (col < 0 || col >= dbSet[n][set]->record().count()) {
-                                        errornum = ERROR_DBCOLNO;
+                                        error->q(ERROR_DBCOLNO);
                                     } else {
                                         switch(opcode) {
                                             case OP_DBINT:
-                                                stack.pushint(dbSet[n][set]->record().value(col).toInt());
+                                                stack->pushint(dbSet[n][set]->record().value(col).toInt());
                                                 break;
                                             case OP_DBFLOAT:
-                                                stack.pushfloat(dbSet[n][set]->record().value(col).toDouble());
+                                                stack->pushfloat(dbSet[n][set]->record().value(col).toDouble());
                                                 break;
                                             case OP_DBNULL:
-                                                stack.pushint(dbSet[n][set]->record().value(col).isNull());
+                                                stack->pushint(dbSet[n][set]->record().value(col).isNull());
                                                 break;
                                             case OP_DBSTRING:
-                                                stack.pushstring(dbSet[n][set]->record().value(col).toString());
+                                                stack->pushstring(dbSet[n][set]->record().value(col).toString());
                                                 break;
                                         }
                                     }
@@ -3999,22 +3678,22 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_LASTERROR: {
-                    stack.pushint(lasterrornum);
+                    stack->pushint(error->e);
                 }
                 break;
 
                 case OP_LASTERRORLINE: {
-                    stack.pushint(lasterrorline);
+                    stack->pushint(lasterrorline);
                 }
                 break;
 
                 case OP_LASTERROREXTRA: {
-                    stack.pushstring(lasterrormessage);
+                    stack->pushstring(error->extra);
                 }
                 break;
 
                 case OP_LASTERRORMESSAGE: {
-                    stack.pushstring(getErrorMessage(lasterrornum));
+                    stack->pushstring(error->getErrorMessage(symtable));
                 }
                 break;
 
@@ -4032,10 +3711,10 @@ Interpreter::execByteCode() {
                     struct sockaddr_in serv_addr, cli_addr;
                     socklen_t clilen;
 
-                    int port = stack.popint();
-                    int fn = stack.popint();
+                    int port = stack->popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
+                        error->q(ERROR_NETSOCKNUMBER);
                     } else {
                         if (netsockfd[fn] >= 0) {
                             netsockfd[fn] = netSockClose(netsockfd[fn]);
@@ -4044,13 +3723,11 @@ Interpreter::execByteCode() {
                         // SOCK_DGRAM = UDP  SOCK_STREAM = TCP
                         tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
                         if (tempsockfd < 0) {
-                            errornum = ERROR_NETSOCK;
-                            errormessage = strerror(errno);
+                            error->q(ERROR_NETSOCK, 0, strerror(errno));
                         } else {
                             int optval = 1;
                             if (setsockopt(tempsockfd,SOL_SOCKET,SO_REUSEADDR,(char *)&optval,sizeof(int))) {
-                                errornum = ERROR_NETSOCKOPT;
-                                errormessage = strerror(errno);
+                                error->q(ERROR_NETSOCKOPT, 0, strerror(errno));
                                 tempsockfd = netSockClose(tempsockfd);
                             } else {
                                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -4058,16 +3735,14 @@ Interpreter::execByteCode() {
                                 serv_addr.sin_addr.s_addr = INADDR_ANY;
                                 serv_addr.sin_port = htons(port);
                                 if (bind(tempsockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-                                    errornum = ERROR_NETBIND;
-                                    errormessage = strerror(errno);
+                                    error->q(ERROR_NETBIND, 0, strerror(errno));
                                     tempsockfd = netSockClose(tempsockfd);
                                 } else {
                                     listen(tempsockfd,5);
                                     clilen = sizeof(cli_addr);
                                     netsockfd[fn] = accept(tempsockfd, (struct sockaddr *) &cli_addr, &clilen);
                                     if (netsockfd[fn] < 0) {
-                                        errornum = ERROR_NETACCEPT;
-                                        errormessage = strerror(errno);
+                                        error->q(ERROR_NETACCEPT, 0, strerror(errno));
                                     }
                                     tempsockfd = netSockClose(tempsockfd);
                                 }
@@ -4082,12 +3757,12 @@ Interpreter::execByteCode() {
                     struct sockaddr_in serv_addr;
                     struct hostent *server;
 
-                    int port = stack.popint();
-                    QString address = stack.popstring();
-                    int fn = stack.popint();
+                    int port = stack->popint();
+                    QString address = stack->popstring();
+                    int fn = stack->popint();
 
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
+                        error->q(ERROR_NETSOCKNUMBER);
                     } else {
 
                         if (netsockfd[fn] >= 0) {
@@ -4096,14 +3771,12 @@ Interpreter::execByteCode() {
 
                         netsockfd[fn] = socket(AF_INET, SOCK_STREAM, 0);
                         if (netsockfd[fn] < 0) {
-                            errornum = ERROR_NETSOCK;
-                            errormessage = strerror(errno);
+                            error->q(ERROR_NETSOCK, 0, strerror(errno));
                         } else {
 
                             server = gethostbyname(address.toUtf8().data());
                             if (server == NULL) {
-                                errornum = ERROR_NETHOST;
-                                errormessage = strerror(errno);
+                                error->q(ERROR_NETHOST, 0, strerror(errno));
                                 netsockfd[fn] = netSockClose(netsockfd[fn]);
                             } else {
                                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -4111,8 +3784,7 @@ Interpreter::execByteCode() {
                                 memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
                                 serv_addr.sin_port = htons(port);
                                 if (::connect(netsockfd[fn],(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-                                    errornum = ERROR_NETCONN;
-                                    errormessage = strerror(errno);
+                                    error->q(ERROR_NETCONN, 0, strerror(errno));
                                     netsockfd[fn] = netSockClose(netsockfd[fn]);
                                 }
                             }
@@ -4126,23 +3798,22 @@ Interpreter::execByteCode() {
                     int n;
                     char * strarray = (char *) malloc(MAXSIZE);
 
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_NETSOCKNUMBER);
+                        stack->pushint(0);
                     } else {
                         if (netsockfd[fn] < 0) {
-                            errornum = ERROR_NETNONE;
-                            stack.pushint(0);
+                            error->q(ERROR_NETNONE);
+                            stack->pushint(0);
                         } else {
                             memset(strarray, 0, MAXSIZE);
                             n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
                             if (n < 0) {
-                                errornum = ERROR_NETREAD;
-                                errormessage = strerror(errno);
-                                stack.pushint(0);
+                                error->q(ERROR_NETREAD, 0, strerror(errno));
+                                stack->pushint(0);
                             } else {
-                                stack.pushstring(QString::fromUtf8(strarray));
+                                stack->pushstring(QString::fromUtf8(strarray));
                             }
                         }
                     }
@@ -4151,18 +3822,17 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_NETWRITE: {
-                    QString data = stack.popstring();
-                    int fn = stack.popint();
+                    QString data = stack->popstring();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
+                        error->q(ERROR_NETSOCKNUMBER);
                     } else {
                         if (netsockfd[fn]<0) {
-                            errornum = ERROR_NETNONE;
+                            error->q(ERROR_NETNONE);
                         } else {
                             int n = send(netsockfd[fn],data.toUtf8().data(),data.length(),0);
                             if (n < 0) {
-                                errornum = ERROR_NETWRITE;
-                                errormessage = strerror(errno);
+                                error->q(ERROR_NETWRITE, 0, strerror(errno));
                             }
                         }
                     }
@@ -4170,12 +3840,12 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_NETCLOSE: {
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
+                        error->q(ERROR_NETSOCKNUMBER);
                     } else {
                         if (netsockfd[fn]<0) {
-                            errornum = ERROR_NETNONE;
+                            error->q(ERROR_NETNONE);
                         } else {
                             netsockfd[fn] = netSockClose(netsockfd[fn]);
                         }
@@ -4186,19 +3856,19 @@ Interpreter::execByteCode() {
                 case OP_NETDATA: {
                     // push 1 if there is data to read on network connection
                     // wait 1 ms for each poll
-                    int fn = stack.popint();
+                    int fn = stack->popint();
                     if (fn<0||fn>=NUMSOCKETS) {
-                        errornum = ERROR_NETSOCKNUMBER;
+                        error->q(ERROR_NETSOCKNUMBER);
                     } else {
 #ifdef WIN32
                         unsigned long n;
                         if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
-                            stack.pushint(0);
+                            stack->pushint(0);
                         } else {
                             if (n==0L) {
-                                stack.pushint(0);
+                                stack->pushint(0);
                             } else {
-                                stack.pushint(1);
+                                stack->pushint(1);
                             }
                         }
 #else
@@ -4206,12 +3876,12 @@ Interpreter::execByteCode() {
                         p[0].fd = netsockfd[fn];
                         p[0].events = POLLIN | POLLPRI;
                         if(poll(p, 1, 1)<0) {
-                            stack.pushint(0);
+                            stack->pushint(0);
                         } else {
                             if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
-                                stack.pushint(1);
+                                stack->pushint(1);
                             } else {
-                                stack.pushint(0);
+                                stack->pushint(0);
                             }
                         }
 #endif
@@ -4229,17 +3899,17 @@ Interpreter::execByteCode() {
                     gethostname( szHostname, sizeof( szHostname ));
                     pHostEnt = gethostbyname( szHostname );
                     memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
-                    stack.pushstring(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
+                    stack->pushstring(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
 #else
 #ifdef ANDROID
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
                     bool good = false;
                     struct ifaddrs *myaddrs, *ifa;
                     void *in_addr;
                     char buf[64];
                     if(getifaddrs(&myaddrs) != 0) {
-                        errornum = ERROR_NETNONE;
+                        error->q(ERROR_NETNONE);
                     } else {
                         for (ifa = myaddrs; ifa != NULL && !good; ifa = ifa->ifa_next) {
                             if (ifa->ifa_addr == NULL) continue;
@@ -4248,7 +3918,7 @@ Interpreter::execByteCode() {
                                 struct sockaddr_in *s4 = (struct sockaddr_in *)ifa->ifa_addr;
                                 in_addr = &s4->sin_addr;
                                 if (inet_ntop(ifa->ifa_addr->sa_family, in_addr, buf, sizeof(buf))) {
-                                    stack.pushstring(QString::fromUtf8(buf));
+                                    stack->pushstring(QString::fromUtf8(buf));
                                     good = true;
                                 }
                             }
@@ -4257,7 +3927,7 @@ Interpreter::execByteCode() {
                     }
                     if (!good) {
                         // on error give local loopback
-                        stack.pushstring(QString("127.0.0.1"));
+                        stack->pushstring(QString("127.0.0.1"));
                     }
 #endif
 #endif
@@ -4265,23 +3935,23 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_KILL: {
-                    QString name = stack.popstring();
+                    QString name = stack->popstring();
                     if(!QFile::remove(name)) {
-                        errornum = ERROR_FILEOPEN;
+                        error->q(ERROR_FILEOPEN);
                     }
                 }
                 break;
 
                 case OP_MD5: {
-                    QString stuff = stack.popstring();
-                    stack.pushstring(MD5(stuff.toUtf8().data()).hexdigest());
+                    QString stuff = stack->popstring();
+                    stack->pushstring(MD5(stuff.toUtf8().data()).hexdigest());
                 }
                 break;
 
                 case OP_SETSETTING: {
-                    QString stuff = stack.popstring();
-                    QString key = stack.popstring();
-                    QString app = stack.popstring();
+                    QString stuff = stack->popstring();
+                    QString key = stack->popstring();
+                    QString app = stack->popstring();
                     if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
                         settings.beginGroup(SETTINGSGROUPUSER);
                         settings.beginGroup(app);
@@ -4289,46 +3959,46 @@ Interpreter::execByteCode() {
                         settings.endGroup();
                         settings.endGroup();
                     } else {
-                        errornum = ERROR_PERMISSION;
+                        error->q(ERROR_PERMISSION);
                     }
                 }
                 break;
 
                 case OP_GETSETTING: {
-                    QString key = stack.popstring();
-                    QString app = stack.popstring();
+                    QString key = stack->popstring();
+                    QString app = stack->popstring();
                     if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
                         if(app==QString("SYSTEM")) {
-							stack.pushstring(settings.value(key, "").toString());
+							stack->pushstring(settings.value(key, "").toString());
 						} else {
 							settings.beginGroup(SETTINGSGROUPUSER);
 							settings.beginGroup(app);
-							stack.pushstring(settings.value(key, "").toString());
+							stack->pushstring(settings.value(key, "").toString());
 							settings.endGroup();
 							settings.endGroup();
 						}
 					} else {
-						errornum = ERROR_PERMISSION;
-						stack.pushint(0);
+						error->q(ERROR_PERMISSION);
+						stack->pushint(0);
 					}
 				}
                 break;
 
 
                 case OP_PORTOUT: {
-                    int data = stack.popint();
-                    int port = stack.popint();
+                    int data = stack->popint();
+                    int port = stack->popint();
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
                         (void) data;
                         (void) port;
-                        errornum = ERROR_NOTIMPLEMENTED;
+                        error->q(ERROR_NOTIMPLEMENTED);
 # else
                         if (Out32==NULL) {
                             (void) data;
                             (void) port;
-                            errornum = ERROR_NOTIMPLEMENTED;
+                            error->q(ERROR_NOTIMPLEMENTED);
                         } else {
                             Out32(port, data);
                         }
@@ -4336,71 +4006,71 @@ Interpreter::execByteCode() {
 #else
                         (void) data;
                         (void) port;
-                        errornum = ERROR_NOTIMPLEMENTED;
+                        error->q(ERROR_NOTIMPLEMENTED);
 #endif
                     } else {
-                        errornum = ERROR_PERMISSION;
+                        error->q(ERROR_PERMISSION);
                     }
                 }
                 break;
 
                 case OP_PORTIN: {
                     int data=0;
-                    int port = stack.popint();
+                    int port = stack->popint();
                     if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
                         (void) port;
-                        errornum = ERROR_NOTIMPLEMENTED;
+                        error->q(ERROR_NOTIMPLEMENTED);
 # else
                         if (Inp32==NULL) {
                             (void) port;
-                            errornum = ERROR_NOTIMPLEMENTED;
+                            error->q(ERROR_NOTIMPLEMENTED);
                         } else {
                             data = Inp32(port);
                         }
 #endif
 #else
                         (void) port;
-                        errornum = ERROR_NOTIMPLEMENTED;
+                        error->q(ERROR_NOTIMPLEMENTED);
 #endif
                     } else {
-                        errornum = ERROR_PERMISSION;
+                        error->q(ERROR_PERMISSION);
                     }
-                    stack.pushint(data);
+                    stack->pushint(data);
                 }
                 break;
 
                 case OP_BINARYOR: {
-                    unsigned long a = stack.popint();
-                    unsigned long b = stack.popint();
-                    stack.pushfloat(a|b);
+                    unsigned long a = stack->popint();
+                    unsigned long b = stack->popint();
+                    stack->pushfloat(a|b);
                 }
                 break;
 
                 case OP_BINARYAND: {
-                    unsigned long a = stack.popint();
-                    unsigned long b = stack.popint();
-                    stack.pushfloat(a&b);
+                    unsigned long a = stack->popint();
+                    unsigned long b = stack->popint();
+                    stack->pushfloat(a&b);
                 }
                 break;
 
                 case OP_BINARYNOT: {
-                    unsigned long a = stack.popint();
-                    stack.pushfloat(~a);
+                    unsigned long a = stack->popint();
+                    stack->pushfloat(~a);
                 }
                 break;
 
                 case OP_IMGSAVE: {
                     // Image Save - Save image
-                    QString type = stack.popstring();
-                    QString file = stack.popstring();
+                    QString type = stack->popstring();
+                    QString file = stack->popstring();
                     QStringList validtypes;
                     validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
                     if (validtypes.indexOf(type)!=-1) {
                         graphwin->image->save(file, type.toUtf8().data());
                     } else {
-                        errornum = ERROR_IMAGESAVETYPE;
+                        error->q(ERROR_IMAGESAVETYPE);
                     }
                 }
                 break;
@@ -4408,7 +4078,7 @@ Interpreter::execByteCode() {
                 case OP_DIR: {
                     // Get next directory entry - id path send start a new folder else get next file name
                     // return "" if we have no names on list - skippimg . and ..
-                    QString folder = stack.popstring();
+                    QString folder = stack->popstring();
                     if (folder.length()>0) {
                         if(directorypointer != NULL) {
                             closedir(directorypointer);
@@ -4421,15 +4091,15 @@ Interpreter::execByteCode() {
                         dirp = readdir(directorypointer);
                         while(dirp != NULL && dirp->d_name[0]=='.') dirp = readdir(directorypointer);
                         if (dirp) {
-                            stack.pushstring(QString::fromUtf8(dirp->d_name));
+                            stack->pushstring(QString::fromUtf8(dirp->d_name));
                         } else {
-                            stack.pushstring(QString(""));
+                            stack->pushstring(QString(""));
                             closedir(directorypointer);
                             directorypointer = NULL;
                         }
                     } else {
-                        errornum = ERROR_FOLDER;
-                        stack.pushint(0);
+                        error->q(ERROR_FOLDER);
+                        stack->pushint(0);
                     }
                 }
                 break;
@@ -4438,25 +4108,25 @@ Interpreter::execByteCode() {
                     // unicode safe replace function
 
                    // 0 sensitive (default) - opposite of QT
-                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 
-                    QString qto = stack.popstring();
-                    QString qfrom = stack.popstring();
-                    QString qhaystack = stack.popstring();
+                    QString qto = stack->popstring();
+                    QString qfrom = stack->popstring();
+                    QString qhaystack = stack->popstring();
 
-                    stack.pushstring(qhaystack.replace(qfrom, qto, casesens));
+                    stack->pushstring(qhaystack.replace(qfrom, qto, casesens));
                 }
                 break;
 
                 case OP_REPLACEX: {
                     // regex replace function
 
-                    QString qto = stack.popstring();
-                    QRegExp expr = QRegExp(stack.popstring());
+                    QString qto = stack->popstring();
+                    QRegExp expr = QRegExp(stack->popstring());
 					expr.setMinimal(regexMinimal);
-					QString qhaystack = stack.popstring();
+					QString qhaystack = stack->popstring();
 
-					stack.pushstring(qhaystack.replace(expr, qto));
+					stack->pushstring(qhaystack.replace(expr, qto));
                 }
                 break;
 
@@ -4464,23 +4134,23 @@ Interpreter::execByteCode() {
                     // unicode safe count function
 
                     // 0 sensitive (default) - opposite of QT
-                    Qt::CaseSensitivity casesens = (stack.popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                    Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
                     
-                    QString qneedle = stack.popstring();
-                    QString qhaystack = stack.popstring();
+                    QString qneedle = stack->popstring();
+                    QString qhaystack = stack->popstring();
 
-					stack.pushint((int) (qhaystack.count(qneedle, casesens)));
+					stack->pushint((int) (qhaystack.count(qneedle, casesens)));
                 }
                 break;
 
                 case OP_COUNTX: {
                     // regex count function
 
-                    QRegExp expr = QRegExp(stack.popstring());
+                    QRegExp expr = QRegExp(stack->popstring());
 					expr.setMinimal(regexMinimal);
-                    QString qhaystack = stack.popstring();
+                    QString qhaystack = stack->popstring();
 
-                    stack.pushint((int) (qhaystack.count(expr)));
+                    stack->pushint((int) (qhaystack.count(expr)));
                 }
                 break;
 
@@ -4499,20 +4169,20 @@ Interpreter::execByteCode() {
 #ifdef ANDROID
                     os = 3;
 #endif
-                    stack.pushint(os);
+                    stack->pushint(os);
                 }
                 break;
 
                 case OP_MSEC: {
                     // Return number of milliseconds the BASIC256 program has been running
-                    stack.pushint((int) (runtimer.elapsed()));
+                    stack->pushint((int) (runtimer.elapsed()));
                 }
                 break;
 
                 case OP_EDITVISIBLE:
                 case OP_GRAPHVISIBLE:
                 case OP_OUTPUTVISIBLE: {
-                    int show = stack.popint();
+                    int show = stack->popint();
                     if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
                     if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
                     if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
@@ -4521,7 +4191,7 @@ Interpreter::execByteCode() {
 
                 case OP_REGEXMINIMAL: {
 					// set the regular expression minimal flag (true = not greedy)
-                    regexMinimal = stack.popint()!=0;
+                    regexMinimal = stack->popint()!=0;
                 }
                 break;
 
@@ -4543,7 +4213,7 @@ Interpreter::execByteCode() {
                     }
 
                     if (opcode==OP_TEXTWIDTH) {
-                        QString txt = stack.popstring();
+                        QString txt = stack->popstring();
                         v = QFontMetrics(ian->font()).width(txt);
                     }
                     if (opcode==OP_TEXTHEIGHT) v = QFontMetrics(ian->font()).height();
@@ -4552,7 +4222,7 @@ Interpreter::execByteCode() {
                         ian->end();
                         delete ian;
                     }
-                    stack.pushint((int) (v));
+                    stack->pushint((int) (v));
                 }
                 break;
 
@@ -4563,10 +4233,10 @@ Interpreter::execByteCode() {
                         if (!filehandle[t]) f = t;
                     }
                     if (f==-1) {
-                        errornum = ERROR_FREEFILE;
-                        stack.pushint(0);
+                        error->q(ERROR_FREEFILE);
+                        stack->pushint(0);
                     } else {
-                        stack.pushint(f);
+                        stack->pushint(f);
                     }
                 }
                 break;
@@ -4578,10 +4248,10 @@ Interpreter::execByteCode() {
                         if (netsockfd[t]==-1) f = t;
                     }
                     if (f==-1) {
-                        errornum = ERROR_FREENET;
-                        stack.pushint(0);
+                        error->q(ERROR_FREENET);
+                        stack->pushint(0);
                     } else {
-                        stack.pushint(f);
+                        stack->pushint(f);
                     }
                 }
                 break;
@@ -4595,30 +4265,30 @@ Interpreter::execByteCode() {
                         if (!db.isValid()) f = t;
                     }
                     if (f==-1) {
-                        errornum = ERROR_FREEDB;
-                        stack.pushint(0);
+                        error->q(ERROR_FREEDB);
+                        stack->pushint(0);
                     } else {
-                        stack.pushint(f);
+                        stack->pushint(f);
                     }
                 }
                 break;
 
                 case OP_FREEDBSET: {
                     // return the next free set for a database - throw error if none free
-                    int n = stack.popint();
+                    int n = stack->popint();
                     int f=-1;
                     if (n<0||n>=NUMDBCONN) {
-                        errornum = ERROR_DBCONNNUMBER;
-                        stack.pushint(0);
+                        error->q(ERROR_DBCONNNUMBER);
+                        stack->pushint(0);
                     } else {
                         for (int t=0; (t<NUMDBSET)&&(f==-1); t++) {
                             if (!dbSet[n][t]) f = t;
                         }
                         if (f==-1) {
-                            errornum = ERROR_FREEDBSET;
-                            stack.pushint(0);
+                            error->q(ERROR_FREEDBSET);
+                            stack->pushint(0);
                         } else {
-                            stack.pushint(f);
+                            stack->pushint(f);
                         }
                     }
                 }
@@ -4627,12 +4297,12 @@ Interpreter::execByteCode() {
                 case OP_ARC:
                 case OP_CHORD:
                 case OP_PIE: {
-                    double angwval = stack.popfloat();
-                    double startval = stack.popfloat();
-                    int hval = stack.popint();
-                    int wval = stack.popint();
-                    int yval = stack.popint();
-                    int xval = stack.popint();
+                    double angwval = stack->popfloat();
+                    double startval = stack->popfloat();
+                    int hval = stack->popint();
+                    int wval = stack->popint();
+                    int yval = stack->popint();
+                    int xval = stack->popint();
 
                     // degrees * 16
                     int s = (int) (startval * 360 * 16 / 2 / M_PI);
@@ -4671,9 +4341,9 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PENWIDTH: {
-                    double a = stack.popfloat();
+                    double a = stack->popfloat();
                     if (a<0) {
-                        errornum = ERROR_PENWIDTH;
+                        error->q(ERROR_PENWIDTH);
                     } else {
                         drawingpen.setWidthF(a);
                     }
@@ -4681,17 +4351,17 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_GETPENWIDTH: {
-                    stack.pushfloat((double) (drawingpen.widthF()));
+                    stack->pushfloat((double) (drawingpen.widthF()));
                 }
                 break;
 
                 case OP_GETBRUSHCOLOR: {
-                    stack.pushfloat((unsigned int) drawingbrush.color().rgba());
+                    stack->pushfloat((unsigned int) drawingbrush.color().rgba());
                 }
                 break;
 
                 case OP_ALERT: {
-                    QString temp = stack.popstring();
+                    QString temp = stack->popstring();
                     mymutex->lock();
                     emit(dialogAlert(temp));
                     waitCond->wait(mymutex);
@@ -4701,25 +4371,25 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_CONFIRM: {
-                    int dflt = stack.popint();
-                    QString temp = stack.popstring();
+                    int dflt = stack->popint();
+                    QString temp = stack->popstring();
                     mymutex->lock();
                     emit(dialogConfirm(temp,dflt));
                     waitCond->wait(mymutex);
                     mymutex->unlock();
-                    stack.pushint(returnInt);
+                    stack->pushint(returnInt);
                     waitForGraphics();
                 }
                 break;
 
                 case OP_PROMPT: {
-                    QString dflt = stack.popstring();
-                    QString msg = stack.popstring();
+                    QString dflt = stack->popstring();
+                    QString msg = stack->popstring();
                     mymutex->lock();
                     emit(dialogPrompt(msg,dflt));
                     waitCond->wait(mymutex);
                     mymutex->unlock();
-                    stack.pushstring(returnString);
+                    stack->pushstring(returnString);
                     waitForGraphics();
                 }
                 break;
@@ -4727,33 +4397,33 @@ Interpreter::execByteCode() {
                 case OP_FROMRADIX: {
                     bool ok;
                     unsigned long dec;
-                    int base = stack.popint();
-                    QString n = stack.popstring();
+                    int base = stack->popint();
+                    QString n = stack->popstring();
                     if (base>=2 && base <=36) {
                         dec = n.toULong(&ok, base);
                         if (ok) {
-                            stack.pushfloat(dec);
+                            stack->pushfloat(dec);
                         } else {
-                            errornum = ERROR_RADIXSTRING;
-                            stack.pushfloat(0);
+                            error->q(ERROR_RADIXSTRING);
+                            stack->pushfloat(0);
                         }
                     } else {
-                        errornum = ERROR_RADIX;
-                        stack.pushfloat(0);
+                        error->q(ERROR_RADIX);
+                        stack->pushfloat(0);
                     }
                 }
                 break;
 
                 case OP_TORADIX: {
-                    int base = stack.popint();
-                    unsigned long n = stack.popfloat();
+                    int base = stack->popint();
+                    unsigned long n = stack->popfloat();
                     if (base>=2 && base <=36) {
                         QString out;
                         out.setNum(n, base);
-                        stack.pushstring(out);
+                        stack->pushstring(out);
                     } else {
-                        errornum = ERROR_RADIX;
-                        stack.pushfloat(0);
+                        error->q(ERROR_RADIX);
+                        stack->pushfloat(0);
                     }
                 }
                 break;
@@ -4765,14 +4435,14 @@ Interpreter::execByteCode() {
                         delete printdocumentpainter;
                         delete printdocument;
                     } else {
-                        errornum = ERROR_PRINTERNOTON;
+                        error->q(ERROR_PRINTERNOTON);
                     }
                 }
                 break;
 
                 case OP_PRINTERON: {
                     if (printing) {
-                        errornum = ERROR_PRINTERNOTOFF;
+                        error->q(ERROR_PRINTERNOTOFF);
                     } else {
                         int resolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
                         int printer = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
@@ -4794,12 +4464,12 @@ Interpreter::execByteCode() {
                             printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
                             printdocumentpainter = new QPainter();
                             if (!printdocumentpainter->begin(printdocument)) {
-                                errornum = ERROR_PRINTEROPEN;
+                                error->q(ERROR_PRINTEROPEN);
                             } else {
                                 printing = true;
                             }
                         } else {
-                            errornum = 99999;
+                            error->q(99999);
                         }
                     }
                 }
@@ -4809,7 +4479,7 @@ Interpreter::execByteCode() {
                     if (printing) {
                         printdocument->newPage();
                     } else {
-                        errornum = ERROR_PRINTERNOTON;
+                        error->q(ERROR_PRINTERNOTON);
                     }
                 }
                 break;
@@ -4822,7 +4492,7 @@ Interpreter::execByteCode() {
                         printdocument->abort();
                         delete printdocument;
                     } else {
-                        errornum = ERROR_PRINTERNOTON;
+                        error->q(ERROR_PRINTERNOTON);
                     }
                 }
                 break;
@@ -4831,19 +4501,19 @@ Interpreter::execByteCode() {
                     // get info about BASIC256 runtime and return as a string
                     // put totally undocumented stuff HERE
                     // NOT FOR HUMANS TO USE
-                    int what = stack.popint();
+                    int what = stack->popint();
                     switch (what) {
                         case 1:
                             // stack height and content
                             mymutex->lock();
-                            emit(outputReady(stack.debug()));
+                            emit(outputReady(stack->debug()));
                             waitCond->wait(mymutex);
                             mymutex->unlock();
-                            stack.pushint(stack.height());
+                            stack->pushint(stack->height());
                             break;
                         case 2:
                             // type of top stack element
-                            stack.pushint(stack.peekType());
+                            stack->pushint(stack->peekType());
                             break;
                         case 3:
                             // number of symbols - display them to output area
@@ -4854,7 +4524,7 @@ Interpreter::execByteCode() {
 									waitCond->wait(mymutex);
 									mymutex->unlock();
 								}
-								stack.pushint(numsyms);
+								stack->pushint(numsyms);
 							}
 							break;
                         case 4:
@@ -4894,21 +4564,21 @@ Interpreter::execByteCode() {
 									mymutex->unlock();
 								}
 							}
-							stack.pushint(0);
+							stack->pushint(0);
 							break;
                         case 5:
                             // dump the variables
 							{
 								mymutex->lock();
-								emit(outputReady(variables.debug()));
+								emit(outputReady(variables->debug()));
 								waitCond->wait(mymutex);
 								mymutex->unlock();
 							}
-							stack.pushint(0);
+							stack->pushint(0);
 							break;
 
                         default:
-                            stack.pushstring("");
+                            stack->pushstring("");
                     }
                 }
                 break;
@@ -4916,33 +4586,33 @@ Interpreter::execByteCode() {
                 case OP_STACKSWAP: {
                     // swap the top of the stack
                     // 0, 1, 2, 3...  becomes 1, 0, 2, 3...
-                    stack.swap();
+                    stack->swap();
                 }
                 break;
 
                 case OP_STACKSWAP2: {
                     // swap the top two pairs of the stack
                     // 0, 1, 2, 3...  becomes 2,3, 0,1...
-                    stack.swap2();
+                    stack->swap2();
                 }
                 break;
 
                 case OP_STACKDUP: {
                     // duplicate top stack entry
-                    stack.dup();
+                    stack->dup();
                 }
                 break;
 
                 case OP_STACKDUP2: {
                     // duplicate top 2 stack entries
-                    stack.dup2();
+                    stack->dup2();
                 }
                 break;
 
                 case OP_STACKTOPTO2: {
                     // move the top of the stack under the next two
                     // 0, 1, 2, 3...  becomes 1, 2, 0, 3...
-                    stack.topto2();
+                    stack->topto2();
                 }
                 break;
 
@@ -4950,43 +4620,43 @@ Interpreter::execByteCode() {
                     // Throw error if stack does not have enough values
                     // used to check if functions and subroutines have the proper number
                     // of datas on the stack to fill the parameters
-                    int a = stack.popint();
-                    if (stack.height()<a) errornum = ERROR_ARGUMENTCOUNT;
-                    //printf("ac args=%i stack=%i\n",a,stack.height());
+                    int a = stack->popint();
+                    if (stack->height()<a) error->q(ERROR_ARGUMENTCOUNT);
+                    //printf("ac args=%i stack=%i\n",a,stack->height());
                 }
                 break;
 
                 case OP_THROWERROR: {
                     // Throw a user defined error number
-                    int fn = stack.popint();
-                    errornum = fn;
+                    int fn = stack->popint();
+                    error->q(fn);
                 }
                 break;
 
                 case OP_WAVLENGTH: {
 					double d = 0.0;
 #ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
 					if (mediaplayer) {
 						if ((d = mediaplayer->length())==0)
-							errornum = WARNING_WAVNODURATION;
+							error->q(WARNING_WAVNODURATION);
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
-					stack.pushfloat(d);
+					stack->pushfloat(d);
                 }
                 break;
 
                 case OP_WAVPAUSE: {
 #ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
 					if (mediaplayer) {
 						mediaplayer->pause();
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
                 }
@@ -4995,29 +4665,29 @@ Interpreter::execByteCode() {
                 case OP_WAVPOS: {
 					double p = 0.0;
 #ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
 					if (mediaplayer) {
 						p = mediaplayer->position();
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
-					stack.pushfloat(p);
+					stack->pushfloat(p);
                 }
                 break;
 
                 case OP_WAVSEEK: {
 #ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
-					double pos = stack.popfloat();
+					double pos = stack->popfloat();
 					if (mediaplayer) {
 						if (!mediaplayer->seek(pos)) {
-							errornum = WARNING_WAVNOTSEEKABLE;
+							error->q(WARNING_WAVNOTSEEKABLE);
 						}
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
                 }
@@ -5026,21 +4696,22 @@ Interpreter::execByteCode() {
                 case OP_WAVSTATE: {
 					int s = 0;
 #ifdef USEQSOUND
-                    errornum = ERROR_NOTIMPLEMENTED;
+                    error->q(ERROR_NOTIMPLEMENTED);
 #else
 					if (mediaplayer) {
 						s = mediaplayer->state();
 					} else {
-						errornum = ERROR_WAVNOTOPEN;
+						error->q(ERROR_WAVNOTOPEN);
 					}
 #endif
-					stack.pushint(s);
+					stack->pushint(s);
 				}
                 break;
 
-                case OP_TYPEOF: {
-					DataElement *e = stack.popelement();
-					stack.pushint(e->type);
+                 case OP_TYPEOF: {
+					// return type of expression (top of the stack)
+					DataElement *e = stack->popelement();
+					stack->pushint(e->type);
 					delete(e);
 				}
                 break;

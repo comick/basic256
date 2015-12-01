@@ -97,7 +97,7 @@ unsigned int args[100];
 unsigned int argstype[100];
 int numargs = 0;
 
-#define ARGSTYPEINT 0
+#define ARGSTYPEVALUE 0
 #define ARGSTYPEVARREF 1
 
 // compiler workings - store in array so that interperter can display all of them
@@ -440,7 +440,7 @@ label:			B256LABEL {
 
 functionvariable:
 			B256VARIABLE {
-				args[numargs] = $1; argstype[numargs] = ARGSTYPEINT; numargs++;
+				args[numargs] = $1; argstype[numargs] = ARGSTYPEVALUE; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
 			}
 			| B256REF '(' B256VARIABLE ')' {
@@ -2102,7 +2102,7 @@ functionstmt:
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						if (argstype[t]==ARGSTYPEINT) addIntOp(OP_ASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
 						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
 					}
 				}
@@ -2140,7 +2140,7 @@ subroutinestmt:
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						if (argstype[t]==ARGSTYPEINT) addIntOp(OP_ASSIGN, args[t]);
+						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
 						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
 					}
 				}

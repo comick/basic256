@@ -12,7 +12,7 @@
 
 #include <QString>
 
-#include "ErrorCodes.h"
+#include "Error.h"
 #include "Types.h"
 
 #define VARIABLE_MAXARRAYELEMENTS 1048576
@@ -37,7 +37,7 @@ class Variable : public DataElement
 class Variables
 {
 	public:
-		Variables();
+		Variables(Error *);
 		~Variables();
 		//
 		QString debug();
@@ -47,13 +47,11 @@ class Variables
 		int getrecurse();
 		//
 		int type(int);
-		int error();
-		int errorvarnum();
 		//
 		Variable* get(int);
 		void set(int, b_type, double, QString);
  		//
-		void arraydim(b_type, int, int, int, bool);
+		void arraydim(int, int, int, bool);
 		DataElement* arrayget(int, int, int);
 		void arrayset(int, int, int, b_type, double, QString);
 		//
@@ -65,8 +63,7 @@ class Variables
 
 
 	private:
-		int lasterror;
-		int lasterrorvar;
+		Error *error;
 		int recurselevel;
 		std::map<int, std::map<int,Variable*> > varmap;
 		std::map<int, bool> globals;
