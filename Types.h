@@ -30,7 +30,9 @@ class DataElement
 
 		DataElement();
 		DataElement(DataElement *);
-		DataElement(b_type , double , QString);
+		DataElement(QString);
+		DataElement(double);
+		DataElement(int);
 		
 		QString debug();
 		

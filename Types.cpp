@@ -4,21 +4,33 @@
 #include <string>
 
 DataElement::DataElement() {
-		DataElement(T_UNUSED, 0, QString());
+	// create an empty dataelement
+	type = T_UNUSED;
+    floatval = 0;
+    stringval = "";
 }
 
 DataElement::DataElement(DataElement *source) {
-	// create a new DataElement from parts
+	// create a new DataElement from as a copy of another
 	type = source->type;
     floatval = source->floatval;
     stringval = source->stringval;
 }
 
-DataElement::DataElement(b_type typein, double floatvalin, QString stringvalin) {
-	// copy a DataElement to another
-	type = typein;
-    floatval = floatvalin;
-    stringval = stringvalin;
+DataElement::DataElement(QString s) {
+	type = T_STRING;
+	floatval = 0;
+	stringval = s;
+}
+
+DataElement::DataElement(int i) {
+	type = T_FLOAT;
+	floatval = i;
+}
+
+DataElement::DataElement(double d) {
+	type = T_FLOAT;
+	floatval = d;
 }
 
 QString DataElement::debug() {

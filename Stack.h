@@ -29,10 +29,10 @@ class Stack
   
   Error *error;
   Convert *convert;
-  void pushelement(b_type, double, QString);
-  void pushelement(DataElement*);
+  void pushduplicate(DataElement*);
   void pushstring(QString);
   void pushint(int);
+  void pushvarref(int);
   void pushfloat(double);
   void swap();
   void swap2();

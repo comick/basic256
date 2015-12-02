@@ -43,29 +43,33 @@ int Stack::height() {
     return stacklist.size();
 }
 
-void Stack::pushelement(b_type type, double floatval, QString stringval) {
-	// create a new data element and push to stack
-    DataElement *ele = new DataElement(type, floatval, stringval);
-    stacklist.push_front(ele);
-}
-
-void Stack::pushelement(DataElement *source) {
-	// create a new data element and push to stack
+void Stack::pushduplicate(DataElement *source) {
+	// push to stack a duplicate
     DataElement *ele = new DataElement(source);
     stacklist.push_front(ele);
 }
 
 
 void Stack::pushstring(QString string) {
-    pushelement(T_STRING, 0, string);
+    DataElement *ele = new DataElement(string);
+    stacklist.push_front(ele);
 }
 
 void Stack::pushint(int i) {
-    pushelement(T_FLOAT, i, QString());
+    DataElement *ele = new DataElement(i);
+    stacklist.push_front(ele);
+}
+
+void Stack::pushvarref(int i) {
+    DataElement *ele = new DataElement();
+    ele->type = T_VARREF;
+    ele->floatval = i;
+    stacklist.push_front(ele);
 }
 
 void Stack::pushfloat(double d) {
-    pushelement(T_FLOAT, d, QString());
+    DataElement *ele = new DataElement(d);
+    stacklist.push_front(ele);
 }
 
 int Stack::peekType() {

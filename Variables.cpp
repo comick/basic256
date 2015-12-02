@@ -214,20 +214,20 @@ DataElement* Variables::arrayget(int varnum, int x, int y) {
 				if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 					d = v->arr->datamap[i];
 				} else {
-					d = new DataElement(T_UNUSED, 0, QString());
+					d = new DataElement();
 					v->arr->datamap[i] = d;
 				}
            } else {
                 error->q(ERROR_ARRAYINDEX, varnum);
-				d = new DataElement(T_UNUSED, 0, QString());
+				d = new DataElement();
             }
         } else {
             error->q(ERROR_NOTARRAY, varnum);
-			d = new DataElement(T_UNUSED, 0, QString());
+			d = new DataElement();
         }
     } else {
         error->q(ERROR_NOSUCHVARIABLE, varnum);
-		d = new DataElement(T_UNUSED, 0, QString());
+		d = new DataElement();
     }
 	return(d);
  }

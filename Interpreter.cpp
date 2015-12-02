@@ -1180,7 +1180,7 @@ Interpreter::execByteCode() {
 					int xindex = stack->popint();
 					DataElement *v = variables->arrayget(i, xindex, yindex);
 					if (v) {
-						stack->pushelement(v);
+						stack->pushduplicate(v);
 					}
 				}
 				break;
@@ -1188,13 +1188,13 @@ Interpreter::execByteCode() {
                 case OP_PUSHVAR: {
 					Variable *v = variables->get(i);
 					if (v) {
-						stack->pushelement(v);
+						stack->pushduplicate(v);
 					}
                 }
                 break;
 
                 case OP_PUSHVARREF: {
-					stack->pushelement(T_VARREF, i, QString());
+					stack->pushvarref(i);
 				}
 				break;
 
@@ -1236,7 +1236,7 @@ Interpreter::execByteCode() {
 						for (int j = 0; j < n; j++) {
 							DataElement *av = variables->arrayget(i, j, 0);
 							if (!error->pending()) {
-								stack->pushelement(av);
+								stack->pushduplicate(av);
 							} else {
 								stack->pushint(0);
 							}
