@@ -119,9 +119,6 @@ Interpreter::Interpreter() {
 	error = new Error();
 	// create the convert and comparer object
 	convert = new Convert(error);
-	SETTINGS;
-	convert->settypeconverror(settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt());
-	convert->setdecimaldigits(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
 	// now build tghe new stack object
 	stack = new Stack(error, convert);
 	// now create the variable storage
@@ -1007,10 +1004,10 @@ Interpreter::execByteCode() {
                     temp->variable = i;
                     temp->recurselevel = variables->getrecurse();
 
-                    variables->set(i, T_FLOAT, startnum, NULL);
+                    variables->setdata(i, new DataElement(startnum));
 
                     if(debugMode != 0) {
-                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->get(i)), -1, -1));
+                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
                     }
 
                     temp->endNum = endnum;
@@ -1018,9 +1015,9 @@ Interpreter::execByteCode() {
                     temp->returnAddr = op;
                     forstack = temp;
                     
-                    if (temp->step > 0 && convert->getFloat(variables->get(i)) > temp->endNum) {
+                    if (temp->step > 0 && convert->getFloat(variables->getdata(i)) > temp->endNum) {
                         error->q(ERROR_FOR1);
-                    } else if (temp->step < 0 && convert->getFloat(variables->get(i)) < temp->endNum) {
+                    } else if (temp->step < 0 && convert->getFloat(variables->getdata(i)) < temp->endNum) {
                         error->q(ERROR_FOR2);
                     }
                 }
@@ -1037,12 +1034,12 @@ Interpreter::execByteCode() {
                         error->q(ERROR_NEXTNOFOR);
                     } else {
 
-                        double val = convert->getFloat(variables->get(i));
+                        double val = convert->getFloat(variables->getdata(i));
                         val += temp->step;
-                        variables->set(i, T_FLOAT, val, NULL);
+                        variables->setdata(i, new DataElement(val));
 
                         if(debugMode != 0) {
-                            emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->get(i)), -1, -1));
+                            emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
                         }
 
                         if (temp->step > 0 && convert->compareFloats(val, temp->endNum)!=1) {
@@ -1116,10 +1113,10 @@ Interpreter::execByteCode() {
 
 						for(int x=0; x<list.size(); x++) {
 							// fill the string array
-							variables->arrayset(i, x, 0, T_STRING, 0, list.at(x));
+							variables->arraysetdata(i, x, 0, new DataElement(list.at(x)));
 							if (!error->pending()) {
 								if(debugMode != 0) {
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arrayget(i, x, 0)), x, 0));
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arraygetdata(i, x, 0)), x, 0));
 								}
 							}
 						}
@@ -1130,14 +1127,19 @@ Interpreter::execByteCode() {
 				case OP_IMPLODE: {
 					QString qdelim = stack->popstring();
 					QString stuff = "";
-					if (variables->get(i)->type == T_ARRAY) {
-						int kount = variables->arraysize(i);
-						for(int n=0; n<kount; n++) {
-							if (n>0) stuff.append(qdelim);
-							stuff.append(convert->getString(variables->arrayget(i, n, 0)));
+					DataElement *e = variables->getdata(i);
+					if (e) {
+						if (e->type == T_ARRAY) {
+							int kount = variables->arraysize(i);
+							for(int n=0; n<kount; n++) {
+								if (n>0) stuff.append(qdelim);
+								stuff.append(convert->getString(variables->arraygetdata(i, n, 0)));
+							}
+						} else {
+							error->q(ERROR_NOTARRAY, i);
 						}
 					} else {
-						error->q(ERROR_NOTARRAY, i);
+						error->q(ERROR_VARNOTASSIGNED, i);
 					}
 					stack->pushstring(stuff);
 				}
@@ -1160,15 +1162,15 @@ Interpreter::execByteCode() {
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
 					} else {
-						variables->arrayset(i, xindex, yindex, e->type, e->floatval, e->stringval);
+						variables->arraysetdata(i, xindex, yindex, e);
 						if (!error->pending()) {
 							if(debugMode != 0) {
-								DataElement *v = variables->arrayget(i, xindex, yindex);
+								DataElement *v = variables->arraygetdata(i, xindex, yindex);
 								emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(v), xindex, yindex));
 							}
 						}
 					}
-					delete(e);
+					// dont delete to an assign of variable
                 }
                 break;
 
@@ -1178,18 +1180,14 @@ Interpreter::execByteCode() {
 					// assumes that arrays are always two dimensional (if 1d then y=0)
 					int yindex = stack->popint();
 					int xindex = stack->popint();
-					DataElement *v = variables->arrayget(i, xindex, yindex);
-					if (v) {
-						stack->pushduplicate(v);
-					}
+					DataElement *e = variables->arraygetdata(i, xindex, yindex);
+					stack->pushdataelement(e);
 				}
 				break;
 
                 case OP_PUSHVAR: {
-					Variable *v = variables->get(i);
-					if (v) {
-						stack->pushduplicate(v);
-					}
+					DataElement *e = variables->getdata(i);
+					stack->pushdataelement(e);
                 }
                 break;
 
@@ -1203,13 +1201,12 @@ Interpreter::execByteCode() {
 					if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
 					} else {
-						variables->set(i, e->type, e->floatval, e->stringval);
+						variables->setdata(i, e);
 						if(debugMode != 0) {
-							Variable *v = variables->get(i);
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(v), -1, -1));
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
 						}
 					}
-					delete(e);
+					// remember dont delete stack to assign to a variable
 
                 }
                 break;
@@ -1219,7 +1216,9 @@ Interpreter::execByteCode() {
                     int type = stack->peekType();
                     int value = stack->popint();
                     if (type==T_VARREF) {
-                        variables->set(i, T_VARREF, value, NULL);
+						DataElement *e = new DataElement(value);
+						e->type = T_VARREF;
+                        variables->setdata(i, e);
                     } else {
                         error->q(ERROR_BYREF);
                     }
@@ -1229,23 +1228,12 @@ Interpreter::execByteCode() {
 				case OP_ARRAY2STACK: {
 					// Push all of the elements of an array to the stack and then push the length to the stack
 					// expects one integer - variable number
-
-					Variable *v = variables->get(i);
-					if (v->type == T_ARRAY) {
-						int n = v->arr->size;
-						for (int j = 0; j < n; j++) {
-							DataElement *av = variables->arrayget(i, j, 0);
-							if (!error->pending()) {
-								stack->pushduplicate(av);
-							} else {
-								stack->pushint(0);
-							}
-						}
-						stack->pushint(n);
-					} else {
-						error->q(ERROR_POLYARRAY);
-						stack->pushint(0);
+					int n = variables->arraysize(i);
+					for (int j = 0; j < n; j++) {
+						DataElement *av = variables->arraygetdata(i, j, 0);
+						stack->pushdataelement(av);
 					}
+					stack->pushint(n);
 				}
 				break;
 
@@ -1309,12 +1297,11 @@ Interpreter::execByteCode() {
 							} else if (e->type==T_ARRAY) {
 								error->q(ERROR_ARRAYINDEXMISSING);
 							} else {
-								variables->arrayset(i, index, 0, e->type, e->floatval, e->stringval);
+								variables->arraysetdata(i, index, 0, e);
 								if(debugMode != 0 && !error->pending()) {
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arrayget(i, index, 0)), index, 0));
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arraygetdata(i, index, 0)), index, 0));
 								}
 							}
- 							delete(e);
 						}
 					}
 

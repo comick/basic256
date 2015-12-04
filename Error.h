@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "ErrorCodes.h"
+#include "Settings.h"
 
 #include <QCoreApplication>
 #include <QString>
@@ -39,4 +40,7 @@ class Error
 		QString getErrorMessage(char **);
 		QString getErrorMessage(int, int, char**);
  		
+ 	private:
+ 		int typeconverror;
+ 		int varnotassignederror;
 };

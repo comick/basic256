@@ -16,7 +16,7 @@
 
 #include "Error.h"
 #include "Convert.h"
-#include "Types.h"
+#include "DataElement.h"
 #include "Settings.h"
 
 
@@ -29,7 +29,7 @@ class Stack
   
   Error *error;
   Convert *convert;
-  void pushduplicate(DataElement*);
+  void pushdataelement(DataElement*);
   void pushstring(QString);
   void pushint(int);
   void pushvarref(int);

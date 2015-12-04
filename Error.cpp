@@ -11,7 +11,14 @@ Error::Error() {
 	newe = ERROR_NONE;
 	newvar = -1;
 	newextra = "";
+	// get the error reporting flags from settings
+	// typeconverror	0- report no errors 1 - report problems as warning 	2 - report problems as an error
+	SETTINGS;
+	typeconverror = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
+	varnotassignederror = settings.value(SETTINGSVNA, SETTINGSVNADEFAULT).toInt();
+
 }
+
 
 bool Error::pending() {
 	// there is a pending error that needs to be handled
@@ -42,6 +49,14 @@ void Error::q(int errornumber, int variablenumber) {
 
 void Error::q(int errornumber, int variablenumber, QString extratext) {
 	// queue up an error with all three
+	if (errornumber==ERROR_TYPECONV) {
+		if (typeconverror==SETTINGSERRORNONE) return;
+		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
+	}
+	if (errornumber==ERROR_VARNOTASSIGNED) {
+		if (typeconverror==SETTINGSERRORNONE) return;
+		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
+	}
 	newe = errornumber;
 	newvar = variablenumber;
 	newextra = extratext;

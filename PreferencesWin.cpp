@@ -85,9 +85,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
         typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"));
         usertablayout->addWidget(typeconvlabel,r,1,1,1);
         typeconvcombo = new QComboBox();
-        typeconvcombo->addItem(tr("Ignore"), SETTINGSTYPECONVNONE);
-        typeconvcombo->addItem(tr("Warn"), SETTINGSTYPECONVWARN);
-        typeconvcombo->addItem(tr("Error"), SETTINGSTYPECONVERROR);
+        typeconvcombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
+        typeconvcombo->addItem(tr("Warn"), SETTINGSERRORWARN);
+        typeconvcombo->addItem(tr("Error"), SETTINGSERROR);
         // set setting and select
         settypeconv = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
         int index = typeconvcombo->findData(settypeconv);
@@ -96,6 +96,25 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
         }
         // add to layout
         usertablayout->addWidget(typeconvcombo,r,2,1,2);
+    }
+    //
+    r++;
+    {
+        int setvna;
+        vnalabel = new QLabel(tr("Runtime handling of unassigned variables:"));
+        usertablayout->addWidget(vnalabel,r,1,1,1);
+        vnacombo = new QComboBox();
+        vnacombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
+        vnacombo->addItem(tr("Warn"), SETTINGSERRORWARN);
+        vnacombo->addItem(tr("Error"), SETTINGSERROR);
+        // set setting and select
+        setvna = settings.value(SETTINGSVNA, SETTINGSVNADEFAULT).toInt();
+        int index = vnacombo->findData(setvna);
+        if ( index != -1 ) { // -1 for not found
+            vnacombo->setCurrentIndex(index);
+        }
+        // add to layout
+        usertablayout->addWidget(vnacombo,r,2,1,2);
     }
     //
     r++;
@@ -386,6 +405,9 @@ void PreferencesWin::clickSaveButton() {
         settings.setValue(SETTINGSIDESAVEONRUN, saveonruncheckbox->isChecked());
         if (typeconvcombo->currentIndex()!=-1) {
             settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));
+        }
+        if (vnacombo->currentIndex()!=-1) {
+            settings.setValue(SETTINGSVNA, vnacombo->itemData(vnacombo->currentIndex()));
         }
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());

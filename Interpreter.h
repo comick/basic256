@@ -28,7 +28,7 @@
 #include <cmath>
 #include <dirent.h>
 #include "BasicGraph.h"
-#include "Types.h"
+#include "DataElement.h"
 #include "Error.h"
 #include "Convert.h"
 #include "Stack.h"

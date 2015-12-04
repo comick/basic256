@@ -1,5 +1,5 @@
 #include "Stack.h"
-#include "Types.h"
+#include "DataElement.h"
 #include <string>
 
 // be doubly sure that when a stack element (DataElement) is popped from
@@ -43,9 +43,15 @@ int Stack::height() {
     return stacklist.size();
 }
 
-void Stack::pushduplicate(DataElement *source) {
-	// push to stack a duplicate
-    DataElement *ele = new DataElement(source);
+
+void Stack::pushdataelement(DataElement *source) {
+	// push to stack a duplicate or a  new nothing
+	DataElement *ele;
+	if (source) {
+		ele = new DataElement(source);
+	} else {
+		ele = new DataElement();
+	}
     stacklist.push_front(ele);
 }
 
@@ -61,9 +67,8 @@ void Stack::pushint(int i) {
 }
 
 void Stack::pushvarref(int i) {
-    DataElement *ele = new DataElement();
+    DataElement *ele = new DataElement(i);
     ele->type = T_VARREF;
-    ele->floatval = i;
     stacklist.push_front(ele);
 }
 

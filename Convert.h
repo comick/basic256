@@ -11,7 +11,7 @@
 
 #include "Settings.h"
 #include "Error.h"
-#include "Types.h"
+#include "DataElement.h"
 
 // convert and compare functions
 // to change DataElement into float, int, or QString and to do string and
@@ -24,7 +24,6 @@ class Convert
 
 		Convert(Error *);
 		
-		void settypeconverror(int);
 		void setdecimaldigits(int);
 
 		
@@ -41,7 +40,6 @@ class Convert
 	private:
 		Error *error;
 		int ec(int, int);
-		int typeconverror;	// 0-return no errors on type conversion, 1-warn, 2-error
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
 		
 };
