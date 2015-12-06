@@ -12,12 +12,12 @@
 #include "Error.h"
 #include "BasicTypes.h"
 
-// the Types.h and Types.cpp include an object called dataElement that is
+// the DataElement.h and DataElements.cpp define a class that is
 // used in stack and variable to store  single element of data and the
 // definitions of the various types of values that may be stored
 
-// internally we can use the stringval and floatval but for all
-// external output and such - use the getint/getfloat/getstring methods
+// we will pass a pointer to a DataElement to the functions of the
+// Convert class for all output
 
 class DataElement
 {
@@ -25,12 +25,13 @@ class DataElement
 		int type;	// type from BasicTypes.h
 		QString stringval;
 		double floatval; 
-		int intval;
+		long intval;
 
 		DataElement();
 		DataElement(DataElement *);
 		DataElement(QString);
 		DataElement(double);
+		DataElement(long);
 		DataElement(int);
 		
 		QString debug();

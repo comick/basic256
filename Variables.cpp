@@ -6,7 +6,7 @@
 
 // variables are limited to types (defined in Types.h):
 
-// T_VARREF is a variable number in the previous recursion level
+// T_REF is a variable number in the previous recursion level
 
 // ************************************************************
 // * the Variable object - defines a single value or an array *
@@ -102,7 +102,7 @@ Variable* Variables::get(int varnum) {
 	if (varmap.find(level) != varmap.end() && varmap[level].find(varnum) != varmap[level].end()) {
 		v = varmap[level][varnum];
 		if (v->data) {
-			if (v->data->type==T_VARREF && recurselevel>0) {
+			if (v->data->type==T_REF && recurselevel>0) {
 				recurselevel--;
 				v = get(v->data->intval);
 				recurselevel++;

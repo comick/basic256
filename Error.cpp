@@ -15,7 +15,7 @@ Error::Error() {
 	// typeconverror	0- report no errors 1 - report problems as warning 	2 - report problems as an error
 	SETTINGS;
 	typeconverror = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
-	varnotassignederror = settings.value(SETTINGSVNA, SETTINGSVNADEFAULT).toInt();
+	varnotassignederror = settings.value(SETTINGSVARNOTASSIGNED, SETTINGSVARNOTASSIGNEDDEFAULT).toInt();
 
 }
 

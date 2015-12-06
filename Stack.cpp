@@ -62,13 +62,17 @@ void Stack::pushstring(QString string) {
 }
 
 void Stack::pushint(int i) {
+    pushlong((long) i);
+}
+
+void Stack::pushlong(long i) {
     DataElement *ele = new DataElement(i);
     stacklist.push_front(ele);
 }
 
 void Stack::pushvarref(int i) {
     DataElement *ele = new DataElement(i);
-    ele->type = T_VARREF;
+    ele->type = T_REF;
     stacklist.push_front(ele);
 }
 
@@ -84,7 +88,7 @@ int Stack::peekType() {
 int Stack::peekType(int i) {
 	if (stacklist.empty()) {
 		error->q(ERROR_STACKUNDERFLOW);
-		return T_UNUSED;
+		return T_UNASSIGNED;
 	}
 	if (i>0) {
 		// need to iterate down the stack to peek out value
@@ -94,7 +98,7 @@ int Stack::peekType(int i) {
 			it++;
 			if ( it == stacklist.end()) {
 				error->q(ERROR_STACKUNDERFLOW);
-				return T_UNUSED;
+				return T_UNASSIGNED;
 			}
 		}
 		return (*it)->type;
@@ -172,8 +176,12 @@ void Stack::dup2() {
 
 
 int Stack::popint() {
+	return (int) poplong();
+}
+
+long Stack::poplong() {
 	DataElement *top=popelement();
-	int i = convert->getInt(top);
+	long i = convert->getLong(top);
 	delete(top);
 	return i;
 }

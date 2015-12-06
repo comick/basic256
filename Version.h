@@ -19,7 +19,7 @@
 #ifndef __VERSION
 #define __VERSION
 
-#define VERSION "1.99.99.06 (2015-12-04)"
-#define VERSIONSIGNATURE  1999906
+#define VERSION "1.99.99.07 (2015-12-06)"
+#define VERSIONSIGNATURE  1999907
 
 #endif

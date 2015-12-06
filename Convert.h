@@ -28,6 +28,7 @@ class Convert
 
 		
 		int getInt(DataElement*);
+		long getLong(DataElement*);
 		double getFloat(DataElement*);
 		QString getString(DataElement*);
 		QString getString(DataElement*, int);

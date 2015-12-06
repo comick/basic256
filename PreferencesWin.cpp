@@ -100,21 +100,21 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     //
     r++;
     {
-        int setvna;
-        vnalabel = new QLabel(tr("Runtime handling of unassigned variables:"));
-        usertablayout->addWidget(vnalabel,r,1,1,1);
-        vnacombo = new QComboBox();
-        vnacombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
-        vnacombo->addItem(tr("Warn"), SETTINGSERRORWARN);
-        vnacombo->addItem(tr("Error"), SETTINGSERROR);
+        int setvarnotassigned;
+        varnotassignedlabel = new QLabel(tr("Runtime handling of unassigned variables:"));
+        usertablayout->addWidget(varnotassignedlabel,r,1,1,1);
+        varnotassignedcombo = new QComboBox();
+        varnotassignedcombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
+        varnotassignedcombo->addItem(tr("Warn"), SETTINGSERRORWARN);
+        varnotassignedcombo->addItem(tr("Error"), SETTINGSERROR);
         // set setting and select
-        setvna = settings.value(SETTINGSVNA, SETTINGSVNADEFAULT).toInt();
-        int index = vnacombo->findData(setvna);
+        setvarnotassigned = settings.value(SETTINGSVARNOTASSIGNED, SETTINGSVARNOTASSIGNEDDEFAULT).toInt();
+        int index = varnotassignedcombo->findData(setvarnotassigned);
         if ( index != -1 ) { // -1 for not found
-            vnacombo->setCurrentIndex(index);
+            varnotassignedcombo->setCurrentIndex(index);
         }
         // add to layout
-        usertablayout->addWidget(vnacombo,r,2,1,2);
+        usertablayout->addWidget(varnotassignedcombo,r,2,1,2);
     }
     //
     r++;
@@ -406,8 +406,8 @@ void PreferencesWin::clickSaveButton() {
         if (typeconvcombo->currentIndex()!=-1) {
             settings.setValue(SETTINGSTYPECONV, typeconvcombo->itemData(typeconvcombo->currentIndex()));
         }
-        if (vnacombo->currentIndex()!=-1) {
-            settings.setValue(SETTINGSVNA, vnacombo->itemData(vnacombo->currentIndex()));
+        if (varnotassignedcombo->currentIndex()!=-1) {
+            settings.setValue(SETTINGSVARNOTASSIGNED, varnotassignedcombo->itemData(varnotassignedcombo->currentIndex()));
         }
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());

@@ -32,6 +32,7 @@ class Stack
   void pushdataelement(DataElement*);
   void pushstring(QString);
   void pushint(int);
+  void pushlong(long);
   void pushvarref(int);
   void pushfloat(double);
   void swap();
@@ -43,6 +44,7 @@ class Stack
   int peekType(int);
   DataElement *popelement();
   int popint();
+  long poplong();
   double popfloat();
   QString popstring();
   void clear();

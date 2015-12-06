@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../BasicTypes.h"
 #include "../WordCodes.h"
 #include "../CompileErrors.h"
 #include "../ErrorCodes.h"
@@ -372,6 +373,7 @@ int newWordCode() {
 %token B256ERROR_NOTIMPLEMENTED
 %token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE B256WARNING_VARNOTASSIGNED
 %token B256REGEXMINIMAL B256TYPEOF
+%token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 
 
 %union anytype
@@ -2771,6 +2773,13 @@ expression:
 			| B256TYPEOF '(' expr ')' {
 				addOp(OP_TYPEOF);
 			}
+			| B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
+			| B256TYPE_INT args_none { addIntOp(OP_PUSHINT, T_INT); }
+			| B256TYPE_FLOAT args_none { addIntOp(OP_PUSHINT, T_FLOAT); }
+			| B256TYPE_STRING args_none { addIntOp(OP_PUSHINT, T_STRING); }
+			| B256TYPE_ARRAY args_none { addIntOp(OP_PUSHINT, T_ARRAY); }
+			| B256TYPE_REF args_none { addIntOp(OP_PUSHINT, T_REF); }
+
 			/* ###########################################
 			   ### INSERT NEW Numeric Functions BEFORE ###
 			   ########################################### */

@@ -410,6 +410,12 @@ tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
 toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 try [Tt][Rr][Yy]
+type_unassigned [Tt][Yy][Pp][Ee][_][UU][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]
+type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
+type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
+type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
+type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
 typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
@@ -680,6 +686,12 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {toradix}					{ count(); return B256TORADIX; }
 {tostring}					{ count(); return B256TOSTRING; }
 {typeof}					{ count(); return B256TYPEOF; }
+{type_unassigned}			{ count(); return B256TYPE_UNASSIGNED; }
+{type_int}					{ count(); return B256TYPE_INT; }
+{type_float}				{ count(); return B256TYPE_FLOAT; }
+{type_string}				{ count(); return B256TYPE_STRING; }
+{type_array}				{ count(); return B256TYPE_ARRAY; }
+{type_ref}					{ count(); return B256TYPE_REF; }
 {upper}						{ count(); return B256UPPER; }
 {version}					{ count(); return B256VERSION; }
 {warning_typeconv}			{ count(); return B256WARNING_TYPECONV; }

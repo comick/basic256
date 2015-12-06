@@ -993,67 +993,100 @@ Interpreter::execByteCode() {
 
             switch(opcode) {
 
-                case OP_FOR: {
-                    
-                    forframe *temp = new forframe;
-                    double step = stack->popfloat();
-                    double endnum = stack->popfloat();
-                    double startnum = stack->popfloat();
+				case OP_FOR: {
+					
+					forframe *temp = new forframe;
+					
+					DataElement *stepE = stack->popelement();
+					DataElement *endnumE = stack->popelement();
+					DataElement *startnumE = stack->popelement();
+	
+					variables->setdata(i, startnumE);	// set variable to initial value
+					if(debugMode != 0) {
+						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
+					}
 
-                    temp->next = forstack;
-                    temp->variable = i;
-                    temp->recurselevel = variables->getrecurse();
+					if (startnumE->type==T_INT && stepE->type==T_INT) {
+						// an integer start and step (do an integer loop)
+						temp->useInt = true;
+						temp->intEndNum = convert->getLong(endnumE);	// could b float but cant ever be
+						temp->intStep = stepE->intval;
+						if (temp->intStep > 0 && convert->getLong(variables->getdata(i)) > temp->intEndNum) {
+							error->q(ERROR_FOR1);
+						} else if (temp->intStep < 0 && convert->getLong(variables->getdata(i)) < temp->intEndNum) {
+							error->q(ERROR_FOR2);
+						}
+					} else {
+						// start or step not integer - it is a float loop
+						temp->useInt = false;
+						temp->floatEndNum = convert->getFloat(endnumE);
+						temp->floatStep = convert->getFloat(stepE);
+						if (temp->floatStep > 0 && convert->getFloat(variables->getdata(i)) > temp->floatEndNum) {
+							error->q(ERROR_FOR1);
+						} else if (temp->floatStep < 0 && convert->getFloat(variables->getdata(i)) < temp->floatEndNum) {
+							error->q(ERROR_FOR2);
+						}
+					}
 
-                    variables->setdata(i, new DataElement(startnum));
+					temp->next = forstack;
+					temp->variable = i;
+					temp->recurselevel = variables->getrecurse();
+					temp->returnAddr = op;
 
-                    if(debugMode != 0) {
-                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
-                    }
+					forstack = temp;
+					
+					// dont delete startnumE because assigned to variable
+					delete(endnumE);
+					delete(stepE);
+				}
+				break;
 
-                    temp->endNum = endnum;
-                    temp->step = step;
-                    temp->returnAddr = op;
-                    forstack = temp;
-                    
-                    if (temp->step > 0 && convert->getFloat(variables->getdata(i)) > temp->endNum) {
-                        error->q(ERROR_FOR1);
-                    } else if (temp->step < 0 && convert->getFloat(variables->getdata(i)) < temp->endNum) {
-                        error->q(ERROR_FOR2);
-                    }
-                }
-                break;
+				case OP_NEXT: {
+					forframe *temp = forstack;
+					
+					//while (temp && temp->variable != i) {
+					//	temp = temp->next;
+					//}
 
-                case OP_NEXT: {
-                    forframe *temp = forstack;
-                    
-                    while (temp && temp->variable != (unsigned int ) i) {
-                        temp = temp->next;
-                    }
+					if (!temp) {
+						error->q(ERROR_NEXTNOFOR);
+					} else {
 
-                    if (!temp) {
-                        error->q(ERROR_NEXTNOFOR);
-                    } else {
+						if (temp->useInt) {
+							long val = convert->getLong(variables->getdata(i));
+							val += temp->intStep;
+							variables->setdata(i, new DataElement(val));
 
-                        double val = convert->getFloat(variables->getdata(i));
-                        val += temp->step;
-                        variables->setdata(i, new DataElement(val));
+							if (temp->intStep > 0 && val <= temp->intEndNum) {
+								op = temp->returnAddr;
+							} else if (temp->intStep < 0 && val >= temp->floatEndNum) {
+								op = temp->returnAddr;
+							} else {
+								forstack = temp->next;
+								delete temp;
+							}
+						} else {
+							double val = convert->getFloat(variables->getdata(i));
+							val += temp->floatStep;
+							variables->setdata(i, new DataElement(val));
 
-                        if(debugMode != 0) {
-                            emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
-                        }
+							if (temp->floatStep > 0 && convert->compareFloats(val, temp->floatEndNum)!=1) {
+								op = temp->returnAddr;
+							} else if (temp->floatStep < 0 && convert->compareFloats(val, temp->floatEndNum)!=-1) {
+								op = temp->returnAddr;
+							} else {
+								forstack = temp->next;
+								delete temp;
+							}
+						}
+						if(debugMode != 0) {
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
+						}
+					}
 
-                        if (temp->step > 0 && convert->compareFloats(val, temp->endNum)!=1) {
-                            op = temp->returnAddr;
-                        } else if (temp->step < 0 && convert->compareFloats(val, temp->endNum)!=-1) {
-                            op = temp->returnAddr;
-                        } else {
-                            forstack = temp->next;
-                            delete temp;
-                        }
-                    }
-
-                }
-                break;
+				}
+				break;
+				
                 case OP_DIM:
                 case OP_REDIM: {
                     int ydim = stack->popint();
@@ -1157,7 +1190,7 @@ Interpreter::execByteCode() {
 					DataElement *e = stack->popelement();
 					int yindex = stack->popint();
 					int xindex = stack->popint();
-					if (e->type==T_UNUSED) {
+					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED);
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
@@ -1215,9 +1248,9 @@ Interpreter::execByteCode() {
                     // assign a variable reference
                     int type = stack->peekType();
                     int value = stack->popint();
-                    if (type==T_VARREF) {
+                    if (type==T_REF) {
 						DataElement *e = new DataElement(value);
-						e->type = T_VARREF;
+						e->type = T_REF;
                         variables->setdata(i, e);
                     } else {
                         error->q(ERROR_BYREF);
@@ -1292,7 +1325,7 @@ Interpreter::execByteCode() {
 
 						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
 							DataElement *e = stack->popelement();
-							if (e->type==T_UNUSED) {
+							if (e->type==T_UNASSIGNED) {
 								error->q(ERROR_VARNOTASSIGNED);
 							} else if (e->type==T_ARRAY) {
 								error->q(ERROR_ARRAYINDEXMISSING);
@@ -2093,123 +2126,235 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-                case OP_SIN:
-                case OP_COS:
-                case OP_TAN:
-                case OP_ASIN:
-                case OP_ACOS:
-                case OP_ATAN:
-                case OP_CEIL:
-                case OP_FLOOR:
-                case OP_ABS:
-                case OP_DEGREES:
-                case OP_RADIANS:
-                case OP_LOG:
-                case OP_LOGTEN:
-                case OP_SQR:
-                case OP_EXP: {
+				case OP_SIN:
+				case OP_COS:
+				case OP_TAN:
+				case OP_ASIN:
+				case OP_ACOS:
+				case OP_ATAN:
+				case OP_CEIL:
+				case OP_FLOOR:
+				case OP_ABS:
+				case OP_DEGREES:
+				case OP_RADIANS:
+				case OP_LOG:
+				case OP_LOGTEN:
+				case OP_SQR:
+				case OP_EXP: {
 
-                    double val = stack->popfloat();
-                    switch (opcode) {
-                        case OP_SIN:
-                            stack->pushfloat(sin(val));
-                            break;
-                        case OP_COS:
-                            stack->pushfloat(cos(val));
-                            break;
-                        case OP_TAN:
-                            val = tan(val);
-                            if (isinf(val)) {
-                                error->q(ERROR_INFINITY);
-                                stack->pushint(0);
-                            } else {
-                                stack->pushfloat(val);
-                            }
-                            break;
-                        case OP_ASIN:
-                            stack->pushfloat(asin(val));
-                            break;
-                        case OP_ACOS:
-                            stack->pushfloat(acos(val));
-                            break;
-                        case OP_ATAN:
-                            stack->pushfloat(atan(val));
-                            break;
-                        case OP_CEIL:
-                            stack->pushint(ceil(val));
-                            break;
-                        case OP_FLOOR:
-                            stack->pushint(floor(val));
-                            break;
-                        case OP_ABS:
-                            if (val < 0) {
-                                val = -val;
-                            }
-                            stack->pushfloat(val);
-                            break;
-                        case OP_DEGREES:
-                            stack->pushfloat(val * 180 / M_PI);
-                            break;
-                        case OP_RADIANS:
-                            stack->pushfloat(val * M_PI / 180);
-                            break;
-                        case OP_LOG:
-                            if (val<0) {
-                                error->q(ERROR_LOGRANGE);
-                                stack->pushint(0);
-                            } else {
-                                stack->pushfloat(log(val));
-                            }
-                            break;
-                        case OP_LOGTEN:
-                            if (val<0) {
-                                error->q(ERROR_LOGRANGE);
-                                stack->pushint(0);
-                            } else {
-                                stack->pushfloat(log10(val));
-                            }
-                            break;
-                        case OP_SQR:
-                            if (val<0) {
-                                error->q(ERROR_LOGRANGE);
-                                stack->pushint(0);
-                            } else {
-                                stack->pushfloat(sqrt(val));
-                            }
-                            break;
-                        case OP_EXP:
-                            val = exp(val);
-                            if (isinf(val)) {
-                                error->q(ERROR_INFINITY);
-                                stack->pushint(0);
-                            } else {
-                                stack->pushfloat(val);
-                            }
-                            break;
-                    }
-                }
-                break;
+					double val = stack->popfloat();
+					switch (opcode) {
+						case OP_SIN:
+							stack->pushfloat(sin(val));
+							break;
+						case OP_COS:
+							stack->pushfloat(cos(val));
+							break;
+						case OP_TAN:
+							val = tan(val);
+							if (isinf(val)) {
+								error->q(ERROR_INFINITY);
+								stack->pushint(0);
+							} else {
+								stack->pushfloat(val);
+							}
+							break;
+						case OP_ASIN:
+							stack->pushfloat(asin(val));
+							break;
+						case OP_ACOS:
+							stack->pushfloat(acos(val));
+							break;
+						case OP_ATAN:
+							stack->pushfloat(atan(val));
+							break;
+						case OP_CEIL:
+							stack->pushint(ceil(val));
+							break;
+						case OP_FLOOR:
+							stack->pushint(floor(val));
+							break;
+						case OP_ABS:
+							if (val < 0) {
+								val = -val;
+							}
+							stack->pushfloat(val);
+							break;
+						case OP_DEGREES:
+							stack->pushfloat(val * 180 / M_PI);
+							break;
+						case OP_RADIANS:
+							stack->pushfloat(val * M_PI / 180);
+							break;
+						case OP_LOG:
+							if (val<0) {
+								error->q(ERROR_LOGRANGE);
+								stack->pushint(0);
+							} else {
+								stack->pushfloat(log(val));
+							}
+							break;
+						case OP_LOGTEN:
+							if (val<0) {
+								error->q(ERROR_LOGRANGE);
+								stack->pushint(0);
+							} else {
+								stack->pushfloat(log10(val));
+							}
+							break;
+						case OP_SQR:
+							if (val<0) {
+								error->q(ERROR_LOGRANGE);
+								stack->pushint(0);
+							} else {
+								stack->pushfloat(sqrt(val));
+							}
+							break;
+						case OP_EXP:
+							val = exp(val);
+							if (isinf(val)) {
+								error->q(ERROR_INFINITY);
+								stack->pushint(0);
+							} else {
+								stack->pushfloat(val);
+							}
+							break;
+					}
+					break;
+				}
 
+				case OP_ADD:
+				case OP_SUB: 
+				case OP_MUL:
+				case OP_MOD: {
+					// integer and float safe operations
+					
+					DataElement *one = stack->popelement();
+					DataElement *two = stack->popelement();
+					switch (opcode) {
+						case OP_ADD:
+							// add is fancy because it concatenates if either are a string
+							// adds integers as integers or converts to floats
+							
+							if (one->type==T_STRING || two->type==T_STRING) {
+								// concatenate (if either are a string then we concatenate)
+								QString sone = convert->getString(one);
+								QString stwo = convert->getString(two);
+								unsigned int l = stwo.length() + sone.length();
+								if (l>STRINGMAXLEN) {
+									error->q(ERROR_STRINGMAXLEN);
+									stack->pushint(0);
+								} else {
+									stack->pushstring(stwo + sone);
+								}
+							} else if (one->type==T_INT && two->type==T_INT) {
+								// integer add
+								stack->pushlong(two->intval + one->intval);
+							} else {
+								// float add
+								double fone = convert->getFloat(one);
+								double ftwo = convert->getFloat(two);
+								double ans = ftwo + fone;
+								if (isinf(ans)) {
+									error->q(ERROR_INFINITY);
+									stack->pushint(0);
+								} else {
+									stack->pushfloat(ans);
+								}
+							}
+							break;
 
-				case OP_ADD: {
-					int tone =stack->peekType(0);
-					int ttwo =stack->peekType(1);
-					if (tone==T_STRING || ttwo==T_STRING) {
-						// concatenate (if either are a string then we concatenate)
-						QString one = stack->popstring();
-						QString two = stack->popstring();
-						unsigned int l = two.length() + one.length();
-						if (l>STRINGMAXLEN) {
-							error->q(ERROR_STRINGMAXLEN);
+						case OP_SUB:
+							if (one->type==T_INT && two->type==T_INT) {
+								// integer subtract
+								stack->pushlong(two->intval - one->intval);
+							} else {
+								// float subtract
+								double fone = convert->getFloat(one);
+								double ftwo = convert->getFloat(two);
+								double ans = ftwo - fone;
+								if (isinf(ans)) {
+									error->q(ERROR_INFINITY);
+									stack->pushint(0);
+								} else {
+									stack->pushfloat(ans);
+								}
+							}
+							break;
+								
+						case OP_MUL:
+							if (one->type==T_INT && two->type==T_INT) {
+								// integer multiply
+								stack->pushlong(two->intval * one->intval);
+							} else {
+								// float multiply
+								double fone = convert->getFloat(one);
+								double ftwo = convert->getFloat(two);
+								double ans = ftwo * fone;
+								if (isinf(ans)) {
+									error->q(ERROR_INFINITY);
+									stack->pushint(0);
+								} else {
+									stack->pushfloat(ans);
+								}
+							}
+							break;
+								
+						case OP_MOD:
+							if (one->type==T_INT && two->type==T_INT) {
+								// integer modulo
+								stack->pushlong(two->intval % one->intval);
+							} else {
+								// float modulo
+								double fone = convert->getFloat(one);
+								double ftwo = convert->getFloat(two);
+								double ans = fmod(ftwo, fone);
+								if (isinf(ans)) {
+									error->q(ERROR_INFINITY);
+									stack->pushint(0);
+								} else {
+									stack->pushfloat(ans);
+								}
+							}
+							break;
+								
+								
+								
+						}
+						delete(one);
+						delete(two);
+						break;
+					}
+     
+                        
+				case OP_EX: {
+					// always return a float value with power "^"
+					double oneval = stack->popfloat();
+					double twoval = stack->popfloat();
+					if (oneval==0) {
+						error->q(ERROR_DIVZERO);
+						stack->pushint(0);
+					} else {
+						double ans = pow(twoval, oneval);
+						if (isinf(ans)) {
+							error->q(ERROR_INFINITY);
 							stack->pushint(0);
 						} else {
-							stack->pushstring(two + one);
+							stack->pushfloat(ans);
 						}
+					}
+					break;
+				}
+                        
+				case OP_DIV: {
+					// always return a float value with division "/"
+					double oneval = stack->popfloat();
+					double twoval = stack->popfloat();
+					if (oneval==0) {
+						error->q(ERROR_DIVZERO);
+						stack->pushint(0);
 					} else {
-						// numeric add
-						double oneval = stack->popfloat();
-						double twoval = stack->popfloat();
-						double ans = twoval + oneval;
+						double ans = twoval / oneval;
 						if (isinf(ans)) {
 							error->q(ERROR_INFINITY);
 							stack->pushint(0);
@@ -2220,105 +2365,20 @@ Interpreter::execByteCode() {
 					break;
 				}
 
-                case OP_SUB: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    double ans = twoval - oneval;
-                    if (isinf(ans)) {
-                        error->q(ERROR_INFINITY);
-                        stack->pushint(0);
-                    } else {
-                        stack->pushfloat(ans);
-                    }
-                    break;
-                }
+				case OP_INTDIV: {
+					// always return an integer with '\' operator
+					long oneval = stack->poplong();
+					long twoval = stack->poplong();
+					if (oneval==0) {
+						error->q(ERROR_DIVZERO);
+						stack->pushint(0);
+					} else {
+						stack->pushlong(twoval /oneval);
+					}
+					break;
+				}
 
-                case OP_MUL: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    double ans = twoval * oneval;
-                    if (isinf(ans)) {
-                        error->q(ERROR_INFINITY);
-                        stack->pushint(0);
-                    } else {
-                        stack->pushfloat(ans);
-                    }
-                    break;
-                }
-
-                case OP_MOD: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    if (oneval==0) {
-                        error->q(ERROR_DIVZERO);
-                        stack->pushint(0);
-                    } else {
-                        double ans = fmod(twoval, oneval);
-                        if (isinf(ans)) {
-                            error->q(ERROR_INFINITY);
-                            stack->pushint(0);
-                        } else {
-                            stack->pushfloat(ans);
-                        }
-                    }
-                    break;
-                }
-
-                case OP_DIV: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    if (oneval==0) {
-                        error->q(ERROR_DIVZERO);
-                        stack->pushint(0);
-                    } else {
-                        double ans = twoval / oneval;
-                        if (isinf(ans)) {
-                            error->q(ERROR_INFINITY);
-                            stack->pushint(0);
-                        } else {
-                            stack->pushfloat(ans);
-                        }
-                    }
-                    break;
-                }
-
-                case OP_INTDIV: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    if (oneval==0) {
-                        error->q(ERROR_DIVZERO);
-                        stack->pushint(0);
-                    } else {
-                        double intpart;
-                        modf(twoval /oneval, &intpart);
-                        if (isinf(intpart)) {
-                            error->q(ERROR_INFINITY);
-                            stack->pushint(0);
-                        } else {
-                            stack->pushfloat(intpart);
-                        }
-                    }
-                    break;
-                }
-
-                case OP_EX: {
-                    double oneval = stack->popfloat();
-                    double twoval = stack->popfloat();
-                    double ans = pow(twoval, oneval);
-                    if (std::isnan(ans)) {
-                        error->q(ERROR_NOTANUMBER);
-                        stack->pushint(0);
-                    } else {
-                        if (isinf(ans)) {
-                            error->q(ERROR_INFINITY);
-                            stack->pushint(0);
-                        } else {
-                            stack->pushfloat(ans);
-                        }
-                    }
-                    break;
-                }
-
+ 
                 case OP_AND: {
                     int one = stack->popint();
                     int two = stack->popint();
@@ -2363,8 +2423,14 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_NEGATE: {
-                    double n = stack->popfloat();
-                    stack->pushfloat(n * -1);
+					// integer save negate
+					DataElement *e = stack->popelement();
+					if (e->type==T_INT) {
+						stack->pushlong(e->intval * -1);
+					} else {
+						stack->pushfloat(convert->getFloat(e) * -1);
+					}
+					delete(e);
                 }
                 break;
 

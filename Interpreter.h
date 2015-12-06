@@ -93,12 +93,16 @@ struct onerrorframe {
 };
 
 // structure for the nested for statements  
+// if useInt then make loop integer safe
 struct forframe {
   forframe *next;
-  unsigned int variable;
+  int variable;
   int *returnAddr;
-  double endNum;
-  double step;
+  bool useInt;
+  double floatEndNum;
+  double floatStep;
+  long intEndNum;
+  long intStep;
   int recurselevel;
 };
 

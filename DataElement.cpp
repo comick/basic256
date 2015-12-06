@@ -5,7 +5,7 @@
 
 DataElement::DataElement() {
 	// create an empty dataelement
-	type = T_UNUSED;
+	type = T_UNASSIGNED;
 }
 
 DataElement::DataElement(DataElement *source) {
@@ -21,7 +21,11 @@ DataElement::DataElement(QString s) {
 	stringval = s;
 }
 
-DataElement::DataElement(int l) {
+DataElement::DataElement(int i) {
+	DataElement((long) i);
+}
+
+DataElement::DataElement(long l) {
 	type = T_INT;
 	intval = l;
 }
@@ -37,8 +41,8 @@ QString DataElement::debug() {
         if(type==T_FLOAT) return("float(" + QString::number(floatval) + ") ");
         if(type==T_STRING) return("string(" + stringval + ") ");
         if(type==T_ARRAY) return("array=" + QString::number(floatval) + " ");
-        if(type==T_UNUSED) return("unused ");
-        if(type==T_VARREF) return("varref=" + QString::number(floatval) + " ");
+        if(type==T_UNASSIGNED) return("unused ");
+        if(type==T_REF) return("varref=" + QString::number(floatval) + " ");
         return("badtype ");
 }
 
