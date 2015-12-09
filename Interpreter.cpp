@@ -1233,6 +1233,7 @@ Interpreter::execByteCode() {
 					DataElement *e = stack->popelement();
 					if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
+						delete(e);
 					} else {
 						variables->setdata(i, e);
 						if(debugMode != 0) {
@@ -1244,19 +1245,18 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_VARREFASSIGN: {
-                    // assign a variable reference
-                    int type = stack->peekType();
-                    int value = stack->popint();
-                    if (type==T_REF) {
-						DataElement *e = new DataElement(value);
-						e->type = T_REF;
-                        variables->setdata(i, e);
-                    } else {
-                        error->q(ERROR_BYREF);
-                    }
-                }
-                break;
+				case OP_VARREFASSIGN: {
+					// assign a variable reference
+					DataElement *e = stack->popelement();
+					if (e->type==T_REF) {
+						 variables->setdata(i, e);
+					} else {
+						error->q(ERROR_BYREF);
+						delete(e);
+						
+					}
+				}
+				break;
 
 				case OP_ARRAY2STACK: {
 					// Push all of the elements of an array to the stack and then push the length to the stack

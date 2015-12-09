@@ -38,11 +38,11 @@ DataElement::DataElement(double d) {
 QString DataElement::debug() {
     // return a string representing the DataElement contents
         if(type==T_INT) return("int(" + QString::number(intval) + ") ");
+        if(type==T_REF) return("varref=" + QString::number(intval) + " ");
         if(type==T_FLOAT) return("float(" + QString::number(floatval) + ") ");
         if(type==T_STRING) return("string(" + stringval + ") ");
         if(type==T_ARRAY) return("array=" + QString::number(floatval) + " ");
         if(type==T_UNASSIGNED) return("unused ");
-        if(type==T_REF) return("varref=" + QString::number(floatval) + " ");
         return("badtype ");
 }
 

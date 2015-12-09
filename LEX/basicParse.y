@@ -2228,16 +2228,12 @@ exprlist:
 
 
 
-expr:
-			expression
-			| '(' expression ')'
-			;
 			
-expression:
+expr:
 
 			/* *** expressions that can ge EITHER float or string *** */
-
-			expr '+' expr {
+			'(' expr ')'
+			| expr '+' expr {
 				addOp(OP_ADD);
 			}
 			| B256VARIABLE '(' exprlist ')' {
@@ -2644,7 +2640,7 @@ expression:
 			| B256TEXTHEIGHT args_none { addOp(OP_TEXTHEIGHT); }
 			| B256READBYTE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' expr ')' { addOp(OP_READBYTE); }
-			| B256REF '(' B256VARIABLE ')' { addIntOp(OP_PUSHVARREF, $3); }
+			| B256REF args_v { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
 			| B256FREEDB args_none { addOp(OP_FREEDB); }
 			| B256FREEDBSET args_none {
 				addIntOp(OP_PUSHINT,0);	// default db number

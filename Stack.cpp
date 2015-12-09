@@ -71,8 +71,9 @@ void Stack::pushlong(long i) {
 }
 
 void Stack::pushvarref(int i) {
-    DataElement *ele = new DataElement(i);
+    DataElement *ele = new DataElement();
     ele->type = T_REF;
+    ele->intval = (long) i;
     stacklist.push_front(ele);
 }
 

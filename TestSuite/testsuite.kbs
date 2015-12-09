@@ -63,7 +63,7 @@ print "  'Runtime Handling of variable not assigned' must set to Warn"
 print "On the 'Printing' tab"
 print "  'Printer' must set to PDF File Output"
 print "  'PDF FileName' must be set to a name of a temporary file with the pdf extension"
-print 
+print
 call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
 call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/VNA"),"1")
 # make sure printer setting are correct
@@ -155,7 +155,7 @@ call s("c$[5]=F",c$[5],"F")
 #
 input "input string 'able' >", c$[5]
 for x = 1 to length(c$[5])
-print x + '"' + mid(c$[5],x,1) + '"' + " " + asc(mid(c$[5],x,1))
+   print x + '"' + mid(c$[5],x,1) + '"' + " " + asc(mid(c$[5],x,1))
 next x
 call s("c$[5]='able'",c$[5],"able")
 #
@@ -242,13 +242,17 @@ section_sound:
 ###################################################
 call section("TTS and Sound")
 ###################################################
-include "testsuite_sound_include.kbs"
+if yn("Do TTS and Sound Testing?") then
+   include "testsuite_sound_include.kbs"
+endif
 
 section_wav:
 ###################################################
 call section("WAVPLAY...")
 ###################################################
-include "testsuite_wav_include.kbs"
+if yn("Do WAVPLAY Testing?") then
+   include "testsuite_wav_include.kbs"
+endif
 
 ###################################################
 call section("IMGSave, IMGLoad, Kill and Exists")
@@ -314,14 +318,17 @@ section_network:
 ###################################################
 call section("Networking")
 ###################################################
-include "testsuite_network_include.kbs"
+if yn("Do Networking Testing?") then
+   include "testsuite_network_include.kbs"
+endif
 
 section_serial:
 ###################################################
 call section("Serial Port")
 ###################################################
-include "testsuite_serialio_include.kbs"
-
+if yn("Do Serial Port Test?") then
+   include "testsuite_serialio_include.kbs"
+endif
 
 
 
