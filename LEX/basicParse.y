@@ -2640,7 +2640,7 @@ expr:
 			| B256TEXTHEIGHT args_none { addOp(OP_TEXTHEIGHT); }
 			| B256READBYTE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' expr ')' { addOp(OP_READBYTE); }
-			| B256REF args_v { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
 			| B256FREEDB args_none { addOp(OP_FREEDB); }
 			| B256FREEDBSET args_none {
 				addIntOp(OP_PUSHINT,0);	// default db number

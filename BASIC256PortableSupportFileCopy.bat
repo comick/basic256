@@ -8,10 +8,11 @@ REM # 2014-01-05 j.m.reneau    1.0.7		added qt sql
 REM # 2014-04-19 j.m.reneau    1.1.1.3		moved development to qt 5.2.1
 REM # 2014-06-01 j.m.reneau    1.1.2.4      changed paths to qt 5.3
 REM # 2014-10-26 j.m.reneau    1.1.4.0      added serialport
+REM # 2016-01-01 j.m.reneau    1.99.99.08	moved to 5.5
 
-set SDK_BIN=C:\Qt\5.3\mingw482_32\bin
-set SDK_LIB=C:\Qt\5.3\mingw482_32\lib
-set SDK_PLUGINS=C:\Qt\5.3\mingw482_32\plugins
+set SDK_BIN=C:\Qt\5.5\mingw492_32\bin
+set SDK_LIB=C:\Qt\5.5\mingw492_32\lib
+set SDK_PLUGINS=C:\Qt\5.5\mingw492_32\plugins
 
 # folder where app will live and support files need to be
 set INSTDIR=BASIC256Portable\App\BASIC256
@@ -24,9 +25,6 @@ xcopy Translations\*.qm %INSTDIR%\Translations
 
 mkdir %INSTDIR%\espeak-data
 xcopy /e release\espeak-data %INSTDIR%\espeak-data
-
-mkdir %INSTDIR%\accessible
-xcopy %SDK_PLUGINS%\accessible\qtaccessiblewidgets.dll %INSTDIR%\accessible
 
 mkdir %INSTDIR%\audio
 xcopy %SDK_PLUGINS%\audio\qtaudio_windows.dll %INSTDIR%\audio
@@ -61,9 +59,9 @@ xcopy ChangeLog %INSTDIR%
 xcopy CONTRIBUTORS %INSTDIR%
 xcopy license.txt %INSTDIR%
 
-xcopy %SDK_BIN%\icudt52.dll %INSTDIR%
-xcopy %SDK_BIN%\icuin52.dll %INSTDIR%
-xcopy %SDK_BIN%\icuuc52.dll %INSTDIR%
+xcopy %SDK_BIN%\icudt54.dll %INSTDIR%
+xcopy %SDK_BIN%\icuin54.dll %INSTDIR%
+xcopy %SDK_BIN%\icuuc54.dll %INSTDIR%
 xcopy %SDK_BIN%\libgcc_s_dw2-1.dll %INSTDIR%
 xcopy %SDK_BIN%\libstdc++-6.dll %INSTDIR%
 xcopy %SDK_BIN%\libwinpthread-1.dll %INSTDIR%
