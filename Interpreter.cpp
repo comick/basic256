@@ -1135,10 +1135,17 @@ Interpreter::execByteCode() {
 					} else {
 						QRegExp expr = QRegExp(qneedle);
 						expr.setMinimal(regexMinimal);
-						list = qhaystack.split(expr, QString::KeepEmptyParts);
+						if (expr.captureCount()>0) {
+							// if we have captures in our regex then return them
+							int pos = expr.indexIn(qhaystack);
+							list = expr.capturedTexts();
+						} else {
+							// if it is a simple regex without captures then split
+							list = qhaystack.split(expr, QString::KeepEmptyParts);
+						}
 					}
 					// create an array
-					if (variables->arraysize(i)!=list.size()) variables->arraydim(i, list.size(), 1, false);
+					variables->arraydim(i, list.size(), 1, false);
 					if (!error->pending()) {
 						if(debugMode != 0) {
 							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
@@ -2119,10 +2126,11 @@ Interpreter::execByteCode() {
 
 					if(start < 1) {
 						error->q(ERROR_STRSTART);
+							stack->pushint(0);
 					} else {
 						pos = expr.indexIn(qtemp,start-1)+1;
+						stack->pushint(pos);
 					}
-					stack->pushint(pos);
 				}
 				break;
 
