@@ -23,24 +23,24 @@ class Convert
 	public:
 
 		Convert(Error *);
-		
+
 		void setdecimaldigits(int);
 
-		
+
 		int getInt(DataElement*);
 		long getLong(DataElement*);
 		double getFloat(DataElement*);
 		QString getString(DataElement*);
 		QString getString(DataElement*, int);
-		  
+
 		int compare(DataElement*, DataElement*);
 		int compareFloats(double, double);
-		
-		static const double EPSILON = 0.00000001;
-		
+
+		const double EPSILON = 0.00000001;
+
 	private:
 		Error *error;
 		int ec(int, int);
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
-		
+
 };

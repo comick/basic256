@@ -8,7 +8,7 @@ TEMPLATE					=	app
 TARGET						=	basic256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
-QMAKE_CXXFLAGS				+=	-g 
+QMAKE_CXXFLAGS				+=	-g
 QMAKE_YACCFLAGS				+=	--verbose
 CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
@@ -38,7 +38,7 @@ win32 {
 	LIBS					+=	-lole32 \
 								-lws2_32 \
 								-lwinmm
-				
+
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign
 
@@ -47,7 +47,7 @@ win32 {
 	########
 	# uncomment one of the options
 
-	## TTS Option 1 - ececute 'espak' command to speak 
+	## TTS Option 1 - ececute 'espak' command to speak
 	#DEFINES				+=	ESPEAK_EXECUTE
 
 	## TTS Option 2 - use the espeak library
@@ -76,13 +76,13 @@ win32 {
 unix:!macx {
 	## this is the LINUX (unix-non-mac)
 	DEFINES					+=	LINUX
-	
+
 	########
 	# TTS control - How Say statement works
 	########
 	# uncomment one of the options
 
-	## TTS Option 1 - ececute 'espak' command to speak 
+	## TTS Option 1 - ececute 'espak' command to speak
 	#DEFINES				+=	ESPEAK_EXECUTE
 
 	## TTS Option 2 - use the espeak library
@@ -132,33 +132,42 @@ macx {
 	# macintosh
 	DEFINES					+=	MACX
 	DEFINES					+=	MACX_SAY
-	
+
+    QMAKE_CXXFLAGS          +=  -Wgnu-static-float-init
+    QMAKE_CXXFLAGS          +=  -Wc++11-extensions
+    QMAKE_CXXFLAGS          +=  -Wc++11-long-long
+
 	ICON					=	resources/basic256.icns
 
 	LIBS					+=	-L/opt/local/lib
 	INCLUDEPATH				+=	/opt/local/include
 
 	## include libraries for SDL audio for wav and sound output
-	DEFINES 				+=	SOUND_SDL
-	LIBS					+=	-lSDL
-	LIBS					+=	-lSDL_mixer
+	##DEFINES 				+=	SOUND_SDL
+	##LIBS					+=	-lSDL
+	##LIBS					+=	-lSDL_mixer
 
-	
+    # Sound - QT Mobility Multimedia AudioOut
+    DEFINES					+=	SOUND_QMOBILITY
+    QT						+=	multimedia
+    INCLUDEPATH				+=	QtMultimediaKit
+    INCLUDEPATH				+=	QtMobility
+
+
 }
 
 exists( ./LEX/Makefile ) {
 	message( Running make for ./LEX/Makefile )
 	system( make -C ./LEX )
-} else { 
+} else {
         error( Could not make LEX project - aborting... )
 }
 
 
 # Input
-HEADERS 					+=	LEX/basicParse.tab.h 
+HEADERS 					+=	LEX/basicParse.tab.h
 HEADERS 					+=	*.h
 
-SOURCES 					+=	LEX/lex.yy.c 
-SOURCES 					+=	LEX/basicParse.tab.c 
+SOURCES 					+=	LEX/lex.yy.c
+SOURCES 					+=	LEX/basicParse.tab.c
 SOURCES 					+=	*.cpp
-

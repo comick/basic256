@@ -177,7 +177,7 @@ int testIfOnTable(int includelevel) {
 		if (iftableincludes[numifs-1]>=includelevel) {
 			return iftablesourceline[numifs-1];
 		}
-	}	
+	}
 	return -1;
 }
 
@@ -197,7 +197,7 @@ int testIfOnTableError(int includelevel) {
 			if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
 			if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
 		}
-	}	
+	}
 	return 0;
 }
 
@@ -304,10 +304,10 @@ int newWordCode() {
 
 %}
 
-%token B256PRINT B256INPUT B256KEY 
+%token B256PRINT B256INPUT B256KEY
 %token B256PIXEL B256RGB B256PLOT B256CIRCLE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
 %token B256IF B256THEN B256ELSE B256ENDIF B256BEGINCASE B256CASE B256ENDCASE
-%token B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT 
+%token B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT
 %token B256OPEN B256OPENB B256OPENSERIAL B256READ B256WRITE B256CLOSE B256RESET
 %token B256GOTO B256GOSUB B256RETURN B256REM B256END B256SETCOLOR
 %token B256GTE B256LTE B256NE
@@ -376,8 +376,7 @@ int newWordCode() {
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 
 
-%union anytype
-{
+%union anytype {
 	int number;
 	double floatnum;
 	char *string;
@@ -385,7 +384,7 @@ int newWordCode() {
 
 %token <number> B256LINENUM
 %token <number> B256INTEGER
-%token <floatnum> B256FLOAT 
+%token <floatnum> B256FLOAT
 %token <string> B256STRING
 %token <string> B256HEXCONST
 %token <string> B256BINCONST
@@ -396,9 +395,9 @@ int newWordCode() {
 %token <number> B256LABEL
 
 
-%left B256XOR 
-%left B256OR 
-%left B256AND 
+%left B256XOR
+%left B256OR
+%left B256AND
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
 %left B256BINARYOR B256BINARYAND
@@ -420,12 +419,12 @@ programnewline:
 					addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 				}
 				;
-				
+
 programline: 	label compoundstmt
 				| label compoundstmt B256REM
 				| compoundstmt
 				| compoundstmt B256REM
-				| label 
+				| label
 				| label B256REM
 				| B256REM
 				| /* empty */
@@ -436,18 +435,18 @@ label:			B256LABEL {
 						errorcode = COMPERR_FUNCTIONGOTO;
 						return -1;
 					}
-					labeltable[$1] = wordOffset; 
+					labeltable[$1] = wordOffset;
 				}
 				;
 
 functionvariable:
 			B256VARIABLE {
 				args[numargs] = $1; argstype[numargs] = ARGSTYPEVALUE; numargs++;
-				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
 			| B256REF '(' B256VARIABLE ')' {
 				args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
-				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs); 
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
 			;
 
@@ -480,55 +479,55 @@ arrayref:
 
 args_none:
 			| '(' ')';
-			
+
 /* one argument (only ones that do not have a native or need to setvarnumber) */
 
 
 args_a:
 			B256VARIABLE arrayref {
-				varnumber[nvarnumber++] = $1
+				varnumber[nvarnumber++] = $1;
 			}
 			;
 
 args_v:
 			B256VARIABLE {
-				varnumber[nvarnumber++] = $1
+				varnumber[nvarnumber++] = $1;
 			};
 
-			
+
 /* two arguments */
 
-			
+
 args_ee:
 			expr ',' expr
 			| '(' args_ee ')';
 
-			
+
 args_ei:
 			expr ',' immediatelist
 			| '(' args_ei ')';
-			
+
 
 args_ea:
 			expr ',' B256VARIABLE arrayref {
-				varnumber[nvarnumber++] = $3
+				varnumber[nvarnumber++] = $3;
 			}
 			|'(' args_ea ')';
 
 
 args_ev:
 			expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $3
+				varnumber[nvarnumber++] = $3;
 			}
 			|'(' args_ev ')';
 
 
-		
+
 /* three arguments */
 args_eee:
 			expr ',' expr ',' expr
 			| '(' args_eee ')';
-			
+
 
 args_eei:
 			expr ',' expr ',' immediatelist
@@ -542,12 +541,12 @@ args_eev:
 			| '(' args_eev ')';
 
 
-			
+
 /* four arguments */
 args_eeee:
 			expr ',' expr ',' expr ',' expr
 			| '(' args_eeee ')';
-			
+
 args_eeei:
 			expr ',' expr ',' expr ',' immediatelist
 			| '(' args_eeei ')';
@@ -574,11 +573,11 @@ args_eeeei:
 
 args_eeeev:
 			expr ',' expr ',' expr ',' expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $9
+				varnumber[nvarnumber++] = $9;
 			}
 			| '(' args_eeeev ')';
 
-			
+
 /* six arguments */
 args_eeeeee:
 			expr ',' expr ',' expr ',' expr ',' expr ',' expr
@@ -626,7 +625,7 @@ statement:
 			| endifstmt
 			| endstmt
 			| endsubroutinestmt
-			| endtrystmt	
+			| endtrystmt
 			| endwhilestmt
 			| exitdostmt
 			| exitforstmt
@@ -730,7 +729,7 @@ caseexpr:	B256CASE {
 						}
 						//
 						// resolve branchfalse from previous case
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						//
 						numifs--;
 					}
@@ -759,7 +758,7 @@ catchstmt: 	B256CATCH {
 					if (iftabletype[numifs-1]==IFTABLETYPETRY) {
 						//
 						// resolve the try onerrorcatch to the catch address
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 						//
 						// put new if on the frame for the catch
@@ -780,7 +779,7 @@ catchstmt: 	B256CATCH {
 dostmt: 	B256DO {
 				//
 				// create internal symbol and add to the label table for the top of the loop
-				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset; 
+				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset;
 				//
 				// add to if frame
 				newIf(linenumber, IFTABLETYPEDO);
@@ -796,7 +795,7 @@ elsestmt:	B256ELSE {
 					if (iftabletype[numifs-1]==IFTABLETYPEIF) {
 						//
 						// resolve the label on the if to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 						//
 						// put new if on the frame for the else
@@ -814,7 +813,7 @@ elsestmt:	B256ELSE {
 							}
 							//
 							// resolve branchfalse from previous case
-							labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+							labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 							//
 							numifs--;
 							// put new if on the frame for the else
@@ -837,7 +836,7 @@ endcasestmt:
 				// add label for last case branchfalse to jump to
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPECASE || iftabletype[numifs-1]==IFTABLETYPEELSE) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = COMPERR_ENDENDCASE;
@@ -850,7 +849,7 @@ endcasestmt:
 				// add label for all cases to jump to after execution
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -872,7 +871,7 @@ endifstmt:	B256ENDIF {
 					if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
 						//
 						// resolve the label on the if/else to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -894,7 +893,7 @@ endtrystmt:	B256ENDTRY {
 					if (iftabletype[numifs-1]==IFTABLETYPECATCH) {
 						//
 						// resolve the label on the Catch to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -917,7 +916,7 @@ endwhilestmt:
 						addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE));
 						//
 						// resolve the label to the bottom
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						//
 						// remove the single placeholder from the if frame
 						numifs--;
@@ -943,22 +942,22 @@ ifstmt:		B256IF expr B256THEN {
 			}
 			;
 
-ifthenstmt: 
+ifthenstmt:
 			ifstmt compoundstmt {
 				// if there is an if branch or jump on the iftable stack get where it is
 				// in the wordcode array and then resolve the lable
 				if (numifs>0) {
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 					numifs--;
 				}
 			}
 			;
-			
+
 ifthenelsestmt:
 			ifthenelse compoundstmt {
 				//
 				// resolve the label on the else to the current location
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 			}
 			;
@@ -970,7 +969,7 @@ ifthenelse:
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// jump point for else
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 				//
 				// put new if on the frame for the else
@@ -993,7 +992,7 @@ until:		B256UNTIL {
 					if (iftabletype[numifs-1]==IFTABLETYPEDO) {
 						//
 						// create label for CONTINUE DO
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
 						//
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -1013,7 +1012,7 @@ untilstmt:	until expr {
 				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
 				//
 				// create label for EXIT DO
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 			}
 			;
@@ -1021,7 +1020,7 @@ untilstmt:	until expr {
 while: 		B256WHILE {
 				//
 				// create internal symbol and add to the label table for the top of the loop
-				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset; 
+				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset;
 			}
 			;
 
@@ -1080,7 +1079,7 @@ clearstmt:	B256CLS args_none {
 			}
 			| B256CLG args_none {
 				addOp(OP_CLG);
-			} 
+			}
 			;
 
 fastgraphicsstmt:
@@ -1184,7 +1183,7 @@ arrayassign:
 			;
 
 
-assign: 
+assign:
 			args_v '=' expr {
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
@@ -1246,9 +1245,9 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 nextstmt:	B256NEXT args_v {
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
 						addIntOp(OP_NEXT, varnumber[--nvarnumber]);
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
+						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -1289,7 +1288,7 @@ callstmt:	B256CALL args_v args_none {
 			;
 
 offerrorstmt:
-			B256OFFERROR args_none { 
+			B256OFFERROR args_none {
 				int i;
 				for(i=0; i < numifs; i++) {
 					if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
@@ -1314,7 +1313,7 @@ onerrorstmt:
 			}
 			;
 
-returnstmt:	B256RETURN args_none { 
+returnstmt:	B256RETURN args_none {
 				if (functionDefSymbol!=-1) {
 					// if we are defining a function return pushes a variable value
 					addIntOp(OP_PUSHVAR, functionDefSymbol);
@@ -1326,7 +1325,7 @@ returnstmt:	B256RETURN args_none {
 				}
 				addOp(OP_RETURN);
 			}
-			| B256RETURN expr { 
+			| B256RETURN expr {
 				if (functionDefSymbol!=-1) {
 					// value on stack gets returned
 					addOp(OP_DECREASERECURSE);
@@ -1339,7 +1338,7 @@ returnstmt:	B256RETURN args_none {
 			;
 
 colorstmt:	B256SETCOLOR args_eee {
-				addIntOp(OP_PUSHINT, 255); 
+				addIntOp(OP_PUSHINT, 255);
 				addOp(OP_RGB);
 				addOp(OP_STACKDUP);
 				addOp(OP_SETCOLOR);
@@ -1391,7 +1390,7 @@ arcstmt: 	B256ARC args_eeeeee {
 			}
 			;
 
-chordstmt:	
+chordstmt:
 			B256CHORD args_eeeeee {
 				addOp(OP_CHORD);
 			}
@@ -1409,7 +1408,7 @@ rectstmt:
 			}
 			;
 
-textstmt: 
+textstmt:
 			B256TEXT args_eee {
 				addOp(OP_TEXT);
 			}
@@ -1438,7 +1437,7 @@ volumestmt:
 			}
 			;
 
-polystmt: 
+polystmt:
 			B256POLY args_v {
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 				addOp(OP_POLY_LIST);
@@ -1446,7 +1445,7 @@ polystmt:
 			| B256POLY immediatelist {
 				addIntOp(OP_PUSHINT, listlen);
 				listlen=0;
-				addOp(OP_POLY_LIST); 
+				addOp(OP_POLY_LIST);
 			}
 			;
 
@@ -1488,7 +1487,7 @@ openstmt:	B256OPEN expr  {
 			| B256OPEN args_ee {
 				addIntOp(OP_PUSHINT, 0); // not binary
 				addOp(OP_OPEN);
-			} 
+			}
 			| B256OPENB expr  {
 				addIntOp(OP_PUSHINT, 0); // file number zero
 				addOp(OP_STACKSWAP);
@@ -1498,7 +1497,7 @@ openstmt:	B256OPEN expr  {
 			| B256OPENB args_ee {
 				addIntOp(OP_PUSHINT, 1); // binary
 				addOp(OP_OPEN);
-			} 
+			}
 			| B256OPENSERIAL args_ee {
 				addIntOp(OP_PUSHINT, 9600); // baud
 				addIntOp(OP_PUSHINT, 8); // data bits
@@ -1543,7 +1542,7 @@ writestmt:	B256WRITE expr {
 				addOp(OP_WRITE);
 			}
 			;
-	
+
 writelinestmt:
 			B256WRITELINE expr {
 				addIntOp(OP_PUSHINT, 0);
@@ -1694,7 +1693,7 @@ imgloadstmt:
 spritedimstmt:
 			B256SPRITEDIM expr {
 				addOp(OP_SPRITEDIM);
-			} 
+			}
 			;
 
 spriteloadstmt:
@@ -1721,8 +1720,8 @@ spritepolystmt:
 			}
 			;
 
-spriteplacestmt: 
-			B256SPRITEPLACE args_eee 
+spriteplacestmt:
+			B256SPRITEPLACE args_eee
 			{
 				addIntOp(OP_PUSHINT,1);	// scale
 				addIntOp(OP_PUSHINT,0);	// rotate
@@ -1758,13 +1757,13 @@ spritemovestmt:
 spritehidestmt:
 			B256SPRITEHIDE expr {
 				addOp(OP_SPRITEHIDE);
-			} 
+			}
 			;
 
 spriteshowstmt:
 			B256SPRITESHOW expr {
 				addOp(OP_SPRITESHOW);
-			} 
+			}
 			;
 
 clickclearstmt:
@@ -1773,7 +1772,7 @@ clickclearstmt:
 			}
 			;
 
-changedirstmt: 
+changedirstmt:
 			B256CHANGEDIR expr {
 				addOp(OP_CHANGEDIR);
 			}
@@ -1852,10 +1851,10 @@ netlistenstmt:
 			}
 			| B256NETLISTEN args_ee {
 				addOp(OP_NETLISTEN);
-			} 
+			}
 			;
 
-netconnectstmt: 
+netconnectstmt:
 			B256NETCONNECT args_ee {
 				addIntOp(OP_PUSHINT, 0);
 				addOp(OP_STACKTOPTO2);
@@ -1874,10 +1873,10 @@ netwritestmt:
 			}
 			| B256NETWRITE args_ee {
 				addOp(OP_NETWRITE);
-			} 
+			}
 			;
 
-netclosestmt: 
+netclosestmt:
 			B256NETCLOSE args_none {
 				addIntOp(OP_PUSHINT, 0);
 				addOp(OP_NETCLOSE);
@@ -1908,7 +1907,7 @@ imgsavestmt:
 			B256IMGSAVE expr  {
 				addStringOp(OP_PUSHSTRING, "PNG");
 				addOp(OP_IMGSAVE);
-			} 
+			}
 			| B256IMGSAVE args_ee {
 				addOp(OP_IMGSAVE);
 			}
@@ -2129,7 +2128,7 @@ subroutinestmt:
 				//
 				// create jump around subroutine definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				// 
+				//
 				// create the new if frame for this subroutine
 				labeltable[subroutineDefSymbol] = wordOffset;
 				newIf(linenumber, IFTABLETYPEFUNCTION);
@@ -2161,11 +2160,11 @@ endfunctionstmt:
 					addOp(OP_RETURN);
 					//
 					// add address for jump around function definition
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-					functionDefSymbol = -1; 
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+					functionDefSymbol = -1;
 					//
 					numifs--;
-				// 
+				//
 				} else {
 					errorcode = testIfOnTableError(numincludes);
 					linenumber = testIfOnTable(numincludes);
@@ -2186,8 +2185,8 @@ endsubroutinestmt:
 					addOp(OP_RETURN);
 					//
 					// add address for jump around function definition
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset; 
-					subroutineDefSymbol = -1; 
+					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+					subroutineDefSymbol = -1;
 					//
 					numifs--;
 				} else {
@@ -2211,7 +2210,7 @@ regexminimalstmt:
 
 
 
-/* ####################################	
+/* ####################################
    ### INSERT NEW Statements BEFORE ###
    #################################### */
 
@@ -2228,7 +2227,7 @@ exprlist:
 
 
 
-			
+
 expr:
 
 			/* *** expressions that can ge EITHER float or string *** */
@@ -2558,7 +2557,7 @@ expr:
 				}
 			| B256PIXEL '(' expr ',' expr ')' { addOp(OP_PIXEL); }
 			| B256RGB '(' expr ',' expr ',' expr ')' {
-				addIntOp(OP_PUSHINT, 0xff); 
+				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 			}
 			| B256RGB '(' expr ',' expr ',' expr ',' expr ')' {
@@ -2690,7 +2689,7 @@ expr:
 			| B256WAVLENGTH args_none { addOp(OP_WAVLENGTH); }
 			| B256WAVPOS args_none { addOp(OP_WAVPOS); }
 			| B256WAVSTATE args_none { addOp(OP_WAVSTATE); }
-			
+
 			| B256ERROR_NONE args_none { addIntOp(OP_PUSHINT, ERROR_NONE); }
 			| B256ERROR_FOR1 args_none { addIntOp(OP_PUSHINT, ERROR_FOR1); }
 			| B256ERROR_FOR2 args_none { addIntOp(OP_PUSHINT, ERROR_FOR2); }
@@ -2830,7 +2829,7 @@ expr:
 			}
 			| B256IMPLODE '(' B256VARIABLE ',' expr ')' {  addIntOp(OP_IMPLODE, $3); }
 			| B256PROMPT '(' expr ')' {
-				addStringOp(OP_PUSHSTRING, "");	
+				addStringOp(OP_PUSHSTRING, "");
 				addOp(OP_PROMPT); }
 			| B256PROMPT '(' expr ',' expr ')' {
 				addOp(OP_PROMPT); }

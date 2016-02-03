@@ -3,6 +3,7 @@
 
 #include <string>
 
+
 Convert::Convert(Error *e) {
 	error = e;
 	SETTINGS;
