@@ -23,6 +23,8 @@ class Error
 		int newe;
 		int newvar;
 		QString newextra;
+		
+		void loadSettings();
 		  
 		Error();
 		

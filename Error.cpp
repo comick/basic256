@@ -11,14 +11,16 @@ Error::Error() {
 	newe = ERROR_NONE;
 	newvar = -1;
 	newextra = "";
+	loadSettings();
+}
+
+void Error::loadSettings() {
 	// get the error reporting flags from settings
 	// typeconverror	0- report no errors 1 - report problems as warning 	2 - report problems as an error
 	SETTINGS;
 	typeconverror = settings.value(SETTINGSTYPECONV, SETTINGSTYPECONVDEFAULT).toInt();
 	varnotassignederror = settings.value(SETTINGSVARNOTASSIGNED, SETTINGSVARNOTASSIGNEDDEFAULT).toInt();
-
 }
-
 
 bool Error::pending() {
 	// there is a pending error that needs to be handled
@@ -54,8 +56,8 @@ void Error::q(int errornumber, int variablenumber, QString extratext) {
 		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
 	}
 	if (errornumber==ERROR_VARNOTASSIGNED) {
-		if (typeconverror==SETTINGSERRORNONE) return;
-		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
+		if (varnotassignederror==SETTINGSERRORNONE) return;
+		if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
 	}
 	newe = errornumber;
 	newvar = variablenumber;
@@ -337,6 +339,8 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
 			if (symtable[variablenumber]) {
 				errormessage.replace(QString("%VARNAME%"),QString(symtable[variablenumber]),Qt::CaseInsensitive);
+			} else {
+				errormessage.replace(QString("%VARNAME%"),QString("unknown"),Qt::CaseInsensitive);
 			}
 		}
 	}

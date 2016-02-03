@@ -773,48 +773,46 @@ Interpreter::compileProgram(char *code) {
 
 void
 Interpreter::initialize() {
-
-    op = wordCode;
-    callstack = NULL;
-    onerrorstack = NULL;
-    forstack = NULL;
-    fastgraphics = false;
-    drawingpen = QPen(Qt::black);
-    drawingbrush = QBrush(Qt::black, Qt::SolidPattern);
-    status = R_RUNNING;
-    once = true;
-    currentLine = 1;
-    currentIncludeFile = QString("");
-    emit(mainWindowsResize(1, 300, 300));
-    fontfamily = QString("");
-    fontpoint = 0;
-    fontweight = 0;
-    nsprites = 0;
-    printing = false;
-    regexMinimal = false;
-    runtimer.start();
-    // clickclear mouse status
-    graphwin->clickX = 0;
-    graphwin->clickY = 0;
-    graphwin->clickB = 0;
-    // initialize files to NULL (closed)
-    filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
-    filehandletype = (int*) malloc(NUMFILES * sizeof(int));
-    for (int t=0; t<NUMFILES; t++) {
-        filehandle[t] = NULL;
-        filehandletype[t] = 0;
-    }
-    // initialize network sockets to closed (-1)
-    for (int t=0; t<NUMSOCKETS; t++) {
-        netsockfd[t] = netSockClose(netsockfd[t]);
-    }
-    // initialize databse connections
-    // by closing any that were previously open
-    for (int t=0; t<NUMDBCONN; t++) {
-        closeDatabase(t);
-    }
-
-
+	error->loadSettings();
+	op = wordCode;
+	callstack = NULL;
+	onerrorstack = NULL;
+	forstack = NULL;
+	fastgraphics = false;
+	drawingpen = QPen(Qt::black);
+	drawingbrush = QBrush(Qt::black, Qt::SolidPattern);
+	status = R_RUNNING;
+	once = true;
+	currentLine = 1;
+	currentIncludeFile = QString("");
+	emit(mainWindowsResize(1, 300, 300));
+	fontfamily = QString("");
+	fontpoint = 0;
+	fontweight = 0;
+	nsprites = 0;
+	printing = false;
+	regexMinimal = false;
+	runtimer.start();
+	// clickclear mouse status
+	graphwin->clickX = 0;
+	graphwin->clickY = 0;
+	graphwin->clickB = 0;
+	// initialize files to NULL (closed)
+	filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
+	filehandletype = (int*) malloc(NUMFILES * sizeof(int));
+	for (int t=0; t<NUMFILES; t++) {
+		filehandle[t] = NULL;
+		filehandletype[t] = 0;
+	}
+	// initialize network sockets to closed (-1)
+	for (int t=0; t<NUMSOCKETS; t++) {
+		netsockfd[t] = netSockClose(netsockfd[t]);
+	}
+	// initialize databse connections
+	// by closing any that were previously open
+	for (int t=0; t<NUMDBCONN; t++) {
+		closeDatabase(t);
+	}
 }
 
 
@@ -1059,7 +1057,7 @@ Interpreter::execByteCode() {
 
 							if (temp->intStep > 0 && val <= temp->intEndNum) {
 								op = temp->returnAddr;
-							} else if (temp->intStep < 0 && val >= temp->floatEndNum) {
+							} else if (temp->intStep < 0 && val >= temp->intEndNum) {
 								op = temp->returnAddr;
 							} else {
 								forstack = temp->next;
@@ -1242,6 +1240,7 @@ Interpreter::execByteCode() {
 						error->q(ERROR_ARRAYINDEXMISSING);
 						delete(e);
 					} else {
+						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, 0);
 						variables->setdata(i, e);
 						if(debugMode != 0) {
 							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));

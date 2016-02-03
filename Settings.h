@@ -27,6 +27,7 @@
 
 	// main window
 	#define SETTINGSVISIBLE "Main/Visible"
+	#define SETTINGSFLOATVISIBLE "Main/Visible"
 	#define SETTINGSPOS "Main/Pos"
 	#define SETTINGSDEFAULT_X 100
 	#define SETTINGSDEFAULT_Y 100
@@ -40,6 +41,8 @@
     #define SETTINGSEDITWHITESPACE "Edit/Whitespace"
     #define SETTINGSEDITWHITESPACEDEFAULT false
     
+    #define SETTINGSEDITVISIBLE "EditDock/Visible"
+
     #define SETTINGSOUTVISIBLE "OutDock/Visible"
     #define SETTINGSOUTFLOAT "OutDock/Float"
     #define SETTINGSOUTPOS "OutDock/Pos"

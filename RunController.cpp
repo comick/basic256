@@ -446,16 +446,16 @@ void
 RunController::mainWindowsVisible(int w, bool v) {
     if (w==0) mainwin->editWinVisibleAct->setChecked(v);
     if (w==1) mainwin->graphWinVisibleAct->setChecked(v);
-    if (w==2) mainwin->textWinVisibleAct->setChecked(v);
+    if (w==2) mainwin->outWinVisibleAct->setChecked(v);
 }
 
 void
 RunController::mainWindowsResize(int w, int width, int height) {
     // only resize graphics window now - may add other windows later
     mymutex->lock();
-    if (w==1) {
-        graphwin->resize(width, height);
-    }
+    if (w==0) editwin->resize(width, height);
+    if (w==1) graphwin->resize(width, height);
+    if (w==2) outwin->resize(width, height);
     waitCond->wakeAll();
     mymutex->unlock();
 }

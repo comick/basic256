@@ -85,7 +85,7 @@ public:
 	// view menu
 	QMenu *viewmenu;
 	QAction *editWinVisibleAct;
-	QAction *textWinVisibleAct;
+	QAction *outWinVisibleAct;
 	QAction *graphWinVisibleAct;
 	QAction *variableWinVisibleAct;
 	QAction *editWhitespaceAct;
@@ -111,6 +111,7 @@ public slots:
 
 private:
 
+	DockWidget * editdock;
 	DockWidget * outdock;
 	DockWidget * graphdock;
 	QScrollArea * graphscroll;
