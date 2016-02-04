@@ -132,35 +132,35 @@ call n("int1-10 t", typeof(t), TYPE_INT)
 call n("int1-10 total", t, 55)
 t = 0
 for i = 10 to 1 step -1
-call n("int10-1 i", typeof(i), TYPE_INT)
+call n("int10-1 i="+i, typeof(i), TYPE_INT)
    t+=i
 next i
 call n("int10-1 t", typeof(t), TYPE_INT)
 call n("int10-1 total", t, 55)
 t = 0
 for i = 1 to 10 step 2
-call n("int1-10,2 i", typeof(i), TYPE_INT)
+call n("int1-10,2 i="+i, typeof(i), TYPE_INT)
    t+=i
 next i
 call n("int1-10,2 t", typeof(t), TYPE_INT)
 call n("int1-10,2 total", t, 25)
 t = 0
 for i = 9 to -1 step -2
-call n("int9-0,-2 i", typeof(i), TYPE_INT)
+call n("int9-0,-2 i="+i, typeof(i), TYPE_INT)
    t+=i
 next i
 call n("int9-0,-2 t", typeof(t), TYPE_INT)
-call n("int9-0,-2 total", t, 25)
+call n("int9-0,-2 total", t, 24)
 t = 0
 for i = .5 to 9.5 step .5
-call n("float.5-9,5,.5 i", typeof(i), TYPE_FLOAT)
+call n("float.5-9,5,.5 i="+i, typeof(i), TYPE_FLOAT)
    t+=i
 next i
 call n("float.5-9,5,.5 t", typeof(t), TYPE_FLOAT)
 call n("float.5-9,5,.5 total", t, 95)
 t = 0
 for i = 9.5 to .5 step -.5
-call n("float9.5-,5,-.5 i", typeof(i), TYPE_FLOAT)
+call n("float9.5-,5,-.5 i="+i, typeof(i), TYPE_FLOAT)
    t+=i
 next i
 call n("float9.5-,5,-.5 t", typeof(t), TYPE_FLOAT)

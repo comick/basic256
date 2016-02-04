@@ -9,6 +9,7 @@ TARGET						=	basic256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g
+QMAKE_CXXFLAGS				+=	-std=c++11
 QMAKE_YACCFLAGS				+=	--verbose
 CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj

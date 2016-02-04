@@ -13,6 +13,7 @@ TARGET						=	BASIC256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g 
+QMAKE_CXXFLAGS				+=	-std=c++11
 CONFIG						+=	 qt debug_and_release
 
 QT						+=	webkit

@@ -36,6 +36,8 @@
 # 20151114	j.m.reneau	added types include
 # 20151127	j.m.reneau	moved requirement to 1.99.99.2
 # 20151204	j.m.reneau	added neq preverence for VNA errors 1.99.99.6
+# 20160203      j.m.reneau      added reverse for loop testing and requirement for
+#                               system to be enabled
 
 include "testsuite_common_include.kbs"
 
@@ -63,10 +65,13 @@ print "  'Runtime Handling of variable not assigned' must set to Warn"
 print "On the 'Printing' tab"
 print "  'Printer' must set to PDF File Output"
 print "  'PDF FileName' must be set to a name of a temporary file with the pdf extension"
+print "On the 'Advanced' tab"
+print "  'Allow SYSTEM statement' must be checked"
 print
 call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
 call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/VNA"),"1")
 # make sure printer setting are correct
+call s("Allow SYSTEM Statement", getSetting("SYSTEM","Allow/System"),"true")
 call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
 call sne("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
 
