@@ -9,7 +9,6 @@ TARGET						=	basic256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g
-QMAKE_CXXFLAGS				+=	-std=c++11
 QMAKE_YACCFLAGS				+=	--verbose
 CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
@@ -40,6 +39,7 @@ win32 {
 								-lws2_32 \
 								-lwinmm
 
+    QMAKE_CXXFLAGS				+=	-std=c++11
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign
 
@@ -133,10 +133,6 @@ macx {
 	# macintosh
 	DEFINES					+=	MACX
 	DEFINES					+=	MACX_SAY
-
-    QMAKE_CXXFLAGS          +=  -Wgnu-static-float-init
-    QMAKE_CXXFLAGS          +=  -Wc++11-extensions
-    QMAKE_CXXFLAGS          +=  -Wc++11-long-long
 
 	ICON					=	resources/basic256.icns
 

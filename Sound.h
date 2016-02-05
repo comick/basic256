@@ -3,10 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-
-#ifndef M_PI
-    #define M_PI 3.14159265
-#endif
+#include "Constants.h"
 
 #ifdef SOUND_DSP
 #endif
@@ -28,7 +25,7 @@
 #endif
 
 #ifdef SOUND_WIN32
-	#include <windows.h> 
+	#include <windows.h>
 	#include <mmsystem.h>
 #endif
 

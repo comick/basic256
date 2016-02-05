@@ -58,13 +58,13 @@ BasicGraph::resize(int width, int height) {
     gwidth  = width;
     gheight = height;
     setMinimumSize(gwidth, gheight);
-    
+
     // delete the old image and then create a new one the right size
     delete image;
     image = NULL;;
     image = new QImage(width, height, QImage::Format_ARGB32);
 	image->fill(QColor(0,0,0,0));
-    
+
     mouseX = 0;
     mouseY = 0;
     mouseB = 0;
@@ -72,18 +72,18 @@ BasicGraph::resize(int width, int height) {
     clickY = 0;
     clickB = 0;
     setMouseTracking(true);
-    
+
     // graphwinwidget is parent - force resize
     BasicWidget * gww = (BasicWidget *) parentWidget();
     if (gww) {
 		gww->adjustSize();
 		// now center scroll area
-		QScrollArea * sa = (QScrollArea *) gww->parentWidget();
-		if(sa) {
-			sa->ensureWidgetVisible(this, width/2, height/2);
-		}
+		//QScrollArea * sa = (QScrollArea *) gww->parentWidget();
+		//if(sa) {
+		//	sa->ensureWidgetVisible(image, width/2, height/2);
+		//}
 	}
-	
+
 
  }
 

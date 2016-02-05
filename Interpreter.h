@@ -28,6 +28,7 @@
 #include <cmath>
 #include <dirent.h>
 #include "BasicGraph.h"
+#include "Constants.h"
 #include "DataElement.h"
 #include "Error.h"
 #include "Convert.h"
@@ -52,10 +53,6 @@
 
 #ifndef USEQSOUND
 	#include "BasicMediaPlayer.h"
-#endif
-
-#ifndef M_PI
-    #define M_PI 3.14159265
 #endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
@@ -92,7 +89,7 @@ struct onerrorframe {
   bool onerrorgosub;
 };
 
-// structure for the nested for statements  
+// structure for the nested for statements
 // if useInt then make loop integer safe
 struct forframe {
   forframe *next;
@@ -224,4 +221,4 @@ class Interpreter : public QThread
 };
 
 
-#endif 
+#endif

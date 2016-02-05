@@ -12,6 +12,7 @@
 #include "Settings.h"
 #include "Error.h"
 #include "DataElement.h"
+#include "Constants.h"
 
 // convert and compare functions
 // to change DataElement into float, int, or QString and to do string and
@@ -35,8 +36,6 @@ class Convert
 
 		int compare(DataElement*, DataElement*);
 		int compareFloats(double, double);
-
-		const double EPSILON = 0.00000001;
 
 	private:
 		Error *error;

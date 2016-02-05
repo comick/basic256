@@ -117,8 +117,8 @@ RunController::RunController() {
 	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
 	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
 #endif
-    
- 
+
+
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
     QObject::connect(i, SIGNAL(varAssignment(int, QString, QString, int, int)), varwin, SLOT(varAssignment(int, QString, QString, int, int)));
@@ -145,10 +145,11 @@ RunController::~RunController() {
 
 void
 RunController::speakWords(QString text) {
-    mymutex->lock();
 #ifdef ESPEAK
     SETTINGS;
     espeak_ERROR err;
+
+    mymutex->lock();
 
     // espeak tts library
     int synth_flags = espeakCHARS_UTF8 | espeakPHONEMES | espeakENDPAUSE;
@@ -180,9 +181,13 @@ RunController::speakWords(QString text) {
     } else {
         printf("Unable to initialize espeak\n");
     }
+    waitCond->wakeAll();
+    mymutex->unlock();
+
 #endif
 #ifdef ESPEAK_EXECUTE
     // easy espeak implementation when all else fails
+    // mutex handled by executeSystem
     text.replace("\""," quote ");
     text.prepend("espeak \"");
     text.append("\"");
@@ -190,16 +195,19 @@ RunController::speakWords(QString text) {
 #endif
 #ifdef MACX_SAY
     // easy macosX implementation - call the command line say statement
+    // mutex handled by executeSystem
     text.replace("\""," quote ");
     text.prepend("say \"");
     text.append("\"");
+    fprintf(stderr,"MACX_SAY %s\n", text.toStdString().c_str());
     executeSystem(text);
 #endif
 #ifdef ANDROID
+    mymutex->lock();
     androidtts->say(text);
-#endif
     waitCond->wakeAll();
     mymutex->unlock();
+#endif
 
 }
 
@@ -606,4 +614,3 @@ void RunController::stopWAV()
 }
 
 #endif
-

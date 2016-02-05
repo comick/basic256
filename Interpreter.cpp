@@ -74,6 +74,7 @@ using namespace std;
 #include "md5.h"
 #include "Settings.h"
 #include "Sound.h"
+#include "Constants.h"
 
 
 extern QMutex *mymutex;
@@ -992,13 +993,13 @@ Interpreter::execByteCode() {
             switch(opcode) {
 
 				case OP_FOR: {
-					
+
 					forframe *temp = new forframe;
-					
+
 					DataElement *stepE = stack->popelement();
 					DataElement *endnumE = stack->popelement();
 					DataElement *startnumE = stack->popelement();
-	
+
 					variables->setdata(i, startnumE);	// set variable to initial value
 					if(debugMode != 0) {
 						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
@@ -1032,7 +1033,7 @@ Interpreter::execByteCode() {
 					temp->returnAddr = op;
 
 					forstack = temp;
-					
+
 					// dont delete startnumE because assigned to variable
 					delete(endnumE);
 					delete(stepE);
@@ -1041,7 +1042,7 @@ Interpreter::execByteCode() {
 
 				case OP_NEXT: {
 					forframe *temp = forstack;
-					
+
 					//while (temp && temp->variable != i) {
 					//	temp = temp->next;
 					//}
@@ -1084,7 +1085,7 @@ Interpreter::execByteCode() {
 
 				}
 				break;
-				
+
                 case OP_DIM:
                 case OP_REDIM: {
                     int ydim = stack->popint();
@@ -1259,7 +1260,7 @@ Interpreter::execByteCode() {
 					} else {
 						error->q(ERROR_BYREF);
 						delete(e);
-						
+
 					}
 				}
 				break;
@@ -1288,7 +1289,7 @@ Interpreter::execByteCode() {
             int i = *op;  // integer for opcodes of this type
             op++;
             switch(opcode) {
-				
+
 				case OP_CURRLINE: {
 					// opcode currentline is compound and includes level and line number
 					int includelevel = i / 0x1000000;
@@ -1322,7 +1323,7 @@ Interpreter::execByteCode() {
 				case OP_ARRAYLISTASSIGN: {
 
 					int items = stack->popint();
-					
+
 					variables->arraydim(i, items, 1, false);
 					if(!error->pending()) {
 						if(debugMode != 0) {
@@ -1616,10 +1617,10 @@ Interpreter::execByteCode() {
 										case 0:
 											if(!p->setFlowControl(QSerialPort::NoFlowControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
-										case 1: 
+										case 1:
 											if(!p->setFlowControl(QSerialPort::HardwareControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
-										case 2: 
+										case 2:
 											if(!p->setFlowControl(QSerialPort::SoftwareControl)) error->q(ERROR_SERIALPARAMETER);
 											break;
 										default:
@@ -1934,7 +1935,7 @@ Interpreter::execByteCode() {
 					// bigger integer safe (trim floating point off of a float)
 					double val = stack->popfloat();
 					double intpart;
-					val = modf(val + (val>0?convert->EPSILON:-convert->EPSILON), &intpart);
+					val = modf(val + (val>0?EPSILON:-EPSILON), &intpart);
 					stack->pushfloat(intpart);
 				}
 				break;
@@ -2112,15 +2113,15 @@ Interpreter::execByteCode() {
                     stack->pushint(pos);
                 }
                 break;
-                
-                
+
+
 				case OP_INSTRX: {
 					// regex instr
 					int start = stack->popint();
 					QRegExp expr = QRegExp(stack->popstring());
 					expr.setMinimal(regexMinimal);
 					QString qtemp = stack->popstring();
-					
+
 					int pos=0;
 
 					if(start < 1) {
@@ -2231,18 +2232,18 @@ Interpreter::execByteCode() {
 				}
 
 				case OP_ADD:
-				case OP_SUB: 
+				case OP_SUB:
 				case OP_MUL:
 				case OP_MOD: {
 					// integer and float safe operations
-					
+
 					DataElement *one = stack->popelement();
 					DataElement *two = stack->popelement();
 					switch (opcode) {
 						case OP_ADD:
 							// add is fancy because it concatenates if either are a string
 							// adds integers as integers or converts to floats
-							
+
 							if (one->type==T_STRING || two->type==T_STRING) {
 								// concatenate (if either are a string then we concatenate)
 								QString sone = convert->getString(one);
@@ -2288,7 +2289,7 @@ Interpreter::execByteCode() {
 								}
 							}
 							break;
-								
+
 						case OP_MUL:
 							if (one->type==T_INT && two->type==T_INT) {
 								// integer multiply
@@ -2306,7 +2307,7 @@ Interpreter::execByteCode() {
 								}
 							}
 							break;
-								
+
 						case OP_MOD:
 							if (one->type==T_INT && two->type==T_INT) {
 								// integer modulo
@@ -2324,16 +2325,16 @@ Interpreter::execByteCode() {
 								}
 							}
 							break;
-								
-								
-								
+
+
+
 						}
 						delete(one);
 						delete(two);
 						break;
 					}
-     
-                        
+
+
 				case OP_EX: {
 					// always return a float value with power "^"
 					double oneval = stack->popfloat();
@@ -2352,7 +2353,7 @@ Interpreter::execByteCode() {
 					}
 					break;
 				}
-                        
+
 				case OP_DIV: {
 					// always return a float value with division "/"
 					double oneval = stack->popfloat();
@@ -2385,7 +2386,7 @@ Interpreter::execByteCode() {
 					break;
 				}
 
- 
+
                 case OP_AND: {
                     int one = stack->popint();
                     int two = stack->popint();
@@ -3305,7 +3306,7 @@ Interpreter::execByteCode() {
                             poly->drawPolygon(points, pairs);
                             poly->end();
 							delete poly;
-							
+
                             if (sprites[n].underimage) {
                                 // free previous underimage before replacing
                                 delete sprites[n].underimage;
@@ -4194,7 +4195,7 @@ Interpreter::execByteCode() {
 
                     // 0 sensitive (default) - opposite of QT
                     Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
-                    
+
                     QString qneedle = stack->popstring();
                     QString qhaystack = stack->popstring();
 
