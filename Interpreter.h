@@ -188,6 +188,7 @@ class Interpreter : public QThread
   run_status oldstatus;
   bool fastgraphics;
   QString inputString;
+  int inputType;				// data type to convert the input into
   bool once;
   int currentLine;
   QString fontfamily;

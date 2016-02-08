@@ -15,296 +15,295 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
 %{
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+	#ifdef __cplusplus
+		extern "C" {
+	#endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "../BasicTypes.h"
-#include "../WordCodes.h"
-#include "../CompileErrors.h"
-#include "../ErrorCodes.h"
-#include "../Version.h"
-
-
-#define SYMTABLESIZE 2000
-#define IFTABLESIZE 1000
-#define PARSEWARNINGTABLESIZE 10
-
-extern int yylex();
-extern char *yytext;
-int yyerror(const char *);
-int errorcode;
-extern int column;
-extern int linenumber;
-extern char *lexingfilename;
-extern int numincludes;
-
-int *wordCode = NULL;
-unsigned int maxwordoffset = 0;		// size of the current wordCode array
-unsigned int wordOffset = 0;		// current location on the WordCode array
-
-unsigned int listlen = 0;
-
-unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
-int nvarnumber=0;
+	#include <stdlib.h>
+	#include <stdio.h>
+	#include <string.h>
+	#include "../BasicTypes.h"
+	#include "../WordCodes.h"
+	#include "../CompileErrors.h"
+	#include "../ErrorCodes.h"
+	#include "../Version.h"
 
 
-int functionDefSymbol = -1;	// if in a function definition (what is the symbol number) -1 = not in fundef
-int subroutineDefSymbol = -1;	// if in a subroutine definition (what is the symbol number) -1 = not in fundef
+	#define SYMTABLESIZE 2000
+	#define IFTABLESIZE 1000
+	#define PARSEWARNINGTABLESIZE 10
 
-struct label
-{
-	char *name;
-	int offset;
-};
+	extern int yylex();
+	extern char *yytext;
+	int yyerror(const char *);
+	int errorcode;
+	extern int column;
+	extern int linenumber;
+	extern char *lexingfilename;
+	extern int numincludes;
 
-char *EMPTYSTR = "";
-char *symtable[SYMTABLESIZE];
-int labeltable[SYMTABLESIZE];
-int numsyms = 0;
+	int *wordCode = NULL;
+	unsigned int maxwordoffset = 0;		// size of the current wordCode array
+	unsigned int wordOffset = 0;		// current location on the WordCode array
 
+	unsigned int listlen = 0;
 
-// array to hold stack of if statement branch locations
-// that need to have final jump location added to them
-// the iftable is also used by for, subroutine, and function to insure
-// that no if,do,while,... is nested incorrectly
-unsigned int iftablesourceline[IFTABLESIZE];
-unsigned int iftabletype[IFTABLESIZE];
-int iftableid[IFTABLESIZE];			// used to store a sequential number for this if - unique label creation
-int iftableincludes[IFTABLESIZE];			// used to store the include depth of the code
-int numifs = 0;
-int nextifid;
-
-#define IFTABLETYPEIF 1
-#define IFTABLETYPEELSE 2
-#define IFTABLETYPEDO 3
-#define IFTABLETYPEWHILE 4
-#define IFTABLETYPEFOR 5
-#define IFTABLETYPEFUNCTION 6
-#define IFTABLETYPETRY 7
-#define IFTABLETYPECATCH 8
-#define IFTABLETYPEBEGINCASE 9
-#define IFTABLETYPECASE 10
+	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
+	int nvarnumber=0;
 
 
-// store the function variables here during a function definition
-unsigned int args[100];
-unsigned int argstype[100];
-int numargs = 0;
+	int functionDefSymbol = -1;	// if in a function definition (what is the symbol number) -1 = not in fundef
+	int subroutineDefSymbol = -1;	// if in a subroutine definition (what is the symbol number) -1 = not in fundef
 
-#define ARGSTYPEVALUE 0
-#define ARGSTYPEVARREF 1
+	struct label
+	{
+		char *name;
+		int offset;
+	};
 
-// compiler workings - store in array so that interperter can display all of them
-int parsewarningtable[PARSEWARNINGTABLESIZE];
-int parsewarningtablelinenumber[PARSEWARNINGTABLESIZE];
-int parsewarningtablecolumn[PARSEWARNINGTABLESIZE];
-char *parsewarningtablelexingfilename[PARSEWARNINGTABLESIZE];
-int numparsewarnings = 0;
+	char *EMPTYSTR = "";
+	char *symtable[SYMTABLESIZE];
+	int labeltable[SYMTABLESIZE];
+	int numsyms = 0;
 
-int
-basicParse(char *);
 
-void checkWordMem(unsigned int addedwords) {
-	unsigned int t;
-	if (wordOffset + addedwords + 1 >= maxwordoffset) {
-		maxwordoffset += maxwordoffset + addedwords + 1024;
-		wordCode = realloc(wordCode, maxwordoffset * sizeof(int));
-		for (t=wordOffset; t<maxwordoffset; t++) {
-			*(wordCode+t) = 0;
+	// array to hold stack of if statement branch locations
+	// that need to have final jump location added to them
+	// the iftable is also used by for, subroutine, and function to insure
+	// that no if,do,while,... is nested incorrectly
+	unsigned int iftablesourceline[IFTABLESIZE];
+	unsigned int iftabletype[IFTABLESIZE];
+	int iftableid[IFTABLESIZE];			// used to store a sequential number for this if - unique label creation
+	int iftableincludes[IFTABLESIZE];			// used to store the include depth of the code
+	int numifs = 0;
+	int nextifid;
+
+	#define IFTABLETYPEIF 1
+	#define IFTABLETYPEELSE 2
+	#define IFTABLETYPEDO 3
+	#define IFTABLETYPEWHILE 4
+	#define IFTABLETYPEFOR 5
+	#define IFTABLETYPEFUNCTION 6
+	#define IFTABLETYPETRY 7
+	#define IFTABLETYPECATCH 8
+	#define IFTABLETYPEBEGINCASE 9
+	#define IFTABLETYPECASE 10
+
+
+	// store the function variables here during a function definition
+	unsigned int args[100];
+	unsigned int argstype[100];
+	int numargs = 0;
+
+	#define ARGSTYPEVALUE 0
+	#define ARGSTYPEVARREF 1
+
+	// compiler workings - store in array so that interperter can display all of them
+	int parsewarningtable[PARSEWARNINGTABLESIZE];
+	int parsewarningtablelinenumber[PARSEWARNINGTABLESIZE];
+	int parsewarningtablecolumn[PARSEWARNINGTABLESIZE];
+	char *parsewarningtablelexingfilename[PARSEWARNINGTABLESIZE];
+	int numparsewarnings = 0;
+
+	int
+	basicParse(char *);
+
+	void checkWordMem(unsigned int addedwords) {
+		unsigned int t;
+		if (wordOffset + addedwords + 1 >= maxwordoffset) {
+			maxwordoffset += maxwordoffset + addedwords + 1024;
+			wordCode = realloc(wordCode, maxwordoffset * sizeof(int));
+			for (t=wordOffset; t<maxwordoffset; t++) {
+				*(wordCode+t) = 0;
+			}
 		}
 	}
-}
 
-int bytesToFullWords(unsigned int size) {
-	// return how many words will be needed to store "size" bytes
-	return((size + sizeof(int) - 1) / sizeof(int));
-}
-
-void addOp(int op) {
-	checkWordMem(1);
-	wordCode[wordOffset] = op;
-	wordOffset++;
-}
-
-void addIntOp(int op, int data) {
-	addOp(op);
-	addOp(data);
-}
-
-
-void addFloatOp(int op, double data) {
-	addOp(op);
-	unsigned int wlen = bytesToFullWords(sizeof(double));
-	checkWordMem(wlen);
-	double *temp = (double *) (wordCode + wordOffset);
-	*temp = data;
-	wordOffset += wlen;
-}
-
-void addStringOp(int op, char *data) {
-	addOp(op);
-	unsigned int len = strlen(data) + 1;
-	unsigned int wlen = bytesToFullWords(len);
-	checkWordMem(wlen);
-	strncpy((char *) (wordCode + wordOffset), data, len);
-	wordOffset += wlen;
-}
-
-void
-clearIfTable() {
-	int j;
-	for (j = 0; j < IFTABLESIZE; j++) {
-		iftablesourceline[j] = -1;
-		iftabletype[j] = -1;
-		iftableid[j] = -1;
-		iftableincludes[j] = -1;
+	int bytesToFullWords(unsigned int size) {
+		// return how many words will be needed to store "size" bytes
+		return((size + sizeof(int) - 1) / sizeof(int));
 	}
-	numifs = 0;
-	nextifid = 0;
-}
 
-int testIfOnTable(int includelevel) {
-	// return line number if there is an unfinished while.do.if.else
-	// or send back -1
-	if (numifs >=1 ) {
-		if (iftableincludes[numifs-1]>=includelevel) {
-			return iftablesourceline[numifs-1];
+	void addOp(int op) {
+		checkWordMem(1);
+		wordCode[wordOffset] = op;
+		wordOffset++;
+	}
+
+	void addIntOp(int op, int data) {
+		addOp(op);
+		addOp(data);
+	}
+
+
+	void addFloatOp(int op, double data) {
+		addOp(op);
+		unsigned int wlen = bytesToFullWords(sizeof(double));
+		checkWordMem(wlen);
+		double *temp = (double *) (wordCode + wordOffset);
+		*temp = data;
+		wordOffset += wlen;
+	}
+
+	void addStringOp(int op, char *data) {
+		addOp(op);
+		unsigned int len = strlen(data) + 1;
+		unsigned int wlen = bytesToFullWords(len);
+		checkWordMem(wlen);
+		strncpy((char *) (wordCode + wordOffset), data, len);
+		wordOffset += wlen;
+	}
+
+	void
+	clearIfTable() {
+		int j;
+		for (j = 0; j < IFTABLESIZE; j++) {
+			iftablesourceline[j] = -1;
+			iftabletype[j] = -1;
+			iftableid[j] = -1;
+			iftableincludes[j] = -1;
 		}
+		numifs = 0;
+		nextifid = 0;
 	}
-	return -1;
-}
 
-int testIfOnTableError(int includelevel) {
-	// return Error number if there is an unfinished while.do.if.else
-	// or send back 0
-	if (numifs >=1 ) {
-		if (iftableincludes[numifs-1]>=includelevel) {
-			if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPETRY) return COMPERR_TRYNOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
-			if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
+	int testIfOnTable(int includelevel) {
+		// return line number if there is an unfinished while.do.if.else
+		// or send back -1
+		if (numifs >=1 ) {
+			if (iftableincludes[numifs-1]>=includelevel) {
+				return iftablesourceline[numifs-1];
+			}
 		}
+		return -1;
 	}
-	return 0;
-}
 
-void
-clearLabelTable() {
-	int j;
-	for (j = 0; j < SYMTABLESIZE; j++) {
-		labeltable[j] = -1;
+	int testIfOnTableError(int includelevel) {
+		// return Error number if there is an unfinished while.do.if.else
+		// or send back 0
+		if (numifs >=1 ) {
+			if (iftableincludes[numifs-1]>=includelevel) {
+				if (iftabletype[numifs-1]==IFTABLETYPEIF) return COMPERR_IFNOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEELSE) return COMPERR_ELSENOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEDO) return COMPERR_DONOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEWHILE) return COMPERR_WHILENOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEFOR) return COMPERR_FORNOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) return COMPERR_FUNCTIONNOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPETRY) return COMPERR_TRYNOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
+			}
+		}
+		return 0;
 	}
-}
 
-void
-clearSymbolTable() {
-	int j;
-	if (numsyms == 0) {
+	void
+	clearLabelTable() {
+		int j;
 		for (j = 0; j < SYMTABLESIZE; j++) {
+			labeltable[j] = -1;
+		}
+	}
+
+	void
+	clearSymbolTable() {
+		int j;
+		if (numsyms == 0) {
+			for (j = 0; j < SYMTABLESIZE; j++) {
+				symtable[j] = 0;
+			}
+		}
+		for (j = 0; j < numsyms; j++) {
+			if (symtable[j]) {
+				free(symtable[j]);
+			}
 			symtable[j] = 0;
 		}
+		numsyms = 0;
 	}
-	for (j = 0; j < numsyms; j++) {
-		if (symtable[j]) {
-			free(symtable[j]);
+
+	int newIf(int sourceline, int type) {
+		iftablesourceline[numifs] = sourceline;
+		iftabletype[numifs] = type;
+		iftableid[numifs] = nextifid;
+		iftableincludes[numifs] = numincludes;
+		nextifid++;
+		numifs++;
+		return numifs - 1;
+	}
+
+	void newParseWarning(int type) {
+		// add warning to warnings table (if not maximum)
+		if (numparsewarnings<PARSEWARNINGTABLESIZE) {
+			parsewarningtable[numparsewarnings] = type;
+			parsewarningtablelinenumber[numparsewarnings] = linenumber;
+			parsewarningtablecolumn[numparsewarnings] = column;
+			parsewarningtablelexingfilename[numparsewarnings] = strdup(lexingfilename);
+			numparsewarnings++;
+		} else {
+			parsewarningtable[numparsewarnings-1] = COMPWARNING_MAXIMUMWARNINGS;
+			parsewarningtablelinenumber[numparsewarnings-1] = 0;
+			parsewarningtablecolumn[numparsewarnings-1] = 0;
+			free(parsewarningtablelexingfilename[numparsewarnings-1]);
+			parsewarningtablelexingfilename[numparsewarnings-1] = strdup("");
 		}
-		symtable[j] = 0;
 	}
-	numsyms = 0;
-}
 
-int newIf(int sourceline, int type) {
-	iftablesourceline[numifs] = sourceline;
-	iftabletype[numifs] = type;
-	iftableid[numifs] = nextifid;
-	iftableincludes[numifs] = numincludes;
-	nextifid++;
-	numifs++;
-	return numifs - 1;
-}
-
-void newParseWarning(int type) {
-	// add warning to warnings table (if not maximum)
-	if (numparsewarnings<PARSEWARNINGTABLESIZE) {
-		parsewarningtable[numparsewarnings] = type;
-		parsewarningtablelinenumber[numparsewarnings] = linenumber;
-		parsewarningtablecolumn[numparsewarnings] = column;
-		parsewarningtablelexingfilename[numparsewarnings] = strdup(lexingfilename);
-		numparsewarnings++;
-	} else {
-		parsewarningtable[numparsewarnings-1] = COMPWARNING_MAXIMUMWARNINGS;
-		parsewarningtablelinenumber[numparsewarnings-1] = 0;
-		parsewarningtablecolumn[numparsewarnings-1] = 0;
-		free(parsewarningtablelexingfilename[numparsewarnings-1]);
-		parsewarningtablelexingfilename[numparsewarnings-1] = strdup("");
-	}
-}
-
-int getSymbol(char *name) {
-	// get a symbol if it exists or create a new one on the symbol table
-	int i;
-	for (i = 0; i < numsyms; i++) {
-		if (symtable[i] && !strcmp(name, symtable[i]))
-			return i;
-	}
-	symtable[numsyms] = strdup(name);
-	numsyms++;
-	return numsyms - 1;
-}
-
-#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
-#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
-#define INTERNALSYMBOLTOP 2 // at the end of the loop - all done
-
-int getInternalSymbol(int id, int type) {
-	// an internal symbol used to jump an if
-	char name[32];
-	sprintf(name,"___%d_%d", id, type);
-	return getSymbol(name);
-}
-
-int newWordCode() {
-	unsigned int t;
-	if (wordCode) {
-		free(wordCode);
-	}
-	maxwordoffset = 1024;
-	wordCode = malloc(maxwordoffset * sizeof(int));
-
-	if (wordCode) {
-		for (t=0; t<maxwordoffset; t++) {
-			*(wordCode+t) = 0;
+	int getSymbol(char *name) {
+		// get a symbol if it exists or create a new one on the symbol table
+		int i;
+		for (i = 0; i < numsyms; i++) {
+			if (symtable[i] && !strcmp(name, symtable[i]))
+				return i;
 		}
-		wordOffset = 0;
-		linenumber = 1;
-		addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
-		return 0; 	// success in creating and filling
+		symtable[numsyms] = strdup(name);
+		numsyms++;
+		return numsyms - 1;
 	}
-	return -1;
-}
+
+	#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
+	#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
+	#define INTERNALSYMBOLTOP 2 // at the end of the loop - all done
+
+	int getInternalSymbol(int id, int type) {
+		// an internal symbol used to jump an if
+		char name[32];
+		sprintf(name,"___%d_%d", id, type);
+		return getSymbol(name);
+	}
+
+	int newWordCode() {
+		unsigned int t;
+		if (wordCode) {
+			free(wordCode);
+		}
+		maxwordoffset = 1024;
+		wordCode = malloc(maxwordoffset * sizeof(int));
+
+		if (wordCode) {
+			for (t=0; t<maxwordoffset; t++) {
+				*(wordCode+t) = 0;
+			}
+			wordOffset = 0;
+			linenumber = 1;
+			addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+			return 0; 	// success in creating and filling
+		}
+		return -1;
+	}
 
 
 
-#ifdef __cplusplus
-}
-#endif
+	#ifdef __cplusplus
+	}
+	#endif
 
 %}
 
-%token B256PRINT B256INPUT B256KEY
+%token B256PRINT B256INPUT B256INPUTSTRING B256INPUTINT B256INPUTFLOAT B256KEY
 %token B256PIXEL B256RGB B256PLOT B256CIRCLE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
 %token B256IF B256THEN B256ELSE B256ENDIF B256BEGINCASE B256CASE B256ENDCASE
 %token B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT
@@ -440,12 +439,12 @@ label:			B256LABEL {
 				;
 
 functionvariable:
-			B256VARIABLE {
-				args[numargs] = $1; argstype[numargs] = ARGSTYPEVALUE; numargs++;
+			args_v {
+				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVALUE; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
-			| B256REF '(' B256VARIABLE ')' {
-				args[numargs] = $3; argstype[numargs] = ARGSTYPEVARREF; numargs++;
+			| B256REF '(' args_v ')' {
+				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARREF; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
 			;
@@ -462,7 +461,7 @@ functionvariables:
 				;
 
 compoundstmt:
-			statement ':' compoundstmt
+			compoundstmt ':' statement
 			| statement
 			;
 /* array reference - make everything 2d */
@@ -484,10 +483,7 @@ args_none:
 
 
 args_a:
-			B256VARIABLE arrayref {
-				varnumber[nvarnumber++] = $1;
-			}
-			;
+			args_v arrayref;
 
 args_v:
 			B256VARIABLE {
@@ -502,28 +498,26 @@ args_ee:
 			expr ',' expr
 			| '(' args_ee ')';
 
-
 args_ei:
 			expr ',' immediatelist
 			| '(' args_ei ')';
 
-
 args_ea:
-			expr ',' B256VARIABLE arrayref {
-				varnumber[nvarnumber++] = $3;
-			}
+			expr ',' args_a
 			|'(' args_ea ')';
 
-
 args_ev:
-			expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $3;
-			}
+			expr ',' args_v
 			|'(' args_ev ')';
+
+args_ve:
+			args_v ',' expr
+			|'(' args_ve ')';
 
 
 
 /* three arguments */
+
 args_eee:
 			expr ',' expr ',' expr
 			| '(' args_eee ')';
@@ -535,9 +529,7 @@ args_eei:
 
 
 args_eev:
-			expr ',' expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $5;
-			}
+			expr ',' expr ',' args_v
 			| '(' args_eev ')';
 
 
@@ -552,9 +544,7 @@ args_eeei:
 			| '(' args_eeei ')';
 
 args_eeev:
-			expr ',' expr ',' expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $7;
-			}
+			expr ',' expr ',' expr ',' args_v
 			| '(' args_eeev ')';
 
 
@@ -572,9 +562,7 @@ args_eeeei:
 
 
 args_eeeev:
-			expr ',' expr ',' expr ',' expr ',' B256VARIABLE {
-				varnumber[nvarnumber++] = $9;
-			}
+			expr ',' expr ',' expr ',' expr ',' args_v
 			| '(' args_eeeev ')';
 
 
@@ -1233,7 +1221,7 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 				// next ed before end of program
 				newIf(linenumber, IFTABLETYPEFOR);
 			}
-			| B256FOR args_v '=' expr B256TO expr B256STEP  expr {
+			| B256FOR args_v '=' expr B256TO expr B256STEP expr {
 				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
@@ -1594,21 +1582,94 @@ seekstmt:	B256SEEK expr {
 			;
 
 inputstmt:	B256INPUT args_ev {
+				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
 			| B256INPUT args_v  {
 				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
 			| B256INPUT args_ea {
 				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
+				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
 			| B256INPUT args_a {
 				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_UNASSIGNED);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTSTRING args_ev {
+				addIntOp(OP_PUSHINT,T_STRING);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTSTRING args_v  {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_STRING);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTSTRING args_ea {
+				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
+				addIntOp(OP_PUSHINT,T_STRING);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTSTRING args_a {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_STRING);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTINT args_ev {
+				addIntOp(OP_PUSHINT,T_INT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTINT args_v  {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_INT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTINT args_ea {
+				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
+				addIntOp(OP_PUSHINT,T_INT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTINT args_a {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_INT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTFLOAT args_ev {
+				addIntOp(OP_PUSHINT,T_FLOAT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTFLOAT args_v  {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_FLOAT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTFLOAT args_ea {
+				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
+				addIntOp(OP_PUSHINT,T_FLOAT);
+				addOp(OP_INPUT);
+				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256INPUTFLOAT args_a {
+				addStringOp(OP_PUSHSTRING, "");
+				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
@@ -2079,14 +2140,14 @@ printerpagestmt:
 			;
 
 functionstmt:
-			B256FUNCTION B256VARIABLE functionvariablelist {
+			B256FUNCTION args_v functionvariablelist {
 				if (numifs>0) {
 					errorcode = COMPERR_FUNCTIONNOTHERE;
 					return -1;
 				}
 				//
 				// $2 is the symbol for the function - add the start to the label table
-				functionDefSymbol = $2;
+				functionDefSymbol = varnumber[--nvarnumber];
 				//
 				// create jump around function definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -2117,14 +2178,14 @@ functionstmt:
 			;
 
 subroutinestmt:
-			B256SUBROUTINE B256VARIABLE functionvariablelist {
+			B256SUBROUTINE args_v functionvariablelist {
 				if (numifs>0) {
 					errorcode = COMPERR_FUNCTIONNOTHERE;
 					return -1;
 				}
 				//
 				// $2 is the symbol for the subroutine - add the start to the label table
-				subroutineDefSymbol = $2;
+				subroutineDefSymbol = varnumber[--nvarnumber];
 				//
 				// create jump around subroutine definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -2230,18 +2291,24 @@ exprlist:
 
 expr:
 
-			/* *** expressions that can ge EITHER float or string *** */
+			/* *** expressions that can ge EITHER numeric or string *** */
 			'(' expr ')'
 			| expr '+' expr {
 				addOp(OP_ADD);
 			}
-			| B256VARIABLE '(' exprlist ')' {
+
+			/* *** variable and function expressions *** */
+
+			| args_v '[' '?' ']' { addIntOp(OP_ALEN, varnumber[--nvarnumber]); }
+			| args_v '[' '?' ',' ']' { addIntOp(OP_ALENX, varnumber[--nvarnumber]); }
+			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENY, varnumber[--nvarnumber]); }
+			| args_v '(' exprlist ')' {
 				// function call with arguments
-				addIntOp(OP_GOSUB, $1);
+				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
 			}
-			| B256VARIABLE '(' ')' {
+			| args_v '(' ')' {
 				// function call without arguments
-				addIntOp(OP_GOSUB, $1);
+				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
 			}
 			| args_v {
 				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
@@ -2251,7 +2318,7 @@ expr:
 			}
 
 
-			/* *** float Experssions *** */
+			/* *** numeric Experssions *** */
 
 			| expr '-' expr {
 				addOp(OP_SUB);
@@ -2285,9 +2352,6 @@ expr:
 			| expr B256LTE expr { addOp(OP_LTE); }
 			| B256FLOAT   { addFloatOp(OP_PUSHFLOAT, $1); }
 			| B256INTEGER { addIntOp(OP_PUSHINT, $1); }
-			| B256VARIABLE '[' '?' ']' { addIntOp(OP_ALEN, $1); }
-			| B256VARIABLE '[' '?' ',' ']' { addIntOp(OP_ALENX, $1); }
-			| B256VARIABLE '[' ',' '?' ']' { addIntOp(OP_ALENY, $1); }
 			| args_a B256ADD1 {
 				// a[b,c]++
 				addOp(OP_STACKDUP2);
@@ -2823,11 +2887,12 @@ expr:
 			}
 			| B256REPLACE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACEX); }
-			| B256IMPLODE '(' B256VARIABLE ')' {
+			| B256IMPLODE '(' args_v ')' {
 				addStringOp(OP_PUSHSTRING, ""); // no delimiter
-				addIntOp(OP_IMPLODE, $3);
+				addIntOp(OP_IMPLODE, varnumber[--nvarnumber]);
 			}
-			| B256IMPLODE '(' B256VARIABLE ',' expr ')' {  addIntOp(OP_IMPLODE, $3); }
+			| B256IMPLODE '(' args_ve ')' {
+				addIntOp(OP_IMPLODE, varnumber[--nvarnumber]); }
 			| B256PROMPT '(' expr ')' {
 				addStringOp(OP_PUSHSTRING, "");
 				addOp(OP_PROMPT); }

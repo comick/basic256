@@ -286,6 +286,9 @@ imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
 input [Ii][Nn][Pp][Uu][Tt]
+inputfloat [Ii][Nn][Pp][Uu][Tt][ \t]*[Ff][Ll][Oo][Aa][Tt]
+inputint [Ii][Nn][Pp][Uu][Tt][ \t]*[iI][nN][tT]([Ee][Gg][Ee][Rr])*
+inputstring [Ii][Nn][Pp][Uu][Tt][ \t]*[Ss][Tt][Rr][Ii][Nn][Gg]
 include [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
@@ -785,6 +788,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {imgload}					{ count(); return B256IMGLOAD; }
 {imgsave}					{ count(); return B256IMGSAVE; }
 {input}						{ count(); return B256INPUT; }
+{inputstring}				{ count(); return B256INPUTSTRING; }
+{inputint}					{ count(); return B256INPUTINT; }
+{inputfloat}				{ count(); return B256INPUTFLOAT; }
 {kill}						{ count(); return B256KILL; }
 {let}						{ count(); return B256LET; }
 {line}						{ count(); return B256LINE; }

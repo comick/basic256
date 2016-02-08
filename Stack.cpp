@@ -61,6 +61,63 @@ void Stack::pushstring(QString string) {
     stacklist.push_front(ele);
 }
 
+void Stack::pushvariant(QString string) {
+	pushvariant(string, T_UNASSIGNED);
+}
+
+void Stack::pushvariant(QString string, int type) {
+	// try to convert a string to an int or float and push that type
+	// if unable then push a string
+	switch (type) {
+		case T_UNASSIGNED:
+			{
+				bool ok;
+				long i;
+				i = string.toLong(&ok);
+				if (ok) {
+					pushlong(i);
+				} else {
+					double d;
+					d = string.toDouble(&ok);
+					if (ok) {
+						pushfloat(d);
+					} else {
+						// not an integer or double - push string
+						pushstring(string);
+					}
+				}
+			}
+			break;
+		case T_INT:
+			{
+				bool ok;
+				long i=0;
+				i = string.toLong(&ok);
+				if (!ok) {
+					error->q(ERROR_TYPECONV);
+				}
+				pushlong(i);
+			}
+			break;
+		case T_FLOAT:
+			{
+				bool ok;
+				double d=0.0;
+				d = string.toDouble(&ok);
+				if (!ok) {
+					error->q(ERROR_TYPECONV);
+				}
+				pushfloat(d);
+			}
+			break;
+		case T_STRING:
+			{
+				pushstring(string);
+			}
+			break;
+	}
+}
+	
 void Stack::pushint(int i) {
     pushlong((long) i);
 }

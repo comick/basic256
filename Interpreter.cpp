@@ -936,9 +936,8 @@ int
 Interpreter::execByteCode() {
 	int opcode;
 	SETTINGS;
-
     if (status == R_INPUTREADY) {
-        stack->pushstring(inputString);
+		stack->pushvariant(inputString, inputType);
         status = R_RUNNING;
         return 0;
     } else if (status == R_PAUSED) {
@@ -3097,6 +3096,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_INPUT: {
+					inputType = stack->popint();
                     QString prompt = stack->popstring();
                     if (prompt.length()>0) {
                         mymutex->lock();
@@ -3121,7 +3121,7 @@ Interpreter::execByteCode() {
                     mymutex->unlock();
                     waitForGraphics();
                     //
-                    stack->pushstring(returnString);
+                    stack->pushvariant(returnString, intType);
 #else
                     // use the input status of interperter and get
                     // input from BasicOutput

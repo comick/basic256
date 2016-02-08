@@ -9,7 +9,8 @@ Convert::Convert(Error *e) {
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
 }
-
+		
+		
 int Convert::getInt(DataElement *e) {
 	return (int) getLong(e);
 }

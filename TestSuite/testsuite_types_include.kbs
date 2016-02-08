@@ -7,6 +7,7 @@
 # 20151205	j.m.reneau	addec constants for types and added type_int
 # 				added tests for integer save and non safe operations
 #				added test for integer safe for loops
+# 20160208      j.m.reneau      added input and prompt for new "Variant" input action
 
 
 # variable types and data types from the stack
@@ -165,4 +166,47 @@ call n("float9.5-,5,-.5 i="+i, typeof(i), TYPE_FLOAT)
 next i
 call n("float9.5-,5,-.5 t", typeof(t), TYPE_FLOAT)
 call n("float9.5-,5,-.5 total", t, 95)
+
+#
+input "Enter '1234' >",a
+call n("input '1234' type", typeof(a), TYPE_INT)
+call n("input '1234' value", a, 1234)
+
+input "Enter '1234.56' >",a
+call n("input '1234.56' type", typeof(a), TYPE_FLOAT)
+call n("input '1234.56' value", a, 1234.56)
+
+input "Enter '-12e+7' >",a
+call n("input '-12e+7' type", typeof(a), TYPE_FLOAT)
+call n("input '-12e+7' value", a, -12e7)
+
+input "Enter '99aa' >",a
+call n("input '99aa' type", typeof(a), TYPE_STRING)
+call n("input '99aa' value", a, "99aa")
+
+input integer "Enter '1234' >",a
+call n("input integer '1234' type", typeof(a), TYPE_INT)
+call n("input integer '1234' value", a, 1234)
+
+input integer "Enter '1234.56' >",a
+call n("input integer '1234.56' type", typeof(a), TYPE_INT)
+call n("input integer '1234.56' value", a, 0)
+
+input float "Enter '1234' >",a
+call n("input float '1234' type", typeof(a), TYPE_FLOAT)
+call n("input float '1234' value", a, 1234)
+
+input float "Enter '1234.56' >",a
+call n("input float '1234.56' type", typeof(a), TYPE_FLOAT)
+call n("input float '1234.56' value", a, 1234.56)
+
+input string "Enter '1234' >",a
+call n("input string '1234' type", typeof(a), TYPE_string)
+call n("input string '1234' value", a, "1234")
+
+input string "Enter '1234.56' >",a
+call n("input string '1234.56' type", typeof(a), TYPE_string)
+call n("input string '1234.56' value", a, "1234.56")
+
+
 
