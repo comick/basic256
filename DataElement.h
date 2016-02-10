@@ -24,7 +24,7 @@ class DataElement
 	public:
 		int type;	// type from BasicTypes.h
 		QString stringval;
-		double floatval; 
+		double floatval;
 		long intval;
 
 		DataElement();
@@ -33,7 +33,7 @@ class DataElement
 		DataElement(double);
 		DataElement(long);
 		DataElement(int);
-		
+
 		QString debug();
-		
+
 };

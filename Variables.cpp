@@ -21,9 +21,9 @@ Variable::~Variable() {
 }
 
 
-// ************************************************************************ 
+// ************************************************************************
 // * Variables contain the individual variable(s) for the recursion level *
-// ************************************************************************ 
+// ************************************************************************
 
 Variables::Variables(Error *e) {
 	error = e;
@@ -45,7 +45,7 @@ QString Variables::debug() {
 				s += " varnum " + QString::number(j->first);
 				s += " " + (j->second->data?j->second->data->debug():"NULL") + "\n";
 			}
-			s += "\n";  
+			s += "\n";
 		}
 	}
 	return s;
@@ -122,10 +122,13 @@ DataElement* Variables::getdata(int varnum) {
     // get data from v -return NULL if not assigned
     Variable *v = get(varnum);
  	if (v->data) {
+		if (v->data->type==T_UNASSIGNED) v->data->intval = varnum;
 		return v->data;
 	}
 	//error->q(ERROR_VARNOTASSIGNED, varnum);
-	return new DataElement();
+	d = new DataElement();
+	d->intval = varnum;
+	return d;
 }
 
 void Variables::setdata(int varnum, DataElement* e) {
@@ -230,8 +233,11 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 					int i = x * v->arr->ydim + y;
 					if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 						return v->arr->datamap[i];
-					//} else {
-					//	error->q(ERROR_VARNOTASSIGNED, varnum);
+					} else {
+						//	error->q(ERROR_VARNOTASSIGNED, varnum);
+						d = new DataElement();
+						d->intval = varnum;
+						return d;
 					}
 			   } else {
 					error->q(ERROR_ARRAYINDEX, varnum);
@@ -245,7 +251,9 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 	} else {
 		error->q(ERROR_NOSUCHVARIABLE, varnum);
 	}
-	return(new DataElement());
+	d = new DataElement();
+	d->intval = varnum;
+	return d;
 }
 
 
@@ -274,7 +282,7 @@ void Variables::arraysetdata(int varnum, int x, int y, DataElement *e) {
 		error->q(ERROR_NOSUCHVARIABLE, varnum);
 	}
 }
- 
+
 
 
 void Variables::makeglobal(int varnum) {
@@ -291,4 +299,3 @@ bool Variables::isglobal(int varnum) {
     }
     return false;
 }
-

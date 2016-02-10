@@ -200,7 +200,7 @@ RunController::speakWords(QString text) {
     text.replace("\""," quote ");
     text.prepend("say \"");
     text.append("\"");
-    fprintf(stderr,"MACX_SAY %s\n", text.toStdString().c_str());
+    //fprintf(stderr,"MACX_SAY %s\n", text.toStdString().c_str());
     executeSystem(text);
 #endif
 #ifdef ANDROID
@@ -218,26 +218,17 @@ RunController::executeSystem(QString text) {
     // and to handle input
 
     QProcess sy;
-    //fprintf(stderr,"system b4 %s\n", text);
     mymutex->lock();
-
 
     sy.start(text);
     if (sy.waitForStarted()) {
-
-        //sy.write("Qt rocks!");
-        //sy.closeWriteChannel();
-
         if (!sy.waitForFinished()) {
             //QByteArray result = sy.readAll();
         }
     }
 
-
-    //system(text);
     waitCond->wakeAll();
     mymutex->unlock();
-    //fprintf(stderr,"system af %s\n", text);
 }
 
 
