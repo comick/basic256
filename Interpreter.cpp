@@ -420,7 +420,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_TYPEOF) return QString("OP_TYPEOF");
     else if (op==OP_UNASSIGN) return QString("OP_UNASSIGN");
     else if (op==OP_UNASSIGNA) return QString("OP_UNASSIGNA");
-    
+
     else return QString("OP_UNKNOWN");
 }
 
@@ -1211,7 +1211,7 @@ Interpreter::execByteCode() {
 					int yindex = stack->popint();
 					int xindex = stack->popint();
 					if (e->type==T_UNASSIGNED) {
-						error->q(ERROR_VARNOTASSIGNED);
+						error->q(ERROR_VARNOTASSIGNED, e->intval);
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
 					} else {
@@ -1255,7 +1255,7 @@ Interpreter::execByteCode() {
 						error->q(ERROR_ARRAYINDEXMISSING);
 						delete(e);
 					} else {
-						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, 0);
+						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
 						variables->setdata(i, e);
 						if(debugMode != 0) {
 							DataElement *v = variables->getdata(i);
@@ -1291,7 +1291,7 @@ Interpreter::execByteCode() {
 					stack->pushint(n);
 				}
 				break;
-				
+
 				case OP_UNASSIGN: {
 					DataElement *e = new DataElement();
 					variables->setdata(i, e);
@@ -1369,7 +1369,7 @@ Interpreter::execByteCode() {
 						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
 							DataElement *e = stack->popelement();
 							if (e->type==T_UNASSIGNED) {
-								error->q(ERROR_VARNOTASSIGNED);
+								error->q(ERROR_VARNOTASSIGNED, e->intval);
 							} else if (e->type==T_ARRAY) {
 								error->q(ERROR_ARRAYINDEXMISSING);
 							} else {

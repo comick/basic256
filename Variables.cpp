@@ -126,7 +126,7 @@ DataElement* Variables::getdata(int varnum) {
 		return v->data;
 	}
 	//error->q(ERROR_VARNOTASSIGNED, varnum);
-	d = new DataElement();
+	DataElement *d = new DataElement();
 	d->intval = varnum;
 	return d;
 }
@@ -235,7 +235,7 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 						return v->arr->datamap[i];
 					} else {
 						//	error->q(ERROR_VARNOTASSIGNED, varnum);
-						d = new DataElement();
+						DataElement *d = new DataElement();
 						d->intval = varnum;
 						return d;
 					}
@@ -251,7 +251,7 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 	} else {
 		error->q(ERROR_NOSUCHVARIABLE, varnum);
 	}
-	d = new DataElement();
+	DataElement *d = new DataElement();
 	d->intval = varnum;
 	return d;
 }
