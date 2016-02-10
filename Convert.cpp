@@ -27,13 +27,13 @@ long Convert::getLong(DataElement *e) {
 				bool ok;
 				i = e->stringval.toLong(&ok);
 				if(!ok) {
-					error->q(ERROR_TYPECONV);
+					if (error) if (error) error->q(ERROR_TYPECONV);
 				}
 			}
 		} else if (e->type==T_ARRAY) {
-			error->q(ERROR_ARRAYINDEXMISSING);
+			if (error) if (error) error->q(ERROR_ARRAYINDEXMISSING);
 		} else if (e->type==T_UNASSIGNED) {
-			error->q(ERROR_VARNOTASSIGNED);
+			if (error) error->q(ERROR_VARNOTASSIGNED);
 		}
 	}
 	return i;
@@ -51,13 +51,13 @@ double Convert::getFloat(DataElement *e) {
 				bool ok;
 				f = e->stringval.toDouble(&ok);
 				if(!ok) {
-					error->q(ERROR_TYPECONV);
+					if (error) error->q(ERROR_TYPECONV);
 				}
 			}
 		} else if (e->type==T_ARRAY) {
-			error->q(ERROR_ARRAYINDEXMISSING);
+			if (error) error->q(ERROR_ARRAYINDEXMISSING);
 		} else if (e->type==T_UNASSIGNED) {
-			error->q(ERROR_VARNOTASSIGNED);
+			if (error) error->q(ERROR_VARNOTASSIGNED);
 		}
 	}
 	return f;
@@ -88,9 +88,9 @@ QString Convert::getString(DataElement *e, int ddigits) {
 				}
 			}
 		} else if (e->type==T_ARRAY) {
-			error->q(ERROR_ARRAYINDEXMISSING);
+			if (error) error->q(ERROR_ARRAYINDEXMISSING);
 		} else if (e->type==T_UNASSIGNED) {
-			error->q(ERROR_VARNOTASSIGNED);
+			if (error) error->q(ERROR_VARNOTASSIGNED);
 		}
 	}
     return s;

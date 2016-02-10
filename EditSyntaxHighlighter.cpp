@@ -286,6 +286,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Tt][Oo][Rr][Aa][Dd][Ii][Xx]\\b"									// toradix
             << "\\b[Tt][Rr][Yy]\\b"													// try
             << "\\b[Tt][Yy][Pp][Ee][Oo][Ff]\\b"										// typeof
+            << "\\b[Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]\\b"								// unassign
             << "\\b[Uu][Nn][Tt][Ii][Ll]\\b"											// until
             << "\\b[Uu][Pp][Pp][Ee][Rr]\\b"											// upper
             << "\\b[Vv][Ee][Rr][Ss][Ii][Oo][Nn]\\b"									// version
@@ -402,7 +403,12 @@ void EditSyntaxHighlighter::initColors() {
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]\\b"		// ERROR_PRINTERNOTOFF
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]\\b"		// ERROR_PRINTEROPEN
             << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]\\b"		// ERROR_WAVFILEFORMAT
-            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]\\b"		// ERROR_WAVNOTOPEN
+            << "\\b[Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]\\b"					// ERROR_WAVNOTOPEN
+            << "\\b[Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]\\b"											// TYPE_ARRAY
+            << "\\b[Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]\\b"											// TYPE_FLOAT
+            << "\\b[Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]\\b"													// TYPE_INT
+            << "\\b[Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]\\b"										// TYPE_STRING
+            << "\\b[Tt][Yy][Pp][Ee][_][Un][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]\\b"							// TYPE_UNASSIGNED
             
             
             ;

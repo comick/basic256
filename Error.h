@@ -35,6 +35,8 @@ class Error
 		void q(int);
 		void q(int, int);
 		void q(int, int, QString);
+		
+		void deq();
 
 		bool isFatal();
 		bool isFatal(int);

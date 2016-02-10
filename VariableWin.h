@@ -21,6 +21,8 @@
 #include <QtWidgets/QTreeWidget>
 
 #include "ViewWidgetIFace.h"
+#include "Convert.h"
+#include "DataElement.h"
 
 class VariableWin : public QTreeWidget, public ViewWidgetIFace
 {
@@ -29,7 +31,7 @@ class VariableWin : public QTreeWidget, public ViewWidgetIFace
   VariableWin();
     
  public slots:
-  void varAssignment(int recurse, QString name, QString value, int arraylenx, int arrayleny);
+  void varAssignment(int recurse, QString name, DataElement *d, int arraylenx, int arrayleny, bool dimarray);
   
  private:
 

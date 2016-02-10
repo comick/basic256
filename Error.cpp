@@ -34,6 +34,11 @@ void Error::process(int currentlinenumber) {
 	var = newvar;
 	extra = newextra;
 	line = currentlinenumber;
+	deq();
+}
+
+void Error::deq() {
+	// clear the pending (q'd) error
 	newe = ERROR_NONE;
 	newvar = -1;
 	newextra = "";

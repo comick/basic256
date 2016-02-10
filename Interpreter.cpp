@@ -418,6 +418,9 @@ QString Interpreter::opname(int op) {
     else if (op==OP_REGEXMINIMAL) return QString("OP_REGEXMINIMAL");
     else if (op==OP_OPENSERIAL) return QString("OP_OPENSERIAL");
     else if (op==OP_TYPEOF) return QString("OP_TYPEOF");
+    else if (op==OP_UNASSIGN) return QString("OP_UNASSIGN");
+    else if (op==OP_UNASSIGNA) return QString("OP_UNASSIGNA");
+    
     else return QString("OP_UNKNOWN");
 }
 
@@ -1001,7 +1004,8 @@ Interpreter::execByteCode() {
 
 					variables->setdata(i, startnumE);	// set variable to initial value
 					if(debugMode != 0) {
-						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
+						DataElement *v = variables->getdata(i);
+						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
 					}
 
 					if (startnumE->type==T_INT && stepE->type==T_INT) {
@@ -1078,7 +1082,8 @@ Interpreter::execByteCode() {
 							}
 						}
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
+							DataElement *v = variables->getdata(i);
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
 						}
 					}
 
@@ -1092,7 +1097,16 @@ Interpreter::execByteCode() {
                     if (ydim<=0) ydim=1; // need to dimension as 1d
                     variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
                     if(debugMode != 0 && !error->pending()) {
-                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xdim, ydim));
+                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xdim, ydim, true));
+                        if (OP_REDIM) {
+							for (int x=0;x<xdim;x++) {
+								for (int y=0;y<ydim;y++) {
+									DataElement *v = variables->arraygetdata(i,x,y);
+									error->deq();	// clear unassigned variable error that may be thrown
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, x, y, false));
+								}
+							}
+						}
                     }
                 }
                 break;
@@ -1146,7 +1160,7 @@ Interpreter::execByteCode() {
 					variables->arraydim(i, list.size(), 1, false);
 					if (!error->pending()) {
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, list.size(), 1));
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, list.size(), 1, true));
 						}
 
 						for(int x=0; x<list.size(); x++) {
@@ -1154,7 +1168,8 @@ Interpreter::execByteCode() {
 							variables->arraysetdata(i, x, 0, new DataElement(list.at(x)));
 							if (!error->pending()) {
 								if(debugMode != 0) {
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arraygetdata(i, x, 0)), x, 0));
+									DataElement *v = variables->arraygetdata(i, x, 0);
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, x, 0, false));
 								}
 							}
 						}
@@ -1204,7 +1219,7 @@ Interpreter::execByteCode() {
 						if (!error->pending()) {
 							if(debugMode != 0) {
 								DataElement *v = variables->arraygetdata(i, xindex, yindex);
-								emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(v), xindex, yindex));
+								emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, xindex, yindex, false));
 							}
 						}
 					}
@@ -1243,7 +1258,8 @@ Interpreter::execByteCode() {
 						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, 0);
 						variables->setdata(i, e);
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->getdata(i)), -1, -1));
+							DataElement *v = variables->getdata(i);
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
 						}
 					}
 					// remember dont delete stack to assign to a variable
@@ -1273,6 +1289,27 @@ Interpreter::execByteCode() {
 						stack->pushdataelement(av);
 					}
 					stack->pushint(n);
+				}
+				break;
+				
+				case OP_UNASSIGN: {
+					DataElement *e = new DataElement();
+					variables->setdata(i, e);
+					if(debugMode != 0) {
+						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, -1, -1, false));
+					}
+				}
+				break;
+
+				case OP_UNASSIGNA: {
+					// clear a variable and release resources
+					int yindex = stack->popint();
+					int xindex = stack->popint();
+					DataElement *e = new DataElement();
+					variables->arraysetdata(i, xindex, yindex, e);
+					if(debugMode != 0) {
+						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xindex, yindex, false));
+					}
 				}
 				break;
 
@@ -1326,7 +1363,7 @@ Interpreter::execByteCode() {
 					variables->arraydim(i, items, 1, false);
 					if(!error->pending()) {
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, items, 1));
+							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, items, 1, true));
 						}
 
 						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
@@ -1338,7 +1375,8 @@ Interpreter::execByteCode() {
 							} else {
 								variables->arraysetdata(i, index, 0, e);
 								if(debugMode != 0 && !error->pending()) {
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), convert->getString(variables->arraygetdata(i, index, 0)), index, 0));
+									DataElement *v = variables->arraygetdata(i, index, 0);
+									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, index, 0, false));
 								}
 							}
 						}
@@ -3254,7 +3292,7 @@ Interpreter::execByteCode() {
 
                     if(debugMode != 0) {
                         // remove variables from variable window when we return back
-                        emit(varAssignment(variables->getrecurse(),QString(""), QString(""), -1, -1));
+                        emit(varAssignment(variables->getrecurse(), NULL, NULL, -1, -1, false));
                     }
 
                     variables->decreaserecurse();

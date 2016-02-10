@@ -120,14 +120,12 @@ Variable* Variables::get(int varnum) {
 
 DataElement* Variables::getdata(int varnum) {
     // get data from v -return NULL if not assigned
-    DataElement *e = NULL;
     Variable *v = get(varnum);
  	if (v->data) {
-		e = v->data;
-	} else {
-		error->q(ERROR_VARNOTASSIGNED, varnum);
+		return v->data;
 	}
-	return e;
+	//error->q(ERROR_VARNOTASSIGNED, varnum);
+	return new DataElement();
 }
 
 void Variables::setdata(int varnum, DataElement* e) {
@@ -232,8 +230,8 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 					int i = x * v->arr->ydim + y;
 					if (v->arr->datamap.find(i) != v->arr->datamap.end()) {
 						return v->arr->datamap[i];
-					} else {
-						error->q(ERROR_VARNOTASSIGNED, varnum);
+					//} else {
+					//	error->q(ERROR_VARNOTASSIGNED, varnum);
 					}
 			   } else {
 					error->q(ERROR_ARRAYINDEX, varnum);
@@ -247,7 +245,7 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 	} else {
 		error->q(ERROR_NOSUCHVARIABLE, varnum);
 	}
-	return(NULL);
+	return(new DataElement());
 }
 
 

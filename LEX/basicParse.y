@@ -371,7 +371,7 @@
 %token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT B256ERROR_WAVNOTOPEN B256ERROR_VARNOTASSIGNED
 %token B256ERROR_NOTIMPLEMENTED
 %token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE B256WARNING_VARNOTASSIGNED
-%token B256REGEXMINIMAL B256TYPEOF
+%token B256REGEXMINIMAL B256TYPEOF B256UNASSIGN
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 
 
@@ -483,12 +483,14 @@ args_none:
 
 
 args_a:
-			args_v arrayref;
+			args_v arrayref
+			| '(' args_a ')';
 
 args_v:
 			B256VARIABLE {
 				varnumber[nvarnumber++] = $1;
-			};
+			}
+			| '(' args_v ')';
 
 
 /* two arguments */
@@ -681,6 +683,7 @@ statement:
 			| textstmt
 			| throwerrorstmt
 			| trystmt
+			| unassignstmt
 			| untilstmt
 			| volumestmt
 			| wavpausestmt
@@ -2265,6 +2268,15 @@ endsubroutinestmt:
 regexminimalstmt:
 			B256REGEXMINIMAL expr {
 				addOp(OP_REGEXMINIMAL);
+			}
+			;
+
+unassignstmt:
+			B256UNASSIGN args_v {
+				addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256UNASSIGN args_a {
+				addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
 			}
 			;
 

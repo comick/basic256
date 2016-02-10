@@ -413,13 +413,14 @@ tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
 toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 try [Tt][Rr][Yy]
-type_unassigned [Tt][Yy][Pp][Ee][_][UU][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+type_unassigned [Tt][Yy][Pp][Ee][_][Un][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]
 type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
 type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
 type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
 type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
 typeof [Tt][Yy][Pp][Ee][Oo][Ff]
+unassign [Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
@@ -859,6 +860,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {to}						{ count(); return B256TO; }
 {try}						{ count(); return B256TRY; }
 {try}":"					{ count(); unputcolon(); return B256TRY; }
+{unassign}					{ count(); return B256UNASSIGN; }
 {until}						{ count(); return B256UNTIL; }
 {volume}					{ count(); return B256VOLUME; }
 {wavpause}					{ count(); return B256WAVPAUSE; }
