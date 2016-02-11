@@ -1005,7 +1005,7 @@ Interpreter::execByteCode() {
 					variables->setdata(i, startnumE);	// set variable to initial value
 					if(debugMode != 0) {
 						DataElement *v = variables->getdata(i);
-						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
+						emit(varAssignment(variables, i, v, -1, -1, false));
 					}
 
 					if (startnumE->type==T_INT && stepE->type==T_INT) {
@@ -1083,7 +1083,7 @@ Interpreter::execByteCode() {
 						}
 						if(debugMode != 0) {
 							DataElement *v = variables->getdata(i);
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
+							emit(varAssignment(variables, i, v, -1, -1, false));
 						}
 					}
 
@@ -1097,13 +1097,13 @@ Interpreter::execByteCode() {
                     if (ydim<=0) ydim=1; // need to dimension as 1d
                     variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
                     if(debugMode != 0 && !error->pending()) {
-                        emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xdim, ydim, true));
+                        emit(varAssignment(variables ,i , NULL, xdim, ydim, true));
                         if (OP_REDIM) {
 							for (int x=0;x<xdim;x++) {
 								for (int y=0;y<ydim;y++) {
 									DataElement *v = variables->arraygetdata(i,x,y);
 									error->deq();	// clear unassigned variable error that may be thrown
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, x, y, false));
+									emit(varAssignment(variables, i, v, x, y, false));
 								}
 							}
 						}
@@ -1160,7 +1160,7 @@ Interpreter::execByteCode() {
 					variables->arraydim(i, list.size(), 1, false);
 					if (!error->pending()) {
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, list.size(), 1, true));
+							emit(varAssignment(variables, i , NULL, list.size(), 1, true));
 						}
 
 						for(int x=0; x<list.size(); x++) {
@@ -1169,7 +1169,7 @@ Interpreter::execByteCode() {
 							if (!error->pending()) {
 								if(debugMode != 0) {
 									DataElement *v = variables->arraygetdata(i, x, 0);
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, x, 0, false));
+									emit(varAssignment(variables, i, v, x, 0, false));
 								}
 							}
 						}
@@ -1219,7 +1219,7 @@ Interpreter::execByteCode() {
 						if (!error->pending()) {
 							if(debugMode != 0) {
 								DataElement *v = variables->arraygetdata(i, xindex, yindex);
-								emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, xindex, yindex, false));
+								emit(varAssignment(variables, i, v, xindex, yindex, false));
 							}
 						}
 					}
@@ -1259,7 +1259,7 @@ Interpreter::execByteCode() {
 						variables->setdata(i, e);
 						if(debugMode != 0) {
 							DataElement *v = variables->getdata(i);
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, -1, -1, false));
+							emit(varAssignment(variables, i, v, -1, -1, false));
 						}
 					}
 					// remember dont delete stack to assign to a variable
@@ -1296,7 +1296,7 @@ Interpreter::execByteCode() {
 					DataElement *e = new DataElement();
 					variables->setdata(i, e);
 					if(debugMode != 0) {
-						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, -1, -1, false));
+						emit(varAssignment(variables, i, NULL, -1, -1, false));
 					}
 				}
 				break;
@@ -1308,7 +1308,7 @@ Interpreter::execByteCode() {
 					DataElement *e = new DataElement();
 					variables->arraysetdata(i, xindex, yindex, e);
 					if(debugMode != 0) {
-						emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, xindex, yindex, false));
+						emit(varAssignment(variables, i, NULL, xindex, yindex, false));
 					}
 				}
 				break;
@@ -1363,7 +1363,7 @@ Interpreter::execByteCode() {
 					variables->arraydim(i, items, 1, false);
 					if(!error->pending()) {
 						if(debugMode != 0) {
-							emit(varAssignment(variables->getrecurse(),QString(symtable[i]), NULL, items, 1, true));
+							emit(varAssignment(variables, i, NULL, items, 1, true));
 						}
 
 						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
@@ -1376,7 +1376,7 @@ Interpreter::execByteCode() {
 								variables->arraysetdata(i, index, 0, e);
 								if(debugMode != 0 && !error->pending()) {
 									DataElement *v = variables->arraygetdata(i, index, 0);
-									emit(varAssignment(variables->getrecurse(),QString(symtable[i]), v, index, 0, false));
+									emit(varAssignment(variables, i, v, index, 0, false));
 								}
 							}
 						}
@@ -3292,7 +3292,7 @@ Interpreter::execByteCode() {
 
                     if(debugMode != 0) {
                         // remove variables from variable window when we return back
-                        emit(varAssignment(variables->getrecurse(), NULL, NULL, -1, -1, false));
+                        emit(varAssignment(variables, -1, NULL, -1, -1, false));
                     }
 
                     variables->decreaserecurse();

@@ -23,16 +23,17 @@
 #include "ViewWidgetIFace.h"
 #include "Convert.h"
 #include "DataElement.h"
+#include "Variables.h"
 
 class VariableWin : public QTreeWidget, public ViewWidgetIFace
 {
   Q_OBJECT;
  public:
   VariableWin();
-    
+
  public slots:
-  void varAssignment(int recurse, QString name, DataElement *d, int arraylenx, int arrayleny, bool dimarray);
-  
+  void varAssignment(Variables *, int , DataElement *, int, int, bool);
+
  private:
 
 };

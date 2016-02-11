@@ -121,8 +121,8 @@ RunController::RunController() {
 
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
-    QObject::connect(i, SIGNAL(varAssignment(int, QString, DataElement*, int, int, bool)), varwin,
-		SLOT(varAssignment(int, QString, DataElement*, int, int, bool)));
+    QObject::connect(i, SIGNAL(varAssignment(Variables*, int, DataElement*, int, int, bool)), varwin,
+		SLOT(varAssignment(Variables*, int, DataElement*, int, int, bool)));
 
     QObject::connect(this, SIGNAL(runPaused()), i, SLOT(runPaused()));
     QObject::connect(this, SIGNAL(runResumed()), i, SLOT(runResumed()));

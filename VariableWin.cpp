@@ -29,22 +29,30 @@ using namespace std;
 
 extern MainWindow * mainwin;
 
+extern "C" {
+    extern char *symtable[];
+    extern int numsyms;
+}
+
 VariableWin::VariableWin () {
-    setColumnCount(2);
-    setHeaderLabels(QStringList() << tr("Level - Name") << tr("Value"));
+    setColumnCount(3);
+    setHeaderLabels(QStringList() << tr("Level - Name") << tr("Ty") << tr("Value"));
+    resizeColumnToContents(1);
     sortByColumn(0,Qt::AscendingOrder);
     setSortingEnabled(true);
 }
 
 void
-VariableWin::varAssignment(int recurse, QString name, DataElement* d, int arraylenx, int arrayleny, bool dimarray) {
-	// pass -1 for a normal variable
-	// dimarray is true for new array
+VariableWin::varAssignment(Variables* variables, int varnum, DataElement* d, int arraylenx, int arrayleny, bool dimarray) {
+	// pass arraylenx == -1 for a normal variable
+	// pass dimarray == true for new array
+    // pass varnum == -1 to remove recurse level
+
 	QTreeWidgetItem *rowItem;
 	Convert *convert = new Convert(NULL);
-	
-	if (name!=NULL) {
-		name = QString::number(recurse) + " - " + name;
+
+	if (varnum>=0) {
+        QString name = QString::number(variables->getrecurse()) + " - " + symtable[varnum];
 
 		// remove old entries when a variable becomes an array or not
 		if (arraylenx==-1||dimarray) {
@@ -57,32 +65,46 @@ VariableWin::varAssignment(int recurse, QString name, DataElement* d, int arrayl
 
 		// fix the name for an array element of the dim of a new array
 		if (!dimarray) {
+			QList<QTreeWidgetItem *> list;
+            rowItem = NULL;
+
 			if (arraylenx > -1) {
 				// if we are acessing an array element then change name to full []
-				name = name + "[" + QString::number(arraylenx);
-				if (arrayleny > 1) {
-					name = name + "," + QString::number(arrayleny);
-				}
-				name = name + "]";
-			}
-			// see if element is on the list and change value or add
-			QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-
-			if (list.size() > 0) {
-				// get existing element
-				rowItem = list[0];
+                // set rowItem BUT we don't need tpo create - done below in dim logic
+				QString tname;
+                tname = name + "[" + QString::number(arraylenx) + "]";
+                list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
+                if (list.size()>0) {
+    				rowItem = list[0];
+                } else {
+                    tname = name + "[" + QString::number(arraylenx) + "," + QString::number(arrayleny) + "]";
+                    list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
+                    if (list.size()>0) rowItem = list[0];
+                }
 			} else {
-				// add new element
-				rowItem = new QTreeWidgetItem();
-				rowItem->setText(0, name);
-				addTopLevelItem(rowItem);
-			}
-			if (d!=NULL && d->type!=T_UNASSIGNED) {
-				rowItem->setText(1, convert->getString(d));
-			} else {
-				rowItem->setText(1, tr("<unassigned>"));
-			}
+                // not an array element - just add or replace name
+    			list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
+                if (list.size() > 0) {
+    				rowItem = list[0];
+    			} else {
+    				// add new element for a simple variable
+    				rowItem = new QTreeWidgetItem();
+    				rowItem->setText(0, name);
+    				addTopLevelItem(rowItem);
+    			}
+            }
 
+		    if (rowItem) {
+                if (d!=NULL && d->type!=T_UNASSIGNED) {
+                    if (d->type==T_STRING) rowItem->setText(1,"S");
+                    if (d->type==T_INT) rowItem->setText(1,"I");
+                    if (d->type==T_FLOAT) rowItem->setText(1,"F");
+			        rowItem->setText(2, convert->getString(d));
+			    } else {
+				    rowItem->setText(1, tr("?"));
+                    rowItem->setText(2, tr(""));
+			    }
+            }
         } else if (dimarray) {
 			// create the top level for the new array
 			// see if element is on the list and change value or add
@@ -97,14 +119,16 @@ VariableWin::varAssignment(int recurse, QString name, DataElement* d, int arrayl
 				rowItem->setText(0, name);
 				addTopLevelItem(rowItem);
 			}
-			rowItem->setText(1,  tr("<array ") + QString::number(arraylenx) + (arrayleny > 1?"," + QString::number(arrayleny):"")+">");
+            rowItem->setText(1,  "A");
+			rowItem->setText(2,  QString::number(arraylenx) + (arrayleny > 1?"," + QString::number(arrayleny):""));
 			// add place holders for the array elements as children for a new array
 			if (arrayleny <= 1) {
 				// 1d array
 				for(int x=0; x<arraylenx; x++) {
 					QTreeWidgetItem *childItem = new QTreeWidgetItem();
 					childItem->setText(0, name + "[" + QString::number(x) + "]");
-					childItem->setText(1, tr("<unassigned>"));
+					childItem->setText(1, "?");
+                    childItem->setText(2, "");
 					rowItem->addChild(childItem);
 				}
 			} else {
@@ -113,16 +137,17 @@ VariableWin::varAssignment(int recurse, QString name, DataElement* d, int arrayl
 					for(int y=0; y<arrayleny; y++) {
 						QTreeWidgetItem *childItem = new QTreeWidgetItem();
 						childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
-						childItem->setText(1, tr("<unassigned>"));
+                        childItem->setText(1, "?");
+                        childItem->setText(2, "");
 						rowItem->addChild(childItem);
 					}
 				}
 			}
 		}
- 
+
 	 } else {
 		// when we return from a subroutine or function delete its variables
-		QList<QTreeWidgetItem *> items = findItems(QString::number(recurse) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
+		QList<QTreeWidgetItem *> items = findItems(QString::number(variables->getrecurse()) + " ", Qt::MatchStartsWith | Qt::MatchRecursive, 0);
 		for (int n=items.size()-1; n>=0; n--) {
 			delete items[n];
 		}
