@@ -1213,7 +1213,7 @@ Interpreter::execByteCode() {
 					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED, e->intval);
 					} else if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING);
+						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 					} else {
 						variables->arraysetdata(i, xindex, yindex, e);
 						if (!error->pending()) {
@@ -1252,7 +1252,7 @@ Interpreter::execByteCode() {
 				case OP_ASSIGN: {
 					DataElement *e = stack->popelement();
 					if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING);
+						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 						delete(e);
 					} else {
 						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
@@ -1371,7 +1371,7 @@ Interpreter::execByteCode() {
 							if (e->type==T_UNASSIGNED) {
 								error->q(ERROR_VARNOTASSIGNED, e->intval);
 							} else if (e->type==T_ARRAY) {
-								error->q(ERROR_ARRAYINDEXMISSING);
+								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 							} else {
 								variables->arraysetdata(i, index, 0, e);
 								if(debugMode != 0 && !error->pending()) {

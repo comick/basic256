@@ -312,7 +312,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Invalid serial port parameter");
             break;
         case ERROR_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value");
+            errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
 
 
@@ -331,7 +331,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Duration is not available for media file");
             break;
         case WARNING_VARNOTASSIGNED:
-            errormessage = tr("Variable has not been assigned a value");
+            errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
 
 
