@@ -32,8 +32,12 @@ class VariableWin : public QTreeWidget, public ViewWidgetIFace
   VariableWin();
 
  public slots:
-  void varAssignment(Variables *, int , DataElement *, int, int, bool);
+  void varWinAssign(Variables *, int);
+  void varWinAssign(Variables *, int, int, int);
+  void varWinDimArray(Variables *, int, int, int);
+  void varWinDropLevel(int);
 
  private:
+  void removeArrayEntries(QString);
 
 };

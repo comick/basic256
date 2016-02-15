@@ -153,7 +153,10 @@ class Interpreter : public QThread
   void speakWords(QString);
   void goToLine(int);
   void seekLine(int);
-  void varAssignment(Variables*, int, DataElement*, int, int, bool);
+  void varWinAssign(Variables*, int);
+  void varWinAssign(Variables*, int, int, int);
+  void varWinDropLevel(int);
+  void varWinDimArray(Variables*, int, int, int);
   void mainWindowsResize(int, int, int);
   void mainWindowsVisible(int, bool);
   void dialogAlert(QString);

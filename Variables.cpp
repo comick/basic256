@@ -118,6 +118,41 @@ Variable* Variables::get(int varnum) {
 	return(v);
 }
 
+
+VariableInfo* Variables::getInfo(int varnum) {
+	// used ONLY by VariableWin to get the real variable being effected
+	// by the assignment
+	// returns the actual variable number and recurse level the variable pointed
+	// to
+	//
+	VariableInfo  *vi;
+	Variable *v;
+	int level=recurselevel;
+	if (isglobal(varnum)) {
+		level = 0;
+	}
+	if (varmap.find(level) != varmap.end() && varmap[level].find(varnum) != varmap[level].end()) {
+		v = varmap[level][varnum];
+		if (v->data && v->data->type==T_REF && recurselevel>0) {
+			// recurse for a reference
+			recurselevel--;
+			vi = getInfo(v->data->intval);
+			recurselevel++;
+		} else {
+			// has data or not send back current recurse info
+			vi = new VariableInfo();
+			vi->level = level;
+			vi->varnum = varnum;
+		}
+	} else {
+		// does not exist - create it at current or global level
+		vi = new VariableInfo();
+		vi->level = level;
+		vi->varnum = varnum;
+	}
+	return(vi);
+}
+
 DataElement* Variables::getdata(int varnum) {
     // get data from v -return NULL if not assigned
     Variable *v = get(varnum);

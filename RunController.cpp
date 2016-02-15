@@ -121,8 +121,15 @@ RunController::RunController() {
 
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
-    QObject::connect(i, SIGNAL(varAssignment(Variables*, int, DataElement*, int, int, bool)), varwin,
-		SLOT(varAssignment(Variables*, int, DataElement*, int, int, bool)));
+	// for debugging and controlling the variable watch window
+	QObject::connect(i, SIGNAL(varWinAssign(Variables*, int)), varwin,
+		SLOT(varWinAssign(Variables*, int)));
+	QObject::connect(i, SIGNAL(varWinAssign(Variables*, int, int, int)), varwin,
+		SLOT(varWinAssign(Variables*, int, int, int)));
+	QObject::connect(i, SIGNAL(varWinDropLevel(int)), varwin,
+		SLOT(varWinDropLevel(int)));
+	QObject::connect(i, SIGNAL(varWinDimArray(Variables*, int, int, int)), varwin,
+		SLOT(varWinDimArray(Variables*, int, int, int)));
 
     QObject::connect(this, SIGNAL(runPaused()), i, SLOT(runPaused()));
     QObject::connect(this, SIGNAL(runResumed()), i, SLOT(runResumed()));

@@ -38,6 +38,17 @@ class Variable
 		VariableArrayPart *arr;
 };
 
+
+class VariableInfo
+{
+	// a variable's inal recurse level and final variable number
+	// after global and varref types are processed
+	// used by VariableWin to get global and referenced variable info 
+	public:
+		int level;
+		int varnum;
+};
+
 class Variables
 {
 	public:
@@ -52,6 +63,8 @@ class Variables
 		//
 		int type(int);
 		//
+		Variable* get(int);
+		VariableInfo* getInfo(int);
 		DataElement *getdata(int);
 		void setdata(int, DataElement *);
  		//
@@ -71,7 +84,6 @@ class Variables
 		int recurselevel;
 		std::map<int, std::map<int,Variable*> > varmap;
 		std::map<int, bool> globals;
-		Variable* get(int);
 		void clearvariable(Variable *);
 		bool isglobal(int);
 
