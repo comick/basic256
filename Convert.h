@@ -27,6 +27,7 @@ class Convert
 
 		void setdecimaldigits(int);
 
+		bool isNumeric(DataElement*);
 
 		int getInt(DataElement*);
 		long getLong(DataElement*);

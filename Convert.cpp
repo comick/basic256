@@ -10,6 +10,23 @@ Convert::Convert(Error *e) {
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
 }
 		
+bool Convert::isNumeric(DataElement *e) {
+	// return true if this is a number or can convert to one
+	if (e) {
+		if (e->type == T_INT || e->type == T_REF || e->type == T_FLOAT) {
+			return true;
+		} else if (e->type == T_STRING) {
+			if (e->stringval.length()!=0) {
+				bool ok;
+				e->stringval.toDouble(&ok);
+				return ok;
+			}
+		}
+	}
+	return false;
+}
+
+
 		
 int Convert::getInt(DataElement *e) {
 	return (int) getLong(e);
@@ -21,13 +38,18 @@ long Convert::getLong(DataElement *e) {
 		if (e->type == T_INT || e->type == T_REF) {
 			i = e->intval;
 		} else if (e->type == T_FLOAT) {
-			i = (long) (e->floatval + (e->floatval>0?EPSILON:-EPSILON));
+			double f = e->floatval + (e->floatval>0?EPSILON:-EPSILON);
+			if (f<-2147483648||f>2147483647) {
+				if (error) error->q(ERROR_LONGRANGE);
+			} else {
+				i = (long) (e->floatval + (e->floatval>0?EPSILON:-EPSILON));
+			}
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
 				bool ok;
 				i = e->stringval.toLong(&ok);
 				if(!ok) {
-					if (error) if (error) error->q(ERROR_TYPECONV);
+					if (error) error->q(ERROR_TYPECONV);
 				}
 			}
 		} else if (e->type==T_ARRAY) {

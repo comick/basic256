@@ -193,6 +193,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_INT) return QString("OP_INT");
     else if (op==OP_STRING) return QString("OP_STRING");
     else if (op==OP_ADD) return QString("OP_ADD");
+    else if (op==OP_CONCATENATE) return QString("OP_CONCATNATE");
     else if (op==OP_SUB) return QString("OP_SUB");
     else if (op==OP_MUL) return QString("OP_MUL");
     else if (op==OP_DIV) return QString("OP_DIV");
@@ -2261,6 +2262,7 @@ Interpreter::execByteCode() {
 				}
 
 				case OP_ADD:
+				case OP_CONCATENATE:
 				case OP_SUB:
 				case OP_MUL:
 				case OP_MOD: {
@@ -2269,25 +2271,27 @@ Interpreter::execByteCode() {
 					DataElement *one = stack->popelement();
 					DataElement *two = stack->popelement();
 					switch (opcode) {
-						case OP_ADD:
-							// add is fancy because it concatenates if either are a string
-							// adds integers as integers or converts to floats
-
-							if (one->type==T_STRING || two->type==T_STRING) {
-								// concatenate (if either are a string then we concatenate)
+						case OP_CONCATENATE:
+							// concatenate ";" operator - all types
+							{
 								QString sone = convert->getString(one);
 								QString stwo = convert->getString(two);
-								unsigned int l = stwo.length() + sone.length();
-								if (l>STRINGMAXLEN) {
+								if (stwo.length() + sone.length()>STRINGMAXLEN) {
 									error->q(ERROR_STRINGMAXLEN);
 									stack->pushint(0);
 								} else {
 									stack->pushstring(stwo + sone);
 								}
-							} else if (one->type==T_INT && two->type==T_INT) {
+							}
+							break;
+						case OP_ADD:
+							// add - if both integer then add as integers
+							// else if both could be numbers convert and add as floats
+							// otherwise concatenate (string & number or string)
+							if (one->type==T_INT && two->type==T_INT) {
 								// integer add
 								stack->pushlong(two->intval + one->intval);
-							} else {
+							} else if (convert->isNumeric(one) && convert->isNumeric(two)) {
 								// float add
 								double fone = convert->getFloat(one);
 								double ftwo = convert->getFloat(two);
@@ -2297,6 +2301,16 @@ Interpreter::execByteCode() {
 									stack->pushint(0);
 								} else {
 									stack->pushfloat(ans);
+								}
+							} else {
+								// concatenate 
+								QString sone = convert->getString(one);
+								QString stwo = convert->getString(two);
+								if (stwo.length() + sone.length()>STRINGMAXLEN) {
+									error->q(ERROR_STRINGMAXLEN);
+									stack->pushint(0);
+								} else {
+									stack->pushstring(stwo + sone);
 								}
 							}
 							break;
@@ -2607,8 +2621,8 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_SETCOLOR: {
-                    unsigned int brushval = stack->popfloat();
-                    unsigned int penval = stack->popfloat();
+                    unsigned long brushval = stack->poplong();
+                    unsigned long penval = stack->poplong();
 
                     drawingpen.setColor(QColor::fromRgba((QRgb) penval));
                     drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
@@ -2623,7 +2637,7 @@ Interpreter::execByteCode() {
                     if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
                         error->q(ERROR_RGB);
                     } else {
-                        stack->pushfloat( (unsigned int) QColor(rval,gval,bval,aval).rgba());
+                        stack->pushlong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
                     }
                 }
                 break;
@@ -2632,12 +2646,12 @@ Interpreter::execByteCode() {
                     int y = stack->popint();
                     int x = stack->popint();
                     QRgb rgb = graphwin->image->pixel(x,y);
-                    stack->pushfloat((unsigned int) rgb);
+                    stack->pushlong((unsigned long) rgb);
                 }
                 break;
 
                 case OP_GETCOLOR: {
-                    stack->pushfloat((unsigned int) drawingpen.color().rgba());
+                    stack->pushlong((unsigned long) drawingpen.color().rgba());
                 }
                 break;
 
@@ -4132,22 +4146,25 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_BINARYOR: {
-                    unsigned long a = stack->popint();
-                    unsigned long b = stack->popint();
-                    stack->pushfloat(a|b);
+					unsigned long a = stack->poplong();
+                    unsigned long b = stack->poplong();
+                    a = a | b;
+                    stack->pushlong(a);
                 }
                 break;
 
                 case OP_BINARYAND: {
-                    unsigned long a = stack->popint();
-                    unsigned long b = stack->popint();
-                    stack->pushfloat(a&b);
+					unsigned long a = stack->poplong();
+                    unsigned long b = stack->poplong();
+                    a = a&b;
+                    stack->pushlong(a);
                 }
                 break;
 
                 case OP_BINARYNOT: {
-                    unsigned long a = stack->popint();
-                    stack->pushfloat(~a);
+					unsigned long a = stack->poplong();
+                    a = ~a;
+                    stack->pushlong(a);
                 }
                 break;
 
@@ -4446,7 +4463,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_GETBRUSHCOLOR: {
-                    stack->pushfloat((unsigned int) drawingbrush.color().rgba());
+                    stack->pushlong((unsigned long) drawingbrush.color().rgba());
                 }
                 break;
 
@@ -4492,28 +4509,28 @@ Interpreter::execByteCode() {
                     if (base>=2 && base <=36) {
                         dec = n.toULong(&ok, base);
                         if (ok) {
-                            stack->pushfloat(dec);
+                            stack->pushlong(dec);
                         } else {
                             error->q(ERROR_RADIXSTRING);
-                            stack->pushfloat(0);
+                            stack->pushlong(0);
                         }
                     } else {
                         error->q(ERROR_RADIX);
-                        stack->pushfloat(0);
+                        stack->pushlong(0);
                     }
                 }
                 break;
 
                 case OP_TORADIX: {
                     int base = stack->popint();
-                    unsigned long n = stack->popfloat();
+                    unsigned long n = stack->poplong();
                     if (base>=2 && base <=36) {
                         QString out;
                         out.setNum(n, base);
                         stack->pushstring(out);
                     } else {
                         error->q(ERROR_RADIX);
-                        stack->pushfloat(0);
+                        stack->pushint(0);
                     }
                 }
                 break;
@@ -4666,7 +4683,14 @@ Interpreter::execByteCode() {
 							}
 							stack->pushint(0);
 							break;
-
+						case 6:
+							// size of int
+							stack->pushint(sizeof(int));
+							break;
+						case 7:
+							// size of long
+							stack->pushint(sizeof(long));
+							break;
                         default:
                             stack->pushstring("");
                     }

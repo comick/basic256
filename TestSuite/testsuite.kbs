@@ -38,6 +38,7 @@
 # 20151204	j.m.reneau	added neq preverence for VNA errors 1.99.99.6
 # 20160203      j.m.reneau      added reverse for loop testing and requirement for
 #                               system to be enabled
+# 20160327	j.m.reneau	added binaryop include
 
 include "testsuite_common_include.kbs"
 
@@ -468,6 +469,12 @@ section_types:
 call section("Variable and Stack Types Tests")
 ###################################################
 include "testsuite_types_include.kbs"
+
+section_binaryop:
+###################################################
+call section("Binary Operations and Type Conversions")
+###################################################
+include "testsuite_binaryop_include.kbs"
 
 
 

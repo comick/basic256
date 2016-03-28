@@ -3,7 +3,7 @@
 
 #define ERROR_NONE 				0
 
-// ERRROR numbers greater than 0 are NOT trappable
+// ERRROR numbers less than 0 are NOT trappable
 // and are fatal at runtime
 #define ERROR_NOSUCHLABEL		-1
 #define ERROR_NEXTNOFOR 		-2
@@ -93,6 +93,8 @@
 #define ERROR_WAVNODURATION				77
 #define ERROR_FILEOPERATION				78
 #define ERROR_SERIALPARAMETER			79
+#define ERROR_LONGRANGE					80
+
 // Insert new error codes here
 
 
@@ -105,6 +107,7 @@
 #define WARNING_WAVNOTSEEKABLE			WARNING_START + ERROR_WAVNOTSEEKABLE
 #define WARNING_WAVNODURATION			WARNING_START + ERROR_WAVNODURATION
 #define WARNING_VARNOTASSIGNED 			WARNING_START + ERROR_VARNOTASSIGNED
+#define WARNING_LONGRANGE 				WARNING_START + ERROR_LONGRANGE
 
 
 //

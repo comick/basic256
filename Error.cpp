@@ -60,6 +60,11 @@ void Error::q(int errornumber, int variablenumber, QString extratext) {
 		if (typeconverror==SETTINGSERRORNONE) return;
 		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
 	}
+	if (errornumber==ERROR_LONGRANGE) {
+		if (typeconverror==SETTINGSERRORNONE) return;
+		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_LONGRANGE;
+	}
+
 	if (errornumber==ERROR_VARNOTASSIGNED) {
 		if (varnotassignederror==SETTINGSERRORNONE) return;
 		if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
@@ -314,7 +319,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_VARNOTASSIGNED:
             errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
+        case ERROR_LONGRANGE:
+            errormessage = tr("Number exceeds integer range (−2,147,483,648 to 2,147,483,647)");
+            break;
 
+            
+      
 
         // put ERROR new messages here
         case ERROR_NOTIMPLEMENTED:
@@ -333,6 +343,10 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case WARNING_VARNOTASSIGNED:
             errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
+        case WARNING_LONGRANGE:
+            errormessage = tr("Number exceeds integer range (−2,147,483,648 to 2,147,483,647), zero used");
+            break;
+
 
 
         // put WARNING new messages here

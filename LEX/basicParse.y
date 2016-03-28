@@ -400,7 +400,7 @@
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
 %left B256BINARYOR B256BINARYAND
-%left '-' '+'
+%left '-' '+' ';'
 %left '*' '/' B256MOD B256INTDIV
 %nonassoc B256UMINUS B256BINARYNOT
 %left '^'
@@ -2307,6 +2307,9 @@ expr:
 			'(' expr ')'
 			| expr '+' expr {
 				addOp(OP_ADD);
+			}
+			| expr ';' expr {
+				addOp(OP_CONCATENATE);
 			}
 
 			/* *** variable and function expressions *** */
