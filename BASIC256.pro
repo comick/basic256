@@ -14,7 +14,8 @@ CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
 
-QT						+=	webkit
+#QT						+=	webkitwidgets
+#QT						+=	webkit
 QT						+=	gui
 QT						+=	sql
 QT						+=	widgets

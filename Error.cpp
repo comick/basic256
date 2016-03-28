@@ -64,6 +64,10 @@ void Error::q(int errornumber, int variablenumber, QString extratext) {
 		if (typeconverror==SETTINGSERRORNONE) return;
 		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_LONGRANGE;
 	}
+	if (errornumber==ERROR_INTEGERRANGE) {
+		if (typeconverror==SETTINGSERRORNONE) return;
+		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_INTEGERRANGE;
+	}
 
 	if (errornumber==ERROR_VARNOTASSIGNED) {
 		if (varnotassignederror==SETTINGSERRORNONE) return;
@@ -320,7 +324,10 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
         case ERROR_LONGRANGE:
-            errormessage = tr("Number exceeds integer range (−2,147,483,648 to 2,147,483,647)");
+            errormessage = tr("Number exceeds long integer range (") + QString::number(LONG_MIN) + tr(" to ") + QString::number(LONG_MAX) + tr(")");
+            break;
+        case ERROR_INTEGERRANGE:
+            errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
             break;
 
             
@@ -344,7 +351,10 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             errormessage = tr("Variable %VARNAME% has not been assigned a value");
             break;
         case WARNING_LONGRANGE:
-            errormessage = tr("Number exceeds integer range (−2,147,483,648 to 2,147,483,647), zero used");
+            errormessage = tr("Number exceeds long integer range (") + QString::number(LONG_MIN) + tr(" to ") + QString::number(LONG_MAX) + tr("), zero used");
+            break;
+        case WARNING_INTEGERRANGE:
+            errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr("), zero used");
             break;
 
 

@@ -234,7 +234,10 @@ void Stack::dup2() {
 
 
 int Stack::popint() {
-	return (int) poplong();
+	DataElement *top=popelement();
+	long i = convert->getInt(top);
+	delete(top);
+	return i;
 }
 
 long Stack::poplong() {

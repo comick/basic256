@@ -29,6 +29,11 @@ bool Convert::isNumeric(DataElement *e) {
 
 		
 int Convert::getInt(DataElement *e) {
+	long l=getLong(e);
+	if (l<INT_MIN||l>INT_MAX) {
+		if (error) error->q(ERROR_INTEGERRANGE);
+		l = 0;
+	}
 	return (int) getLong(e);
 }
 
@@ -39,10 +44,10 @@ long Convert::getLong(DataElement *e) {
 			i = e->intval;
 		} else if (e->type == T_FLOAT) {
 			double f = e->floatval + (e->floatval>0?EPSILON:-EPSILON);
-			if (f<-2147483648||f>2147483647) {
+			if (f<LONG_MIN||f>LONG_MAX) {
 				if (error) error->q(ERROR_LONGRANGE);
 			} else {
-				i = (long) (e->floatval + (e->floatval>0?EPSILON:-EPSILON));
+				i = (long) f;
 			}
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
