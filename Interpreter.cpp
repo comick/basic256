@@ -1966,7 +1966,11 @@ Interpreter::execByteCode() {
 					double val = stack->popfloat();
 					double intpart;
 					val = modf(val + (val>0?EPSILON:-EPSILON), &intpart);
-					stack->pushfloat(intpart);
+					if (intpart >= LONG_MIN && intpart <= LONG_MAX) {
+						stack->pushlong(intpart);
+					} else {
+						stack->pushfloat(intpart);
+					}
 				}
 				break;
 
@@ -2285,41 +2289,53 @@ Interpreter::execByteCode() {
 							}
 							break;
 						case OP_ADD:
-							// add - if both integer then add as integers
-							// else if both could be numbers convert and add as floats
-							// otherwise concatenate (string & number or string)
-							if (one->type==T_INT && two->type==T_INT) {
-								// integer add
-								stack->pushlong(two->intval + one->intval);
-							} else if (convert->isNumeric(one) && convert->isNumeric(two)) {
-								// float add
-								double fone = convert->getFloat(one);
-								double ftwo = convert->getFloat(two);
-								double ans = ftwo + fone;
-								if (isinf(ans)) {
-									error->q(ERROR_INFINITY);
-									stack->pushint(0);
-								} else {
-									stack->pushfloat(ans);
+							{
+								// add - if both integer then add as integers (if no ovverflow)
+								// else if both could be numbers then convert and add as floats
+								// otherwise concatenate (string & number or strings)
+								if (one->type==T_INT && two->type==T_INT) {
+									long a = two->intval + one->intval;
+									if((two->intval<=0||one->intval<=0||a>=0)&&(two->intval>=0||one->intval>=0||a<=0)) {
+										// integer add - without overflow
+										stack->pushlong(a);
+										break;
+									}
 								}
-							} else {
-								// concatenate 
-								QString sone = convert->getString(one);
-								QString stwo = convert->getString(two);
-								if (stwo.length() + sone.length()>STRINGMAXLEN) {
-									error->q(ERROR_STRINGMAXLEN);
-									stack->pushint(0);
+								if (convert->isNumeric(one) && convert->isNumeric(two)) {
+									// float add (if floats, numeric strings, or overflow
+									double fone = convert->getFloat(one);
+									double ftwo = convert->getFloat(two);
+									double ans = ftwo + fone;
+									if (isinf(ans)) {
+										error->q(ERROR_INFINITY);
+										stack->pushint(0);
+									} else {
+										stack->pushfloat(ans);
+									}
 								} else {
-									stack->pushstring(stwo + sone);
+									// concatenate 
+									QString sone = convert->getString(one);
+									QString stwo = convert->getString(two);
+									if (stwo.length() + sone.length()>STRINGMAXLEN) {
+										error->q(ERROR_STRINGMAXLEN);
+										stack->pushint(0);
+									} else {
+										stack->pushstring(stwo + sone);
+									}
 								}
 							}
 							break;
 
 						case OP_SUB:
-							if (one->type==T_INT && two->type==T_INT) {
-								// integer subtract
-								stack->pushlong(two->intval - one->intval);
-							} else {
+							{
+								if (one->type==T_INT && two->type==T_INT) {
+									long a = two->intval - one->intval;
+									if((two->intval<=0||one->intval>0||a>=0)&&(two->intval>=0||one->intval<0||a<=0)) {
+										// integer subtract - without overflow
+										stack->pushlong(a);
+										break;
+									}
+								}
 								// float subtract
 								double fone = convert->getFloat(one);
 								double ftwo = convert->getFloat(two);
@@ -2334,10 +2350,15 @@ Interpreter::execByteCode() {
 							break;
 
 						case OP_MUL:
-							if (one->type==T_INT && two->type==T_INT) {
-								// integer multiply
-								stack->pushlong(two->intval * one->intval);
-							} else {
+							{
+								if (one->type==T_INT && two->type==T_INT) {
+									if(one->intval<=LONG_MAX/two->intval && one->intval>=LONG_MIN/two->intval) {
+										long a = two->intval * one->intval;
+										// integer multiply - without overflow
+										stack->pushlong(a);
+										break;
+									}
+								}
 								// float multiply
 								double fone = convert->getFloat(one);
 								double ftwo = convert->getFloat(two);
@@ -4829,6 +4850,42 @@ Interpreter::execByteCode() {
 					delete(e);
 				}
                 break;
+
+				case OP_ISNUMERIC: {
+					// return if data element is numeric
+					DataElement *e = stack->popelement();
+					stack->pushint(convert->isNumeric(e));
+					delete(e);
+				}
+				break;
+
+				case OP_LTRIM: {
+					QString s = stack->popstring();
+					int l = s.length();
+					int p = 0;
+					while(p<l && s.at(p).isSpace()) {
+						p++;
+					}
+					stack->pushstring(s.mid(p));
+				}
+				break;
+
+				case OP_RTRIM: {
+					QString s = stack->popstring();
+					int l = s.length();
+					int p = l;
+					while(p>0 && s.at(p-1).isSpace()) {
+						p--;
+					}
+					stack->pushstring(s.mid(0,p));
+				}
+				break;
+
+				case OP_TRIM: {
+					QString s = stack->popstring();
+					stack->pushstring(s.trimmed());
+				}
+				break;
 
 
 

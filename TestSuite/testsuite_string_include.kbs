@@ -4,6 +4,7 @@
 # date		programmer	description
 # 20140204	j.m.reneau	split from testsuite
 # 2014-08-06     j.m.reneau      added midx and regexminimal
+# 2016-03-28	j.m.reneau	Added ltrim, rtrim, trim
 
 # String Assignment
 b$ = "string" : call s('b$ = "string"', b$, "string")
@@ -76,3 +77,10 @@ regexminimal true
 call s('lazy midx("abcdacbdabcdabcd", "b.*d")',midx("abcdacbdabcdabcd", "b.*d"),'bcd')
 regexminimal false # return back to default
 call s('greedy midx("abcdacbdabcdabcd", "b.*d")',midx("abcdacbdabcdabcd", "b.*c"),'bcdacbdabcdabc')
+
+# string trimming
+a$ = "	 test  string to trim 	  "
+call s("ltrim '"+a$+"'",ltrim(a$),"test  string to trim 	  ")
+call s("rtrim '"+a$+"'",rtrim(a$),"	 test  string to trim")
+call s("trim '"+a$+"'",trim(a$),"test  string to trim")
+

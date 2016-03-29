@@ -174,6 +174,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Ii][Nn][Ss][Tt][Rr]\\b"											// instr
             << "\\b[Ii][Nn][Ss][Tt][Rr][Xx]\\b"										// instrx
             << "\\b[Ii][Nn][Tt]\\b"													// int
+            << "\\b[Ii][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]\\b"							// isnumeric
             << "\\b[Kk][Ee][Yy]\\b"													// key
             << "\\b[Kk][Ii][Ll][Ll]\\b"												// kill
             << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]\\b"							// lasterror
@@ -187,6 +188,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Ll][Oo][Gg]\\b"													// log
             << "\\b[Ll][Oo][Gg][1][0]\\b"											// log10
             << "\\b[Ll][Oo][Ww][Ee][Rr]\\b"											// lower
+            << "\\b[Ll][Tt][Rr][Ii][Mm]\\b"											// ltrim
             << "\\b[Mm][Dd][5]\\b"													// md5
             << "\\b[Mm][Ii][Dd]\\b"													// mid
             << "\\b[Mm][Ii][Dd][Xx]\\b"												// midx
@@ -243,6 +245,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Rr][Ee][Tt][Uu][Rr][Nn]\\b"	        							// return
             << "\\b[Rr][Gg][Bb]\\b"													// rgb
             << "\\b[Rr][Ii][Gg][Hh][Tt]\\b"											// right
+            << "\\b[Rr][Tt][Rr][Ii][Mm]\\b"											// ltrim
             << "\\b[Ss][Aa][Yy]\\b"													// say
             << "\\b[Ss][Ee][Cc][Oo][Nn][Dd]\\b"										// second
             << "\\b[Ss][Ee][Ee][Kk]\\b"												// seek
@@ -284,6 +287,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Tt][Oo][Hh][Ee][Xx]\\b"											// tohex
             << "\\b[Tt][Oo][Oc][Cc][Tt][Aa][Ll]\\b"									// tooctal
             << "\\b[Tt][Oo][Rr][Aa][Dd][Ii][Xx]\\b"									// toradix
+            << "\\b[Tt][Rr][Ii][Mm]\\b"												// trim
             << "\\b[Tt][Rr][Yy]\\b"													// try
             << "\\b[Tt][Yy][Pp][Ee][Oo][Ff]\\b"										// typeof
             << "\\b[Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]\\b"								// unassign

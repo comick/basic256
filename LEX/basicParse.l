@@ -292,6 +292,7 @@ inputstring [Ii][Nn][Pp][Uu][Tt][ \t]*[Ss][Tt][Rr][Ii][Nn][Gg]
 include [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
+isnumeric [iI][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
 key [Kk][Ee][Yy]
 kill [Kk][Ii][Ll][Ll]
 label ^[ \t]*{variable}:
@@ -306,6 +307,7 @@ line [Ll][Ii][Nn][Ee]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
+ltrim [Ll][Tt][Rr][Ii][Mm]
 md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
 midx [Mm][Ii][Dd][Xx]
@@ -369,6 +371,7 @@ reset [Rr][Ee][Ss][Ee][Tt]
 return [Rr][Ee][Tt][Uu][Rr][Nn]
 rgb [Rr][Gg][Bb]
 right [Rr][Ii][Gg][Hh][Tt]
+rtrim [Rr][Tt][Rr][Ii][Mm]
 say [Ss][Aa][Yy]
 second [Ss][Ee][Cc][Oo][Nn][Dd]
 seek [Ss][Ee][Ee][Kk]
@@ -412,6 +415,7 @@ toint [Ii][Nn][Tt]
 tooctal [Tt][Oo][Oo][Cc][Tt][Aa][Ll]
 toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
+trim [Tt][Rr][Ii][Mm]
 try [Tt][Rr][Yy]
 type_unassigned [Tt][Yy][Pp][Ee][_][Un][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]
@@ -627,6 +631,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {implode}					{ count(); return B256IMPLODE; }
 {instr}						{ count(); return B256INSTR; }
 {instrx}					{ count(); return B256INSTRX; }
+{isnumeric}					{ count(); return B256ISNUMERIC; }
 {key}						{ count(); return B256KEY; }
 {lasterror}					{ count(); return B256LASTERROR; }
 {lasterrorextra} 			{ count(); return B256LASTERROREXTRA; }
@@ -637,6 +642,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {log}						{ count(); return B256LOG; }
 {logten}					{ count(); return B256LOGTEN; }
 {lower}						{ count(); return B256LOWER; }
+{ltrim}						{ count(); return B256LTRIM; }
 {md5}						{ count(); return B256MD5; }
 {mid}						{ count(); return B256MID; }
 {midx}						{ count(); return B256MIDX; }
@@ -666,6 +672,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {replacex}					{ count(); return B256REPLACEX; }
 {rgb}						{ count(); return B256RGB; }
 {right}						{ count(); return B256RIGHT; }
+{rtrim}						{ count(); return B256RTRIM; }
 {second}					{ count(); return B256SECOND; }
 {sin}						{ count(); return B256SIN; }
 {size}						{ count(); return B256SIZE; }
@@ -689,6 +696,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {tooctal}					{ count(); return B256TOOCTAL; }
 {toradix}					{ count(); return B256TORADIX; }
 {tostring}					{ count(); return B256TOSTRING; }
+{trim}						{ count(); return B256TRIM; }
 {typeof}					{ count(); return B256TYPEOF; }
 {type_unassigned}			{ count(); return B256TYPE_UNASSIGNED; }
 {type_int}					{ count(); return B256TYPE_INT; }

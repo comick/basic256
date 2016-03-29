@@ -12,14 +12,14 @@ Convert::Convert(Error *e) {
 		
 bool Convert::isNumeric(DataElement *e) {
 	// return true if this is a number or can convert to one
+	// if there is white space around the string number IT IS NOT NUMERIC
 	if (e) {
 		if (e->type == T_INT || e->type == T_REF || e->type == T_FLOAT) {
 			return true;
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
-				bool ok;
-				e->stringval.toDouble(&ok);
-				return ok;
+				QRegExp numeric("^[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?$");
+				return numeric.indexIn(e->stringval) != -1;
 			}
 		}
 	}
