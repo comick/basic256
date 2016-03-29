@@ -421,6 +421,11 @@ QString Interpreter::opname(int op) {
     else if (op==OP_TYPEOF) return QString("OP_TYPEOF");
     else if (op==OP_UNASSIGN) return QString("OP_UNASSIGN");
     else if (op==OP_UNASSIGNA) return QString("OP_UNASSIGNA");
+    else if (op==OP_ISNUMERIC) return QString("OP_ISNUMERIC");
+    else if (op==OP_LTRIM) return QString("OP_LTRIM");
+    else if (op==OP_RTRIM) return QString("OP_RTRIM");
+    else if (op==OP_TRIM) return QString("OP_TRIM");
+    else if (op==OP_EXITFOR) return QString("OP_EXITFOR");
 
     else return QString("OP_UNKNOWN");
 }
@@ -1493,10 +1498,22 @@ Interpreter::execByteCode() {
                     onerrorstack = temp;
                 }
                 break;
+                
+   				case OP_EXITFOR: {
+					forframe *temp = forstack;
+					if (!temp) {
+						error->q(ERROR_NEXTNOFOR);
+					} else {
+						forstack = temp->next;
+						delete temp;
+						op = wordCode + i;
+					}
 
-            }
-        }
-        break;
+				}
+				break;
+				
+			}
+		}
 
         case OPTYPE_NONE: {
             switch(opcode) {
@@ -2264,9 +2281,23 @@ Interpreter::execByteCode() {
 					}
 					break;
 				}
+				
+				case OP_CONCATENATE:
+					// concatenate ";" operator - all types
+					{
+						QString sone = stack->popstring();
+						QString stwo = stack->popstring();
+						if (stwo.length() + sone.length()>STRINGMAXLEN) {
+							error->q(ERROR_STRINGMAXLEN);
+							stack->pushint(0);
+						} else {
+							stack->pushstring(stwo + sone);
+						}
+					}
+					break;
+
 
 				case OP_ADD:
-				case OP_CONCATENATE:
 				case OP_SUB:
 				case OP_MUL:
 				case OP_MOD: {
@@ -2275,19 +2306,6 @@ Interpreter::execByteCode() {
 					DataElement *one = stack->popelement();
 					DataElement *two = stack->popelement();
 					switch (opcode) {
-						case OP_CONCATENATE:
-							// concatenate ";" operator - all types
-							{
-								QString sone = convert->getString(one);
-								QString stwo = convert->getString(two);
-								if (stwo.length() + sone.length()>STRINGMAXLEN) {
-									error->q(ERROR_STRINGMAXLEN);
-									stack->pushint(0);
-								} else {
-									stack->pushstring(stwo + sone);
-								}
-							}
-							break;
 						case OP_ADD:
 							{
 								// add - if both integer then add as integers (if no ovverflow)
@@ -2352,7 +2370,7 @@ Interpreter::execByteCode() {
 						case OP_MUL:
 							{
 								if (one->type==T_INT && two->type==T_INT) {
-									if(one->intval<=LONG_MAX/two->intval && one->intval>=LONG_MIN/two->intval) {
+									if(labs(one->intval)<=LONG_MAX/labs(two->intval)) {
 										long a = two->intval * one->intval;
 										// integer multiply - without overflow
 										stack->pushlong(a);
@@ -4886,6 +4904,7 @@ Interpreter::execByteCode() {
 					stack->pushstring(s.trimmed());
 				}
 				break;
+
 
 
 

@@ -2095,7 +2095,7 @@ exitforstmt:
 					n--;
 				}
 				if (n>=0) {
-					addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLEXIT));
+					addIntOp(OP_EXITFOR, getInternalSymbol(iftableid[n],INTERNALSYMBOLEXIT));
 				} else {
 					errorcode = COMPERR_EXITFOR;
 					return -1;
