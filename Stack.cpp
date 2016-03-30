@@ -118,6 +118,14 @@ void Stack::pushvariant(QString string, int type) {
 	}
 }
 	
+void Stack::pushbool(bool i) {
+	if (i) {
+		pushlong(1);
+	} else {
+		pushlong(0);
+	}
+}
+
 void Stack::pushint(int i) {
     pushlong((long) i);
 }
@@ -232,6 +240,13 @@ void Stack::dup2() {
     stacklist.push_front(ele);
 }
 
+
+int Stack::popbool() {
+	DataElement *top=popelement();
+	int i = convert->getBool(top);
+	delete(top);
+	return i;
+}
 
 int Stack::popint() {
 	DataElement *top=popelement();

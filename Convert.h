@@ -34,6 +34,7 @@ class Convert
 		double getFloat(DataElement*);
 		QString getString(DataElement*);
 		QString getString(DataElement*, int);
+		int getBool(DataElement*);
 
 		int compare(DataElement*, DataElement*);
 		int compareFloats(double, double);

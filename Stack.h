@@ -30,6 +30,7 @@ class Stack
 		Error *error;
 		Convert *convert;
 		void pushdataelement(DataElement*);
+		void pushbool(bool);
 		void pushstring(QString);
 		void pushvariant(QString);
 		void pushvariant(QString, int);
@@ -46,6 +47,7 @@ class Stack
 		int peekType(int);
 		DataElement *popelement();
 		int popint();
+		int popbool();
 		long poplong();
 		double popfloat();
 		QString popstring();

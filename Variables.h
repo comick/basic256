@@ -24,7 +24,6 @@ class VariableArrayPart
 	public:
 		int xdim;
 		int ydim;
-		int size;
 		std::map<int,DataElement*> datamap;
 };
 

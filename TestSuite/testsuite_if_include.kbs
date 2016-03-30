@@ -4,6 +4,7 @@
 # date		programmer	description
 # 20140203	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
+# 201603330	j.m.reneau	added section to test values for true/false
 
 s = 0
 for t = 1 to 10
@@ -72,4 +73,11 @@ call n("case", s, 2323)
 # test case single line
 s = 0:for t = 1 to 10:begin case:case t<=3:s+=1:case t <=5:s+=10:case t<=8:s+=100:else:s+=1000:end case:next t
 call n("case compound", s, 2323)
+
+# test values as true and false
+a = {"", "hello", 0, 1223, -112, 0.00, 0.0000000001, 12312.23, 1233123123124234.123123 }
+b = {false, true, false, true, true, false, false, true, true }
+for i = 0 to a[?]-1
+	call n(a[i] ; " is "; b[i], not not a[i], b[i])
+next i
 

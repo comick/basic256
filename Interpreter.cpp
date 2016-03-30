@@ -1358,23 +1358,30 @@ Interpreter::execByteCode() {
 				case OP_ARRAYLISTASSIGN: {
 
 					int items = stack->popint();
-
-					variables->arraydim(i, items, 1, false);
-					if(!error->pending()) {
+					
+					// create array if we need to (wrong size)
+					if (variables->get(i)->data->type != T_ARRAY || variables->arraysize(i)!=items) {
+						variables->arraydim(i, items, 1, false);
+						if(error->pending()) break;
 						if(debugMode != 0) {
 							emit(varWinDimArray(variables, i, items, 1));
 						}
+					}
 
-						for (int index = items - 1; index >= 0 && !error->pending(); index--) {
+					// use the array dimensions to fill data from stack
+					int xdim = variables->arraysizex(i);
+					int ydim = variables->arraysizey(i);
+					for(int x = xdim-1; x>=0 && !error->pending(); x--) {
+						for (int y = ydim - 1; y >= 0 && !error->pending(); y--) {
 							DataElement *e = stack->popelement();
 							if (e->type==T_UNASSIGNED) {
 								error->q(ERROR_VARNOTASSIGNED, e->intval);
 							} else if (e->type==T_ARRAY) {
 								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 							} else {
-								variables->arraysetdata(i, index, 0, e);
+								variables->arraysetdata(i, x, y, e);
 								if(debugMode != 0 && !error->pending()) {
-									emit(varWinAssign(variables, i, index, 0));
+									emit(varWinAssign(variables, i, x, y));
 								}
 							}
 						}
@@ -1460,9 +1467,9 @@ Interpreter::execByteCode() {
 
                 case OP_BRANCH: {
                     // goto if true
-                    int val = stack->popint();
+                    int val = stack->popbool();
 
-                    if (val == 0) { // go to next line on false, otherwise execute rest of line.
+                    if (val == 0) { // jump on false
                         op = wordCode + i;
                     }
                 }
@@ -2299,8 +2306,7 @@ Interpreter::execByteCode() {
 
 				case OP_ADD:
 				case OP_SUB:
-				case OP_MUL:
-				case OP_MOD: {
+				case OP_MUL: {
 					// integer and float safe operations
 
 					DataElement *one = stack->popelement();
@@ -2394,25 +2400,6 @@ Interpreter::execByteCode() {
 							}
 							break;
 
-						case OP_MOD:
-							if (one->type==T_INT && two->type==T_INT) {
-								// integer modulo
-								stack->pushlong(two->intval % one->intval);
-							} else {
-								// float modulo
-								double fone = convert->getFloat(one);
-								double ftwo = convert->getFloat(two);
-								double ans = fmod(ftwo, fone);
-								if (isinf(ans)) {
-									error->q(ERROR_INFINITY);
-									stack->pushint(0);
-								} else {
-									stack->pushfloat(ans);
-								}
-							}
-							break;
-
-
 
 						}
 						delete(one);
@@ -2437,8 +2424,8 @@ Interpreter::execByteCode() {
 							stack->pushfloat(ans);
 						}
 					}
-					break;
 				}
+				break;
 
 				case OP_DIV: {
 					// always return a float value with division "/"
@@ -2456,63 +2443,57 @@ Interpreter::execByteCode() {
 							stack->pushfloat(ans);
 						}
 					}
-					break;
 				}
+				break;
 
 				case OP_INTDIV: {
-					// always return an integer with '\' operator
 					long oneval = stack->poplong();
 					long twoval = stack->poplong();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
 						stack->pushint(0);
 					} else {
-						stack->pushlong(twoval /oneval);
+						stack->pushlong(twoval / oneval);
 					}
-					break;
 				}
-
+				break;
+						
+				case OP_MOD: {
+					long oneval = stack->poplong();
+					long twoval = stack->poplong();
+					if (oneval==0) {
+						error->q(ERROR_DIVZERO);
+						stack->pushint(0);
+					} else {
+						stack->pushlong(twoval % oneval);
+					}
+				}
+				break;
 
                 case OP_AND: {
-                    int one = stack->popint();
-                    int two = stack->popint();
-                    if (one && two) {
-                        stack->pushint(1);
-                    } else {
-                        stack->pushint(0);
-                    }
+                    int one = stack->popbool();
+                    int two = stack->popbool();
+                    stack->pushbool(one && two);
                 }
                 break;
 
                 case OP_OR: {
-                    int one = stack->popint();
-                    int two = stack->popint();
-                    if (one || two)	{
-                        stack->pushint(1);
-                    } else {
-                        stack->pushint(0);
-                    }
+                    int one = stack->popbool();
+                    int two = stack->popbool();
+                    stack->pushbool(one || two);
                 }
                 break;
 
                 case OP_XOR: {
-                    int one = stack->popint();
-                    int two = stack->popint();
-                    if (!(one && two) && (one || two)) {
-                        stack->pushint(1);
-                    } else {
-                        stack->pushint(0);
-                    }
+                    int one = stack->popbool();
+                    int two = stack->popbool();
+                    stack->pushbool(!(one && two) && (one || two));
                 }
                 break;
 
                 case OP_NOT: {
-                    int temp = stack->popint();
-                    if (temp) {
-                        stack->pushint(0);
-                    } else {
-                        stack->pushint(1);
-                    }
+                    int temp = stack->popbool();
+                    stack->pushbool(!temp);
                 }
                 break;
 
@@ -2542,25 +2523,24 @@ Interpreter::execByteCode() {
 					delete(one);
                     switch(opcode) {
 						case OP_EQUAL:
-							ans = (ans==0);
+							stack->pushbool(ans==0);
 							break;
 						case OP_NEQUAL:
-							ans = (ans!=0);
+							stack->pushbool(ans!=0);
 							break;
 						case OP_GT:
-							ans = (ans==1);
+							stack->pushbool(ans==1);
 							break;
 						case OP_LTE:
-							ans = (ans!=1);
+							stack->pushbool(ans!=1);
 							break;
 						case OP_LT:
-							ans = (ans==-1);
+							stack->pushbool(ans==-1);
 							break;
 						case OP_GTE:
-							ans = (ans!=-1);
+							stack->pushbool(ans!=-1);
 							break;
 					}
-					stack->pushint(ans);
 				}
 				break;
 

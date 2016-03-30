@@ -27,6 +27,28 @@ bool Convert::isNumeric(DataElement *e) {
 }
 
 
+int Convert::getBool(DataElement *e) {
+	// BASIC56 uses 1 for true and 0 for false
+	// a number not zero is 1 otherwise 0
+	// a non empty string is 1 otherwise 0
+	// an unassigned variable is 0
+	// an array throws an error and is 0
+	long i=0;
+	if (e) {
+		if (e->type == T_INT || e->type == T_REF) {
+			if(e->intval!=0) return 1;
+		} else if (e->type == T_FLOAT) {
+			if (e->floatval < -EPSILON || e->floatval > EPSILON) return 1;
+		} else if (e->type == T_STRING) {
+			if (e->stringval.length()!=0) return 1;
+		} else if (e->type==T_UNASSIGNED) {
+			return 0;
+		} else if (e->type==T_ARRAY) {
+			if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+		}
+	}
+	return 0;
+}
 		
 int Convert::getInt(DataElement *e) {
 	long l=getLong(e);

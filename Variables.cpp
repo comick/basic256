@@ -189,7 +189,6 @@ void Variables::arraydim(int varnum, int xdim, int ydim, bool redim) {
             }
             v->data->type = T_ARRAY;
             v->data->intval = varnum;	// put the variable number as the intval so that if it ends up on the stack we can get the original number
-            v->arr->size = size;
             v->arr->xdim = xdim;
             v->arr->ydim = ydim;
         } else {
@@ -206,7 +205,7 @@ int Variables::arraysize(int varnum) {
 	if(v) {
 		if (v->data) {
 			if (v->data->type == T_ARRAY) {
-				return(v->arr->size);
+				return(v->arr->xdim * v->arr->ydim);
 			} else {
 				error->q(ERROR_NOTARRAY, varnum);
 			}
