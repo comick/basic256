@@ -2370,7 +2370,11 @@ Interpreter::execByteCode() {
 						case OP_MUL:
 							{
 								if (one->type==T_INT && two->type==T_INT) {
-									if(labs(one->intval)<=LONG_MAX/labs(two->intval)) {
+									if(two->intval==0||one->intval==0) {
+										stack->pushlong(0);
+										break;
+									}
+									if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
 										long a = two->intval * one->intval;
 										// integer multiply - without overflow
 										stack->pushlong(a);

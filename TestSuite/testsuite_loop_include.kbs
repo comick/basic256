@@ -4,6 +4,7 @@
 # date		programmer	description
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
+# 20160329	j.m.reneau	added second test if exit for to test condition fixed 1.99.99.21
 
 #test for
 total = 0
@@ -21,6 +22,16 @@ for t = 1 to 100
 next t
 print
 call n("FOR - Exit and Continue", total, 103)
+
+total = 0
+for x = 0 to 7
+for y = 0 to 5
+if y > 3 then  exit for
+next y
+total = total + x
+next x
+call n("FOR - Exit outside still run", total, 28)
+
 
 #test for compound
 total = 0:for t = 1 to 100:if t = 3 or t = 4 or t = 10 then print "continue for = skip " + t;: continuefor

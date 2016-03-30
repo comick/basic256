@@ -6,6 +6,8 @@
 
 # this include tests binary operations on integers
 # and type conversions
+#
+# also test integer operations and overflow and underflow
 
 # to hex
 call s("-1=ffffffff", tohex(-1), "ffffffff")
@@ -38,4 +40,49 @@ for t = 1 to 31
    
 next t
 
+# test float to integer
+maxi = int(2 ^ 31 - 1)
+mini = int(-(2 ^31))
+call n("maxi=2147483647",maxi,2147483647)
+call n("typeof(maxi)",typeof(maxi),1)
+call n("mini=-2147483648",mini,-2147483648)
+call n("typeof(mini)",typeof(mini),1)
+
+#addition of integers
+a = maxi + 1	# overflow
+call n("+a=2147483648",a,2147483648)
+call n("typeof(a)",typeof(a),2)
+a = maxi + -1	# not overflow
+call n("+a=2147483646",a,2147483646)
+call n("typeof(a)",typeof(a),1)
+a = mini + -1	# overflow
+call n("+a=-2147483649",a,-2147483649)
+call n("typeof(a)",typeof(a),2)
+a = mini + 1	# not overflow
+call n("+a=-2147483647",a,-2147483647)
+call n("typeof(a)",typeof(a),1)
+
+#subtraction of integers
+a = maxi - -1	# overflow
+call n("-a=2147483648",a,2147483648)
+call n("typeof(a)",typeof(a),2)
+a = maxi - 1	# not overflow
+call n("-a=2147483646",a,2147483646)
+call n("typeof(a)",typeof(a),1)
+a = mini - 1	# overflow
+call n(-"a=-2147483649",a,-2147483649)
+call n("typeof(a)",typeof(a),2)
+a = mini - -1	# not overflow
+call n("-a=-2147483647",a,-2147483647)
+call n("typeof(a)",typeof(a),1)
+
+#multiplication of integers
+call n("typeof(maxi \ 9 * 10)",typeof(maxi \ 9 * 10),2)
+call n("typeof(mini \ 9 * 10)",typeof(mini \ 9 * 10),2)
+call n("typeof(maxi \ 10 * 9)",typeof(maxi \ 10 * 9),1)
+call n("typeof(mini \ 10 * 9)",typeof(mini \ 10 * 9),1)
+call n("typeof(maxi \ 9 * -10)",typeof(maxi \ 9 * -10),2)
+call n("typeof(mini \ 9 * -10)",typeof(mini \ 9 * -10),2)
+call n("typeof(maxi \ 10 * -9)",typeof(maxi \ 10 * -9),1)
+call n("typeof(mini \ 10 * -9)",typeof(mini \ 10 * -9),1)
 
