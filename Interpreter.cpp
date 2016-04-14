@@ -802,6 +802,7 @@ Interpreter::initialize() {
 	nsprites = 0;
 	printing = false;
 	regexMinimal = false;
+	currentKey = 0;
 	runtimer.start();
 	// clickclear mouse status
 	graphwin->clickX = 0;
