@@ -1070,6 +1070,15 @@ clearstmt:	B256CLS args_none {
 				addOp(OP_CLS);
 			}
 			| B256CLG args_none {
+				// push the color clear if there are no arguments
+				addIntOp(OP_PUSHINT, 0x00);
+				addIntOp(OP_PUSHINT, 0x00);
+				addIntOp(OP_PUSHINT, 0x00);
+				addIntOp(OP_PUSHINT, 0x00);
+				addOp(OP_RGB);
+				addOp(OP_CLG);
+			}
+			| B256CLG expr {
 				addOp(OP_CLG);
 			}
 			;

@@ -3086,7 +3086,9 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_CLG: {
-                    graphwin->image->fill(QColor(0,0,0,0));
+					
+					unsigned long clearcolor = stack->poplong();
+                    graphwin->image->fill(QColor::fromRgba((QRgb) clearcolor));
                     if (!fastgraphics) waitForGraphics();
                 }
                 break;
@@ -4472,17 +4474,22 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_PENWIDTH: {
-                    double a = stack->popfloat();
+                    double a = stack->popint();
                     if (a<0) {
                         error->q(ERROR_PENWIDTH);
                     } else {
-                        drawingpen.setWidthF(a);
+                        drawingpen.setWidth(a);
+                        if (a==0) {
+							drawingpen.setStyle(Qt::NoPen);
+						} else {
+							drawingpen.setStyle(Qt::SolidLine);
+						}
                     }
                 }
                 break;
 
                 case OP_GETPENWIDTH: {
-                    stack->pushfloat((double) (drawingpen.widthF()));
+                    stack->pushint((double) (drawingpen.width()));
                 }
                 break;
 
