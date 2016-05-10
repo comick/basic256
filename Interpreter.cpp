@@ -3220,22 +3220,26 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_KEYPRESSED: {
+				case OP_KEYPRESSED: {
 #ifdef ANDROID
-                    error->q(ERROR_NOTIMPLEMENTED);
-                    stack->pushint(0);
+					error->q(ERROR_NOTIMPLEMENTED);
+					stack->pushint(0);
 #else
-                    mymutex->lock();
-                    int keyCode = stack->popint();
-                    if (std::find(pressedKeys.begin(), pressedKeys.end(), keyCode) != pressedKeys.end()) {
-						stack->pushint(1);
+					mymutex->lock();
+					int keyCode = stack->popint();
+					if (keyCode==0) {
+						stack->pushint(pressedKeys.size());
 					} else {
-						stack->pushint(0);
+						if (std::find(pressedKeys.begin(), pressedKeys.end(), keyCode) != pressedKeys.end()) {
+							stack->pushint(1);
+						} else {
+							stack->pushint(0);
+						}
 					}
-                    mymutex->unlock();
+					mymutex->unlock();
 #endif
-                }
-                break;
+				}
+				break;
 
                 case OP_PRINT:
                 case OP_PRINTN: {

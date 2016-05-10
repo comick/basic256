@@ -2542,6 +2542,10 @@ expr:
 				addOp(OP_SIZE);
 			}
 			| B256SIZE '(' expr ')' { addOp(OP_SIZE); }
+			| B256KEYPRESSED args_none {
+				addIntOp(OP_PUSHINT, 0x00);
+				addOp(OP_KEYPRESSED);
+			}
 			| B256KEYPRESSED '(' expr ')' { addOp(OP_KEYPRESSED); }
 			| B256KEY args_none     { addOp(OP_KEY); }
 			| B256MOUSEX args_none { addOp(OP_MOUSEX); }
