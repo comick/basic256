@@ -82,9 +82,10 @@ extern QMutex *mydebugmutex;
 extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
 
-extern int currentKey;
-
 extern BasicGraph *graphwin;
+
+extern int lastKey;
+extern std::list<int> pressedKeys;
 
 extern "C" {
     extern int basicParse(char *);
@@ -802,7 +803,8 @@ Interpreter::initialize() {
 	nsprites = 0;
 	printing = false;
 	regexMinimal = false;
-	currentKey = 0;
+	lastKey = 0;
+	pressedKeys.clear();
 	runtimer.start();
 	// clickclear mouse status
 	graphwin->clickX = 0;
@@ -2338,7 +2340,7 @@ Interpreter::execByteCode() {
 										stack->pushfloat(ans);
 									}
 								} else {
-									// concatenate 
+									// concatenate (if one or both at not numbers or cant be converted to numbers)
 									QString sone = convert->getString(one);
 									QString stwo = convert->getString(two);
 									if (stwo.length() + sone.length()>STRINGMAXLEN) {
@@ -3211,8 +3213,25 @@ Interpreter::execByteCode() {
                     stack->pushint(0);
 #else
                     mymutex->lock();
-                    stack->pushint(currentKey);
-                    currentKey = 0;
+                    stack->pushint(lastKey);
+                    lastKey = 0;
+                    mymutex->unlock();
+#endif
+                }
+                break;
+
+                case OP_KEYPRESSED: {
+#ifdef ANDROID
+                    error->q(ERROR_NOTIMPLEMENTED);
+                    stack->pushint(0);
+#else
+                    mymutex->lock();
+                    int keyCode = stack->popint();
+                    if (std::find(pressedKeys.begin(), pressedKeys.end(), keyCode) != pressedKeys.end()) {
+						stack->pushint(1);
+					} else {
+						stack->pushint(0);
+					}
                     mymutex->unlock();
 #endif
                 }
@@ -4173,40 +4192,58 @@ Interpreter::execByteCode() {
 
                 case OP_BINARYOR: {
 					unsigned long a = stack->poplong();
-                    unsigned long b = stack->poplong();
-                    a = a | b;
-                    stack->pushlong(a);
-                }
-                break;
+					unsigned long b = stack->poplong();
+					a = a | b;
+					stack->pushlong(a);
+				}
+				break;
 
-                case OP_BINARYAND: {
+				case OP_BINARYAND: {
+ 					DataElement *one = stack->popelement();
+					DataElement *two = stack->popelement();
+					// if both could be numbers then convert to long and bitwise and
+					// otherwise concatenate (string & number or strings)
+					if (convert->isNumeric(one) && convert->isNumeric(two)) {
+						unsigned long a = convert->getLong(one);
+						unsigned long b = convert->getLong(two);
+						a = a&b;
+						stack->pushlong(a);
+					} else {
+						// concatenate (if one or both at not numbers or cant be converted to numbers)
+						QString sone = convert->getString(one);
+						QString stwo = convert->getString(two);
+						if (stwo.length() + sone.length()>STRINGMAXLEN) {
+							error->q(ERROR_STRINGMAXLEN);
+							stack->pushint(0);
+						} else {
+							stack->pushstring(stwo + sone);
+						}
+					}
+					delete(one);
+					delete(two);              
+				}
+				break;
+
+				case OP_BINARYNOT: {
 					unsigned long a = stack->poplong();
-                    unsigned long b = stack->poplong();
-                    a = a&b;
-                    stack->pushlong(a);
-                }
-                break;
+					a = ~a;
+					stack->pushlong(a);
+				}
+				break;
 
-                case OP_BINARYNOT: {
-					unsigned long a = stack->poplong();
-                    a = ~a;
-                    stack->pushlong(a);
-                }
-                break;
-
-                case OP_IMGSAVE: {
-                    // Image Save - Save image
-                    QString type = stack->popstring();
-                    QString file = stack->popstring();
-                    QStringList validtypes;
-                    validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
-                    if (validtypes.indexOf(type)!=-1) {
-                        graphwin->image->save(file, type.toUtf8().data());
-                    } else {
-                        error->q(ERROR_IMAGESAVETYPE);
-                    }
-                }
-                break;
+				case OP_IMGSAVE: {
+					// Image Save - Save image
+					QString type = stack->popstring();
+					QString file = stack->popstring();
+					QStringList validtypes;
+					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
+					if (validtypes.indexOf(type)!=-1) {
+						graphwin->image->save(file, type.toUtf8().data());
+					} else {
+						error->q(ERROR_IMAGESAVETYPE);
+					}
+				}
+				break;
 
                 case OP_DIR: {
                     // Get next directory entry - id path send start a new folder else get next file name

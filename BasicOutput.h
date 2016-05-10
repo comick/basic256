@@ -35,6 +35,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   ~BasicOutput();
   
   char *inputString;
+  int currentKey;			// store the last key pressed for key function
   void inputStart();
 
   virtual bool initActions(QMenu *, ToolBar *);
@@ -48,6 +49,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   
  protected:
   void keyPressEvent(QKeyEvent *);
+  void keyReleaseEvent(QKeyEvent *);
  
  private:
   int startPos;

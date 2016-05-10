@@ -294,6 +294,7 @@ instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
 isnumeric [iI][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
 key [Kk][Ee][Yy]
+keypressed [Kk][Ee][Yy][Pp][Rr][Ee][Ss][Ss][Ee][Dd]
 kill [Kk][Ii][Ll][Ll]
 label ^[ \t]*{variable}:
 lasterror [Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]
@@ -633,6 +634,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {instrx}					{ count(); return B256INSTRX; }
 {isnumeric}					{ count(); return B256ISNUMERIC; }
 {key}						{ count(); return B256KEY; }
+{keypressed}				{ count(); return B256KEYPRESSED; }
 {lasterror}					{ count(); return B256LASTERROR; }
 {lasterrorextra} 			{ count(); return B256LASTERROREXTRA; }
 {lasterrorline}				{ count(); return B256LASTERRORLINE; }
@@ -907,7 +909,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 "\\"						{ count(); return B256INTDIV; }
 "\%"						{ count(); return B256MOD; }
 "|"							{ count(); return B256BINARYOR; }
-"&"							{ count(); return B256BINARYAND; }
+"&"							{ count(); return B256AMP; }
+"&="						{ count(); return B256AMPEQUAL; }
 "~"							{ count(); return B256BINARYNOT; }
 "/"							{ count(); return '/'; }
 "/="						{ count(); return B256DIVEQUAL; }
@@ -916,7 +919,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 "<"							{ count(); return '<'; }
 ">"							{ count(); return '>'; }
 ","							{ count(); return ','; }
-";"							{ count(); return ';'; }
+";"							{ count(); return B256SEMICOLON; }
+";="						{ count(); return B256SEMICOLONEQUAL; }
 ":"							{ count(); return ':'; }
 "("							{ count(); return '('; }
 ")"							{ count(); return ')'; }

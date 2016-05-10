@@ -34,7 +34,9 @@
 #include "BasicGraph.h"
 
 extern QMutex *mymutex;
-extern int currentKey;
+
+extern int lastKey;
+extern std::list<int> pressedKeys;
 
 BasicGraph::BasicGraph() {
     image = NULL;
@@ -134,13 +136,20 @@ BasicGraph::paintEvent(QPaintEvent *) {
 }
 
 
-void
-BasicGraph::keyPressEvent(QKeyEvent *e) {
-    e->accept();
+void BasicGraph::keyPressEvent(QKeyEvent *e) {
+	e->accept();
+	mymutex->lock();
+	lastKey = e->key();
+	pressedKeys.push_front(e->key());
+	mymutex->unlock();
+}
 
-    mymutex->lock();
-    currentKey = e->key();
-    mymutex->unlock();
+
+void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
+	e->accept();
+	mymutex->lock();
+	pressedKeys.remove(e->key());
+	mymutex->unlock();
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {

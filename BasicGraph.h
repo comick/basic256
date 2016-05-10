@@ -64,6 +64,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
  protected:
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);
+  void keyReleaseEvent(QKeyEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);

@@ -176,6 +176,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "\\b[Ii][Nn][Tt]\\b"													// int
             << "\\b[Ii][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]\\b"							// isnumeric
             << "\\b[Kk][Ee][Yy]\\b"													// key
+            << "\\b[Kk][Ee][Yy][Pp][Rr][Ee][Ss][Ss][Ee][Dd]\\b"						// keypressed
             << "\\b[Kk][Ii][Ll][Ll]\\b"												// kill
             << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr]\\b"							// lasterror
             << "\\b[Ll][Aa][Ss][Tt][Ee][Rr][Rr][Oo][Rr][Ee][Xx][Tt][Rr][Aa]\\b"		// lasterrorextra

@@ -54,8 +54,10 @@ BasicOutput * outwin;
 BasicGraph * graphwin;
 VariableWin * varwin;
 
-// other variables that objects use "extern"
-int currentKey;	// last non input key press.
+// key press information from outwin and graphwin
+int lastKey;
+std::list<int> pressedKeys;
+
 
 
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)

@@ -337,7 +337,7 @@
 %token B256ONERROR B256OFFERROR B256LASTERROR B256LASTERRORMESSAGE B256LASTERRORLINE B256LASTERROREXTRA
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA B256NETADDRESS
 %token B256KILL B256MD5 B256SETSETTING B256GETSETTING B256PORTIN B256PORTOUT
-%token B256BINARYOR B256BINARYAND B256BINARYNOT
+%token B256BINARYOR B256AMP B256AMPEQUAL B256BINARYNOT
 %token B256IMGSAVE
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
@@ -373,7 +373,8 @@
 %token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE B256WARNING_VARNOTASSIGNED
 %token B256REGEXMINIMAL B256TYPEOF B256UNASSIGN
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
-%token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM
+%token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM B256SEMICOLON B256SEMICOLONEQUAL B256AMPEQUAL
+%token B256KEYPRESSED
 
 
 %union anytype {
@@ -400,8 +401,8 @@
 %left B256AND
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
-%left B256BINARYOR B256BINARYAND
-%left '-' '+' ';'
+%left B256BINARYOR B256AMP
+%left '-' '+' B256SEMICOLON
 %left '*' '/' B256MOD B256INTDIV
 %nonassoc B256UMINUS B256BINARYNOT
 %left '^'
@@ -1166,6 +1167,28 @@ arrayassign:
 				addOp(OP_DIV);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
+			| args_a B256AMPEQUAL expr {
+				// a[b,c] &= n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_STACKSWAP);
+				addOp(OP_BINARYAND);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+			}
+			| args_a B256SEMICOLONEQUAL expr {
+				// a[b,c] /= n
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKDUP2);
+				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addOp(OP_STACKTOPTO2);
+				addOp(OP_STACKSWAP2);
+				addOp(OP_STACKSWAP);
+				addOp(OP_CONCATENATE);
+				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+			}
 			| args_v '=' immediatelist {
 				addIntOp(OP_PUSHINT, listlen);
 				listlen = 0;
@@ -1221,6 +1244,18 @@ assign:
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_DIV);
+				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+			}
+			| args_v B256AMPEQUAL expr {
+				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addOp(OP_STACKSWAP);
+				addOp(OP_BINARYAND);
+				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+			}
+			| args_v B256SEMICOLONEQUAL expr {
+				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addOp(OP_STACKSWAP);
+				addOp(OP_CONCATENATE);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
 			;
@@ -1696,7 +1731,7 @@ printstmt:
 			| B256PRINT expr {
 				addOp(OP_PRINTN);
 			}
-			| B256PRINT expr ';' {
+			| B256PRINT expr B256SEMICOLON {
 				addOp(OP_PRINT);
 			}
 			;
@@ -2318,9 +2353,13 @@ expr:
 			| expr '+' expr {
 				addOp(OP_ADD);
 			}
-			| expr ';' expr {
+			| expr B256SEMICOLON expr {
 				addOp(OP_CONCATENATE);
 			}
+			| expr B256AMP expr {
+				addOp(OP_BINARYAND);
+			}
+
 
 			/* *** variable and function expressions *** */
 
@@ -2362,7 +2401,6 @@ expr:
 			}
 			| expr '^' expr { addOp(OP_EX); }
 			| expr B256BINARYOR expr { addOp(OP_BINARYOR); }
-			| expr B256BINARYAND expr { addOp(OP_BINARYAND); }
 			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
 			| '-' expr %prec B256UMINUS { addOp(OP_NEGATE); }
 			| expr B256AND expr {addOp(OP_AND); }
@@ -2504,6 +2542,7 @@ expr:
 				addOp(OP_SIZE);
 			}
 			| B256SIZE '(' expr ')' { addOp(OP_SIZE); }
+			| B256KEYPRESSED '(' expr ')' { addOp(OP_KEYPRESSED); }
 			| B256KEY args_none     { addOp(OP_KEY); }
 			| B256MOUSEX args_none { addOp(OP_MOUSEX); }
 			| B256MOUSEY args_none { addOp(OP_MOUSEY); }

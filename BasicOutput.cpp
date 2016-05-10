@@ -32,7 +32,9 @@
 #include "BasicOutput.h"
 
 extern QMutex *mymutex;
-extern int currentKey;
+
+extern int lastKey;
+extern std::list<int> pressedKeys;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
     setInputMethodHints(Qt::ImhNoPredictiveText);
@@ -54,12 +56,12 @@ BasicOutput::getInput() {
     setFocus();
 }
 
-void
-BasicOutput::keyPressEvent(QKeyEvent *e) {
+void BasicOutput::keyPressEvent(QKeyEvent *e) {
     e->accept();
     if (!gettingInput) {
         mymutex->lock();
-        currentKey = e->key();
+        lastKey = e->key();
+        pressedKeys.push_front(e->key());
         mymutex->unlock();
         //QTextEdit::keyPressEvent(e);
     } else {
@@ -84,6 +86,16 @@ BasicOutput::keyPressEvent(QKeyEvent *e) {
         }
     }
 }
+
+void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
+	e->accept();
+	if (!gettingInput) {
+		mymutex->lock();
+		pressedKeys.remove(e->key());
+		mymutex->unlock();
+	}
+}
+
 
 bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar) {
     if ((NULL == vMenu) || (NULL == vToolBar)) {
