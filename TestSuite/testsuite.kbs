@@ -39,13 +39,14 @@
 # 20160203      j.m.reneau      added reverse for loop testing and requirement for
 #                               system to be enabled
 # 20160327	j.m.reneau	added binaryop include
+# 20160510      j.m.reneau      moved input and key to external include
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1999906)
+call versiontest(1999926)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -185,58 +186,11 @@ call s("c$[0,1]=A",c$[0,1],"A")
 input "input string 'alpha' > ", c$[3,1]
 call s("c$[3,1]='alpha'",c$[3,1],"alpha")
 
+section_input:
 ###################################################
 call section("Input, Key, and Prompt")
 ###################################################
-a$ = "foo"
-input "input the string 'abcd' ?", a$
-call s("input prompt $",a$,"abcd")
-print "input the string 'able' ?";
-input a$
-call s("input $",a$,"able")
-input "Press enter?", a$
-call s("input enter $",a$,"")
-a = 99
-input "input the number 99.99 ?", a
-call n("input prompt #",a,99.99)
-print "input the number -1.234 ?";
-input a
-call s("input #",a,-1.234)
-input "input the string 'abcd' ?", a
-call n("input prompt bad #",a,0)
-input "Press enter?", a
-call s("input enter #",a,0)
-
-## key
-if ostype() <> 3 then
-   print "Press the space bar"
-   # debounce
-   do
-      a = key
-   until a = 0
-   # get key
-   do
-      a = key
-   until a <> 0
-   call n("key space",a,32)
-   print "Press the shift key."
-   # debounce
-   do
-      a = key
-   until a = 0
-   # get key
-   do
-      a = key
-   until a <> 0
-   call n("key shift",a,16777248)
-end if
-
-a$=prompt("Click OK to accept the default","abcd")
-call s("prompt dialog default",a$,"abcd")
-a$=prompt("Change the value and click cancel","abcd")
-call s("prompt dialog cancel default",a$,"abcd")
-a$=prompt("Change the value to 'able' and click OK")
-call s("prompt dialog",a$,"able")
+include "testsuite_inputkey_include.kbs"
 
 section_graphics:
 ###################################################
@@ -336,6 +290,11 @@ if yn("Do Serial Port Test?") then
    include "testsuite_serialio_include.kbs"
 endif
 
+section_types:
+###################################################
+call section("Variable and Stack Types Tests")
+###################################################
+include "testsuite_types_include.kbs"
 
 
 
@@ -349,7 +308,7 @@ endif
 
 
 
-
+section_unattended:
 ###################################################
 ###################################################
 ###################################################
@@ -463,12 +422,6 @@ section_dir:
 call section("Directory and File-System Checks")
 ###################################################
 include "testsuite_dir_include.kbs"
-
-section_types:
-###################################################
-call section("Variable and Stack Types Tests")
-###################################################
-include "testsuite_types_include.kbs"
 
 section_binaryop:
 ###################################################

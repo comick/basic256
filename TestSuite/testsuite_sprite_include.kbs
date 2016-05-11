@@ -4,9 +4,9 @@
 # date		programmer	description
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
+# 20160510      j.m.reneau      use new form of the clg statetement to clear to a color
 
 spritedim 5
-clg
 # make the sprites from polys using the subroutine polysprite
 penwidth 3
 # two big right triangles
@@ -20,7 +20,7 @@ spritepoly 1, {0,0,200,0,100,100}
 points =  {200,0,200,100,150,50}
 color black, blue
 spritepoly 2,{200,0,200,100,150,50}
-color black,yellow
+color orange, grey
 spritepoly 3,{50,0,50,100,0,50}
 # one medium triangle
 points =  {100,0,100,100,0,100}
@@ -29,13 +29,14 @@ color black, cyan
 spritepoly 4, {100,0,100,100,0,100}
 
 # draw a black and white pattern on the screen for under the sprites
+clg purple
 color white
-rect 0,0,graphwidth, graphheight
-color black
-penwidth 1
+penwidth 3
 for t = 0 to graphwidth step 10
-   line 0,t,graphwidth,t
-   line t,0,t,graphheight
+   line 0,0,t,graphheight
+next t
+for t = 0 to graphheight step 10
+   line 0,0,graphwidth,t
 next t
 refresh
 
@@ -59,6 +60,7 @@ for t = 0 to 4
    spritehide t
 next t
 
+refresh
 # calculate the md5 hash of the screen
 newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
 

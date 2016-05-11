@@ -89,14 +89,14 @@ a = 1 % 2
 call n("a = 1 % 2 == 1", a, 1)
 call n("typeof a = 1 % 2", typeof(a), TYPE_INT)
 a = 1.1 % 2
-call n("a = 1.1 % 2 == 1.1", a, 1.1)
-call n("typeof a = 1.1 % 2", typeof(a), TYPE_FLOAT)
+call n("a = 1.1 % 2 == 1", a, 1)
+call n("typeof a = 1.1 % 2", typeof(a), TYPE_INT)
 a = 1 % 2.2
-call n("a = 1 % 2.2 == 1.0", a, 1.0)
-call n("typeof a = 1 % 2.2", typeof(a), TYPE_FLOAT)
+call n("a = 1 % 2.2 == 1", a, 1)
+call n("typeof a = 1 % 2.2", typeof(a), TYPE_INT)
 a = 1.1 % 2.2
-call n("a = 1.1 % 2.2 == 1.1", a, 1.1)
-call n("typeof a = 1.1 % 2.2", typeof(a), TYPE_FLOAT)
+call n("a = 1.1 % 2.2 == 1", a, 1)
+call n("typeof a = 1.1 % 2.2", typeof(a), TYPE_INT)
 
 ## negate
 a = 1
@@ -166,6 +166,49 @@ call n("float9.5-,5,-.5 i="+i, typeof(i), TYPE_FLOAT)
 next i
 call n("float9.5-,5,-.5 t", typeof(t), TYPE_FLOAT)
 call n("float9.5-,5,-.5 total", t, 95)
+
+#isnumeric convert
+a = 0
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " int*1 self", int(a)*1, a)
+a = -12312
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " int*1 self", int(a)*1, a)
+a = 42342342
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " int*1 self", int(a)*1, a)
+a = 2345.3424
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = -12123.324
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = "0"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " int*1 self", int(a)*1, a)
+a = "-120"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " int*1 self", int(a)*1, a)
+a = "123234"
+call n(a; " int*1 self", int(a)*1, a)
+call n(a; " isnumeric", isnumeric(a), true)
+a = "23423.12"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = "-2342.234"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = "2e7"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = "+2e7"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+a = "-2.345e-7"
+call n(a; " isnumeric", isnumeric(a), true)
+call n(a; " float*1 self", float(a)*1, a)
+
+
 
 #
 input "Enter '1234' >",a

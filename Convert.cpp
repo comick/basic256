@@ -18,7 +18,7 @@ bool Convert::isNumeric(DataElement *e) {
 			return true;
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
-				QRegExp numeric("^[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?$");
+				QRegExp numeric("^[-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?$");
 				return numeric.indexIn(e->stringval) != -1;
 			}
 		}

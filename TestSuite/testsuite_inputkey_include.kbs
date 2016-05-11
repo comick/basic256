@@ -1,0 +1,73 @@
+# testsuite_inputkey_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20160510	j.m.reneau	original coding
+
+# this include tests input, prompt, key, and ketpressed
+
+## input tested in other places
+
+## key
+if ostype() <> 3 then
+   print "Press the space bar"
+   # debounce
+   do
+      a = key
+   until a = 0
+   # get key
+   do
+      a = key
+   until a <> 0
+   call n("key space",a,32)
+   print "Press the shift key."
+   # debounce
+   do
+      a = key
+   until a = 0
+   # get key
+   do
+      a = key
+   until a <> 0
+   call n("key shift",a,16777248)
+end if
+
+# graphical input - prompt
+a$=prompt("Click OK to accept the default","abcd")
+call s("prompt dialog default",a$,"abcd")
+a$=prompt("Change the value and click cancel","abcd")
+call s("prompt dialog cancel default",a$,"abcd")
+a$=prompt("Change the value to 'able' and click OK")
+call s("prompt dialog",a$,"able")
+
+#keypressed
+print 'press and hold the down arrow for 2 seconds'
+while not keypressed(16777237)
+   pause .01
+end while
+print 'start 2 seconds now'
+time = msec + 2000
+while keypressed(16777237) and time >= msec
+   pause .01
+end while
+call n("keypressed single key 2 seconds",time < msec, 1)
+#
+print
+print 'press and hold the up arrow for 1 seconds but not longer'
+while not keypressed(16777235)
+   pause .01
+end while
+print 'start 1 seconds now'
+time = msec + 5000
+while keypressed(16777235) and time >= msec
+   pause .01
+end while
+call n("keypressed single key release before timeout",time < msec, 0)
+#
+print
+print 'press and hold the down arrow AND space bar'
+while not keypressed(16777237) or not keypressed(32)
+   pause .01
+end while
+print 'passed multiple keys'
+
