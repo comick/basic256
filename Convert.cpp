@@ -1,13 +1,20 @@
 #include "Convert.h"
 
+#include "MainWindow.h"
 
 #include <string>
+
+// needed to get localecode
+extern MainWindow * mainwin;
 
 
 Convert::Convert(Error *e) {
 	error = e;
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
+	// build international safe regular expression for numbers
+	locale = new QLocale(mainwin->localecode);
+	isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + locale->decimalPoint() + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
 }
 		
 bool Convert::isNumeric(DataElement *e) {
@@ -18,8 +25,7 @@ bool Convert::isNumeric(DataElement *e) {
 			return true;
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
-				QRegExp numeric("^[-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?$");
-				return numeric.indexIn(e->stringval) != -1;
+				return isnumeric->indexIn(e->stringval) != -1;
 			}
 		}
 	}
@@ -33,7 +39,6 @@ int Convert::getBool(DataElement *e) {
 	// a non empty string is 1 otherwise 0
 	// an unassigned variable is 0
 	// an array throws an error and is 0
-	long i=0;
 	if (e) {
 		if (e->type == T_INT || e->type == T_REF) {
 			if(e->intval!=0) return 1;

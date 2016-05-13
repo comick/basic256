@@ -8,6 +8,7 @@
 #include <limits>
 
 #include <QString>
+#include <QLocale>
 
 #include "Settings.h"
 #include "Error.h"
@@ -41,6 +42,8 @@ class Convert
 
 	private:
 		Error *error;
+		QLocale *locale;
+		QRegExp *isnumeric;
 		int ec(int, int);
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
 

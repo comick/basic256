@@ -82,7 +82,7 @@ extern QMutex *mydebugmutex;
 extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
 
-extern BasicGraph *graphwin;
+extern BasicGraph * graphwin;
 
 extern int lastKey;
 extern std::list<int> pressedKeys;
