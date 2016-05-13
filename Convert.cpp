@@ -138,7 +138,7 @@ QString Convert::getString(DataElement *e, int ddigits) {
 				// need to test for locales with a comma as a currency seperator
 				if (s.contains('.',Qt::CaseInsensitive)) {
 					while(s.endsWith("0")) s.chop(1);
-					if(s.endsWith(".")) s.chop(1);
+					if(s.endsWith(locale->decimalPoint())) s.chop(1);
 				}
 			}
 		} else if (e->type==T_ARRAY) {
