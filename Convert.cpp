@@ -61,7 +61,7 @@ int Convert::getInt(DataElement *e) {
 		if (error) error->q(ERROR_INTEGERRANGE);
 		l = 0;
 	}
-	return (int) getLong(e);
+	return (int) l;
 }
 
 long Convert::getLong(DataElement *e) {

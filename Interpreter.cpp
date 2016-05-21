@@ -2318,7 +2318,7 @@ Interpreter::execByteCode() {
 						case OP_ADD:
 							{
 								// add - if both integer then add as integers (if no ovverflow)
-								// else if both could be numbers then convert and add as floats
+								// else if both are numbers then convert and add as floats
 								// otherwise concatenate (string & number or strings)
 								if (one->type==T_INT && two->type==T_INT) {
 									long a = two->intval + one->intval;
@@ -2328,7 +2328,7 @@ Interpreter::execByteCode() {
 										break;
 									}
 								}
-								if (convert->isNumeric(one) && convert->isNumeric(two)) {
+								if ((one->type==T_INT || one->type==T_FLOAT) && (two->type==T_INT || two->type==T_FLOAT)) {
 									// float add (if floats, numeric strings, or overflow
 									double fone = convert->getFloat(one);
 									double ftwo = convert->getFloat(two);
@@ -2340,7 +2340,7 @@ Interpreter::execByteCode() {
 										stack->pushfloat(ans);
 									}
 								} else {
-									// concatenate (if one or both at not numbers or cant be converted to numbers)
+									// concatenate (if one or both ar not numbers)
 									QString sone = convert->getString(one);
 									QString stwo = convert->getString(two);
 									if (stwo.length() + sone.length()>STRINGMAXLEN) {
@@ -3041,10 +3041,10 @@ Interpreter::execByteCode() {
                     } else {
                         ian = new QPainter(graphwin->image);
                     }
-
-                    ian->setPen(drawingpen);
-                    ian->setBrush(drawingbrush);
-                    if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                    	
+                    ian->setPen(QPen(drawingpen.color()));
+                    
+                    if (drawingpen.color()==QColor(0,0,0,0)) {
                         ian->setCompositionMode(QPainter::CompositionMode_Clear);
                     }
                     if(!fontfamily.isEmpty()) {
@@ -4205,9 +4205,9 @@ Interpreter::execByteCode() {
 				case OP_BINARYAND: {
  					DataElement *one = stack->popelement();
 					DataElement *two = stack->popelement();
-					// if both could be numbers then convert to long and bitwise and
+					// if both are numbers then convert to long and bitwise and
 					// otherwise concatenate (string & number or strings)
-					if (convert->isNumeric(one) && convert->isNumeric(two)) {
+					if ((one->type==T_INT || one->type==T_FLOAT) && (two->type==T_INT || two->type==T_FLOAT)) {
 						unsigned long a = convert->getLong(one);
 						unsigned long b = convert->getLong(two);
 						a = a&b;
@@ -4763,6 +4763,11 @@ Interpreter::execByteCode() {
 							// size of long
 							stack->pushint(sizeof(long));
 							break;
+						case 8:
+							// size of long long
+							stack->pushint(sizeof(long long));
+							break;
+
                         default:
                             stack->pushstring("");
                     }
