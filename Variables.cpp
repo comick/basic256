@@ -18,6 +18,8 @@ Variable::Variable() {
 }
 
 Variable::~Variable() {
+	if (data) delete(data);
+	if (arr) delete(arr);
 }
 
 

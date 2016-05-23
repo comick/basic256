@@ -25,6 +25,7 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "../BasicTypes.h"
+	#include "../Constants.h"
 	#include "../WordCodes.h"
 	#include "../CompileErrors.h"
 	#include "../ErrorCodes.h"
@@ -1312,14 +1313,19 @@ gosubstmt:	B256GOSUB args_v {
 					return -1;
 				}
 				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			;
 
 callstmt:	B256CALL args_v args_none {
+				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE); // used to check of subroutine was really called
 				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| B256CALL args_v '(' exprlist ')' {
+				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE); // used to check of subroutine was really called
 				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			;
 
@@ -2204,6 +2210,17 @@ functionstmt:
 				labeltable[functionDefSymbol] = wordOffset;
 				newIf(linenumber, IFTABLETYPEFUNCTION);
 				//
+				// test that this is a real function call or error - before the call a CALLSIG
+				// should have bene pushed to the stack.  Pop it and test that it is the correct one
+				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION);
+				addOp(OP_NEQUAL);
+				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				newIf(linenumber, IFTABLETYPEIF);
+				addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION);
+				addOp(OP_THROWERROR);
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				numifs--;
+				//
 				// check to see if there are enough values on the stack
 				addIntOp(OP_PUSHINT, numargs);
 				addOp(OP_ARGUMENTCOUNTTEST);
@@ -2241,6 +2258,17 @@ subroutinestmt:
 				// create the new if frame for this subroutine
 				labeltable[subroutineDefSymbol] = wordOffset;
 				newIf(linenumber, IFTABLETYPEFUNCTION);
+				//
+				// test that this is a real subroutine call or error - before the call a CALLSIG
+				// should have bene pushed to the stack.  Pop it and test that it is the correct one
+				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE);
+				addOp(OP_NEQUAL);
+				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+				newIf(linenumber, IFTABLETYPEIF);
+				addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE);
+				addOp(OP_THROWERROR);
+				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				numifs--;
 				//
 				// check to see if there are enough values on the stack
 				addIntOp(OP_PUSHINT, numargs);
@@ -2368,11 +2396,15 @@ expr:
 			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENY, varnumber[--nvarnumber]); }
 			| args_v '(' exprlist ')' {
 				// function call with arguments
+				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION); // used to check of function was really called
 				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| args_v '(' ')' {
 				// function call without arguments
+				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION); // used to check of function was really called
 				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| args_v {
 				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);

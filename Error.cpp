@@ -329,6 +329,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_INTEGERRANGE:
             errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
             break;
+        case ERROR_BADCALLFUNCTION:
+            errormessage = tr("Function was not called correctly");
+            break;
+        case ERROR_BADCALLSUBROUTINE:
+            errormessage = tr("Subroutine was not called correctly");
+            break;
 
             
       

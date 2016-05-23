@@ -35,8 +35,9 @@ class Sound
   Sound();
   ~Sound();
   void playSounds(int, int*);
-  void setVolume(int);
+  void setVolume(double);
+  double getVolume();
 
  private:
-  int soundVolume;
+  double soundVolume;
 };

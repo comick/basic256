@@ -8,3 +8,8 @@
 #ifndef M_PI
     #define M_PI 3.14159265
 #endif
+
+#ifndef CALLSIG_SUBROUTINE
+    #define CALLSIG_SUBROUTINE 0xffff
+    #define CALLSIG_FUNCTION 0xfffe
+#endif

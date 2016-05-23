@@ -28,6 +28,7 @@ class DataElement
 		long intval;
 
 		DataElement();
+		
 		DataElement(DataElement *);
 		DataElement(QString);
 		DataElement(double);

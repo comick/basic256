@@ -18,6 +18,16 @@ Sound::~Sound() {
 // notes is arraylength/2 (number of notes)
 void Sound::playSounds(int notes, int* freqdur) {
 
+
+	double amplititude = soundVolume / (double) 10 * (double) 0x7f; // (half wave height)
+	double wave=0.0;		// current radian angle of wave
+	double wavebit=0.0;		// delta radians for each byte output in wave
+	int totaltime = 0;		// total time in milliseconds
+
+	for(int tnotes=0; tnotes<notes; tnotes++) {
+		totaltime += freqdur[tnotes*2+1];
+	}
+
 #ifdef SOUND_WIN32
 
     // code uses Microsoft's waveOut process to create a wave on the default sound card
@@ -25,8 +35,6 @@ void Sound::playSounds(int notes, int* freqdur) {
     unsigned long errorcode;
     HWAVEOUT      outHandle;
     WAVEFORMATEX  waveFormat;
-
-    double amplititude = tan((double) soundVolume / (double) 10) * (double) 0x7f;  // (half wave height)
 
     // Initialize the WAVEFORMATEX for 8-bit, 11.025KHz, mono
     waveFormat.wFormatTag = WAVE_FORMAT_PCM;
@@ -41,11 +49,6 @@ void Sound::playSounds(int notes, int* freqdur) {
     errorcode = waveOutOpen(&outHandle, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL);
     if (!errorcode) {
 
-        double wave = 0;
-        int totaltime = 0;
-        for(int tnotes=0; tnotes<notes; tnotes++) {
-            totaltime += freqdur[tnotes*2+1];
-        }
         int totallength = waveFormat.nSamplesPerSec * totaltime / 1000;
         unsigned char * p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
 
@@ -54,8 +57,15 @@ void Sound::playSounds(int notes, int* freqdur) {
         for(int tnotes=0; tnotes<notes; tnotes++) {
             // lets build a sine wave
             int length = waveFormat.nSamplesPerSec * freqdur[tnotes*2+1] / 1000;
-            double wavebit = 2 * M_PI / ((double) waveFormat.nSamplesPerSec / (double) freqdur[tnotes*2]);
-
+            
+            if(freqdur[tnotes*2]==0) {
+				// rest (put out zeros)
+				wave=0;
+				wavebit=0;
+			} else {
+				wavebit = 2 * M_PI / ((double) waveFormat.nSamplesPerSec / (double) freqdur[tnotes*2]);
+            }
+            
             for(int i = 0; i < length; i++) {
                 p[pos++] =  (unsigned char) (amplititude * (sin(wave)+1));
                 wave+=wavebit;
@@ -91,14 +101,8 @@ void Sound::playSounds(int notes, int* freqdur) {
     /dev/dsp
     int devfh;
     int i, test;
-    double amplititude = tan((double) soundVolume / 10) * 0x7f;  // (half wave height)
 
     // lets build the output
-    double wave = 0;
-    int totaltime = 0;
-    for(int tnotes=0; tnotes<notes; tnotes++) {
-        totaltime += freqdur[tnotes*2+1];
-    }
     int totallength = rate * totaltime / 1000;
     unsigned char * p = (unsigned char *) malloc(totallength * sizeof(unsigned char));
 
@@ -107,8 +111,14 @@ void Sound::playSounds(int notes, int* freqdur) {
     for(int tnotes=0; tnotes<notes; tnotes++) {
         // lets build a sine wave
         int length = rate * freqdur[tnotes*2+1] / 1000;
-        double wavebit = 2 * M_PI / ((double) rate / (double) freqdur[tnotes*2]);
-
+		if(freqdur[tnotes*2]==0) {
+			// rest (put out zeros)
+			wave=0;
+			wavebit=0;
+		} else {
+			wavebit = 2 * M_PI / ((double) rate / (double) freqdur[tnotes*2]);
+		}
+		
         for(int i = 0; i < length; i++) {
             p[pos++] = (unsigned char) ((sin(wave) + 1) * amplititude);
             wave+=wavebit;
@@ -136,17 +146,11 @@ void Sound::playSounds(int notes, int* freqdur) {
 
     short s;
     char *cs = (char *) &s;
-    double amplititude = tan((double) soundVolume / (double) 10) * (double) SOUND_HALFWAVE;  // (half wave height)
 
     c.allocated = 1; // sdl needs to free chunk data
     c.volume = (unsigned char) (tan((double) soundVolume / 10) * 0x7f);
 
     // lets build the output
-    double wave = 0;
-    int totaltime = 0;
-    for(int tnotes=0; tnotes<notes; tnotes++) {
-        totaltime += freqdur[tnotes*2+1];
-    }
     if (totaltime>0) {
         c.alen = MIX_DEFAULT_FREQUENCY * sizeof(short) * totaltime / 1000;
         c.abuf = (unsigned char *) malloc(c.alen);
@@ -156,7 +160,14 @@ void Sound::playSounds(int notes, int* freqdur) {
         for(int tnotes=0; tnotes<notes; tnotes++) {
             // lets build a sine wave
             int length = MIX_DEFAULT_FREQUENCY * freqdur[tnotes*2+1] / 1000;
-            double wavebit = 2 * M_PI / ((double) MIX_DEFAULT_FREQUENCY / (double) freqdur[tnotes*2]);
+            if(freqdur[tnotes*2]==0) {
+				// rest (put out zeros)
+				wave=0;
+				wavebit=0;
+			} else {
+				wavebit = 2 * M_PI / ((double) MIX_DEFAULT_FREQUENCY / (double) freqdur[tnotes*2]);
+			}
+			
             for(int i = 0; i < length; i++) {
 
                 s = (short) ( amplititude * sin(wave));
@@ -178,9 +189,6 @@ void Sound::playSounds(int notes, int* freqdur) {
     short s;
     char *cs = (char *) &s;
 
-    double amplititude = tan((double) soundVolume / (double) 10) * (double) SOUND_HALFWAVE;  // (half wave height)
-    double wave = 0;
-
     // setup the audio format
     QAudioFormat format;
     format.setSampleRate(8000);
@@ -195,7 +203,14 @@ void Sound::playSounds(int notes, int* freqdur) {
     for(int tnotes=0; tnotes<notes; tnotes++) {
         // lets build a sine wave
         int length = format.sampleRate() * freqdur[tnotes*2+1] / 1000;
-        double wavebit = 2 * M_PI / ((double) format.sampleRate() / (double) freqdur[tnotes*2]);
+		if(freqdur[tnotes*2]==0) {
+			// rest (put out zeros)
+			wave=0;
+			wavebit=0;
+		} else {
+			wavebit = 2 * M_PI / ((double) format.sampleRate() / (double) freqdur[tnotes*2]);
+		}
+		
         for(int i = 0; i < length; i++) {
             s = (short) (amplititude * sin(wave));
             buffer.write(cs,sizeof(short));
@@ -225,9 +240,15 @@ void Sound::playSounds(int notes, int* freqdur) {
 
 }
 
-void Sound::setVolume(int volume) {
+void Sound::setVolume(double volume) {
     // volume MUST be betwen 0(mute) and 10(all the way)
+    if (volume < 0.0) volume = 0;
+    if (volume > 10.0) volume = 10.0;
     soundVolume = volume;
+}
+
+double Sound::getVolume() {
+    return soundVolume;
 }
 
 

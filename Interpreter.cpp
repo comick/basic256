@@ -2569,9 +2569,7 @@ Interpreter::execByteCode() {
 
                 case OP_VOLUME: {
                     // set the wave output height (volume 0-10)
-                    int volume = stack->popint();
-                    if (volume<0) volume = 0;
-                    if (volume>10) volume = 10;
+                    double volume = stack->popfloat();
                     sound.setVolume(volume);
                 }
                 break;

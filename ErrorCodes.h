@@ -11,6 +11,8 @@
 #define ERROR_ARGUMENTCOUNT 	-5
 #define ERROR_MAXRECURSE 		-6
 #define ERROR_STACKUNDERFLOW	-7
+#define ERROR_BADCALLFUNCTION	-8
+#define ERROR_BADCALLSUBROUTINE	-9
 
 
 // ERRRORS and WARNINGS greater than 0 are trappable
