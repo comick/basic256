@@ -45,6 +45,7 @@ class DocumentationWin : public QDialog
 	QTextBrowser* docs;
 	QString indexfile;
 	QString localecode;
+	QString defaultlocale;
 };
 
 #endif

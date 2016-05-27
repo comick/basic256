@@ -392,7 +392,7 @@ void RunController::showOnlineDocumentation() {
 void
 RunController::showContextDocumentation() {
     QString w = editwin->getCurrentWord();
-    if (!replacewin) docwin = new DocumentationWin(mainwin);
+    if (!docwin) docwin = new DocumentationWin(mainwin);
     docwin->show();
     docwin->raise();
     docwin->go(w);

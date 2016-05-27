@@ -25,6 +25,7 @@ DocumentationWin::DocumentationWin (QWidget * parent)
     :QDialog(parent) {
     localecode = ((MainWindow *) parent)->localecode;
     indexfile = "start.html";
+    defaultlocale = "en";
 
     // position where it was last on screen
     SETTINGS;
@@ -62,6 +63,8 @@ DocumentationWin::DocumentationWin (QWidget * parent)
     this->setWindowTitle(QObject::tr("BASIC-256 Reference"));
     this->show();
 
+	docs->setOpenExternalLinks(true);
+
     docs->setSearchPaths(QStringList()
                          <<	QApplication::applicationDirPath() + "/help/"
                          <<	"/usr/share/basic256/help/"
@@ -74,32 +77,37 @@ DocumentationWin::DocumentationWin (QWidget * parent)
 }
 
 void DocumentationWin::go(QString word) {
-
-    if (word == "") {
-        QString u = localecode.left(2) + "_" + indexfile;
-        docs->setSource(QUrl(u.toLower()));
-        if(docs->toPlainText().length() == 0) {
+	// pass word for context level help or pass "" for general help
+	
+	QString u;
+	
+	if (word == "") {
+		// local file - locale specific start
+		u = localecode.left(2) + "_" + indexfile;
+		docs->setSource(QUrl(u.toLower()));
+		if(docs->toPlainText().length() == 0) {
+			// local file - general start
 			docs->setSource(QUrl(indexfile));
 			if(docs->toPlainText().length() == 0) {
-				QMessageBox msgBox;
-				msgBox.setText(tr("Off-line help does not appear to be installed.  Please use on-line help."));
-				msgBox.setStandardButtons(QMessageBox::Ok);
-				msgBox.setDefaultButton(QMessageBox::Ok);
-				msgBox.exec();
+				// nothing
+				docs->setHtml(tr("<h2>Local help files are not available.<h2><p>Try the online documentation at <a href='http://doc.basic256.org'>http://doc.basic256.org</a>.</p>"));
 			}
-        }
-    } else {
-        QString u = localecode.left(2) + "_" + word + ".html";
-        docs->setSource(QUrl(u.toLower()));
-        if(docs->toPlainText().length() == 0) {
-            go("");
-            QMessageBox msgBox;
-            msgBox.setText(tr("Contextual help for the word '") + word + tr("' is not available."));
-            msgBox.setStandardButtons(QMessageBox::Ok);
-            msgBox.setDefaultButton(QMessageBox::Ok);
-            msgBox.exec();
-        }
-    }
+		}
+	} else {
+		// context help
+		// local file - locale specific
+		u = localecode.left(2) + "_" + word + ".html";
+		docs->setSource(QUrl(u.toLower()));
+		if(docs->toPlainText().length() == 0) {
+			// local file - default locale
+			QString u = defaultlocale + "_" + word + ".html";
+			docs->setSource(QUrl(u.toLower()));
+			if(docs->toPlainText().length() == 0) {
+				// nothing - recurse for general help
+				go("");
+			}
+		}
+	}
 }
 
 

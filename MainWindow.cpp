@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     connect(editwin, SIGNAL(changeWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
     editdock = new DockWidget();
     editdock->setObjectName( "editdock" );
-    editdock->setFeatures(QDockWidget::DockWidgetMovable);
+    editdock->setFeatures(QDockWidget::NoDockWidgetFeatures);
     editdock->setWidget(editwinwgt);
     editdock->setWindowTitle(QObject::tr("Program Editor"));
 
@@ -136,10 +136,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     openact->setShortcut(Qt::Key_O + Qt::CTRL);
     saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
     saveact->setShortcut(Qt::Key_S + Qt::CTRL);
-    saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As"));
+    saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As..."));
     saveasact->setShortcut(Qt::Key_S + Qt::CTRL + Qt::SHIFT);
     filemenu->addSeparator();
-    printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print"));
+    printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print..."));
     printact->setShortcut(Qt::Key_P + Qt::CTRL);
     filemenu->addSeparator();
     recentact[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
@@ -189,12 +189,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
     QObject::connect(editwin, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
     QObject::connect(undoact, SIGNAL(triggered()), editwin, SLOT(undo()));
-    undoact->setShortcut(Qt::Key_U + Qt::CTRL);
+    undoact->setShortcut(Qt::Key_Z + Qt::CTRL);
     undoact->setEnabled(false);
     redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
     QObject::connect(editwin, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
     QObject::connect(redoact, SIGNAL(triggered()), editwin, SLOT(redo()));
-    redoact->setShortcut(Qt::Key_R + Qt::CTRL);
+    redoact->setShortcut(Qt::Key_Y + Qt::CTRL);
     redoact->setEnabled(false);
     editmenu->addSeparator();
     cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
@@ -204,20 +204,22 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     copyact->setShortcut(Qt::Key_C + Qt::CTRL);
     copyact->setEnabled(false);
     pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
-    pasteact->setShortcut(Qt::Key_P + Qt::CTRL);
+    pasteact->setShortcut(Qt::Key_V + Qt::CTRL);
     editmenu->addSeparator();
     selectallact = editmenu->addAction(QObject::tr("Select &All"));
     selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
     editmenu->addSeparator();
-    findact = editmenu->addAction(QObject::tr("&Find"));
+    findact = editmenu->addAction(QObject::tr("&Find..."));
     findact->setShortcut(Qt::Key_F + Qt::CTRL);
-    findagain1 = new QShortcut(Qt::Key_F3, this);
+	findagain1 = editmenu->addAction(QObject::tr("Find &Next"));
+	findagain1->setShortcut(Qt::Key_F3);
     findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
-    replaceact = editmenu->addAction(QObject::tr("&Replace"));
+    replaceact = editmenu->addAction(QObject::tr("&Replace..."));
+	replaceact->setShortcut(Qt::Key_H + Qt::CTRL);
     editmenu->addSeparator();
     beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
     editmenu->addSeparator();
-    prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences"));
+    prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences..."));
     //
     QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
     QObject::connect(copyact, SIGNAL(triggered()), editwin, SLOT(copy()));
@@ -225,8 +227,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
     QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
     QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
-    QObject::connect(findagain1, SIGNAL(activated()), rc, SLOT(findAgain()));
-    QObject::connect(findagain2, SIGNAL(activated()), rc, SLOT(findAgain()));
+    QObject::connect(findagain1, SIGNAL(triggered()), rc, SLOT(findAgain()));
+    QObject::connect(findagain2, SIGNAL(triggered()), rc, SLOT(findAgain()));
     QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
     QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
     QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
@@ -363,7 +365,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
 #endif
     helpmenu->addSeparator();
-    QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256"));
+    QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256..."));
     QObject::connect(aboutact, SIGNAL(triggered()), this, SLOT(about()));
 
     // Add actions to main window toolbar

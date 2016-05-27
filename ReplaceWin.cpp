@@ -25,6 +25,7 @@ using namespace std;
 #include "md5.h"
 
 extern BasicEdit * editwin;
+extern MainWindow * mainwin;
 
 ReplaceWin::ReplaceWin () {
 
@@ -62,29 +63,31 @@ ReplaceWin::ReplaceWin () {
     layout->addWidget(casecheckbox,r,2,1,3);
     //
     r++;
-    cancelbutton = new QPushButton(tr("Cancel"), this);
-    connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
-    layout->addWidget(cancelbutton,r,1,1,1);
-    replaceallbutton = new QPushButton(tr("Replace &All"), this);
-    connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
-    layout->addWidget(replaceallbutton,r,2,1,1);
-    replacebutton = new QPushButton(tr("&Replace"), this);
-    connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
-    layout->addWidget(replacebutton,r,3,1,1);
     findbutton = new QPushButton(tr("&Find"), this);
     connect(findbutton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
-    layout->addWidget(findbutton,r,4,1,1);
+    layout->addWidget(findbutton,r,1,1,1);
+    replacebutton = new QPushButton(tr("&Replace"), this);
+    connect(replacebutton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
+    layout->addWidget(replacebutton,r,2,1,1);
+    replaceallbutton = new QPushButton(tr("Replace &All"), this);
+    connect(replaceallbutton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
+    layout->addWidget(replaceallbutton,r,3,1,1);
+    cancelbutton = new QPushButton(tr("Cancel"), this);
+    connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
+    layout->addWidget(cancelbutton,r,4,1,1);
     //
     QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
     connect(findagain1, SIGNAL(activated()), this, SLOT (clickFindButton()));
     QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
     connect(findagain2, SIGNAL(activated()), this, SLOT (clickFindButton()));
     //
+    this->setParent(mainwin);
+    this->setWindowFlags(Qt::Dialog);
     this->setLayout(layout);
     this->show();
     changeFromInput(frominput->text());
 
-    findbutton->setFocus();
+    frominput->setFocus();
 }
 
 void ReplaceWin::setReplaceMode(bool m) {
@@ -102,7 +105,7 @@ void ReplaceWin::setReplaceMode(bool m) {
     } else {
         setWindowTitle(tr("BASIC-256 Find"));
     }
-    findbutton->setFocus();
+    frominput->setFocus();
 }
 
 void ReplaceWin::changeFromInput(QString t) {
@@ -116,13 +119,17 @@ void ReplaceWin::clickCancelButton() {
 }
 
 void ReplaceWin::findAgain() {
-    editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-    changeFromInput(frominput->text());
+    if(frominput->text().length() != 0){
+        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+        changeFromInput(frominput->text());
+    }
 }
 
 void ReplaceWin::clickFindButton() {
-    editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-    changeFromInput(frominput->text());
+    if(frominput->text().length() != 0){
+        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
+        changeFromInput(frominput->text());
+    }
 }
 
 void ReplaceWin::clickReplaceButton() {

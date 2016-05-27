@@ -76,8 +76,8 @@ public:
 	QAction *pasteact;
 	QAction *selectallact;
 	QAction *findact;
-	QShortcut* findagain1;
-	QShortcut* findagain2;
+	QAction *findagain1;
+	QShortcut *findagain2;
 	QAction *replaceact;
 	QAction *beautifyact;
 	QAction *prefact;
