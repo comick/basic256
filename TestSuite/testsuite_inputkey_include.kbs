@@ -3,6 +3,7 @@
 # Modification History
 # date		programmer	description
 # 20160510	j.m.reneau	original coding
+# 20160527      j.m.reneau      added keypress fancy logic
 
 # this include tests input, prompt, key, and ketpressed
 
@@ -40,33 +41,30 @@ call s("prompt dialog cancel default",a$,"abcd")
 a$=prompt("Change the value to 'able' and click OK")
 call s("prompt dialog",a$,"able")
 
-#keypressed
+# keypressed
+# because of a quirk in QT and keyboard handling a key that is
+# contuniously pressed may show release even if down.
+# use a threshold of 75% or better for downness
+
 print 'press and hold the down arrow for 2 seconds'
+#wait for it
 while not keypressed(16777237)
    pause .01
 end while
 print 'start 2 seconds now'
 time = msec + 2000
-while keypressed(16777237) and time >= msec
-   pause .01
+n = 0	# count the number of ticks the key is pressed
+while time >= msec
+   if keypressed(16777237) then n++
+   pause .1
+   print '.';
 end while
-call n("keypressed single key 2 seconds",time < msec, 1)
+print n
+call n("keypressed single key 2 seconds",n>15,1)
 #
 print
-print 'press and hold the up arrow for 1 seconds but not longer'
-while not keypressed(16777235)
-   pause .01
-end while
-print 'start 1 seconds now'
-time = msec + 5000
-while keypressed(16777235) and time >= msec
-   pause .01
-end while
-call n("keypressed single key release before timeout",time < msec, 0)
-#
-print
-print 'press and hold the down arrow AND space bar'
-while not keypressed(16777237) or not keypressed(32)
+print 'press and hold the UP arrow AND space bar'
+while not keypressed(16777235) or not keypressed(32)
    pause .01
 end while
 print 'passed multiple keys'

@@ -59,13 +59,6 @@ win32 {
 	########
 	# Sound class - How Sound statement works
 	########
-	# uncomment one of the options
-
-	# Sound - Option 0 - Microsoft built in 32 bit API
-	#DEFINES				+=	SOUND_WIN32
-
-	# Sound - Option 1 - QT Mobility Multimedia AudioOut
-	DEFINES					+=	SOUND_QMOBILITY
 	QT						+=	multimedia
 	INCLUDEPATH				+=	QtMultimediaKit
 	INCLUDEPATH				+=	QtMobility
@@ -97,13 +90,6 @@ unix:!macx {
 	########
 	# Sound class - How Sound statement works
 	########
-	# uncomment one of the options
-
-	# Sound - Option 0 - /dev/dsp
-	#DEFINES				+=	SOUND_DSP
-
-	# Sound - QT Mobility Multimedia AudioOut
-	DEFINES					+=	SOUND_QMOBILITY
 	QT						+=	multimedia
 	INCLUDEPATH				+=	QtMultimediaKit
 	INCLUDEPATH				+=	QtMobility
@@ -140,13 +126,7 @@ macx {
 	LIBS					+=	-L/opt/local/lib
 	INCLUDEPATH				+=	/opt/local/include
 
-	## include libraries for SDL audio for wav and sound output
-	##DEFINES 				+=	SOUND_SDL
-	##LIBS					+=	-lSDL
-	##LIBS					+=	-lSDL_mixer
-
     # Sound - QT Mobility Multimedia AudioOut
-    DEFINES					+=	SOUND_QMOBILITY
     QT						+=	multimedia
     INCLUDEPATH				+=	QtMultimediaKit
     INCLUDEPATH				+=	QtMobility
