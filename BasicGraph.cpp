@@ -140,15 +140,62 @@ void BasicGraph::keyPressEvent(QKeyEvent *e) {
 	e->accept();
 	mymutex->lock();
 	lastKey = e->key();
-	pressedKeys.push_front(e->key());
+	pressedKeys.push_front(lastKey);
+	if( e->modifiers() & Qt::ShiftModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Shift);
+	}else{
+			pressedKeys.remove(Qt::Key_Shift);
+	}
+	if( e->modifiers() & Qt::ControlModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Control);
+	}else{
+			pressedKeys.remove(Qt::Key_Control);
+	}
+	if( e->modifiers() & Qt::AltModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Alt);
+	}else{
+			pressedKeys.remove(Qt::Key_Alt);
+	}
+	if( e->modifiers() & Qt::MetaModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Meta);
+	}else{
+			pressedKeys.remove(Qt::Key_Meta);
+	}
 	mymutex->unlock();
 }
-
 
 void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
 	e->accept();
 	mymutex->lock();
-	pressedKeys.remove(e->key());
+	if(!e->isAutoRepeat())pressedKeys.remove(e->key());
+	if( e->modifiers() & Qt::ShiftModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Shift);
+	}else{
+			pressedKeys.remove(Qt::Key_Shift);
+	}
+	if( e->modifiers() & Qt::ControlModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Control);
+	}else{
+			pressedKeys.remove(Qt::Key_Control);
+	}
+	if( e->modifiers() & Qt::AltModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Alt);
+	}else{
+			pressedKeys.remove(Qt::Key_Alt);
+	}
+	if( e->modifiers() & Qt::MetaModifier )
+	{
+			pressedKeys.push_front(Qt::Key_Meta);
+	}else{
+			pressedKeys.remove(Qt::Key_Meta);
+	}
 	mymutex->unlock();
 }
 
