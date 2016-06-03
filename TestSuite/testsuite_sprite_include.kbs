@@ -5,6 +5,12 @@
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
 # 20160510      j.m.reneau      use new form of the clg statetement to clear to a color
+# 20160603      j.m.reneau      updated to use more sprite features for better testing
+
+dim spritedx(5)
+dim spritedy(5)
+dim spritedr(5)
+dim spriteds(5)
 
 spritedim 5
 # make the sprites from polys using the subroutine polysprite
@@ -45,14 +51,30 @@ originalscreen$ = md5(getslice(0,0,graphwidth, graphheight))
 
 for t = 0 to 4
    spriteshow t
+   spritedx[t] = rand*5-.25
+   spritedy[t] = rand*5-.25
+   spritedr[t] = rand*pi*.1+-pi*.05
+   spriteds[t] = rand *.3 - .15
+   spriteplace t, rand*graphwidth, rand*graphheight, 1, spritedr[t]
 next t
 
-# move the sprites randomly scaled and rotated
-for t = 1 to 500
-   spriteplace int(rand*5), int(rand*graphwidth) , int(rand*graphheight),rand*2,int(2*pi*rand)
-refresh
-next t
-
+# move the sprites
+for n = 1 to 100
+   for t = 0 to 4
+      x = spritex(t) + spritedx[t]
+      if x > graphwidth then x = 0
+      if x < 0 then x = graphwidth
+      y = spritey(t) + spritedy[t]
+      if y > graphwidth then y = 0
+      if y < 0 then y = graphwidth
+      r = spriter(t) + spritedr[t]
+      s = sprites(t) + spriteds[t]
+      if s > 1.5 then s = .5
+      if s < .5 then s = 1.5
+      spriteplace t,x,y,s,r
+      refresh
+   next t
+next n
 newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
 call sne("Screen different with sprites",originalscreen$,newscreen$)
 

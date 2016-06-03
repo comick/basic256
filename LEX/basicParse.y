@@ -2601,9 +2601,9 @@ expr:
 				addOp(OP_RGB);
 				}
 			| B256WHITE args_none {
-				addIntOp(OP_PUSHINT, 0xf8);
-				addIntOp(OP_PUSHINT, 0xf8);
-				addIntOp(OP_PUSHINT, 0xf8);
+				addIntOp(OP_PUSHINT, 0xff);
+				addIntOp(OP_PUSHINT, 0xff);
+				addIntOp(OP_PUSHINT, 0xff);
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);
 				}
@@ -2699,8 +2699,8 @@ expr:
 				addOp(OP_RGB);
 				}
 			| B256DARKORANGE args_none {
-				addIntOp(OP_PUSHINT, 0xFF);
-				addIntOp(OP_PUSHINT, 0x33);
+				addIntOp(OP_PUSHINT, 0xb0);
+				addIntOp(OP_PUSHINT, 0x3d);
 				addIntOp(OP_PUSHINT, 0x00);
 				addIntOp(OP_PUSHINT, 0xff);
 				addOp(OP_RGB);

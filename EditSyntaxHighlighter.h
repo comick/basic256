@@ -18,7 +18,6 @@
 #define __EDITSYNTAXHIGHLIGHTER_H
 
 #include <QSyntaxHighlighter>
-//#include <QHash>
 #include <QTextCharFormat>
 
 class QTextDocument;
@@ -43,18 +42,19 @@ private:
     typedef QVector< HighlightRule > VecHighlightRules;
     
     VecHighlightRules m_standardRules;
-    VecHighlightRules m_functionRules;
     
     void initKeywords();
-    void initColors();
+    void initConstants();
     void initQuotes();
-    void initFunctions();
+    void initLabels();
+    void initNumbers();
     void initComments();
     
     QTextCharFormat m_keywordFmt;
-    QTextCharFormat m_colorFmt;
+    QTextCharFormat m_constantFmt;
     QTextCharFormat m_quoteFmt;
-    QTextCharFormat m_functionFmt;
+    QTextCharFormat m_labelFmt;
+    QTextCharFormat m_numberFmt;
     QTextCharFormat m_commentFmt;
 };
 
