@@ -276,7 +276,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
     // Editor and Output font and Editor settings
     viewmenu->addSeparator();
-    fontact = viewmenu->addAction(QObject::tr("&Font"));
+    fontact = viewmenu->addAction(QObject::tr("&Font..."));
     QObject::connect(fontact, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
     editWhitespaceAct = viewmenu->addAction(QObject::tr("Show &Whitespace Characters"));
     editWhitespaceAct->setCheckable(true);
@@ -346,22 +346,22 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     //QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
     // Help menu
-    QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
+    QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help..."));
 #if defined(WIN32PORTABLE) || defined(ANDROID)
     // in portable or android make doc online and context help online
-    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
+    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
     onlinehact->setShortcut(Qt::Key_F1);
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
     QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
     QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showOnlineContextDocumentation()));
 #else
     // in installed mode make doc offline and online and context help offline
-    QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help"));
+    QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help..."));
     docact->setShortcut(Qt::Key_F1);
     QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
     QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
     QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showContextDocumentation()));
-    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help"));
+    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
 #endif
     helpmenu->addSeparator();
