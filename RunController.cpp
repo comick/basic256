@@ -521,18 +521,21 @@ RunController::dialogPrompt(QString prompt, QString dflt) {
 }
 
 void RunController::dialogFontSelect() {
-    bool ok;
-    SETTINGS;
-    QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin);
-    if (ok) {
-        settings.setValue(SETTINGSFONT, newf.toString());
+	bool ok;
+	SETTINGS;
+	QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin, QString(), QFontDialog::MonospacedFonts);
 
-        mymutex->lock();
-        editwin->setFont(newf);
-        outwin->setFont(newf);
-        waitCond->wakeAll();
-        mymutex->unlock();
-    }
+	if (ok) {
+		settings.setValue(SETTINGSFONT, newf.toString());
+
+		mymutex->lock();
+		editwin->setFont(newf);
+		QFontMetrics metrics(newf);
+		editwin->setTabStopWidth(metrics.width("9999"));	// 4 spaces
+		outwin->setFont(newf);
+		waitCond->wakeAll();
+		mymutex->unlock();
+	}
 }
 
 void RunController::mainWindowSetRunning(int type) {

@@ -42,22 +42,25 @@ extern MainWindow * mainwin;
 
 BasicEdit::BasicEdit() {
 
-    this->setInputMethodHints(Qt::ImhNoPredictiveText);
-    currentMaxLine = 10;
-    currentLine = 1;
-    startPos = this->textCursor().position();
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
-    codeChanged = false;
+	this->setInputMethodHints(Qt::ImhNoPredictiveText);
+	currentMaxLine = 10;
+	currentLine = 1;
+	startPos = this->textCursor().position();
+	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
+	codeChanged = false;
 
-    breakPoints = new QList<int>;
-    lineNumberArea = new LineNumberArea(this);
-    
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+	breakPoints = new QList<int>;
+	lineNumberArea = new LineNumberArea(this);
+	
+	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+	connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
-    updateLineNumberAreaWidth(0);
-    highlightCurrentLine();
+	updateLineNumberAreaWidth(0);
+	highlightCurrentLine();
+	
+	QFontMetrics metrics(font());
+	setTabStopWidth(metrics.width("9999"));	// 4 spaces
 }
 
 

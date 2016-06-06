@@ -225,6 +225,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "readbyte"							//readbyte
             << "readline"							//readline
             << "rect"								//rect
+            << "ref"								//ref
             << "redim"								//redim
             << "refresh"							//refresh
             << "regexminimal"						//regexminimal
@@ -326,7 +327,7 @@ void EditSyntaxHighlighter::initConstants() {
             << "(dark){0,1}purple"					//purple and darkpurple
             << "(dark){0,1}yellow"					//yellow and darkyellow
             << "(dark){0,1}orange"					//orange and darkorange
-            << "(dark){0,1}grey"					//gray and darkgrey
+            << "(dark){0,1}gr[ea]y"					//gray, grey, darkgray and darkgrey
             << "ERROR_NONE"							//ERROR_NONE
             << "ERROR_FOR1"							//ERROR_FOR1
             << "ERROR_FOR2"							//ERROR_FOR2
