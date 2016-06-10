@@ -449,8 +449,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QString initialFontString = settings.value(SETTINGSFONT,SETTINGSFONTDEFAULT).toString();
     if (initialFont.fromString(initialFontString)) {
         editwin->setFont(initialFont);
-		QFontMetrics metrics(editwin->font());
-		editwin->setTabStopWidth(metrics.width("9999"));	// 4 spaces
         outwin->setFont(initialFont);
     }
 

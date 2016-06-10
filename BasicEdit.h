@@ -31,71 +31,73 @@
 
 class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  BasicEdit();
-  ~BasicEdit();
+	public:
+		BasicEdit();
+		~BasicEdit();
 
-  void loadFile(QString);
-  void saveFile(bool);
-  void findString(QString, bool, bool);
-  void replaceString(QString, QString, bool, bool, bool);
-  bool codeChanged;
-  QString getCurrentWord();
-  void lineNumberAreaPaintEvent(QPaintEvent *event);
-  void lineNumberAreaMouseClickEvent(QMouseEvent *event);
-  int lineNumberAreaWidth();
-  QList<int> *breakPoints;
-  void clearBreakPoints();
+		void loadFile(QString);
+		void saveFile(bool);
+		void findString(QString, bool, bool, bool);
+		void replaceString(QString, QString, bool, bool, bool, bool);
+		bool codeChanged;
+		QString getCurrentWord();
+		void lineNumberAreaPaintEvent(QPaintEvent *event);
+		void lineNumberAreaMouseClickEvent(QMouseEvent *event);
+		int lineNumberAreaWidth();
+		QList<int> *breakPoints;
+		void clearBreakPoints();
+		void setFont(QFont);
 
- public slots:
-  void newProgram();
-  void saveProgram();
-  void saveAsProgram();
-  void loadProgram();
-  void cursorMove();
-  void goToLine(int);
-  void seekLine(int);
-  void slotPrint();
-  void beautifyProgram();
-  void slotWhitespace(bool);
-  void loadRecent0();
-  void loadRecent1();
-  void loadRecent2();
-  void loadRecent3();
-  void loadRecent4();
-  void loadRecent5();
-  void loadRecent6();
-  void loadRecent7();
-  void loadRecent8();
+	public slots:
+		void newProgram();
+		void saveProgram();
+		void saveAsProgram();
+		void loadProgram();
+		void cursorMove();
+		void goToLine(int);
+		void seekLine(int);
+		void slotPrint();
+		void beautifyProgram();
+		void slotWhitespace(bool);
+		void loadRecent0();
+		void loadRecent1();
+		void loadRecent2();
+		void loadRecent3();
+		void loadRecent4();
+		void loadRecent5();
+		void loadRecent6();
+		void loadRecent7();
+		void loadRecent8();
+		void highlightCurrentLine();
+		int  indentSelection();
+		void unindentSelection();
 
-signals:
-	void changeStatusBar(QString);
-	void changeWindowTitle(QString);
- 
- protected:
-  void keyPressEvent(QKeyEvent *);
-  void resizeEvent(QResizeEvent *event);
+	signals:
+		void changeStatusBar(QString);
+		void changeWindowTitle(QString);
 
- private:
-  QMainWindow *mainwin;
-  int currentMaxLine;
-  int currentLine;
-  int startPos;
-  int linePos;
-  QString filename;
-//  void changeFontSize(unsigned int);
-  void addFileToRecentList(QString);
-  void loadRecent(int);
-  QWidget *lineNumberArea;
-  
-private slots:
-  void updateLineNumberAreaWidth(int newBlockCount);
-  void updateLineNumberArea(const QRect &, int);
-  void highlightCurrentLine();
+	protected:
+		void keyPressEvent(QKeyEvent *);
+		void resizeEvent(QResizeEvent *event);
 
-   
+	private:
+		QMainWindow *mainwin;
+		int currentMaxLine;
+		int currentLine;
+		int startPos;
+		int linePos;
+		QString filename;
+		void addFileToRecentList(QString);
+		void loadRecent(int);
+		QWidget *lineNumberArea;
+
+	private slots:
+		void updateLineNumberAreaWidth(int newBlockCount);
+		void updateLineNumberArea(const QRect &, int);
+
+
 };
 
 

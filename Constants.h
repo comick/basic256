@@ -13,3 +13,7 @@
     #define CALLSIG_SUBROUTINE 0xffff
     #define CALLSIG_FUNCTION 0xfffe
 #endif
+
+#ifndef EDITOR_TAB_WIDTH
+	#define EDITOR_TAB_WIDTH 4
+#endif

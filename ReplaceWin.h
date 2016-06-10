@@ -61,8 +61,9 @@ private:
 	QLabel *tolabel;
 	QLineEdit *toinput;
 	QCheckBox *backcheckbox;
-	QCheckBox *casecheckbox;
-	QPushButton *cancelbutton;
+    QCheckBox *casecheckbox;
+    QCheckBox *wordscheckbox;
+    QPushButton *cancelbutton;
 	QPushButton *findbutton;
 	QShortcut *findagain1;
 	QShortcut *findagain2;

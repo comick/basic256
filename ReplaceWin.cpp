@@ -53,14 +53,19 @@ ReplaceWin::ReplaceWin () {
     layout->addWidget(toinput,r,2,1,3);
     //
     r++;
-    backcheckbox = new QCheckBox(tr("Search Backwards"),this);
-    backcheckbox->setChecked(settings.value(SETTINGSREPLACEBACK, SETTINGSREPLACEBACKDEFAULT).toBool());
-    layout->addWidget(backcheckbox,r,2,1,2);
-    //
-    r++;
-    casecheckbox = new QCheckBox(tr("Case Sensitive"),this);
+    casecheckbox = new QCheckBox(tr("Case sensitive"),this);
     casecheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACECASEDEFAULT).toBool());
     layout->addWidget(casecheckbox,r,2,1,3);
+    //
+    r++;
+    wordscheckbox = new QCheckBox(tr("Only whole words"),this);
+    wordscheckbox->setChecked(settings.value(SETTINGSREPLACECASE, SETTINGSREPLACEWORDSDEFAULT).toBool());
+    layout->addWidget(wordscheckbox,r,2,1,3);
+    //
+    r++;
+    backcheckbox = new QCheckBox(tr("Search backwards"),this);
+    backcheckbox->setChecked(settings.value(SETTINGSREPLACEBACK, SETTINGSREPLACEBACKDEFAULT).toBool());
+    layout->addWidget(backcheckbox,r,2,1,3);
     //
     r++;
     findbutton = new QPushButton(tr("&Find"), this);
@@ -109,7 +114,7 @@ void ReplaceWin::setReplaceMode(bool m) {
 }
 
 void ReplaceWin::changeFromInput(QString t) {
-    replacebutton->setEnabled(replaceMode && (t.length() != 0) && (t.compare(editwin->textCursor().selectedText(),(casecheckbox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive))==0));
+    replacebutton->setEnabled(replaceMode && (t.length() != 0));
     replaceallbutton->setEnabled(replaceMode && t.length() != 0);
     findbutton->setEnabled(t.length() != 0);
 }
@@ -119,26 +124,23 @@ void ReplaceWin::clickCancelButton() {
 }
 
 void ReplaceWin::findAgain() {
-    if(frominput->text().length() != 0){
-        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-        changeFromInput(frominput->text());
-    }
+    if(frominput->text().length() != 0)
+        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), wordscheckbox->isChecked());
 }
 
 void ReplaceWin::clickFindButton() {
-    if(frominput->text().length() != 0){
-        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked());
-        changeFromInput(frominput->text());
-    }
+    if(frominput->text().length() != 0)
+        editwin->findString(frominput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), wordscheckbox->isChecked());
 }
 
 void ReplaceWin::clickReplaceButton() {
-    editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), false);
-    changeFromInput(frominput->text());
+    if(frominput->text().length() != 0)
+        editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), wordscheckbox->isChecked(), false);
 }
 
 void ReplaceWin::clickReplaceAllButton() {
-    editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), true);
+    if(frominput->text().length() != 0)
+        editwin->replaceString(frominput->text(), toinput->text(), backcheckbox->isChecked(), casecheckbox->isChecked(), wordscheckbox->isChecked(), true);
 }
 
 void ReplaceWin::closeEvent(QCloseEvent *e) {
@@ -152,5 +154,7 @@ void ReplaceWin::saveSettings() {
     settings.setValue(SETTINGSREPLACEFROM, frominput->text());
     if (replaceMode) settings.setValue(SETTINGSREPLACETO, toinput->text());
     settings.setValue(SETTINGSREPLACECASE, casecheckbox->isChecked());
+    settings.setValue(SETTINGSREPLACEBACK, backcheckbox->isChecked());
+    settings.setValue(SETTINGSREPLACEWORDS, wordscheckbox->isChecked());
 }
 

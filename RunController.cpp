@@ -311,11 +311,14 @@ RunController::outputClear() {
 
 void
 RunController::outputReady(QString text) {
-    mymutex->lock();
-    outwin->insertPlainText(text);
-    outwin->ensureCursorVisible();
-    waitCond->wakeAll();
-    mymutex->unlock();
+	mymutex->lock();
+	QTextCursor t(outwin->textCursor());
+	t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+	outwin->setTextCursor(t);
+	outwin->insertPlainText(text);
+	outwin->ensureCursorVisible();
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 void
@@ -344,21 +347,21 @@ RunController::stepBreakPoint() {
 
 void
 RunController::stopRun() {
-    mainwin->statusBar()->showMessage(tr("Ready."));
+	mainwin->statusBar()->showMessage(tr("Ready."));
 
-    mainWindowSetRunning(0);
+	mainWindowSetRunning(0);
 
-    mymutex->lock();
-    outwin->setReadOnly(true);
-    waitCond->wakeAll();
-    mymutex->unlock();
+	mymutex->lock();
+	outwin->stopInput();
+	waitCond->wakeAll();
+	mymutex->unlock();
 
-    mydebugmutex->lock();
-    i->debugMode = 0;
-    waitDebugCond->wakeAll();
-    mydebugmutex->unlock();
+	mydebugmutex->lock();
+	i->debugMode = 0;
+	waitDebugCond->wakeAll();
+	mydebugmutex->unlock();
 
-    emit(runHalted());
+	emit(runHalted());
 }
 
 
@@ -530,8 +533,6 @@ void RunController::dialogFontSelect() {
 
 		mymutex->lock();
 		editwin->setFont(newf);
-		QFontMetrics metrics(newf);
-		editwin->setTabStopWidth(metrics.width("9999"));	// 4 spaces
 		outwin->setFont(newf);
 		waitCond->wakeAll();
 		mymutex->unlock();
@@ -547,6 +548,8 @@ void RunController::mainWindowSetRunning(int type) {
     QTextCursor textCursor = editwin->textCursor();
     textCursor.clearSelection();
     editwin->setTextCursor( textCursor );
+    if (replacewin) replacewin->close();
+	editwin->highlightCurrentLine();
 
     // file menu
     mainwin->newact->setEnabled(type==0);
@@ -563,7 +566,7 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->cutact->setEnabled(false);
     mainwin->copyact->setEnabled(false);
     mainwin->pasteact->setEnabled(type==0);
-    mainwin->selectallact->setEnabled(true);
+    mainwin->selectallact->setEnabled(type==0);
     mainwin->findact->setEnabled(type==0);
     mainwin->findagain1->setEnabled(type==0);
     mainwin->findagain2->setEnabled(type==0);

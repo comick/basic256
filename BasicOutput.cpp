@@ -37,11 +37,11 @@ extern int lastKey;
 extern std::list<int> pressedKeys;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
-    setInputMethodHints(Qt::ImhNoPredictiveText);
-    setFocusPolicy(Qt::StrongFocus);
-    setAcceptRichText(false);
-    gettingInput = false;
-
+	setInputMethodHints(Qt::ImhNoPredictiveText);
+	setFocusPolicy(Qt::StrongFocus);
+	setAcceptRichText(false);
+	setUndoRedoEnabled(false);
+	gettingInput = false;
 }
 
 BasicOutput::~BasicOutput( ) {
@@ -50,10 +50,25 @@ BasicOutput::~BasicOutput( ) {
 
 void
 BasicOutput::getInput() {
-    gettingInput = true;
-    startPos = textCursor().position();
-    setReadOnly(false);
-    setFocus();
+	// move cursor to the end of the existing text and start inout
+	gettingInput = true;
+	QTextCursor t(textCursor());
+	t.movePosition(QTextCursor::End);
+	setTextCursor(t);
+	startPos = t.position();
+	setReadOnly(false);
+	setFocus();
+}
+
+void BasicOutput::stopInput() {
+	gettingInput = false;
+	setReadOnly(true);
+}
+
+void BasicOutput::mousePressEvent(QMouseEvent *e) {
+	// stop mouse events when we are getting input
+	e->accept();
+	if (!gettingInput) QTextEdit::mousePressEvent(e);
 }
 
 void BasicOutput::keyPressEvent(QKeyEvent *e) {
@@ -113,6 +128,7 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
 void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 	e->accept();
 	if (!gettingInput) {
+		mymutex->lock();
 		if(!e->isAutoRepeat())pressedKeys.remove(e->key());
 		if( e->modifiers() & Qt::ShiftModifier )
 		{

@@ -42,12 +42,14 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   
  public slots:
   void getInput();
+  void stopInput();
   void slotPrint();
  
  signals:
   void inputEntered(QString);
   
  protected:
+  void mousePressEvent(QMouseEvent *);
   void keyPressEvent(QKeyEvent *);
   void keyReleaseEvent(QKeyEvent *);
  

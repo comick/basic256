@@ -18,6 +18,7 @@
 
 
 #include <iostream>
+#include <QScrollBar>
 #include <QTextCursor>
 #include <QTextBlock>
 #include <QFlags>
@@ -29,8 +30,9 @@
 #include <QtWidgets/QStatusBar>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
-#include <QtWidgets/QMessageBox>
+
 #include <QtWidgets/QFontDialog>
+
 using namespace std;
 
 #include "MainWindow.h"
@@ -58,9 +60,6 @@ BasicEdit::BasicEdit() {
 
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();
-	
-	QFontMetrics metrics(font());
-	setTabStopWidth(metrics.width("9999"));	// 4 spaces
 }
 
 
@@ -75,11 +74,19 @@ BasicEdit::~BasicEdit() {
 	}
 }
 
+void BasicEdit::setFont(QFont f) {
+	// set the font and the tab stop at EDITOR_TAB_WIDTH spaces
+	QPlainTextEdit::setFont(f);
+	QFontMetrics metrics(f);
+	setTabStopWidth(metrics.width(" ")*EDITOR_TAB_WIDTH);
+}
+
+
 void
 BasicEdit::cursorMove() {
-    QTextCursor t(textCursor());
-    emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
-                         + tr(" Character: ") + QString::number(t.positionInBlock())));
+	QTextCursor t(textCursor());
+	emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
+		+ tr(" Character: ") + QString::number(t.positionInBlock())));
 }
 
 void
@@ -131,63 +138,77 @@ void
 BasicEdit::keyPressEvent(QKeyEvent *e) {
 	e->accept();
 	codeChanged = true;
-	QPlainTextEdit::keyPressEvent(e);
+	//Autoindent new line as previus one
+	if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
+		QPlainTextEdit::keyPressEvent(e);
+		QTextCursor cur = textCursor();
+		cur.movePosition(QTextCursor::PreviousBlock);
+		cur.movePosition(QTextCursor::StartOfBlock);
+		cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+		QString str = cur.selectedText();
+		QRegExp rx("^([\\t ]+)");
+		if(str.indexOf(rx) >= 0)
+			textCursor().insertText(rx.cap(1));
+	}else if(e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoModifier){
+		if(!indentSelection())
+			QPlainTextEdit::keyPressEvent(e);
+	}else if((e->key() == Qt::Key_Tab && e->modifiers() & Qt::ShiftModifier) || e->key() == Qt::Key_Backtab){
+		unindentSelection();
+	}else{
+		QPlainTextEdit::keyPressEvent(e);
+	}
 }
 
 void
 BasicEdit::newProgram() {
-    bool donew = true;
-    if (codeChanged) {
-        QMessageBox msgBox;
-        msgBox.setText(tr("New Program?"));
-        msgBox.setInformativeText(tr("Are you sure you want to completely clear this program and start a new one?"));
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        donew = (msgBox.exec() == QMessageBox::Yes);
-    }
-    if (donew) {
-        clear();
-        clearBreakPoints();
-        emit(changeWindowTitle(tr("Untitled - BASIC-256")));
-        filename = "";
-        codeChanged = false;
-    }
+	bool donew = true;
+	if (codeChanged) {
+		donew = ( QMessageBox::Yes == QMessageBox::warning(this, tr("New Program?"),
+			tr("Are you sure you want to completely clear this program and start a new one?"),
+			QMessageBox::Yes | QMessageBox::No,
+			QMessageBox::No));
+	}
+	if (donew) {
+		clear();
+		clearBreakPoints();
+		emit(changeWindowTitle(tr("Untitled - BASIC-256")));
+		filename = "";
+		codeChanged = false;
+	}
 }
 
 
 void BasicEdit::saveFile(bool overwrite) {
-    // BE SURE TO SET filename PROPERTY FIRST
-    // or set it to '' to prompt for a new file name
-    if (filename == "") {
-        filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
-    }
+	// BE SURE TO SET filename PROPERTY FIRST
+	// or set it to '' to prompt for a new file name
+	if (filename == "") {
+		filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
+	}
 
-    if (filename != "") {
-        QRegExp rx("\\.[^\\/]*$");
-        if (rx.indexIn(filename) == -1) {
-            filename += ".kbs";
-        }
-        QFile f(filename);
-        bool dooverwrite = true;
-        if (!overwrite && f.exists()) {
-            QMessageBox msgBox;
-            msgBox.setText(tr("The file ") + filename + tr(" already exists."));
-            msgBox.setInformativeText(tr("Do you want to overwrite?"));
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::Yes);
-            dooverwrite = (msgBox.exec() == QMessageBox::Yes);
-        }
-        if (dooverwrite) {
-            f.open(QIODevice::WriteOnly | QIODevice::Truncate);
-            f.write(this->document()->toPlainText().toUtf8());
-            f.close();
-            QFileInfo fi(f);
-            emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
-            QDir::setCurrent(fi.absolutePath());
-            codeChanged = false;
-            addFileToRecentList(filename);
-        }
-    }
+	if (filename != "") {
+		QRegExp rx("\\.[^\\/]*$");
+		if (rx.indexIn(filename) == -1) {
+			filename += ".kbs";
+		}
+		QFile f(filename);
+		bool dooverwrite = true;
+		if (!overwrite && f.exists()) {
+			dooverwrite = ( QMessageBox::Yes == QMessageBox::warning(this, tr("The file ") + filename + tr(" already exists."),
+				tr("Do you want to overwrite?"),
+				QMessageBox::Yes | QMessageBox::No,
+				QMessageBox::No));
+		}
+		if (dooverwrite) {
+			f.open(QIODevice::WriteOnly | QIODevice::Truncate);
+			f.write(this->document()->toPlainText().toUtf8());
+			f.close();
+			QFileInfo fi(f);
+			emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
+			QDir::setCurrent(fi.absolutePath());
+			codeChanged = false;
+			addFileToRecentList(filename);
+		}
+	}
 }
 
 void
@@ -274,50 +295,40 @@ BasicEdit::loadRecent(int i) {
 
 void
 BasicEdit::loadFile(QString s) {
-    if (s != NULL) {
-        bool doload = true;
-        if (codeChanged) {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Program modifications have not been saved."));
-            msgBox.setInformativeText(tr("Do you want to discard your changes?"));
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::Yes);
-            doload = (msgBox.exec() == QMessageBox::Yes);
-        }
-        if (doload) {
-            if (QFile::exists(s)) {
-                QFile f(s);
-                if (f.open(QIODevice::ReadOnly)) {
-                    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                    QByteArray ba = f.readAll();
-                    this->setPlainText(QString::fromUtf8(ba.data()));
-                    f.close();
-                    filename = s;
-                    QFileInfo fi(f);
-                    emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
-                    QDir::setCurrent(fi.absolutePath());
-                    codeChanged = false;
-                    clearBreakPoints();
-                    addFileToRecentList(s);
-                    QApplication::restoreOverrideCursor();
-                } else {
-                    QMessageBox msgBox;
-                    msgBox.setText(tr("File \"")+s+tr("\"."));
-                    msgBox.setInformativeText(tr("Unable to open program file."));
-                    msgBox.setStandardButtons(QMessageBox::Ok);
-                    msgBox.setDefaultButton(QMessageBox::Ok);
-                    msgBox.exec();
-                }
-            } else {
-                QMessageBox msgBox;
-                msgBox.setText(tr("File \"")+s+tr("\"."));
-                msgBox.setInformativeText(tr("Program file does not exist."));
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                msgBox.exec();
-            }
-        }
-    }
+	if (s != NULL) {
+		bool doload = true;
+		if (codeChanged) {
+			doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Program modifications have not been saved."),
+				tr("Do you want to discard your changes?"),
+				QMessageBox::Yes | QMessageBox::No,
+				QMessageBox::No));
+		}
+		if (doload) {
+			if (QFile::exists(s)) {
+				QFile f(s);
+				if (f.open(QIODevice::ReadOnly)) {
+					QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+					QByteArray ba = f.readAll();
+					this->setPlainText(QString::fromUtf8(ba.data()));
+					f.close();
+					filename = s;
+					QFileInfo fi(f);
+					emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
+					QDir::setCurrent(fi.absolutePath());
+					codeChanged = false;
+					clearBreakPoints();
+					addFileToRecentList(s);
+					QApplication::restoreOverrideCursor();
+				} else {
+					QMessageBox::warning(this, tr("File \"")+s+tr("\"."),
+						tr("Unable to open program file."), QMessageBox::Ok, QMessageBox::Ok);
+				}
+			} else {
+				QMessageBox::warning(this, tr("File \"")+s+tr("\"."),
+					tr("Program file does not exist."), QMessageBox::Ok, QMessageBox::Ok);
+			}
+		}
+	}
 
 }
 
@@ -351,152 +362,209 @@ void BasicEdit::slotPrint() {
 
 
 void BasicEdit::beautifyProgram() {
-    QString program;
-    QStringList lines;
-    const int TAB = 3;
-    int indent = 0;
-    bool indentThisLine = true;
-    bool increaseIndent = false;
-    bool decreaseIndent = false;
-    bool increaseIndentDouble = false;
-    bool decreaseIndentDouble = false;
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    program = this->document()->toPlainText();
-    lines = program.split(QRegExp("\\n"));
-    for (int i = 0; i < lines.size(); i++) {
-        QString line = lines.at(i);
-        line = line.trimmed();
-        if (line.contains(QRegExp("^\\S+[:]"))) {
-            // label - one line no indent
-            indentThisLine = false;
-        } else if (line.contains(QRegExp("^[Ff][Oo][Rr]\\s"))) {
-            // for - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Nn][Ee][Xx][Tt]\\s"))) {
-            // next - come out of block - reduce indent
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ii][Ff]\\s.+\\s[Tt][Hh][Ee][Nn]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // if/then (NOTHING FOLLOWING) - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Ll][Ss][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // else - come out of block and start new block
-            decreaseIndent = true;
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ii][Ff]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // end if - come out of block - reduce indent
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ww][Hh][Ii][Ll][Ee]\\s"))) {
-            // while - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ww][Hh][Ii][Ll][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // endwhile - come out of block
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\s"))) {
-            // function - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // endfunction - come out of block
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\s"))) {
-            // function - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // endfunction - come out of block
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Dd][Oo]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // do - indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Uu][Nn][Tt][Ii][Ll]\\s"))) {
-            // until - come out of block
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Tt][Rr][Yy]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // try indent next (block of code)
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Cc][Aa][Tt][Cc][Hh]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // catch - come out of block and start new block
-            decreaseIndent = true;
-            increaseIndent = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Tt][Rr][Yy]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // end try - come out of block - reduce indent
-            decreaseIndent = true;
-        } else if (line.contains(QRegExp("^[Bb][Ee][Gg][Ii][Nn]\\s*[Cc][Aa][Ss][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // begin case double indent next (block of code)
-            increaseIndentDouble = true;
-        } else if (line.contains(QRegExp("^[Ee][Nn][Dd]\\s*[Cc][Aa][Ss][Ee]\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // end case double reduce
-            decreaseIndentDouble = true;
-        } else if (line.contains(QRegExp("^[Cc][Aa][Ss][Ee]\\s.+\\s*((#|([Rr][Ee][Mm]\\s)).*)?$"))) {
-            // case expression - indent one line
-            decreaseIndent = true;
-            increaseIndent = true;
-        }
-        //
-        if (decreaseIndent) {
-            indent -= TAB;
-            if (indent<0) indent=0;
-            decreaseIndent = false;
-        }
-        if (decreaseIndentDouble) {
-            indent -= TAB*2;
-            if (indent<0) indent=0;
-            decreaseIndentDouble = false;
-        }
-        if (indentThisLine) {
-            line = QString(indent, QChar(' ')) + line;
-        } else {
-            indentThisLine = true;
-        }
-        if (increaseIndent) {
-            indent += TAB;
-            increaseIndent = false;
-        }
-        if (increaseIndentDouble) {
-            indent += TAB*2;
-            increaseIndentDouble = false;
-        }
-        //
-        lines.replace(i, line);
-    }
-    this->setPlainText(lines.join("\n"));
-    codeChanged = true;
-    QApplication::restoreOverrideCursor();
+	QString program;
+	QStringList lines;
+	int indent = 0;
+	bool indentThisLine = true;
+	bool increaseIndent = false;
+	bool decreaseIndent = false;
+	bool increaseIndentDouble = false;
+	bool decreaseIndentDouble = false;
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	program = this->document()->toPlainText();
+	lines = program.split(QRegExp("\\n"));
+	for (int i = 0; i < lines.size(); i++) {
+		QString line = lines.at(i);
+		line = line.trimmed();
+		if (line.contains(QRegExp("^\\S+[:]"))) {
+			// label - one line no indent
+			indentThisLine = false;
+		} else if (line.contains(QRegExp("^for\\s", Qt::CaseInsensitive))) {
+			// for - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^next\\s", Qt::CaseInsensitive))) {
+			// next - come out of block - reduce indent
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^if\\s.+\\sthen\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// if/then (NOTHING FOLLOWING) - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^else\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// else - come out of block and start new block
+			decreaseIndent = true;
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^end\\s*if\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// end if - come out of block - reduce indent
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^while\\s", Qt::CaseInsensitive))) {
+			// while - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^end\\s*while\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// endwhile - come out of block
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^function\\s", Qt::CaseInsensitive))) {
+			// function - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^end\\s*function\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// endfunction - come out of block
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^subroutine\\s", Qt::CaseInsensitive))) {
+			// function - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^end\\s*subroutine\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// endfunction - come out of block
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^do\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// do - indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^until\\s", Qt::CaseInsensitive))) {
+			// until - come out of block
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^try\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// try indent next (block of code)
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^catch\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// catch - come out of block and start new block
+			decreaseIndent = true;
+			increaseIndent = true;
+		} else if (line.contains(QRegExp("^end\\s*try\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// end try - come out of block - reduce indent
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^begin\\s*case\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// begin case double indent next (block of code)
+			increaseIndentDouble = true;
+		} else if (line.contains(QRegExp("^end\\s*case\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// end case double reduce
+			decreaseIndentDouble = true;
+		} else if (line.contains(QRegExp("^case\\s.+\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
+			// case expression - indent one line
+			decreaseIndent = true;
+			increaseIndent = true;
+		}
+		//
+		if (decreaseIndent) {
+			indent--;
+			if (indent<0) indent=0;
+			decreaseIndent = false;
+		}
+		if (decreaseIndentDouble) {
+			indent-=2;
+			if (indent<0) indent=0;
+			decreaseIndentDouble = false;
+		}
+		if (indentThisLine) {
+			line = QString(indent, QChar('\t')) + line;
+		} else {
+			indentThisLine = true;
+		}
+		if (increaseIndent) {
+			indent++;
+			increaseIndent = false;
+		}
+		if (increaseIndentDouble) {
+			indent+=2;
+			increaseIndentDouble = false;
+		}
+		//
+		lines.replace(i, line);
+	}
+	this->setPlainText(lines.join("\n"));
+	codeChanged = true;
+	QApplication::restoreOverrideCursor();
 }
 
-void BasicEdit::findString(QString s, bool reverse, bool casesens) {
-    QTextDocument::FindFlags flag;
-    if (reverse) flag |= QTextDocument::FindBackward;
-    if (casesens) flag |= QTextDocument::FindCaseSensitively;
-    if (!find(s, flag)) {
-        QMessageBox msgBox;
-        msgBox.setText(tr("String not found."));
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
-    }
+void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
+{
+	if(s.length()==0) return;
+	QTextDocument::FindFlags flag;
+	if (reverse) flag |= QTextDocument::FindBackward;
+	if (casesens) flag |= QTextDocument::FindCaseSensitively;
+	if (words) flag |= QTextDocument::FindWholeWords;
+
+	QTextCursor cursor = this->textCursor();
+	// here we save the cursor position and the verticalScrollBar value
+	QTextCursor cursorSaved = cursor;
+	int scroll = verticalScrollBar()->value();
+
+	if (!find(s, flag))
+	{
+		//nothing is found | jump to start/end
+		cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
+		setTextCursor(cursor);
+
+		if (!find(s, flag))
+		{
+			// word not found : we set the cursor back to its initial position and restore verticalScrollBar value
+			setTextCursor(cursorSaved);
+			verticalScrollBar()->setValue(scroll);
+			QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+		}
+	}
 }
 
-void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool doall) {
-    bool doone = true;
-    QTextDocument::FindFlags flag;
-    if (reverse) flag |= QTextDocument::FindBackward;
-    if (casesens) flag |= QTextDocument::FindCaseSensitively;
-    while (doone) {
-        if (from.compare(this->textCursor().selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))!=0) {
-            if (!find(from, flag)) {
-                QMessageBox msgBox;
-                msgBox.setText(tr("Replace completed."));
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setDefaultButton(QMessageBox::Ok);
-                msgBox.exec();
-                doall = false;
-            }
-        } else {
-            this->textCursor().clearSelection();
-            this->textCursor().insertText(to);
-            codeChanged = true;
-        }
-        doone = doall;
-    }
+void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool words, bool doall) {
+	if(from.length()==0) return;
+
+	// create common flags for replace or replace all
+	QTextDocument::FindFlags flag;
+	if (casesens) flag |= QTextDocument::FindCaseSensitively;
+	if (words) flag |= QTextDocument::FindWholeWords;
+
+	// get a COPY of the cursor on the current text
+	QTextCursor cursor = this->textCursor();
+	
+	// save the cursor position and the verticalScrollBar value
+	int position = cursor.position();
+	int scroll = verticalScrollBar()->value();
+
+	// Replace one time.
+	if(!doall){
+		if (reverse) flag |= QTextDocument::FindBackward;
+
+		//Replace if text is selected - use the cursor from the last find not the copy
+		if (from.compare(cursor.selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))==0){
+			cursor.insertText(to);
+			setTextCursor(cursor);
+			codeChanged = true;
+		}
+
+		//Make a search
+		if (!find(from, flag))
+		{
+			//nothing is found | jump to start/end
+			cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
+			setTextCursor(cursor);
+
+			if (!find(from, flag))
+			{
+				// word not found : we set the cursor back to its initial position and restore verticalScrollBar value
+				cursor.setPosition(position);
+				setTextCursor(cursor);
+				verticalScrollBar()->setValue(scroll);
+				QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+			}
+		}
+
+	//Replace all
+	}else{
+		int n = 0;
+		cursor.movePosition(QTextCursor::Start);
+		setTextCursor(cursor);
+		while (find(from, flag)){
+			if (textCursor().hasSelection()){
+				textCursor().insertText(to);
+				codeChanged = true;
+				n++;
+			}
+		}
+		// set the cursor back to its initial position and restore verticalScrollBar value
+		cursor.setPosition(position);
+		setTextCursor(cursor);
+		verticalScrollBar()->setValue(scroll);
+		if(n==0)
+			QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+		else
+			QMessageBox::information(this, tr("BASIC-256"), tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."), QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
 QString BasicEdit::getCurrentWord() {
@@ -634,4 +702,75 @@ void BasicEdit::clearBreakPoints() {
 	breakPoints->clear();
 	lineNumberArea->repaint();
 }
+
+
+int BasicEdit::indentSelection() {
+	QTextCursor cur = textCursor();
+	if(!cur.hasSelection())
+			return false;
+	int a = cur.anchor();
+	int p = cur.position();
+	int start = (a<=p?a:p);
+	int end = (a>p?a:p);
+
+	cur.beginEditBlock();
+	cur.setPosition(end);
+	int eblock = cur.block().blockNumber();
+	cur.setPosition(start);
+	int sblock = cur.block().blockNumber();
+
+	for(int i = sblock; i <= eblock; i++)
+	{
+		cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+		cur.insertText("\t");
+		cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+	}
+	cur.endEditBlock();
+return true;
+}
+
+
+void BasicEdit::unindentSelection() {
+	QTextCursor cur = textCursor();
+	int a = cur.anchor();
+	int p = cur.position();
+	int start = (a<=p?a:p);
+	int end = (a>p?a:p);
+
+	cur.beginEditBlock();
+	cur.setPosition(end);
+	int eblock = cur.block().blockNumber();
+	cur.setPosition(start);
+	int sblock = cur.block().blockNumber();
+	QString s;
+
+	for(int i = sblock; i <= eblock; i++)
+	{
+		cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
+		cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+		s = cur.selectedText();
+		if(!s.isEmpty()){
+			if(s.startsWith("    ") || s.startsWith("   \t")){
+				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 4);
+				cur.removeSelectedText();
+			}else if(s.startsWith("   ") || s.startsWith("  \t")){
+				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 3);
+				cur.removeSelectedText();
+			}else if(s.startsWith("  ") || s.startsWith(" \t")){
+				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 2);
+				cur.removeSelectedText();
+			}else if(s.startsWith(" ") || s.startsWith("\t")){
+				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 1);
+				cur.removeSelectedText();
+			}
+		}
+		cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+	}
+	cur.endEditBlock();
+}
+
 

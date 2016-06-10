@@ -36,7 +36,7 @@
 	#define SETTINGSDEFAULT_H 600
     #define SETTINGSFONT "Main/Font"
     #define SETTINGSTOOLBAR "Main/Toolbar"
-    #define SETTINGSFONTDEFAULT "Courier,10,-1,5,50,0,0,0,0,0"
+    #define SETTINGSFONTDEFAULT "DejaVu Sans Mono,11,-1,5,50,0,0,0,0,0"
 
     #define SETTINGSEDITWHITESPACE "Edit/Whitespace"
     #define SETTINGSEDITWHITESPACEDEFAULT false
@@ -90,9 +90,11 @@
 	#define SETTINGSREPLACEPOS "Replace/Pos"
 	#define SETTINGSREPLACEFROM "Replace/From"
 	#define SETTINGSREPLACETO "Replace/To"
-	#define SETTINGSREPLACECASE "Replace/Case"
-	#define SETTINGSREPLACECASEDEFAULT false
-	#define SETTINGSREPLACEBACK "Replace/Back"
+    #define SETTINGSREPLACECASE "Replace/Case"
+    #define SETTINGSREPLACECASEDEFAULT false
+    #define SETTINGSREPLACEWORDS "Replace/Words"
+    #define SETTINGSREPLACEWORDSDEFAULT false
+    #define SETTINGSREPLACEBACK "Replace/Back"
 	#define SETTINGSREPLACEBACKDEFAULT false
 
 	// permissions
