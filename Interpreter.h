@@ -71,36 +71,36 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED}
 
 struct byteCodeData
 {
-  unsigned int size;
-  void *data;
+	unsigned int size;
+	void *data;
 };
 
 
 // used by function calls, subroutine calls, and gosubs for return location
 struct frame {
-  frame *next;
-  int *returnAddr;
+	frame *next;
+	int *returnAddr;
 };
 
 // used to track nested on-error and try/catch definitions
 struct onerrorframe {
-  onerrorframe *next;
-  int onerroraddress;
-  bool onerrorgosub;
+	onerrorframe *next;
+	int onerroraddress;
+	bool onerrorgosub;
 };
 
 // structure for the nested for statements
 // if useInt then make loop integer safe
 struct forframe {
-  forframe *next;
-  int variable;
-  int *returnAddr;
-  bool useInt;
-  double floatEndNum;
-  double floatStep;
-  long intEndNum;
-  long intStep;
-  int recurselevel;
+	forframe *next;
+	int variable;
+	int *returnAddr;
+	bool useInt;
+	double floatEndNum;
+	double floatStep;
+	long intEndNum;
+	long intStep;
+	int recurselevel;
 };
 
 typedef struct {
@@ -116,110 +116,115 @@ typedef struct {
 class Interpreter : public QThread
 {
   Q_OBJECT;
- public:
-  Interpreter();
-  ~Interpreter();
-  int compileProgram(char *);
-  void initialize();
-  bool isRunning();
-  bool isStopped();
-  bool isAwaitingInput();
-  void setInputReady();
-  void cleanup();
-  void run();
-  int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
-  QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
-  QString returnString;		// return value from runcontroller emit
-  int returnInt;			// return value from runcontroller emit
+	public:
+		Interpreter();
+		~Interpreter();
+		int compileProgram(char *);
+		void initialize();
+		bool isRunning();
+		bool isStopped();
+		bool isAwaitingInput();
+		void setInputReady();
+		void cleanup();
+		void run();
+		int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
+		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
+		QString returnString;		// return value from runcontroller emit
+		int returnInt;			// return value from runcontroller emit
 
- public slots:
-  int execByteCode();
-  void runPaused();
-  void runResumed();
-  void runHalted();
-  void inputEntered(QString);
+	public slots:
+		int execByteCode();
+		void runPaused();
+		void runResumed();
+		void runHalted();
+		void inputEntered(QString);
 
- signals:
-  void fastGraphics();
-  void stopRun();
-  void goutputReady();
-  void outputReady(QString);
-  void getInput();
-  void outputClear();
-  void getKey();
-  void playSounds(int, int*);
-  void setVolume(int);
-  void executeSystem(QString);
-  void speakWords(QString);
-  void goToLine(int);
-  void seekLine(int);
-  void varWinAssign(Variables*, int);
-  void varWinAssign(Variables*, int, int, int);
-  void varWinDropLevel(int);
-  void varWinDimArray(Variables*, int, int, int);
-  void mainWindowsResize(int, int, int);
-  void mainWindowsVisible(int, bool);
-  void dialogAlert(QString);
-  void dialogConfirm(QString, int);
-  void dialogPrompt(QString, QString);
+	signals:
+		void fastGraphics();
+		void stopRun();
+		void goutputReady();
+		void outputReady(QString);
+		void getInput();
+		void outputClear();
+		void getKey();
+		void playSounds(int, int*);
+		void setVolume(int);
+		void executeSystem(QString);
+		void speakWords(QString);
+		void goToLine(int);
+		void seekLine(int);
+		void varWinAssign(Variables*, int);
+		void varWinAssign(Variables*, int, int, int);
+		void varWinDropLevel(int);
+		void varWinDimArray(Variables*, int, int, int);
+		void mainWindowsResize(int, int, int);
+		void mainWindowsVisible(int, bool);
+		void dialogAlert(QString);
+		void dialogConfirm(QString, int);
+		void dialogPrompt(QString, QString);
 #if ANDROID
-  void playWAV(QString);
-  void waitWAV();
-  void stopWAV();
+		void playWAV(QString);
+		void waitWAV();
+		void stopWAV();
 #endif
 
- private:
-  Sleeper *sleeper;
-  int optype(int op);
-  QString opname(int);
-  void waitForGraphics();
-  void printError();
-  int netSockClose(int);
-  Variables *variables;
-  Stack *stack;
-  Error *error;
-  Convert *convert;
-  QIODevice **filehandle;
-  int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
-  int *op;
-  frame *callstack;
-  forframe *forstack;
-  onerrorframe *onerrorstack;
-  QPen drawingpen;
-  QBrush drawingbrush;
-  run_status status;
-  run_status oldstatus;
-  bool fastgraphics;
-  QString inputString;
-  int inputType;				// data type to convert the input into
-  bool once;
-  int currentLine;
-  QString fontfamily;
-  int fontpoint;
-  int fontweight;
-  void clearsprites();
-  void spriteundraw(int);
-  void spriteredraw(int);
-  bool spritecollide(int, int);
-  sprite *sprites;
-  int nsprites;
-  void closeDatabase(int);
+	private:
+		Sleeper *sleeper;
+		int optype(int op);
+		QString opname(int);
+		void waitForGraphics();
+		void printError();
+		int netSockClose(int);
+		Variables *variables;
+		Stack *stack;
+		Error *error;
+		Convert *convert;
+		QIODevice **filehandle;
+		int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
+		int *op;
+		frame *callstack;
+		forframe *forstack;
+		onerrorframe *onerrorstack;
+		QPen drawingpen;
+		QBrush drawingbrush;
+		run_status status;
+		run_status oldstatus;
+		bool fastgraphics;
+		QString inputString;
+		int inputType;				// data type to convert the input into
+		bool once;
+		int currentLine;
+		QString fontfamily;
+		int fontpoint;
+		int fontweight;
+		void clearsprites();
+		void spriteundraw(int);
+		void spriteredraw(int);
+		bool spritecollide(int, int);
+		sprite *sprites;
+		int nsprites;
+		void closeDatabase(int);
+		// watch... functions trigger the variablewatch window to display
+		void watchvariable(bool, int);
+		void watchvariable(bool, int, int, int);
+		void watchdim(bool, int, int, int);
+		void watchdecurse(bool);
 
-  int netsockfd[NUMSOCKETS];
-  DIR *directorypointer;		// used by DIR function
-  QTime runtimer;				// used by MSEC function
-  Sound sound;
-  QString currentIncludeFile;	// set to current included file name for runtime error messages
-  bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
+		int netsockfd[NUMSOCKETS];
+		DIR *directorypointer;		// used by DIR function
+		QTime runtimer;				// used by MSEC function
+		Sound sound;
+		QString currentIncludeFile;	// set to current included file name for runtime error messages
+		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
 
-  bool printing;
-  QPrinter *printdocument;
-  QPainter *printdocumentpainter;
+		bool printing;
+		QPrinter *printdocument;
+		QPainter *printdocumentpainter;
 
-  QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
+		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
 #ifndef USEQSOUND
-  BasicMediaPlayer *mediaplayer;
+		BasicMediaPlayer *mediaplayer;
 #endif
 
 };

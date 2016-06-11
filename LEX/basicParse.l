@@ -428,6 +428,7 @@ typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 unassign [Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
+variablewatch [Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee][Ww][Aa][Tt][Cc][Hh]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
 warning_typeconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]
@@ -707,6 +708,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {type_array}				{ count(); return B256TYPE_ARRAY; }
 {type_ref}					{ count(); return B256TYPE_REF; }
 {upper}						{ count(); return B256UPPER; }
+{variablewatch}				{ count(); return B256VARIABLEWATCH; }
 {version}					{ count(); return B256VERSION; }
 {warning_typeconv}			{ count(); return B256WARNING_TYPECONV; }
 {warning_wavnoduration}		{ count(); return B256WARNING_WAVNODURATION; }

@@ -283,6 +283,7 @@ void EditSyntaxHighlighter::initKeywords() {
             << "unassign"							//unassign
             << "until"								//until
             << "upper"								//upper
+            << "variablewatch"						//variablewatch
             << "version"							//version
             << "volume"								//volume
             << "wavlength"							//wavlength

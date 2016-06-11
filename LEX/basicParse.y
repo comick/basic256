@@ -375,7 +375,7 @@
 %token B256REGEXMINIMAL B256TYPEOF B256UNASSIGN
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 %token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM B256SEMICOLON B256SEMICOLONEQUAL
-%token B256KEYPRESSED
+%token B256KEYPRESSED B256VARIABLEWATCH
 
 
 %union anytype {
@@ -688,6 +688,7 @@ statement:
 			| trystmt
 			| unassignstmt
 			| untilstmt
+			| variablewatchstmt
 			| volumestmt
 			| wavpausestmt
 			| wavplaystmt
@@ -2350,6 +2351,13 @@ unassignstmt:
 			}
 			| B256UNASSIGN args_a {
 				addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
+			}
+			;
+
+
+variablewatchstmt:
+			B256VARIABLEWATCH args_v {
+				addIntOp(OP_VARIABLEWATCH, varnumber[--nvarnumber]);
 			}
 			;
 

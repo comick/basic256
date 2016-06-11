@@ -427,6 +427,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_RTRIM) return QString("OP_RTRIM");
     else if (op==OP_TRIM) return QString("OP_TRIM");
     else if (op==OP_EXITFOR) return QString("OP_EXITFOR");
+    else if (op==OP_VARIABLEWATCH) return QString("OP_VARIABLEWATCH");
 
     else return QString("OP_UNKNOWN");
 }
@@ -597,6 +598,47 @@ bool Interpreter::spritecollide(int n1, int n2) {
     if (right1<left2) return false;
     if (left1>right2) return false;
     return true;
+}
+
+void Interpreter::watchvariable(bool doit, int i) {
+	// send an event to the variable watch window to display a simple variable's value
+	// wait for the event to complete by watching the mutex
+	if (doit) {
+		mymutex->lock();
+		emit(varWinAssign(variables, i));
+		waitCond->wait(mymutex);
+		mymutex->unlock();
+	}
+}
+void Interpreter::watchvariable(bool doit, int i, int x, int y) {
+	// send an event to the variable watch window to display aan array element's value
+	// wait for the event to complete by watching the mutex
+	if (doit) {
+		mymutex->lock();
+		emit(varWinAssign(variables, i, x ,y));
+		waitCond->wait(mymutex);
+		mymutex->unlock();
+	}
+}
+void Interpreter::watchdim(bool doit, int i, int x, int y) {
+	// send an event to the variable watch window to display an array dim or redim
+	// wait for the event to complete by watching the mutex
+	if (doit) {
+		mymutex->lock();
+		emit(varWinDimArray(variables ,i , x, y));
+		waitCond->wait(mymutex);
+		mymutex->unlock();
+	}
+}
+void Interpreter::watchdecurse(bool doit) {
+	// send an event to the variable watch window to remove a function's variables
+	// wait for the event to complete by watching the mutex
+	if (doit) {
+		mymutex->lock();
+		emit(varWinDropLevel(variables->getrecurse()));
+		waitCond->wait(mymutex);
+		mymutex->unlock();
+	}
 }
 
 int
@@ -1012,9 +1054,7 @@ Interpreter::execByteCode() {
 					DataElement *startnumE = stack->popelement();
 
 					variables->setdata(i, startnumE);	// set variable to initial value
-					if(debugMode != 0) {
-						emit(varWinAssign(variables, i));
-					}
+					watchvariable(debugMode, i);
 
 					if (startnumE->type==T_INT && stepE->type==T_INT) {
 						// an integer start and step (do an integer loop)
@@ -1089,9 +1129,7 @@ Interpreter::execByteCode() {
 								delete temp;
 							}
 						}
-						if(debugMode != 0) {
-							emit(varWinAssign(variables, i));
-						}
+						watchvariable(debugMode, i);
 					}
 
 				}
@@ -1103,15 +1141,8 @@ Interpreter::execByteCode() {
                     int xdim = stack->popint();
                     if (ydim<=0) ydim=1; // need to dimension as 1d
                     variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
-                    if(debugMode != 0 && !error->pending()) {
-                        emit(varWinDimArray(variables ,i , xdim, ydim));
-                        if (OP_REDIM) {
-							for (int x=0;x<xdim;x++) {
-								for (int y=0;y<ydim;y++) {
-									emit(varWinAssign(variables, i, x, y));
-								}
-							}
-						}
+                    if(!error->pending()) {
+                        watchdim(debugMode, i , xdim, ydim);
                     }
                 }
                 break;
@@ -1164,17 +1195,13 @@ Interpreter::execByteCode() {
 					// create an array
 					variables->arraydim(i, list.size(), 1, false);
 					if (!error->pending()) {
-						if(debugMode != 0) {
-							emit(varWinDimArray(variables, i , list.size(), 1));
-						}
+						watchdim(debugMode, i , list.size(), 1);
 
 						for(int x=0; x<list.size(); x++) {
 							// fill the string array
 							variables->arraysetdata(i, x, 0, new DataElement(list.at(x)));
 							if (!error->pending()) {
-								if(debugMode != 0) {
-									emit(varWinAssign(variables, i, x, 0));
-								}
+								watchvariable(debugMode, i, x, 0);
 							}
 						}
 					}
@@ -1221,9 +1248,7 @@ Interpreter::execByteCode() {
 					} else {
 						variables->arraysetdata(i, xindex, yindex, e);
 						if (!error->pending()) {
-							if(debugMode != 0) {
-								emit(varWinAssign(variables, i, xindex, yindex));
-							}
+							watchvariable(debugMode, i, xindex, yindex);
 						}
 					}
 					// dont delete to an assign of variable
@@ -1260,9 +1285,7 @@ Interpreter::execByteCode() {
 					} else {
 						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
 						variables->setdata(i, e);
-						if(debugMode != 0) {
-							emit(varWinAssign(variables, i));
-						}
+						watchvariable(debugMode, i);
 					}
 					// remember dont delete stack to assign to a variable
 
@@ -1297,9 +1320,7 @@ Interpreter::execByteCode() {
 				case OP_UNASSIGN: {
 					DataElement *e = new DataElement();
 					variables->setdata(i, e);
-					if(debugMode != 0) {
-						emit(varWinAssign(variables, i));
-					}
+					watchvariable(debugMode, i);
 				}
 				break;
 
@@ -1309,11 +1330,24 @@ Interpreter::execByteCode() {
 					int xindex = stack->popint();
 					DataElement *e = new DataElement();
 					variables->arraysetdata(i, xindex, yindex, e);
-					if(debugMode != 0) {
-						emit(varWinAssign(variables, i, xindex, yindex));
+					watchvariable(debugMode, i, xindex, yindex);
+				}
+				break;
+				
+				case OP_VARIABLEWATCH: {
+					if (variables->get(i)->data->type == T_ARRAY) {
+						// an array - trigger dim and dumping of the elements
+						int ydim = variables->arraysizey(i);
+						int xdim = variables->arraysizex(i);
+						watchdim(true, i , xdim, ydim);
+ 					} else {
+						// regular variable - show it
+						watchvariable(true, i);
 					}
 				}
 				break;
+
+
 
             }
         }
@@ -1366,9 +1400,7 @@ Interpreter::execByteCode() {
 					if (variables->get(i)->data->type != T_ARRAY || variables->arraysize(i)!=items) {
 						variables->arraydim(i, items, 1, false);
 						if(error->pending()) break;
-						if(debugMode != 0) {
-							emit(varWinDimArray(variables, i, items, 1));
-						}
+						watchdim(debugMode, i, items, 1);
 					}
 
 					// use the array dimensions to fill data from stack
@@ -1383,8 +1415,8 @@ Interpreter::execByteCode() {
 								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 							} else {
 								variables->arraysetdata(i, x, y, e);
-								if(debugMode != 0 && !error->pending()) {
-									emit(varWinAssign(variables, i, x, y));
+								if(!error->pending()) {
+									watchvariable(debugMode, i, x, y);
 								}
 							}
 						}
@@ -3343,11 +3375,7 @@ Interpreter::execByteCode() {
                         delete temp;
                     }
 
-                    if(debugMode != 0) {
-                        // remove variables from variable window when we return back
-                        emit(varWinDropLevel(variables->getrecurse()));
-                    }
-
+                    watchdecurse(debugMode);
                     variables->decreaserecurse();
                 }
                 break;

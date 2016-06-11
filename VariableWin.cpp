@@ -22,6 +22,8 @@ using namespace std;
 #include <qglobal.h>
 
 #include <QtWidgets/QHeaderView>
+#include <QMutex>
+#include <QWaitCondition>
 
 //#include "VariableWin.h"
 #include "DataElement.h"
@@ -29,18 +31,40 @@ using namespace std;
 
 extern MainWindow * mainwin;
 
+extern QMutex* mymutex;
+extern QWaitCondition* waitCond;
+
 extern "C" {
     extern char *symtable[];
     extern int numsyms;
 }
 
 VariableWin::VariableWin () {
-    setColumnCount(3);
-    setHeaderLabels(QStringList() << tr("Level - Name") << tr("Ty") << tr("Value"));
-    resizeColumnToContents(1);
-    sortByColumn(0,Qt::AscendingOrder);
-    setSortingEnabled(true);
+	setColumnCount(3);
+	setHeaderLabels(QStringList() << tr("Level - Name") << tr("Ty") << tr("Value"));
+	resizeColumnToContents(1);
+	sortByColumn(0,Qt::AscendingOrder);
+	setSortingEnabled(true);
+	convert = new Convert(NULL);
 }
+
+
+void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
+	// set thr type and value columns (2 and 3)
+	if (r) {
+		if (d!=NULL && d->type!=T_UNASSIGNED) {
+			if (d->type==T_STRING) r->setText(1,"S");
+			if (d->type==T_INT) r->setText(1,"I");
+			if (d->type==T_FLOAT) r->setText(1,"F");
+			r->setText(2, convert->getString(d));
+		} else {
+			r->setText(1, tr("?"));
+			r->setText(2, tr(""));
+		}
+	}
+
+}
+
 
 void VariableWin::removeArrayEntries(QString name) {
 	// remove old entries when a variable becomes an array or not
@@ -54,8 +78,9 @@ void VariableWin::removeArrayEntries(QString name) {
 
 void VariableWin::varWinAssign(Variables* variables, int varnum, int x, int y) {
 
+	mymutex->lock();
+
 	QTreeWidgetItem *rowItem = NULL;
-	Convert *convert = new Convert(NULL);
 	QString name;
 	VariableInfo *vi;
 	DataElement *d;
@@ -76,24 +101,19 @@ void VariableWin::varWinAssign(Variables* variables, int varnum, int x, int y) {
 		if (list.size()>0) rowItem = list[0];
 	}
 	// set the data and data type
-	if (rowItem) {
-		if (d!=NULL && d->type!=T_UNASSIGNED) {
-			if (d->type==T_STRING) rowItem->setText(1,"S");
-			if (d->type==T_INT) rowItem->setText(1,"I");
-			if (d->type==T_FLOAT) rowItem->setText(1,"F");
-			rowItem->setText(2, convert->getString(d));
-		} else {
-			rowItem->setText(1, tr("?"));
-			rowItem->setText(2, tr(""));
-		}
-	}
+	setTypeAndValue(rowItem, d);
+	
+	waitCond->wakeAll();
+	mymutex->unlock();
+
 }
 
 void VariableWin::varWinAssign(Variables* variables, int varnum) {
 	// simple variable assignmemnt
+
+	mymutex->lock();
 	
 	QTreeWidgetItem *rowItem;
-	Convert *convert = new Convert(NULL);
 	QString name;
 	VariableInfo *vi;
 	DataElement *d;
@@ -114,24 +134,23 @@ void VariableWin::varWinAssign(Variables* variables, int varnum) {
 		addTopLevelItem(rowItem);
 	}
 	// display the data type and the data
-	if (d!=NULL && d->type!=T_UNASSIGNED) {
-		if (d->type==T_STRING) rowItem->setText(1,"S");
-		if (d->type==T_INT) rowItem->setText(1,"I");
-		if (d->type==T_FLOAT) rowItem->setText(1,"F");
-		rowItem->setText(2, convert->getString(d));
-	} else {
-		rowItem->setText(1, tr("?"));
-		rowItem->setText(2, tr(""));
-	}
+	setTypeAndValue(rowItem, d);
+	
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 
 
 void VariableWin::varWinDimArray(Variables* variables, int varnum, int arraylenx, int arrayleny) {
 
+	mymutex->lock();
+
 	QTreeWidgetItem *rowItem;
 	QString name;
 	VariableInfo *vi;
+	DataElement *d;
+
 
 	vi = variables->getInfo(varnum);
 	name = QString::number(vi->level) + " - " + symtable[vi->varnum];
@@ -158,8 +177,8 @@ void VariableWin::varWinDimArray(Variables* variables, int varnum, int arraylenx
 		for(int x=0; x<arraylenx; x++) {
 			QTreeWidgetItem *childItem = new QTreeWidgetItem();
 			childItem->setText(0, name + "[" + QString::number(x) + "]");
-			childItem->setText(1, "?");
-			childItem->setText(2, "");
+			d = variables->arraygetdata(varnum,x,0);
+			setTypeAndValue(childItem, d);
 			rowItem->addChild(childItem);
 		}
 	} else {
@@ -168,17 +187,22 @@ void VariableWin::varWinDimArray(Variables* variables, int varnum, int arraylenx
 			for(int y=0; y<arrayleny; y++) {
 				QTreeWidgetItem *childItem = new QTreeWidgetItem();
 				childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
-				childItem->setText(1, "?");
-				childItem->setText(2, "");
+				d = variables->arraygetdata(varnum,x,y);
+				setTypeAndValue(childItem, d);
 				rowItem->addChild(childItem);
 			}
 		}
 	}
+	
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 
 void VariableWin::varWinDropLevel(int level) {
 	// when we return from a subroutine or function delete its variables
+	mymutex->lock();
+
 	QString name;
 	name = QString::number(level) + " ";
 	QList<QTreeWidgetItem *> items = findItems(name, Qt::MatchStartsWith | Qt::MatchRecursive, 0);
@@ -190,4 +214,7 @@ void VariableWin::varWinDropLevel(int level) {
 	//rowItem->setText(1, "X");
 	//addTopLevelItem(rowItem);
 	repaint();
+		
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
