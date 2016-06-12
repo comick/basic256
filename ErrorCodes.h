@@ -22,8 +22,6 @@
 // WARNINGS 65536+ are trapable but execution will continue by default
 //
 // trapable ERRORS
-#define ERROR_FOR1 						2
-#define ERROR_FOR2 						3
 #define ERROR_FILENUMBER 				5
 #define ERROR_FILEOPEN 					6
 #define ERROR_FILENOTOPEN 				7

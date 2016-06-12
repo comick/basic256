@@ -177,8 +177,6 @@ endtry [Ee][Nn][Dd][ \t]*[Tt][Rr][Yy]
 endsubroutine [Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 endwhile [Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]
 error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]
-error_for1 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][1]
-error_for2 [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Rr][2]
 error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
 error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
 error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
@@ -538,8 +536,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {degrees}					{ count(); return B256DEGREES; }
 {dir}						{ count(); return B256DIR; }
 {error_none}				{ count(); return B256ERROR_NONE; }
-{error_for1} 				{ count(); return B256ERROR_FOR1; }
-{error_for2}				{ count(); return B256ERROR_FOR2; }
 {error_filenumber}			{ count(); return B256ERROR_FILENUMBER; }
 {error_fileopen}			{ count(); return B256ERROR_FILEOPEN; }
 {error_filenotopen}			{ count(); return B256ERROR_FILENOTOPEN; }

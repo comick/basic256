@@ -97,12 +97,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_NOSUCHLABEL:
             errormessage = tr("No such label %VARNAME%");
             break;
-        case ERROR_FOR1:
-            errormessage = tr("Illegal FOR -- start number > end number");
-            break;
-        case ERROR_FOR2 :
-            errormessage = tr("Illegal FOR -- start number < end number");
-            break;
         case ERROR_NEXTNOFOR:
             errormessage = tr("Next without FOR");
             break;

@@ -354,7 +354,7 @@
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 %token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
 %token B256TRY B256CATCH B256ENDTRY B256LET
-%token B256ERROR_NONE B256ERROR_FOR1 B256ERROR_FOR2 B256ERROR_FILENUMBER B256ERROR_FILEOPEN
+%token B256ERROR_NONE B256ERROR_FILENUMBER B256ERROR_FILEOPEN
 %token B256ERROR_FILENOTOPEN B256ERROR_FILEWRITE B256ERROR_FILERESET B256ERROR_ARRAYSIZELARGE
 %token B256ERROR_ARRAYSIZESMALL B256ERROR_NOSUCHVARIABLE B256ERROR_ARRAYINDEX B256ERROR_STRNEGLEN
 %token B256ERROR_STRSTART B256ERROR_NONNUMERIC B256ERROR_RGB B256ERROR_PUTBITFORMAT
@@ -1264,19 +1264,23 @@ assign:
 
 
 forstmt: 	B256FOR args_v '=' expr B256TO expr {
-				addIntOp(OP_PUSHINT, 1); //step
-				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
 				newIf(linenumber, IFTABLETYPEFOR);
+				// push default step 1 and exit address
+				addIntOp(OP_PUSHINT, 1); //step
+				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
+				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 			}
 			| B256FOR args_v '=' expr B256TO expr B256STEP expr {
-				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
 				newIf(linenumber, IFTABLETYPEFOR);
+				// push exit address
+				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
+				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -2863,8 +2867,6 @@ expr:
 			| B256WAVSTATE args_none { addOp(OP_WAVSTATE); }
 
 			| B256ERROR_NONE args_none { addIntOp(OP_PUSHINT, ERROR_NONE); }
-			| B256ERROR_FOR1 args_none { addIntOp(OP_PUSHINT, ERROR_FOR1); }
-			| B256ERROR_FOR2 args_none { addIntOp(OP_PUSHINT, ERROR_FOR2); }
 			| B256ERROR_FILENUMBER args_none { addIntOp(OP_PUSHINT, ERROR_FILENUMBER); }
 			| B256ERROR_FILEOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILEOPEN); }
 			| B256ERROR_FILENOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILENOTOPEN); }

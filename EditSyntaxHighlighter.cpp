@@ -330,8 +330,6 @@ void EditSyntaxHighlighter::initConstants() {
             << "(dark){0,1}orange"					//orange and darkorange
             << "(dark){0,1}gr[ea]y"					//gray, grey, darkgray and darkgrey
             << "ERROR_NONE"							//ERROR_NONE
-            << "ERROR_FOR1"							//ERROR_FOR1
-            << "ERROR_FOR2"							//ERROR_FOR2
             << "ERROR_FILENUMBER"					//ERROR_FILENUMBER
             << "ERROR_FILEOPEN"						//ERROR_FILEOPEN
             << "ERROR_FILENOTOPEN"					//ERROR_FILENOTOPEN

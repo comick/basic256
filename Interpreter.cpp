@@ -428,6 +428,7 @@ QString Interpreter::opname(int op) {
     else if (op==OP_TRIM) return QString("OP_TRIM");
     else if (op==OP_EXITFOR) return QString("OP_EXITFOR");
     else if (op==OP_VARIABLEWATCH) return QString("OP_VARIABLEWATCH");
+    else if (op==OP_PUSHLABEL) return QString("OP_PUSHLABEL");
 
     else return QString("OP_UNKNOWN");
 }
@@ -1049,54 +1050,52 @@ Interpreter::execByteCode() {
 
 					forframe *temp = new forframe;
 
+					int exitOffset = stack->popint();
 					DataElement *stepE = stack->popelement();
-					DataElement *endnumE = stack->popelement();
-					DataElement *startnumE = stack->popelement();
+					DataElement *endE = stack->popelement();
+					DataElement *startE = stack->popelement();
+					
+					bool goodloop;	// set to true if we should do the loop atleast once
 
-					variables->setdata(i, startnumE);	// set variable to initial value
+					variables->setdata(i, startE);	// set variable to initial value
 					watchvariable(debugMode, i);
 
-					if (startnumE->type==T_INT && stepE->type==T_INT) {
+					if (startE->type==T_INT && stepE->type==T_INT) {
 						// an integer start and step (do an integer loop)
 						temp->useInt = true;
-						temp->intEndNum = convert->getLong(endnumE);	// could b float but cant ever be
+						temp->intStart = startE->intval;
+						temp->intEnd = convert->getLong(endE);	// could b float but cant ever be
 						temp->intStep = stepE->intval;
-						if (temp->intStep > 0 && convert->getLong(variables->getdata(i)) > temp->intEndNum) {
-							error->q(ERROR_FOR1);
-						} else if (temp->intStep < 0 && convert->getLong(variables->getdata(i)) < temp->intEndNum) {
-							error->q(ERROR_FOR2);
-						}
+						goodloop = (temp->intStep >=0 && temp->intStart <= temp->intEnd) | (temp->intStep <=0 && temp->intStart >= temp->intEnd);
 					} else {
 						// start or step not integer - it is a float loop
 						temp->useInt = false;
-						temp->floatEndNum = convert->getFloat(endnumE);
+						temp->floatStart = convert->getFloat(startE);
+						temp->floatEnd = convert->getFloat(endE);
 						temp->floatStep = convert->getFloat(stepE);
-						if (temp->floatStep > 0 && convert->getFloat(variables->getdata(i)) > temp->floatEndNum) {
-							error->q(ERROR_FOR1);
-						} else if (temp->floatStep < 0 && convert->getFloat(variables->getdata(i)) < temp->floatEndNum) {
-							error->q(ERROR_FOR2);
-						}
+						goodloop = (temp->floatStep >=0 && temp->floatStart <= temp->floatEnd) | (temp->floatStep <=0 && temp->floatStart >= temp->floatEnd);
 					}
 
-					temp->next = forstack;
-					temp->variable = i;
-					temp->recurselevel = variables->getrecurse();
-					temp->returnAddr = op;
+					if (goodloop) {
+						// add new forframe to the forframe stack
+						temp->next = forstack;
+						temp->variable = i;
+						temp->recurselevel = variables->getrecurse();
+						temp->returnAddr = op;		// first op after FOR statement to loop back to
+						forstack = temp;
+					} else {
+						// bad loop exit straight away - jump to the statement after the next
+						op = wordCode + exitOffset;
+					}
 
-					forstack = temp;
-
-					// dont delete startnumE because assigned to variable
-					delete(endnumE);
+					// dont delete startE because assigned to variable
+					delete(endE);
 					delete(stepE);
 				}
 				break;
 
 				case OP_NEXT: {
 					forframe *temp = forstack;
-
-					//while (temp && temp->variable != i) {
-					//	temp = temp->next;
-					//}
 
 					if (!temp) {
 						error->q(ERROR_NEXTNOFOR);
@@ -1107,9 +1106,9 @@ Interpreter::execByteCode() {
 							val += temp->intStep;
 							variables->setdata(i, new DataElement(val));
 
-							if (temp->intStep > 0 && val <= temp->intEndNum) {
+							if (temp->intStep >= 0 && val <= temp->intEnd) {
 								op = temp->returnAddr;
-							} else if (temp->intStep < 0 && val >= temp->intEndNum) {
+							} else if (temp->intStep <= 0 && val >= temp->intEnd) {
 								op = temp->returnAddr;
 							} else {
 								forstack = temp->next;
@@ -1120,9 +1119,9 @@ Interpreter::execByteCode() {
 							val += temp->floatStep;
 							variables->setdata(i, new DataElement(val));
 
-							if (temp->floatStep > 0 && convert->compareFloats(val, temp->floatEndNum)!=1) {
+							if (temp->floatStep >= 0 && convert->compareFloats(val, temp->floatEnd)!=1) {
 								op = temp->returnAddr;
-							} else if (temp->floatStep < 0 && convert->compareFloats(val, temp->floatEndNum)!=-1) {
+							} else if (temp->floatStep <= 0 && convert->compareFloats(val, temp->floatEnd)!=-1) {
 								op = temp->returnAddr;
 							} else {
 								forstack = temp->next;
@@ -1481,7 +1480,7 @@ Interpreter::execByteCode() {
             // the symbol is looked up in the labeltable and changed to an array location
             // and stored in i BEFORE the OPCODES are executed
             //
-            // int i is the new execution location
+            // int i is the new execution location offset within the array wordCode
             //
             int i = *op;    // label/symbol number
             op++;
@@ -1553,6 +1552,14 @@ Interpreter::execByteCode() {
 
 				}
 				break;
+
+				case OP_PUSHLABEL: {
+					// get a label fom the wordcode and push the offset address
+					stack->pushint(i);
+				}
+				break;
+
+
 				
 			}
 		}

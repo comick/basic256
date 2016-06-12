@@ -96,9 +96,11 @@ struct forframe {
 	int variable;
 	int *returnAddr;
 	bool useInt;
-	double floatEndNum;
+	double floatStart;
+	double floatEnd;
 	double floatStep;
-	long intEndNum;
+	long intStart;
+	long intEnd;
 	long intStep;
 	int recurselevel;
 };

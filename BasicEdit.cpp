@@ -163,7 +163,7 @@ void
 BasicEdit::newProgram() {
 	bool donew = true;
 	if (codeChanged) {
-		donew = ( QMessageBox::Yes == QMessageBox::warning(this, tr("New Program?"),
+		donew = ( QMessageBox::Yes == QMessageBox::warning(this, tr("New Program"),
 			tr("Are you sure you want to completely clear this program and start a new one?"),
 			QMessageBox::Yes | QMessageBox::No,
 			QMessageBox::No));
@@ -193,8 +193,8 @@ void BasicEdit::saveFile(bool overwrite) {
 		QFile f(filename);
 		bool dooverwrite = true;
 		if (!overwrite && f.exists()) {
-			dooverwrite = ( QMessageBox::Yes == QMessageBox::warning(this, tr("The file ") + filename + tr(" already exists."),
-				tr("Do you want to overwrite?"),
+			dooverwrite = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Save File"),
+				tr("The file ") + filename + tr(" already exists.")+ "\n" +tr("Do you want to overwrite?"),
 				QMessageBox::Yes | QMessageBox::No,
 				QMessageBox::No));
 		}
@@ -298,8 +298,8 @@ BasicEdit::loadFile(QString s) {
 	if (s != NULL) {
 		bool doload = true;
 		if (codeChanged) {
-			doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Program modifications have not been saved."),
-				tr("Do you want to discard your changes?"),
+			doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
+				tr("Program modifications have not been saved.")+ "\n" + tr("Do you want to discard your changes?"),
 				QMessageBox::Yes | QMessageBox::No,
 				QMessageBox::No));
 		}
@@ -320,12 +320,14 @@ BasicEdit::loadFile(QString s) {
 					addFileToRecentList(s);
 					QApplication::restoreOverrideCursor();
 				} else {
-					QMessageBox::warning(this, tr("File \"")+s+tr("\"."),
-						tr("Unable to open program file."), QMessageBox::Ok, QMessageBox::Ok);
+					QMessageBox::warning(this, tr("Load File"),
+						tr("Unable to open program file \"")+s+tr("\".\nFile permissions problem or file open by another process."),
+						QMessageBox::Ok, QMessageBox::Ok);
 				}
 			} else {
-				QMessageBox::warning(this, tr("File \"")+s+tr("\"."),
-					tr("Program file does not exist."), QMessageBox::Ok, QMessageBox::Ok);
+				QMessageBox::warning(this, tr("Load File"),
+					tr("Program file does not exist. \"")+s+tr("\"."),
+					QMessageBox::Ok, QMessageBox::Ok);
 			}
 		}
 	}
@@ -335,7 +337,8 @@ BasicEdit::loadFile(QString s) {
 
 void BasicEdit::slotPrint() {
 #ifdef ANDROID
-    QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Printing is not supported in this platform at this time."));
+    QMessageBox::warning(this, QObject::tr("Print"),
+		QObject::tr("Printing is not supported in this platform at this time."));
 #else
     QTextDocument *document = this->document();
     QPrinter printer;
@@ -350,7 +353,8 @@ void BasicEdit::slotPrint() {
             document->print(&printer);
             QApplication::restoreOverrideCursor();
         } else {
-            QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+            QMessageBox::warning(this, QObject::tr("Print"),
+				QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
         }
 
     }
@@ -496,7 +500,9 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 			// word not found : we set the cursor back to its initial position and restore verticalScrollBar value
 			setTextCursor(cursorSaved);
 			verticalScrollBar()->setValue(scroll);
-			QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::information(this, tr("Find"),
+				tr("String not found."),
+				QMessageBox::Ok, QMessageBox::Ok);
 		}
 	}
 }
@@ -540,7 +546,9 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 				cursor.setPosition(position);
 				setTextCursor(cursor);
 				verticalScrollBar()->setValue(scroll);
-				QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+				QMessageBox::information(this, tr("Replace"),
+					tr("String not found."),
+					QMessageBox::Ok, QMessageBox::Ok);
 			}
 		}
 
@@ -561,9 +569,13 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 		setTextCursor(cursor);
 		verticalScrollBar()->setValue(scroll);
 		if(n==0)
-			QMessageBox::information(this, tr("BASIC-256"), tr("String not found."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::information(this, tr("Replace"),
+				tr("String not found."),
+				QMessageBox::Ok, QMessageBox::Ok);
 		else
-			QMessageBox::information(this, tr("BASIC-256"), tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::information(this, tr("Replace"),
+				tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."),
+				QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
 

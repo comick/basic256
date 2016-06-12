@@ -5,6 +5,8 @@
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
 # 20160329	j.m.reneau	added second test if exit for to test condition fixed 1.99.99.21
+# 20160611  j.m.reneau	added cases for the for statement to match
+#						 the FOR behaviour of most other BASICs 1.99.99.40
 
 #test for
 total = 0
@@ -38,21 +40,139 @@ total = 0:for t = 1 to 100:if t = 3 or t = 4 or t = 10 then print "continue for 
 total = total + t:print t + " " + total:if total > 100 then print "exit for";: exit for
 next t: print:call n("FOR compound - Exit and Continue", total, 103)
 
-# test for backwards integer
-total = 0
-for t = 10 to 9 step -1
-total += t
+# normal 1..10 - loop 10 times
+n = 0
+for t = 1 to 10 step 1
+	print " "+t
+	n = n + t
 next t
-call n("FOR backwards integer", total, 19)
+call n("FOR normal 1..10 - loop 10 times", n, 55)
 
-# test for backwards float
-total = 0
-for t = 10 to 9 step -.5
-total += t
+# forwards with a backwards step - loop ZERO times
+n = 0
+for t = 1 to 10 step -1
+	print " "+t
+	n = n + t
 next t
-call n("FOR backwards float", total, 28.5)
+call n("FOR forwards with a backwards step - loop ZERO times", n, 0)
 
 
+# backwards 10 to 1 - loop 10 times
+n = 0
+for t = 10 to 1 step -1
+	print " "+t
+	n = n + t
+next t
+call n("FOR backwards 10 to 1 - loop 10 times", n, 55)
+
+
+# backwards with a forwards step - loop ZERO times
+n = 0
+for t = 10 to 1 step 1
+	print " "+t
+	n = n + t
+next t
+call n("FOR backwards with a forwards step - loop ZERO times", n, 0)
+
+# forward - step 0 - loop forever with starting value
+n = 0
+for t = 1 to 10 step 0
+	print " "+t
+	n = n + t
+	if n = 42 then exit for
+next t
+call n("FOR forward - step 0 - loop forever with starting value", n, 42)
+
+# backward - step 0 - loop forever with starting value
+n = 0
+for t = 10 to 1 step 0
+	print " "+t
+	n = n + t
+	if n = 420 then exit for
+next t
+call n("FOR backward - step 0 - loop forever with starting value", n, 420)
+
+# same start and end forward step - loop once
+n = 0
+for t = 10 to 10 step 1
+	print " "+t
+	n = n + t
+next t
+call n("FOR same start and end forward step - loop once", n, 10)
+
+# same start and end backward step - loop once
+n = 0
+for t = 10 to 10 step -1
+	print " "+t
+	n = n + t
+next t
+call n("FOR same start and end backward step - loop once", n, 10)
+
+# normal .5 to 2 step .5 - loop 10 times
+n = 0
+for t = .5 to 2 step .5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float normal .5 to 2 step .5 - loop 10 times", n, 5)
+
+# forwards with a backwards step - loop ZERO times
+n = 0
+for t = .5 to 2 step -.5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float forwards with a backwards step - loop ZERO times", n, 0)
+
+# backwards 2 to .5 - loop 10 times
+n = 0
+for t = 2 to .5 step -.5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float backwards 2 to .5 - loop 10 times", n, 5)
+
+# backwards with a forwards step - loop ZERO times
+n = 0
+for t = 2 to .5 step .5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float backwards with a forwards step - loop ZERO times", n, 0)
+
+# forward - step 0 - loop forever with starting value
+n = 0
+for t = .5 to 2 step 0
+	print " "+t
+	n = n + t
+	if n = 10 then exit for
+next t
+call n("FOR float forward - step 0 - loop forever with starting value", n, 10)
+
+# backward - step 0 - loop forever with starting value
+n = 0
+for t = 2 to .5 step 0
+	print " "+t
+	n = n + t
+	if n = 12 then exit for
+next t
+call n("FOR float backward - step 0 - loop forever with starting value", n, 12)
+
+# same start and end forward step - loop once
+n = 0
+for t = .5 to .5 step .5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float same start and end forward step - loop once", n, .5)
+
+# same start and end backward step - loop once
+n = 0
+for t = 2 to 2 step -.5
+	print " "+t
+	n = n + t
+next t
+call n("FOR float same start and end backward step - loop once", n, 2)
 
 # test do
 total = 0
