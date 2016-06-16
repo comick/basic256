@@ -39,20 +39,23 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   void inputStart();
 
   virtual bool initActions(QMenu *, ToolBar *);
-  
+
  public slots:
   void getInput();
   void stopInput();
   void slotPrint();
- 
+  void cursorChanged();
+
  signals:
   void inputEntered(QString);
   
  protected:
-  void mousePressEvent(QMouseEvent *);
   void keyPressEvent(QKeyEvent *);
   void keyReleaseEvent(QKeyEvent *);
- 
+  void dragEnterEvent(QDragEnterEvent *e);
+  void dragMoveEvent(QDragMoveEvent *e);
+  void insertFromMimeData(const QMimeData *source);
+
  private:
   int startPos;
   bool gettingInput;

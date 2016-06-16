@@ -21,6 +21,7 @@
 #include <QTextCursor>
 #include <QMutex>
 #include <QClipboard>
+#include <QMimeData>
 
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
@@ -42,6 +43,8 @@ BasicOutput::BasicOutput( ) : QTextEdit () {
 	setAcceptRichText(false);
 	setUndoRedoEnabled(false);
 	gettingInput = false;
+	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorChanged()));
+	connect(this, SIGNAL(selectionChanged()), this, SLOT(cursorChanged()));
 }
 
 BasicOutput::~BasicOutput( ) {
@@ -50,7 +53,7 @@ BasicOutput::~BasicOutput( ) {
 
 void
 BasicOutput::getInput() {
-	// move cursor to the end of the existing text and start inout
+    // move cursor to the end of the existing text and start input
 	gettingInput = true;
 	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::End);
@@ -65,11 +68,6 @@ void BasicOutput::stopInput() {
 	setReadOnly(true);
 }
 
-void BasicOutput::mousePressEvent(QMouseEvent *e) {
-	// stop mouse events when we are getting input
-	e->accept();
-	if (!gettingInput) QTextEdit::mousePressEvent(e);
-}
 
 void BasicOutput::keyPressEvent(QKeyEvent *e) {
     e->accept();
@@ -110,20 +108,17 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
             insertPlainText("\n");
             gettingInput = false;
             setReadOnly(true);
-       } else if (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Left) {
+       } else if (e->key() == Qt::Key_Backspace) {
             QTextCursor t(textCursor());
             t.movePosition(QTextCursor::PreviousCharacter);
             if (t.position() >= startPos)
                 QTextEdit::keyPressEvent(e);
-        } else if (e->key() == Qt::Key_Home || e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Up) {
-            QTextCursor t(textCursor());
-            t.setPosition(startPos);
-            setTextCursor(t);
         } else {
             QTextEdit::keyPressEvent(e);
         }
     }
 }
+
 
 void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 	e->accept();
@@ -160,26 +155,26 @@ void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 
 
 bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar) {
-    if ((NULL == vMenu) || (NULL == vToolBar)) {
-        return false;
-    }
+	if ((NULL == vMenu) || (NULL == vToolBar)) {
+		return false;
+	}
 
-    QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-    QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
-    QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+	QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
+	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
 
-    vToolBar->addAction(copyAct);
-    vToolBar->addAction(pasteAct);
-    vToolBar->addAction(printAct);
+	vToolBar->addAction(copyAct);
+	vToolBar->addAction(pasteAct);
+	vToolBar->addAction(printAct);
 
-    QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
-    QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
-    QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+	QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
 
-    m_usesToolBar = true;
-    m_usesMenu = true;
+	m_usesToolBar = true;
+	m_usesMenu = true;
 
-    return true;
+	return true;
 }
 
 void BasicOutput::slotPrint() {
@@ -200,3 +195,52 @@ void BasicOutput::slotPrint() {
     }
 #endif
 }
+
+
+//User can navigate or select text only in permitted area when BASIC-256 wait for input
+void BasicOutput::cursorChanged() {
+	if (gettingInput) {
+		QTextCursor t(textCursor());
+		int position=t.position();
+		int anchor=t.anchor();
+		if (position < startPos || anchor < startPos) {
+			if (position < startPos) position = startPos;
+			if (anchor < startPos) anchor = startPos;
+			t.setPosition(anchor, QTextCursor::MoveAnchor);
+			t.setPosition(position, QTextCursor::KeepAnchor);
+			setTextCursor(t);
+		}
+	}
+}
+
+
+// Ensure that drag and drop is allowed only in permitted area when BASIC-256 wait for input
+void BasicOutput::dragEnterEvent(QDragEnterEvent *e){
+	if (e->mimeData()->hasFormat("text/plain") && gettingInput && !isReadOnly()  )
+		e->acceptProposedAction();
+}
+
+void BasicOutput::dragMoveEvent (QDragMoveEvent *event){
+	QTextCursor t = cursorForPosition(event->pos());
+	if (t.position() >= startPos){
+		event->acceptProposedAction();
+		QDragMoveEvent move(event->pos(),event->dropAction(), event->mimeData(), event->mouseButtons(),
+			event->keyboardModifiers(), event->type());
+		QTextEdit::dragMoveEvent(&move); // Call the parent function (show cursor and keep selection)
+	} else {
+		event->ignore();
+	}
+}
+
+
+//Ensure that drang and drop operation or paste operation will add only first line of the copied text.
+void BasicOutput::insertFromMimeData(const QMimeData* source)
+{
+	if (source->hasText()) {
+		QString s = source->text();
+		QStringList l = s.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+		textCursor().insertText(l.at(0));
+		setFocus();
+	}
+}
+

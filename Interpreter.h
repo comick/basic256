@@ -146,6 +146,7 @@ class Interpreter : public QThread
 		void stopRun();
 		void goutputReady();
 		void outputReady(QString);
+		void outputError(QString);
 		void getInput();
 		void outputClear();
 		void getKey();

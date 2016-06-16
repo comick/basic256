@@ -140,15 +140,15 @@ Interpreter::Interpreter() {
     // initialize the inpout32 dll
     inpout32dll  = LoadLibrary(L"inpout32.dll");
     if (inpout32dll==NULL) {
-        emit(outputReady(tr("ERROR - Unable to find inpout32.dll - direct port I/O disabled.\n")));
+        emit(outputError(tr("ERROR - Unable to find inpout32.dll - direct port I/O disabled.\n")));
     } else {
         Inp32 = (InpOut32InpType) GetProcAddress(inpout32dll, "Inp32");
         if (Inp32==NULL) {
-            emit(outputReady(tr("ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.\n")));
+            emit(outputError(tr("ERROR - Unable to find Inp32 in inpout32.dll - direct port I/O disabled.\n")));
         }
         Out32 = (InpOut32OutType) GetProcAddress(inpout32dll, "Out32");
         if (Inp32==NULL) {
-            emit(outputReady(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
+            emit(outputError(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
         }
     }
 #endif
@@ -447,7 +447,7 @@ void Interpreter::printError() {
     msg += tr(" on line ") + QString::number(error->line) + tr(": ") + error->getErrorMessage(symtable);
     if (error->extra!="") msg+= " " + error->extra;
     msg += ".\n";
-    emit(outputReady(msg));
+    emit(outputError(msg));
 }
 
 
@@ -673,7 +673,7 @@ Interpreter::compileProgram(char *code) {
                 msg += tr("Unknown compiler warning #") + QString::number(parsewarningtable[i]);
         }
         msg += tr(".\n");
-        emit(outputReady(msg));
+        emit(outputError(msg));
         //
         free(parsewarningtablelexingfilename[i]);
     }
@@ -808,7 +808,7 @@ Interpreter::compileProgram(char *code) {
                 }
         }
         msg += tr(".\n");
-        emit(outputReady(msg));
+        emit(outputError(msg));
         return -1;
     }
 

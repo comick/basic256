@@ -53,6 +53,7 @@ class RunController : public QObject
   void executeSystem(QString);
   void inputEntered(QString text);
   void outputReady(QString text);
+  void outputError(QString text);
   void outputClear();
   void goutputReady();
   void mainWindowsResize(int, int, int);

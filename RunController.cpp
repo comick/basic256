@@ -110,6 +110,7 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
     QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
+    QObject::connect(i, SIGNAL(outputError(QString)), this, SLOT(outputError(QString)));
     QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 #ifdef ANDROID
@@ -309,13 +310,33 @@ RunController::outputClear() {
     mymutex->unlock();
 }
 
-void
-RunController::outputReady(QString text) {
+void RunController::outputReady(QString text) {
 	mymutex->lock();
 	QTextCursor t(outwin->textCursor());
-	t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-	outwin->setTextCursor(t);
+	if(!t.atEnd() || t.hasSelection()){
+		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+		outwin->setTextCursor(t);
+	}
 	outwin->insertPlainText(text);
+	outwin->ensureCursorVisible();
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
+void RunController::outputError(QString text) {
+	mymutex->lock();
+
+	QTextCursor t(outwin->textCursor());
+	if(!t.atEnd() || t.hasSelection()){
+		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+		outwin->setTextCursor(t);
+	}
+	if(!t.atBlockStart()) //error is printed with newline if needed
+		outwin->insertPlainText("\n");
+
+	outwin->setTextColor(Qt::red); //color red
+	outwin->insertPlainText(text);
+	outwin->setTextColor(Qt::black); //back to black color
 	outwin->ensureCursorVisible();
 	waitCond->wakeAll();
 	mymutex->unlock();
