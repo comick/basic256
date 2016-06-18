@@ -138,7 +138,7 @@ void
 BasicEdit::keyPressEvent(QKeyEvent *e) {
 	e->accept();
 	codeChanged = true;
-	//Autoindent new line as previus one
+    //Autoindent new line as previous one
 	if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
 		QPlainTextEdit::keyPressEvent(e);
 		QTextCursor cur = textCursor();
@@ -380,7 +380,10 @@ void BasicEdit::beautifyProgram() {
 	for (int i = 0; i < lines.size(); i++) {
 		QString line = lines.at(i);
 		line = line.trimmed();
-		if (line.contains(QRegExp("^\\S+[:]"))) {
+        if(line.isEmpty()){
+            // label - empty line no indent
+            indentThisLine = false;
+        } else if (line.contains(QRegExp("^\\S+[:]"))) {
 			// label - one line no indent
 			indentThisLine = false;
 		} else if (line.contains(QRegExp("^for\\s", Qt::CaseInsensitive))) {
@@ -471,7 +474,10 @@ void BasicEdit::beautifyProgram() {
 		//
 		lines.replace(i, line);
 	}
-	this->setPlainText(lines.join("\n"));
+    //this->setPlainText(lines.join("\n"));
+    QTextCursor cursor = this->textCursor();
+    cursor.select(QTextCursor::Document);
+    cursor.insertText(lines.join("\n"));
 	codeChanged = true;
 	QApplication::restoreOverrideCursor();
 }
@@ -489,10 +495,11 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 	QTextCursor cursorSaved = cursor;
 	int scroll = verticalScrollBar()->value();
 
-	if (!find(s, flag))
+    if (!find(s, flag))
 	{
-		//nothing is found | jump to start/end
-		cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
+        //nothing is found | jump to start/end
+        setUpdatesEnabled(false);
+        cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
 		setTextCursor(cursor);
 
 		if (!find(s, flag))
@@ -504,7 +511,8 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 				tr("String not found."),
 				QMessageBox::Ok, QMessageBox::Ok);
 		}
-	}
+        setUpdatesEnabled(true);
+    }
 }
 
 void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool words, bool doall) {
@@ -534,9 +542,10 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 		}
 
 		//Make a search
-		if (!find(from, flag))
+        if (!find(from, flag))
 		{
-			//nothing is found | jump to start/end
+            setUpdatesEnabled(false);
+            //nothing is found | jump to start/end
 			cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
 			setTextCursor(cursor);
 
@@ -550,11 +559,15 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 					tr("String not found."),
 					QMessageBox::Ok, QMessageBox::Ok);
 			}
+            setUpdatesEnabled(true);
 		}
 
 	//Replace all
 	}else{
-		int n = 0;
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        setUpdatesEnabled(false);
+        cursor.beginEditBlock();
+        int n = 0;
 		cursor.movePosition(QTextCursor::Start);
 		setTextCursor(cursor);
 		while (find(from, flag)){
@@ -568,7 +581,10 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 		cursor.setPosition(position);
 		setTextCursor(cursor);
 		verticalScrollBar()->setValue(scroll);
-		if(n==0)
+        cursor.endEditBlock();
+        setUpdatesEnabled(true);
+        QApplication::restoreOverrideCursor();
+        if(n==0)
 			QMessageBox::information(this, tr("Replace"),
 				tr("String not found."),
 				QMessageBox::Ok, QMessageBox::Ok);
