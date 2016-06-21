@@ -131,16 +131,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     // File menu
     filemenu = menuBar()->addMenu(QObject::tr("&File"));
     newact = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
-    newact->setShortcut(Qt::Key_N + Qt::CTRL);
+    newact->setShortcuts(QKeySequence::keyBindings(QKeySequence::New));
     openact = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open"));
-    openact->setShortcut(Qt::Key_O + Qt::CTRL);
+    openact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Open));
     saveact = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
-    saveact->setShortcut(Qt::Key_S + Qt::CTRL);
+    saveact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Save));
     saveasact = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As..."));
-    saveasact->setShortcut(Qt::Key_S + Qt::CTRL + Qt::SHIFT);
+    saveasact->setShortcuts(QKeySequence::keyBindings(QKeySequence::SaveAs));
     filemenu->addSeparator();
     printact = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print..."));
-    printact->setShortcut(Qt::Key_P + Qt::CTRL);
+    printact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
     filemenu->addSeparator();
     recentact[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
     recentact[0]->setShortcut(Qt::Key_1 + Qt::CTRL);
@@ -162,7 +162,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     recentact[8]->setShortcut(Qt::Key_9 + Qt::CTRL);
     filemenu->addSeparator();
     exitact = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
-    exitact->setShortcut(Qt::Key_Q + Qt::CTRL);
+    exitact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Quit));
     //
     showRecentList = true;
     QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
@@ -189,33 +189,32 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
     QObject::connect(editwin, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
     QObject::connect(undoact, SIGNAL(triggered()), editwin, SLOT(undo()));
-    undoact->setShortcut(Qt::Key_Z + Qt::CTRL);
+    undoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Undo));
     undoact->setEnabled(false);
     redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
     QObject::connect(editwin, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
     QObject::connect(redoact, SIGNAL(triggered()), editwin, SLOT(redo()));
-    redoact->setShortcut(Qt::Key_Y + Qt::CTRL);
+    redoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Redo));
     redoact->setEnabled(false);
     editmenu->addSeparator();
     cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
-    cutact->setShortcut(Qt::Key_X + Qt::CTRL);
+    cutact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Cut));
     cutact->setEnabled(false);
     copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
-    copyact->setShortcut(Qt::Key_C + Qt::CTRL);
+    copyact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Copy));
     copyact->setEnabled(false);
     pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
-    pasteact->setShortcut(Qt::Key_V + Qt::CTRL);
+    pasteact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Paste));
     editmenu->addSeparator();
     selectallact = editmenu->addAction(QObject::tr("Select &All"));
-    selectallact->setShortcut(Qt::Key_A + Qt::CTRL);
+    selectallact->setShortcuts(QKeySequence::keyBindings(QKeySequence::SelectAll));
     editmenu->addSeparator();
     findact = editmenu->addAction(QObject::tr("&Find..."));
-    findact->setShortcut(Qt::Key_F + Qt::CTRL);
-	findagain1 = editmenu->addAction(QObject::tr("Find &Next"));
-	findagain1->setShortcut(Qt::Key_F3);
-    findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
+    findact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
+    findagain = editmenu->addAction(QObject::tr("Find &Next"));
+    findagain->setShortcuts(QKeySequence::keyBindings(QKeySequence::FindNext));
     replaceact = editmenu->addAction(QObject::tr("&Replace..."));
-	replaceact->setShortcut(Qt::Key_H + Qt::CTRL);
+    replaceact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Replace));
     editmenu->addSeparator();
     beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
     editmenu->addSeparator();
@@ -227,8 +226,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
     QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
     QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
-    QObject::connect(findagain1, SIGNAL(triggered()), rc, SLOT(findAgain()));
-    QObject::connect(findagain2, SIGNAL(triggered()), rc, SLOT(findAgain()));
+    QObject::connect(findagain, SIGNAL(triggered()), rc, SLOT(findAgain()));
     QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
     QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
     QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
@@ -346,21 +344,25 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     //QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
     // Help menu
-    QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help..."));
+    QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
 #if defined(WIN32PORTABLE) || defined(ANDROID)
     // in portable or android make doc online and context help online
     QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
-    onlinehact->setShortcut(Qt::Key_F1);
+    onlinehact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
-    QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
-    QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showOnlineContextDocumentation()));
+    QAction* helpthis = new QAction (this);
+    helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
+    QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showOnlineContextDocumentation()));
+    addAction (helpthis);
 #else
     // in installed mode make doc offline and online and context help offline
     QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help..."));
-    docact->setShortcut(Qt::Key_F1);
-    QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));
-    QShortcut* helpthis = new QShortcut(Qt::Key_F1 + Qt::SHIFT, this);
-    QObject::connect(helpthis, SIGNAL(activated()), rc, SLOT(showContextDocumentation()));
+    docact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
+    QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));    
+    QAction* helpthis = new QAction (this);
+    helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
+    QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showContextDocumentation()));
+    addAction (helpthis);
     QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
 #endif

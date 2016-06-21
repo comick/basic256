@@ -65,8 +65,7 @@ private:
     QCheckBox *wordscheckbox;
     QPushButton *cancelbutton;
 	QPushButton *findbutton;
-	QShortcut *findagain1;
-	QShortcut *findagain2;
+	QAction *findagain;
 	QPushButton *replacebutton;
 	QPushButton *replaceallbutton;
 	bool replaceMode;

@@ -81,10 +81,10 @@ ReplaceWin::ReplaceWin () {
     connect(cancelbutton, SIGNAL(clicked()), this, SLOT (clickCancelButton()));
     layout->addWidget(cancelbutton,r,4,1,1);
     //
-    QShortcut* findagain1 = new QShortcut(Qt::Key_F3, this);
-    connect(findagain1, SIGNAL(activated()), this, SLOT (clickFindButton()));
-    QShortcut* findagain2 = new QShortcut(Qt::Key_G + Qt::CTRL, this);
-    connect(findagain2, SIGNAL(activated()), this, SLOT (clickFindButton()));
+    QAction* findagain = new QAction (this);
+    findagain->setShortcuts(QKeySequence::keyBindings(QKeySequence::FindNext));
+    connect(findagain, SIGNAL(triggered()), this, SLOT (clickFindButton()));
+    addAction (findagain);
     //
     this->setParent(mainwin);
     this->setWindowFlags(Qt::Dialog);

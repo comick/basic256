@@ -47,12 +47,12 @@ BasicEdit::BasicEdit() {
 	this->setInputMethodHints(Qt::ImhNoPredictiveText);
 	currentMaxLine = 10;
 	currentLine = 1;
-	startPos = this->textCursor().position();
+    startPos = this->textCursor().position();
 	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
 	codeChanged = false;
 
-	breakPoints = new QList<int>;
-	lineNumberArea = new LineNumberArea(this);
+    breakPoints = new QList<int>;
+    lineNumberArea = new LineNumberArea(this);
 	
 	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
 	connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
@@ -64,11 +64,11 @@ BasicEdit::BasicEdit() {
 
 
 BasicEdit::~BasicEdit() {
-	if (breakPoints) {
-		delete breakPoints;
-		breakPoints = NULL;
-	}
-	if (lineNumberArea) {
+    if (breakPoints) {
+        delete breakPoints;
+        breakPoints = NULL;
+    }
+    if (lineNumberArea) {
 		delete lineNumberArea;
 		lineNumberArea = NULL;
 	}
@@ -95,22 +95,22 @@ BasicEdit::seekLine(int newLine) {
 	// the text cursor
 	//
 	// code should be proximal in that it should be closest to look at the curent
-	// position than to go and search the entire program from the top
-	QTextCursor t = textCursor();
-	int line = t.blockNumber()+1;	// current line number for the block
-	// go back or forward to the line from the current position
-	if (line==newLine) return;
-	if (line<newLine) {
-		// advance forward
-		while (line < newLine && t.movePosition(QTextCursor::NextBlock)) {
-			line++;
-		}
-	} else {
-		// go back to find the line
-		while (line > newLine && t.movePosition(QTextCursor::PreviousBlock)) {
-			line--;
-		}
-	}
+    // position than to go and search the entire program from the top
+    QTextCursor t = textCursor();
+    int line = t.blockNumber()+1;	// current line number for the block
+    // go back or forward to the line from the current position
+    if (line==newLine) return;
+    if (line<newLine) {
+        // advance forward
+        while (line < newLine && t.movePosition(QTextCursor::NextBlock)) {
+            line++;
+        }
+    } else {
+        // go back to find the line
+        while (line > newLine && t.movePosition(QTextCursor::PreviousBlock)) {
+            line--;
+        }
+    }
 	setTextCursor(t);
 }
 
@@ -638,22 +638,160 @@ void BasicEdit::updateLineNumberArea(const QRect &rect, int dy) {
 
 void BasicEdit::highlightCurrentLine() {
 	QList<QTextEdit::ExtraSelection> extraSelections;
-	QTextEdit::ExtraSelection selection;
-	QColor lineColor;
+    QTextEdit::ExtraSelection blockSelection;
+    QTextEdit::ExtraSelection selection;
+    QColor lineColor;
+    QColor blockColor;
 	
 	if (isReadOnly()) {
-		lineColor = QColor(Qt::red).lighter(175);
+        lineColor = QColor(Qt::red).lighter(175);
+        blockColor = QColor(Qt::red).lighter(190);
 	} else {
-		lineColor = QColor(Qt::yellow).lighter(175);
+        lineColor = QColor(Qt::yellow).lighter(165);
+        blockColor = QColor(Qt::yellow).lighter(190);
 	}
 
-	selection.format.setBackground(lineColor);
-	selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-	selection.cursor = textCursor();
-	selection.cursor.clearSelection();
-	extraSelections.append(selection);
+    blockSelection.format.setBackground(blockColor);
+    blockSelection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    blockSelection.cursor = textCursor();
+    blockSelection.cursor.movePosition(QTextCursor::StartOfBlock,QTextCursor::MoveAnchor);
+    blockSelection.cursor.movePosition(QTextCursor::EndOfBlock,QTextCursor::KeepAnchor);
+    extraSelections.append(blockSelection);
 
-	setExtraSelections(extraSelections);
+    selection.format.setBackground(lineColor);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = textCursor();
+    selection.cursor.clearSelection();
+    extraSelections.append(selection);
+
+
+    //mark brackets
+    if (!isReadOnly()) {
+        QTextCursor cur = textCursor();
+        int pos = cur.position();
+        cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
+        cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+        int posDoc = cur.position();
+        pos = pos - posDoc -1;
+        QString s = cur.selectedText(); //current line as QString
+        int length = s.length();
+        QChar cPrev, cNext;
+
+
+        if(length>1){
+            QChar open;
+            QChar close;
+            QChar c;
+            bool lookBefore = false;
+            bool lookAfter = false;
+            int quote=0;
+            int doubleQuote=0;
+            int i = 0;
+            const QColor bracketColor = QColor(Qt::green).lighter(165);
+            QTextEdit::ExtraSelection selectionBracket;
+
+            if(pos>0){
+                cPrev = s.at(pos);
+                if(cPrev==')'){
+                    open = '(';
+                    lookBefore = true;
+                }else if(cPrev==']'){
+                    open = '[';
+                    lookBefore = true;
+                }else if(cPrev=='}'){
+                    open = '{';
+                    lookBefore = true;
+                }
+            }
+
+            if(pos<length-1){
+                cNext = s.at(pos+1);
+                if(cNext=='('){
+                    close = ')';
+                    lookAfter = true;
+                }else if(cNext=='['){
+                    close = ']';
+                    lookAfter = true;
+                }else if(cNext=='{'){
+                    close = '}';
+                    lookAfter = true;
+                }
+            }
+
+            if(lookBefore){
+                //check for open bracket
+                QList<int> list;
+                for(i=0;i<pos;i++){
+                    c=s.at(i);
+                    if(c=='\"' && quote==0){
+                        doubleQuote^=1;
+                    }else if(c=='\'' && doubleQuote==0){
+                        quote^=1;
+                    }else if(quote==0 && doubleQuote==0){
+                        if(c==open){
+                            list.append(i);
+                        }else if(c==cPrev){
+                            if(!list.isEmpty())
+                                list.removeLast();
+                        }
+                    }
+                }
+                if(quote==0 && doubleQuote==0 && !list.isEmpty()){
+                    //mark current bracket and the corresponding bracket
+                    selectionBracket.format.setBackground(bracketColor);
+                    selectionBracket.cursor = textCursor();
+                    selectionBracket.cursor.setPosition(pos+posDoc+1);
+                    selectionBracket.cursor.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor);
+                    extraSelections.append(selectionBracket);
+                    selectionBracket.cursor.setPosition(list.last()+posDoc+1);
+                    selectionBracket.cursor.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor);
+                    extraSelections.append(selectionBracket);
+                }
+            }else if(lookAfter){
+                //else check only for quotes if lookAfter
+                for(i=0;i<pos;i++){
+                    c=s.at(i);
+                    if(c=='\"' && quote==0){
+                        doubleQuote^=1;
+                    }else if(c=='\'' && doubleQuote==0){
+                        quote^=1;
+                    }
+                }
+            }
+
+            if(lookAfter && quote==0 && doubleQuote==0){
+                //check for bracket if current bracket is not quoted
+                int count = 1;
+                for(i=pos+2;i<length;i++){
+                    c=s.at(i);
+                    if(c=='\"' && quote==0){
+                        doubleQuote^=1;
+                    }else if(c=='\'' && doubleQuote==0){
+                        quote^=1;
+                    }else if(quote==0 && doubleQuote==0){
+                        if(c==cNext){
+                            count++;
+                        }else if(c==close){
+                            count--;
+                            if(count==0){
+                                //mark current bracket and the corresponding bracket
+                                selectionBracket.format.setBackground(bracketColor);
+                                selectionBracket.cursor = textCursor();
+                                selectionBracket.cursor.setPosition(pos+posDoc+1);
+                                selectionBracket.cursor.movePosition(QTextCursor::NextCharacter,QTextCursor::KeepAnchor);
+                                extraSelections.append(selectionBracket);
+                                selectionBracket.cursor.setPosition(i+posDoc+1);
+                                selectionBracket.cursor.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor);
+                                extraSelections.append(selectionBracket);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    setExtraSelections(extraSelections);
 }
 
 
@@ -663,8 +801,13 @@ void BasicEdit::resizeEvent(QResizeEvent *e) {
     lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
+
 void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
+    //We need lastBlockNumber to adjust Qt bug (see below)
     QTextCursor t(textCursor());
+    int currentBlockNumber = t.blockNumber();
+    t.movePosition(QTextCursor::End);
+    int lastBlockNumber = t.block().blockNumber();
 
     QPainter painter(lineNumberArea);
     painter.fillRect(event->rect(), Qt::lightGray);
@@ -677,22 +820,32 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
+
+            //Draw lighter background for current paragraph
+            //For this to work (and to correctly change the color of current paragraph number) highlightCurrentLine()
+            //must set a specialSelection for entire current block. If not, QPaintEvent will update only
+            //a small portion of lineNumberAreaPaint (just current line, not entire paragraph), acording with Automatic Clipping.
+            //Also there is a bug with last block. See http://stackoverflow.com/questions/37890906/qt-linenumberarea-example-blockboundingrectlastblock
+            //or http://www.forum.crossplatform.ru/index.php?showtopic=3963
+            if (blockNumber==currentBlockNumber)
+                painter.fillRect(0,top,lineNumberArea->width(),bottom-top-(blockNumber==lastBlockNumber?3:0), QColor(Qt::lightGray).lighter(110));
+
             // Draw breakpoints
-            if (breakPoints->contains(blockNumber)) {
+            if (block.userState()==STATEBREAKPOINT) {
                     painter.setBrush(Qt::red);
                     painter.setPen(Qt::red);
                     int w = lineNumberArea->width();
                     int bh = blockBoundingRect(block).height();
                     int fh = fontMetrics().height();
                     painter.drawEllipse((w-(fh-6))/2, top+(bh-(fh-6))/2, fh-6, fh-6);
-			}
+            }
             // draw text
-            if (blockNumber==t.blockNumber()) {
+            if (blockNumber==currentBlockNumber) {
                 painter.setPen(Qt::blue);
             } else {
                 painter.setPen(Qt::black);
             }
-            painter.drawText(5, top, lineNumberArea->width()-5, fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, lineNumberArea->width()-5, fontMetrics().height(), Qt::AlignRight, number);
         }
 
         block = block.next();
@@ -702,21 +855,22 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     }
 }
 
+
+void BasicEdit::lineNumberAreaMouseWheelEvent(QWheelEvent *event) {
+    QPlainTextEdit::wheelEvent(event);
+}
+
 void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
-	// based on mouse click - set the breakpoint in the map and highlight the line
+    // based on mouse click - set the breakpoint in the map and highlight the line
 	int line;
-	int bottom=0;
 	QTextBlock block = firstVisibleBlock();
-	line = block.blockNumber();
+    int bottom = (int) blockBoundingGeometry(block).translated(contentOffset()).top(); //bottom from previous block
+    line = block.blockNumber();
 	// line 0 ... (n-1) of what was clicked
 	while(block.isValid()) {
 		bottom += blockBoundingRect(block).height();
 		if (event->y() < bottom) {
-            if (breakPoints->contains(line)) {
-				breakPoints->removeAt(breakPoints->indexOf(line,0));
-			} else {
-				breakPoints->append(line);
-			}
+            block.setUserState(block.userState()==STATEBREAKPOINT?STATECLEAR:STATEBREAKPOINT);
 			lineNumberArea->repaint();
 			return;
 		}
@@ -726,9 +880,24 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
 }
 
 void BasicEdit::clearBreakPoints() {
-	// remove all breakpoints from map
-	breakPoints->clear();
-	lineNumberArea->repaint();
+    // remove all breakpoints
+    QTextBlock b(document()->firstBlock());
+    while (b.isValid()){
+        b.setUserState(STATECLEAR);
+        b = b.next();
+    }
+    lineNumberArea->repaint();
+}
+
+
+void BasicEdit::updateBreakPointsList() {
+    breakPoints->clear();
+    QTextBlock b(document()->firstBlock());
+    while (b.isValid()){
+        if(b.userState()==STATEBREAKPOINT)
+            breakPoints->append(b.blockNumber());
+        b = b.next();
+    }
 }
 
 

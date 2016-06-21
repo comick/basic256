@@ -252,6 +252,7 @@ RunController::startDebug() {
         }
         i->initialize();
         i->debugMode = 1;
+        editwin->updateBreakPointsList();
         i->debugBreakPoints = editwin->breakPoints;
         mainwin->statusBar()->showMessage(tr("Running"));
         graphwin->setFocus();
@@ -305,6 +306,7 @@ RunController::inputEntered(QString text) {
 void
 RunController::outputClear() {
     mymutex->lock();
+	outwin->setTextColor(Qt::black);
     outwin->clear();
     waitCond->wakeAll();
     mymutex->unlock();
@@ -324,22 +326,9 @@ void RunController::outputReady(QString text) {
 }
 
 void RunController::outputError(QString text) {
-	mymutex->lock();
-
-	QTextCursor t(outwin->textCursor());
-	if(!t.atEnd() || t.hasSelection()){
-		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-		outwin->setTextCursor(t);
-	}
-	if(!t.atBlockStart()) //error is printed with newline if needed
-		outwin->insertPlainText("\n");
-
 	outwin->setTextColor(Qt::red); //color red
-	outwin->insertPlainText(text);
+	outputReady(text);
 	outwin->setTextColor(Qt::black); //back to black color
-	outwin->ensureCursorVisible();
-	waitCond->wakeAll();
-	mymutex->unlock();
 }
 
 void
@@ -589,8 +578,7 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->pasteact->setEnabled(type==0);
     mainwin->selectallact->setEnabled(type==0);
     mainwin->findact->setEnabled(type==0);
-    mainwin->findagain1->setEnabled(type==0);
-    mainwin->findagain2->setEnabled(type==0);
+    mainwin->findagain->setEnabled(type==0);
     mainwin->replaceact->setEnabled(type==0);
     mainwin->beautifyact->setEnabled(type==0);
     mainwin->prefact->setEnabled(type==0);

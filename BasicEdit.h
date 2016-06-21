@@ -40,14 +40,16 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void loadFile(QString);
 		void saveFile(bool);
 		void findString(QString, bool, bool, bool);
-		void replaceString(QString, QString, bool, bool, bool, bool);
+        void replaceString(QString, QString, bool, bool, bool, bool);
 		bool codeChanged;
 		QString getCurrentWord();
 		void lineNumberAreaPaintEvent(QPaintEvent *event);
-		void lineNumberAreaMouseClickEvent(QMouseEvent *event);
+        void lineNumberAreaMouseClickEvent(QMouseEvent *event);
+        void lineNumberAreaMouseWheelEvent(QWheelEvent *event);
 		int lineNumberAreaWidth();
-		QList<int> *breakPoints;
-		void clearBreakPoints();
+        QList<int> *breakPoints;
+        void clearBreakPoints();
+        void updateBreakPointsList();
 		void setFont(QFont);
 
 	public slots:
@@ -83,6 +85,8 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void resizeEvent(QResizeEvent *event);
 
 	private:
+		const int STATECLEAR = -1;
+		const int STATEBREAKPOINT = 1;
 		QMainWindow *mainwin;
 		int currentMaxLine;
 		int currentLine;
