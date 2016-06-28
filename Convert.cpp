@@ -12,6 +12,7 @@ Convert::Convert(Error *e) {
 	error = e;
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
+	floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toInt();
 	// build international safe regular expression for numbers
 	locale = new QLocale(mainwin->localecode);
 	isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + locale->decimalPoint() + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
@@ -136,10 +137,14 @@ QString Convert::getString(DataElement *e, int ddigits) {
 				s = QString::number(e->floatval,'f',ddigits - (xp>0?xp:0));
 				// strip trailing zeros and decimal point
 				// need to test for locales with a comma as a currency seperator
-				if (s.contains('.',Qt::CaseInsensitive)) {
+				if (s.contains(locale->decimalPoint(),Qt::CaseInsensitive)) {
 					while(s.endsWith("0")) s.chop(1);
 					if(s.endsWith(locale->decimalPoint())) s.chop(1);
 				}
+			}
+			if (floattail&&!s.contains(locale->decimalPoint(),Qt::CaseInsensitive)) {
+				s.append(locale->decimalPoint());
+				s.append("0");
 			}
 		} else if (e->type==T_ARRAY) {
 			if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);

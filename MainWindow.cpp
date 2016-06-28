@@ -334,6 +334,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
     stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
     stopact->setEnabled(false);
+    runmenu->addSeparator();
+    clearbreakpointsact = runmenu->addAction(QObject::tr("&Clear all breakpoints"));
     //runmenu->addSeparator();
     //QAction *saveByteCode = runmenu->addAction(QObject::tr("Save Compiled &Byte Code"));
     QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
@@ -341,6 +343,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
     QObject::connect(bpact, SIGNAL(triggered()), rc, SLOT(stepBreakPoint()));
     QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
+    QObject::connect(clearbreakpointsact, SIGNAL(triggered()), editwin, SLOT(clearBreakPoints()));
     //QObject::connect(saveByteCode, SIGNAL(triggered()), rc, SLOT(saveByteCode()));
 
     // Help menu
@@ -593,7 +596,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
         settings.setValue(SETTINGSVARSIZE, vardock->size());
         settings.setValue(SETTINGSVARPOS, vardock->pos());
 #endif
-
+        qApp->quit();
     } else {
         // not quitting
         e->ignore();

@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     MainWindow mainwin;
 
     mainwin.setObjectName( "mainwin" );
-    mainwin.setWindowTitle(QObject::tr("Untitled - BASIC-256"));
+    editwin->setWindowTitle(QObject::tr("Untitled"));
     mainwin.statusBar()->showMessage(QObject::tr("Ready."));
     mainwin.localecode = localecode;
     mainwin.show();

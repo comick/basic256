@@ -38,7 +38,7 @@
  **
  ****************************************************************************/
 
-// modified fron the example at http://qt-project.org/doc/qt-4.8/widgets-codeeditor-codeeditor-cpp.html
+// modified from the example at http://doc.qt.io/qt-4.8/qt-widgets-codeeditor-example.html
 // 2013-01-27
 
 #include "BasicEdit.h"
@@ -52,7 +52,10 @@
      
  protected:
 	void paintEvent(QPaintEvent *event);
-	void mousePressEvent(QMouseEvent *event);    
+    void mousePressEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+    void mouseMoveEvent(QMouseEvent *);
+    void leaveEvent(QEvent *);
  private:
 	BasicEdit *be;
  };

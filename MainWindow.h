@@ -97,7 +97,8 @@ public:
 	QAction * debugact;
 	QAction * stepact;
 	QAction * bpact;
-	QAction * stopact;
+    QAction * stopact;
+    QAction * clearbreakpointsact;
 
 	RunController *rc;
     EditSyntaxHighlighter * editsyntax;

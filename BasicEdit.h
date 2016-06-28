@@ -48,9 +48,13 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         void lineNumberAreaMouseWheelEvent(QWheelEvent *event);
 		int lineNumberAreaWidth();
         QList<int> *breakPoints;
-        void clearBreakPoints();
         void updateBreakPointsList();
 		void setFont(QFont);
+        int runningState; //0 - stop, 1-run, 2-debug
+        QString winTitle;
+        void setWindowTitle(QString title);
+        void updateWindowTitle();
+
 
 	public slots:
 		void newProgram();
@@ -75,6 +79,9 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void highlightCurrentLine();
 		int  indentSelection();
 		void unindentSelection();
+        void clearBreakPoints();
+        void toggleBreakPoint();
+
 
 	signals:
 		void changeStatusBar(QString);
@@ -82,13 +89,12 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 
 	protected:
 		void keyPressEvent(QKeyEvent *);
-		void resizeEvent(QResizeEvent *event);
+        void resizeEvent(QResizeEvent *event);
 
 	private:
 		const int STATECLEAR = -1;
 		const int STATEBREAKPOINT = 1;
 		QMainWindow *mainwin;
-		int currentMaxLine;
 		int currentLine;
 		int startPos;
 		int linePos;
@@ -96,10 +102,13 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void addFileToRecentList(QString);
 		void loadRecent(int);
 		QWidget *lineNumberArea;
+        int rightClickBlockNumber;
 
 	private slots:
 		void updateLineNumberAreaWidth(int newBlockCount);
 		void updateLineNumberArea(const QRect &, int);
+        void codeModificationChanged(bool change);
+
 
 
 };

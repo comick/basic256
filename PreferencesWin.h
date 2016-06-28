@@ -72,6 +72,7 @@ private:
 	QComboBox *varnotassignedcombo;
 	QLabel *decdigslabel;
 	QSlider *decdigsslider;
+	QCheckBox *floattailcheckbox;
 	QLabel *debugspeedlabel;
 	QSlider *debugspeedslider;
 

@@ -49,6 +49,8 @@
 
 
 LineNumberArea::LineNumberArea(BasicEdit *editor) : QWidget(editor) {
+    setFocusPolicy(Qt::NoFocus);
+    setMouseTracking(true);
     be = editor;
 }
 
@@ -60,7 +62,18 @@ void LineNumberArea::paintEvent(QPaintEvent *event) {
     be->lineNumberAreaPaintEvent(event);
 }
 
-
 void LineNumberArea::mousePressEvent(QMouseEvent *event) {
     be->lineNumberAreaMouseClickEvent(event);
+}
+
+void LineNumberArea::wheelEvent(QWheelEvent * event) {
+    be->lineNumberAreaMouseWheelEvent(event);
+}
+
+void LineNumberArea::mouseMoveEvent(QMouseEvent *){
+    repaint();
+}
+
+void LineNumberArea::leaveEvent(QEvent *){
+    repaint();
 }

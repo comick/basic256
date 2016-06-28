@@ -46,5 +46,6 @@ class Convert
 		QRegExp *isnumeric;
 		int ec(int, int);
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
+		bool floattail;		// display floats with a tail of ".0" if whole numbers
 
 };

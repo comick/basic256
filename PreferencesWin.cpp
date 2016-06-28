@@ -142,6 +142,12 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	usertablayout->addWidget(decdigslabel,r,1,1,1);
 	usertablayout->addLayout(decdigssliderlayout,r,2,1,2);
 	decdigsslider->setValue(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
+	// show trailing .0 on floatingpoint numbers (python style numbers)
+	r++;
+	floattailcheckbox = new QCheckBox(tr("Always show decimal point on floating point numbers."),this);
+	floattailcheckbox->setChecked(settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool());
+	usertablayout->addWidget(floattailcheckbox,r,2,1,2);
+
 	//
 	// speed of next statement in run to breakpoint
 	r++;

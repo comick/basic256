@@ -555,11 +555,9 @@ void RunController::mainWindowSetRunning(int type) {
     // type 0 - stop, 1-run, 2-debug
 
     editwin->setReadOnly(type!=0);
-    QTextCursor textCursor = editwin->textCursor();
-    textCursor.clearSelection();
-    editwin->setTextCursor( textCursor );
     if (replacewin) replacewin->close();
 	editwin->highlightCurrentLine();
+    editwin->runningState = type;
 
     // file menu
     mainwin->newact->setEnabled(type==0);
@@ -589,7 +587,7 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->stepact->setEnabled(type==2);
     mainwin->bpact->setEnabled(type==2);
     mainwin->stopact->setEnabled(type!=0);
-
+    mainwin->clearbreakpointsact->setEnabled(type!=1);
 }
 
 void RunController::mainWindowEnableCopy(bool stuffToCopy) {

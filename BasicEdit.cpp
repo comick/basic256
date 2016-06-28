@@ -43,20 +43,19 @@ using namespace std;
 extern MainWindow * mainwin;
 
 BasicEdit::BasicEdit() {
-
 	this->setInputMethodHints(Qt::ImhNoPredictiveText);
-	currentMaxLine = 10;
 	currentLine = 1;
     startPos = this->textCursor().position();
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
-	codeChanged = false;
-
+    codeChanged = false;
+    rightClickBlockNumber = -1;
     breakPoints = new QList<int>;
     lineNumberArea = new LineNumberArea(this);
 	
-	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-	connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+    connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(codeModificationChanged(bool)));
 
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();
@@ -137,7 +136,6 @@ BasicEdit::goToLine(int newLine) {
 void
 BasicEdit::keyPressEvent(QKeyEvent *e) {
 	e->accept();
-	codeChanged = true;
     //Autoindent new line as previous one
 	if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
 		QPlainTextEdit::keyPressEvent(e);
@@ -171,9 +169,9 @@ BasicEdit::newProgram() {
 	if (donew) {
 		clear();
 		clearBreakPoints();
-		emit(changeWindowTitle(tr("Untitled - BASIC-256")));
-		filename = "";
-		codeChanged = false;
+        filename = "";
+        document()->setModified(false);
+        setWindowTitle(tr("Untitled"));
 	}
 }
 
@@ -203,9 +201,9 @@ void BasicEdit::saveFile(bool overwrite) {
 			f.write(this->document()->toPlainText().toUtf8());
 			f.close();
 			QFileInfo fi(f);
-			emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
+            document()->setModified(false);
+            setWindowTitle(fi.fileName());
 			QDir::setCurrent(fi.absolutePath());
-			codeChanged = false;
 			addFileToRecentList(filename);
 		}
 	}
@@ -313,9 +311,9 @@ BasicEdit::loadFile(QString s) {
 					f.close();
 					filename = s;
 					QFileInfo fi(f);
-					emit(changeWindowTitle(fi.fileName() + tr(" - BASIC-256")));
+                    setWindowTitle(fi.fileName());
 					QDir::setCurrent(fi.absolutePath());
-					codeChanged = false;
+                    document()->setModified(false);
 					clearBreakPoints();
 					addFileToRecentList(s);
 					QApplication::restoreOverrideCursor();
@@ -478,7 +476,6 @@ void BasicEdit::beautifyProgram() {
     QTextCursor cursor = this->textCursor();
     cursor.select(QTextCursor::Document);
     cursor.insertText(lines.join("\n"));
-	codeChanged = true;
 	QApplication::restoreOverrideCursor();
 }
 
@@ -492,26 +489,28 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 
 	QTextCursor cursor = this->textCursor();
 	// here we save the cursor position and the verticalScrollBar value
-	QTextCursor cursorSaved = cursor;
-	int scroll = verticalScrollBar()->value();
+    QTextCursor cursorSaved = cursor;
+    int scroll = verticalScrollBar()->value();
 
     if (!find(s, flag))
 	{
         //nothing is found | jump to start/end
         setUpdatesEnabled(false);
         cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
-		setTextCursor(cursor);
+        setTextCursor(cursor);
 
-		if (!find(s, flag))
-		{
-			// word not found : we set the cursor back to its initial position and restore verticalScrollBar value
+        if (!find(s, flag))
+        {
+            // word not found : we set the cursor back to its initial position and restore verticalScrollBar value
 			setTextCursor(cursorSaved);
-			verticalScrollBar()->setValue(scroll);
-			QMessageBox::information(this, tr("Find"),
-				tr("String not found."),
-				QMessageBox::Ok, QMessageBox::Ok);
-		}
-        setUpdatesEnabled(true);
+            verticalScrollBar()->setValue(scroll);
+            setUpdatesEnabled(true);
+            QMessageBox::information(this, tr("Find"),
+                tr("String not found."),
+                QMessageBox::Ok, QMessageBox::Ok);
+        }else{
+            setUpdatesEnabled(true);
+        }
     }
 }
 
@@ -538,7 +537,6 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 		if (from.compare(cursor.selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))==0){
 			cursor.insertText(to);
 			setTextCursor(cursor);
-			codeChanged = true;
 		}
 
 		//Make a search
@@ -573,7 +571,6 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 		while (find(from, flag)){
 			if (textCursor().hasSelection()){
 				textCursor().insertText(to);
-				codeChanged = true;
 				n++;
 			}
 		}
@@ -589,7 +586,7 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 				tr("String not found."),
 				QMessageBox::Ok, QMessageBox::Ok);
 		else
-			QMessageBox::information(this, tr("Replace"),
+            QMessageBox::information(this, tr("Replace"),
 				tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."),
 				QMessageBox::Ok, QMessageBox::Ok);
 	}
@@ -619,7 +616,14 @@ int BasicEdit::lineNumberAreaWidth() {
 }
 
 void BasicEdit::updateLineNumberAreaWidth(int /* newBlockCount */) {
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+    //update setViewportMargins only when lineNumberAreaWidth is changed - save CPU
+    //(this signal is emitted even when user scroll up or scroll down code)
+    static int last=-1;
+    int w = lineNumberAreaWidth();
+    if(w!=last){
+        last=w;
+        setViewportMargins(w, 0, 0, 0);
+    }
 }
 
 void BasicEdit::updateLineNumberArea(const QRect &rect, int dy) {
@@ -637,7 +641,7 @@ void BasicEdit::updateLineNumberArea(const QRect &rect, int dy) {
 
 
 void BasicEdit::highlightCurrentLine() {
-	QList<QTextEdit::ExtraSelection> extraSelections;
+    QList<QTextEdit::ExtraSelection> extraSelections;
     QTextEdit::ExtraSelection blockSelection;
     QTextEdit::ExtraSelection selection;
     QColor lineColor;
@@ -816,9 +820,13 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
     int bottom = top + (int) blockBoundingRect(block).height();
+    int y = -1;
+
+    if(lineNumberArea->underMouse())
+        y = lineNumberArea->mapFromGlobal(QCursor::pos()).y();
 
     while (block.isValid() && top <= event->rect().bottom()) {
-        if (block.isVisible() && bottom >= event->rect().top()) {
+        if (block.isVisible() && bottom > event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
 
             //Draw lighter background for current paragraph
@@ -829,6 +837,8 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
             //or http://www.forum.crossplatform.ru/index.php?showtopic=3963
             if (blockNumber==currentBlockNumber)
                 painter.fillRect(0,top,lineNumberArea->width(),bottom-top-(blockNumber==lastBlockNumber?3:0), QColor(Qt::lightGray).lighter(110));
+            else if(top <= y && bottom > y && y>=0 && runningState != 1)
+                painter.fillRect(0,top,lineNumberArea->width(),bottom-top-(blockNumber==lastBlockNumber?3:0), QColor(Qt::lightGray).lighter(104));
 
             // Draw breakpoints
             if (block.userState()==STATEBREAKPOINT) {
@@ -860,8 +870,14 @@ void BasicEdit::lineNumberAreaMouseWheelEvent(QWheelEvent *event) {
     QPlainTextEdit::wheelEvent(event);
 }
 
+
+//Breakpoints are stick to each paragraph by using setUserState to avoid messing up while delete/edit/drop/paste large sections of text.
+//breakPoints list is also needed by interpretor. Before running in debug mode breakPoints list is update by calling updateBreakPointsList().
+//Because setting/removing breakpoints is enabled in debug mode, we set/unset breakpoints in breakPoints list too.
 void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
-    // based on mouse click - set the breakpoint in the map and highlight the line
+    if (runningState == 1)
+        return;
+    // based on mouse click - set the breakpoint in the map/block and highlight the line
 	int line;
 	QTextBlock block = firstVisibleBlock();
     int bottom = (int) blockBoundingGeometry(block).translated(contentOffset()).top(); //bottom from previous block
@@ -870,13 +886,66 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
 	while(block.isValid()) {
 		bottom += blockBoundingRect(block).height();
 		if (event->y() < bottom) {
-            block.setUserState(block.userState()==STATEBREAKPOINT?STATECLEAR:STATEBREAKPOINT);
-			lineNumberArea->repaint();
-			return;
-		}
+            if(event->button() == Qt::LeftButton){
+                //keep breakPoints list update for debug running mode
+                if(block.userState()==STATEBREAKPOINT){
+                    block.setUserState(STATECLEAR);
+                    if (breakPoints->contains(line))
+                        breakPoints->removeAt(breakPoints->indexOf(line,0));
+                }else{
+                    block.setUserState(STATEBREAKPOINT);
+                    breakPoints->append(line);
+                }
+                lineNumberArea->repaint();
+            }else if(event->button() == Qt::RightButton){
+                rightClickBlockNumber = line;
+                QMenu contextMenu(this);
+                if(block.userState()==STATEBREAKPOINT)
+                    contextMenu.addAction ( tr("Remove breakpoint from line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
+                else
+                    contextMenu.addAction ( tr("Set breakpoint at line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
+                contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
+                contextMenu.exec (event->globalPos());
+            }
+            return;
+        }
 		block = block.next();
 		line++;
 	}
+    QMenu contextMenu(this);
+    contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
+    contextMenu.exec (event->globalPos());
+}
+
+void BasicEdit::toggleBreakPoint(){
+    if(rightClickBlockNumber<0)
+        return;
+    QTextBlock block = firstVisibleBlock();
+    int n = block.blockNumber();
+    if(n<rightClickBlockNumber){
+        for(;n<rightClickBlockNumber;n++){
+            block = block.next();
+        }
+    }else if(n>rightClickBlockNumber){
+        for(;n>rightClickBlockNumber;n--){
+            block = block.previous();
+        }
+    }
+    if(block.isValid()){
+        if(block.blockNumber()==rightClickBlockNumber){
+            //keep breakPoints list update for debug running mode
+            if(block.userState()==STATEBREAKPOINT){
+                block.setUserState(STATECLEAR);
+                if (breakPoints->contains(rightClickBlockNumber))
+                    breakPoints->removeAt(breakPoints->indexOf(rightClickBlockNumber,0));
+            }else{
+                block.setUserState(STATEBREAKPOINT);
+                breakPoints->append(rightClickBlockNumber);
+            }
+            lineNumberArea->repaint();
+        }
+    }
+    rightClickBlockNumber=-1;
 }
 
 void BasicEdit::clearBreakPoints() {
@@ -886,6 +955,7 @@ void BasicEdit::clearBreakPoints() {
         b.setUserState(STATECLEAR);
         b = b.next();
     }
+    breakPoints->clear();
     lineNumberArea->repaint();
 }
 
@@ -970,4 +1040,19 @@ void BasicEdit::unindentSelection() {
 	cur.endEditBlock();
 }
 
+
+void BasicEdit::codeModificationChanged(bool change){
+    codeChanged = change;
+    updateWindowTitle();
+}
+
+void BasicEdit::setWindowTitle(QString title){
+    winTitle = title;
+    updateWindowTitle();
+}
+
+void BasicEdit::updateWindowTitle(){
+    //mainwin->setWindowTitle((codeChanged?"*":"") + winTitle + tr(" - BASIC-256"));
+    emit(changeWindowTitle((codeChanged?"*":"") + winTitle + tr(" - BASIC-256")));
+}
 
