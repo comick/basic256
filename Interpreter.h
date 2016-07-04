@@ -36,6 +36,7 @@
 #include "Variables.h"
 #include "Sound.h"
 #include "Sleeper.h"
+#include "BasicMediaPlayer.h"
 
 
 #include <QtPrintSupport/QPrinter>
@@ -49,10 +50,6 @@
 #ifndef ANDROID
 	// includes for all ports EXCEPT android
 	#include <QSerialPort>
-#endif
-
-#ifndef USEQSOUND
-	#include "BasicMediaPlayer.h"
 #endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
@@ -226,9 +223,7 @@ class Interpreter : public QThread
 
 		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
-#ifndef USEQSOUND
 		BasicMediaPlayer *mediaplayer;
-#endif
 
 };
 

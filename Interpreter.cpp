@@ -914,6 +914,9 @@ Interpreter::cleanup() {
         printdocumentpainter->end();
         delete printdocumentpainter;
     }
+    // stop playing any wav files
+    if(mediaplayer) mediaplayer->stop();
+
 }
 
 void Interpreter::closeDatabase(int t) {
@@ -1085,7 +1088,9 @@ Interpreter::execByteCode() {
 						forstack = temp;
 					} else {
 						// bad loop exit straight away - jump to the statement after the next
+						delete temp;
 						op = wordCode + exitOffset;
+						
 					}
 
 					// dont delete startE because assigned to variable
@@ -1094,45 +1099,57 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_NEXT: {
-					forframe *temp = forstack;
+                case OP_NEXT: {
+                    forframe *temp = forstack;
 
-					if (!temp) {
-						error->q(ERROR_NEXTNOFOR);
-					} else {
+                    if (!temp) {
+                        error->q(ERROR_NEXTNOFOR);
+                    } else {
 
-						if (temp->useInt) {
-							long val = convert->getLong(variables->getdata(i));
-							val += temp->intStep;
-							variables->setdata(i, new DataElement(val));
+                        if (temp->useInt) {
+                            long val = convert->getLong(variables->getdata(i));
+                            val += temp->intStep;
+                            variables->setdata(i, new DataElement(val));
 
-							if (temp->intStep >= 0 && val <= temp->intEnd) {
-								op = temp->returnAddr;
-							} else if (temp->intStep <= 0 && val >= temp->intEnd) {
-								op = temp->returnAddr;
-							} else {
-								forstack = temp->next;
-								delete temp;
-							}
-						} else {
-							double val = convert->getFloat(variables->getdata(i));
-							val += temp->floatStep;
-							variables->setdata(i, new DataElement(val));
+                            if (temp->intStep == 0 && temp->intStart <= temp->intEnd && val >= temp->intEnd) {
+                                forstack = temp->next;
+                                delete temp;
+                            } else if (temp->intStep == 0 && temp->intStart >= temp->intEnd && val <= temp->intEnd) {
+                                forstack = temp->next;
+                                delete temp;
+                            } else if (temp->intStep >= 0 && val <= temp->intEnd) {
+                                op = temp->returnAddr;
+                            } else if (temp->intStep <= 0 && val >= temp->intEnd) {
+                                op = temp->returnAddr;
+                            } else {
+                                forstack = temp->next;
+                                delete temp;
+                            }
+                        } else {
+                            double val = convert->getFloat(variables->getdata(i));
+                            val += temp->floatStep;
+                            variables->setdata(i, new DataElement(val));
 
-							if (temp->floatStep >= 0 && convert->compareFloats(val, temp->floatEnd)!=1) {
-								op = temp->returnAddr;
-							} else if (temp->floatStep <= 0 && convert->compareFloats(val, temp->floatEnd)!=-1) {
-								op = temp->returnAddr;
-							} else {
-								forstack = temp->next;
-								delete temp;
-							}
-						}
-						watchvariable(debugMode, i);
-					}
+                            if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=1 && convert->compareFloats(val, temp->floatEnd)!=-1) {
+                                forstack = temp->next;
+                                delete temp;
+                            } else if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=-1 && convert->compareFloats(val, temp->floatEnd)!=1) {
+                                forstack = temp->next;
+                                delete temp;
+                            } else if (temp->floatStep >= 0 && convert->compareFloats(val, temp->floatEnd)!=1) {
+                                op = temp->returnAddr;
+                            } else if (temp->floatStep <= 0 && convert->compareFloats(val, temp->floatEnd)!=-1) {
+                                op = temp->returnAddr;
+                            } else {
+                                forstack = temp->next;
+                                delete temp;
+                            }
+                        }
+                        watchvariable(debugMode, i);
+                    }
 
-				}
-				break;
+                }
+                break;
 
                 case OP_DIM:
                 case OP_REDIM: {
@@ -2637,16 +2654,6 @@ Interpreter::execByteCode() {
 
                 case OP_WAVPLAY: {
 					QString file = stack->popstring();
-#ifdef USEQSOUND
-					if(file.compare("")!=0) {
-						mymutex->lock();
-						emit(playWAV(file));
-						waitCond->wait(mymutex);
-						mymutex->unlock();
-					} else {
-						error->q(ERROR_NOTIMPLEMENTED);
-					}
-#else
 					if(file.compare("")!=0) {
 						// load new file and start playback
 						mediaplayer = new BasicMediaPlayer();
@@ -2663,23 +2670,15 @@ Interpreter::execByteCode() {
 							error->q(ERROR_WAVNOTOPEN);
 						}
 					}
-#endif
                 }
                 break;
 
                 case OP_WAVSTOP: {
-#ifdef USEQSOUND
-					mymutex->lock();
-					emit(stopWAV());
-					waitCond->wait(mymutex);
-					mymutex->unlock();
-#else
 					if(mediaplayer) {
                         mediaplayer->stop();
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
                 }
                 break;
 
@@ -3665,18 +3664,11 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_WAVWAIT: {
-#ifdef USEQSOUND
-					mymutex->lock();
-					emit(waitWAV());
-					waitCond->wait(mymutex);
-					mymutex->unlock();
-#else
 					if(mediaplayer) {
 						mediaplayer->wait();
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
                 }
                 break;
 
@@ -4859,52 +4851,37 @@ Interpreter::execByteCode() {
 
                 case OP_WAVLENGTH: {
 					double d = 0.0;
-#ifdef USEQSOUND
-                    error->q(ERROR_NOTIMPLEMENTED);
-#else
 					if (mediaplayer) {
 						if ((d = mediaplayer->length())==0)
 							error->q(WARNING_WAVNODURATION);
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
 					stack->pushfloat(d);
                 }
                 break;
 
                 case OP_WAVPAUSE: {
-#ifdef USEQSOUND
-                    error->q(ERROR_NOTIMPLEMENTED);
-#else
 					if (mediaplayer) {
 						mediaplayer->pause();
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
                 }
                 break;
 
                 case OP_WAVPOS: {
 					double p = 0.0;
-#ifdef USEQSOUND
-                    error->q(ERROR_NOTIMPLEMENTED);
-#else
 					if (mediaplayer) {
 						p = mediaplayer->position();
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
 					stack->pushfloat(p);
                 }
                 break;
 
                 case OP_WAVSEEK: {
-#ifdef USEQSOUND
-                    error->q(ERROR_NOTIMPLEMENTED);
-#else
 					double pos = stack->popfloat();
 					if (mediaplayer) {
 						if (!mediaplayer->seek(pos)) {
@@ -4913,21 +4890,16 @@ Interpreter::execByteCode() {
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
                 }
                 break;
 
                 case OP_WAVSTATE: {
 					int s = 0;
-#ifdef USEQSOUND
-                    error->q(ERROR_NOTIMPLEMENTED);
-#else
 					if (mediaplayer) {
 						s = mediaplayer->state();
 					} else {
 						error->q(ERROR_WAVNOTOPEN);
 					}
-#endif
 					stack->pushint(s);
 				}
                 break;

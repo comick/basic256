@@ -19,8 +19,6 @@
 #ifndef __BASICMEDIAPLAYER_H
 #define __BASICMEDIAPLAYER_H
 
-#ifndef USEQSOUND
-
 #include <QMediaPlayer>
 #include <QFileInfo>
 #include <QEventLoop>
@@ -53,5 +51,4 @@ private:
 
 };
 
-#endif
 #endif

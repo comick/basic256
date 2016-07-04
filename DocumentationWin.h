@@ -1,4 +1,4 @@
-/** Copyright (C) 2010, J.M.Reneau.
+/** Copyright (C) 2010, J.M.Reneau, Florin Oprea.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -15,14 +15,29 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
 #include <qglobal.h>
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QTextBrowser>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDesktopServices>
+#include <QDialog>
+#include <QDir>
+#include <QFile>
+#include <QFlags>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QPushButton>
+#include <QScrollBar>
+#include <QTextBrowser>
+#include <QToolBar>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #ifndef DOCUMENTATIONWINH
 
@@ -33,19 +48,50 @@ class DocumentationWin : public QDialog
   Q_OBJECT
   public:
 	DocumentationWin(QWidget * parent);
-	void resizeEvent(QResizeEvent *e);
-	void closeEvent(QCloseEvent *);
-	void go(QString);
+    void resizeEvent(QResizeEvent *e);
+    void closeEvent(QCloseEvent *);
+    void go(QString);
+
+  protected:
+    virtual void keyPressEvent(QKeyEvent *);
 
   public slots:
 
+  private slots:
+    void hijackAnchorClicked(QUrl);
+    void slotPrintHelp();
+    void searchTextChanged();
+    void clickFindNext();
+    void clickFindPrev();
+    void clickCloseFind();
+    void newSource(const QUrl url);
+    void searchFocus();
+    void userSelectLanguage(const QString s);
+
   private:
-	QVBoxLayout* layout;
+    bool helpFileExists(QString check);
+    void setLanguageAlternatives(QString s);
+    bool setBestSourceForHelp(QString s);
+    void findWordInHelp(bool verbose, bool reverse = false);
+    void highlight();
+    int occurrences;
+    QString indexfile;
+    QString localecode;
+    QString defaultlocale;
+    QVBoxLayout* layout;
 	QToolBar* toolbar;
 	QTextBrowser* docs;
-	QString indexfile;
-	QString localecode;
-	QString defaultlocale;
+    QBoxLayout* footer;
+    QLabel *searchlabel;
+    QLabel *resultslabel;
+    QLineEdit *searchinput;
+    QToolButton *findprev;
+    QToolButton *findnext;
+    QCheckBox *casecheckbox;
+    QWidget *bottom;
+    QPushButton *closeButton;
+    QComboBox *comboLanguage;
+    QLabel *viewLanguage;
 };
 
 #endif

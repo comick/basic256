@@ -64,11 +64,6 @@ using namespace std;
 #include <speak_lib.h>
 #endif
 
-#ifdef USEQSOUND
-#include <QSound>
-QSound *wavsound;
-#endif
-
 #ifdef ANDROID
 #include "android/AndroidTTS.h"
 AndroidTTS *androidtts;
@@ -596,33 +591,3 @@ void RunController::mainWindowEnableCopy(bool stuffToCopy) {
     mainwin->copyact->setEnabled(stuffToCopy);
 }
 
-#ifdef USEQSOUND
-// this is the old way (2014-04-13 <1.1.1 of doing WAV play statements)
-// the QMediaPlayer object is not complete on ANDROID so this has been
-// left for that platform
-// Hopefully soon QT 5.3+ we can remove this logic and use BasicMediaPlayer for everything
-
-void RunController::playWAV(QString file) {
-	mymutex->lock();
-	wavsound->play(file);
-	waitCond->wakeAll();
-	mymutex->unlock();
-}
-
-void RunController::waitWAV() {
-	mymutex->lock();
-	Sleeper *sleeper = new Sleeper();
-	while(!wavsound->isFinished())
-        sleeper->sleepMS(100);
-	waitCond->wakeAll();
-	mymutex->unlock();
-}
-void RunController::stopWAV()
-{
-	mymutex->lock();
-	wavsound->stop();
-	waitCond->wakeAll();
-	mymutex->unlock();
-}
-
-#endif

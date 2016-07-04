@@ -15,8 +15,6 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-#ifndef USEQSOUND
-
 #include "BasicMediaPlayer.h"
 
 void BasicMediaPlayer::loadFile(QString file) {
@@ -131,6 +129,4 @@ int BasicMediaPlayer::error() {
 	return QMediaPlayer::error();
 }
 
-
-#endif
 

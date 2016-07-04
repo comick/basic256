@@ -78,12 +78,6 @@ class RunController : public QObject
   void dialogFontSelect();
   void mainWindowSetRunning(int);
   void mainWindowEnableCopy(bool);
-  
-#ifdef USEQSOUND
-	void playWAV(QString);
-	void stopWAV();
-	void waitWAV(); 
-#endif
 
  private:
   Interpreter *i;
