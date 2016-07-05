@@ -308,6 +308,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_WAVFILEFORMAT:
             errormessage = tr("Media file does not exist or in an unsupported format");
             break;
+        case ERROR_WAVNOTOPEN:
+            errormessage = tr("Media file not open");
+            break;
         case ERROR_FILEOPERATION:
             errormessage = tr("Can not perform that operation on a Serial Port");
             break;

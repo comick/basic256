@@ -848,6 +848,7 @@ Interpreter::initialize() {
 	regexMinimal = false;
 	lastKey = 0;
 	pressedKeys.clear();
+	mediaplayer = NULL;
 	runtimer.start();
 	// clickclear mouse status
 	graphwin->clickX = 0;
