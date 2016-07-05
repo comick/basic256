@@ -156,9 +156,9 @@ void EditSyntaxHighlighter::initKeywords() {
             << "implode"							//implode
             << "include"							//include
             << "input"								//input
-            << "inputfloat"							//inputfloat
-            << "inputint"							//inputint
-            << "inputstring"						//inputstring
+            << "input *float"						//inputfloat
+            << "input *int(eger)*"					//inputint
+            << "input *string"						//inputstring
             << "instr"								//instr
             << "instrx"								//instrx
             << "int"								//int
