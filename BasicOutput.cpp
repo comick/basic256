@@ -55,6 +55,7 @@ void
 BasicOutput::getInput() {
     // move cursor to the end of the existing text and start input
 	gettingInput = true;
+	emit(mainWindowsVisible(2,true));
 	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::End);
 	setTextCursor(t);

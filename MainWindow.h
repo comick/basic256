@@ -27,6 +27,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QScrollArea>
+#include <QClipboard>
 
 #include "BasicWidget.h"
 #include "BasicOutput.h"
@@ -41,6 +42,7 @@
 #include "DockWidget.h"
 
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -49,6 +51,7 @@ public:
 	~MainWindow();
 	void closeEvent(QCloseEvent *);
 	void loadAndGoMode();
+    void setEnabledEditorButtons(bool val);
 
 	// Main IU Widgets
 	BasicWidget * editwinwgt;
@@ -104,6 +107,8 @@ public:
     EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;
+    bool undoButtonValue;
+    bool redoButtonValue;
 
 public slots:
   void updateStatusBar(QString);
@@ -126,6 +131,10 @@ private:
 private slots:
 	void updateRecent();
 	void about();
+    void updatePasteButton();
+    void updateCopyCutButtons(bool);
+    void slotUndoAvailable(bool val);
+    void slotRedoAvailable(bool val);
 };
 
 #endif

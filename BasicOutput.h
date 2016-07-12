@@ -48,6 +48,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 
  signals:
   void inputEntered(QString);
+  void mainWindowsVisible(int, bool);
   
  protected:
   void keyPressEvent(QKeyEvent *);

@@ -309,6 +309,7 @@ RunController::outputClear() {
 
 void RunController::outputReady(QString text) {
 	mymutex->lock();
+	mainWindowsVisible(2,true);
 	QTextCursor t(outwin->textCursor());
 	if(!t.atEnd() || t.hasSelection()){
 		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -564,11 +565,7 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->exitact->setEnabled(true);
 
     // edit menu
-    mainwin->undoact->setEnabled(type==0);
-    mainwin->redoact->setEnabled(type==0);
-    mainwin->cutact->setEnabled(false);
-    mainwin->copyact->setEnabled(false);
-    mainwin->pasteact->setEnabled(type==0);
+    mainwin->setEnabledEditorButtons(type==0);
     mainwin->selectallact->setEnabled(type==0);
     mainwin->findact->setEnabled(type==0);
     mainwin->findagain->setEnabled(type==0);
@@ -583,11 +580,5 @@ void RunController::mainWindowSetRunning(int type) {
     mainwin->bpact->setEnabled(type==2);
     mainwin->stopact->setEnabled(type!=0);
     mainwin->clearbreakpointsact->setEnabled(type!=1);
-}
-
-void RunController::mainWindowEnableCopy(bool stuffToCopy) {
-    // only enable the copy buttons when there is stuff to copy
-    mainwin->cutact->setEnabled(stuffToCopy && mainwin->pasteact->isEnabled());
-    mainwin->copyact->setEnabled(stuffToCopy);
 }
 

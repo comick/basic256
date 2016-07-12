@@ -65,6 +65,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     SETTINGS;
     bool v;
 
+    undoButtonValue = false;
+    redoButtonValue = false;
+
     mainwin = this;
 
     // create the global mymutexes and waits
@@ -187,12 +190,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     // Edit menu
     editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
     undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
-    QObject::connect(editwin, SIGNAL(undoAvailable(bool)), undoact, SLOT(setEnabled(bool)));
+    QObject::connect(editwin, SIGNAL(undoAvailable(bool)), this, SLOT(slotUndoAvailable(bool)));
     QObject::connect(undoact, SIGNAL(triggered()), editwin, SLOT(undo()));
     undoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Undo));
     undoact->setEnabled(false);
     redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
-    QObject::connect(editwin, SIGNAL(redoAvailable(bool)), redoact, SLOT(setEnabled(bool)));
+    QObject::connect(editwin, SIGNAL(redoAvailable(bool)), this, SLOT(slotRedoAvailable(bool)));
     QObject::connect(redoact, SIGNAL(triggered()), editwin, SLOT(redo()));
     redoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Redo));
     redoact->setEnabled(false);
@@ -222,7 +225,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     //
     QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
     QObject::connect(copyact, SIGNAL(triggered()), editwin, SLOT(copy()));
-    QObject::connect(editwin, SIGNAL(copyAvailable(bool)), rc, SLOT(mainWindowEnableCopy(bool)));
+    QObject::connect(editwin, SIGNAL(copyAvailable(bool)), this, SLOT(updateCopyCutButtons(bool)));
     QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
     QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
     QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
@@ -230,6 +233,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
     QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
     QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
+    QObject::connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(updatePasteButton()));
 
     bool extraSepAdded = false;
     if (outwinwgt->usesMenu()) {
@@ -559,19 +563,17 @@ void MainWindow::loadAndGoMode() {
 void MainWindow::closeEvent(QCloseEvent *e) {
     // quit the application but ask if there are unsaved changes in buffer
     bool doquit = true;
-    if (editwin->codeChanged) {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Program modifications have not been saved."));
-        msgBox.setInformativeText(tr("Do you want to discard your changes?"));
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        doquit = (msgBox.exec() == QMessageBox::Yes);
+    if (editwin->document()->isModified()) {
+        doquit = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Program modifications have not been saved."),
+            tr("Do you want to discard your changes?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No));
     }
     if (doquit) {
         // actually quitting
         e->accept();
         // save current screen posision, visibility and floating
-        // if we ae not android
+        // if we are not android
 #ifndef ANDROID
         SETTINGS;
         settings.setValue(SETTINGSVISIBLE, isVisible());
@@ -605,6 +607,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 
 }
 
+//Buttons section
 void MainWindow::updateStatusBar(QString status) {
     statusBar()->showMessage(status);
 }
@@ -613,5 +616,32 @@ void MainWindow::updateWindowTitle(QString title) {
     setWindowTitle(title);
 }
 
+void MainWindow::updatePasteButton(){
+     pasteact->setEnabled(editwin->canPaste());
+}
 
+void MainWindow::updateCopyCutButtons(bool stuffToCopy) {
+    // only enable the copy buttons when there is stuff to copy
+    cutact->setEnabled(stuffToCopy && editwin->canPaste());
+    copyact->setEnabled(stuffToCopy);
+}
+
+void MainWindow::slotUndoAvailable(bool val) {
+    undoact->setEnabled(val);
+    undoButtonValue = val;
+}
+
+void MainWindow::slotRedoAvailable(bool val) {
+    redoact->setEnabled(val);
+    redoButtonValue = val;
+}
+
+//Update Paste, Copy, Cut, Undo, Redo buttons for Run/Stop program
+void MainWindow::setEnabledEditorButtons(bool val) {
+    updatePasteButton();
+    QTextCursor curs = editwin->textCursor();
+    updateCopyCutButtons(curs.hasSelection());
+    undoact->setEnabled(val?undoButtonValue:false);
+    redoact->setEnabled(val?redoButtonValue:false);
+}
 

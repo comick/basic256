@@ -26,6 +26,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QKeyEvent>
 #include <QList>
+#include <QMimeData>
+
+#include <QMimeDatabase>
 
 #include "ViewWidgetIFace.h"
 
@@ -41,7 +44,6 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void saveFile(bool);
 		void findString(QString, bool, bool, bool);
         void replaceString(QString, QString, bool, bool, bool, bool);
-		bool codeChanged;
 		QString getCurrentWord();
 		void lineNumberAreaPaintEvent(QPaintEvent *event);
         void lineNumberAreaMouseClickEvent(QMouseEvent *event);
@@ -53,7 +55,8 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         int runningState; //0 - stop, 1-run, 2-debug
         QString winTitle;
         void setWindowTitle(QString title);
-        void updateWindowTitle();
+        void dropEvent(QDropEvent *event);
+        void dragEnterEvent(QDragEnterEvent *event);
 
 
 	public slots:
@@ -107,10 +110,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 	private slots:
 		void updateLineNumberAreaWidth(int newBlockCount);
 		void updateLineNumberArea(const QRect &, int);
-        void codeModificationChanged(bool change);
-
-
-
+        void updateTitle();
 };
 
 

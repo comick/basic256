@@ -46,7 +46,6 @@ BasicEdit::BasicEdit() {
 	this->setInputMethodHints(Qt::ImhNoPredictiveText);
 	currentLine = 1;
     startPos = this->textCursor().position();
-    codeChanged = false;
     rightClickBlockNumber = -1;
     breakPoints = new QList<int>;
     lineNumberArea = new LineNumberArea(this);
@@ -55,7 +54,7 @@ BasicEdit::BasicEdit() {
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-    connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(codeModificationChanged(bool)));
+    connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(updateTitle()));
 
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();
@@ -160,19 +159,19 @@ BasicEdit::keyPressEvent(QKeyEvent *e) {
 void
 BasicEdit::newProgram() {
 	bool donew = true;
-	if (codeChanged) {
+    if (document()->isModified()) {
 		donew = ( QMessageBox::Yes == QMessageBox::warning(this, tr("New Program"),
 			tr("Are you sure you want to completely clear this program and start a new one?"),
 			QMessageBox::Yes | QMessageBox::No,
 			QMessageBox::No));
 	}
 	if (donew) {
-		clear();
-		clearBreakPoints();
+        clearBreakPoints();
         filename = "";
+        clear();
         document()->setModified(false);
         setWindowTitle(tr("Untitled"));
-	}
+    }
 }
 
 
@@ -295,7 +294,7 @@ void
 BasicEdit::loadFile(QString s) {
 	if (s != NULL) {
 		bool doload = true;
-		if (codeChanged) {
+        if (document()->isModified()) {
 			doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
 				tr("Program modifications have not been saved.")+ "\n" + tr("Do you want to discard your changes?"),
 				QMessageBox::Yes | QMessageBox::No,
@@ -305,19 +304,31 @@ BasicEdit::loadFile(QString s) {
 			if (QFile::exists(s)) {
 				QFile f(s);
 				if (f.open(QIODevice::ReadOnly)) {
-					QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-					QByteArray ba = f.readAll();
-					this->setPlainText(QString::fromUtf8(ba.data()));
-					f.close();
-					filename = s;
-					QFileInfo fi(f);
-                    setWindowTitle(fi.fileName());
-					QDir::setCurrent(fi.absolutePath());
-                    document()->setModified(false);
-					clearBreakPoints();
-					addFileToRecentList(s);
-					QApplication::restoreOverrideCursor();
-				} else {
+                    QFileInfo fi(f);
+                    QMimeDatabase db;
+                    QMimeType mime = db.mimeTypeForFile(fi);
+                    // Get user confirmation for non-text files
+                    //Remember that empty ".kbs" files are detected as non-text files
+                    if (!(mime.inherits("text/plain") || (fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
+                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
+                            tr("It does not seem to be a text file.")+ "\n" + tr("Load it anyway?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No));
+                    }
+                    if (doload) {
+                        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                        QByteArray ba = f.readAll();
+                        this->setPlainText(QString::fromUtf8(ba.data()));
+                        filename = s;
+                        document()->setModified(false);
+                        setWindowTitle(fi.fileName());
+                        QDir::setCurrent(fi.absolutePath());
+                        clearBreakPoints();
+                        addFileToRecentList(s);
+                        QApplication::restoreOverrideCursor();
+                    }
+                    f.close();
+                } else {
 					QMessageBox::warning(this, tr("Load File"),
 						tr("Unable to open program file \"")+s+tr("\".\nFile permissions problem or file open by another process."),
 						QMessageBox::Ok, QMessageBox::Ok);
@@ -1040,19 +1051,31 @@ void BasicEdit::unindentSelection() {
 	cur.endEditBlock();
 }
 
-
-void BasicEdit::codeModificationChanged(bool change){
-    codeChanged = change;
-    updateWindowTitle();
-}
-
 void BasicEdit::setWindowTitle(QString title){
     winTitle = title;
-    updateWindowTitle();
+    updateTitle();
 }
 
-void BasicEdit::updateWindowTitle(){
-    //mainwin->setWindowTitle((codeChanged?"*":"") + winTitle + tr(" - BASIC-256"));
-    emit(changeWindowTitle((codeChanged?"*":"") + winTitle + tr(" - BASIC-256")));
+void BasicEdit::updateTitle(){
+    emit(changeWindowTitle((document()->isModified()?"*":"") + winTitle + tr(" - BASIC-256")));
 }
 
+void BasicEdit::dragEnterEvent(QDragEnterEvent *event){
+    if (event->mimeData()->hasFormat("text/uri-list") || event->mimeData()->hasFormat("text/plain"))
+        event->acceptProposedAction();
+}
+
+
+void BasicEdit::dropEvent(QDropEvent *event){
+    if(event->mimeData()->hasFormat("text/uri-list")){
+        QList<QUrl> urls = event->mimeData()->urls();
+        if (urls.isEmpty())
+            return;
+        QString fileName = urls.first().toLocalFile();
+        if (fileName.isEmpty())
+            return;
+        loadFile(fileName);
+    }else if (event->mimeData()->hasFormat("text/plain")){
+        event->acceptProposedAction();
+    }
+}

@@ -77,7 +77,6 @@ class RunController : public QObject
   void dialogPrompt(QString, QString);
   void dialogFontSelect();
   void mainWindowSetRunning(int);
-  void mainWindowEnableCopy(bool);
 
  private:
   Interpreter *i;
