@@ -159,7 +159,17 @@ Interpreter::Interpreter() {
             dbSet[t][u] = NULL;
         }
     }
+    
+    // initialize number of sprites to 0 (on exit clearsprites() is called)
+    nsprites = 0;
 
+    // initialize open files (set to NULL for closed)
+    filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
+    filehandletype = (int*) malloc(NUMFILES * sizeof(int));
+    for (int t=0; t<NUMFILES; t++) {
+        filehandle[t] = NULL;
+        filehandletype[t] = 0;
+    }
 }
 
 Interpreter::~Interpreter() {
@@ -914,9 +924,7 @@ Interpreter::cleanup() {
         printing = false;
         printdocumentpainter->end();
         delete printdocumentpainter;
-    }
-    // stop playing any wav files
-    if(mediaplayer) mediaplayer->stop();
+    }    
 
 }
 
@@ -955,6 +963,10 @@ Interpreter::runResumed() {
 void
 Interpreter::runHalted() {
     status = R_STOPPED;
+    // stop timers
+    sleeper->wake();
+   // stop playing any wav files
+    if(mediaplayer) mediaplayer->stop();
 }
 
 

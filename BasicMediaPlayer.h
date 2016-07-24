@@ -31,7 +31,7 @@ class BasicMediaPlayer : private QMediaPlayer
     Q_OBJECT
 public:
 
-
+	BasicMediaPlayer();
     void loadFile(QString file);
 	int state();
     void stop();
@@ -46,6 +46,7 @@ public:
 public slots:
 
 private:
+	Sleeper *mediasleeper;
     void waitForSeekable(int);
     void waitForState(QMediaPlayer::State, int);
 

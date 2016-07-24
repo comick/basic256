@@ -140,10 +140,9 @@ RunController::RunController() {
 RunController::~RunController() {
     if(replacewin!=NULL) replacewin->close();
     if(docwin!=NULL) docwin->close();
-
+    stopRun();
+    i->wait();
     delete i;
-
-    //printf("rcdestroy\n");
 }
 
 

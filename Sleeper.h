@@ -28,11 +28,14 @@
 class Sleeper
 {
 public:
-
-	void sleepMS(long int ms);
+	Sleeper();
+	bool sleepMS(long int ms);
+	void sleepRQM(long int ms);
 	void sleepSeconds(double s);
+	void wake();
 	
 private:
+	bool wakesleeper;
 
 };
 

@@ -17,8 +17,32 @@
 
 #include "Sleeper.h"
 
-void Sleeper::sleepMS(long int ms) {
-// sleep ms miliseconds
+Sleeper::Sleeper() {
+	wakesleeper=false;
+}
+
+void Sleeper::wake() {
+	// signal the sleeper to wake
+	wakesleeper=true;
+}
+
+bool Sleeper::sleepMS(long int ms) {
+	// interruptable - return true if NOT interrupted
+	wakesleeper=false;
+	while (ms > 0L && !wakesleeper) {
+		if(ms > 100L){
+			ms -= 100L;
+			sleepRQM(100L);
+		}else{
+			sleepRQM(ms);
+			break;
+		}
+	}
+	return !wakesleeper;
+}
+
+void Sleeper::sleepRQM(long int ms) {
+// sleep ms miliseconds - an uninterruptable quantum moment
 #ifdef WIN32
 		Sleep(ms);
 #else

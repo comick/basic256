@@ -17,6 +17,11 @@
 
 #include "BasicMediaPlayer.h"
 
+BasicMediaPlayer::BasicMediaPlayer() {
+	mediasleeper = new Sleeper();
+}
+
+
 void BasicMediaPlayer::loadFile(QString file) {
     // blocking load adapted from http://qt-project.org/wiki/seek_in_sound_file
     setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
@@ -57,38 +62,36 @@ int BasicMediaPlayer::state() {
 	
 	int s;
 	qint64 starttime, endtime;
-	Sleeper *sleeper = new Sleeper();
-    s = QMediaPlayer::state();
+	s = QMediaPlayer::state();
 	if (s==QMediaPlayer::PlayingState) {
         starttime = QMediaPlayer::position();
-		sleeper->sleepMS(30);
+		mediasleeper->sleepRQM(30);
         endtime = QMediaPlayer::position();
 		if (starttime==endtime) {
 			stop();
 			s = QMediaPlayer::StoppedState; // stopped
 		}
 	}
-	delete sleeper;
 	return(s);
 }
 
 void BasicMediaPlayer::stop() {
 	// force stop to reset position at the begining of the file
 	// and to totally stop
+	mediasleeper->wake();
 	setPosition(0);
 	QMediaPlayer::stop();
 //	waitForState(QMediaPlayer::StoppedState, 1000);
 }
 
 void BasicMediaPlayer::wait() {
+	waitForSeekable(500);
 	// wait for the media file to complete
-	Sleeper *sleeper = new Sleeper();
-    do {
-		sleeper->sleepMS(100);
-	} while (state()==QMediaPlayer::PlayingState);
+	if (state()==QMediaPlayer::PlayingState) {
+		mediasleeper->sleepMS(QMediaPlayer::duration()-QMediaPlayer::position());
+	}
 	setPosition(0);
-	QMediaPlayer::pause();
-	delete sleeper;
+	QMediaPlayer::stop();
 }
 
 bool BasicMediaPlayer::seek(double time) {
