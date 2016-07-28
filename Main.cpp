@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/** Copyright (C) 2006, Ian Paul Larsen, Florin Oprea
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -18,62 +18,124 @@
 
 
 #include <iostream>
-
-#include <QTranslator>
-#include <QLocale>
-#include <QFileInfo>
-#include <QtPlugin>
-#include <QLibraryInfo>
-
-//Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
-
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QStatusBar>
-
 #include <locale.h>
 #if !defined(WIN32) || defined(__MINGW32__)
 #include <unistd.h>
 #endif
+using namespace std;
 
+#include <QApplication>
+#include <QCommandLineOption>
+#include <QCommandLineParser>
+#include <QFileInfo>
+#include <QLibraryInfo>
+#include <QLocale>
+#include <QStatusBar>
+#include <QtPlugin>
+#include <QTranslator>
+
+#include "Settings.h"
+#include "Version.h"
 #include "MainWindow.h"
 #include "BasicEdit.h"
 
-using namespace std;
+
+//Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 
 extern MainWindow * mainwin;
 extern BasicEdit * editwin;
 
-#include "MainWindow.h"
+#if defined(WIN32) && !defined(WIN32PORTABLE)
+static void associateFileTypes(const QStringList &fileTypes)
+{
+    QString displayName = QGuiApplication::applicationDisplayName();
+    QString filePath = QCoreApplication::applicationFilePath();
+    QString fileName = QFileInfo(filePath).fileName();
+
+    //Application
+    QSettings s("HKEY_CURRENT_USER\\Software\\Classes\\Applications\\" + fileName, QSettings::NativeFormat);
+    s.setValue("FriendlyAppName", displayName);
+    s.beginGroup("SupportedTypes");
+    foreach (const QString& fileType, fileTypes)
+        s.setValue(fileType, QString());
+    s.endGroup();
+    s.beginGroup("shell");
+    s.beginGroup("open");
+    s.setValue("FriendlyAppName", displayName);
+    s.beginGroup("Command");
+    s.setValue(".", QChar('"') + QDir::toNativeSeparators(filePath) + QString("\" \"%1\""));
+
+
+    //Associate .kbs files to BASIC-256 (Windows)
+    QSettings ss("HKEY_CURRENT_USER\\Software\\Classes\\" , QSettings::NativeFormat);
+    ss.beginGroup(".kbs");
+    ss.setValue(".",fileName + QString(".kbs"));
+    ss.endGroup();
+    ss.beginGroup(fileName + QString(".kbs"));
+    ss.beginGroup("shell");
+    ss.beginGroup("open");
+    ss.beginGroup("Command");
+    ss.setValue(".", QChar('"') + QDir::toNativeSeparators(filePath) + QString("\" \"%1\""));
+    ss.endGroup();
+    ss.endGroup();
+    ss.beginGroup("run");
+    ss.setValue(".", QString("&Run"));
+    ss.beginGroup("Command");
+    ss.setValue(".", QChar('"') + QDir::toNativeSeparators(filePath) + QString("\" -r \"%1\""));
+}
+#endif
+
+
+
 
 int main(int argc, char *argv[]) {
     QApplication qapp(argc, argv);
-    char *lang = NULL;		// locale code passed with argument -l on command line
-    bool loadandgo = false;		// if -r option then run code in loadandgo mode
+    int guimode = 0;		// 0=normal, 1- r option, 2- app option
     QString localecode;		// either lang or the system localle - stored on mainwin for help display
 
-#if !defined(WIN32) || defined(__MINGW32__)
+    QCoreApplication::setOrganizationName(SETTINGSORG);
+    QCoreApplication::setApplicationName(SETTINGSAPP);
+    QCoreApplication::setApplicationVersion(VERSION);
 
-    while (true) {
-        int opt = getopt(argc, argv, "rl:");
-        if (opt == -1) break;
-
-        switch ((char) opt) {
-            case 'l':
-                lang = optarg;
-                break;
-            case 'r':
-                loadandgo = true;
-                break;
-            default:
-                break;
-        }
-    }
+#if defined(WIN32) && !defined(WIN32PORTABLE)
+    associateFileTypes(QStringList(".kbs"));
 #endif
 
-    if (lang) {
-        localecode = QString(lang);
-    } else {
+    // Command Line Parser
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QObject::tr("BASIC-256 is an easy to use version of BASIC designed to teach anybody (especially middle and high-school students) the basics of computer programming."));
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("file", QObject::tr("BASIC file in format <name.kbs>"));
+    // Run option
+    QCommandLineOption setRunOption(QStringList() << "r" << "run", QObject::tr("Run specified file"));
+    parser.addOption(setRunOption);
+    // Application option
+    QCommandLineOption setAppOption(QStringList() << "a" << "app" << "application", QObject::tr("Run specified file as an application"));
+    parser.addOption(setAppOption);
+    // Language option
+    QCommandLineOption setLanguageOption(QStringList() << "l" << "lang" << "language", QObject::tr("Set language to <language>."), QObject::tr("language"));
+    parser.addOption(setLanguageOption);
+    // Process the actual command line arguments given by the user
+    parser.process(qapp);
+    const QStringList args = parser.positionalArguments();
+
+    // file is args.at(0)
+    QString fileName;
+    if(args.size()>0)
+    if (!args.at(0).isEmpty())
+        fileName=args.at(0);
+
+    localecode = parser.value(setLanguageOption);
+    if(localecode.isEmpty())
         localecode = QLocale::system().name();
+
+    if (parser.isSet(setRunOption) and !fileName.isEmpty()) {
+        guimode=1;
+    }
+
+    if (parser.isSet(setAppOption) and !fileName.isEmpty()) {
+        guimode=2;
     }
 
     QTranslator qtTranslator;
@@ -95,48 +157,33 @@ int main(int argc, char *argv[]) {
     qapp.installTranslator(&kbTranslator);
 
     MainWindow mainwin;
-
     mainwin.setObjectName( "mainwin" );
     editwin->setWindowTitle(QObject::tr("Untitled"));
     mainwin.statusBar()->showMessage(QObject::tr("Ready."));
     mainwin.localecode = localecode;
+    mainwin.setGuiState(guimode);
     mainwin.show();
+    
 
-#if defined(WIN32)
-    // load initial file -- Win style
-    if (argc >= 1 && argv[1] != NULL) {
-        QString s = QString::fromUtf8(argv[1]);
-        if (s.endsWith(".kbs")) {
-            QFileInfo fi(s);
-            if (fi.exists()) {
-                editwin->loadFile(fi.absoluteFilePath());
-            }
-        }
-    }
-#else
 #ifdef ANDROID
     // android - dont load initial file but set default folder to sdcard if exists
     if (QDir("/storage/sdcard0").exists()) {
         QDir::setCurrent("/storage/sdcard0");
     }
 #else
-    // load initial file -- POSIX style
-    if (optind < argc) {
-        // printf("extra arg %s\n",argv[optind]);
-        QString s = QString::fromUtf8(argv[optind]);
-        if (s.endsWith(".kbs")) {
-            QFileInfo fi(s);
+    // load initial file and optionally start
+    if (!fileName.isEmpty()) {
+        if (fileName.endsWith(".kbs")) {
+            QFileInfo fi(fileName);
             if (fi.exists()) {
                 editwin->loadFile(fi.absoluteFilePath());
+                mainwin.ifGuiStateRun();
             }
         }
     }
-#endif // ANDROID
-#endif // WIN32
+#endif
 
     setlocale(LC_ALL,"C");
-
-    if (loadandgo) mainwin.loadAndGoMode();
-
     return qapp.exec();
 }
+

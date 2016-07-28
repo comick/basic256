@@ -946,23 +946,11 @@ void Interpreter::closeDatabase(int t) {
 }
 
 void
-Interpreter::runPaused() {
-    if (status == R_PAUSED) {
-        status = oldstatus;
-    } else {
-        oldstatus = status;
-        status = R_PAUSED;
-    }
-}
-
-void
-Interpreter::runResumed() {
-    runPaused();
-}
-
-void
 Interpreter::runHalted() {
-    status = R_STOPPED;
+	// event fires from runcoltroller to tell program to signal user stop
+    status = R_STOPING;
+    //
+    // force the interperter ops that block to go ahead and quit
     // stop timers
     sleeper->wake();
    // stop playing any wav files
@@ -972,15 +960,17 @@ Interpreter::runHalted() {
 
 void
 Interpreter::run() {
+	// main run loop
     onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
 		emit(seekLine(2));
 		emit(seekLine(1));
 	}
-    while (status != R_STOPPED && execByteCode() >= 0) {} //continue
+    while (status != R_STOPING && execByteCode() >= 0) {} //continue
     status = R_STOPPED;
+    debugMode = 0;
     cleanup(); // cleanup the variables, databases, files, stack and everything
-    emit(stopRun());
+    emit(stopRunFinalized());
 }
 
 
@@ -1402,6 +1392,8 @@ Interpreter::execByteCode() {
 							// would go three dimensional - but not right now
 							emit(seekLine(currentLine));
 							if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
+								// show step and runto options
+								emit(debugNextStep());
 								// wait for button if we are stepping or if we are at a break point
 								mydebugmutex->lock();
 								waitDebugCond->wait(mydebugmutex);

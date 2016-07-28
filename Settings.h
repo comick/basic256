@@ -36,14 +36,17 @@
 	#define SETTINGSDEFAULT_H 600
     #define SETTINGSFONT "Main/Font"
     #define SETTINGSTOOLBAR "Main/Toolbar"
+    #define SETTINGSTOOLBARDEFAULT true
     #define SETTINGSFONTDEFAULT "DejaVu Sans Mono,11,-1,5,50,0,0,0,0,0"
 
     #define SETTINGSEDITWHITESPACE "Edit/Whitespace"
     #define SETTINGSEDITWHITESPACEDEFAULT false
     
     #define SETTINGSEDITVISIBLE "EditDock/Visible"
+    #define SETTINGSEDITVISIBLEDEFAULT true
 
     #define SETTINGSOUTVISIBLE "OutDock/Visible"
+    #define SETTINGSOUTVISIBLEDEFAULT true
     #define SETTINGSOUTFLOAT "OutDock/Float"
     #define SETTINGSOUTPOS "OutDock/Pos"
 	#define SETTINGSOUTDEFAULT_X 100
@@ -52,8 +55,10 @@
 	#define SETTINGSOUTDEFAULT_W 400
 	#define SETTINGSOUTDEFAULT_H 400
     #define SETTINGSOUTTOOLBAR "OutDock/Toolbar"
+    #define SETTINGSOUTTOOLBARDEFAULT true
 
     #define SETTINGSGRAPHVISIBLE "GraphDock/Visible"
+    #define SETTINGSGRAPHVISIBLEDEFAULT true
     #define SETTINGSGRAPHFLOAT "GraphDock/Float"
     #define SETTINGSGRAPHPOS "GraphDock/Pos"
 	#define SETTINGSGRAPHDEFAULT_X 100
@@ -62,9 +67,12 @@
 	#define SETTINGSGRAPHDEFAULT_W 400
 	#define SETTINGSGRAPHDEFAULT_H 400
     #define SETTINGSGRAPHTOOLBAR "GraphDock/Toolbar"
+    #define SETTINGSGRAPHTOOLBARDEFAULT true
     #define SETTINGSGRAPHGRIDLINES "GraphDock/GridLines"
-
+    #define SETTINGSGRAPHGRIDLINESDEFAUT false
+    
     #define SETTINGSVARVISIBLE "VarDock/Visible"
+    #define SETTINGSVARVISIBLEDEFAULT true
     #define SETTINGSVARFLOAT "VarDock/Float"
     #define SETTINGSVARPOS "VarDock/Pos"
 	#define SETTINGSVARDEFAULT_X 100

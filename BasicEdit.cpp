@@ -39,12 +39,14 @@ using namespace std;
 #include "BasicEdit.h"
 #include "LineNumberArea.h"
 #include "Settings.h"
+#include "Constants.h"
 
 extern MainWindow * mainwin;
 
 BasicEdit::BasicEdit() {
 	this->setInputMethodHints(Qt::ImhNoPredictiveText);
 	currentLine = 1;
+	runState = RUNSTATESTOP;
     startPos = this->textCursor().position();
     rightClickBlockNumber = -1;
     breakPoints = new QList<int>;
@@ -658,10 +660,23 @@ void BasicEdit::highlightCurrentLine() {
     QColor lineColor;
     QColor blockColor;
 	
-	if (isReadOnly()) {
+	if (runState==RUNSTATERUN || runState==RUNSTATESTOPING || (runState==RUNSTATESTOP && isReadOnly())) {
+		// no highlighting when running, stopping, or in -r mode
+		setExtraSelections(extraSelections);
+		return;
+	}
+	if (runState==RUNSTATEDEBUG) {
+		// if we are waiting to execute in debug mode
         lineColor = QColor(Qt::red).lighter(175);
         blockColor = QColor(Qt::red).lighter(190);
-	} else {
+	}
+	if (runState==RUNSTATERUNDEBUG) {
+		// if we are executing in debug mode
+        lineColor = QColor(Qt::green).lighter(175);
+        blockColor = QColor(Qt::green).lighter(190);
+	}
+	if (runState==RUNSTATESTOP) {
+		// in edit mode
         lineColor = QColor(Qt::yellow).lighter(165);
         blockColor = QColor(Qt::yellow).lighter(190);
 	}
@@ -680,8 +695,8 @@ void BasicEdit::highlightCurrentLine() {
     extraSelections.append(selection);
 
 
-    //mark brackets
-    if (!isReadOnly()) {
+    //mark brackets if we are editing
+	if (runState==RUNSTATESTOP && !isReadOnly()) {
         QTextCursor cur = textCursor();
         int pos = cur.position();
         cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
@@ -848,7 +863,7 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
             //or http://www.forum.crossplatform.ru/index.php?showtopic=3963
             if (blockNumber==currentBlockNumber)
                 painter.fillRect(0,top,lineNumberArea->width(),bottom-top-(blockNumber==lastBlockNumber?3:0), QColor(Qt::lightGray).lighter(110));
-            else if(top <= y && bottom > y && y>=0 && runningState != 1)
+            else if(top <= y && bottom > y && y>=0 && runState != RUNSTATERUN)
                 painter.fillRect(0,top,lineNumberArea->width(),bottom-top-(blockNumber==lastBlockNumber?3:0), QColor(Qt::lightGray).lighter(104));
 
             // Draw breakpoints
@@ -886,7 +901,7 @@ void BasicEdit::lineNumberAreaMouseWheelEvent(QWheelEvent *event) {
 //breakPoints list is also needed by interpretor. Before running in debug mode breakPoints list is update by calling updateBreakPointsList().
 //Because setting/removing breakpoints is enabled in debug mode, we set/unset breakpoints in breakPoints list too.
 void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
-    if (runningState == 1)
+    if (runState == RUNSTATERUN)
         return;
     // based on mouse click - set the breakpoint in the map/block and highlight the line
 	int line;

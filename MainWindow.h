@@ -42,16 +42,21 @@
 #include "DockWidget.h"
 
 
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
   	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
 	~MainWindow();
+	void loadCustomizations();
+	void saveCustomizations();
+	void ifGuiStateRun();
+	void ifGuiStateClose();
 	void closeEvent(QCloseEvent *);
-	void loadAndGoMode();
+	void setGuiState(int);
     void setEnabledEditorButtons(bool val);
+    void setRunState(int);
+    
 
 	// Main IU Widgets
 	BasicWidget * editwinwgt;
@@ -66,7 +71,6 @@ public:
 	QAction * saveact;
 	QAction * saveasact;
 	QAction * printact;
-	bool showRecentList;
 	QAction *recentact[SETTINGSGROUPHISTN]; 
 	QAction * exitact;
 
@@ -93,6 +97,9 @@ public:
 	QAction *editWhitespaceAct;
 	QAction *graphGridVisibleAct;
 	QAction *fontact;
+	QAction *maintbaract;
+	QAction *texttbaract;
+	QAction *graphtbaract;
 
 	// run menu
 	QMenu *runmenu;
@@ -103,13 +110,16 @@ public:
     QAction * stopact;
     QAction * clearbreakpointsact;
 
-	RunController *rc;
+    // help menu
+    QAction * helpthis;
+
+    RunController *rc;
     EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;
     bool undoButtonValue;
     bool redoButtonValue;
-
+	
 public slots:
   void updateStatusBar(QString);
   void updateWindowTitle(QString);
@@ -123,6 +133,9 @@ private:
 	DockWidget * vardock;
 
 	QToolBar *maintbar;
+    
+	// SEE GUISTATE* Constants
+	int guiState;
 
 	// void pointer to the run controller
 	// can't specify type because of circular reference

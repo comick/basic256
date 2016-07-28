@@ -42,11 +42,8 @@ class RunController : public QObject
   DocumentationWin *docwin;
 
  signals:
-  void debugStarted();
   void runStarted();
   void runHalted();
-  void runPaused();
-  void runResumed();
  
  public slots:
   void speakWords(QString);
@@ -58,9 +55,10 @@ class RunController : public QObject
   void goutputReady();
   void mainWindowsResize(int, int, int);
   void startDebug();
+  void debugNextStep();
   void startRun();
-  void stopRun();
-  void pauseResume();
+  void stopRun();				// user pressed the stop button
+  void stopRunFinalized();		// called when interperter finally finished stoprun
   void stepThrough();
   void stepBreakPoint();
   void showDocumentation();
@@ -76,7 +74,6 @@ class RunController : public QObject
   void dialogConfirm(QString, int);
   void dialogPrompt(QString, QString);
   void dialogFontSelect();
-  void mainWindowSetRunning(int);
 
  private:
   Interpreter *i;

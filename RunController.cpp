@@ -96,6 +96,7 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
     QObject::connect(i, SIGNAL(seekLine(int)), editwin, SLOT(seekLine(int)));
 
+    QObject::connect(i, SIGNAL(debugNextStep()), this, SLOT(debugNextStep()));
     QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
     QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
     QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
@@ -107,6 +108,7 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
     QObject::connect(i, SIGNAL(outputError(QString)), this, SLOT(outputError(QString)));
     QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
+    QObject::connect(i, SIGNAL(stopRunFinalized()), this, SLOT(stopRunFinalized()));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 #ifdef ANDROID
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
@@ -127,8 +129,6 @@ RunController::RunController() {
 	QObject::connect(i, SIGNAL(varWinDimArray(Variables*, int, int, int)), varwin,
 		SLOT(varWinDimArray(Variables*, int, int, int)));
 
-    QObject::connect(this, SIGNAL(runPaused()), i, SLOT(runPaused()));
-    QObject::connect(this, SIGNAL(runResumed()), i, SLOT(runResumed()));
     QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
 
     QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(inputEntered(QString)));
@@ -252,10 +252,17 @@ RunController::startDebug() {
         graphwin->setFocus();
         i->start();
         varwin->clear();
-        mainWindowSetRunning(2);
-        emit(debugStarted());
+        if (replacewin) replacewin->close();
+        mainwin->setRunState(RUNSTATEDEBUG);
     }
 }
+
+void
+RunController::debugNextStep() {
+	// show step buttons for next debug step
+    mainwin->setRunState(RUNSTATEDEBUG);
+}
+
 
 void
 RunController::startRun() {
@@ -282,7 +289,8 @@ RunController::startRun() {
         graphwin->setFocus();
         i->start();
         varwin->clear();
-        mainWindowSetRunning(1);
+        if (replacewin) replacewin->close();
+        mainwin->setRunState(RUNSTATERUN);
         emit(runStarted());
     }
 }
@@ -337,6 +345,7 @@ RunController::goutputReady() {
 void
 RunController::stepThrough() {
 	i->debugMode = 1; // step through debugging
+	mainwin->setRunState(RUNSTATERUNDEBUG);
     mydebugmutex->lock();
     waitDebugCond->wakeAll();
     mydebugmutex->unlock();
@@ -345,16 +354,17 @@ void
 
 RunController::stepBreakPoint() {
 	i->debugMode = 2; // run to break point debugging
+	mainwin->setRunState(RUNSTATERUNDEBUG);
     mydebugmutex->lock();
     waitDebugCond->wakeAll();
     mydebugmutex->unlock();
 }
 
-void
-RunController::stopRun() {
-	mainwin->statusBar()->showMessage(tr("Ready."));
+void RunController::stopRun() {
+	// event when the user clicks on the stop button
+	mainwin->statusBar()->showMessage(tr("Stopping."));
 
-	mainWindowSetRunning(0);
+	mainwin->setRunState(RUNSTATESTOPING);
 
 	mymutex->lock();
 	outwin->stopInput();
@@ -369,18 +379,13 @@ RunController::stopRun() {
 	emit(runHalted());
 }
 
+void RunController::stopRunFinalized() {
+	// event when the interperter actually finishes the run
+	mainwin->statusBar()->showMessage(tr("Ready."));
 
-void
-RunController::pauseResume() {
-    if (paused) {
-        mainwin->statusBar()->showMessage(tr("Running"));
-        paused = false;
-        emit(runResumed());
-    } else {
-        mainwin->statusBar()->showMessage(tr("Paused"));
-        paused = true;
-        emit(runPaused());
-    }
+	mainwin->setRunState(RUNSTATESTOP);
+
+	mainwin->ifGuiStateClose();
 }
 
 void
@@ -543,41 +548,3 @@ void RunController::dialogFontSelect() {
 		mymutex->unlock();
 	}
 }
-
-void RunController::mainWindowSetRunning(int type) {
-    // set the menus, menu options, and tool bar items to
-    // correct state based on the stop/run/debug status
-    // type 0 - stop, 1-run, 2-debug
-
-    editwin->setReadOnly(type!=0);
-    if (replacewin) replacewin->close();
-	editwin->highlightCurrentLine();
-    editwin->runningState = type;
-
-    // file menu
-    mainwin->newact->setEnabled(type==0);
-    mainwin->openact->setEnabled(type==0);
-    mainwin->saveact->setEnabled(type==0);
-    mainwin->saveasact->setEnabled(type==0);
-    mainwin->printact->setEnabled(type==0);
-    for(int t=0; t<SETTINGSGROUPHISTN; t++) mainwin->recentact[t]->setEnabled(type==0);
-    mainwin->exitact->setEnabled(true);
-
-    // edit menu
-    mainwin->setEnabledEditorButtons(type==0);
-    mainwin->selectallact->setEnabled(type==0);
-    mainwin->findact->setEnabled(type==0);
-    mainwin->findagain->setEnabled(type==0);
-    mainwin->replaceact->setEnabled(type==0);
-    mainwin->beautifyact->setEnabled(type==0);
-    mainwin->prefact->setEnabled(type==0);
-
-    // run menu
-    mainwin->runact->setEnabled(type==0);
-    mainwin->debugact->setEnabled(type==0);
-    mainwin->stepact->setEnabled(type==2);
-    mainwin->bpact->setEnabled(type==2);
-    mainwin->stopact->setEnabled(type!=0);
-    mainwin->clearbreakpointsact->setEnabled(type!=1);
-}
-

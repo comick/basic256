@@ -17,3 +17,24 @@
 #ifndef EDITOR_TAB_WIDTH
 	#define EDITOR_TAB_WIDTH 4
 #endif
+
+// time between sleep interrupt checks
+#ifndef SLEEP_GRANULE
+	#define SLEEP_GRANULE 2000L
+#endif
+
+// command line states that define how the GUI is laid-out and reacts
+#ifndef GUISTATENORMAL
+	#define GUISTATENORMAL 0
+	#define GUISTATERUN 1
+	#define GUISTATEAPP 2
+#endif
+
+// states of a program
+#ifndef RUNSTATESTOP
+	#define RUNSTATESTOP 0
+	#define RUNSTATERUN 1
+	#define RUNSTATEDEBUG 2
+	#define RUNSTATESTOPING 3
+	#define RUNSTATERUNDEBUG 4
+#endif

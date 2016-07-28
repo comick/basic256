@@ -15,7 +15,9 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
+#include "Constants.h"
 #include "Sleeper.h"
+
 
 Sleeper::Sleeper() {
 	wakesleeper=false;
@@ -30,9 +32,9 @@ bool Sleeper::sleepMS(long int ms) {
 	// interruptable - return true if NOT interrupted
 	wakesleeper=false;
 	while (ms > 0L && !wakesleeper) {
-		if(ms > 100L){
-			ms -= 100L;
-			sleepRQM(100L);
+		if(ms > SLEEP_GRANULE){
+			ms -= SLEEP_GRANULE;
+			sleepRQM(SLEEP_GRANULE);
 		}else{
 			sleepRQM(ms);
 			break;
@@ -51,10 +53,10 @@ void Sleeper::sleepRQM(long int ms) {
 			s = (ms/1000);
 			ms %= 1000;
 		}
-		struct timespec tim, tim2;
+		struct timespec tim;
         tim.tv_sec = s;
 		tim.tv_nsec = ms * 1000000L;
-		nanosleep(&tim, &tim2);
+		nanosleep(&tim, NULL);
 #endif
 }
 

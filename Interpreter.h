@@ -52,7 +52,7 @@
 	#include <QSerialPort>
 #endif
 
-enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED};
+enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED, R_STOPING};
 
 #define NUMFILES 8
 #define NUMSOCKETS 8
@@ -133,14 +133,14 @@ class Interpreter : public QThread
 
 	public slots:
 		int execByteCode();
-		void runPaused();
-		void runResumed();
 		void runHalted();
 		void inputEntered(QString);
 
 	signals:
+		void debugNextStep();
 		void fastGraphics();
 		void stopRun();
+		void stopRunFinalized();
 		void goutputReady();
 		void outputReady(QString);
 		void outputError(QString);

@@ -52,7 +52,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         QList<int> *breakPoints;
         void updateBreakPointsList();
 		void setFont(QFont);
-        int runningState; //0 - stop, 1-run, 2-debug
+        int runState; //0 - stop, 1-run, 2-debug
         QString winTitle;
         void setWindowTitle(QString title);
         void dropEvent(QDropEvent *event);
