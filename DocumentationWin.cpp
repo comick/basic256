@@ -51,10 +51,13 @@ DocumentationWin::DocumentationWin (QWidget * parent){
                          <<	QApplication::applicationDirPath() + "/wikihelp/help/"
                         );
     connect(docs,SIGNAL(anchorClicked(QUrl)),this,SLOT(hijackAnchorClicked(QUrl)));
-    connect(docs, SIGNAL(sourceChanged(const QUrl)), this, SLOT(newSource(const QUrl)));
+    connect(docs, SIGNAL(sourceChanged(const QUrl)), this, SLOT(sourceChangedSlot(const QUrl)));
 
     //Prepare toolbar
     toolbar = new QToolBar( this );
+    QAction *home = new QAction(QIcon(":images/home.png"), tr("&Home"), this);
+    connect(home, SIGNAL(triggered()), docs, SLOT(home()));
+    toolbar->addAction(home);
     QAction *backward = new QAction(QIcon(":images/backward.png"), tr("&Back"), this);
     connect(backward, SIGNAL(triggered()), docs, SLOT(backward()));
     connect(docs, SIGNAL(backwardAvailable(bool)), backward, SLOT(setEnabled(bool)));
@@ -63,18 +66,17 @@ DocumentationWin::DocumentationWin (QWidget * parent){
     connect(forward, SIGNAL(triggered()), docs, SLOT(forward()));
     connect(docs, SIGNAL(forwardAvailable(bool)), forward, SLOT(setEnabled(bool)));
     toolbar->addAction(forward);
-    QAction *home = new QAction(QIcon(":images/home.png"), tr("&Home"), this);
-    connect(home, SIGNAL(triggered()), docs, SLOT(home()));
-    toolbar->addAction(home);
     toolbar->addSeparator();
     QAction* find = new QAction(QIcon(":images/find.png"), tr("&Find"), this);
     find->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
-    connect(find, SIGNAL(triggered()), this, SLOT (searchFocus()));
+    connect(find, SIGNAL(triggered()), this, SLOT (searchSetFocus()));
     toolbar->addAction(find);
     QAction *zoomin = new QAction(QIcon(":images/zoom-in.png"), tr("Zoom in"), this);
+    zoomin->setShortcuts(QKeySequence::keyBindings(QKeySequence::ZoomIn));
     connect(zoomin, SIGNAL(triggered()), docs, SLOT(zoomIn()));
     toolbar->addAction(zoomin);
     QAction *zoomout = new QAction(QIcon(":images/zoom-out.png"), tr("Zoom out"), this);
+    zoomout->setShortcuts(QKeySequence::keyBindings(QKeySequence::ZoomOut));
     connect(zoomout, SIGNAL(triggered()), docs, SLOT(zoomOut()));
     toolbar->addAction(zoomout);
     toolbar->addSeparator();
@@ -82,6 +84,10 @@ DocumentationWin::DocumentationWin (QWidget * parent){
     printact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
     connect(printact, SIGNAL(triggered()), this, SLOT(slotPrintHelp()));
     toolbar->addAction(printact);
+    toolbar->addSeparator();
+    QAction *onlinehact = new QAction(QIcon(":images/firefox.png"), tr("&Online help..."), this);
+    connect(onlinehact, SIGNAL(triggered()), this, SLOT(showOnlineHelpPage()));
+    toolbar->addAction(onlinehact);
     QWidget* empty = new QWidget();
     empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
     toolbar->addWidget(empty);
@@ -159,6 +165,7 @@ DocumentationWin::DocumentationWin (QWidget * parent){
 
 
 void DocumentationWin::go(QString word) {
+    static bool firstTime = true;
     // pass word for context level help or pass "" for general help
     QString u;
     if (word == "") {
@@ -166,10 +173,13 @@ void DocumentationWin::go(QString word) {
         if(setBestSourceForHelp(u.toLower())==false)
             docs->setHtml(tr("<h2>Local help files are not available.<h2><p>Try the online documentation at <a href='http://doc.basic256.org'>http://doc.basic256.org</a>.</p>"));
     } else {
+        if(firstTime)
+            go("");
         u = localecode + "_" + word + ".html";
         if(setBestSourceForHelp(u.toLower())==false)
             go("");
     }
+    firstTime = false;
 }
 
 
@@ -187,7 +197,7 @@ void DocumentationWin::closeEvent(QCloseEvent *e) {
 }
 
 
-void DocumentationWin::newSource(const QUrl url){
+void DocumentationWin::sourceChangedSlot(const QUrl url){
     //Grab title for new source
     QString title;
     QString html = docs->toHtml();
@@ -248,10 +258,14 @@ void DocumentationWin::findWordInHelp(bool verbose, bool reverse) {
     }}
 
 
-void DocumentationWin::searchFocus(){
+void DocumentationWin::searchSetFocus(){
+    QTextCursor cursor = docs->textCursor();
+    if(cursor.hasSelection()){
+        searchinput->setText(cursor.selectedText());
+    }
+    searchinput->selectAll();
     bottom->show();
     searchinput->setFocus();
-    searchinput->selectAll();
 }
 
 
@@ -300,13 +314,17 @@ void DocumentationWin::highlight(){
 
 
 void DocumentationWin::searchTextChanged(){
-    QTextCursor cursor = docs->textCursor();
-    int s = cursor.selectionStart();
-    int e = cursor.selectionEnd();
-    cursor.setPosition(s<=e?s:e);
-    docs->setTextCursor(cursor);
-    highlight();
-    findWordInHelp(false);
+    if(searchinput->text().length() == 0){
+        highlight();
+    }else{
+        QTextCursor cursor = docs->textCursor();
+        int s = cursor.selectionStart();
+        int e = cursor.selectionEnd();
+        cursor.setPosition(s<=e?s:e);
+        docs->setTextCursor(cursor);
+        highlight();
+        findWordInHelp(false);
+    }
 }
 
 
@@ -317,8 +335,9 @@ void DocumentationWin::keyPressEvent(QKeyEvent *e) {
     }else if(e->text()!="" && (e->modifiers()==Qt::NoModifier || e->modifiers()==Qt::ShiftModifier)){
         if(e->text()[0].isPrint()){
             e->accept();
-            searchFocus();
             searchinput->setText( e->text() );
+            bottom->show();
+            searchinput->setFocus();
         }
     }else{
         e->ignore();
@@ -452,21 +471,15 @@ void DocumentationWin::setLanguageAlternatives(QString s) {
             }
         }
     }
-    if(langs.size()<2){
-        viewLanguage->hide();
-        comboLanguage->hide();
-        comboLanguage->clear();
-    }else{
-        comboLanguage->clear();
-        langs.sort();
-        comboLanguage->addItems(langs);
-        int index = comboLanguage->findText(s.left(2));
-        if ( index != -1 ) { // -1 for not found
-           comboLanguage->setCurrentIndex(index);
-        }
-        viewLanguage->show();
-        comboLanguage->show();
+    comboLanguage->clear();
+    langs.sort();
+    comboLanguage->addItems(langs);
+    int index = comboLanguage->findText(s.left(2));
+    if ( index != -1 ) { // -1 for not found
+       comboLanguage->setCurrentIndex(index);
     }
+    viewLanguage->show();
+    comboLanguage->show();
 }
 
 
@@ -478,6 +491,23 @@ void DocumentationWin::userSelectLanguage(const QString s){
     if(before!=after){
         docs->setSource(after);
     }
-
-
 }
+
+
+void DocumentationWin::showOnlineHelpPage() {
+    bool thisPage = false;
+    QString fileName = docs->source().toString();
+    if(fileName.size()>2){
+        if(fileName[2]=='_'){
+            fileName[2]=':';
+            fileName.remove(".html");
+            thisPage=true;
+        }
+    }
+    if(thisPage){
+        QDesktopServices::openUrl(QUrl("http://doc.basic256.org/doku.php?id="+fileName));
+    }else{
+       QDesktopServices::openUrl(QUrl("http://doc.basic256.org/"));
+    }
+}
+

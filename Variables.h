@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unordered_map>
 
 #include <QString>
 
@@ -24,7 +25,7 @@ class VariableArrayPart
 	public:
 		int xdim;
 		int ydim;
-		std::map<int,DataElement*> datamap;
+		std::unordered_map<int,DataElement*> datamap;
 };
 
 class Variable
@@ -81,8 +82,8 @@ class Variables
 	private:
 		Error *error;
 		int recurselevel;
-		std::map<int, std::map<int,Variable*> > varmap;
-		std::map<int, bool> globals;
+		std::unordered_map<int, std::unordered_map<int,Variable*> > varmap;
+		std::unordered_map<int, bool> globals;
 		void clearvariable(Variable *);
 		bool isglobal(int);
 

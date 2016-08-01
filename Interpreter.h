@@ -175,6 +175,7 @@ class Interpreter : public QThread
 		void waitForGraphics();
 		void printError();
 		int netSockClose(int);
+		void netSockCloseAll();
 		Variables *variables;
 		Stack *stack;
 		Error *error;
@@ -210,7 +211,9 @@ class Interpreter : public QThread
 		void watchdim(bool, int, int, int);
 		void watchdecurse(bool);
 
+		int listensockfd;				// temp socket used in netlisten
 		int netsockfd[NUMSOCKETS];
+		
 		DIR *directorypointer;		// used by DIR function
 		QTime runtimer;				// used by MSEC function
 		Sound sound;

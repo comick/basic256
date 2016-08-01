@@ -15,26 +15,16 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-
-#include <QObject>
-#include <QIcon>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QToolBar>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QCheckBox>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QAction>
-#include <QtWidgets/QShortcut>
 
 #include "BasicEdit.h"
 
 #ifndef REPLACEWINH
-
 #define REPLACEWINH
 
 class ReplaceWin : public QDialog
@@ -45,31 +35,29 @@ public:
 	ReplaceWin();
 	void closeEvent(QCloseEvent *);
 	void setReplaceMode(bool);
-	void findAgain();
+    void findAgain();
+    QLineEdit *findText;
 
 private slots:
-	void changeFromInput(QString);
-	void clickCancelButton();
-	void clickFindButton();
-	void clickReplaceButton();
-	void clickReplaceAllButton();
-  
-private:
-	void saveSettings();
-	QLabel *fromlabel;
-	QLineEdit *frominput;
-	QLabel *tolabel;
-	QLineEdit *toinput;
-	QCheckBox *backcheckbox;
-    QCheckBox *casecheckbox;
-    QCheckBox *wordscheckbox;
-    QPushButton *cancelbutton;
-	QPushButton *findbutton;
-	QAction *findagain;
-	QPushButton *replacebutton;
-	QPushButton *replaceallbutton;
-	bool replaceMode;
+    void changeFindText(QString);
+    void clickFindButton();
+    void clickReplaceButton();
+    void clickReplaceAllButton();
+    void switchToFind();
+    void switchToReplace();
 
+private:
+    QLabel *findLabel;
+    QLabel *replaceLabel;
+    QLineEdit *replaceText;
+    QCheckBox *backCheckbox;
+    QCheckBox *caseCheckbox;
+    QCheckBox *wordsCheckbox;
+    QPushButton *cancelButton;
+    QPushButton *findButton;
+    QPushButton *replaceButton;
+    QPushButton *replaceAllButton;
+    bool replaceMode;
 };
 
 #endif

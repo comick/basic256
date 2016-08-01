@@ -50,6 +50,7 @@
 	unsigned int wordOffset = 0;		// current location on the WordCode array
 
 	unsigned int listlen = 0;
+        unsigned int numberoflists = 0;
 
 	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
 	int nvarnumber=0;
@@ -472,10 +473,15 @@ compoundstmt:
 arrayref:
 			'[' expr ']' {
 				addIntOp(OP_PUSHINT, 0);
-				// addOp(OP_STACKSWAP);
+                                addOp(OP_STACKSWAP);
 			}
 			| '[' expr ',' expr ']'
 			;
+
+/* array assigment a[]={0, 1, 2}*/
+
+array_empty:
+                        args_v '[' ']';
 
 /* statement argument paterns */
 
@@ -1038,9 +1044,10 @@ dimstmt: 	B256DIM args_a {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
 			| B256DIM args_v expr {
-				addIntOp(OP_PUSHINT, 1);
-				addIntOp(OP_DIM, varnumber[--nvarnumber]);
-			}
+                                addIntOp(OP_PUSHINT, 1);
+                                addOp(OP_STACKSWAP);
+                                addIntOp(OP_DIM, varnumber[--nvarnumber]);
+                        }
 			| B256DIM args_v args_ee {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
@@ -1050,9 +1057,10 @@ redimstmt:	B256REDIM args_a {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
 			| B256REDIM args_v expr {
-				addIntOp(OP_PUSHINT, 1);
-				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
-			}
+                                addIntOp(OP_PUSHINT, 1);
+                                addOp(OP_STACKSWAP);
+                                addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+                        }
 			| B256REDIM args_v args_ee {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
@@ -1191,12 +1199,21 @@ arrayassign:
 				addOp(OP_CONCATENATE);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v '=' immediatelist {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen = 0;
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| args_v '=' B256EXPLODE args_ee {
+                        | args_v '=' immediatelist {
+                                addIntOp(OP_PUSHINT, 1);	// one dimension
+                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+                        }
+                        | array_empty '=' immediatelist {
+                                addIntOp(OP_PUSHINT, 1);	// one dimension
+                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+                        }
+                        | args_v '=' listoflists {
+                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+                        }
+                        | array_empty '=' listoflists {
+                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+                        }
+                        | args_v '=' B256EXPLODE args_ee {
 				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
 				addIntOp(OP_EXPLODE, varnumber[--nvarnumber]);
 			}
@@ -1405,8 +1422,6 @@ soundstmt:	B256SOUND args_v {
 				addOp(OP_SOUND_LIST);
 			}
 			| B256SOUND immediatelist {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen = 0;
 				addOp(OP_SOUND_LIST);
 			}
 			| B256SOUND args_ee {
@@ -1490,8 +1505,6 @@ polystmt:
 				addOp(OP_POLY_LIST);
 			}
 			| B256POLY immediatelist {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen=0;
 				addOp(OP_POLY_LIST);
 			}
 			;
@@ -1501,8 +1514,6 @@ stampstmt: 	B256STAMP args_eeev {
 				addOp(OP_STAMP_S_LIST);
 			}
 			| B256STAMP args_eeei {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen=0;
 				addOp(OP_STAMP_S_LIST);
 			}
 			| B256STAMP args_eev {
@@ -1510,8 +1521,6 @@ stampstmt: 	B256STAMP args_eeev {
 				addOp(OP_STAMP_LIST);
 			}
 			| B256STAMP args_eei {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen=0;
 				addOp(OP_STAMP_LIST);
 			}
 			| B256STAMP args_eeeev {
@@ -1519,8 +1528,6 @@ stampstmt: 	B256STAMP args_eeev {
 				addOp(OP_STAMP_SR_LIST);
 			}
 			| B256STAMP args_eeeei {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen=0;
 				addOp(OP_STAMP_SR_LIST);
 			}
 			;
@@ -1657,7 +1664,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_a {
+                        | B256INPUT args_a {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
@@ -1834,8 +1841,6 @@ spritepolystmt:
 				addOp(OP_SPRITEPOLY_LIST);
 			}
 			| B256SPRITEPOLY args_ei {
-				addIntOp(OP_PUSHINT, listlen);
-				listlen=0;
 				addOp(OP_SPRITEPOLY_LIST);
 			}
 			;
@@ -2373,8 +2378,23 @@ variablewatchstmt:
    #################################### */
 
 
+
+
+listoflists:
+                        '{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
+                        ;
+
+
+listinlist:
+                        immediatelist {numberoflists = 1; }
+                        | immediatelist ',' listinlist {numberoflists++;}
+                        ;
+
+
+
+
 immediatelist:
-			'{' exprlist '}'
+                        '{' exprlist '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
 			;
 
 

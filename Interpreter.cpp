@@ -121,15 +121,8 @@ Interpreter::Interpreter() {
 	error = new Error();
 	// create the convert and comparer object
 	convert = new Convert(error);
-	// now build tghe new stack object
-	stack = new Stack(error, convert);
-	// now create the variable storage
-	variables = new Variables(error);
-	// initialize the sockets to nothing
-    for (int t=0; t<NUMSOCKETS; t++) netsockfd[t]=-1;
-    // on a windows box start winsock
 #ifdef WIN32
-    //
+    // WINDOWS
     // initialize the winsock network library
     WSAData wsaData;
     int nCode;
@@ -152,24 +145,6 @@ Interpreter::Interpreter() {
         }
     }
 #endif
-    //
-    // initialize pointers used for database recordsets (querries)
-    for (int t=0; t<NUMDBCONN; t++) {
-        for (int u=0; u<NUMDBSET; u++) {
-            dbSet[t][u] = NULL;
-        }
-    }
-    
-    // initialize number of sprites to 0 (on exit clearsprites() is called)
-    nsprites = 0;
-
-    // initialize open files (set to NULL for closed)
-    filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
-    filehandletype = (int*) malloc(NUMFILES * sizeof(int));
-    for (int t=0; t<NUMFILES; t++) {
-        filehandle[t] = NULL;
-        filehandletype[t] = 0;
-    }
 }
 
 Interpreter::~Interpreter() {
@@ -467,12 +442,23 @@ int Interpreter::netSockClose(int fd) {
     // call  f = netSockClose(f);
     if(fd>=0) {
 #ifdef WIN32
+        shutdown(fd,2);
         closesocket(fd);
 #else
+        shutdown(fd,2);
         close(fd);
 #endif
     }
     return(-1);
+}
+
+
+void Interpreter::netSockCloseAll() {
+    // close network connections
+    listensockfd = netSockClose(listensockfd);
+    for (int t=0; t<NUMSOCKETS; t++) {
+        netsockfd[t] = netSockClose(netsockfd[t]);
+    }
 }
 
 void
@@ -654,7 +640,6 @@ void Interpreter::watchdecurse(bool doit) {
 
 int
 Interpreter::compileProgram(char *code) {
-    variables->clear();
     if (newWordCode() < 0) {
         return -1;
     }
@@ -819,6 +804,7 @@ Interpreter::compileProgram(char *code) {
         }
         msg += tr(".\n");
         emit(outputError(msg));
+        status = R_STOPPED;
         return -1;
     }
 
@@ -864,6 +850,25 @@ Interpreter::initialize() {
 	graphwin->clickX = 0;
 	graphwin->clickY = 0;
 	graphwin->clickB = 0;
+		// now build tghe new stack object
+	stack = new Stack(error, convert);
+	// now create the variable storage
+	variables = new Variables(error);
+
+	// initialize the sockets to nothing
+	listensockfd = -1;
+	for (int t=0; t<NUMSOCKETS; t++) netsockfd[t]=-1;
+	
+    // initialize pointers used for database recordsets (querries)
+    for (int t=0; t<NUMDBCONN; t++) {
+        for (int u=0; u<NUMDBSET; u++) {
+            dbSet[t][u] = NULL;
+        }
+    }
+    
+    // initialize number of sprites to 0 (on exit clearsprites() is called)
+    nsprites = 0;
+
 	// initialize files to NULL (closed)
 	filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
 	filehandletype = (int*) malloc(NUMFILES * sizeof(int));
@@ -871,10 +876,7 @@ Interpreter::initialize() {
 		filehandle[t] = NULL;
 		filehandletype[t] = 0;
 	}
-	// initialize network sockets to closed (-1)
-	for (int t=0; t<NUMSOCKETS; t++) {
-		netsockfd[t] = netSockClose(netsockfd[t]);
-	}
+
 	// initialize databse connections
 	// by closing any that were previously open
 	for (int t=0; t<NUMDBCONN; t++) {
@@ -885,6 +887,7 @@ Interpreter::initialize() {
 
 void
 Interpreter::cleanup() {
+    // cleanup that MUST happen for run to early terminate is in runHalted
     // called by run() once the run is terminated
     //
     // Clean up stack
@@ -906,26 +909,30 @@ Interpreter::cleanup() {
 			filehandletype[t] = 0;
         }
     }
-    // close open network connections (set to -1 of closed)
-    for (int t=0; t<NUMSOCKETS; t++) {
-        if (netsockfd[t]) netsockfd[t] = netSockClose(netsockfd[t]);
-    }
+	
     // close open database connections and record sets
     for (int t=0; t<NUMDBCONN; t++) {
         closeDatabase(t);
     }
+    
     // close the currently open folder
     if(directorypointer != NULL) {
         closedir(directorypointer);
         directorypointer = NULL;
     }
+    
     // close a print document if it is open
     if (printing) {
         printing = false;
         printdocumentpainter->end();
         delete printdocumentpainter;
-    }    
+    }   
+    
+    // close network connections
+    netSockCloseAll(); 
 
+	// remove any queued errors
+	error->deq();
 }
 
 void Interpreter::closeDatabase(int t) {
@@ -951,10 +958,17 @@ Interpreter::runHalted() {
     status = R_STOPING;
     //
     // force the interperter ops that block to go ahead and quit
+    
     // stop timers
     sleeper->wake();
-   // stop playing any wav files
+    
+    // stop playing any wav files
     if(mediaplayer) mediaplayer->stop();
+    
+    
+    // close network connections
+    netSockCloseAll(); 
+
 }
 
 
@@ -1158,7 +1172,7 @@ Interpreter::execByteCode() {
                 case OP_REDIM: {
                     int ydim = stack->popint();
                     int xdim = stack->popint();
-                    if (ydim<=0) ydim=1; // need to dimension as 1d
+                    if (xdim<=0) xdim=1; // need to dimension as 1d
                     variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
                     if(!error->pending()) {
                         watchdim(debugMode, i , xdim, ydim);
@@ -1212,19 +1226,19 @@ Interpreter::execByteCode() {
 						}
 					}
 					// create an array
-					variables->arraydim(i, list.size(), 1, false);
+                                        variables->arraydim(i, 1, list.size(), false);
 					if (!error->pending()) {
-						watchdim(debugMode, i , list.size(), 1);
+                                                watchdim(debugMode, i, 1, list.size());
 
-						for(int x=0; x<list.size(); x++) {
+                                                for(int y=0; y<list.size(); y++) {
 							// fill the string array
-							variables->arraysetdata(i, x, 0, new DataElement(list.at(x)));
+                                                        variables->arraysetdata(i, 0, y, new DataElement(list.at(y)));
 							if (!error->pending()) {
-								watchvariable(debugMode, i, x, 0);
+                                                                watchvariable(debugMode, i, 0, y);
 							}
 						}
 					}
-				}
+                                }
 				break;
 
 				case OP_IMPLODE: {
@@ -1236,7 +1250,7 @@ Interpreter::execByteCode() {
 							int kount = variables->arraysize(i);
 							for(int n=0; n<kount; n++) {
 								if (n>0) stuff.append(qdelim);
-								stuff.append(convert->getString(variables->arraygetdata(i, n, 0)));
+                                                                stuff.append(convert->getString(variables->arraygetdata(i, 0, n)));
 							}
 						} else {
 							error->q(ERROR_NOTARRAY, i);
@@ -1329,7 +1343,7 @@ Interpreter::execByteCode() {
 					// expects one integer - variable number
 					int n = variables->arraysize(i);
 					for (int j = 0; j < n; j++) {
-						DataElement *av = variables->arraygetdata(i, j, 0);
+                                                DataElement *av = variables->arraygetdata(i, 0, j);
 						stack->pushdataelement(av);
 					}
 					stack->pushint(n);
@@ -1413,41 +1427,42 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_ARRAYLISTASSIGN: {
+                                case OP_ARRAYLISTASSIGN: {
+                                    int rows = stack->popint();
+                                    int columns = stack->popint(); //pop the first row length - the following rows must have the same length
 
-					int items = stack->popint();
-					
-					// create array if we need to (wrong size)
-					if (variables->get(i)->data->type != T_ARRAY || variables->arraysize(i)!=items) {
-						variables->arraydim(i, items, 1, false);
-						if(error->pending()) break;
-						watchdim(debugMode, i, items, 1);
-					}
+                                    // create array if we need to (wrong dimensions)
+                                    if (variables->get(i)->data->type != T_ARRAY || variables->arraysizey(i)!=columns || variables->arraysizey(i)!=rows) {
+                                        variables->arraydim(i, rows, columns, false);
+                                        if(error->pending()) break;
+                                        watchdim(debugMode, i, rows, columns);
+                                    }
 
-					// use the array dimensions to fill data from stack
-					int xdim = variables->arraysizex(i);
-					int ydim = variables->arraysizey(i);
-					for(int x = xdim-1; x>=0 && !error->pending(); x--) {
-						for (int y = ydim - 1; y >= 0 && !error->pending(); y--) {
-							DataElement *e = stack->popelement();
-							if (e->type==T_UNASSIGNED) {
-								error->q(ERROR_VARNOTASSIGNED, e->intval);
-							} else if (e->type==T_ARRAY) {
-								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
-							} else {
-								variables->arraysetdata(i, x, y, e);
-								if(!error->pending()) {
-									watchvariable(debugMode, i, x, y);
-								}
-							}
-						}
-					}
+                                    for(int row = rows-1; row>=0 && !error->pending(); row--) {
+                                        //pop row length only if is not first row - already popped
+                                        if(row != rows-1)
+                                            if(stack->popint()!=columns){
+                                                error->q(ERROR_ARRAYNITEMS, i);
+                                            }
+                                        for (int col = columns - 1; col >= 0 && !error->pending(); col--) {
+                                            DataElement *e = stack->popelement();
+                                            if (e->type==T_UNASSIGNED) {
+                                                error->q(ERROR_VARNOTASSIGNED, e->intval);
+                                            } else if (e->type==T_ARRAY) {
+                                                error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+                                            } else {
+                                                variables->arraysetdata(i, row, col, e);
+                                                if(!error->pending()) {
+                                                    watchvariable(debugMode, i, row, col);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
 
-				}
-				break;
 
-
-            }
+        }
         }
         break;
 
@@ -3890,7 +3905,6 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_NETLISTEN: {
-                    int tempsockfd;
                     struct sockaddr_in serv_addr, cli_addr;
                     socklen_t clilen;
 
@@ -3904,30 +3918,30 @@ Interpreter::execByteCode() {
                         }
 
                         // SOCK_DGRAM = UDP  SOCK_STREAM = TCP
-                        tempsockfd = socket(AF_INET, SOCK_STREAM, 0);
-                        if (tempsockfd < 0) {
+                        listensockfd = socket(AF_INET, SOCK_STREAM, 0);
+                        if (listensockfd < 0) {
                             error->q(ERROR_NETSOCK, 0, strerror(errno));
                         } else {
                             int optval = 1;
-                            if (setsockopt(tempsockfd,SOL_SOCKET,SO_REUSEADDR,(char *)&optval,sizeof(int))) {
+                            if (setsockopt(listensockfd,SOL_SOCKET,SO_REUSEADDR,(char *)&optval,sizeof(int))) {
                                 error->q(ERROR_NETSOCKOPT, 0, strerror(errno));
-                                tempsockfd = netSockClose(tempsockfd);
+                                listensockfd = netSockClose(listensockfd);
                             } else {
                                 memset((char *) &serv_addr, 0, sizeof(serv_addr));
                                 serv_addr.sin_family = AF_INET;
                                 serv_addr.sin_addr.s_addr = INADDR_ANY;
                                 serv_addr.sin_port = htons(port);
-                                if (bind(tempsockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+                                if (bind(listensockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
                                     error->q(ERROR_NETBIND, 0, strerror(errno));
-                                    tempsockfd = netSockClose(tempsockfd);
+                                    listensockfd = netSockClose(listensockfd);
                                 } else {
-                                    listen(tempsockfd,5);
+                                    listen(listensockfd,5);
                                     clilen = sizeof(cli_addr);
-                                    netsockfd[fn] = accept(tempsockfd, (struct sockaddr *) &cli_addr, &clilen);
+                                    netsockfd[fn] = accept(listensockfd, (struct sockaddr *) &cli_addr, &clilen);
                                     if (netsockfd[fn] < 0) {
                                         error->q(ERROR_NETACCEPT, 0, strerror(errno));
                                     }
-                                    tempsockfd = netSockClose(tempsockfd);
+                                    listensockfd = netSockClose(listensockfd);
                                 }
                             }
                         }

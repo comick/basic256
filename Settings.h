@@ -96,14 +96,6 @@
 
 	// Replace window
 	#define SETTINGSREPLACEPOS "Replace/Pos"
-	#define SETTINGSREPLACEFROM "Replace/From"
-	#define SETTINGSREPLACETO "Replace/To"
-    #define SETTINGSREPLACECASE "Replace/Case"
-    #define SETTINGSREPLACECASEDEFAULT false
-    #define SETTINGSREPLACEWORDS "Replace/Words"
-    #define SETTINGSREPLACEWORDSDEFAULT false
-    #define SETTINGSREPLACEBACK "Replace/Back"
-	#define SETTINGSREPLACEBACKDEFAULT false
 
 	// permissions
 	#define SETTINGSALLOWSYSTEM "Allow/System"

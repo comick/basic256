@@ -131,6 +131,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_ARRAYINDEX:
             errormessage = tr("Array %VARNAME% index out of bounds");
             break;
+		case ERROR_ARRAYNITEMS:
+            errormessage = tr("Array %VARNAME% rows must have the same number of items");
+            break;
         case ERROR_STRNEGLEN:
             errormessage = tr("Substring length less that zero");
             break;

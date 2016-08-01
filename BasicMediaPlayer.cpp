@@ -37,6 +37,7 @@ void BasicMediaPlayer::waitForSeekable(int ms) {
 		timer.setInterval(ms);
 		loop.connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()) );
         loop.connect(this, SIGNAL(seekableChanged(bool)), &loop, SLOT(quit()));
+        loop.connect(this, SIGNAL(error(QMediaPlayer::Error)), &loop, SLOT(quit()));
 		loop.exec();
 	}
 }
@@ -99,7 +100,7 @@ bool BasicMediaPlayer::seek(double time) {
 	waitForSeekable(500);
 	//qDebug ("mediaStatus %d\n",mediaStatus()); 
 	if(isSeekable()) {
-		QMediaPlayer::setPosition(ms);
+		if (ms!=QMediaPlayer::position()) QMediaPlayer::setPosition(ms);
 		return true;
 	} else {
 		return false;

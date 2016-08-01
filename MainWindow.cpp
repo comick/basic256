@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     outwinwgt->setViewWidget(outwin);
     outdock = new DockWidget();
     outdock->setObjectName( "tdock" );
-    outdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    outdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
     outdock->setWidget(outwinwgt);
     outdock->setWindowTitle(QObject::tr("Text Output"));
  
@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 	graphscroll->setWidget(graphwinwgt);
     graphdock = new DockWidget();
     graphdock->setObjectName( "graphdock" );
-    graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    graphdock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
     graphdock->setWidget(graphscroll);
     graphdock->setWindowTitle(QObject::tr("Graphics Output"));
 
@@ -119,9 +119,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     varwinwgt->setViewWidget(varwin);
     vardock = new DockWidget();
     vardock->setObjectName( "vardock" );
-    vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    vardock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
     vardock->setWidget(varwinwgt);
     vardock->setWindowTitle(QObject::tr("Variable Watch"));
+
+    setCentralWidget(editdock);
+    addDockWidget(Qt::RightDockWidgetArea, outdock);
+    addDockWidget(Qt::RightDockWidgetArea, graphdock);
+    addDockWidget(Qt::LeftDockWidgetArea, vardock);
+    setContextMenuPolicy(Qt::NoContextMenu);
 
     rc = new RunController();
     editsyntax = new EditSyntaxHighlighter(editwin->document());
@@ -270,6 +276,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     QObject::connect(graphWinVisibleAct, SIGNAL(toggled(bool)), graphdock, SLOT(setVisible(bool)));
     QObject::connect(variableWinVisibleAct, SIGNAL(toggled(bool)), vardock, SLOT(setVisible(bool)));
 
+    QObject::connect(outdock, SIGNAL(visibilityChanged(bool)), this, SLOT(checkOutMenuVisible()));
+    QObject::connect(graphdock, SIGNAL(visibilityChanged(bool)), this, SLOT(checkGraphMenuVisible()));
+    QObject::connect(vardock, SIGNAL(visibilityChanged(bool)), this, SLOT(checkVarMenuVisible()));
+
     // Editor and Output font and Editor settings
     viewmenu->addSeparator();
     fontact = viewmenu->addAction(QObject::tr("&Font..."));
@@ -384,11 +394,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     maintbar->addAction(copyact);
     maintbar->addAction(pasteact);
         
-    setCentralWidget(editdock);
-    addDockWidget(Qt::RightDockWidgetArea, outdock);
-    addDockWidget(Qt::RightDockWidgetArea, graphdock);
-    addDockWidget(Qt::LeftDockWidgetArea, vardock);
-    setContextMenuPolicy(Qt::NoContextMenu);
 
 	loadCustomizations();
 
@@ -447,16 +452,19 @@ void MainWindow::loadCustomizations() {
 	// mainwindow may not be here absoutely as the docked widgets sizes may force 
 	// qt to move the window and increase size
 
+    // get last size and if it was larger then the screen then reduce to fit
+    mainz = settings.value(SETTINGSSIZE, QSize(SETTINGSDEFAULT_W, SETTINGSDEFAULT_H)).toSize();
+    mainl = settings.value(SETTINGSPOS, QPoint(SETTINGSDEFAULT_X, SETTINGSDEFAULT_Y)).toPoint();
+
 	// if position is off of the screen then return to default location
-	mainl = settings.value(SETTINGSPOS, QPoint(SETTINGSDEFAULT_X, SETTINGSDEFAULT_Y)).toPoint();
-	if (mainl.x() >= screen->width() || mainl.x() <= 0 ) mainl.setX(SETTINGSDEFAULT_X);
-	if (mainl.y() >= screen->height() || mainl.y() <= 0 ) mainl.setY(SETTINGSDEFAULT_Y);
+    if (mainl.x() >= screen->width() || mainl.x() <= 0 ) mainl.setX(SETTINGSDEFAULT_X);
+    if (mainl.y() >= screen->height() || mainl.y() <= 0 ) mainl.setY(SETTINGSDEFAULT_Y);
+    if (mainz.width() >= screen->width()-mainl.x()) mainz.setWidth(screen->width()-mainl.x());
+    if (mainz.height() >= screen->height()-mainl.y()) mainz.setHeight(screen->height()-mainl.y());
+	//proper order
+    resize(mainz);
 	move(mainl);
-	// get last size and if it was larger then the screen then reduce to fit
-	mainz = settings.value(SETTINGSSIZE, QSize(SETTINGSDEFAULT_W, SETTINGSDEFAULT_H)).toSize();
-	if (mainz.width() >= screen->width()-mainl.x()) z.setWidth(screen->width()-mainl.x());
-	if (mainz.height() >= screen->height()-mainl.y()) z.setHeight(screen->height()-mainl.y());
-	resize(mainz);
+
 
 	// position and size the graphics dock and basicgraph
 	floating = settings.value(SETTINGSGRAPHFLOAT, false).toBool();
@@ -768,3 +776,12 @@ void MainWindow::setRunState(int state) {
     clearbreakpointsact->setEnabled(state!=RUNSTATERUN);
 }
 
+void MainWindow::checkGraphMenuVisible(){
+    graphWinVisibleAct->setChecked(graphdock->isVisible());
+}
+void MainWindow::checkOutMenuVisible(){
+    outWinVisibleAct->setChecked(outdock->isVisible());
+}
+void MainWindow::checkVarMenuVisible(){
+    variableWinVisibleAct->setChecked(vardock->isVisible());
+}

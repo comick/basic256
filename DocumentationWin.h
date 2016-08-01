@@ -64,9 +64,10 @@ class DocumentationWin : public QDialog
     void clickFindNext();
     void clickFindPrev();
     void clickCloseFind();
-    void newSource(const QUrl url);
-    void searchFocus();
+    void sourceChangedSlot(const QUrl url);
+    void searchSetFocus();
     void userSelectLanguage(const QString s);
+    void showOnlineHelpPage();
 
   private:
     bool helpFileExists(QString check);

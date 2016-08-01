@@ -42,11 +42,11 @@ int Convert::getBool(DataElement *e) {
 	// an array throws an error and is 0
 	if (e) {
 		if (e->type == T_INT || e->type == T_REF) {
-			if(e->intval!=0) return 1;
+			return ((e->intval!=0)?1:0);
 		} else if (e->type == T_FLOAT) {
-			if (e->floatval < -EPSILON || e->floatval > EPSILON) return 1;
+			return ((e->floatval < -EPSILON || e->floatval > EPSILON)?1:0);
 		} else if (e->type == T_STRING) {
-			if (e->stringval.length()!=0) return 1;
+			return ((e->stringval.length()!=0)?1:0);
 		} else if (e->type==T_UNASSIGNED) {
 			return 0;
 		} else if (e->type==T_ARRAY) {
@@ -97,10 +97,10 @@ long Convert::getLong(DataElement *e) {
 double Convert::getFloat(DataElement *e) {
     double f=0;
 	if (e) {
-		if (e->type == T_INT || e->type == T_REF) {
-			f = e->intval;
-		} else if (e->type == T_FLOAT) {
+		if (e->type == T_FLOAT) {
 			f = e->floatval;
+		} else if (e->type == T_INT || e->type == T_REF) {
+			f = e->intval;
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
 				bool ok;

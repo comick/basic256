@@ -41,9 +41,9 @@ QString Variables::debug() {
 	// return a string representing the variables
 	QString s("");
 	if(!varmap.empty()) {
-		for(std::map<int, std::map<int, Variable*> >::iterator i = varmap.begin(); i != varmap.end(); ++i) {
+		for(std::unordered_map<int, std::unordered_map<int, Variable*> >::iterator i = varmap.begin(); i != varmap.end(); ++i) {
 			s += "recurse Level " + QString::number(i->first);
-			for(std::map<int, Variable*>::iterator j = i->second.begin(); j != i->second.end(); ++j) {
+			for(std::unordered_map<int, Variable*>::iterator j = i->second.begin(); j != i->second.end(); ++j) {
 				s += " varnum " + QString::number(j->first);
 				s += " " + (j->second->data?j->second->data->debug():"NULL") + "\n";
 			}
@@ -82,7 +82,7 @@ Variables::decreaserecurse() {
         // to the previous level
         if(varmap.find(recurselevel)!=varmap.end()) {
             while(!varmap[recurselevel].empty()) {
-                std::map<int,Variable*>::iterator j=varmap[recurselevel].begin();
+                std::unordered_map<int,Variable*>::iterator j=varmap[recurselevel].begin();
                 delete((*j).second);
                 varmap[recurselevel].erase((*j).first);
             }

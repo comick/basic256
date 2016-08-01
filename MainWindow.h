@@ -148,6 +148,9 @@ private slots:
     void updateCopyCutButtons(bool);
     void slotUndoAvailable(bool val);
     void slotRedoAvailable(bool val);
+    void checkGraphMenuVisible();
+    void checkOutMenuVisible();
+    void checkVarMenuVisible();
 };
 
 #endif

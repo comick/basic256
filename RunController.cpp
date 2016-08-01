@@ -241,7 +241,7 @@ RunController::startDebug() {
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         if (result < 0) {
             i->debugMode = 0;
-            emit(runHalted());
+            stopRunFinalized();
             return;
         }
         i->initialize();
@@ -273,7 +273,7 @@ RunController::startRun() {
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         i->debugMode = 0;
         if (result < 0) {
-            emit(runHalted());
+            stopRunFinalized();
             return;
         }
         // if successful compile see if we need to save it
@@ -440,6 +440,11 @@ RunController::showPreferences() {
 void RunController::showReplace() {
     if (!replacewin) replacewin = new ReplaceWin();
     replacewin->setReplaceMode(true);
+    QTextCursor cursor = editwin->textCursor();
+    if(cursor.hasSelection()){
+        replacewin->findText->setText(cursor.selectedText());
+    }
+    replacewin->findText->selectAll();
     replacewin->show();
     replacewin->raise();
     replacewin->activateWindow();
@@ -448,6 +453,11 @@ void RunController::showReplace() {
 void RunController::showFind() {
     if (!replacewin) replacewin = new ReplaceWin();
     replacewin->setReplaceMode(false);
+    QTextCursor cursor = editwin->textCursor();
+    if(cursor.hasSelection()){
+        replacewin->findText->setText(cursor.selectedText());
+    }
+    replacewin->findText->selectAll();
     replacewin->show();
     replacewin->raise();
     replacewin->activateWindow();

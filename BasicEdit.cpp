@@ -522,6 +522,15 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
                 tr("String not found."),
                 QMessageBox::Ok, QMessageBox::Ok);
         }else{
+            //start from current screen position -> no scroll or scroll only as needed
+            //if next search is in the same view
+            verticalScrollBar()->setValue(scroll);
+            // we can use ensureCursorVisible() but we want to make sure that entire selection is visible
+            cursor = this->textCursor();
+            cursorSaved = cursor;
+            cursor.setPosition(cursor.selectionStart());
+            setTextCursor(cursor);
+            setTextCursor(cursorSaved);
             setUpdatesEnabled(true);
         }
     }
@@ -530,57 +539,31 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool words, bool doall) {
 	if(from.length()==0) return;
 
-	// create common flags for replace or replace all
-	QTextDocument::FindFlags flag;
-	if (casesens) flag |= QTextDocument::FindCaseSensitively;
-	if (words) flag |= QTextDocument::FindWholeWords;
-
-	// get a COPY of the cursor on the current text
-	QTextCursor cursor = this->textCursor();
-	
-	// save the cursor position and the verticalScrollBar value
-	int position = cursor.position();
-	int scroll = verticalScrollBar()->value();
-
 	// Replace one time.
 	if(!doall){
-		if (reverse) flag |= QTextDocument::FindBackward;
-
 		//Replace if text is selected - use the cursor from the last find not the copy
-		if (from.compare(cursor.selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))==0){
+        QTextCursor cursor = this->textCursor();
+        if (from.compare(cursor.selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))==0){
 			cursor.insertText(to);
-			setTextCursor(cursor);
 		}
 
 		//Make a search
-        if (!find(from, flag))
-		{
-            setUpdatesEnabled(false);
-            //nothing is found | jump to start/end
-			cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
-			setTextCursor(cursor);
+        findString(from, reverse, casesens, words);
 
-			if (!find(from, flag))
-			{
-				// word not found : we set the cursor back to its initial position and restore verticalScrollBar value
-				cursor.setPosition(position);
-				setTextCursor(cursor);
-				verticalScrollBar()->setValue(scroll);
-				QMessageBox::information(this, tr("Replace"),
-					tr("String not found."),
-					QMessageBox::Ok, QMessageBox::Ok);
-			}
-            setUpdatesEnabled(true);
-		}
-
-	//Replace all
-	}else{
+    //Replace all
+    }else{
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         setUpdatesEnabled(false);
+        QTextCursor cursor = this->textCursor();
+        QTextCursor cursorSaved = cursor;
+        int scroll = verticalScrollBar()->value();
         cursor.beginEditBlock();
         int n = 0;
 		cursor.movePosition(QTextCursor::Start);
 		setTextCursor(cursor);
+        QTextDocument::FindFlags flag;
+        if (casesens) flag |= QTextDocument::FindCaseSensitively;
+        if (words) flag |= QTextDocument::FindWholeWords;
 		while (find(from, flag)){
 			if (textCursor().hasSelection()){
 				textCursor().insertText(to);
@@ -588,9 +571,8 @@ void BasicEdit::replaceString(QString from, QString to, bool reverse, bool cases
 			}
 		}
 		// set the cursor back to its initial position and restore verticalScrollBar value
-		cursor.setPosition(position);
-		setTextCursor(cursor);
-		verticalScrollBar()->setValue(scroll);
+        setTextCursor(cursorSaved);
+        verticalScrollBar()->setValue(scroll);
         cursor.endEditBlock();
         setUpdatesEnabled(true);
         QApplication::restoreOverrideCursor();
