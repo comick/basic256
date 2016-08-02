@@ -67,7 +67,7 @@
 
 	char *EMPTYSTR = "";
 	char *symtable[SYMTABLESIZE];
-	int labeltable[SYMTABLESIZE];
+	int symtableaddress[SYMTABLESIZE];
 	int numsyms = 0;
 
 
@@ -203,19 +203,12 @@
 	}
 
 	void
-	clearLabelTable() {
-		int j;
-		for (j = 0; j < SYMTABLESIZE; j++) {
-			labeltable[j] = -1;
-		}
-	}
-
-	void
 	clearSymbolTable() {
 		int j;
 		if (numsyms == 0) {
 			for (j = 0; j < SYMTABLESIZE; j++) {
 				symtable[j] = 0;
+				symtableaddress[j] = -1;
 			}
 		}
 		for (j = 0; j < numsyms; j++) {
@@ -223,6 +216,7 @@
 				free(symtable[j]);
 			}
 			symtable[j] = 0;
+			symtableaddress[j] = -1;
 		}
 		numsyms = 0;
 	}
@@ -438,7 +432,7 @@ label:			B256LABEL {
 						errorcode = COMPERR_FUNCTIONGOTO;
 						return -1;
 					}
-					labeltable[$1] = wordOffset;
+					symtableaddress[$1] = wordOffset;
 				}
 				;
 
@@ -730,7 +724,7 @@ caseexpr:	B256CASE {
 						}
 						//
 						// resolve branchfalse from previous case
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						//
 						numifs--;
 					}
@@ -759,7 +753,7 @@ catchstmt: 	B256CATCH {
 					if (iftabletype[numifs-1]==IFTABLETYPETRY) {
 						//
 						// resolve the try onerrorcatch to the catch address
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 						//
 						// put new if on the frame for the catch
@@ -780,7 +774,7 @@ catchstmt: 	B256CATCH {
 dostmt: 	B256DO {
 				//
 				// create internal symbol and add to the label table for the top of the loop
-				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset;
+				symtableaddress[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset;
 				//
 				// add to if frame
 				newIf(linenumber, IFTABLETYPEDO);
@@ -796,7 +790,7 @@ elsestmt:	B256ELSE {
 					if (iftabletype[numifs-1]==IFTABLETYPEIF) {
 						//
 						// resolve the label on the if to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 						//
 						// put new if on the frame for the else
@@ -814,7 +808,7 @@ elsestmt:	B256ELSE {
 							}
 							//
 							// resolve branchfalse from previous case
-							labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+							symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 							//
 							numifs--;
 							// put new if on the frame for the else
@@ -837,7 +831,7 @@ endcasestmt:
 				// add label for last case branchfalse to jump to
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPECASE || iftabletype[numifs-1]==IFTABLETYPEELSE) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = COMPERR_ENDENDCASE;
@@ -850,7 +844,7 @@ endcasestmt:
 				// add label for all cases to jump to after execution
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -872,7 +866,7 @@ endifstmt:	B256ENDIF {
 					if (iftabletype[numifs-1]==IFTABLETYPEIF||iftabletype[numifs-1]==IFTABLETYPEELSE) {
 						//
 						// resolve the label on the if/else to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -894,7 +888,7 @@ endtrystmt:	B256ENDTRY {
 					if (iftabletype[numifs-1]==IFTABLETYPECATCH) {
 						//
 						// resolve the label on the Catch to the current location
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -917,7 +911,7 @@ endwhilestmt:
 						addIntOp(OP_GOTO, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE));
 						//
 						// resolve the label to the bottom
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						//
 						// remove the single placeholder from the if frame
 						numifs--;
@@ -948,7 +942,7 @@ ifthenstmt:
 				// if there is an if branch or jump on the iftable stack get where it is
 				// in the wordcode array and then resolve the lable
 				if (numifs>0) {
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+					symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 					numifs--;
 				}
 			}
@@ -958,7 +952,7 @@ ifthenelsestmt:
 			ifthenelse compoundstmt {
 				//
 				// resolve the label on the else to the current location
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 			}
 			;
@@ -970,7 +964,7 @@ ifthenelse:
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// jump point for else
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 				//
 				// put new if on the frame for the else
@@ -993,7 +987,7 @@ until:		B256UNTIL {
 					if (iftabletype[numifs-1]==IFTABLETYPEDO) {
 						//
 						// create label for CONTINUE DO
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
 						//
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -1013,7 +1007,7 @@ untilstmt:	until expr {
 				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
 				//
 				// create label for EXIT DO
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 			}
 			;
@@ -1021,7 +1015,7 @@ untilstmt:	until expr {
 while: 		B256WHILE {
 				//
 				// create internal symbol and add to the label table for the top of the loop
-				labeltable[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset;
+				symtableaddress[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset;
 			}
 			;
 
@@ -1304,9 +1298,9 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 nextstmt:	B256NEXT args_v {
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
 						addIntOp(OP_NEXT, varnumber[--nvarnumber]);
-						labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -2217,7 +2211,7 @@ functionstmt:
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this function
-				labeltable[functionDefSymbol] = wordOffset;
+				symtableaddress[functionDefSymbol] = wordOffset;
 				newIf(linenumber, IFTABLETYPEFUNCTION);
 				//
 				// test that this is a real function call or error - before the call a CALLSIG
@@ -2228,7 +2222,7 @@ functionstmt:
 				newIf(linenumber, IFTABLETYPEIF);
 				addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION);
 				addOp(OP_THROWERROR);
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 				//
 				// check to see if there are enough values on the stack
@@ -2266,7 +2260,7 @@ subroutinestmt:
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this subroutine
-				labeltable[subroutineDefSymbol] = wordOffset;
+				symtableaddress[subroutineDefSymbol] = wordOffset;
 				newIf(linenumber, IFTABLETYPEFUNCTION);
 				//
 				// test that this is a real subroutine call or error - before the call a CALLSIG
@@ -2277,7 +2271,7 @@ subroutinestmt:
 				newIf(linenumber, IFTABLETYPEIF);
 				addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE);
 				addOp(OP_THROWERROR);
-				labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 				numifs--;
 				//
 				// check to see if there are enough values on the stack
@@ -2307,7 +2301,7 @@ endfunctionstmt:
 					addOp(OP_RETURN);
 					//
 					// add address for jump around function definition
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+					symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 					functionDefSymbol = -1;
 					//
 					numifs--;
@@ -2332,7 +2326,7 @@ endsubroutinestmt:
 					addOp(OP_RETURN);
 					//
 					// add address for jump around function definition
-					labeltable[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+					symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 					subroutineDefSymbol = -1;
 					//
 					numifs--;

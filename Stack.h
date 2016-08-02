@@ -44,18 +44,19 @@ class Stack
 		void dup();
 		void dup2();
 		int peekType();
-		int peekType(int);
+		int peekType(unsigned int);
 		DataElement *popelement();
 		int popint();
 		int popbool();
 		long poplong();
 		double popfloat();
 		QString popstring();
-		void clear();
 		QString debug();
 		int height();
 
 
 	private:
-		std::list<DataElement*> stacklist;
+		std::vector<DataElement*> stackdata;
+		unsigned int stackpointer;
+		void stackGrow();
 };

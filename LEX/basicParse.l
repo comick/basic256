@@ -33,21 +33,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct symbol
-{
-	char *name;
-	int type;
-	union
-	{
-		double floatnum;
-		char *string;
-	} value;
-};
 
 extern int numifs;
-extern struct symbol symtable[];
 extern void clearSymbolTable();
-extern void dumpSynbolTable();
 extern void clearLabelTable();
 extern void clearIfTable();
 extern int testIfOnTable(int);
@@ -1075,7 +1063,6 @@ int basicParse(char *code) {
 	numparsewarnings=0;
 	
 	clearSymbolTable();
-	clearLabelTable();
 	clearIfTable();
 
 	linenumber = 1;

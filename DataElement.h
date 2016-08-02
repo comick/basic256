@@ -36,5 +36,5 @@ class DataElement
 		DataElement(int);
 
 		QString debug();
-
+		void copy(DataElement *);
 };

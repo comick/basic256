@@ -89,7 +89,6 @@ extern std::list<int> pressedKeys;
 
 extern "C" {
     extern int basicParse(char *);
-    extern int labeltable[];
     extern int linenumber;			// linenumber being LEXd
     extern int column;				// column on line being LEXd
     extern char* lexingfilename;	// current included file name being LEXd
@@ -100,8 +99,10 @@ extern "C" {
     extern int *wordCode;
     extern unsigned int wordOffset;
     extern unsigned int maxwordoffset;
-    extern char *symtable[];
-    extern int numsyms;
+
+    extern char *symtable[];		// table of variables and labels (strings)
+    extern int symtableaddress[];	// associated label address
+    extern int numsyms;				// number of symbols
 
     // arrays to return warnings from compiler
     // defined in basicParse.y
@@ -852,8 +853,9 @@ Interpreter::initialize() {
 	graphwin->clickB = 0;
 		// now build tghe new stack object
 	stack = new Stack(error, convert);
+
 	// now create the variable storage
-	variables = new Variables(error);
+	variables = new Variables(numsyms, error);
 
 	// initialize the sockets to nothing
 	listensockfd = -1;
@@ -891,9 +893,9 @@ Interpreter::cleanup() {
     // called by run() once the run is terminated
     //
     // Clean up stack
-    stack->clear();
+    delete(stack);
     // Clean up variables
-    variables->clear();
+    delete(variables);
     // Clean up sprites
     clearsprites();
     // Clean up, for frames, etc.
@@ -1109,10 +1111,6 @@ Interpreter::execByteCode() {
 						op = wordCode + exitOffset;
 						
 					}
-
-					// dont delete startE because assigned to variable
-					delete(endE);
-					delete(stepE);
 				}
 				break;
 
@@ -1126,7 +1124,7 @@ Interpreter::execByteCode() {
                         if (temp->useInt) {
                             long val = convert->getLong(variables->getdata(i));
                             val += temp->intStep;
-                            variables->setdata(i, new DataElement(val));
+                            variables->setdata(i, val);
 
                             if (temp->intStep == 0 && temp->intStart <= temp->intEnd && val >= temp->intEnd) {
                                 forstack = temp->next;
@@ -1145,7 +1143,7 @@ Interpreter::execByteCode() {
                         } else {
                             double val = convert->getFloat(variables->getdata(i));
                             val += temp->floatStep;
-                            variables->setdata(i, new DataElement(val));
+                            variables->setdata(i, val);
 
                             if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=1 && convert->compareFloats(val, temp->floatEnd)!=-1) {
                                 forstack = temp->next;
@@ -1232,7 +1230,7 @@ Interpreter::execByteCode() {
 
                                                 for(int y=0; y<list.size(); y++) {
 							// fill the string array
-                                                        variables->arraysetdata(i, 0, y, new DataElement(list.at(y)));
+                                                        variables->arraysetdata(i, 0, y, list.at(y));
 							if (!error->pending()) {
                                                                 watchvariable(debugMode, i, 0, y);
 							}
@@ -1250,7 +1248,7 @@ Interpreter::execByteCode() {
 							int kount = variables->arraysize(i);
 							for(int n=0; n<kount; n++) {
 								if (n>0) stuff.append(qdelim);
-                                                                stuff.append(convert->getString(variables->arraygetdata(i, 0, n)));
+								stuff.append(convert->getString(variables->arraygetdata(i, n)));
 							}
 						} else {
 							error->q(ERROR_NOTARRAY, i);
@@ -1320,8 +1318,6 @@ Interpreter::execByteCode() {
 						variables->setdata(i, e);
 						watchvariable(debugMode, i);
 					}
-					// remember dont delete stack to assign to a variable
-
                 }
                 break;
 
@@ -1343,7 +1339,7 @@ Interpreter::execByteCode() {
 					// expects one integer - variable number
 					int n = variables->arraysize(i);
 					for (int j = 0; j < n; j++) {
-                                                DataElement *av = variables->arraygetdata(i, 0, j);
+						DataElement *av = variables->arraygetdata(i, j);
 						stack->pushdataelement(av);
 					}
 					stack->pushint(n);
@@ -1351,8 +1347,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_UNASSIGN: {
-					DataElement *e = new DataElement();
-					variables->setdata(i, e);
+					variables->unassign(i);
 					watchvariable(debugMode, i);
 				}
 				break;
@@ -1361,8 +1356,7 @@ Interpreter::execByteCode() {
 					// clear a variable and release resources
 					int yindex = stack->popint();
 					int xindex = stack->popint();
-					DataElement *e = new DataElement();
-					variables->arraysetdata(i, xindex, yindex, e);
+					variables->arrayunassign(i, xindex, yindex);
 					watchvariable(debugMode, i, xindex, yindex);
 				}
 				break;
@@ -1514,7 +1508,7 @@ Interpreter::execByteCode() {
         case OPTYPE_LABEL: {
             //
             // OPCODES with an integer wordCode label/symbol number go here
-            // the symbol is looked up in the labeltable and changed to an array location
+            // the symbol is looked up in the symtableaddress and changed to an array location
             // and stored in i BEFORE the OPCODES are executed
             //
             // int i is the new execution location offset within the array wordCode
@@ -1523,8 +1517,8 @@ Interpreter::execByteCode() {
             op++;
 
             // lookup address for the label
-            if (labeltable[i] >=0) {
-                i = labeltable[i];
+            if (symtableaddress[i] >=0) {
+                i = symtableaddress[i];
             } else {
                 error->q(ERROR_NOSUCHLABEL, i);
                 break;
@@ -2481,8 +2475,6 @@ Interpreter::execByteCode() {
 
 
 						}
-						delete(one);
-						delete(two);
 						break;
 					}
 
@@ -2584,7 +2576,6 @@ Interpreter::execByteCode() {
 					} else {
 						stack->pushfloat(convert->getFloat(e) * -1);
 					}
-					delete(e);
                 }
                 break;
 
@@ -2598,8 +2589,6 @@ Interpreter::execByteCode() {
 					DataElement *two = stack->popelement();
 					DataElement *one = stack->popelement();
 					int ans = convert->compare(one,two);
-					delete(two);
-					delete(one);
                     switch(opcode) {
 						case OP_EQUAL:
 							stack->pushbool(ans==0);
@@ -4267,8 +4256,6 @@ Interpreter::execByteCode() {
 							stack->pushstring(stwo + sone);
 						}
 					}
-					delete(one);
-					delete(two);              
 				}
 				break;
 
@@ -4743,7 +4730,7 @@ Interpreter::execByteCode() {
 							{
 								for(int i=0; i<numsyms; i++) {
 									mymutex->lock();
-									emit(outputReady(QString("SYM %1 %2 LOC %3\n").arg(i).arg(symtable[i],-32).arg(labeltable[i],8,16,QChar('0'))));
+									emit(outputReady(QString("SYM %1 %2 LOC %3\n").arg(i).arg(symtable[i],-32).arg(symtableaddress[i],8,16,QChar('0'))));
 									waitCond->wait(mymutex);
 									mymutex->unlock();
 								}
@@ -4770,8 +4757,8 @@ Interpreter::execByteCode() {
 										emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtable[(int) *o])));
 										o++;
 									} else if (optype(currentop) == OPTYPE_LABEL) {
-										//op has one Int arg (label - lookup the address from the labeltable
-										emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(labeltable[(int) *o],8,16,QChar('0')).arg(symtable[(int) *o])));
+										//op has one Int arg (label - lookup the address from the symtableaddress
+										emit(outputReady(QString("%1 %2 %3 %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtableaddress[(int) *o],8,16,QChar('0')).arg(symtable[(int) *o])));
 										o++;
 									} else if (optype(currentop) == OPTYPE_FLOAT) {
 										// op has a single double arg
@@ -4927,7 +4914,6 @@ Interpreter::execByteCode() {
 					// return type of expression (top of the stack)
 					DataElement *e = stack->popelement();
 					stack->pushint(e->type);
-					delete(e);
 				}
                 break;
 
@@ -4935,7 +4921,6 @@ Interpreter::execByteCode() {
 					// return if data element is numeric
 					DataElement *e = stack->popelement();
 					stack->pushint(convert->isNumeric(e));
-					delete(e);
 				}
 				break;
 

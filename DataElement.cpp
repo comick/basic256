@@ -11,9 +11,12 @@ DataElement::DataElement() {
 DataElement::DataElement(DataElement *source) {
 	// create a new DataElement from as a copy of another
 	type = source->type;
-	floatval = source->floatval;
-	intval = source->intval;
-	stringval = source->stringval;
+	if (type!=T_STRING) {
+		floatval = source->floatval;
+		intval = source->intval;
+	} else {
+		stringval = source->stringval;
+	}
 }
 
 DataElement::DataElement(QString s) {
@@ -33,6 +36,17 @@ DataElement::DataElement(long l) {
 DataElement::DataElement(double d) {
 	type = T_FLOAT;
 	floatval = d;
+}
+
+void DataElement::copy(DataElement *source) {
+	// fill an existing from as a copy of another
+	type = source->type;
+	if (type!=T_STRING) {
+		floatval = source->floatval;
+		intval = source->intval;
+	} else {
+		stringval = source->stringval;
+	}
 }
 
 QString DataElement::debug() {

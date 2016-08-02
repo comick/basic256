@@ -9,30 +9,32 @@
 Stack::Stack(Error *e, Convert *c) {
 	error = e;	// save error object as private pointer
 	convert = c;
-
+	stackpointer = 0;	// height of stack
+	stackGrow();
 }
 
 Stack::~Stack() {
-    clear();
+	for(unsigned int i = 0; i< stackdata.size(); i++) {
+		delete(stackdata[i]);
+		stackdata[i] = NULL;
+	}
+	stackdata.clear();
 }
 
-
-void Stack::clear() {
-    DataElement *ele;
-    while(!stacklist.empty()) {
-        ele = stacklist.front();
-        stacklist.pop_front();
-        delete(ele);
-    }
+void Stack::stackGrow() {
+	// add 10 elements to the size of the stack
+	int oldsize = stackdata.size();
+	stackdata.resize(oldsize+10);
+	for(unsigned int i = oldsize; i< stackdata.size(); i++) {
+		stackdata[i] = new DataElement();
+	}
 }
 
 QString Stack::debug() {
     // return a string representing the stack
     QString s("");
-    DataElement *ele;
-    for (std::list<DataElement*>::iterator it = stacklist.begin(); it != stacklist.end(); it++) {
-        ele = *it;
-        s += ele->debug() +  " ";
+    for (unsigned int i=0; i<stackdata.size(); i++) {
+        s += stackdata[i]->debug() +  " ";
     }
     return s;
 }
@@ -40,26 +42,55 @@ QString Stack::debug() {
 int Stack::height() {
     // return the height of the stack in elements
     // magic of pointer math returns number of elements
-    return stacklist.size();
+    return stackpointer;
 }
 
+//
+// RAW Push Operations
+//
 
 void Stack::pushdataelement(DataElement *source) {
-	// push to stack a duplicate or a  new nothing
-	DataElement *ele;
+	if (stackpointer >= stackdata.size())  stackGrow();
+	// push to stack a copy of he dataelement
 	if (source) {
-		ele = new DataElement(source);
+		stackdata[stackpointer]->copy(source);
 	} else {
-		ele = new DataElement();
+		stackdata[stackpointer]->type = T_UNASSIGNED;
 	}
-    stacklist.push_front(ele);
+	stackpointer++;
 }
 
+void Stack::pushlong(long i) {
+	if (stackpointer >= stackdata.size())  stackGrow();
+	stackdata[stackpointer]->type = T_INT;
+	stackdata[stackpointer]->intval = i;
+	stackpointer++;
+}
+
+void Stack::pushvarref(int i) {
+	if (stackpointer >= stackdata.size())  stackGrow();
+	stackdata[stackpointer]->type = T_REF;
+	stackdata[stackpointer]->intval = i;
+	stackpointer++;
+}
+
+void Stack::pushfloat(double d) {
+	if (stackpointer >= stackdata.size())  stackGrow();
+	stackdata[stackpointer]->type = T_FLOAT;
+	stackdata[stackpointer]->floatval = d;
+	stackpointer++;
+}
 
 void Stack::pushstring(QString string) {
-    DataElement *ele = new DataElement(string);
-    stacklist.push_front(ele);
+	if (stackpointer >= stackdata.size())  stackGrow();
+	stackdata[stackpointer]->type = T_STRING;
+	stackdata[stackpointer]->stringval = string;
+	stackpointer++;
 }
+
+//
+// Pushes derived from RAW pushes
+//
 
 void Stack::pushvariant(QString string) {
 	pushvariant(string, T_UNASSIGNED);
@@ -130,148 +161,136 @@ void Stack::pushint(int i) {
     pushlong((long) i);
 }
 
-void Stack::pushlong(long i) {
-    DataElement *ele = new DataElement(i);
-    stacklist.push_front(ele);
-}
 
-void Stack::pushvarref(int i) {
-    DataElement *ele = new DataElement();
-    ele->type = T_REF;
-    ele->intval = (long) i;
-    stacklist.push_front(ele);
-}
-
-void Stack::pushfloat(double d) {
-    DataElement *ele = new DataElement(d);
-    stacklist.push_front(ele);
-}
+//
+// Peek Operations - look but dont touch
 
 int Stack::peekType() {
 	return peekType(0);
 }
 
-int Stack::peekType(int i) {
-	if (stacklist.empty()) {
+int Stack::peekType(unsigned int i) {
+	if (stackpointer<=i) {
 		error->q(ERROR_STACKUNDERFLOW);
 		return T_UNASSIGNED;
 	}
-	if (i>0) {
-		// need to iterate down the stack to peek out value
-		std::list<DataElement*>::iterator it = stacklist.begin();
-		while(i>0) {
-			i--;
-			it++;
-			if ( it == stacklist.end()) {
-				error->q(ERROR_STACKUNDERFLOW);
-				return T_UNASSIGNED;
-			}
-		}
-		return (*it)->type;
-	} else {
-		// peek at top element
-		return stacklist.front()->type;
-	}
+	return stackdata[stackpointer - i - 1]->type;
 }
 
+//
+// Raw Pop Operations
+
 DataElement *Stack::popelement() {
-    // pop an element but if there is not one on the stack
-    // pop a zero and set the error to underflow
-    DataElement *e;
-    if (stacklist.empty()) {
+    // pop an element - a POINTER to the data on the stack
+    // WILL CHANGE ON NEXT PUSH!!!!
+    if (stackpointer==0) {
         error->q(ERROR_STACKUNDERFLOW);
-        pushint(0);
+        return NULL;
     }
-    e = stacklist.front();
-    stacklist.pop_front();
-    return e;
+	stackpointer--;
+	return stackdata[stackpointer];
 }
+
+//
+// Pops derivedfrom RAW pop
+
+int Stack::popbool() {
+	DataElement *top=popelement();
+	return convert->getBool(top);
+}
+
+int Stack::popint() {
+	DataElement *top=popelement();
+	return convert->getInt(top);
+}
+
+long Stack::poplong() {
+	DataElement *top=popelement();
+	return convert->getLong(top);
+}
+
+double Stack::popfloat() {
+	DataElement *top=popelement();
+	return convert->getFloat(top);
+}
+
+QString Stack::popstring() {
+	DataElement *top=popelement();
+	return convert->getString(top);
+}
+
+//
+// SWAP and DUP opeations to the stack
 
 void Stack::swap2() {
     // swap top two pairs of elements
-    DataElement *zero = popelement();
-    DataElement *one = popelement();
-    DataElement *two = popelement();
-    DataElement *three = popelement();
+    // if top of stack is A,B,C,D make it C,D,A,B
+    DataElement *t;
 
-    stacklist.push_front(one);
-    stacklist.push_front(zero);
-    stacklist.push_front(three);
-    stacklist.push_front(two);
+	if (stackpointer<4) {
+		error->q(ERROR_STACKUNDERFLOW);
+		return;
+	}
+    
+    t = stackdata[stackpointer-3];
+    stackdata[stackpointer-3] = stackdata[stackpointer-1];
+    stackdata[stackpointer-1] = t;
+
+    t = stackdata[stackpointer-4];
+    stackdata[stackpointer-4] = stackdata[stackpointer-2];
+    stackdata[stackpointer-2] = t;
 }
 
 void Stack::swap() {
     // swap top two elements
-    DataElement *zero = popelement();
-    DataElement *one = popelement();
-    stacklist.push_front(zero);
-    stacklist.push_front(one);
+    // if top of stack is A,B,C,D make it B,A,C,D
+    DataElement *t;
+
+	if (stackpointer<2) {
+		error->q(ERROR_STACKUNDERFLOW);
+		return;
+	}
+    
+    t = stackdata[stackpointer-2];
+    stackdata[stackpointer-2] = stackdata[stackpointer-1];
+    stackdata[stackpointer-1] = t;
 }
 
 void
 Stack::topto2() {
     // move the top of the stack under the next two
     // 0, 1, 2, 3...  becomes 1, 2, 0, 3...
-    DataElement *zero = popelement();
-    DataElement *one = popelement();
-    DataElement *two = popelement();
-    stacklist.push_front(zero);
-    stacklist.push_front(two);
-    stacklist.push_front(one);
+    DataElement *t;
+
+	if (stackpointer<3) {
+		error->q(ERROR_STACKUNDERFLOW);
+		return;
+	}
+    
+    t = stackdata[stackpointer-1];
+    stackdata[stackpointer-1] = stackdata[stackpointer-2];
+    stackdata[stackpointer-2] = stackdata[stackpointer-3];
+    stackdata[stackpointer-3] = t;
 }
 
 void Stack::dup() {
     // make copy of top
-    DataElement *zero = popelement();
-    DataElement *ele = new DataElement(zero);
-    stacklist.push_front(ele);
-    stacklist.push_front(zero);
+    // if top of stack is A,B,C,D make it A,A,B,C,D
+	if (stackpointer<1) {
+		error->q(ERROR_STACKUNDERFLOW);
+		return;
+	}
+    pushdataelement(stackdata[stackpointer-1]);
 }
 
 void Stack::dup2() {
-    DataElement *zero = popelement();
-    DataElement *one = popelement();
-    stacklist.push_front(one);
-    stacklist.push_front(zero);
-    // make copies of one and zero to dup
-    DataElement *ele = new DataElement(one);
-    stacklist.push_front(ele);
-    ele = new DataElement(zero);
-    stacklist.push_front(ele);
+    // make copy of top two
+    // if top of stack is A,B,C,D make it A,B,A,B,C,D
+	if (stackpointer<2) {
+		error->q(ERROR_STACKUNDERFLOW);
+		return;
+	}
+    pushdataelement(stackdata[stackpointer-2]);
+    pushdataelement(stackdata[stackpointer-2]);
 }
 
-
-int Stack::popbool() {
-	DataElement *top=popelement();
-	int i = convert->getBool(top);
-	delete(top);
-	return i;
-}
-
-int Stack::popint() {
-	DataElement *top=popelement();
-	long i = convert->getInt(top);
-	delete(top);
-	return i;
-}
-
-long Stack::poplong() {
-	DataElement *top=popelement();
-	long i = convert->getLong(top);
-	delete(top);
-	return i;
-}
-
-double Stack::popfloat() {
-	DataElement *top=popelement();
-	double f = convert->getFloat(top);
-	delete(top);
-	return f;
-}
-
-QString Stack::popstring() {
-	DataElement *top=popelement();
-	QString s = convert->getString(top);
-	delete(top);
-	return s;
-}
