@@ -120,8 +120,7 @@ Interpreter::Interpreter() {
 	sleeper = new Sleeper();
 	// create the error handling object
 	error = new Error();
-	// create the convert and comparer object
-	convert = new Convert(error);
+
 #ifdef WIN32
 	// WINDOWS
 	// initialize the winsock network library
@@ -851,7 +850,11 @@ Interpreter::initialize() {
 	graphwin->clickX = 0;
 	graphwin->clickY = 0;
 	graphwin->clickB = 0;
-		// now build tghe new stack object
+	
+	// create the convert and comparer object
+	convert = new Convert(error);
+	
+	// now build the new stack object
 	stack = new Stack(error, convert);
 
 	// now create the variable storage
@@ -892,10 +895,10 @@ Interpreter::cleanup() {
 	// cleanup that MUST happen for run to early terminate is in runHalted
 	// called by run() once the run is terminated
 	//
-	// Clean up stack
+	// Clean up run time objects
 	delete(stack);
-	// Clean up variables
 	delete(variables);
+	delete(convert);
 	// Clean up sprites
 	clearsprites();
 	// Clean up, for frames, etc.
@@ -2497,12 +2500,12 @@ Interpreter::execByteCode() {
 					double twoval = stack->popfloat();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushint(0);
+						stack->pushfloat(0);
 					} else {
 						double ans = pow(twoval, oneval);
 						if (isinf(ans)) {
 							error->q(ERROR_INFINITY);
-							stack->pushint(0);
+							stack->pushfloat(0);
 						} else {
 							stack->pushfloat(ans);
 						}
@@ -2516,12 +2519,12 @@ Interpreter::execByteCode() {
 					double twoval = stack->popfloat();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushint(0);
+						stack->pushfloat(0);
 					} else {
 						double ans = twoval / oneval;
 						if (isinf(ans)) {
 							error->q(ERROR_INFINITY);
-							stack->pushint(0);
+							stack->pushfloat(0);
 						} else {
 							stack->pushfloat(ans);
 						}
@@ -2534,7 +2537,7 @@ Interpreter::execByteCode() {
 					long twoval = stack->poplong();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushint(0);
+						stack->pushlong(0);
 					} else {
 						stack->pushlong(twoval / oneval);
 					}
@@ -2630,11 +2633,6 @@ Interpreter::execByteCode() {
 					// play an immediate list of sounds
 					// from a 2d array pushed on the stack or a list of lists
 					// fill the sound array backwrds because of pulling from the stack
-
-					//mymutex->lock();
-					//emit(dialogAlert(stack->debug()));
-					//waitCond->wait(mymutex);
-					//mymutex->unlock();
 
 					int rows = stack->popint();
 					int columns = stack->popint();

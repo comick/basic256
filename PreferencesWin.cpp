@@ -417,6 +417,7 @@ void PreferencesWin::clickSaveButton() {
         }
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
+        settings.setValue(SETTINGSFLOATTAIL, floattailcheckbox->isChecked());
 
         // *******************************************************************************************
         // sound settings

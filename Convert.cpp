@@ -12,7 +12,7 @@ Convert::Convert(Error *e) {
 	error = e;
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
-	floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toInt();
+	floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool();
 	// build international safe regular expression for numbers
 	locale = new QLocale(mainwin->localecode);
 	isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + locale->decimalPoint() + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));

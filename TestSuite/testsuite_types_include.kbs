@@ -8,6 +8,7 @@
 # 				added tests for integer save and non safe operations
 #				added test for integer safe for loops
 # 20160208      j.m.reneau      added input and prompt for new "Variant" input action
+# 20160807	j.m.reneau	removed typeof check on an array
 
 
 # variable types and data types from the stack
@@ -22,11 +23,9 @@ newvar = 983749823/2
 call n("typeof float newvar ", typeof(newvar), TYPE_FLOAT)
 newvar = "9988"
 call n("typeof string newvar ", typeof(newvar), TYPE_STRING)
-dim newvar(5)
-call n("typeof array newvar ", typeof(newvar), TYPE_ARRAY)
-# cant to typeof of an array
 
 # check vartype and typeof for array elements
+dim newvar(5)
 newvar[1] = 213123
 newvar[2] = newvar[1] / 11
 newvar[3] = "dsdf"

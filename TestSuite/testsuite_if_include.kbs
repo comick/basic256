@@ -5,6 +5,7 @@
 # 20140203	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
 # 201603330	j.m.reneau	added section to test values for true/false
+# 20160807	j.m.reneau	added tests of and, or, xor, and not
 
 s = 0
 for t = 1 to 10
@@ -81,3 +82,24 @@ for i = 0 to a[?]-1
 	call n(a[i] ; " is "; b[i], not not a[i], b[i])
 next i
 
+# test OR
+call n("0 or 0",0 or 0, 0)
+call n("0 or 1",0 or 1, 1)
+call n("1 or 0",1 or 0, 1)
+call n("1 or 1",1 or 1, 1)
+
+# test Xor
+call n("0 xor 0",0 xor 0, 0)
+call n("0 xor 1",0 xor 1, 1)
+call n("1 xor 0",1 xor 0, 1)
+call n("1 xor 1",1 xor 1, 0)
+
+# test and
+call n("0 and 0",0 and 0, 0)
+call n("0 and 1",0 and 1, 0)
+call n("1 and 0",1 and 0, 0)
+call n("1 and 1",1 and 1, 1)
+
+# test not
+call n("not 0",not 0, 1)
+call n("not 1",not 1, 0)
