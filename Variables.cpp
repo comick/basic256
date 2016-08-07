@@ -310,26 +310,6 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 	return v->data;
 }
 
-//This function sould be used to access data using just one index
-//this is usefull expecially for statements that accept array (SOUND, POLY etc.) by OP_ARRAY2STACK or OP_IMPLODE
-//In this way can be passed arrays with two dimensions without problems. (+speed)
-
-DataElement* Variables::arraygetdata(int varnum, int y) {
-	// get data from array elements in v from map (using items index)
-	// if there is an error return an unassigned value
-	Variable *v = get(varnum);
-	if (v->data->type == T_ARRAY) {
-		if (y >=0 && y < v->arr->ydim * v->arr->ydim) {
-			return v->arr->datavector[y];
-		} else {
-		error->q(ERROR_ARRAYINDEX, varnum);
-		}
-	} else {
-		error->q(ERROR_NOTARRAY, varnum);
-	}
-	return v->data;
-}
-
 void Variables::arraysetdata(int varnum, int x, int y, DataElement *e) {
 	// DataElement's data is copied to the variable and it should be deleted
 	// by whomever created it

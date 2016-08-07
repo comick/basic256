@@ -73,7 +73,6 @@ class Variables
         //
         void arraydim(int, int, int, bool);
         DataElement* arraygetdata(int, int, int);
-        DataElement* arraygetdata(int, int);
         void arraysetdata(int, int, int, DataElement *);
         void arraysetdata(int, int, int, long);
         void arraysetdata(int, int, int, double);

@@ -6,26 +6,30 @@
 #				moved to a statement and not a stand alone line (1010002)
 # 20160510      j.m.reneau      use new form of the clg statetement to clear to a color
 # 20160603      j.m.reneau      updated to use more sprite features for better testing
+# 20160805		j.m.reneau		changed lists to listsoflists (1.99.99.53)
+#								Added additional sprite testing logic
 
-dim spritedx(5)
-dim spritedy(5)
-dim spritedr(5)
-dim spriteds(5)
+nsprites = 7
 
-spritedim 5
+dim spritedx(nsprites)
+dim spritedy(nsprites)
+dim spritedr(nsprites)
+dim spriteds(nsprites)
+
+spritedim nsprites
 # make the sprites from polys using the subroutine polysprite
 penwidth 3
-# two big right triangles
-points =  {0,0,200,0,100,100}
+# two big squares
+points =  {0,0,200,0,200,200,0,200}
 penwidth 1
 color black,red
-spritepoly 0, {0,0,200,0,100,100}
+spritepoly 0, points
 color black,green
-spritepoly 1, {0,0,200,0,100,100}
+spritepoly 1, points
 # two small right triangles
-points =  {200,0,200,100,150,50}
+points =  {{200,0},{200,100},{150,50}}
 color black, blue
-spritepoly 2,{200,0,200,100,150,50}
+spritepoly 2,{{200,0},{200,100},{150,50}}
 color orange, grey
 spritepoly 3,{50,0,50,100,0,50}
 # one medium triangle
@@ -33,57 +37,99 @@ points =  {100,0,100,100,0,100}
 penwidth 2
 color black, cyan
 spritepoly 4, {100,0,100,100,0,100}
+# load image
+spriteload 5, "testsuite_sprite.png"
+call n("sprite height",spriteh(5),50)
+call n("sprite width",spritew(5),50)
+
+spriteslice 6, 200,200,60,50
+call n("sprite height",spriteh(6),50)
+call n("sprite width",spritew(6),60)
 
 # draw a black and white pattern on the screen for under the sprites
 clg purple
 color white
 penwidth 3
 for t = 0 to graphwidth step 10
-   line 0,0,t,graphheight
+	line 0,0,t,graphheight
 next t
 for t = 0 to graphheight step 10
-   line 0,0,graphwidth,t
+	line 0,0,graphwidth,t
 next t
 refresh
 
 # calculate the md5 hash of the screen
 originalscreen$ = md5(getslice(0,0,graphwidth, graphheight))
 
-for t = 0 to 4
-   spriteshow t
-   spritedx[t] = rand*5-.25
-   spritedy[t] = rand*5-.25
-   spritedr[t] = rand*pi*.1+-pi*.05
-   spriteds[t] = rand *.3 - .15
-   spriteplace t, rand*graphwidth, rand*graphheight, 1, spritedr[t]
+for t = 0 to nsprites-1
+	spriteshow t
+	spritedx[t] = rand*5-.25
+	spritedy[t] = rand*5-.25
+	spritedr[t] = rand*pi*.1+-pi*.05
+	spriteds[t] = rand *.3 - .15
+	spriteplace t, rand*graphwidth, rand*graphheight, 1, spritedr[t]
 next t
 
+collissions = 0
 # move the sprites
 for n = 1 to 100
-   for t = 0 to 4
-      x = spritex(t) + spritedx[t]
-      if x > graphwidth then x = 0
-      if x < 0 then x = graphwidth
-      y = spritey(t) + spritedy[t]
-      if y > graphwidth then y = 0
-      if y < 0 then y = graphwidth
-      r = spriter(t) + spritedr[t]
-      s = sprites(t) + spriteds[t]
-      if s > 1.5 then s = .5
-      if s < .5 then s = 1.5
-      spriteplace t,x,y,s,r
-      refresh
-   next t
+	for t = 0 to nsprites-1
+		x = spritex(t) + spritedx[t]
+		if x > graphwidth-10 then x = 10
+		if x < 10 then x = graphwidth-10
+		y = spritey(t) + spritedy[t]
+		if y > graphwidth-10 then y = 10
+		if y < 10 then y = graphwidth - 10
+		r = spriter(t) + spritedr[t]
+		s = sprites(t) + spriteds[t]
+		if s > 1.5 then s = .5
+		if s < .5 then s = 1.5
+		spriteplace t,x,y,s,r
+		refresh
+	next t
+	if spritecollide(0,1) then collissions++
 next n
-newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
-call sne("Screen different with sprites",originalscreen$,newscreen$)
 
-for t = 0 to 4
-   spritehide t
+call n("0 and 1 should have collided (collissions>0)",collissions>0,1)
+
+screenwith = md5(getslice(0,0,graphwidth, graphheight))
+call sne("Screen different with sprites",originalscreen$,screenwith)
+
+for t = 0 to nsprites-1
+	spritehide t
 next t
-
 refresh
 # calculate the md5 hash of the screen
-newscreen$ = md5(getslice(0,0,graphwidth, graphheight))
+call s("Screen original after sprites",originalscreen$,md5(getslice(0,0,graphwidth, graphheight)))
 
-call s("Screen same after sprites",originalscreen$,newscreen$)
+spriteshow 2
+spriteshow 3
+spriteshow 4
+refresh
+screenwiththree = md5(getslice(0,0,graphwidth, graphheight))
+call sne("Screen with three is different from original",originalscreen$,screenwiththree)
+call sne("Screen with three is different from all sprites",originalscreen$,screenwiththree)
+
+t = 0
+for n = 0 to nsprites-1
+	if spritev(n) then
+		t = t + n
+	endif
+next n
+call n("only three sprites are visible",t,9)
+
+# move them and move them back
+for t = 1 to 20
+	spritemove 2,1,0
+	spritemove 3,0,2
+	spritemove 4,3,3
+	refresh
+next t
+call sne("sprites move them", screenwiththree, md5(getslice(0,0,graphwidth, graphheight)))
+
+for t = 0 to nsprites-1
+	spritehide t
+next t
+refresh
+# calculate the md5 hash of the screen
+call s("Screen original after sprites",originalscreen$,md5(getslice(0,0,graphwidth, graphheight)))

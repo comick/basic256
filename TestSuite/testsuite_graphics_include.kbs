@@ -4,6 +4,7 @@
 # date		programmer	description
 # 2012????	j.m.reneau	original coding
 # 20140529	j.m.reneau	split to own include
+# 20160805	j.m.reneau	added tests to make more complete
 
 # test the basic graphics statements
 
@@ -12,6 +13,8 @@ color blue
 rect 10,10,20,20
 call q("Blue rectangle")
 call n("is 20,20 blue",pixel(20,20), blue)
+call n("pen and brush blue",getcolor(), getbrushcolor())
+
 #
 clg
 color red
@@ -63,7 +66,7 @@ c = {100, 100, 200, 200, 100, 200}
 poly c
 penwidth 5
 color orange, black
-poly {100, 100, 200, 200, 200, 100}
+poly {{100, 100}, {200, 200}, {200, 100}}
 call q("poly - orange/black and green/blue triangles with different fill and pen")
 penwidth 0
 #
@@ -75,4 +78,48 @@ color darkgreen
 font "Tahoma",10,100
 text 10,200,"This is Tahoma!"
 call q("Font - Times and Tahoma")
+#
+clg
+dim c(6)
+c[0] = 0
+c[1] = 0
+c[2] = 20
+c[3] = 20
+c[4] = 15
+c[5] = 10
+color yellow
+for r = 0 to (2 * pi) step (pi/8)
+        stamp graphwidth/2, graphheight/2, 6, r, c
+next r
+c = {{0,0}, {20,20}, {15,10}}
+color darkorange
+for r = 0 to (2 * pi) step (pi/8)
+        stamp graphwidth/2, graphheight/2, 4, r, c
+next r
+color red
+for r = 0 to (2 * pi) step (pi/8)
+        stamp graphwidth/2, graphheight/2, 2, r, {0,0,20,20,15,10}
+next r
+color black
+for r = 0 to (2 * pi) step (pi/8)
+        stamp graphwidth/2, graphheight/2, 1, r, {{0,0}, {20,20}, {15,10}}
+next r
+call q("stamp - 16 pointed yellow to black wheel")
 
+clg
+color orange
+circle 150,150,150
+color black
+chord 70,100,60,90,1.5*PI, PI
+chord 170,100,60,90,1.5*PI, PI
+color yellow
+circle 110,140,20
+circle 210,140,20
+color black, clear
+call n("pen and brush different",getcolor() = getbrushcolor(),0)
+penwidth 10
+pie 90,120,120,120,.75*pi,.5*pi
+call n("getpenwidth - did it set to 10", getpenwidth(), 10)
+penwidth 1
+call q("chord,pie - yellow eyed monster with chevron for mouth")
+call n("getpenwidth - did it set BACK to 1", getpenwidth(), 1)

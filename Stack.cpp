@@ -33,7 +33,7 @@ void Stack::stackGrow() {
 QString Stack::debug() {
     // return a string representing the stack
     QString s("");
-    for (unsigned int i=0; i<stackdata.size(); i++) {
+    for (unsigned int i=0; i<stackpointer; i++) {
         s += stackdata[i]->debug() +  " ";
     }
     return s;

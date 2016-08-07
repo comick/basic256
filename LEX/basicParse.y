@@ -349,24 +349,90 @@
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 %token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
 %token B256TRY B256CATCH B256ENDTRY B256LET
-%token B256ERROR_NONE B256ERROR_FILENUMBER B256ERROR_FILEOPEN
-%token B256ERROR_FILENOTOPEN B256ERROR_FILEWRITE B256ERROR_FILERESET B256ERROR_ARRAYSIZELARGE
-%token B256ERROR_ARRAYSIZESMALL B256ERROR_NOSUCHVARIABLE B256ERROR_ARRAYINDEX B256ERROR_STRNEGLEN
-%token B256ERROR_STRSTART B256ERROR_NONNUMERIC B256ERROR_RGB B256ERROR_PUTBITFORMAT
-%token B256ERROR_POLYARRAY B256ERROR_POLYPOINTS B256ERROR_IMAGEFILE B256ERROR_SPRITENUMBER
-%token B256ERROR_SPRITENA B256ERROR_SPRITESLICE B256ERROR_FOLDER B256ERROR_INFINITY B256ERROR_DBOPEN
-%token B256ERROR_DBQUERY B256ERROR_DBNOTOPEN B256ERROR_DBCOLNO B256ERROR_DBNOTSET B256ERROR_NETSOCK
-%token B256ERROR_NETHOST B256ERROR_NETCONN B256ERROR_NETREAD B256ERROR_NETNONE B256ERROR_NETWRITE
-%token B256ERROR_NETSOCKOPT B256ERROR_NETBIND B256ERROR_NETACCEPT B256ERROR_NETSOCKNUMBER
-%token B256ERROR_PERMISSION B256ERROR_IMAGESAVETYPE B256ERROR_DIVZERO B256ERROR_BYREF
-%token B256ERROR_BYREFTYPE B256ERROR_FREEFILE B256ERROR_FREENET B256ERROR_FREEDB
-%token B256ERROR_DBCONNNUMBER B256ERROR_FREEDBSET B256ERROR_DBSETNUMBER B256ERROR_DBNOTSETROW
-%token B256ERROR_PENWIDTH B256ERROR_COLORNUMBER B256ERROR_ARRAYINDEXMISSING B256ERROR_IMAGESCALE
-%token B256ERROR_FONTSIZE B256ERROR_FONTWEIGHT B256ERROR_RADIXSTRING B256ERROR_RADIX B256ERROR_LOGRANGE
-%token B256ERROR_STRINGMAXLEN B256ERROR_NOTANUMBER B256ERROR_PRINTERNOTON B256ERROR_PRINTERNOTOFF
-%token B256ERROR_PRINTEROPEN B256ERROR_WAVFILEFORMAT B256ERROR_WAVNOTOPEN B256ERROR_VARNOTASSIGNED
+%token B256ERROR_NONE
+%token B256ERROR_NOSUCHLABEL
+%token B256ERROR_NEXTNOFOR
+%token B256ERROR_NOTARRAY
+%token B256ERROR_ARGUMENTCOUNT
+%token B256ERROR_MAXRECURSE
+%token B256ERROR_STACKUNDERFLOW
+%token B256ERROR_BADCALLFUNCTION
+%token B256ERROR_BADCALLSUBROUTINE
+%token B256ERROR_FILENUMBER
+%token B256ERROR_FILEOPEN
+%token B256ERROR_FILENOTOPEN
+%token B256ERROR_FILEWRITE
+%token B256ERROR_FILERESET
+%token B256ERROR_ARRAYSIZELARGE
+%token B256ERROR_ARRAYSIZESMALL
+%token B256ERROR_VARNOTASSIGNED
+%token B256ERROR_ARRAYNITEMS
+%token B256ERROR_ARRAYINDEX
+%token B256ERROR_STRSTART
+%token B256ERROR_RGB
+%token B256ERROR_PUTBITFORMAT
+%token B256ERROR_POLYPOINTS
+%token B256ERROR_IMAGEFILE
+%token B256ERROR_SPRITENUMBER
+%token B256ERROR_SPRITENA
+%token B256ERROR_SPRITESLICE
+%token B256ERROR_FOLDER
+%token B256ERROR_INFINITY
+%token B256ERROR_DBOPEN
+%token B256ERROR_DBQUERY
+%token B256ERROR_DBNOTOPEN
+%token B256ERROR_DBCOLNO
+%token B256ERROR_DBNOTSET
+%token B256ERROR_TYPECONV
+%token B256ERROR_NETSOCK
+%token B256ERROR_NETHOST
+%token B256ERROR_NETCONN
+%token B256ERROR_NETREAD
+%token B256ERROR_NETNONE
+%token B256ERROR_NETWRITE
+%token B256ERROR_NETSOCKOPT
+%token B256ERROR_NETBIND
+%token B256ERROR_NETACCEPT
+%token B256ERROR_NETSOCKNUMBER
+%token B256ERROR_PERMISSION
+%token B256ERROR_IMAGESAVETYPE
+%token B256ERROR_DIVZERO
+%token B256ERROR_BYREF
+%token B256ERROR_FREEFILE
+%token B256ERROR_FREENET
+%token B256ERROR_FREEDB
+%token B256ERROR_DBCONNNUMBER
+%token B256ERROR_FREEDBSET
+%token B256ERROR_DBSETNUMBER
+%token B256ERROR_DBNOTSETROW
+%token B256ERROR_PENWIDTH
+%token B256ERROR_ARRAYINDEXMISSING
+%token B256ERROR_IMAGESCALE
+%token B256ERROR_FONTSIZE
+%token B256ERROR_FONTWEIGHT
+%token B256ERROR_RADIXSTRING
+%token B256ERROR_RADIX
+%token B256ERROR_LOGRANGE
+%token B256ERROR_STRINGMAXLEN
+%token B256ERROR_PRINTERNOTON
+%token B256ERROR_PRINTERNOTOFF
+%token B256ERROR_PRINTEROPEN
+%token B256ERROR_WAVFILEFORMAT
+%token B256ERROR_WAVNOTOPEN
+%token B256ERROR_WAVNOTSEEKABLE
+%token B256ERROR_WAVNODURATION
+%token B256ERROR_FILEOPERATION
+%token B256ERROR_SERIALPARAMETER
+%token B256ERROR_LONGRANGE
+%token B256ERROR_INTEGERRANGE
 %token B256ERROR_NOTIMPLEMENTED
-%token B256WARNING_TYPECONV B256WARNING_WAVNODURATION B256WARNING_WAVNOTSEEKABLE B256WARNING_VARNOTASSIGNED
+%token B256WARNING_START
+%token B256WARNING_TYPECONV
+%token B256WARNING_WAVNOTSEEKABLE
+%token B256WARNING_WAVNODURATION
+%token B256WARNING_VARNOTASSIGNED
+%token B256WARNING_LONGRANGE
+%token B256WARNING_INTEGERRANGE
 %token B256REGEXMINIMAL B256TYPEOF B256UNASSIGN
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 %token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM B256SEMICOLON B256SEMICOLONEQUAL
@@ -484,10 +550,23 @@ args_none:
 
 /* one argument (only ones that do not have a native or need to setvarnumber) */
 
+/* X - Meaning */
+/* a - array element with [e] or [e,e] following */
+/* A - array data pushed to the stack exactly like listoflists */
+/* e - data element */
+/* i - listoflists {} or {{},{}} */
+/* v - variable	*/
+
 
 args_a:
 			args_v arrayref
 			| '(' args_a ')';
+
+// Array Variable Data as a list of lists
+args_A:
+			args_v {
+				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+			}
 
 args_v:
 			B256VARIABLE {
@@ -504,8 +583,12 @@ args_ee:
 			| '(' args_ee ')';
 
 args_ei:
-			expr ',' immediatelist
+			expr ',' listoflists
 			| '(' args_ei ')';
+
+args_eA:
+			expr ',' args_A
+			| '(' args_eA ')';
 
 args_ea:
 			expr ',' args_a
@@ -515,9 +598,13 @@ args_ev:
 			expr ',' args_v
 			|'(' args_ev ')';
 
-args_ve:
-			args_v ',' expr
-			|'(' args_ve ')';
+args_Ae:
+			args_A ',' expr
+			|'(' args_Ae ')';
+
+args_ie:
+			listoflists ',' expr
+			| '(' args_ie ')';
 
 
 
@@ -529,15 +616,21 @@ args_eee:
 
 
 args_eei:
-			expr ',' expr ',' immediatelist
+			expr ',' expr ',' listoflists
 			| '(' args_eei ')';
 
 
-args_eev:
-			expr ',' expr ',' args_v
-			| '(' args_eev ')';
+args_eeA:
+			expr ',' expr ',' args_A
+			| '(' args_eeA ')';
 
+args_Aee:
+			args_A ',' expr ',' expr
+			|'(' args_Aee ')';
 
+args_iee:
+			listoflists ',' expr ',' expr
+			| '(' args_iee ')';
 
 /* four arguments */
 args_eeee:
@@ -545,12 +638,12 @@ args_eeee:
 			| '(' args_eeee ')';
 
 args_eeei:
-			expr ',' expr ',' expr ',' immediatelist
+			expr ',' expr ',' expr ',' listoflists
 			| '(' args_eeei ')';
 
-args_eeev:
-			expr ',' expr ',' expr ',' args_v
-			| '(' args_eeev ')';
+args_eeeA:
+			expr ',' expr ',' expr ',' args_A
+			| '(' args_eeeA ')';
 
 
 
@@ -562,13 +655,13 @@ args_eeeee:
 
 
 args_eeeei:
-			expr ',' expr ',' expr ',' expr ',' immediatelist
+			expr ',' expr ',' expr ',' expr ',' listoflists
 			| '(' args_eeeei ')';
 
 
-args_eeeev:
-			expr ',' expr ',' expr ',' expr ',' args_v
-			| '(' args_eeeev ')';
+args_eeeeA:
+			expr ',' expr ',' expr ',' expr ',' args_A
+			| '(' args_eeeeA ')';
 
 
 /* six arguments */
@@ -1030,20 +1123,28 @@ whilestmt: 	while expr {
 
 letstmt:	B256LET assign
 			| B256LET arrayassign
+			| B256LET arrayelementassign
 			| assign
 			| arrayassign
+			| arrayelementassign
 			;
 
 dimstmt: 	B256DIM args_a {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
 			| B256DIM args_v expr {
-                                addIntOp(OP_PUSHINT, 1);
-                                addOp(OP_STACKSWAP);
-                                addIntOp(OP_DIM, varnumber[--nvarnumber]);
-                        }
+					addIntOp(OP_PUSHINT, 1);
+					addOp(OP_STACKSWAP);
+					addIntOp(OP_DIM, varnumber[--nvarnumber]);
+			}
 			| B256DIM args_v args_ee {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_v '=' listoflists {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_v '=' args_A {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -1057,6 +1158,12 @@ redimstmt:	B256REDIM args_a {
                         }
 			| B256REDIM args_v args_ee {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+			}
+			| B256REDIM args_v '=' listoflists {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256REDIM args_v '=' args_A {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -1111,7 +1218,9 @@ endstmt: 	B256END args_none {
 			}
 			;
 
-arrayassign:
+
+/* assign an expression to a single array element */
+arrayelementassign:
 			args_a '=' expr {
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
@@ -1193,33 +1302,19 @@ arrayassign:
 				addOp(OP_CONCATENATE);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-                        | args_v '=' immediatelist {
-                                addIntOp(OP_PUSHINT, 1);	// one dimension
-                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-                        }
-                        | array_empty '=' immediatelist {
-                                addIntOp(OP_PUSHINT, 1);	// one dimension
-                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-                        }
-                        | args_v '=' listoflists {
-                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-                        }
-                        | array_empty '=' listoflists {
-                                addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-                        }
-                        | args_v '=' B256EXPLODE args_ee {
-				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
-				addIntOp(OP_EXPLODE, varnumber[--nvarnumber]);
+			;
+			
+/* assign an entire array in one statement */
+arrayassign:
+			args_v '=' listoflists {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
-			| args_v '=' B256EXPLODE args_eee {
-				addIntOp(OP_EXPLODE, varnumber[--nvarnumber]);
-			}
-			| args_v '=' B256EXPLODEX args_ee{
-				addIntOp(OP_EXPLODEX, varnumber[--nvarnumber]);
+			| array_empty '=' listoflists {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			;
 
-
+/* assign an expression to a normal variable */
 assign:
 			args_v '=' expr {
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
@@ -1411,15 +1506,15 @@ colorstmt:	B256SETCOLOR args_eee {
 			}
 			;
 
-soundstmt:	B256SOUND args_v {
-				addIntOp(OP_ARRAY2STACK,varnumber[--nvarnumber]);
+soundstmt:	B256SOUND args_A {
 				addOp(OP_SOUND_LIST);
 			}
-			| B256SOUND immediatelist {
+			| B256SOUND listoflists {
 				addOp(OP_SOUND_LIST);
 			}
 			| B256SOUND args_ee {
-				addIntOp(OP_PUSHINT, 2);
+				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 1);	// 1 row
 				addOp(OP_SOUND_LIST);
 			}
 			;
@@ -1498,27 +1593,24 @@ polystmt:
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 				addOp(OP_POLY_LIST);
 			}
-			| B256POLY immediatelist {
+			| B256POLY listoflists {
 				addOp(OP_POLY_LIST);
 			}
 			;
 
-stampstmt: 	B256STAMP args_eeev {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+stampstmt: 	B256STAMP args_eeeA {
 				addOp(OP_STAMP_S_LIST);
 			}
 			| B256STAMP args_eeei {
 				addOp(OP_STAMP_S_LIST);
 			}
-			| B256STAMP args_eev {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+			| B256STAMP args_eeA {
 				addOp(OP_STAMP_LIST);
 			}
 			| B256STAMP args_eei {
 				addOp(OP_STAMP_LIST);
 			}
-			| B256STAMP args_eeeev {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+			| B256STAMP args_eeeeA {
 				addOp(OP_STAMP_SR_LIST);
 			}
 			| B256STAMP args_eeeei {
@@ -1830,8 +1922,7 @@ spriteslicestmt:
 			;
 
 spritepolystmt:
-			B256SPRITEPOLY args_ev {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+			B256SPRITEPOLY args_eA {
 				addOp(OP_SPRITEPOLY_LIST);
 			}
 			| B256SPRITEPOLY args_ei {
@@ -2371,24 +2462,28 @@ variablewatchstmt:
    ### INSERT NEW Statements BEFORE ###
    #################################### */
 
-
-
-
 listoflists:
-                        '{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
-                        ;
-
+			'{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
+			| B256EXPLODE args_ee {
+				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
+				addOp(OP_EXPLODE);
+			}
+			| B256EXPLODE args_eee {
+				addOp(OP_EXPLODE);
+			}
+			|  B256EXPLODEX args_ee{
+				addOp(OP_EXPLODEX);
+			}
+			;
 
 listinlist:
-                        immediatelist {numberoflists = 1; }
-                        | immediatelist ',' listinlist {numberoflists++;}
-                        ;
-
-
-
+			exprlist {addIntOp(OP_PUSHINT, listlen); listlen = 0; numberoflists = 1; }
+			| immediatelist {numberoflists = 1; }
+			| immediatelist ',' listinlist {numberoflists++;}
+			;
 
 immediatelist:
-                        '{' exprlist '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
+			'{' exprlist '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
 			;
 
 
@@ -2881,6 +2976,14 @@ expr:
 			| B256WAVSTATE args_none { addOp(OP_WAVSTATE); }
 
 			| B256ERROR_NONE args_none { addIntOp(OP_PUSHINT, ERROR_NONE); }
+			| B256ERROR_NOSUCHLABEL args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHLABEL); }
+			| B256ERROR_NEXTNOFOR args_none { addIntOp(OP_PUSHINT, ERROR_NEXTNOFOR); }
+			| B256ERROR_NOTARRAY args_none { addIntOp(OP_PUSHINT, ERROR_NOTARRAY); }
+			| B256ERROR_ARGUMENTCOUNT args_none { addIntOp(OP_PUSHINT, ERROR_ARGUMENTCOUNT); }
+			| B256ERROR_MAXRECURSE args_none { addIntOp(OP_PUSHINT, ERROR_MAXRECURSE); }
+			| B256ERROR_STACKUNDERFLOW args_none { addIntOp(OP_PUSHINT, ERROR_STACKUNDERFLOW); }
+			| B256ERROR_BADCALLFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION); }
+			| B256ERROR_BADCALLSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE); }
 			| B256ERROR_FILENUMBER args_none { addIntOp(OP_PUSHINT, ERROR_FILENUMBER); }
 			| B256ERROR_FILEOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILEOPEN); }
 			| B256ERROR_FILENOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILENOTOPEN); }
@@ -2888,14 +2991,12 @@ expr:
 			| B256ERROR_FILERESET args_none { addIntOp(OP_PUSHINT, ERROR_FILERESET); }
 			| B256ERROR_ARRAYSIZELARGE args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYSIZELARGE); }
 			| B256ERROR_ARRAYSIZESMALL args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYSIZESMALL); }
-			| B256ERROR_NOSUCHVARIABLE args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHVARIABLE); }
+			| B256ERROR_VARNOTASSIGNED args_none { addIntOp(OP_PUSHINT, ERROR_VARNOTASSIGNED); }
+			| B256ERROR_ARRAYNITEMS args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYNITEMS); }
 			| B256ERROR_ARRAYINDEX args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYINDEX); }
-			| B256ERROR_STRNEGLEN args_none { addIntOp(OP_PUSHINT, ERROR_STRNEGLEN); }
 			| B256ERROR_STRSTART args_none { addIntOp(OP_PUSHINT, ERROR_STRSTART); }
-			| B256ERROR_NONNUMERIC args_none { addIntOp(OP_PUSHINT, ERROR_NONNUMERIC); }
 			| B256ERROR_RGB args_none { addIntOp(OP_PUSHINT, ERROR_RGB); }
 			| B256ERROR_PUTBITFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_PUTBITFORMAT); }
-			| B256ERROR_POLYARRAY args_none { addIntOp(OP_PUSHINT, ERROR_POLYARRAY); }
 			| B256ERROR_POLYPOINTS args_none { addIntOp(OP_PUSHINT, ERROR_POLYPOINTS); }
 			| B256ERROR_IMAGEFILE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGEFILE); }
 			| B256ERROR_SPRITENUMBER args_none { addIntOp(OP_PUSHINT, ERROR_SPRITENUMBER); }
@@ -2908,6 +3009,7 @@ expr:
 			| B256ERROR_DBNOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_DBNOTOPEN); }
 			| B256ERROR_DBCOLNO args_none { addIntOp(OP_PUSHINT, ERROR_DBCOLNO); }
 			| B256ERROR_DBNOTSET args_none { addIntOp(OP_PUSHINT, ERROR_DBNOTSET); }
+			| B256ERROR_TYPECONV args_none { addIntOp(OP_PUSHINT, ERROR_TYPECONV); }
 			| B256ERROR_NETSOCK args_none { addIntOp(OP_PUSHINT, ERROR_NETSOCK); }
 			| B256ERROR_NETHOST args_none { addIntOp(OP_PUSHINT, ERROR_NETHOST); }
 			| B256ERROR_NETCONN args_none { addIntOp(OP_PUSHINT, ERROR_NETCONN); }
@@ -2922,7 +3024,6 @@ expr:
 			| B256ERROR_IMAGESAVETYPE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGESAVETYPE); }
 			| B256ERROR_DIVZERO args_none { addIntOp(OP_PUSHINT, ERROR_DIVZERO); }
 			| B256ERROR_BYREF args_none { addIntOp(OP_PUSHINT, ERROR_BYREF); }
-			| B256ERROR_BYREFTYPE args_none { addIntOp(OP_PUSHINT, ERROR_BYREFTYPE); }
 			| B256ERROR_FREEFILE args_none { addIntOp(OP_PUSHINT, ERROR_FREEFILE); }
 			| B256ERROR_FREENET args_none { addIntOp(OP_PUSHINT, ERROR_FREENET); }
 			| B256ERROR_FREEDB args_none { addIntOp(OP_PUSHINT, ERROR_FREEDB); }
@@ -2931,7 +3032,6 @@ expr:
 			| B256ERROR_DBSETNUMBER args_none { addIntOp(OP_PUSHINT, ERROR_DBSETNUMBER); }
 			| B256ERROR_DBNOTSETROW args_none { addIntOp(OP_PUSHINT, ERROR_DBNOTSETROW); }
 			| B256ERROR_PENWIDTH args_none { addIntOp(OP_PUSHINT, ERROR_PENWIDTH); }
-			| B256ERROR_COLORNUMBER args_none { addIntOp(OP_PUSHINT, ERROR_COLORNUMBER); }
 			| B256ERROR_ARRAYINDEXMISSING args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYINDEXMISSING); }
 			| B256ERROR_IMAGESCALE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGESCALE); }
 			| B256ERROR_FONTSIZE args_none { addIntOp(OP_PUSHINT, ERROR_FONTSIZE); }
@@ -2940,19 +3040,26 @@ expr:
 			| B256ERROR_RADIX args_none { addIntOp(OP_PUSHINT, ERROR_RADIX); }
 			| B256ERROR_LOGRANGE args_none { addIntOp(OP_PUSHINT, ERROR_LOGRANGE); }
 			| B256ERROR_STRINGMAXLEN args_none { addIntOp(OP_PUSHINT, ERROR_STRINGMAXLEN); }
-			| B256ERROR_NOTANUMBER args_none { addIntOp(OP_PUSHINT, ERROR_NOTANUMBER); }
 			| B256ERROR_PRINTERNOTON args_none { addIntOp(OP_PUSHINT, ERROR_PRINTERNOTON); }
 			| B256ERROR_PRINTERNOTOFF args_none { addIntOp(OP_PUSHINT, ERROR_PRINTERNOTOFF); }
 			| B256ERROR_PRINTEROPEN args_none { addIntOp(OP_PUSHINT, ERROR_PRINTEROPEN); }
 			| B256ERROR_WAVFILEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_WAVFILEFORMAT); }
 			| B256ERROR_WAVNOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_WAVNOTOPEN); }
-			| B256ERROR_VARNOTASSIGNED args_none { addIntOp(OP_PUSHINT, ERROR_VARNOTASSIGNED); }
-
+			| B256ERROR_WAVNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, ERROR_WAVNOTSEEKABLE); }
+			| B256ERROR_WAVNODURATION args_none { addIntOp(OP_PUSHINT, ERROR_WAVNODURATION); }
+			| B256ERROR_FILEOPERATION args_none { addIntOp(OP_PUSHINT, ERROR_FILEOPERATION); }
+			| B256ERROR_SERIALPARAMETER args_none { addIntOp(OP_PUSHINT, ERROR_SERIALPARAMETER); }
+			| B256ERROR_LONGRANGE args_none { addIntOp(OP_PUSHINT, ERROR_LONGRANGE); }
+			| B256ERROR_INTEGERRANGE args_none { addIntOp(OP_PUSHINT, ERROR_INTEGERRANGE); }
 			| B256ERROR_NOTIMPLEMENTED args_none { addIntOp(OP_PUSHINT, ERROR_NOTIMPLEMENTED); }
+			| B256WARNING_START args_none { addIntOp(OP_PUSHINT, WARNING_START); }
 			| B256WARNING_TYPECONV args_none { addIntOp(OP_PUSHINT, WARNING_TYPECONV); }
-			| B256WARNING_WAVNODURATION args_none { addIntOp(OP_PUSHINT, WARNING_WAVNODURATION); }
 			| B256WARNING_WAVNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, WARNING_WAVNOTSEEKABLE); }
+			| B256WARNING_WAVNODURATION args_none { addIntOp(OP_PUSHINT, WARNING_WAVNODURATION); }
 			| B256WARNING_VARNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_VARNOTASSIGNED); }
+			| B256WARNING_LONGRANGE args_none { addIntOp(OP_PUSHINT, WARNING_LONGRANGE); }
+			| B256WARNING_INTEGERRANGE args_none { addIntOp(OP_PUSHINT, WARNING_INTEGERRANGE); }
+
 			| B256TYPEOF '(' expr ')' {
 				addOp(OP_TYPEOF);
 			}
@@ -3011,12 +3118,30 @@ expr:
 			}
 			| B256REPLACE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACEX); }
-			| B256IMPLODE '(' args_v ')' {
+			| B256IMPLODE '(' args_A ')' {
 				addStringOp(OP_PUSHSTRING, ""); // no delimiter
-				addIntOp(OP_IMPLODE, varnumber[--nvarnumber]);
+				addOp(OP_STACKDUP);
+				addOp(OP_IMPLODE_LIST);
 			}
-			| B256IMPLODE '(' args_ve ')' {
-				addIntOp(OP_IMPLODE, varnumber[--nvarnumber]); }
+			| B256IMPLODE '(' args_Ae ')' {
+				addOp(OP_STACKDUP);				// same delimiter for rows and columns
+				addOp(OP_IMPLODE_LIST);
+			}
+			| B256IMPLODE '(' args_Aee ')' {
+				addOp(OP_IMPLODE_LIST);
+			}
+			| B256IMPLODE '(' listoflists ')' {
+				addStringOp(OP_PUSHSTRING, ""); // no delimiter
+				addOp(OP_STACKDUP);
+				addOp(OP_IMPLODE_LIST);
+			}
+			| B256IMPLODE '(' args_ie ')' {
+				addOp(OP_STACKDUP);				// same delimiter for rows and columns
+				addOp(OP_IMPLODE_LIST);
+			}
+			| B256IMPLODE '(' args_iee ')' {
+				addOp(OP_IMPLODE_LIST);
+			}
 			| B256PROMPT '(' expr ')' {
 				addStringOp(OP_PUSHSTRING, "");
 				addOp(OP_PROMPT); }

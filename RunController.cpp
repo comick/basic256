@@ -390,11 +390,11 @@ void RunController::stopRunFinalized() {
 
 void
 RunController::showDocumentation() {
-    if (!docwin) docwin = new DocumentationWin(mainwin);
-    docwin->show();
-    docwin->raise();
-    docwin->go("");
-    docwin->activateWindow();
+	if (!docwin) docwin = new DocumentationWin(mainwin);
+	docwin->show();
+	if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+	docwin->go("");
+	docwin->activateWindow();
 }
 
 
@@ -404,12 +404,13 @@ void RunController::showOnlineDocumentation() {
 
 void
 RunController::showContextDocumentation() {
-    QString w = editwin->getCurrentWord();
-    if (!docwin) docwin = new DocumentationWin(mainwin);
-    docwin->show();
-    docwin->raise();
-    docwin->go(w);
-    docwin->activateWindow();
+	QString w = editwin->getCurrentWord();
+	if (!docwin) docwin = new DocumentationWin(mainwin);
+	docwin->show();
+	if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+	docwin->raise();
+	docwin->go(w);
+	docwin->activateWindow();
 }
 
 void RunController::showOnlineContextDocumentation() {
