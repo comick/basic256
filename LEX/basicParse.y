@@ -436,7 +436,7 @@
 %token B256REGEXMINIMAL B256TYPEOF B256UNASSIGN
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 %token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM B256SEMICOLON B256SEMICOLONEQUAL
-%token B256KEYPRESSED B256VARIABLEWATCH
+%token B256KEYPRESSED B256VARIABLEWATCH B256FILL
 
 
 %union anytype {
@@ -1132,19 +1132,39 @@ letstmt:	B256LET assign
 dimstmt: 	B256DIM args_a {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
+			| B256DIM args_a B256FILL expr {
+				addOp(OP_STACKTOPTO2);
+				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
+			}
 			| B256DIM args_v expr {
-					addIntOp(OP_PUSHINT, 1);
-					addOp(OP_STACKSWAP);
-					addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 1);
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_v expr B256FILL expr {
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_PUSHINT, 1);
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM args_v args_ee {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_v args_ee B256FILL expr {
+				addOp(OP_STACKTOPTO2);
+				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM args_v '=' listoflists {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			| B256DIM args_v '=' args_A {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256DIM args_v B256FILL expr {
+				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -1158,12 +1178,6 @@ redimstmt:	B256REDIM args_a {
                         }
 			| B256REDIM args_v args_ee {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
-			}
-			| B256REDIM args_v '=' listoflists {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| B256REDIM args_v '=' args_A {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			;
 

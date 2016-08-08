@@ -124,6 +124,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "explode"							//explode
 			<< "explodex"							//explodex
 			<< "fastgraphics"						//fastgraphics
+			<< "fill"								//fill
 			<< "float"								//float
 			<< "floor"								//floor
 			<< "font"								//font

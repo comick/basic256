@@ -256,6 +256,7 @@ exp [Ee][Xx][Pp]
 explode [Ee][Xx][Pp][Ll][Oo][Dd][Ee]
 explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
+fill [Ff][Ii][Ll][Ll]
 floor [Ff][Ll][Oo][Oo][Rr]
 font [Ff][Oo][Nn][Tt]
 for [Ff][Oo][Rr]
@@ -623,6 +624,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {exp}						{ count(); return B256EXP; }
 {explode}					{ count(); return B256EXPLODE; }
 {explodex}					{ count(); return B256EXPLODEX; }
+{fill}						{ count(); return B256FILL; }
 {floor}						{ count(); return B256FLOOR; }
 {freedb}					{ count(); return B256FREEDB; }
 {freedbset}					{ count(); return B256FREEDBSET; }

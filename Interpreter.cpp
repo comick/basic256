@@ -313,6 +313,7 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
 	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
 	else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
+	else if (op==OP_ARRAYFILL) return QString("OP_ARRAYFILL");
 	else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
 	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
 	else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
@@ -1296,6 +1297,22 @@ Interpreter::execByteCode() {
 					//mymutex->unlock();
 
 					
+				}
+				break;
+				
+				case OP_ARRAYFILL: {
+					// fill an array with a single value
+					DataElement *e = stack->popelement();
+					int columns = variables->arraysizey(i);
+					int rows = variables->arraysizex(i);
+					for(int row = 0; row<rows && !error->pending(); row++) {
+						for (int col = 0; col<columns && !error->pending(); col++) {
+							variables->arraysetdata(i, row, col, e);
+							if (!error->pending()) {
+								watchvariable(debugMode, i, row, col);
+							}
+						}
+					}
 				}
 				break;
 
@@ -2288,7 +2305,6 @@ Interpreter::execByteCode() {
 				case OP_ATAN:
 				case OP_CEIL:
 				case OP_FLOOR:
-				case OP_ABS:
 				case OP_DEGREES:
 				case OP_RADIANS:
 				case OP_LOG:
@@ -2327,12 +2343,6 @@ Interpreter::execByteCode() {
 							break;
 						case OP_FLOOR:
 							stack->pushint(floor(val));
-							break;
-						case OP_ABS:
-							if (val < 0) {
-								val = -val;
-							}
-							stack->pushfloat(val);
 							break;
 						case OP_DEGREES:
 							stack->pushfloat(val * 180 / M_PI);
@@ -2493,6 +2503,17 @@ Interpreter::execByteCode() {
 						break;
 					}
 
+				case OP_ABS:
+				{
+					DataElement *one = stack->popelement();
+					if (one->type==T_INT) {
+						stack->pushlong(labs(one->intval));
+
+					} else {
+						stack->pushfloat(fabs(convert->getFloat(one)));
+					}
+				}
+				break;
 
 				case OP_EX: {
 					// always return a float value with power "^"
