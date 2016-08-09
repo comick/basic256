@@ -45,9 +45,12 @@ VariableWin::VariableWin () {
 	resizeColumnToContents(1);
 	sortByColumn(0,Qt::AscendingOrder);
 	setSortingEnabled(true);
-	convert = new Convert(NULL);
+	convert = new Convert(NULL, mainwin->locale);
 }
 
+VariableWin::~VariableWin() {
+	delete(convert);
+}
 
 void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
 	// set thr type and value columns (2 and 3)

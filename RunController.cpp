@@ -83,7 +83,7 @@ extern VariableWin * varwin;
 
 
 RunController::RunController() {
-    i = new Interpreter();
+    i = new Interpreter(mainwin->locale);
 
     replacewin = NULL;
     docwin = NULL;

@@ -116,7 +116,7 @@ class Interpreter : public QThread
 {
   Q_OBJECT;
 	public:
-		Interpreter();
+		Interpreter(QLocale*);
 		~Interpreter();
 		int compileProgram(char *);
 		void initialize();
@@ -169,6 +169,7 @@ class Interpreter : public QThread
 #endif
 
 	private:
+		QLocale *locale;
 		Sleeper *sleeper;
 		int optype(int op);
 		QString opname(int);

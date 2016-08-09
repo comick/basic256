@@ -1,22 +1,23 @@
 #include "Convert.h"
 
-#include "MainWindow.h"
-
 #include <string>
 
-// needed to get localecode
-extern MainWindow * mainwin;
 
 
-Convert::Convert(Error *e) {
+Convert::Convert(Error *e, QLocale *applocale) {
 	error = e;
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
 	floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool();
 	// build international safe regular expression for numbers
-	locale = new QLocale(mainwin->localecode);
+	locale = applocale;
 	isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + locale->decimalPoint() + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
 }
+
+Convert::~Convert() {
+	delete(isnumeric);
+}
+
 		
 bool Convert::isNumeric(DataElement *e) {
 	// return true if this is a number or can convert to one
@@ -104,7 +105,7 @@ double Convert::getFloat(DataElement *e) {
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
 				bool ok;
-				f = e->stringval.toDouble(&ok);
+				f = locale->toDouble(e->stringval, &ok);
 				if(!ok) {
 					if (error) error->q(ERROR_TYPECONV);
 				}
@@ -132,9 +133,9 @@ QString Convert::getString(DataElement *e, int ddigits) {
 		} else if (e->type == T_FLOAT) {
 			double xp = log10(e->floatval*(e->floatval<0?-1:1)); // size in powers of 10
 			if (xp*2<-ddigits || xp>ddigits) {
-				s = QString::number(e->floatval,'g',ddigits);
+				s = locale->toString(e->floatval,'g',ddigits);
 			} else {
-				s = QString::number(e->floatval,'f',ddigits - (xp>0?xp:0));
+				s = locale->toString(e->floatval,'f',ddigits - (xp>0?xp:0));
 				// strip trailing zeros and decimal point
 				// need to test for locales with a comma as a currency seperator
 				if (s.contains(locale->decimalPoint(),Qt::CaseInsensitive)) {

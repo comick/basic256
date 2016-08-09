@@ -95,6 +95,7 @@ extern "C" {
 
 	extern int numparsewarnings;
 	extern int newWordCode();
+	extern void freeBasicParse();
 	extern int bytesToFullWords(int size);
 	extern int *wordCode;
 	extern unsigned int wordOffset;
@@ -112,14 +113,14 @@ extern "C" {
 	extern char *parsewarningtablelexingfilename[];
 }
 
-Interpreter::Interpreter() {
+Interpreter::Interpreter(QLocale *applocale) {
 	fastgraphics = false;
 	directorypointer=NULL;
 	status = R_STOPPED;
 	printing = false;
 	sleeper = new Sleeper();
-	// create the error handling object
 	error = new Error();
+	locale = applocale;
 
 #ifdef WIN32
 	// WINDOWS
@@ -153,6 +154,7 @@ Interpreter::~Interpreter() {
 	WSACleanup();
 #endif
 	delete sleeper;
+	delete error;
 }
 
 
@@ -671,7 +673,6 @@ Interpreter::compileProgram(char *code) {
 		msg += tr(".\n");
 		emit(outputError(msg));
 		//
-		free(parsewarningtablelexingfilename[i]);
 	}
 	//
 	// now display fatal error if there is one
@@ -805,18 +806,12 @@ Interpreter::compileProgram(char *code) {
 		}
 		msg += tr(".\n");
 		emit(outputError(msg));
+
+		freeBasicParse();
+
 		status = R_STOPPED;
 		return -1;
 	}
-
-	// for debugging - dump the wordcode as hex
-	//op = wordCode;
-	//currentLine = 1;
-	//while (op <= wordCode + wordOffset)
-	//{
-	//	emit(outputReady("off=" + QString::number(op-wordCode,16) + " w=" + QString::number(*op,16) + "\n"));
-	//	op++;
-	//}
 
 	currentLine = 1;
 	return 0;
@@ -853,10 +848,10 @@ Interpreter::initialize() {
 	graphwin->clickB = 0;
 	
 	// create the convert and comparer object
-	convert = new Convert(error);
+	convert = new Convert(error, locale);
 	
 	// now build the new stack object
-	stack = new Stack(error, convert);
+	stack = new Stack(error, convert, locale);
 
 	// now create the variable storage
 	variables = new Variables(numsyms, error);
@@ -903,10 +898,7 @@ Interpreter::cleanup() {
 	// Clean up sprites
 	clearsprites();
 	// Clean up, for frames, etc.
-	if (wordCode) {
-		free(wordCode);
-		wordCode = NULL;
-	}
+	freeBasicParse();
 	// close open files (set to NULL if closed)
 	for (int t=0; t<NUMFILES; t++) {
 		if (filehandle[t]) {
@@ -1302,16 +1294,26 @@ Interpreter::execByteCode() {
 				
 				case OP_ARRAYFILL: {
 					// fill an array with a single value
-					DataElement *e = stack->popelement();
-					int columns = variables->arraysizey(i);
-					int rows = variables->arraysizex(i);
-					for(int row = 0; row<rows && !error->pending(); row++) {
-						for (int col = 0; col<columns && !error->pending(); col++) {
-							variables->arraysetdata(i, row, col, e);
-							if (!error->pending()) {
-								watchvariable(debugMode, i, row, col);
+					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
+					DataElement *e = stack->popelement();	// fill value
+					Variable *v = variables->get(i);
+					if (v->data->type==T_ARRAY) {
+						int columns = variables->arraysizey(i);
+						int rows = variables->arraysizex(i);
+						for(int row = 0; row<rows && !error->pending(); row++) {
+							for (int col = 0; col<columns && !error->pending(); col++) {
+								if(mode==1 || variables->arraygetdata(i, row, col)->type == T_UNASSIGNED) {
+									variables->arraysetdata(i, row, col, e);
+									if (!error->pending()) {
+										watchvariable(debugMode, i, row, col);
+									}
+								}
 							}
 						}
+					} else {
+						// trying to fill a regular variable - just do an assign
+						variables->setdata(i, e);
+						watchvariable(debugMode, i);
 					}
 				}
 				break;
@@ -3945,12 +3947,16 @@ Interpreter::execByteCode() {
 												stack->pushint(dbSet[n][set]->record().value(col).toInt());
 												break;
 											case OP_DBFLOAT:
+												// potential issue with locale and database
+												// it seems like locale->toDouble does not support a QVariant
 												stack->pushfloat(dbSet[n][set]->record().value(col).toDouble());
 												break;
 											case OP_DBNULL:
 												stack->pushint(dbSet[n][set]->record().value(col).isNull());
 												break;
 											case OP_DBSTRING:
+												// potential issue with locale and database
+												// it seems like locale->toString does not support a QVariant
 												stack->pushstring(dbSet[n][set]->record().value(col).toString());
 												break;
 										}

@@ -156,14 +156,14 @@ int main(int argc, char *argv[]) {
 #endif
     qapp.installTranslator(&kbTranslator);
 
-    MainWindow mainwin;
+    MainWindow mainwin(0,0,localecode);
     mainwin.setObjectName( "mainwin" );
-    editwin->setWindowTitle(QObject::tr("Untitled"));
     mainwin.statusBar()->showMessage(QObject::tr("Ready."));
-    mainwin.localecode = localecode;
     mainwin.setGuiState(guimode);
     mainwin.show();
-    
+ 
+    editwin->setWindowTitle(QObject::tr("Untitled"));
+   
 
 #ifdef ANDROID
     // android - dont load initial file but set default folder to sdcard if exists

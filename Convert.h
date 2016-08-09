@@ -9,6 +9,7 @@
 
 #include <QString>
 #include <QLocale>
+#include <QVariant>
 
 #include "Settings.h"
 #include "Error.h"
@@ -24,7 +25,8 @@ class Convert
 {
 	public:
 
-		Convert(Error *);
+		Convert(Error *, QLocale *);
+		~Convert();
 
 		void setdecimaldigits(int);
 

@@ -2,15 +2,14 @@
 #include "DataElement.h"
 #include <string>
 
-// be doubly sure that when a stack element (DataElement) is popped from
-// the stack and NOT PUT BACK it MUST be deleted to keep from causing a memory
-// leak!!!!  - 2013-03-25 j.m.reneau
 
-Stack::Stack(Error *e, Convert *c) {
+Stack::Stack(Error *e, Convert *c, QLocale *applocale) {
 	error = e;	// save error object as private pointer
 	convert = c;
 	stackpointer = 0;	// height of stack
 	stackGrow();
+	locale = applocale;
+
 }
 
 Stack::~Stack() {
@@ -109,7 +108,7 @@ void Stack::pushvariant(QString string, int type) {
 					pushlong(i);
 				} else {
 					double d;
-					d = string.toDouble(&ok);
+					d = locale->toDouble(string,&ok);
 					if (ok) {
 						pushfloat(d);
 					} else {
@@ -134,7 +133,7 @@ void Stack::pushvariant(QString string, int type) {
 			{
 				bool ok;
 				double d=0.0;
-				d = string.toDouble(&ok);
+				d = locale->toDouble(string,&ok);
 				if (!ok) {
 					error->q(ERROR_TYPECONV);
 				}

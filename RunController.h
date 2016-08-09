@@ -25,6 +25,8 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 
+#include <QLocale>
+
 #include "BasicEdit.h"
 #include "BasicOutput.h"
 #include "BasicGraph.h"
@@ -80,6 +82,7 @@ class RunController : public QObject
   bool paused;
   run_status oldStatus;
   QString bytefilename;
+  QLocale *locale;
 };
 
 

@@ -60,8 +60,11 @@ std::list<int> pressedKeys;
 
 
 
-MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
+MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring)
     :	QMainWindow(parent, f) {
+
+	localecode = localestring;
+	locale = new QLocale(localecode);
 
     undoButtonValue = false;
     redoButtonValue = false;
@@ -547,6 +550,7 @@ MainWindow::~MainWindow() {
     delete outwin;
     delete graphwin;
     delete maintbar;
+    if (locale) delete(locale);
     
 }
 
@@ -559,6 +563,7 @@ void MainWindow::about() {
     title = QObject::tr("About BASIC-256") +  QObject::tr(" Android");
     message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
               QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
+			QObject::tr("Locale Name: ") + locale->name() + QObject::tr("Decimal Point: ")+  "'" +locale->decimalPoint() + "'\n" +
               QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "\n" +
               QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
               QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
@@ -573,11 +578,12 @@ void MainWindow::about() {
     message = "<h2>" + QObject::tr("BASIC-256") + "</h2>";
 #endif	// WIN32PORTABLE
 
-    message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
-               "<p>" + QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "</p>" +
-               "<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
-               "<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
-               "<p><i>" + QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.")  + "</i></p>";
+	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
+			"<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + locale->decimalPoint() + "'</b>" +
+			"<p>" + QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "</p>" +
+			"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
+			"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
+			"<p><i>" + QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.")  + "</i></p>";
 #endif
 
     QMessageBox::about(this, title, message);

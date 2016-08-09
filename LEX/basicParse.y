@@ -215,7 +215,7 @@
 			if (symtable[j]) {
 				free(symtable[j]);
 			}
-			symtable[j] = 0;
+			symtable[j] = NULL;
 			symtableaddress[j] = -1;
 		}
 		numsyms = 0;
@@ -291,6 +291,21 @@
 		return -1;
 	}
 
+	void freeBasicParse() {
+		// free all dynamically allocated stuff
+		int i;
+		for(i=0; i<numparsewarnings; i++) {
+			if (parsewarningtablelexingfilename[i]) {
+				free(parsewarningtablelexingfilename[i]);
+				parsewarningtablelexingfilename[i]=NULL;
+			}
+		}
+		clearSymbolTable();
+		if (wordCode) {
+			free(wordCode);
+			wordCode = NULL;
+		}
+	}
 
 
 	#ifdef __cplusplus
@@ -1135,6 +1150,7 @@ dimstmt: 	B256DIM args_a {
 			| B256DIM args_a B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM args_v expr {
@@ -1147,6 +1163,7 @@ dimstmt: 	B256DIM args_a {
 				addIntOp(OP_PUSHINT, 1);
 				addOp(OP_STACKSWAP);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM args_v args_ee {
@@ -1155,6 +1172,7 @@ dimstmt: 	B256DIM args_a {
 			| B256DIM args_v args_ee B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM args_v '=' listoflists {
@@ -1163,7 +1181,18 @@ dimstmt: 	B256DIM args_a {
 			| B256DIM args_v '=' args_A {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
+			| B256DIM array_empty '=' listoflists {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			}
+			| B256DIM array_empty '=' args_A {
+				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			}
 			| B256DIM args_v B256FILL expr {
+				addIntOp(OP_PUSHINT, 1);
+				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
+			}
+			| B256DIM array_empty B256FILL expr {
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
 			}
 			;
@@ -1171,13 +1200,33 @@ dimstmt: 	B256DIM args_a {
 redimstmt:	B256REDIM args_a {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
+			| B256REDIM args_a B256FILL expr {
+				addOp(OP_STACKTOPTO2);
+				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
+			}
 			| B256REDIM args_v expr {
-                                addIntOp(OP_PUSHINT, 1);
-                                addOp(OP_STACKSWAP);
-                                addIntOp(OP_REDIM, varnumber[--nvarnumber]);
-                        }
+				addIntOp(OP_PUSHINT, 1);
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+			}
+			| B256REDIM args_v expr B256FILL expr {
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_PUSHINT, 1);
+				addOp(OP_STACKSWAP);
+				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
+			}
 			| B256REDIM args_v args_ee {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+			}
+			| B256REDIM args_v args_ee B256FILL expr {
+				addOp(OP_STACKTOPTO2);
+				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
+				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			;
 
@@ -1320,7 +1369,15 @@ arrayelementassign:
 			
 /* assign an entire array in one statement */
 arrayassign:
-			args_v '=' listoflists {
+			args_v B256FILL expr {
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
+				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
+			}
+			| array_empty B256FILL expr {
+				addIntOp(OP_PUSHINT, 1);		// fill all elements
+				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
+			}
+			| args_v '=' listoflists {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			| array_empty '=' listoflists {

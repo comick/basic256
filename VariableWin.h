@@ -19,6 +19,7 @@
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QTreeWidget>
+#include <QLocale>
 
 #include "ViewWidgetIFace.h"
 #include "Convert.h"
@@ -31,6 +32,7 @@ class VariableWin : public QTreeWidget, public ViewWidgetIFace
 
 	public:
 		VariableWin();
+		~VariableWin();
 
 	public slots:
 		void varWinAssign(Variables *, int);
@@ -42,5 +44,6 @@ class VariableWin : public QTreeWidget, public ViewWidgetIFace
 		Convert *convert;
 		void removeArrayEntries(QString);
 		void setTypeAndValue(QTreeWidgetItem *, DataElement *);
+		QLocale *locale;
 
 };

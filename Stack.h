@@ -13,6 +13,7 @@
 #include <limits>
 
 #include <QString>
+#include <QLocale>
 
 #include "Error.h"
 #include "Convert.h"
@@ -24,7 +25,7 @@
 class Stack
 {
 	public:
-		Stack(Error *, Convert *);
+		Stack(Error *, Convert *, QLocale *);
 		~Stack();
 
 		Error *error;
@@ -59,4 +60,5 @@ class Stack
 		std::vector<DataElement*> stackdata;
 		unsigned int stackpointer;
 		void stackGrow();
+		QLocale *locale;
 };

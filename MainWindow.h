@@ -46,7 +46,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-  	MainWindow(QWidget * parent = 0, Qt::WindowFlags f = 0);
+  	MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring);
 	~MainWindow();
 	void loadCustomizations();
 	void saveCustomizations();
@@ -117,6 +117,7 @@ public:
     EditSyntaxHighlighter * editsyntax;
 
 	QString localecode;
+	QLocale *locale;
     bool undoButtonValue;
     bool redoButtonValue;
 	
