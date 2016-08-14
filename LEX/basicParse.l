@@ -288,6 +288,9 @@ if [Ii][Ff]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
+imagetype_bmp [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Bb][Mm][Pp]
+imagetype_jpg [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Jj][Pp][Gg]
+imagetype_png [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Pp][Nn][Gn]
 input [Ii][Nn][Pp][Uu][Tt]
 inputfloat [Ii][Nn][Pp][Uu][Tt][ \t]*[Ff][Ll][Oo][Aa][Tt]
 inputint [Ii][Nn][Pp][Uu][Tt][ \t]*[iI][nN][tT]([Ee][Gg][Ee][Rr])*
@@ -318,6 +321,10 @@ midx [Mm][Ii][Dd][Xx]
 minute [Mm][Ii][Nn][Uu][Tt][Ee]
 month [Mm][Oo][Nn][Tt][Hh]
 mouseb [Mm][Oo][Uu][Ss][Ee][Bb]
+mousebutton_center [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Cc][Ee][Nn][Tt][Ee][Rr]
+mousebutton_left [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Ll][Ee][Ff][Tt]
+mousebutton_none [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Nn][Oo][Nn][Ee]
+mousebutton_right [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Rr][Ii][Gg][Hh][Tt]
 mousex [Mm][Oo][Uu][Ss][Ee][Xx]
 mousey [Mm][Oo][Uu][Ss][Ee][Yy]
 msec [Mm][Ss][Ee][Cc]
@@ -338,6 +345,10 @@ openserial [Oo][Pp][Ee][Nn][Ss][Ee][Rr][Ii][Aa][Ll]
 or [Oo][Rr]
 orange [Oo][Rr][Aa][Nn][Gg][Ee]
 ostype [Oo][Ss][Tt][Yy][Pp][Ee]
+ostype_android [Oo][Ss][Tt][Yy][Pp][Ee][_][Aa][Nn][Dd][Rr][Oo][Ii][Dd]
+ostype_linux [Oo][Ss][Tt][Yy][Pp][Ee][_][Ll][Ii][Nn][Uu][Xx]
+ostype_macintosh [Oo][Ss][Tt][Yy][Pp][Ee][_][Mm][Aa][Cc][Ii][Nn][Tt][Oo][Ss][Hh]
+ostype_windows [Oo][Ss][Tt][Yy][Pp][Ee][_][Ww][Ii][Nn][Dd][Oo][Ww][Ss]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 pause [Pp][Aa][Uu][Ss][Ee]
 penwidth [Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
@@ -644,6 +655,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {gray}						{ count(); return B256GREY; }
 {green}						{ count(); return B256GREEN; }
 {hour}						{ count(); return B256HOUR; }
+{imagetype_bmp}				{ count(); return B256IMAGETYPE_BMP; }
+{imagetype_jpg}				{ count(); return B256IMAGETYPE_JPG; }
+{imagetype_png}				{ count(); return B256IMAGETYPE_PNG; }
 {implode}					{ count(); return B256IMPLODE; }
 {instr}						{ count(); return B256INSTR; }
 {instrx}					{ count(); return B256INSTRX; }
@@ -666,6 +680,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {minute}					{ count(); return B256MINUTE; }
 {month}						{ count(); return B256MONTH; }
 {mouseb}					{ count(); return B256MOUSEB; }
+{mousebutton_center}		{ count(); return B256MOUSEBUTTON_CENTER; }
+{mousebutton_left}			{ count(); return B256MOUSEBUTTON_LEFT; }
+{mousebutton_none}			{ count(); return B256MOUSEBUTTON_NONE; }
+{mousebutton_right}			{ count(); return B256MOUSEBUTTON_RIGHT; }
 {mousex}					{ count(); return B256MOUSEX; }
 {mousey}					{ count(); return B256MOUSEY; }
 {msec}						{ count(); return B256MSEC; }
@@ -674,6 +692,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {netread}					{ count(); return B256NETREAD; }
 {orange}					{ count(); return B256ORANGE; }
 {ostype}					{ count(); return B256OSTYPE; }
+{ostype_android}			{ count(); return B256OSTYPE_ANDROID; }
+{ostype_linux}				{ count(); return B256OSTYPE_LINUX; }
+{ostype_macintosh}			{ count(); return B256OSTYPE_MACINTOSH; }
+{ostype_windows}			{ count(); return B256OSTYPE_WINDOWS; }
 {pi}						{ count(); return B256PI; }
 {pixel}						{ count(); return B256PIXEL; }
 {portin}					{ count(); return B256PORTIN; }

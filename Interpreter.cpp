@@ -4375,9 +4375,9 @@ Interpreter::execByteCode() {
 					QString type = stack->popstring();
 					QString file = stack->popstring();
 					QStringList validtypes;
-					validtypes << "BMP" << "bmp" << "JPG" << "jpg" << "JPEG" << "jpeg" << "PNG" << "png";
-					if (validtypes.indexOf(type)!=-1) {
-						graphwin->image->save(file, type.toUtf8().data());
+					validtypes << IMAGETYPE_BMP << IMAGETYPE_JPG << IMAGETYPE_JPEG << IMAGETYPE_PNG ;
+					if (validtypes.contains(type, Qt::CaseInsensitive)) {
+						graphwin->image->save(file, type.toUpper().toUtf8().data());
 					} else {
 						error->q(ERROR_IMAGESAVETYPE);
 					}
@@ -4467,16 +4467,16 @@ Interpreter::execByteCode() {
 					// Return type of OS this compile was for
 					int os = -1;
 #ifdef WIN32
-					os = 0;
+					os = OSTYPE_WINDOWS;
 #endif
 #ifdef LINUX
-					os = 1;
+					os = OSTYPE_LINUX;
 #endif
 #ifdef MACX
-					os = 2;
+					os = OSTYPE_MACINTOSH;
 #endif
 #ifdef ANDROID
-					os = 3;
+					os = OSTYPE_ANDROID;
 #endif
 					stack->pushint(os);
 				}

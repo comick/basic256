@@ -17,6 +17,7 @@
 # 20160105	j.m.reneau	fixed iages and other things
 
 
+global listsig, intable
 
 function quote(s)
 	# return quotes around a string
@@ -39,15 +40,62 @@ function processline(lang, l)
 	# process the heading, font, character, images, and links on that line
 
 	## headings
-	l = replacex(l,"======\s(.*)\s======", "<h1>\1</h1>")
-	l = replacex(l,"=====\s(.*)\s=====", "<h1>\1</h1>")
-	l = replacex(l,"====\s(.*)\s====", "<h2>\1</h2>")
-	l = replacex(l,"===\s(.*)\s===", "<h3>\1</h3>")
-	l = replacex(l,"==\s(.*)\s==", "<h4>\1</h4>")
+	l = replacex(l,"======\s*(.*)\s*======", "<h1>\1</h1>")
+	l = replacex(l,"=====\s*(.*)\s*=====", "<h1>\1</h1>")
+	l = replacex(l,"====\s*(.*)\s*====", "<h2>\1</h2>")
+	l = replacex(l,"===\s*(.*)\s*===", "<h3>\1</h3>")
+	l = replacex(l,"==\s*(.*)\s*==", "<h4>\1</h4>")
 
 	# font effects
 	l = replacex(l,"\*\*(.*)\*\*", "<b>\1</b>")
 	l = replacex(l,"//(.*)//", "<i>\1</i>")
+
+	# list item (starts with a *) and may have a nested sub list
+	if instrx(l, "^ *\*.*$") then
+		parts = explodex(l, "^( *\*)(.*)$")
+		if length(parts[1]) > length(listsig) then
+			# new list
+			l = "<ul><li>"+ parts[2]
+			listsig = parts[1]
+		else
+			if length(parts[1]) < length(listsig) then
+				# end nested list
+				l = "</li></ul></li><li>"+ parts[2]
+				listsig = parts[1]
+			else
+				l = "</li><li>"+ parts[2]
+			endif
+		endif
+	else
+		if length(listsig) > 0 then
+			l = "</li></ul>" + l
+			listsig = ""
+		endif
+	endif
+
+	# doing a table
+	if instrx(l,"^ *(\||\^)") then
+		l = replacex(l, "^ *\|", "<tr><td>")
+		l = replacex(l, "^ *\^", "<tr><th>")
+		l = replacex(l, "\| *\n*$", "</td></tr>")
+		l = replacex(l, "\^ *\n*$", "</th></tr>")
+		l = replacex(l, "\|", "</td><td>")
+		l = replacex(l, "\^", "</th><th>")
+		if not intable then
+			l = "<table border='1' cellspacing='0'>" + l
+			intable = true
+		endif
+		#colspan for table header
+		l = replacex(l,"<th>(.+)</th><th></th><th></th><th></th>","<th colspan='4'>\1</th>")
+		l = replacex(l,"<th>(.+)</th><th></th><th></th>","<th colspan='3'>\1</th>")
+		l = replacex(l,"<th>(.+)</th><th></th>","<th colspan='2'>\1</th>")
+	else
+		if intable then
+			l = "</table>" + l
+			intable = false
+		endif
+	endif
+
 
 	# characters
 	l = replace(l,"%%|%%", "&#124;")
@@ -107,6 +155,8 @@ function processline(lang, l)
 			l = replace(l, parts[0], "<a href=" + quote(lang + "_" + lower( parts[1]) + ".html") +">" + parts[1] + "</a>")
 		endif
 	end while
+
+
 	return l
 
 end function
@@ -145,68 +195,33 @@ subroutine processfile(lang, filename)
 				l += processline(lang,l2)
 			end while
 			close(2)
-		endif
+		end if
 
-		# list item (starts with a *) and may have a nested sub list
-		if instrx(l, "^ *\*.*$") then
-			parts = explodex(l, "^( *\*)(.*)$")
-			if length(parts[1]) > length(listsig) then
-				# new list
-				l = "<ul><li>"+ parts[2]
-				listsig = parts[1]
+		#include whole other file
+		# {{page>XX:page}}
+		if instrx(l,"\{\{page>[a-zA-z_:]*\}\}") then
+			parts = explodex(l, "\{\{page>(.*)\}\}")
+			l = ""
+			print "  include " + parts[1]
+			if instr(parts[1],":") then
+				open 2,  "pages/"+replace(parts[1],":",'/')+".txt"
 			else
-				if length(parts[1]) < length(listsig) then
-					# end nested list
-					l = "</li></ul></li><li>"+ parts[2]
-					listsig = parts[1]
-				else
-					l = "</li><li>"+ parts[2]
-				endif
+				open 2,  "pages/"+lang+"/"+parts[1]+".txt"
 			endif
-		else
-			if length(listsig) > 0 then
-				l = "</li></ul>" + l
-				listsig = ""
-			endif
-		endif
-
-		# doing a table
-		if instrx(l,"^ *(\||\^)") then
-			l = replacex(l, "^ *\|", "<tr><td>")
-			l = replacex(l, "^ *\^", "<tr><th>")
-			l = replacex(l, "\| *\n*$", "</td></tr>")
-			l = replacex(l, "\^ *\n*$", "</th></tr>")
-			l = replacex(l, "\|", "</td><td>")
-			l = replacex(l, "\^", "</th><th>")
-			if not intable then
-				l = "<table border='1' cellspacing='0'>" + l
-				intable = true
-			endif
-			#colspan for table header
-			l = replacex(l,"<th>(.+)</th><th></th><th></th><th></th>","<th colspan='4'>\1</th>")
-			l = replacex(l,"<th>(.+)</th><th></th><th></th>","<th colspan='3'>\1</th>")
-			l = replacex(l,"<th>(.+)</th><th></th>","<th colspan='2'>\1</th>")
-		else
-			if intable then
-				l = "</table>" + l
-				intable = false
-			endif
-		endif
+			# find line with parts[2]
+			while not eof(2)
+				l2 = readline(2)
+				l += processline(lang,l2)
+			end while
+			l += processline(lang,"") ## process a blank line to close any tables or lists
+			close(2)
+		end if
 
 		page += l
 	end while
+	
+	page += processline(lang,"") ## process a blank line to close any tables or lists
 	close(1)
-
-	# have we closed tabes and lists??
-	if length(listsig) > 0 then
-		page += "</li></ul>"
-		listsig = ""
-	endif
-	if intable then
-		page += "</table>"
-		intable = false
-	endif
-
 
 	## now that we have read in the lines and concatenated them to
 	## page lets do a few global things
@@ -254,7 +269,7 @@ subroutine processfile(lang, filename)
 	if intable then html+= "</table>"
 	if listsig <> "" then html+= "</li></ul>"
 	html +=  chr(13) + chr(10) + "<footer>" + chr(13)
-	html += "<p><small>Except where otherwise noted, content on documentation is licensed under the following license: CC Attribution-Share Alike 3.0 Unported.  For on-line Documentation see <a href='http://doc.basic256.org'>http://doc.basic256.org</a>.</small></p>" + chr(13)
+	html += "<p><small>&copy; "+year+" The BASIC-256 Consortium - Except where otherwise noted, content on documentation is licensed under the CC Attribution-Share Alike 3.0 Unported license.  For on-line Documentation see <a href='http://doc.basic256.org'>http://doc.basic256.org</a>.</small></p>" + chr(13)
 	html += "<p><small>Generated on "+ pad(year,4) + '-' + pad(month+1,2) + "-" + pad(day,2) +".</small></p>" + chr(13)
 	html += "</footer></body></html>"
 
@@ -272,8 +287,8 @@ end subroutine
 
 ##### PROGRAM STARTS HERE #####
 
-if version < 1999909 then
-	print "This program requires 1.99.99.9 or better to run successfully."
+if version < 1999957 then
+	print "This program requires 1.99.99.57 or better to run successfully."
 	end
 endif
 
@@ -301,6 +316,7 @@ call processfile("", "start.txt")
 
 ## Loop through all of the language folders (startting with the root)
 langs = {"de", "el", "en", "es", "fr", "jp", "nl", "pt", "ro", "ru"}
+##langs = {"en"}
 for tlangs = 0 to langs[?]-1
 	lang = langs[tlangs]
 

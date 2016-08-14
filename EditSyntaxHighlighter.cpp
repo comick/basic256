@@ -415,11 +415,22 @@ void EditSyntaxHighlighter::initConstants() {
 			<< "WARNING_VARNOTASSIGNED"
 			<< "WARNING_LONGRANGE"
 			<< "WARNING_INTEGERRANGE"
-			<< "TYPE_ARRAY"							//TYPE_ARRAY
-			<< "TYPE_FLOAT"							//TYPE_FLOAT
-			<< "TYPE_INT"							//TYPE_INT
-			<< "TYPE_STRING"						//TYPE_STRING
-			<< "TYPE_UNASSIGNED"					//TYPE_UNASSIGNED
+			<< "TYPE_ARRAY"
+			<< "TYPE_FLOAT"
+			<< "TYPE_INT"
+			<< "TYPE_STRING"
+			<< "TYPE_UNASSIGNED"
+			<< "MOUSEBUTTON_CENTER"
+			<< "MOUSEBUTTON_LEFT"
+			<< "MOUSEBUTTON_NONE"
+			<< "MOUSEBUTTON_RIGHT"
+			<< "IMAGETYPE_BMP"
+			<< "IMAGETYPE_JPG"
+			<< "IMAGETYPE_PNG"
+			<< "OSTYPE_ANDROID"
+			<< "OSTYPE_LINUX"
+			<< "OSTYPE_MACINTOSH"
+			<< "OSTYPE_WINDOWS"
 			;
 	for (QStringList::iterator it = constantPatterns.begin(); it != constantPatterns.end(); ++it ) {
 		HighlightRule *rule = new HighlightRule;
