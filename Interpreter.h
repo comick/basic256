@@ -38,6 +38,9 @@
 #include "Sleeper.h"
 #include "BasicMediaPlayer.h"
 
+#include <QElapsedTimer>
+#include <QDebug>
+
 
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrinterInfo>
@@ -189,13 +192,15 @@ class Interpreter : public QThread
 		onerrorframe *onerrorstack;
 		QPen drawingpen;
 		QBrush drawingbrush;
+        int CompositionModeClear;
+        int PenColorIsClear;
 		run_status status;
 		run_status oldstatus;
 		bool fastgraphics;
 		QString inputString;
 		int inputType;				// data type to convert the input into
-		bool once;
-		int currentLine;
+        double double_random_max;
+        int currentLine;
 		QString fontfamily;
 		int fontpoint;
 		int fontweight;

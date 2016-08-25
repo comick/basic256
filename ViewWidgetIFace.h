@@ -22,7 +22,7 @@
 #include <qglobal.h>
 
 #include <QtWidgets/QMenu>
-#include "ToolBar.h"
+#include <QtWidgets/QToolBar>
 
 class ViewWidgetIFace
 {
@@ -30,7 +30,7 @@ public:
   	ViewWidgetIFace();
 	virtual ~ViewWidgetIFace();
 
-	virtual bool initActions(QMenu *, ToolBar *);
+	virtual bool initActions(QMenu *, QToolBar *);
 	bool usesToolBar() { return m_usesToolBar; }
 	bool usesMenu() { return m_usesMenu; }
 	

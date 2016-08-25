@@ -121,6 +121,7 @@ Interpreter::Interpreter(QLocale *applocale) {
 	sleeper = new Sleeper();
 	error = new Error();
 	locale = applocale;
+	mediaplayer = NULL;
 
 #ifdef WIN32
 	// WINDOWS
@@ -827,8 +828,12 @@ Interpreter::initialize() {
 	fastgraphics = false;
 	drawingpen = QPen(Qt::black);
 	drawingbrush = QBrush(Qt::black, Qt::SolidPattern);
-	status = R_RUNNING;
-	once = true;
+    CompositionModeClear = false;
+    PenColorIsClear = false;
+    status = R_RUNNING;
+    //initialize random
+    double_random_max = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
+    srand(time(NULL) * (999 + QTime::currentTime().msec()));
 	currentLine = 1;
 	currentIncludeFile = QString("");
 	emit(mainWindowsResize(1, 300, 300));
@@ -840,7 +845,6 @@ Interpreter::initialize() {
 	regexMinimal = false;
 	lastKey = 0;
 	pressedKeys.clear();
-	mediaplayer = NULL;
 	runtimer.start();
 	// clickclear mouse status
 	graphwin->clickX = 0;
@@ -2057,20 +2061,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_RAND: {
-					double r = 1.0;
-					double ra;
-					double rx;
-					if (once) {
-						int ms = 999 + QTime::currentTime().msec();
-						once = false;
-						srand(time(NULL) * ms);
-					}
-					while(r == 1.0) {
-						ra = (double) rand() * (double) RAND_MAX + (double) rand();
-						rx = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
-						r = ra/rx;
-					}
-					stack->pushfloat(r);
+                    double r = ((double) rand() * (double) RAND_MAX + (double) rand()) / double_random_max;
+                    stack->pushfloat(r);
 				}
 				break;
 
@@ -2718,11 +2710,17 @@ Interpreter::execByteCode() {
 					QString file = stack->popstring();
 					if(file.compare("")!=0) {
 						// load new file and start playback
+						if (mediaplayer) {
+							delete(mediaplayer);
+							mediaplayer = NULL;
+						}
 						mediaplayer = new BasicMediaPlayer();
 						mediaplayer->loadFile(file);
 						mediaplayer->play();
 						if (mediaplayer->error()!=0) {
 							error->q(ERROR_WAVFILEFORMAT);
+							delete(mediaplayer);
+							mediaplayer = NULL;
 						}
 					} else {
 						// start playing an existing mediaplayer
@@ -2748,6 +2746,19 @@ Interpreter::execByteCode() {
 					unsigned long brushval = stack->poplong();
 					unsigned long penval = stack->poplong();
 
+                    //set PenColorIsClear and CompositionModeClear flags here for speed
+                    if (penval == 0){
+                        PenColorIsClear = true;
+                        if (brushval == 0){
+                            CompositionModeClear = true;
+                        }else{
+                            CompositionModeClear = false;
+                        }
+                    }else{
+                        PenColorIsClear = false;
+                        CompositionModeClear = false;
+                    }
+
 					drawingpen.setColor(QColor::fromRgba((QRgb) penval));
 					drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
 				}
@@ -2760,7 +2771,7 @@ Interpreter::execByteCode() {
 					int rval = stack->popint();
 					if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
 						error->q(ERROR_RGB);
-					} else {
+                    } else {
 						stack->pushlong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
 					}
 				}
@@ -2872,9 +2883,9 @@ Interpreter::execByteCode() {
 						ian = new QPainter(graphwin->image);
 					}
 
-					ian->setPen(drawingpen);
-					ian->setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                    ian->setPen(drawingpen);
+//					ian->setBrush(drawingbrush);
+                    if (CompositionModeClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					if (x1val >= 0 && y1val >= 0) {
@@ -2897,7 +2908,7 @@ Interpreter::execByteCode() {
 					int x0val = stack->popint();
 
 					QPainter *ian;
-					if (printing) {
+                    if (printing) {
 						ian = printdocumentpainter;
 					} else {
 						ian = new QPainter(graphwin->image);
@@ -2912,9 +2923,9 @@ Interpreter::execByteCode() {
 						y1val*=-1;
 					}
 
-					ian->setBrush(drawingbrush);
-					ian->setPen(drawingpen);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                    ian->setBrush(drawingbrush);
+                    ian->setPen(drawingpen);
+                    if (CompositionModeClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 
@@ -2977,7 +2988,7 @@ Interpreter::execByteCode() {
 
 								poly->setPen(drawingpen);
 								poly->setBrush(drawingbrush);
-								if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                                if (CompositionModeClear) {
 									poly->setCompositionMode(QPainter::CompositionMode_Clear);
 								}
 								poly->drawPolygon(points, pairs);
@@ -3059,7 +3070,7 @@ Interpreter::execByteCode() {
 									}
 									poly->setPen(drawingpen);
 									poly->setBrush(drawingbrush);
-									if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                                    if (CompositionModeClear) {
 										poly->setCompositionMode(QPainter::CompositionMode_Clear);
 									}
 									poly->drawPolygon(points, pairs);
@@ -3095,7 +3106,7 @@ Interpreter::execByteCode() {
 
 					ian->setPen(drawingpen);
 					ian->setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                    if (CompositionModeClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					ian->drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
@@ -3164,7 +3175,7 @@ Interpreter::execByteCode() {
 						
 					ian->setPen(QPen(drawingpen.color()));
 					
-					if (drawingpen.color()==QColor(0,0,0,0)) {
+                    if (PenColorIsClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					if(!fontfamily.isEmpty()) {
@@ -3220,6 +3231,7 @@ Interpreter::execByteCode() {
 					int twoval = stack->popint();
 
 					QPainter *ian;
+
 					if (printing) {
 						ian = printdocumentpainter;
 					} else {
@@ -3227,7 +3239,7 @@ Interpreter::execByteCode() {
 					}
 
 					ian->setPen(drawingpen);
-					if (drawingpen.color()==QColor(0,0,0,0)) {
+                    if (PenColorIsClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					ian->drawPoint(twoval, oneval);
@@ -3525,7 +3537,7 @@ Interpreter::execByteCode() {
 									QPainter *poly = new QPainter(sprites[n].image);
 									poly->setPen(drawingpen);
 									poly->setBrush(drawingbrush);
-									if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                                    if (CompositionModeClear) {
 										poly->setCompositionMode(QPainter::CompositionMode_Clear);
 									}
 									poly->drawPolygon(points, pairs);
@@ -4628,7 +4640,7 @@ Interpreter::execByteCode() {
 
 					ian->setPen(drawingpen);
 					ian->setBrush(drawingbrush);
-					if (drawingpen.color()==QColor(0,0,0,0) && drawingbrush.color()==QColor(0,0,0,0) ) {
+                    if (CompositionModeClear) {
 						ian->setCompositionMode(QPainter::CompositionMode_Clear);
 					}
 					if(opcode==OP_ARC) {
@@ -4920,26 +4932,26 @@ Interpreter::execByteCode() {
 					// swap the top two pairs of the stack
 					// 0, 1, 2, 3...  becomes 2,3, 0,1...
 					stack->swap2();
-				}
+                }
 				break;
 
 				case OP_STACKDUP: {
 					// duplicate top stack entry
 					stack->dup();
-				}
+                }
 				break;
 
 				case OP_STACKDUP2: {
 					// duplicate top 2 stack entries
 					stack->dup2();
-				}
+                }
 				break;
 
 				case OP_STACKTOPTO2: {
 					// move the top of the stack under the next two
 					// 0, 1, 2, 3...  becomes 1, 2, 0, 3...
 					stack->topto2();
-				}
+                }
 				break;
 
 				case OP_ARGUMENTCOUNTTEST: {

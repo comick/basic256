@@ -24,10 +24,11 @@
 #include <qglobal.h>
 
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QToolBar>
 #include <QPainter>
 #include <QKeyEvent>
-
-
+#include <QElapsedTimer>
+#include <QDebug>
 #include "ViewWidgetIFace.h"
 #include "BasicOutput.h"
 
@@ -41,7 +42,9 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   BasicGraph();
   ~BasicGraph();
   QImage *image;
-  bool initActions(QMenu *, ToolBar *);
+  QImage *gridlinesimage;
+  QImage *displayedimage;
+  bool initActions(QMenu *, QToolBar *);
   // used to store current location of mouse
   // default value of -1 when no mouse recorded over graphic output
   int mouseX;
@@ -54,13 +57,13 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   int clickB;
   bool isVisibleGridLines();
 
- 
+
  public slots:
   void resize(int, int);
   void slotGridLines(bool);
   void slotCopy();
   void slotPrint();
- 
+
  protected:
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);
@@ -68,14 +71,14 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
-  
+
  private:
-  uchar *imagedata;
   unsigned int gwidth;
   unsigned int gheight;
   unsigned int gtop;	// position of image in basicgraph widget
   unsigned int gleft;
   bool gridlines;		// show the grid lines or not
+  void drawGridLines();
 
 };
 

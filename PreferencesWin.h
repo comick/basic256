@@ -75,6 +75,7 @@ private:
 	QCheckBox *floattailcheckbox;
 	QLabel *debugspeedlabel;
 	QSlider *debugspeedslider;
+	QCheckBox *mainrestorecheckbox;
 
 	// sound tab
 	QWidget * soundtabwidget;

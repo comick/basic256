@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/** Copyright (C) 2016, J.M.Reneau.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -16,13 +16,26 @@
  **/
 
 
-#include "ToolBar.h"
+#ifndef __BASICDOCK_H
+#define __BASICDOCK_H
 
-ToolBar::ToolBar(QString & title, QWidget * parent)
-    :	QToolBar(title, parent) {
+#include <qglobal.h>
 
-}
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QAction>
+#include <QCloseEvent>
 
-ToolBar::ToolBar(QWidget * parent)
-    :	QToolBar(parent) {
-}
+
+class BasicDock : public QDockWidget
+{
+    Q_OBJECT
+public:
+	BasicDock();
+	
+	void setActionCheck(QAction *vischeck);
+	void closeEvent(QCloseEvent *);
+private:
+	QAction *visible_action;
+};
+
+#endif

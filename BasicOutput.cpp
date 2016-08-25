@@ -24,6 +24,7 @@
 #include <QMimeData>
 
 #include <QtWidgets/QAction>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 #include <QtPrintSupport/QPrintDialog>
@@ -155,10 +156,13 @@ void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 }
 
 
-bool BasicOutput::initActions(QMenu * vMenu, ToolBar * vToolBar) {
+bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {
 	if ((NULL == vMenu) || (NULL == vToolBar)) {
 		return false;
 	}
+
+	vToolBar->setObjectName("outtoolbar");
+
 
 	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
 	QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));

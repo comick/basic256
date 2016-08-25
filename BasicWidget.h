@@ -22,6 +22,7 @@
 #include <qglobal.h>
 
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 class QMenu;
@@ -46,7 +47,7 @@ public slots:
 
 private:
 	ViewWidgetIFace *m_viewWidget;
-	ToolBar *m_toolBar;
+	QToolBar *m_toolBar;
 	QMenu *m_menu;
 	QVBoxLayout *m_layout;
 };

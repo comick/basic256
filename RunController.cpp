@@ -475,9 +475,9 @@ void RunController::findAgain() {
 
 void
 RunController::mainWindowsVisible(int w, bool v) {
-    if (w==0) mainwin->editWinVisibleAct->setChecked(v);
-    if (w==1) mainwin->graphWinVisibleAct->setChecked(v);
-    if (w==2) mainwin->outWinVisibleAct->setChecked(v);
+    if (w==0) mainwin->editwin_visible_act->setChecked(v);
+    if (w==1) mainwin->graphwin_visible_act->setChecked(v);
+    if (w==2) mainwin->outwin_visible_act->setChecked(v);
 }
 
 void
@@ -550,8 +550,6 @@ void RunController::dialogFontSelect() {
 	QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin, QString(), QFontDialog::MonospacedFonts);
 
 	if (ok) {
-		settings.setValue(SETTINGSFONT, newf.toString());
-
 		mymutex->lock();
 		editwin->setFont(newf);
 		outwin->setFont(newf);

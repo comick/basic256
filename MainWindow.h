@@ -29,6 +29,7 @@
 #include <QtWidgets/QScrollArea>
 #include <QClipboard>
 
+#include "BasicDock.h"
 #include "BasicWidget.h"
 #include "BasicOutput.h"
 #include "BasicEdit.h"
@@ -46,33 +47,30 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-  	MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring);
+  	MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring, int guistate);
 	~MainWindow();
-	void loadCustomizations();
-	void saveCustomizations();
 	void ifGuiStateRun();
 	void ifGuiStateClose();
 	void closeEvent(QCloseEvent *);
-	void setGuiState(int);
     void setEnabledEditorButtons(bool val);
     void setRunState(int);
     
 
 	// Main IU Widgets
-	BasicWidget * editwinwgt;
-	BasicWidget * outwinwgt;
-	BasicWidget * graphwinwgt;
-	BasicWidget * varwinwgt;
+	BasicWidget * editwin_widget;
+	BasicWidget * outwin_widget;
+	BasicWidget * graphwin_widget;
+	BasicWidget * varwin_widget;
 
 	// file menu and choices
 	QMenu * filemenu;
-	QAction * newact;
-	QAction * openact;
-	QAction * saveact;
-	QAction * saveasact;
-	QAction * printact;
-	QAction *recentact[SETTINGSGROUPHISTN]; 
-	QAction * exitact;
+	QAction * filemenu_new_act;
+	QAction * filemenu_open_act;
+	QAction * filemenu_save_act;
+	QAction * filemenu_saveas_act;
+	QAction * filemenu_print_act;
+	QAction *filemenu_recent_act[SETTINGSGROUPHISTN]; 
+	QAction * filemenu_exit_act;
 
 	// edit menu and choices
 	QMenu * editmenu;
@@ -90,16 +88,16 @@ public:
 
 	// view menu
 	QMenu *viewmenu;
-	QAction *editWinVisibleAct;
-	QAction *outWinVisibleAct;
-	QAction *graphWinVisibleAct;
-	QAction *variableWinVisibleAct;
-	QAction *editWhitespaceAct;
-	QAction *graphGridVisibleAct;
+	QAction *editwin_visible_act;
+	QAction *outwin_visible_act;
+	QAction *graphwin_visible_act;
+	QAction *varwin_visible_act;
+	QAction *edit_whitespace_act;
+	QAction *graph_grid_visible_act;
 	QAction *fontact;
-	QAction *maintbaract;
-	QAction *texttbaract;
-	QAction *graphtbaract;
+	QAction *main_toolbar_visible_act;
+	QAction *outwin_toolbar_visible_act;
+	QAction *graphwin_toolbar_visible_act;
 
 	// run menu
 	QMenu *runmenu;
@@ -127,16 +125,21 @@ public slots:
 
 private:
 
-	DockWidget * editdock;
-	DockWidget * outdock;
-	DockWidget * graphdock;
-	QScrollArea * graphscroll;
-	DockWidget * vardock;
+	BasicDock * editwin_dock;
+	BasicDock * outwin_dock;
+	BasicDock * graphwin_dock;
+	QScrollArea * graph_scroll;
+	BasicDock * varwin_dock;
 
-	QToolBar *maintbar;
+	QToolBar *main_toolbar;
     
 	// SEE GUISTATE* Constants
+	void configureGuiState();
 	int guiState;
+	
+	void loadCustomizations();
+	void saveCustomizations();
+
 
 	// void pointer to the run controller
 	// can't specify type because of circular reference
@@ -149,9 +152,6 @@ private slots:
     void updateCopyCutButtons(bool);
     void slotUndoAvailable(bool val);
     void slotRedoAvailable(bool val);
-    void checkGraphMenuVisible();
-    void checkOutMenuVisible();
-    void checkVarMenuVisible();
 };
 
 #endif

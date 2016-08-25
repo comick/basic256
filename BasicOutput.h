@@ -22,6 +22,7 @@
 #include <QKeyEvent>
 #include <QPaintEvent>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QToolBar>
 
 #include <qglobal.h>
 
@@ -38,7 +39,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   int currentKey;			// store the last key pressed for key function
   void inputStart();
 
-  virtual bool initActions(QMenu *, ToolBar *);
+  virtual bool initActions(QMenu *, QToolBar *);
 
  public slots:
   void getInput();

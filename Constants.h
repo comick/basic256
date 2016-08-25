@@ -12,7 +12,27 @@
     #define CALLSIG_SUBROUTINE 0xffff
     #define CALLSIG_FUNCTION 0xfffe
 
+	// editor settings
 	#define EDITOR_TAB_WIDTH 4
+	
+	// mainwindow geometry settings/defaults
+	#define MAINWINDOW_DEFAULT_X 100
+	#define MAINWINDOW_DEFAULT_Y 100
+	#define MAINWINDOW_DEFAULT_W 800
+	#define MAINWINDOW_DEFAULT_H 600
+	#define GRAPH_DOCK_DEFAULT_X 100
+	#define GRAPH_DOCK_DEFAULT_Y 100
+	#define GRAPH_DOCK_DEFAULT_W 400
+	#define GRAPH_DOCK_DEFAULT_H 400
+	#define OUT_DOCK_DEFAULT_X 100
+	#define OUT_DOCK_DEFAULT_Y 100
+	#define OUT_DOCK_DEFAULT_W 400
+	#define OUT_DOCK_DEFAULT_H 400
+	#define VAR_DOCK_DEFAULT_X 100
+	#define VAR_DOCK_DEFAULT_Y 100
+	#define VAR_DOCK_DEFAULT_W 400
+	#define VAR_DOCK_DEFAULT_H 400
+
 
 	// time between sleep interrupt checks
 	#define SLEEP_GRANULE 2000L

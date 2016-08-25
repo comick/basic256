@@ -1,4 +1,4 @@
-/** Copyright (C) 2006, Ian Paul Larsen.
+/** Copyright (C) 2016, J.M.Reneau
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -15,21 +15,25 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-
-#ifndef __TOOLBAR_H
-#define __TOOLBAR_H
-
 #include <qglobal.h>
 
-#include <QtWidgets/QToolBar>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QAction>
+#include <QCloseEvent>
+#include "BasicDock.h"
 
-class ToolBar : public QToolBar
-{
-    Q_OBJECT
+
+BasicDock::BasicDock() {
+	visible_action = NULL;
+}
 	
-public:
-	ToolBar(QString & title, QWidget * parent = 0);
-  	ToolBar(QWidget * parent = 0);
-};
-
-#endif
+void BasicDock::setActionCheck(QAction *vischeck) {
+	visible_action = vischeck;
+}
+	
+void BasicDock::closeEvent(QCloseEvent *event) {
+	// on close of a BasicDock - see if a checkable menu action
+	// needs to be unchecked
+	if (visible_action) visible_action->setChecked(false);
+	event->accept();
+}

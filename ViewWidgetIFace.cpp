@@ -26,6 +26,6 @@ ViewWidgetIFace::ViewWidgetIFace()
 ViewWidgetIFace::~ViewWidgetIFace() {
 }
 
-bool ViewWidgetIFace::initActions(QMenu *, ToolBar *) {
+bool ViewWidgetIFace::initActions(QMenu *, QToolBar *) {
     return true;	// Success.
 }

@@ -80,10 +80,10 @@ DocumentationWin::DocumentationWin (QWidget * parent){
     connect(zoomout, SIGNAL(triggered()), docs, SLOT(zoomOut()));
     toolbar->addAction(zoomout);
     toolbar->addSeparator();
-    QAction *printact = new QAction(QIcon(":images/print.png"), tr("&Print..."), this);
-    printact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
-    connect(printact, SIGNAL(triggered()), this, SLOT(slotPrintHelp()));
-    toolbar->addAction(printact);
+    QAction *print_act = new QAction(QIcon(":images/print.png"), tr("&Print..."), this);
+    print_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
+    connect(print_act, SIGNAL(triggered()), this, SLOT(slotPrintHelp()));
+    toolbar->addAction(print_act);
     toolbar->addSeparator();
     QAction *onlinehact = new QAction(QIcon(":images/firefox.png"), tr("&Online help..."), this);
     connect(onlinehact, SIGNAL(triggered()), this, SLOT(showOnlineHelpPage()));

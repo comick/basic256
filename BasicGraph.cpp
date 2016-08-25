@@ -21,25 +21,26 @@
 
 #include <QClipboard>
 #include <QMutex>
-#include <QPainter>
-
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrinter>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QToolBar>
+#include <QDockWidget>
 
 #include "BasicWidget.h"
 #include "BasicGraph.h"
 
 extern QMutex *mymutex;
-
 extern int lastKey;
 extern std::list<int> pressedKeys;
 
+
 BasicGraph::BasicGraph() {
     image = NULL;
+    gridlinesimage = NULL;
     resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
     setMinimumSize(gwidth, gheight);
     gridlines = false;
@@ -47,13 +48,16 @@ BasicGraph::BasicGraph() {
 
 BasicGraph::~BasicGraph() {
     if (image) {
-		delete image;
-		image = NULL;
-	}
+        delete image;
+        image = NULL;
+    }
+    if (gridlinesimage) {
+        delete gridlinesimage;
+        gridlinesimage = NULL;
+    }
 }
 
-void
-BasicGraph::resize(int width, int height) {
+void BasicGraph::resize(int width, int height) {
     if (image != NULL && width == image->width() && height == image->height()) {
         return;
     }
@@ -61,11 +65,24 @@ BasicGraph::resize(int width, int height) {
     gheight = height;
     setMinimumSize(gwidth, gheight);
 
+
     // delete the old image and then create a new one the right size
-    delete image;
-    image = NULL;;
+    if(image){
+        delete image;
+        image = NULL;
+    }
     image = new QImage(width, height, QImage::Format_ARGB32);
-	image->fill(QColor(0,0,0,0));
+    image->fill(QColor(0,0,0,0));
+
+
+    // delete the old gridlinesimage if exist and draw new one if required
+    if(gridlinesimage){
+        delete gridlinesimage;
+        gridlinesimage = NULL;
+    }
+    if (gridlines)
+        drawGridLines();
+
 
     mouseX = 0;
     mouseY = 0;
@@ -75,128 +92,97 @@ BasicGraph::resize(int width, int height) {
     clickB = 0;
     setMouseTracking(true);
 
-    // graphwinwidget is parent - force resize
+    //force resize
+    //if graph window is floating, then also resize window
     BasicWidget * gww = (BasicWidget *) parentWidget();
     if (gww) {
-		gww->adjustSize();
-		// now center scroll area
-		//QScrollArea * sa = (QScrollArea *) gww->parentWidget();
-		//if(sa) {
-		//	sa->ensureWidgetVisible(image, width/2, height/2);
-		//}
-	}
-
-
- }
+        gww->adjustSize();
+        QDockWidget * dok = (QDockWidget *) gww->parentWidget()->parentWidget()->parentWidget();
+        if(dok->isFloating())
+            dok->resize(gww->width()+2,gww->height()+2);
+    }
+}
 
 bool BasicGraph::isVisibleGridLines() {
     return gridlines;
 }
 
-void
-BasicGraph::paintEvent(QPaintEvent *) {
-    unsigned int tx, ty;
-
-    QPainter p2(this);
+void BasicGraph::paintEvent(QPaintEvent *e) {
     gtop = (height() - gheight) / 2;
     gleft = (width() - gwidth) / 2;
+    QRect from = e->rect();
+    //from.moveTo(from.x()-gleft, from.y()-gtop);
+    QPainter painter(this);
 
     if (gridlines) {
-        p2.setPen(QColor(128,128,128,255));
-        for(tx=0; tx<gwidth; tx=tx+10) {
-            if (tx%100==0) {
-                p2.setPen(QColor(64,64,64,255));
-            } else {
-                p2.setPen(QColor(128,128,128,255));
-            }
-            p2.drawLine(tx+gleft, gtop, tx+gleft, gheight+gtop);
-        }
-
-        for(ty=0; ty<gheight; ty=ty+10) {
-            if (ty%100==0) {
-                p2.setPen(QColor(64,64,64,255));
-            } else {
-                p2.setPen(QColor(128,128,128,255));
-            }
-            p2.drawLine(gleft, ty+gtop, gwidth+gleft, ty+gtop);
-        }
-
-        p2.setPen(QColor(64,64,64,255));
-        p2.setFont(QFont("Sans", 6, 100));
-        char buffer[64];
-        for(tx=0; tx<gwidth; tx=tx+100) {
-            for(ty=0; ty<gheight; ty=ty+100) {
-                sprintf(buffer, "%u,%u", tx, ty);
-                p2.drawText(gleft+tx+2, gtop+ty+(QFontMetrics(p2.font()).ascent())+1, buffer);
-            }
-        }
+        if(!gridlinesimage) drawGridLines();
+        painter.drawImage(e->rect(), *gridlinesimage, from);
     }
-
-    p2.drawImage(gleft, gtop, *image);
+    painter.drawImage(e->rect(), *image, from);
 }
 
 
 void BasicGraph::keyPressEvent(QKeyEvent *e) {
-	e->accept();
-	mymutex->lock();
-	lastKey = e->key();
-	pressedKeys.push_front(lastKey);
-	if( e->modifiers() & Qt::ShiftModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Shift);
-	}else{
-			pressedKeys.remove(Qt::Key_Shift);
-	}
-	if( e->modifiers() & Qt::ControlModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Control);
-	}else{
-			pressedKeys.remove(Qt::Key_Control);
-	}
-	if( e->modifiers() & Qt::AltModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Alt);
-	}else{
-			pressedKeys.remove(Qt::Key_Alt);
-	}
-	if( e->modifiers() & Qt::MetaModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Meta);
-	}else{
-			pressedKeys.remove(Qt::Key_Meta);
-	}
-	mymutex->unlock();
+    e->accept();
+    mymutex->lock();
+    lastKey = e->key();
+    pressedKeys.push_front(lastKey);
+    if( e->modifiers() & Qt::ShiftModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Shift);
+    }else{
+            pressedKeys.remove(Qt::Key_Shift);
+    }
+    if( e->modifiers() & Qt::ControlModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Control);
+    }else{
+            pressedKeys.remove(Qt::Key_Control);
+    }
+    if( e->modifiers() & Qt::AltModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Alt);
+    }else{
+            pressedKeys.remove(Qt::Key_Alt);
+    }
+    if( e->modifiers() & Qt::MetaModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Meta);
+    }else{
+            pressedKeys.remove(Qt::Key_Meta);
+    }
+    mymutex->unlock();
 }
 
 void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
-	e->accept();
-	mymutex->lock();
-	if(!e->isAutoRepeat())pressedKeys.remove(e->key());
-	if( e->modifiers() & Qt::ShiftModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Shift);
-	}else{
-			pressedKeys.remove(Qt::Key_Shift);
-	}
-	if( e->modifiers() & Qt::ControlModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Control);
-	}else{
-			pressedKeys.remove(Qt::Key_Control);
-	}
-	if( e->modifiers() & Qt::AltModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Alt);
-	}else{
-			pressedKeys.remove(Qt::Key_Alt);
-	}
-	if( e->modifiers() & Qt::MetaModifier )
-	{
-			pressedKeys.push_front(Qt::Key_Meta);
-	}else{
-			pressedKeys.remove(Qt::Key_Meta);
-	}
-	mymutex->unlock();
+    e->accept();
+    mymutex->lock();
+    if(!e->isAutoRepeat())pressedKeys.remove(e->key());
+    if( e->modifiers() & Qt::ShiftModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Shift);
+    }else{
+            pressedKeys.remove(Qt::Key_Shift);
+    }
+    if( e->modifiers() & Qt::ControlModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Control);
+    }else{
+            pressedKeys.remove(Qt::Key_Control);
+    }
+    if( e->modifiers() & Qt::AltModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Alt);
+    }else{
+            pressedKeys.remove(Qt::Key_Alt);
+    }
+    if( e->modifiers() & Qt::MetaModifier )
+    {
+            pressedKeys.push_front(Qt::Key_Meta);
+    }else{
+            pressedKeys.remove(Qt::Key_Meta);
+    }
+    mymutex->unlock();
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
@@ -218,13 +204,14 @@ void BasicGraph::mousePressEvent(QMouseEvent *e) {
         clickY = mouseY = e->y() - gtop;
         clickB = mouseB = e->buttons();
     }
-    setFocus();
 }
 
-bool BasicGraph::initActions(QMenu * vMenu, ToolBar * vToolBar) {
+bool BasicGraph::initActions(QMenu * vMenu, QToolBar * vToolBar) {
     if ((NULL == vMenu) || (NULL == vToolBar)) {
         return false;
     }
+
+    vToolBar->setObjectName("graphtoolbar");
 
     QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
     QAction *printAct = vMenu->addAction(QObject::tr("Print"));
@@ -277,3 +264,35 @@ void BasicGraph::slotPrint() {
 #endif
 
 }
+
+
+void BasicGraph::drawGridLines(){
+    gridlinesimage = new QImage(gwidth, gheight, QImage::Format_ARGB32_Premultiplied);
+    gridlinesimage->fill(QColor(0,0,0,0));
+    unsigned int tx, ty;
+
+    QPainter *painter = new QPainter(gridlinesimage);
+
+    const QColor darkColor = QColor(64,64,64,255);
+    const QColor lightColor = QColor(128,128,128,255);
+    painter->setFont(QFont("Sans", 6, 100));
+
+    painter->setPen(lightColor);
+    for(tx=10; tx<gwidth; tx=tx+10) if (tx%100!=0) painter->drawLine(tx, 0, tx, gheight);
+    for(ty=10; ty<gheight; ty=ty+10) if (ty%100!=0) painter->drawLine(0, ty, gwidth, ty);
+    painter->setPen(darkColor);
+    for(tx=0; tx<gwidth; tx=tx+100) painter->drawLine(tx, 0, tx, gheight);
+    for(ty=0; ty<gheight; ty=ty+100) painter->drawLine(0, ty, gwidth, ty);
+
+    const unsigned int fontAscent = (QFontMetrics(painter->font()).ascent())+1;
+    char buffer[64];
+    for(tx=0; tx<gwidth; tx=tx+100) {
+        for(ty=0; ty<gheight; ty=ty+100) {
+            sprintf(buffer, "%u,%u", tx, ty);
+            painter->drawText(tx+2, ty+fontAscent, buffer);
+        }
+    }
+    painter->end();
+    delete painter;
+}
+

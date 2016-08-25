@@ -19,7 +19,6 @@
 
 #include <QtWidgets/QMenu>
 
-#include "ToolBar.h"
 #include "ViewWidgetIFace.h"
 #include "BasicWidget.h"
 
@@ -28,8 +27,10 @@ BasicWidget::BasicWidget(const QString & title, QWidget * parent, Qt::WindowFlag
     ,	m_viewWidget(NULL)
     ,	m_toolBar(NULL)
     ,	m_menu(NULL) {
-    m_toolBar = new ToolBar();
+    m_toolBar = new QToolBar();
+    m_toolBar->setObjectName(title + "toolbar");
     m_menu = new QMenu(title);
+    m_menu->setObjectName(title + "menu");
     m_layout = new QVBoxLayout();
 
     setLayout(m_layout);

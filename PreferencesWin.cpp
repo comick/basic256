@@ -169,6 +169,11 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	usertablayout->addWidget(debugspeedlabel,r,1,1,1);
 	usertablayout->addLayout(debugspeedsliderlayout,r,2,1,2);
 	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
+	// restore layout and geometry to default on next load
+	r++;
+	mainrestorecheckbox = new QCheckBox(tr("Restore GUI layout to default on next restart."),this);
+	mainrestorecheckbox->setChecked(SETTINGSMAINRESTOREDEFAULT);
+	usertablayout->addWidget(mainrestorecheckbox,r,2,1,2);
 
     //
     // *******************************************************************************************
@@ -418,6 +423,7 @@ void PreferencesWin::clickSaveButton() {
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
         settings.setValue(SETTINGSFLOATTAIL, floattailcheckbox->isChecked());
+        settings.setValue(SETTINGSMAINRESTORE, mainrestorecheckbox->isChecked());
 
         // *******************************************************************************************
         // sound settings
