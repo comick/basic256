@@ -1,12 +1,15 @@
 // Constants.h - Constants used throughout the code
 
+#ifndef M_PI
+    #define M_PI 3.14159265
+#endif
+
+
 #ifndef CONSTANTS
 	#define CONSTANTS "CONSTANTS"
 
 	// EPSILON represents how far off float comparison may be to be the same
     #define EPSILON 0.00000001
-
-    #define M_PI 3.14159265
 
     // returned in bytecode is this a function or a subroutine
     #define CALLSIG_SUBROUTINE 0xffff
