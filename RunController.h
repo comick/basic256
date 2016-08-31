@@ -44,7 +44,6 @@ class RunController : public QObject
   DocumentationWin *docwin;
 
  signals:
-  void runStarted();
   void runHalted();
  
  public slots:

@@ -833,7 +833,6 @@ Interpreter::initialize() {
     status = R_RUNNING;
     //initialize random
     double_random_max = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
-    srand(time(NULL) * (999 + QTime::currentTime().msec()));
 	currentLine = 1;
 	currentIncludeFile = QString("");
 	emit(mainWindowsResize(1, 300, 300));
@@ -977,6 +976,7 @@ Interpreter::runHalted() {
 void
 Interpreter::run() {
 	// main run loop
+	srand(time(NULL));	// initialize the random number generator for this thread
 	onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
 		emit(seekLine(2));

@@ -291,8 +291,7 @@ RunController::startRun() {
         varwin->clear();
         if (replacewin) replacewin->close();
         mainwin->setRunState(RUNSTATERUN);
-        emit(runStarted());
-    }
+     }
 }
 
 
