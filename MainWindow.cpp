@@ -33,7 +33,7 @@
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QDesktopWidget>
 
-using namespace std;
+
 
 #include "PauseButton.h"
 #include "MainWindow.h"

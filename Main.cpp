@@ -22,7 +22,7 @@
 #if !defined(WIN32) || defined(__MINGW32__)
 #include <unistd.h>
 #endif
-using namespace std;
+
 
 #include <QApplication>
 #include <QCommandLineOption>

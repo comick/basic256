@@ -16,7 +16,7 @@
  **/
 
 #include <iostream>
-using namespace std;
+
 
 #include "DocumentationWin.h"
 #include "MainWindow.h"

@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <cmath>
+#include <math.h>
 #include <string>
 #include <errno.h>
 
@@ -65,7 +65,7 @@ InpOut32OutType Out32 = NULL;
 
 #include <QtWidgets/QMessageBox>
 
-using namespace std;
+
 
 #include "LEX/basicParse.tab.h"
 #include "WordCodes.h"
@@ -2325,7 +2325,7 @@ Interpreter::execByteCode() {
 							break;
 						case OP_TAN:
 							val = tan(val);
-							if (isinf(val)) {
+							if (std::isinf(val)) {
 								error->q(ERROR_INFINITY);
 								stack->pushint(0);
 							} else {
@@ -2379,7 +2379,7 @@ Interpreter::execByteCode() {
 							break;
 						case OP_EXP:
 							val = exp(val);
-							if (isinf(val)) {
+							if (std::isinf(val)) {
 								error->q(ERROR_INFINITY);
 								stack->pushint(0);
 							} else {
@@ -2431,7 +2431,7 @@ Interpreter::execByteCode() {
 									double fone = convert->getFloat(one);
 									double ftwo = convert->getFloat(two);
 									double ans = ftwo + fone;
-									if (isinf(ans)) {
+									if (std::isinf(ans)) {
 										error->q(ERROR_INFINITY);
 										stack->pushint(0);
 									} else {
@@ -2465,7 +2465,7 @@ Interpreter::execByteCode() {
 								double fone = convert->getFloat(one);
 								double ftwo = convert->getFloat(two);
 								double ans = ftwo - fone;
-								if (isinf(ans)) {
+								if (std::isinf(ans)) {
 									error->q(ERROR_INFINITY);
 									stack->pushint(0);
 								} else {
@@ -2492,7 +2492,7 @@ Interpreter::execByteCode() {
 								double fone = convert->getFloat(one);
 								double ftwo = convert->getFloat(two);
 								double ans = ftwo * fone;
-								if (isinf(ans)) {
+								if (std::isinf(ans)) {
 									error->q(ERROR_INFINITY);
 									stack->pushint(0);
 								} else {
@@ -2527,7 +2527,7 @@ Interpreter::execByteCode() {
 						stack->pushfloat(0);
 					} else {
 						double ans = pow(twoval, oneval);
-						if (isinf(ans)) {
+						if (std::isinf(ans)) {
 							error->q(ERROR_INFINITY);
 							stack->pushfloat(0);
 						} else {
@@ -2546,7 +2546,7 @@ Interpreter::execByteCode() {
 						stack->pushfloat(0);
 					} else {
 						double ans = twoval / oneval;
-						if (isinf(ans)) {
+						if (std::isinf(ans)) {
 							error->q(ERROR_INFINITY);
 							stack->pushfloat(0);
 						} else {

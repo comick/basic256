@@ -33,7 +33,7 @@
 
 #include <QtWidgets/QFontDialog>
 
-using namespace std;
+
 
 #include "MainWindow.h"
 #include "BasicEdit.h"

@@ -30,7 +30,7 @@
 #include <QtWidgets/QFontDialog>
 #include <QtWidgets/QApplication>
 
-using namespace std;
+
 
 #include "RunController.h"
 #include "MainWindow.h"

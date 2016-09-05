@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-using namespace std;
+
 
 #include <qglobal.h>
 
