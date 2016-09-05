@@ -800,6 +800,9 @@ Interpreter::compileProgram(char *code) {
 			case COMPERR_LABELREDEFINED:
 				msg += tr("Label may only be defined once");
 				break;
+			case COMPERR_NEXTWRONGFOR:
+				msg += tr("Variable in NEXT does not match FOR");
+				break;
 
 			default:
 				if(column==0) {
@@ -1123,47 +1126,50 @@ Interpreter::execByteCode() {
 					if (!temp) {
 						error->q(ERROR_NEXTNOFOR);
 					} else {
+						if (temp->variable==i) {
+							if (temp->useInt) {
+								long val = convert->getLong(variables->getdata(i));
+								val += temp->intStep;
+								variables->setdata(i, val);
 
-						if (temp->useInt) {
-							long val = convert->getLong(variables->getdata(i));
-							val += temp->intStep;
-							variables->setdata(i, val);
-
-							if (temp->intStep == 0 && temp->intStart <= temp->intEnd && val >= temp->intEnd) {
-								forstack = temp->next;
-								delete temp;
-							} else if (temp->intStep == 0 && temp->intStart >= temp->intEnd && val <= temp->intEnd) {
-								forstack = temp->next;
-								delete temp;
-							} else if (temp->intStep >= 0 && val <= temp->intEnd) {
-								op = temp->returnAddr;
-							} else if (temp->intStep <= 0 && val >= temp->intEnd) {
-								op = temp->returnAddr;
+								if (temp->intStep == 0 && temp->intStart <= temp->intEnd && val >= temp->intEnd) {
+									forstack = temp->next;
+									delete temp;
+								} else if (temp->intStep == 0 && temp->intStart >= temp->intEnd && val <= temp->intEnd) {
+									forstack = temp->next;
+									delete temp;
+								} else if (temp->intStep >= 0 && val <= temp->intEnd) {
+									op = temp->returnAddr;
+								} else if (temp->intStep <= 0 && val >= temp->intEnd) {
+									op = temp->returnAddr;
+								} else {
+									forstack = temp->next;
+									delete temp;
+								}
 							} else {
-								forstack = temp->next;
-								delete temp;
+								double val = convert->getFloat(variables->getdata(i));
+								val += temp->floatStep;
+								variables->setdata(i, val);
+
+								if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=1 && convert->compareFloats(val, temp->floatEnd)!=-1) {
+									forstack = temp->next;
+									delete temp;
+								} else if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=-1 && convert->compareFloats(val, temp->floatEnd)!=1) {
+									forstack = temp->next;
+									delete temp;
+								} else if (temp->floatStep >= 0 && convert->compareFloats(val, temp->floatEnd)!=1) {
+									op = temp->returnAddr;
+								} else if (temp->floatStep <= 0 && convert->compareFloats(val, temp->floatEnd)!=-1) {
+									op = temp->returnAddr;
+								} else {
+									forstack = temp->next;
+									delete temp;
+								}
 							}
+							watchvariable(debugMode, i);
 						} else {
-							double val = convert->getFloat(variables->getdata(i));
-							val += temp->floatStep;
-							variables->setdata(i, val);
-
-							if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=1 && convert->compareFloats(val, temp->floatEnd)!=-1) {
-								forstack = temp->next;
-								delete temp;
-							} else if (temp->floatStep == 0 && convert->compareFloats(temp->floatStart, temp->floatEnd)!=-1 && convert->compareFloats(val, temp->floatEnd)!=1) {
-								forstack = temp->next;
-								delete temp;
-							} else if (temp->floatStep >= 0 && convert->compareFloats(val, temp->floatEnd)!=1) {
-								op = temp->returnAddr;
-							} else if (temp->floatStep <= 0 && convert->compareFloats(val, temp->floatEnd)!=-1) {
-								op = temp->returnAddr;
-							} else {
-								forstack = temp->next;
-								delete temp;
-							}
+							error->q(ERROR_NEXTWRONGFOR);
 						}
-						watchvariable(debugMode, i);
 					}
 
 				}

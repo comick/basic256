@@ -317,6 +317,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_BADCALLSUBROUTINE:
 			errormessage = tr("Subroutine was not called correctly");
 			break;
+		case ERROR_NEXTWRONGFOR:
+			errormessage = tr("Variable in NEXT does not match FOR");
+			break;
 
 			
 	  

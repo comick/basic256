@@ -59,6 +59,8 @@
 #define COMPERR_BEGINCASENOEND			38
 #define COMPERR_CASENOEND				39
 #define COMPERR_LABELREDEFINED			40
+#define COMPERR_NEXTWRONGFOR			41
+
 
 
 // WaRNINGS - do not stop run

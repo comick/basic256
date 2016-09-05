@@ -79,6 +79,7 @@
 	unsigned int iftabletype[IFTABLESIZE];
 	int iftableid[IFTABLESIZE];			// used to store a sequential number for this if - unique label creation
 	int iftableincludes[IFTABLESIZE];			// used to store the include depth of the code
+	unsigned int iftablevariable[IFTABLESIZE];			// store the variable in a FOR to check at NEXT
 	int numifs = 0;
 	int nextifid;
 
@@ -221,11 +222,13 @@
 		numsyms = 0;
 	}
 
-	int newIf(int sourceline, int type) {
+
+	int newIf(int sourceline, int type, unsigned int variable) {
 		iftablesourceline[numifs] = sourceline;
 		iftabletype[numifs] = type;
 		iftableid[numifs] = nextifid;
 		iftableincludes[numifs] = numincludes;
+		iftablevariable[numifs] = variable;
 		nextifid++;
 		numifs++;
 		return numifs - 1;
@@ -820,7 +823,7 @@ statement:
 begincasestmt:
 			B256BEGINCASE {
 				// start a case block
-				newIf(linenumber, IFTABLETYPEBEGINCASE);
+				newIf(linenumber, IFTABLETYPEBEGINCASE,-1);
 			}
 			;
 
@@ -854,7 +857,7 @@ casestmt:	caseexpr expr {
 				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// put new CASE on the frame for the IF
-				newIf(linenumber, IFTABLETYPECASE);
+				newIf(linenumber, IFTABLETYPECASE,-1);
 			}
 			;
 
@@ -872,7 +875,7 @@ catchstmt: 	B256CATCH {
 						numifs--;
 						//
 						// put new if on the frame for the catch
-						newIf(linenumber, IFTABLETYPECATCH);
+						newIf(linenumber, IFTABLETYPECATCH,-1);
 						addOp(OP_OFFERROR);
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -892,7 +895,7 @@ dostmt: 	B256DO {
 				symtableaddress[getInternalSymbol(nextifid,INTERNALSYMBOLTOP)] = wordOffset;
 				//
 				// add to if frame
-				newIf(linenumber, IFTABLETYPEDO);
+				newIf(linenumber, IFTABLETYPEDO, -1);
 			}
 			;
 
@@ -909,7 +912,7 @@ elsestmt:	B256ELSE {
 						numifs--;
 						//
 						// put new if on the frame for the else
-						newIf(linenumber, IFTABLETYPEELSE);
+						newIf(linenumber, IFTABLETYPEELSE, -1);
 					} else if (iftabletype[numifs-1]==IFTABLETYPECASE) {
 						if (numifs>1) {
 							if (iftabletype[numifs-2]==IFTABLETYPEBEGINCASE) {
@@ -927,7 +930,7 @@ elsestmt:	B256ELSE {
 							//
 							numifs--;
 							// put new if on the frame for the else
-							newIf(linenumber, IFTABLETYPEELSE);
+							newIf(linenumber, IFTABLETYPEELSE, -1);
 						}
 					} else {
 						errorcode = testIfOnTableError(numincludes);
@@ -1048,7 +1051,7 @@ ifstmt:		B256IF expr B256THEN {
 					addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 					//
 					// put new if on the frame for the IF
-					newIf(linenumber, IFTABLETYPEIF);
+					newIf(linenumber, IFTABLETYPEIF, -1);
 			}
 			;
 
@@ -1083,7 +1086,7 @@ ifthenelse:
 				numifs--;
 				//
 				// put new if on the frame for the else
-				newIf(linenumber, IFTABLETYPEELSE);
+				newIf(linenumber, IFTABLETYPEELSE, -1);
 			}
 			;
 
@@ -1093,7 +1096,7 @@ trystmt: 	B256TRY	{
 				addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// put new if on the frame for the TRY
-				newIf(linenumber, IFTABLETYPETRY);
+				newIf(linenumber, IFTABLETYPETRY, -1);
 			}
 			;
 
@@ -1140,7 +1143,7 @@ whilestmt: 	while expr {
 				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// add to if frame
-				newIf(linenumber, IFTABLETYPEWHILE);
+				newIf(linenumber, IFTABLETYPEWHILE, -1);
 			};
 
 letstmt:	B256LET assign
@@ -1451,7 +1454,7 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
-				newIf(linenumber, IFTABLETYPEFOR);
+				newIf(linenumber, IFTABLETYPEFOR, varnumber[nvarnumber-1]);
 				// push default step 1 and exit address
 				addIntOp(OP_PUSHINT, 1); //step
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
@@ -1461,7 +1464,7 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
-				newIf(linenumber, IFTABLETYPEFOR);
+				newIf(linenumber, IFTABLETYPEFOR, varnumber[nvarnumber-1]);
 				// push exit address
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
 				addIntOp(OP_FOR, varnumber[--nvarnumber]);
@@ -1471,10 +1474,15 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 nextstmt:	B256NEXT args_v {
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
-						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
-						addIntOp(OP_NEXT, varnumber[--nvarnumber]);
-						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
-						numifs--;
+						if (iftablevariable[numifs-1]==varnumber[nvarnumber-1]) {
+							symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
+							addIntOp(OP_NEXT, varnumber[--nvarnumber]);
+							symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+							numifs--;
+						} else {
+							errorcode = COMPERR_NEXTWRONGFOR;
+							return -1;
+						}
 					} else {
 						errorcode = testIfOnTableError(numincludes);
 						linenumber = testIfOnTable(numincludes);
@@ -2381,14 +2389,14 @@ functionstmt:
 				//
 				// create the new if frame for this function
 				symtableaddress[functionDefSymbol] = wordOffset;
-				newIf(linenumber, IFTABLETYPEFUNCTION);
+				newIf(linenumber, IFTABLETYPEFUNCTION, -1);
 				//
 				// test that this is a real function call or error - before the call a CALLSIG
 				// should have bene pushed to the stack.  Pop it and test that it is the correct one
 				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION);
 				addOp(OP_NEQUAL);
 				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				newIf(linenumber, IFTABLETYPEIF);
+				newIf(linenumber, IFTABLETYPEIF, -1);
 				addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION);
 				addOp(OP_THROWERROR);
 				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
@@ -2430,14 +2438,14 @@ subroutinestmt:
 				//
 				// create the new if frame for this subroutine
 				symtableaddress[subroutineDefSymbol] = wordOffset;
-				newIf(linenumber, IFTABLETYPEFUNCTION);
+				newIf(linenumber, IFTABLETYPEFUNCTION, -1);
 				//
 				// test that this is a real subroutine call or error - before the call a CALLSIG
 				// should have bene pushed to the stack.  Pop it and test that it is the correct one
 				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE);
 				addOp(OP_NEQUAL);
 				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				newIf(linenumber, IFTABLETYPEIF);
+				newIf(linenumber, IFTABLETYPEIF, -1);
 				addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE);
 				addOp(OP_THROWERROR);
 				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
