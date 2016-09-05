@@ -58,6 +58,7 @@
 #define COMPERR_ENDENDCASE				37
 #define COMPERR_BEGINCASENOEND			38
 #define COMPERR_CASENOEND				39
+#define COMPERR_LABELREDEFINED			40
 
 
 // WaRNINGS - do not stop run

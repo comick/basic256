@@ -256,6 +256,7 @@
 				return i;
 		}
 		symtable[numsyms] = strdup(name);
+		symtableaddress[numsyms] = -1;
 		numsyms++;
 		return numsyms - 1;
 	}
@@ -513,6 +514,10 @@ programline: 	label compoundstmt
 label:			B256LABEL {
 					if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
 						errorcode = COMPERR_FUNCTIONGOTO;
+						return -1;
+					}
+					if (symtableaddress[$1] != -1) {
+						errorcode = COMPERR_LABELREDEFINED;
 						return -1;
 					}
 					symtableaddress[$1] = wordOffset;

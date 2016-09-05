@@ -797,6 +797,9 @@ Interpreter::compileProgram(char *code) {
 			case COMPERR_CASENOEND:
 				msg += tr("CASE whthout next CASE or matching END CASE statement");
 				break;
+			case COMPERR_LABELREDEFINED:
+				msg += tr("Label may only be defined once");
+				break;
 
 			default:
 				if(column==0) {
