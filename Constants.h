@@ -78,5 +78,11 @@
 	// Transparency Color used in Interperter
 	#define COLOR_CLEAR 0
 	
+	// Constants used in seralize and unserialize
+	#define SERALIZE_DELIMITER ':'
+	#define SERALIZE_INT '1'
+	#define SERALIZE_FLOAT '2'
+	#define SERALIZE_STRING '3'
+	#define SERALIZE_UNASSIGNED '0'
 
 #endif

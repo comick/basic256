@@ -5236,28 +5236,28 @@ Interpreter::execByteCode() {
 					int rows = stack->popint();
 					int cols;
 					for (int row=0; row<rows; row++) {
-						if (row!=0) stuff.prepend(",");
+						if (row!=0) stuff.prepend(SERALIZE_DELIMITER);
 						cols = stack->popint();
 						for (int col=0; col<cols; col++) {
-								if (col!=0) stuff.prepend(",");
+								if (col!=0) stuff.prepend(SERALIZE_DELIMITER);
 								e = stack->popelement();
 								switch (e->type) {
 									case T_STRING:
-										stuff.prepend("S"+  QString::fromUtf8(e->stringval.toUtf8().toHex()) );
+										stuff.prepend(SERALIZE_STRING + QString::fromUtf8(e->stringval.toUtf8().toHex()) );
 										break;
 									case T_FLOAT:
-										stuff.prepend("F" + QString::number(e->floatval));
+										stuff.prepend(SERALIZE_FLOAT + QString::number(e->floatval));
 										break;
 									case T_INT:
-										stuff.prepend("I" + QString::number(e->intval));
+										stuff.prepend(SERALIZE_INT + QString::number(e->intval));
 										break;
 									default:
-										stuff.prepend("U");
+										stuff.prepend(SERALIZE_UNASSIGNED);
 										break;
 								}
 						}
 					}
-					stack->pushstring(QString::number(rows) + "," + QString::number(cols) + "," + stuff);
+					stack->pushstring(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
 				}
 				break;
 
@@ -5306,7 +5306,7 @@ Interpreter::execByteCode() {
 				case OP_UNSERIALIZE: {
 					bool goodrows, goodcols;
 					QString data = stack->popstring();
-					QStringList list = data.split(",");
+					QStringList list = data.split(SERALIZE_DELIMITER);
 					if (list.count()>=3) {
 						int rows = list[0].toInt(&goodrows);
 						int cols = list[1].toInt(&goodcols);
@@ -5316,20 +5316,20 @@ Interpreter::execByteCode() {
 									for (int col=0; col<cols&&!error->pending(); col++) {
 										int i = row * cols + col + 2;
 										switch (list[i].at(0).toLatin1()) {
-											case 'S':
+											case SERALIZE_STRING:
 												stack->pushstring(QString::fromUtf8(QByteArray::fromHex(list[i].mid(1).toUtf8()).data()));
 												break;
-											case 'F':
+											case SERALIZE_FLOAT:
 												stack->pushfloat(list[i].mid(1).toDouble());
 												break;
-											case 'I':
+											case SERALIZE_INT:
 												stack->pushint(list[i].mid(1).toLong());
 												break;
-											case 'U':
+											case SERALIZE_UNASSIGNED:
 												stack->pushdataelement(NULL);
 												break;
 											default:
-											error->q(ERROR_UNSERIALIZEFORMAT);
+												error->q(ERROR_UNSERIALIZEFORMAT);
 										}
 									}
 									stack->pushint(cols);
