@@ -325,6 +325,7 @@ mousebutton_center [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Cc][Ee][Nn][T
 mousebutton_left [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Ll][Ee][Ff][Tt]
 mousebutton_none [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Nn][Oo][Nn][Ee]
 mousebutton_right [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Rr][Ii][Gg][Hh][Tt]
+mousebutton_doubleclick [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Dd][Oo][Uu][Bb][Ll][Ee][Cc][Ll][Ii][Cc][Kk]
 mousex [Mm][Oo][Uu][Ss][Ee][Xx]
 mousey [Mm][Oo][Uu][Ss][Ee][Yy]
 msec [Mm][Ss][Ee][Cc]
@@ -389,10 +390,15 @@ right [Rr][Ii][Gg][Hh][Tt]
 rtrim [Rr][Tt][Rr][Ii][Mm]
 say [Ss][Aa][Yy]
 second [Ss][Ee][Cc][Oo][Nn][Dd]
+seed [Ss][Ee][Ee][Dd]
 seek [Ss][Ee][Ee][Kk]
+serialize [Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 sin [Ss][Ii][Nn]
 size [Ss][Ii][Zz][Ee]
+slice_all [Ss][Ll][Ii][Cc][Ee]_[Aa][Ll][Ll]
+slice_paint [Ss][Ll][Ii][Cc][Ee]_[Pp][Aa][Ii][Nn][Tt]
+slice_sprite [Ss][Ll][Ii][Cc][Ee]_[Ss][Pp][Rr][Ii][Tt][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
 spritecollide [Ss][Pp][Rr][Ii][Tt][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]
 spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
@@ -404,6 +410,7 @@ spriteplace [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]
 spritepoly [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]
 spriter [Ss][Pp][Rr][Ii][Tt][Ee][Rr]
 sprites [Ss][Pp][Rr][Ii][Tt][Ee][Ss]
+spriteo [Ss][Pp][Rr][Ii][Tt][Ee][Oo]
 spriteshow [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]
 spriteslice [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
@@ -440,6 +447,7 @@ type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
 type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
 typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 unassign [Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]
+unserialize [Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
 variablewatch [Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee][Ww][Aa][Tt][Cc][Hh]
@@ -684,6 +692,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {mousebutton_left}			{ count(); return B256MOUSEBUTTON_LEFT; }
 {mousebutton_none}			{ count(); return B256MOUSEBUTTON_NONE; }
 {mousebutton_right}			{ count(); return B256MOUSEBUTTON_RIGHT; }
+{mousebutton_doubleclick}	{ count(); return B256MOUSEBUTTON_DOUBLECLICK; }
 {mousex}					{ count(); return B256MOUSEX; }
 {mousey}					{ count(); return B256MOUSEY; }
 {msec}						{ count(); return B256MSEC; }
@@ -713,12 +722,17 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {right}						{ count(); return B256RIGHT; }
 {rtrim}						{ count(); return B256RTRIM; }
 {second}					{ count(); return B256SECOND; }
+{serialize}					{ count(); return B256SERIALIZE; }
 {sin}						{ count(); return B256SIN; }
 {size}						{ count(); return B256SIZE; }
+{slice_all}					{ count(); return B256SLICE_ALL; }
+{slice_paint}				{ count(); return B256SLICE_PAINT; }
+{slice_sprite}				{ count(); return B256SLICE_SPRITE; }
 {spritecollide}				{ count(); return B256SPRITECOLLIDE; }
 {spriteh}					{ count(); return B256SPRITEH; }
 {spriter}					{ count(); return B256SPRITER; }
 {sprites}					{ count(); return B256SPRITES; }
+{spriteo}					{ count(); return B256SPRITEO; }
 {spritev}					{ count(); return B256SPRITEV; }
 {spritew}					{ count(); return B256SPRITEW; }
 {spritex}					{ count(); return B256SPRITEX; }
@@ -744,6 +758,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {type_array}				{ count(); return B256TYPE_ARRAY; }
 {type_ref}					{ count(); return B256TYPE_REF; }
 {upper}						{ count(); return B256UPPER; }
+{unserialize}				{ count(); return B256UNSERIALIZE; }
 {variablewatch}				{ count(); return B256VARIABLEWATCH; }
 {version}					{ count(); return B256VERSION; }
 {wavlength}					{ count(); return B256WAVLENGTH; }
@@ -882,6 +897,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {return}					{ count(); return B256RETURN; }
 {return}":"					{ count(); unputcolon(); return B256RETURN; }
 {say}						{ count(); return B256SAY; }
+{seed}						{ count(); return B256SEED; }
 {seek}						{ count(); return B256SEEK; }
 {setsetting}				{ count(); return B256SETSETTING; }
 {sound}						{ count(); return B256SOUND; }

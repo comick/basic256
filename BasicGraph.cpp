@@ -32,6 +32,7 @@
 
 #include "BasicWidget.h"
 #include "BasicGraph.h"
+#include "Constants.h"
 
 extern QMutex *mymutex;
 extern int lastKey;
@@ -41,9 +42,13 @@ extern std::list<int> pressedKeys;
 BasicGraph::BasicGraph() {
     image = NULL;
     gridlinesimage = NULL;
-    resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
-    setMinimumSize(gwidth, gheight);
+    displayedimage = NULL;
+    spritesimage = NULL;
+    sprites_clip_region = QRegion(0,0,0,0);
     gridlines = false;
+    draw_sprites_flag = false;
+    resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
+    setMouseTracking(true);
 }
 
 BasicGraph::~BasicGraph() {
@@ -54,6 +59,14 @@ BasicGraph::~BasicGraph() {
     if (gridlinesimage) {
         delete gridlinesimage;
         gridlinesimage = NULL;
+    }
+    if (displayedimage) {
+        delete displayedimage;
+        displayedimage = NULL;
+    }
+    if (spritesimage) {
+        delete spritesimage;
+        spritesimage = NULL;
     }
 }
 
@@ -72,7 +85,25 @@ void BasicGraph::resize(int width, int height) {
         image = NULL;
     }
     image = new QImage(width, height, QImage::Format_ARGB32);
-    image->fill(QColor(0,0,0,0));
+    image->fill(Qt::transparent);
+
+
+    // delete displayed image and then create a new one the right size
+    if(displayedimage){
+        delete displayedimage;
+        displayedimage = NULL;
+    }
+    displayedimage = new QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+    displayedimage->fill(Qt::transparent);
+
+
+    // delete sprites image and then create a new one the right size
+    if(spritesimage){
+        delete spritesimage;
+        spritesimage = NULL;
+    }
+    spritesimage = new QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+    spritesimage->fill(Qt::transparent);
 
 
     // delete the old gridlinesimage if exist and draw new one if required
@@ -90,7 +121,6 @@ void BasicGraph::resize(int width, int height) {
     clickX = 0;
     clickY = 0;
     clickB = 0;
-    setMouseTracking(true);
 
     //force resize
     //if graph window is floating, then also resize window
@@ -111,14 +141,14 @@ void BasicGraph::paintEvent(QPaintEvent *e) {
     gtop = (height() - gheight) / 2;
     gleft = (width() - gwidth) / 2;
     QRect from = e->rect();
-    //from.moveTo(from.x()-gleft, from.y()-gtop);
+    from.moveTo(from.x()-gleft, from.y()-gtop);
     QPainter painter(this);
 
     if (gridlines) {
         if(!gridlinesimage) drawGridLines();
         painter.drawImage(e->rect(), *gridlinesimage, from);
     }
-    painter.drawImage(e->rect(), *image, from);
+    painter.drawImage(e->rect(), *displayedimage, from);
 }
 
 
@@ -186,11 +216,33 @@ void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
-    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
-        mouseX = e->x() - gleft;
-        mouseY = e->y() - gtop;
-        mouseB = e->buttons();
-    }
+	static int c = Qt::ArrowCursor;
+	if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
+		mouseX = e->x() - gleft;
+		mouseY = e->y() - gtop;
+		mouseB = e->buttons();
+
+		if(gridlines){
+			this->setToolTip(QString::number( mouseX ) + ", " + QString::number( mouseY ));
+
+			if(c!=Qt::CrossCursor){
+				this->setCursor(Qt::CrossCursor);
+				c=Qt::CrossCursor;
+			}
+		}else{
+			if(c!=Qt::ArrowCursor){
+				this->setCursor(Qt::ArrowCursor);
+				this->setToolTip("");
+				c=Qt::ArrowCursor;
+			}
+		}
+	}else{
+		if(c!=Qt::ArrowCursor){ //if leave the image area, then do that only once
+			this->setToolTip("");
+			this->setCursor(Qt::ArrowCursor);
+			c=Qt::ArrowCursor;
+		}
+	}
 }
 
 void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
@@ -199,43 +251,45 @@ void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mousePressEvent(QMouseEvent *e) {
-    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
-        clickX = mouseX = e->x() - gleft;
-        clickY = mouseY = e->y() - gtop;
-        clickB = mouseB = e->buttons();
-    }
+	if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
+		clickX = mouseX = e->x() - gleft;
+		clickY = mouseY = e->y() - gtop;
+		clickB = e->button();
+		mouseB = e->buttons();
+	}
 }
 
 bool BasicGraph::initActions(QMenu * vMenu, QToolBar * vToolBar) {
-    if ((NULL == vMenu) || (NULL == vToolBar)) {
-        return false;
-    }
+	if ((NULL == vMenu) || (NULL == vToolBar)) {
+		return false;
+	}
 
-    vToolBar->setObjectName("graphtoolbar");
+	vToolBar->setObjectName("graphtoolbar");
 
-    QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-    QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
+	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
 
-    vToolBar->addAction(copyAct);
-    vToolBar->addAction(printAct);
+	vToolBar->addAction(copyAct);
+	vToolBar->addAction(printAct);
 
-    QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
-    QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
+	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
 
-    m_usesToolBar = true;
-    m_usesMenu = true;
+	m_usesToolBar = true;
+	m_usesMenu = true;
 
-    return true;
+	return true;
 }
 
 void BasicGraph::slotGridLines(bool visible) {
-    gridlines = visible;
-    update();
+	gridlines = visible;
+	update();
 }
 
 void BasicGraph::slotCopy() {
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setImage(*image);
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setImage(*image);
+	QApplication::processEvents();
 }
 
 void BasicGraph::slotPrint() {
@@ -268,7 +322,7 @@ void BasicGraph::slotPrint() {
 
 void BasicGraph::drawGridLines(){
     gridlinesimage = new QImage(gwidth, gheight, QImage::Format_ARGB32_Premultiplied);
-    gridlinesimage->fill(QColor(0,0,0,0));
+    gridlinesimage->fill(Qt::transparent);
     unsigned int tx, ty;
 
     QPainter *painter = new QPainter(gridlinesimage);
@@ -296,3 +350,26 @@ void BasicGraph::drawGridLines(){
     delete painter;
 }
 
+void BasicGraph::updateScreenImage(){
+    if(draw_sprites_flag){
+        QImage tmp = image->convertToFormat(QImage::Format_ARGB32_Premultiplied);
+        QRectF target(0.0, 0.0, tmp.width(), tmp.height() );
+        QPainter painter;
+        painter.begin(&tmp);
+        painter.setClipRegion(sprites_clip_region);
+        painter.drawImage(target, *spritesimage);
+        painter.end();
+        displayedimage->swap(tmp);
+    }else{
+        *displayedimage = image->convertToFormat(QImage::Format_ARGB32_Premultiplied);
+    }
+}
+
+void BasicGraph::mouseDoubleClickEvent(QMouseEvent * e){
+    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
+        clickX = mouseX = e->x() - gleft;
+        clickY = mouseY = e->y() - gtop;
+        clickB = e->button() | MOUSEBUTTON_DOUBLECLICK; //set doubleclick flag
+        mouseB = e->buttons();
+    }
+}

@@ -17,6 +17,7 @@
 
 #include "Constants.h"
 #include "Sleeper.h"
+#include <chrono>
 
 
 Sleeper::Sleeper() {
@@ -30,13 +31,17 @@ void Sleeper::wake() {
 
 bool Sleeper::sleepMS(long int ms) {
 	// interruptable - return true if NOT interrupted
+	std::chrono::steady_clock::time_point finish;
+	long int remainingms;
+	finish = std::chrono::steady_clock::now() + std::chrono::milliseconds(ms);
 	wakesleeper=false;
-	while (ms > 0L && !wakesleeper) {
-		if(ms > SLEEP_GRANULE){
+	while (std::chrono::steady_clock::now() < finish && !wakesleeper) {
+		remainingms = std::chrono::duration_cast<std::chrono::milliseconds>(finish - std::chrono::steady_clock::now()).count();
+		if(remainingms > SLEEP_GRANULE){
 			ms -= SLEEP_GRANULE;
 			sleepRQM(SLEEP_GRANULE);
 		}else{
-			sleepRQM(ms);
+			sleepRQM(remainingms);
 			break;
 		}
 	}

@@ -335,28 +335,29 @@ void RunController::outputError(QString text) {
 
 void
 RunController::goutputReady() {
-    mymutex->lock();
-    graphwin->repaint();
-    waitCond->wakeAll();
-    mymutex->unlock();
+	mymutex->lock();
+	graphwin->updateScreenImage();
+	graphwin->repaint();
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 void
 RunController::stepThrough() {
 	i->debugMode = 1; // step through debugging
 	mainwin->setRunState(RUNSTATERUNDEBUG);
-    mydebugmutex->lock();
-    waitDebugCond->wakeAll();
-    mydebugmutex->unlock();
+	mydebugmutex->lock();
+	waitDebugCond->wakeAll();
+	mydebugmutex->unlock();
 }
 void
 
 RunController::stepBreakPoint() {
 	i->debugMode = 2; // run to break point debugging
 	mainwin->setRunState(RUNSTATERUNDEBUG);
-    mydebugmutex->lock();
-    waitDebugCond->wakeAll();
-    mydebugmutex->unlock();
+	mydebugmutex->lock();
+	waitDebugCond->wakeAll();
+	mydebugmutex->unlock();
 }
 
 void RunController::stopRun() {

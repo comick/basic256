@@ -44,6 +44,9 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   QImage *image;
   QImage *gridlinesimage;
   QImage *displayedimage;
+  QImage *spritesimage;
+  QRegion sprites_clip_region;
+  bool draw_sprites_flag;
   bool initActions(QMenu *, QToolBar *);
   // used to store current location of mouse
   // default value of -1 when no mouse recorded over graphic output
@@ -56,6 +59,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   int clickY;
   int clickB;
   bool isVisibleGridLines();
+  void updateScreenImage();
 
 
  public slots:
@@ -71,6 +75,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
+  void mouseDoubleClickEvent(QMouseEvent * );
 
  private:
   unsigned int gwidth;

@@ -14,6 +14,7 @@
 #define ERROR_BADCALLFUNCTION	-8
 #define ERROR_BADCALLSUBROUTINE	-9
 #define ERROR_NEXTWRONGFOR		-10
+#define ERROR_UNSERIALIZEFORMAT	-11
 
 
 // ERRRORS and WARNINGS greater than 0 are trappable
@@ -36,7 +37,6 @@
 #define ERROR_ARRAYINDEX 				15
 #define ERROR_STRSTART 					17
 #define ERROR_RGB 						20
-#define ERROR_PUTBITFORMAT 				21
 #define ERROR_POLYPOINTS 				23
 #define ERROR_IMAGEFILE 				24
 #define ERROR_SPRITENUMBER 				25
@@ -91,6 +91,7 @@
 #define ERROR_SERIALPARAMETER			79
 #define ERROR_LONGRANGE					80
 #define ERROR_INTEGERRANGE				81
+#define ERROR_SLICESIZE					82
 
 // Insert new error codes here
 

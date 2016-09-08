@@ -248,6 +248,7 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_WAVPAUSE) return QString("OP_WAVPAUSE");
 	else if (op==OP_WAVPLAY) return QString("OP_WAVPLAY");
 	else if (op==OP_WAVSTOP) return QString("OP_WAVSTOP");
+	else if (op==OP_SEED) return QString("OP_SEED");
 	else if (op==OP_SEEK) return QString("OP_SEEK");
 	else if (op==OP_SIZE) return QString("OP_SIZE");
 	else if (op==OP_EXISTS) return QString("OP_EXISTS");
@@ -271,7 +272,6 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_LOGTEN) return QString("OP_LOGTEN");
 	else if (op==OP_GETSLICE) return QString("OP_GETSLICE");
 	else if (op==OP_PUTSLICE) return QString("OP_PUTSLICE");
-	else if (op==OP_PUTSLICEMASK) return QString("OP_PUTSLICEMASK");
 	else if (op==OP_IMGLOAD) return QString("OP_IMGLOAD");
 	else if (op==OP_SQR) return QString("OP_SQR");
 	else if (op==OP_EXP) return QString("OP_EXP");
@@ -381,6 +381,7 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_TEXTWIDTH) return QString("OP_TEXTWIDTH");
 	else if (op==OP_SPRITER) return QString("OP_SPRITER");
 	else if (op==OP_SPRITES) return QString("OP_SPRITES");
+	else if (op==OP_SPRITEO) return QString("OP_SPRITEO");
 	else if (op==OP_FREEFILE) return QString("OP_FREEFILE");
 	else if (op==OP_FREENET) return QString("OP_FREENET");
 	else if (op==OP_FREEDB) return QString("OP_FREEDB");
@@ -418,6 +419,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_EXITFOR) return QString("OP_EXITFOR");
 	else if (op==OP_VARIABLEWATCH) return QString("OP_VARIABLEWATCH");
 	else if (op==OP_PUSHLABEL) return QString("OP_PUSHLABEL");
+	else if (op==OP_SERIALIZE) return QString("OP_SERIALIZE");
+	else if (op==OP_UNSERIALIZE) return QString("OP_UNSERIALIZE");
 
 	else return QString("OP_UNKNOWN");
 }
@@ -493,112 +496,6 @@ Interpreter::isStopped() {
 		return true;
 	}
 	return false;
-}
-
-
-void Interpreter::clearsprites() {
-	// cleanup sprites - release images and deallocate the space
-	int i;
-	if (nsprites>0) {
-		for(i=0; i<nsprites; i++) {
-			if (sprites[i].image) {
-				delete sprites[i].image;
-				sprites[i].image = NULL;
-			}
-			if (sprites[i].underimage) {
-				delete sprites[i].underimage;
-				sprites[i].underimage = NULL;
-			}
-		}
-		free(sprites);
-		sprites = NULL;
-		nsprites = 0;
-	}
-}
-
-void Interpreter::spriteundraw(int n) {
-	// undraw all visible sprites >= n
-	int x, y, i;
-	QPainter *ian;
-	ian = new QPainter(graphwin->image);
-	i = nsprites-1;
-	while(i>=n) {
-		if (sprites[i].underimage && sprites[i].visible) {
-			x = sprites[i].x - (sprites[i].underimage->width()/2);
-			y = sprites[i].y - (sprites[i].underimage->height()/2);
-			ian->setCompositionMode(QPainter::CompositionMode_Clear);
-			ian->drawImage(x, y, *(sprites[i].underimage));
-			ian->setCompositionMode(QPainter::CompositionMode_SourceOver);
-			ian->drawImage(x, y, *(sprites[i].underimage));
-		}
-		i--;
-	}
-	ian->end();
-	delete ian;
-}
-
-void Interpreter::spriteredraw(int n) {
-	int x, y, i;
-	// redraw all sprites n to nsprites-1
-	i = n;
-	while(i<nsprites) {
-		if (sprites[i].image && sprites[i].visible) {
-			QPainter *ian;
-			ian = new QPainter(graphwin->image);
-			if (sprites[i].r==0 && sprites[i].s==1) {
-				if (sprites[i].underimage) {
-					delete sprites[i].underimage;
-					sprites[i].underimage = NULL;
-				}
-				if (sprites[i].image->width()>0 and sprites[i].image->height()>0) {
-					x = sprites[i].x - (sprites[i].image->width()/2);
-					y = sprites[i].y - (sprites[i].image->height()/2);
-					sprites[i].underimage = new QImage(graphwin->image->copy(x, y, sprites[i].image->width(), sprites[i].image->height()));
-					ian->drawImage(x, y, *(sprites[i].image));
-				}
-			} else {
-				QTransform transform = QTransform().translate(0,0).rotateRadians(sprites[i].r).scale(sprites[i].s,sprites[i].s);;
-				QImage rotated = sprites[i].image->transformed(transform);
-				if (sprites[i].underimage) {
-					delete sprites[i].underimage;
-					sprites[i].underimage = NULL;
-				}
-				if (rotated.width()>0 and rotated.height()>0) {
-					x = sprites[i].x - (rotated.width()/2);
-					y = sprites[i].y - (rotated.height()/2);
-					sprites[i].underimage = new QImage(graphwin->image->copy(x, y, rotated.width(), rotated.height()));
-					ian->drawImage(x, y, rotated);
-				}
-			}
-			ian->end();
-			delete ian;
-		}
-		i++;
-	}
-}
-
-bool Interpreter::spritecollide(int n1, int n2) {
-	int top1, bottom1, left1, right1;
-	int top2, bottom2, left2, right2;
-
-	if (n1==n2) return true;											// cant collide with itself
-	if (!sprites[n1].visible || !sprites[n2].visible) return false; 	// cant collide if invisible
-	if (!sprites[n1].image || !sprites[n2].image) return false;			// cant collide if not initialized
-
-	left1 = (int) (sprites[n1].x - (double) sprites[n1].image->width()*sprites[n1].s/2.0);
-	left2 = (int) (sprites[n2].x - (double) sprites[n2].image->width()*sprites[n2].s/2.0);;
-	right1 = left1 + sprites[n1].image->width()*sprites[n1].s;
-	right2 = left2 + sprites[n2].image->width()*sprites[n2].s;
-	top1 = (int) (sprites[n1].y - (double) sprites[n1].image->height()*sprites[n1].s/2.0);
-	top2 = (int) (sprites[n2].y - (double) sprites[n2].image->height()*sprites[n2].s/2.0);
-	bottom1 = top1 + sprites[n1].image->height()*sprites[n1].s;
-	bottom2 = top2 + sprites[n2].image->height()*sprites[n2].s;
-
-	if (bottom1<top2) return false;
-	if (top1>bottom2) return false;
-	if (right1<left2) return false;
-	if (left1>right2) return false;
-	return true;
 }
 
 void Interpreter::watchvariable(bool doit, int i) {
@@ -875,9 +772,6 @@ Interpreter::initialize() {
 			dbSet[t][u] = NULL;
 		}
 	}
-	
-	// initialize number of sprites to 0 (on exit clearsprites() is called)
-	nsprites = 0;
 
 	// initialize files to NULL (closed)
 	filehandle = (QIODevice**) malloc(NUMFILES * sizeof(QIODevice*));
@@ -982,7 +876,7 @@ Interpreter::runHalted() {
 void
 Interpreter::run() {
 	// main run loop
-	srand(time(NULL));	// initialize the random number generator for this thread
+	srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
 	onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
 		emit(seekLine(2));
@@ -1005,14 +899,231 @@ Interpreter::inputEntered(QString text) {
 }
 
 
+void Interpreter::clearsprites() {
+	// cleanup sprites - release images and deallocate the space
+	graphwin->spritesimage->fill(Qt::transparent);
+
+	int i;
+	if (nsprites>0) {
+		for(i=0; i<nsprites; i++) {
+			if (sprites[i].image) {
+				delete sprites[i].image;
+				sprites[i].image = NULL;
+			}
+			if (sprites[i].transformed_image) {
+				delete sprites[i].transformed_image;
+				sprites[i].transformed_image = NULL;
+			}
+		}
+		free(sprites);
+		sprites = NULL;
+		nsprites = 0;
+		graphwin->draw_sprites_flag = false;
+	}
+}
+
+void Interpreter::sprite_prepare_for_new_content(int n) {
+	if (sprites[n].image) {
+		delete sprites[n].image;
+		sprites[n].image = NULL;
+	}
+	if (sprites[n].transformed_image) {
+		delete sprites[n].transformed_image;
+		sprites[n].transformed_image = NULL;
+	}
+	sprites[n].x=0;
+	sprites[n].y=0;
+	sprites[n].r=0;	// rotate
+	sprites[n].s=1;	// scale
+	sprites[n].o=1;	// opacity
+	sprites[n].visible=false;
+	sprites[n].changed=true;
+	sprites[n].position.setRect(0,0,0,0);
+	//last_position and was_printed remains the same in case we need to clear last position
+}
+
+bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
+	QPolygon p1, p2, result;
+	QPoint center;
+	QRect rect;
+	if (n1==n2) return true;											// cant collide with itself
+	if (!sprites[n1].visible || !sprites[n2].visible) return false; 	// cant collide if invisible
+	if(!sprites[n1].position.intersects(sprites[n2].position))
+		return false;
+
+	if(sprites[n1].r==0 && sprites[n2].r==0){
+		if(!deep) return true;
+		rect=sprites[n1].position.intersected(sprites[n2].position);
+	}else{
+		if(sprites[n1].r==0){
+			p1=QPolygon(sprites[n1].position);
+		}else{
+			p1 = QTransform().translate(0,0).rotateRadians(sprites[n1].r).scale(sprites[n1].s,sprites[n1].s).mapToPolygon(QRect(0, 0, sprites[n1].image->width(), sprites[n1].image->height()));
+			center = p1.boundingRect().center();
+			p1.translate(sprites[n1].x-center.x(), sprites[n1].y-center.y());
+		}
+		if(sprites[n2].r==0){
+			p2=QPolygon(sprites[n2].position);
+		}else{
+			p2 = QTransform().translate(0,0).rotateRadians(sprites[n2].r).scale(sprites[n2].s,sprites[n2].s).mapToPolygon(QRect(0, 0, sprites[n2].image->width(), sprites[n2].image->height()));
+			center = p2.boundingRect().center();
+			p2.translate(sprites[n2].x-center.x(), sprites[n2].y-center.y());
+		}
+
+		result=p1.intersected(p2);
+		if(result.isEmpty()) return false;
+		if(!deep) return true;
+		//this line can look stupid, but if we use only rect = result.boundingRect(), then we got from time to time
+		//bome black lines on the edge of intersected rectangle after we print the two images
+		//draw contact zone
+		//rect = result.boundingRect();
+		rect = result.boundingRect().intersected(sprites[n1].position).intersected(sprites[n2].position);
+	}
+	if(rect.isEmpty()) return false;
+
+	// Debug
+	//    QPainter *ian2;
+	//    ian2 = new QPainter(graphwin->image);
+	//    ian2->drawPolygon(p1);
+	//    ian2->drawPolygon(p2);
+	//    ian2->drawPolygon(result);
+	//    ian2->drawRect(result.boundingRect());
+	//    ian2->end();
+	//    delete ian2;
+	//////////////////////////////////
+
+
+	QImage *scan = new QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
+	scan->fill(Qt::transparent);
+	QPainter *painter = new QPainter(scan);
+	if(sprites[n1].r==0 && sprites[n1].s==1){
+		painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].image);
+	}else{
+		painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].transformed_image);
+	}
+	painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
+	if(sprites[n2].r==0 && sprites[n2].s==1){
+		painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].image);
+	}else{
+		painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].transformed_image);
+	}
+	painter->end();
+	delete painter;
+
+	//check collision comparing only alpha channel
+	const uchar* scanbits = scan->bits();
+	bool flag=false;
+	const int max = scan->byteCount();
+	for(int f=3;f<max;f+=4){
+		if(scanbits[f]){
+			flag=true;
+			break;
+		}
+	}
+
+	//debug - print collision zone
+	//    QPainter *ian;
+	//    ian = new QPainter(graphwin->image);
+	//    ian->drawImage(0,0,*scan);
+	//    ian->end();
+	//    delete ian;
+
+	delete scan;
+	return flag;
+}
+
+void Interpreter::force_redraw_all_sprites_next_time(){
+	for(int n=0;n<nsprites;n++){
+		sprites[n].was_printed=false;
+	}
+}
+
+void Interpreter::update_sprite_screen(){
+	if(nsprites<=0){
+		graphwin->draw_sprites_flag = false;
+		return;
+	}
+
+	QPainter *painter;
+	QRegion region = QRegion(0,0,0,0);
+	painter = new QPainter(graphwin->spritesimage);
+	bool flag=false;
+
+	for(int n=0;n<nsprites;n++){
+		if(sprites[n].was_printed){
+			if(!sprites[n].visible){
+				//clear old position if sprite is hidden now
+				region+=sprites[n].last_position;
+				sprites[n].was_printed=false;
+			}else{
+				if(sprites[n].changed){
+					//prepare area for a moved sprite
+					region+=sprites[n].last_position;
+					region+=sprites[n].position;
+				}
+			}
+		}else{
+			//sprite become visible - clear area
+			if(sprites[n].visible){
+				region+=sprites[n].position; //Delete new - mark for first draw
+			}
+		}
+	}
+
+	graphwin->sprites_clip_region = region;
+	painter->setClipRegion(region);
+	painter->setCompositionMode(QPainter::CompositionMode_Clear);
+	painter->fillRect(region.boundingRect(),Qt::transparent);
+	painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+	double lasto=1.0;
+	for(int n=0;n<nsprites;n++){
+		if(sprites[n].visible){
+				if(lasto!=sprites[n].o){
+					lasto=sprites[n].o;
+					painter->setOpacity(lasto);
+				}
+				if(sprites[n].s==1 && sprites[n].r==0){
+					if(sprites[n].image){
+						if(graphwin->sprites_clip_region.intersects(sprites[n].position)){
+							painter->drawImage(sprites[n].position, *sprites[n].image);
+							sprites[n].last_position=sprites[n].position;
+							sprites[n].was_printed=true;
+							sprites[n].changed=false;
+						}
+						graphwin->sprites_clip_region+=sprites[n].position;
+						flag = true;
+					}
+				}else{
+					if(sprites[n].transformed_image){
+						if(graphwin->sprites_clip_region.intersects(sprites[n].position)){
+							painter->drawImage(sprites[n].position, *sprites[n].transformed_image);
+							sprites[n].last_position=sprites[n].position;
+							sprites[n].was_printed=true;
+							sprites[n].changed=false;
+						}
+						graphwin->sprites_clip_region+=sprites[n].position;
+						flag = true;
+					}
+				}
+
+		}
+	}
+	painter->end();
+	delete painter;
+	graphwin->draw_sprites_flag = flag;
+
+}
+
 void
 Interpreter::waitForGraphics() {
+	update_sprite_screen();
 	// wait for graphics operation to complete
 	mymutex->lock();
 	emit(goutputReady());
 	waitCond->wait(mymutex);
 	mymutex->unlock();
 }
+
 
 
 int
@@ -1426,15 +1537,15 @@ Interpreter::execByteCode() {
 							}
 						for (int col = columns - 1; col >= 0 && !error->pending(); col--) {
 							DataElement *e = stack->popelement();
-							if (e->type==T_UNASSIGNED) {
-								error->q(ERROR_VARNOTASSIGNED, e->intval);
-							} else if (e->type==T_ARRAY) {
+							if (e->type==T_ARRAY) {
 								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+							} else if (e->type==T_UNASSIGNED) {
+								variables->arrayunassign(i, row, col);
 							} else {
 								variables->arraysetdata(i, row, col, e);
-								if(!error->pending()) {
-									watchvariable(debugMode, i, row, col);
-								}
+							}
+							if(!error->pending()) {
+								watchvariable(debugMode, i, row, col);
 							}
 						}
 					}
@@ -2072,6 +2183,12 @@ Interpreter::execByteCode() {
 				case OP_RAND: {
                     double r = ((double) rand() * (double) RAND_MAX + (double) rand()) / double_random_max;
                     stack->pushfloat(r);
+				}
+				break;
+				
+				case OP_SEED: {
+					unsigned int seed = stack->poplong();
+					srand(seed);
 				}
 				break;
 
@@ -2756,9 +2873,9 @@ Interpreter::execByteCode() {
 					unsigned long penval = stack->poplong();
 
                     //set PenColorIsClear and CompositionModeClear flags here for speed
-                    if (penval == 0){
+                    if (penval == COLOR_CLEAR){
                         PenColorIsClear = true;
-                        if (brushval == 0){
+                        if (brushval == COLOR_CLEAR){
                             CompositionModeClear = true;
                         }else{
                             CompositionModeClear = false;
@@ -2800,81 +2917,79 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_GETSLICE: {
-					// slice format is 4 digit HEX width, 4 digit HEX height,
-					// and (w*h)*8 digit HEX RGB for each pixel of slice
+					// slice format was a hex stringnow it is a 2d array list on the stack
+					int layer = stack->popint();
 					int h = stack->popint();
 					int w = stack->popint();
 					int y = stack->popint();
 					int x = stack->popint();
-					if (h*w > (STRINGMAXLEN -8)/8) {
-						error->q(ERROR_STRINGMAXLEN);
+					QImage *layerimage;
+					switch(layer) {
+						case SLICE_PAINT:
+							layerimage = graphwin->image;
+							break;
+						case SLICE_SPRITE:
+							layerimage = graphwin->spritesimage;
+							break;
+						default:
+							layerimage = graphwin->displayedimage;
+							break;
+					}
+					if (x<0||y<0||x>layerimage->width()||y>layerimage->height()||x+w-1>layerimage->width()||y+h-1>layerimage->height()) {
+						error->q(ERROR_SLICESIZE);
+						stack->pushint(0);
 						stack->pushint(0);
 					} else {
-						QString qs;
 						QRgb rgb;
 						int tw, th;
-						qs.append(QString::number(w,16).rightJustified(4,'0'));
-						qs.append(QString::number(h,16).rightJustified(4,'0'));
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								rgb = graphwin->image->pixel(x+tw,y+th);
-								qs.append(QString::number(rgb,16).rightJustified(8,'0'));
+								rgb = layerimage->pixel(x+tw,y+th);
+								stack->pushlong(rgb);
 							}
+							stack->pushint(w);
 						}
-						stack->pushstring(qs);
+						stack->pushint(h);
 					}
 				}
 				break;
 
-				case OP_PUTSLICE:
-				case OP_PUTSLICEMASK: {
-					QRgb mask = 0x00;	// default mask transparent - nothing gets masked
-					if (opcode == OP_PUTSLICEMASK) mask = stack->popint();
-					QString imagedata = stack->popstring();
+				case OP_PUTSLICE: {
+					// get image array
+					int th, tw;
+					int h = stack->popint();
+					int w = stack->popint();
+					stack->pushint(w);		// put back on stack to make pull off easier
+					int data[h][w];
+					for(th=h-1; th>=0; th--) {
+						stack->popint();	// get extra cols
+						for(tw=w-1; tw>=0; tw--) {
+							data[th][tw] = stack->popint();
+						}
+					}
+					// get where
 					int y = stack->popint();
 					int x = stack->popint();
-					bool ok;
-					QRgb rgb, lastrgb = 0x00;
-					int th, tw;
-					int offset = 0; // location in qstring to get next hex number
+					// draw
+					QPainter *ian;
+					if (printing) {
+						ian = printdocumentpainter;
+					} else {
+						ian = new QPainter(graphwin->image);
+					}
 
-					int w = imagedata.mid(offset,4).toInt(&ok, 16);
-					offset+=4;
-					if (ok) {
-						int h = imagedata.mid(offset,4).toInt(&ok, 16);
-						offset+=4;
-						if (ok) {
-
-							QPainter *ian;
-							if (printing) {
-								ian = printdocumentpainter;
-							} else {
-								ian = new QPainter(graphwin->image);
-							}
-
-							ian->setPen(lastrgb);
-							for(th=0; th<h && ok; th++) {
-								for(tw=0; tw<w && ok; tw++) {
-									rgb = imagedata.mid(offset, 8).toUInt(&ok, 16);
-									offset+=8;
-									if (ok && rgb != mask) {
-										if (rgb!=lastrgb) {
-											ian->setPen(rgb);
-											lastrgb = rgb;
-										}
-										ian->drawPoint(x + tw, y + th);
-									}
-								}
-							}
-							if (!printing) {
-								ian->end();
-								delete ian;
-								if (!fastgraphics) waitForGraphics();
+					for(th=0; th<h; th++) {
+						for(tw=0; tw<w; tw++) {
+							if(data[th][tw]!=COLOR_CLEAR) {
+								ian->setPen(data[th][tw]);
+								ian->drawPoint(x + tw, y + th);
 							}
 						}
 					}
-					if (!ok) {
-						error->q(ERROR_PUTBITFORMAT);
+					if (!printing) {
+						ian->end();
+						delete ian;
+						if (!fastgraphics) waitForGraphics();
 					}
 				}
 				break;
@@ -3279,6 +3394,8 @@ Interpreter::execByteCode() {
 						waitCond->wait(mymutex);
 						mymutex->unlock();
 					}
+					force_redraw_all_sprites_next_time();
+					waitForGraphics();
 				}
 				break;
 
@@ -3301,10 +3418,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_REFRESH: {
-					mymutex->lock();
-					emit(goutputReady());
-					waitCond->wait(mymutex);
-					mymutex->unlock();
+					waitForGraphics();
 				}
 				break;
 
@@ -3535,31 +3649,22 @@ Interpreter::execByteCode() {
 								int n = stack->popint(); // sprite number
 								if(n >= 0 && n < nsprites) {
 									// free old, draw, and capture sprite
-									spriteundraw(n);
-									if (sprites[n].image) {
-										// free previous image before replacing
-										delete sprites[n].image;
-										sprites[n].image = NULL;
+									sprite_prepare_for_new_content(n);
+									sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32_Premultiplied);
+									if(!sprites[n].image->isNull()){
+										sprites[n].image->fill(Qt::transparent);
+										if (!CompositionModeClear) {
+											QPainter *poly = new QPainter(sprites[n].image);
+											poly->setPen(drawingpen);
+											poly->setBrush(drawingbrush);
+											poly->drawPolygon(points, pairs);
+											poly->end();
+											delete poly;
+											double img_w=maxx+1;
+											double img_h=maxy+1;
+											sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
+										}
 									}
-									sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32);
-									sprites[n].image->fill(Qt::transparent);
-									QPainter *poly = new QPainter(sprites[n].image);
-									poly->setPen(drawingpen);
-									poly->setBrush(drawingbrush);
-                                    if (CompositionModeClear) {
-										poly->setCompositionMode(QPainter::CompositionMode_Clear);
-									}
-									poly->drawPolygon(points, pairs);
-									poly->end();
-									delete poly;
-
-									if (sprites[n].underimage) {
-										// free previous underimage before replacing
-										delete sprites[n].underimage;
-										sprites[n].underimage = NULL;
-									}
-									sprites[n].visible = false;
-									spriteredraw(n);
 								} else {
 									error->q(ERROR_SPRITENUMBER);
 								}
@@ -3573,10 +3678,6 @@ Interpreter::execByteCode() {
 					}
 				}
 				break;
-					
-
-
-
 
 				case OP_SPRITEDIM: {
 					int n = stack->popint();
@@ -3589,12 +3690,16 @@ Interpreter::execByteCode() {
 						while (n>0) {
 							n--;
 							sprites[n].image = NULL;
-							sprites[n].underimage = NULL;
+							sprites[n].transformed_image = NULL;
 							sprites[n].visible = false;
 							sprites[n].x = 0;
 							sprites[n].y = 0;
 							sprites[n].r = 0;
 							sprites[n].s = 1;
+							sprites[n].position.setRect(0,0,0,0);
+							sprites[n].changed=false;
+							sprites[n].was_printed = false;
+							sprites[n].last_position.setRect(0,0,0,0);
 						}
 					}
 				}
@@ -3608,25 +3713,18 @@ Interpreter::execByteCode() {
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
 					} else {
-						spriteundraw(n);
-						if (sprites[n].image) {
-							// free previous image before replacing
-							delete sprites[n].image;
-							sprites[n].image = NULL;
-						}
-						sprites[n].image = new QImage(file);
-						if(sprites[n].image->isNull()) {
+						sprite_prepare_for_new_content(n);
+						QImage *tmp = new QImage(file);
+						if(tmp->isNull()) {
+							delete tmp;
 							error->q(ERROR_IMAGEFILE);
-							sprites[n].image = NULL;
-						} else {
-							if (sprites[n].underimage) {
-								// free previous underimage before replacing
-								delete sprites[n].underimage;
-								sprites[n].underimage = NULL;
-							}
-							sprites[n].visible = false;
+						}else{
+							sprites[n].image = new QImage(tmp->convertToFormat(QImage::Format_ARGB32_Premultiplied));
+							delete tmp;
+							double img_w=sprites[n].image->width();
+							double img_h=sprites[n].image->height();
+							sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
 						}
-						spriteredraw(n);
 					}
 				}
 				break;
@@ -3642,69 +3740,103 @@ Interpreter::execByteCode() {
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
 					} else {
-						spriteundraw(n);
-						if (sprites[n].image) {
-							// free previous image before replacing
-							delete sprites[n].image;
-							sprites[n].image = NULL;
-						}
-						sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h));
+						sprite_prepare_for_new_content(n);
+						sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32_Premultiplied));
 						if(sprites[n].image->isNull()) {
 							error->q(ERROR_SPRITESLICE);
-							sprites[n].image = NULL;
-						} else {
-							if (sprites[n].underimage) {
-								// free previous underimage before replacing
-								delete sprites[n].underimage;
-								sprites[n].underimage = NULL;
-							}
-							sprites[n].visible = false;
+						}else{
+							double img_w=sprites[n].image->width();
+							double img_h=sprites[n].image->height();
+							sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
 						}
-						spriteredraw(n);
 					}
 				}
 				break;
 
 				case OP_SPRITEMOVE:
 				case OP_SPRITEPLACE: {
-
-					double r = stack->popfloat();
-					double s = stack->popfloat();
-					double y = stack->popfloat();
-					double x = stack->popfloat();
+					double o=0, r=0, s=0, y=0, x=0;
+					int nr = stack->popint(); // number of arguments (3-6)
+					switch(nr){
+						case 6  :
+						   o = stack->popfloat();
+						case 5  :
+						   r = stack->popfloat();
+						case 4  :
+						   s = stack->popfloat();
+						default :
+						   y = stack->popfloat();
+						   x = stack->popfloat();
+					}
 					int n = stack->popint();
+
+					double img_w, img_h;
 
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
 					} else {
-						if (s<0) {
-							error->q(ERROR_IMAGESCALE);
-						} else {
 							if(!sprites[n].image) {
 								error->q(ERROR_SPRITENA);
 							} else {
 
-								spriteundraw(n);
 								if (opcode==OP_SPRITEMOVE) {
 									x += sprites[n].x;
 									y += sprites[n].y;
 									s += sprites[n].s;
 									r += sprites[n].r;
-									if (x >= (int) graphwin->image->width()) x = (double) graphwin->image->width();
-									if (x < 0) x = 0;
-									if (y >= (int) graphwin->image->height()) y = (double) graphwin->image->height();
-									if (y < 0) y = 0;
-									if (s < 0) s = 0;
+									o += sprites[n].o;
+								}else{
+									//OP_SPRITEPLACE - populate missing arguments
+									if(nr<6) o = sprites[n].o;
+									if(nr<5) r = sprites[n].r;
+									if(nr<4) s = sprites[n].s;
 								}
-								sprites[n].x = x;
-								sprites[n].y = y;
-								sprites[n].s = s;
-								sprites[n].r = r;
-								spriteredraw(n);
 
-								if (!fastgraphics) waitForGraphics();
+									if(sprites[n].s != s || sprites[n].r != r){
+										//there is a transformation from the last time
+										if (sprites[n].transformed_image) {
+											delete sprites[n].transformed_image;
+											sprites[n].transformed_image = NULL;
+										}
+										if(s!=1 || r!=0){
+											QTransform transform = QTransform().translate(sprites[n].image->width()/2, sprites[n].image->height()/2).rotateRadians(r).scale(s,s);;
+											sprites[n].transformed_image = new QImage(sprites[n].image->transformed(transform).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+											img_w=sprites[n].transformed_image->width();
+											img_h=sprites[n].transformed_image->height();
+											sprites[n].position.setRect(x-(img_w/2),y-(img_h/2),img_w,img_h);
+										}else{
+											img_w=sprites[n].image->width();
+											img_h=sprites[n].image->height();
+											sprites[n].position.setRect(x-(img_w/2),y-(img_h/2),img_w,img_h);
+										}
+										sprites[n].changed=true;
+									}else if(sprites[n].x != x || sprites[n].y != y){
+										//there is no transformation from last time but is just a movement
+										if(s!=1 || r!=0){
+											img_w=sprites[n].transformed_image->width();
+											img_h=sprites[n].transformed_image->height();
+										}else{
+											img_w=sprites[n].image->width();
+											img_h=sprites[n].image->height();
+										}
+										sprites[n].position.moveTo(x-(img_w/2),y-(img_h/2));
+										sprites[n].changed=true;
+									}
+									if(sprites[n].o != o){
+										if(o<0) o=0;
+										if(o>1) o=1;
+										if(sprites[n].o != o)
+											sprites[n].changed=true;
+									}
+
+									sprites[n].x = x;
+									sprites[n].y = y;
+									sprites[n].s = s;
+									sprites[n].r = r;
+									sprites[n].o = o;
+
+									if (!fastgraphics) waitForGraphics();
 							}
-						}
 					}
 				}
 				break;
@@ -3718,22 +3850,18 @@ Interpreter::execByteCode() {
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
 					} else {
-						if(!sprites[n].image) {
+						if(!sprites[n].image && vis) {
 							error->q(ERROR_SPRITENA);
-						} else {
-							if (sprites[n].visible != vis) {
-								spriteundraw(n);
-								sprites[n].visible = vis;
-								spriteredraw(n);
-								if (!fastgraphics) waitForGraphics();
-							}
+						} else if (sprites[n].visible != vis){
+							sprites[n].visible = vis;
+							if (!fastgraphics) waitForGraphics();
 						}
 					}
 				}
 				break;
 
 				case OP_SPRITECOLLIDE: {
-
+					int val = stack->popbool();
 					int n1 = stack->popint();
 					int n2 = stack->popint();
 
@@ -3743,7 +3871,7 @@ Interpreter::execByteCode() {
 						if(!sprites[n1].image || !sprites[n2].image) {
 							error->q(ERROR_SPRITENA);
 						} else {
-							stack->pushint(spritecollide(n1, n2));
+							stack->pushint(sprite_collide(n1, n2, val!=0));
 						}
 					}
 				}
@@ -3755,7 +3883,8 @@ Interpreter::execByteCode() {
 				case OP_SPRITEW:
 				case OP_SPRITEV:
 				case OP_SPRITER:
-				case OP_SPRITES: {
+				case OP_SPRITES:
+				case OP_SPRITEO: {
 
 					int n = stack->popint();
 
@@ -3763,22 +3892,17 @@ Interpreter::execByteCode() {
 						error->q(ERROR_SPRITENUMBER);
 						stack->pushint(0);
 					} else {
-						if(!sprites[n].image) {
-							error->q(ERROR_SPRITENA);
-							stack->pushint(0);
-						} else {
-							if (opcode==OP_SPRITEX) stack->pushfloat(sprites[n].x);
-							if (opcode==OP_SPRITEY) stack->pushfloat(sprites[n].y);
-							if (opcode==OP_SPRITEH) stack->pushint(sprites[n].image->height());
-							if (opcode==OP_SPRITEW) stack->pushint(sprites[n].image->width());
-							if (opcode==OP_SPRITEV) stack->pushint(sprites[n].visible?1:0);
-							if (opcode==OP_SPRITER) stack->pushfloat(sprites[n].r);
-							if (opcode==OP_SPRITES) stack->pushfloat(sprites[n].s);
-						}
+						if (opcode==OP_SPRITEX) stack->pushfloat(sprites[n].x);
+						if (opcode==OP_SPRITEY) stack->pushfloat(sprites[n].y);
+						if (opcode==OP_SPRITEH) stack->pushint(sprites[n].image?sprites[n].image->height():0);
+						if (opcode==OP_SPRITEW) stack->pushint(sprites[n].image?sprites[n].image->width():0);
+						if (opcode==OP_SPRITEV) stack->pushint(sprites[n].visible?1:0);
+						if (opcode==OP_SPRITER) stack->pushfloat(sprites[n].r);
+						if (opcode==OP_SPRITES) stack->pushfloat(sprites[n].s);
+						if (opcode==OP_SPRITEO) stack->pushfloat(sprites[n].o);
 					}
 				}
 				break;
-
 
 				case OP_CHANGEDIR: {
 					QString file = stack->popstring();
@@ -4627,12 +4751,23 @@ Interpreter::execByteCode() {
 				case OP_ARC:
 				case OP_CHORD:
 				case OP_PIE: {
+					int yval, xval, hval, wval;
+					int arg = stack->popint(); // number of arguments
 					double angwval = stack->popfloat();
 					double startval = stack->popfloat();
-					int hval = stack->popint();
-					int wval = stack->popint();
-					int yval = stack->popint();
-					int xval = stack->popint();
+
+					if(arg==5){
+						int rval = stack->popint();
+						yval = stack->popint() - rval;
+						xval = stack->popint() - rval;
+						hval = rval * 2;
+						wval = rval * 2;
+					}else{
+						hval = stack->popint();
+						wval = stack->popint();
+						yval = stack->popint();
+						xval = stack->popint();
+					}
 
 					// degrees * 16
 					int s = (int) (startval * 360 * 16 / 2 / M_PI);
@@ -5093,6 +5228,38 @@ Interpreter::execByteCode() {
 					stack->pushstring(stuff);
 				}
 				break;
+				
+				case OP_SERIALIZE: {
+					// rows,columns,typedata
+					DataElement *e;
+					QString stuff = "";
+					int rows = stack->popint();
+					int cols;
+					for (int row=0; row<rows; row++) {
+						if (row!=0) stuff.prepend(",");
+						cols = stack->popint();
+						for (int col=0; col<cols; col++) {
+								if (col!=0) stuff.prepend(",");
+								e = stack->popelement();
+								switch (e->type) {
+									case T_STRING:
+										stuff.prepend("S"+  QString::fromUtf8(e->stringval.toUtf8().toHex()) );
+										break;
+									case T_FLOAT:
+										stuff.prepend("F" + QString::number(e->floatval));
+										break;
+									case T_INT:
+										stuff.prepend("I" + QString::number(e->intval));
+										break;
+									default:
+										stuff.prepend("U");
+										break;
+								}
+						}
+					}
+					stack->pushstring(QString::number(rows) + "," + QString::number(cols) + "," + stuff);
+				}
+				break;
 
 
 				case OP_EXPLODE:
@@ -5136,6 +5303,49 @@ Interpreter::execByteCode() {
 				}
 				break;
 
+				case OP_UNSERIALIZE: {
+					bool goodrows, goodcols;
+					QString data = stack->popstring();
+					QStringList list = data.split(",");
+					if (list.count()>=3) {
+						int rows = list[0].toInt(&goodrows);
+						int cols = list[1].toInt(&goodcols);
+						if (goodrows&&goodcols) {
+							if (list.count()==rows*cols+2) {
+								for (int row=0; row<rows&&!error->pending(); row++) {
+									for (int col=0; col<cols&&!error->pending(); col++) {
+										int i = row * cols + col + 2;
+										switch (list[i].at(0).toLatin1()) {
+											case 'S':
+												stack->pushstring(QString::fromUtf8(QByteArray::fromHex(list[i].mid(1).toUtf8()).data()));
+												break;
+											case 'F':
+												stack->pushfloat(list[i].mid(1).toDouble());
+												break;
+											case 'I':
+												stack->pushint(list[i].mid(1).toLong());
+												break;
+											case 'U':
+												stack->pushdataelement(NULL);
+												break;
+											default:
+											error->q(ERROR_UNSERIALIZEFORMAT);
+										}
+									}
+									stack->pushint(cols);
+								}
+								stack->pushint(rows);
+							} else {
+								error->q(ERROR_UNSERIALIZEFORMAT);
+							}
+						} else {
+							error->q(ERROR_UNSERIALIZEFORMAT);
+						}
+					} else {
+						error->q(ERROR_UNSERIALIZEFORMAT);
+					}
+				}
+				break;
 
 					// insert additional OPTYPE_NONE operations here
 

@@ -1,17 +1,21 @@
 # sliceanimation.kbs
 # 2010-05-08 j.m.reneau
+# 2016-09-08 j.m.reneau updated for 2.0
 
 # demonstration program of getslice function
 # and putslice statements.
 
+# easier accomplished with sprites because you do not
+# have to slice the under image and then re draw it
+
 fastgraphics
 
-# capture slice of red foreground and white background
-clg
+# capture slice of red foreground and clear background
+clg 
 color red
 gosub randomdraw
 refresh
-slice$ = getslice(100,100,100,100)
+slice = getslice(100,100,100,100)
 
 # draw a screen of yellow and black to
 # draw slice onto
@@ -30,16 +34,15 @@ dy = rand * 3 + 1
 while true
    # get new loction to put slise at
    x = x + dx
-   if x < 0 or x > 200 then dx = dx * -1
+   if x < 1 or x > 200 then dx = dx * -1
    y = y + dy
-   if y < 0 or y > 200 then dy = dy * -1
+   if y < 1 or y > 200 then dy = dy * -1
    # get whet is there before putting slice
-   original$ = getslice(x,y,100,100)
-   # draw the slize with white as a transparent color
-   putslice x,y,slice$,black
+   original = getslice(x,y,100,100)
+   putslice x,y,slice
    refresh
    # change it back to what it was before the slice
-   putslice x,y,original$
+   putslice x,y,original
 end while
 end
 

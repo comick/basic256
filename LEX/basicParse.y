@@ -337,7 +337,7 @@
 %token B256GRAPHWIDTH B256GRAPHHEIGHT B256GETSLICE B256PUTSLICE B256IMGLOAD
 %token B256SPRITEDIM B256SPRITELOAD B256SPRITESLICE B256SPRITEMOVE B256SPRITEHIDE B256SPRITESHOW B256SPRITEPLACE
 %token B256SPRITECOLLIDE B256SPRITEX B256SPRITEY B256SPRITEH B256SPRITEW B256SPRITEV
-%token B256SPRITEPOLY B256SPRITER B256SPRITES
+%token B256SPRITEPOLY B256SPRITER B256SPRITES B256SPRITEO
 %token B256WAVLENGTH B256WAVPAUSE B256WAVPOS B256WAVPLAY B256WAVSTATE B256WAVSEEK B256WAVSTOP B256WAVWAIT
 %token B256SIZE B256SEEK B256EXISTS
 %token B256BOOLTRUE B256BOOLFALSE
@@ -367,7 +367,7 @@
 %token B256DEBUGINFO
 %token B256CONTINUEDO B256CONTINUEFOR B256CONTINUEWHILE B256EXITDO B256EXITFOR B256EXITWHILE
 %token B256PRINTERPAGE B256PRINTERON B256PRINTEROFF B256PRINTERCANCEL
-%token B256TRY B256CATCH B256ENDTRY B256LET
+%token B256TRY B256CATCH B256ENDTRY B256LET B256SERIALIZE B256UNSERIALIZE B256SEED
 %token B256ERROR_NONE
 %token B256ERROR_NOSUCHLABEL
 %token B256ERROR_NEXTNOFOR
@@ -456,9 +456,10 @@
 %token B256TYPE_UNASSIGNED B256TYPE_INT B256TYPE_FLOAT B256TYPE_STRING B256TYPE_ARRAY B256TYPE_REF
 %token B256ISNUMERIC B256LTRIM B256RTRIM B256TRIM B256SEMICOLON B256SEMICOLONEQUAL
 %token B256KEYPRESSED B256VARIABLEWATCH B256FILL
-%token B256MOUSEBUTTON_CENTER B256MOUSEBUTTON_LEFT B256MOUSEBUTTON_NONE B256MOUSEBUTTON_RIGHT
+%token B256MOUSEBUTTON_CENTER B256MOUSEBUTTON_LEFT B256MOUSEBUTTON_NONE B256MOUSEBUTTON_RIGHT B256MOUSEBUTTON_DOUBLECLICK
 %token B256IMAGETYPE_BMP B256IMAGETYPE_JPG B256IMAGETYPE_PNG
 %token B256OSTYPE_ANDROID B256OSTYPE_LINUX B256OSTYPE_MACINTOSH B256OSTYPE_WINDOWS
+%token B256SLICE_ALL B256SLICE_PAINT B256SLICE_SPRITE
 
 %union anytype {
 	int number;
@@ -589,7 +590,10 @@ args_a:
 
 // Array Variable Data as a list of lists
 args_A:
-			args_v {
+			array_empty {
+				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+			}
+			| args_v {
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 			}
 
@@ -787,6 +791,7 @@ statement:
 			| resetstmt
 			| returnstmt
 			| saystmt
+			| seedstmt
 			| seekstmt
 			| setsettingstmt
 			| soundstmt
@@ -1623,18 +1628,33 @@ circlestmt:
 			;
 
 arcstmt: 	B256ARC args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+				addOp(OP_ARC);
+			}
+			| B256ARC args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_ARC);
 			}
 			;
 
 chordstmt:
 			B256CHORD args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+				addOp(OP_CHORD);
+			}
+			| B256CHORD args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_CHORD);
 			}
 			;
 
 piestmt:
 			B256PIE args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+				addOp(OP_PIE);
+			}
+			| B256PIE args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_PIE);
 			}
 			;
@@ -1809,6 +1829,11 @@ resetstmt:	B256RESET args_none {
 			}
 			;
 
+seedstmt:	B256SEED expr {
+				addOp(OP_SEED);
+			}
+			;
+			
 seekstmt:	B256SEEK expr {
 				addIntOp(OP_PUSHINT, 0);
 				addOp(OP_STACKSWAP);
@@ -1960,11 +1985,11 @@ wavwaitstmt:
 			;
 
 putslicestmt:
-			B256PUTSLICE args_eee  {
+			B256PUTSLICE args_eeA  {
 				addOp(OP_PUTSLICE);
 			}
-			| B256PUTSLICE args_eeee  {
-				addOp(OP_PUTSLICEMASK);
+			| B256PUTSLICE args_eei  {
+				addOp(OP_PUTSLICE);
 			}
 			;
 
@@ -2019,37 +2044,46 @@ spritepolystmt:
 spriteplacestmt:
 			B256SPRITEPLACE args_eee
 			{
-				addIntOp(OP_PUSHINT,1);	// scale
-				addIntOp(OP_PUSHINT,0);	// rotate
+				addIntOp(OP_PUSHINT,3);	// nr of arguments
 				addOp(OP_SPRITEPLACE);
 			}
 			| B256SPRITEPLACE args_eeee
 			{
-				addIntOp(OP_PUSHINT,0);	// rotate
+				addIntOp(OP_PUSHINT,4);	// nr of arguments
 				addOp(OP_SPRITEPLACE);
 			}
 			| B256SPRITEPLACE args_eeeee
 			{
+				addIntOp(OP_PUSHINT,5);	// nr of arguments
 				addOp(OP_SPRITEPLACE);
+			}
+			| B256SPRITEPLACE args_eeeeee
+			{
+					addIntOp(OP_PUSHINT,6);	// nr of arguments
+					addOp(OP_SPRITEPLACE);
 			}
 			;
 
 spritemovestmt:
 			B256SPRITEMOVE args_eee
 			{
-				addIntOp(OP_PUSHINT,0);	// scale (change in scale)
-				addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
+				addIntOp(OP_PUSHINT,3);	// nr of arguments
 				addOp(OP_SPRITEMOVE);
 			}
 			| B256SPRITEMOVE args_eeee  {
-				addIntOp(OP_PUSHINT,0);	// rotate (change in rotation)
+				addIntOp(OP_PUSHINT,4);	// nr of arguments
 				addOp(OP_SPRITEMOVE);
 			}
 			| B256SPRITEMOVE args_eeeee {
+				addIntOp(OP_PUSHINT,5);	// nr of arguments
 				addOp(OP_SPRITEMOVE);
 			}
+			| B256SPRITEMOVE args_eeeeee {
+					addIntOp(OP_PUSHINT,6);	// nr of arguments
+					addOp(OP_SPRITEMOVE);
+			}
 			;
-
+			
 spritehidestmt:
 			B256SPRITEHIDE expr {
 				addOp(OP_SPRITEHIDE);
@@ -2550,6 +2584,9 @@ variablewatchstmt:
 
 listoflists:
 			'{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
+			| B256UNSERIALIZE expr {
+				addOp(OP_UNSERIALIZE);
+			}
 			| B256EXPLODE args_ee {
 				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
 				addOp(OP_EXPLODE);
@@ -2559,6 +2596,13 @@ listoflists:
 			}
 			|  B256EXPLODEX args_ee{
 				addOp(OP_EXPLODEX);
+			}
+			| B256GETSLICE args_eeeee {
+				addOp(OP_GETSLICE);
+			}
+			| B256GETSLICE args_eeee {
+				addIntOp(OP_PUSHINT, SLICE_ALL);	// get everything
+				addOp(OP_GETSLICE);
 			}
 			;
 
@@ -2937,7 +2981,8 @@ expr:
 			| B256GETCOLOR args_none { addOp(OP_GETCOLOR); }
 			| B256GETBRUSHCOLOR args_none { addOp(OP_GETBRUSHCOLOR); }
 			| B256GETPENWIDTH args_none { addOp(OP_GETPENWIDTH); }
-			| B256SPRITECOLLIDE '(' expr ',' expr ')' { addOp(OP_SPRITECOLLIDE); }
+			| B256SPRITECOLLIDE '(' expr ',' expr ',' expr ')' { addOp(OP_SPRITECOLLIDE); }
+			| B256SPRITECOLLIDE '(' expr ',' expr ')' { addIntOp(OP_PUSHINT, 0); addOp(OP_SPRITECOLLIDE); }
 			| B256SPRITEX '(' expr ')' { addOp(OP_SPRITEX); }
 			| B256SPRITEY '(' expr ')' { addOp(OP_SPRITEY); }
 			| B256SPRITEH '(' expr ')' { addOp(OP_SPRITEH); }
@@ -2945,6 +2990,7 @@ expr:
 			| B256SPRITEV '(' expr ')' { addOp(OP_SPRITEV); }
 			| B256SPRITER '(' expr ')' { addOp(OP_SPRITER); }
 			| B256SPRITES '(' expr ')' { addOp(OP_SPRITES); }
+			| B256SPRITEO '(' expr ')' { addOp(OP_SPRITEO); }
 			| B256DBROW args_none {
 				addIntOp(OP_PUSHINT,0);	// default db number
 				addIntOp(OP_PUSHINT,0);	// default dbset number
@@ -3082,7 +3128,6 @@ expr:
 			| B256ERROR_ARRAYINDEX args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYINDEX); }
 			| B256ERROR_STRSTART args_none { addIntOp(OP_PUSHINT, ERROR_STRSTART); }
 			| B256ERROR_RGB args_none { addIntOp(OP_PUSHINT, ERROR_RGB); }
-			| B256ERROR_PUTBITFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_PUTBITFORMAT); }
 			| B256ERROR_POLYPOINTS args_none { addIntOp(OP_PUSHINT, ERROR_POLYPOINTS); }
 			| B256ERROR_IMAGEFILE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGEFILE); }
 			| B256ERROR_SPRITENUMBER args_none { addIntOp(OP_PUSHINT, ERROR_SPRITENUMBER); }
@@ -3158,10 +3203,14 @@ expr:
 			| B256MOUSEBUTTON_LEFT args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_LEFT); }
 			| B256MOUSEBUTTON_NONE args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_NONE); }
 			| B256MOUSEBUTTON_RIGHT args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_RIGHT); }
+			| B256MOUSEBUTTON_DOUBLECLICK args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_DOUBLECLICK); }
 			| B256OSTYPE_ANDROID args_none { addIntOp(OP_PUSHINT, OSTYPE_ANDROID); }
 			| B256OSTYPE_LINUX args_none { addIntOp(OP_PUSHINT, OSTYPE_LINUX); }
 			| B256OSTYPE_MACINTOSH args_none { addIntOp(OP_PUSHINT, OSTYPE_MACINTOSH); }
 			| B256OSTYPE_WINDOWS args_none { addIntOp(OP_PUSHINT, OSTYPE_WINDOWS); }
+			| B256SLICE_ALL args_none { addIntOp(OP_PUSHINT, SLICE_ALL); }
+			| B256SLICE_PAINT args_none { addIntOp(OP_PUSHINT, SLICE_PAINT); }
+			| B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
 			
 
 			/* ###########################################
@@ -3179,7 +3228,6 @@ expr:
 			| B256MIDX '(' expr ',' expr ',' expr ')' { addOp(OP_MIDX); }
 			| B256LEFT '(' expr ',' expr ')' { addOp(OP_LEFT); }
 			| B256RIGHT '(' expr ',' expr ')' { addOp(OP_RIGHT); }
-			| B256GETSLICE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_GETSLICE); }
 			| B256READ args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READ); }
 			| B256READ '(' expr ')' { addOp(OP_READ); }
 			| B256READLINE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READLINE); }
@@ -3212,6 +3260,12 @@ expr:
 			}
 			| B256REPLACE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACEX); }
+			| B256SERIALIZE '(' listoflists ')' {
+				addOp(OP_SERIALIZE);
+			}
+			| B256SERIALIZE '(' args_A ')' {
+				addOp(OP_SERIALIZE);
+			}
 			| B256IMPLODE '(' args_A ')' {
 				addStringOp(OP_PUSHSTRING, ""); // no delimiter
 				addOp(OP_STACKDUP);

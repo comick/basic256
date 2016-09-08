@@ -106,13 +106,18 @@ struct forframe {
 };
 
 typedef struct {
-	QImage *image;
-	QImage *underimage;
-	double x;
-	double y;
-	double r;	// rotate
-	double s;	// scale
-	bool visible;
+    bool visible;
+    double x;
+    double y;
+    double r;	// rotate
+    double s;	// scale
+    double o;	// opacity
+    QImage *image;
+    QImage *transformed_image;
+    QRect position;
+    bool changed;
+    bool was_printed;
+    QRect last_position;
 } sprite;
 
 class Interpreter : public QThread
@@ -205,9 +210,10 @@ class Interpreter : public QThread
 		int fontpoint;
 		int fontweight;
 		void clearsprites();
-		void spriteundraw(int);
-		void spriteredraw(int);
-		bool spritecollide(int, int);
+        void update_sprite_screen();
+        void sprite_prepare_for_new_content(int);
+        void force_redraw_all_sprites_next_time();
+        bool sprite_collide(int, int, bool);
 		sprite *sprites;
 		int nsprites;
 		void closeDatabase(int);

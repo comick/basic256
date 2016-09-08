@@ -36,9 +36,8 @@
 	#define VAR_DOCK_DEFAULT_W 400
 	#define VAR_DOCK_DEFAULT_H 400
 
-
 	// time between sleep interrupt checks
-	#define SLEEP_GRANULE 2000L
+	#define SLEEP_GRANULE 500L
 
 	// command line states that define how the GUI is laid-out and reacts
 	#define GUISTATENORMAL 0
@@ -63,13 +62,21 @@
 	#define MOUSEBUTTON_LEFT 1
 	#define MOUSEBUTTON_NONE 0
 	#define MOUSEBUTTON_RIGHT 2
-	
+    #define MOUSEBUTTON_DOUBLECLICK 32
+    	
 	// ostypes returned by ostype function
 	#define OSTYPE_ANDROID 3
 	#define OSTYPE_LINUX 1
 	#define OSTYPE_MACINTOSH 2
 	#define OSTYPE_WINDOWS 0
 	
+	// GetSlice Layers
+	#define SLICE_ALL 0
+	#define SLICE_PAINT 1
+	#define SLICE_SPRITE 2
+	
+	// Transparency Color used in Interperter
+	#define COLOR_CLEAR 0
 	
 
 #endif

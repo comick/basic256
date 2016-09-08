@@ -140,9 +140,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_RGB:
 			errormessage = tr("RGB Color values must be in the range of 0 to 255");
 			break;
-		case ERROR_PUTBITFORMAT:
-			errormessage = tr("String input to putbit incorrect");
-			break;
 		case ERROR_POLYPOINTS:
 			errormessage = tr("Not enough points in array for poly()/stamp()");
 			break;
@@ -319,6 +316,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			break;
 		case ERROR_NEXTWRONGFOR:
 			errormessage = tr("Variable in NEXT does not match FOR");
+			break;
+		case ERROR_UNSERIALIZEFORMAT:
+			errormessage = tr("Unable to UnSrialize string");
+			break;
+		case ERROR_SLICESIZE:
+			errormessage = tr("Invalid Slice dimensions");
 			break;
 
 			

@@ -239,7 +239,9 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "ltrim"								//ltrim
 			<< "say"								//say
 			<< "second"								//second
+			<< "seed"								//seed
 			<< "seek"								//seek
+			<< "serialize"							//serialize
 			<< "setsetting"							//setsetting
 			<< "sin"								//sin
 			<< "size"								//size
@@ -250,6 +252,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "spritehide"							//spritehide
 			<< "spriteload"							//spriteload
 			<< "spritemove"							//spritemove
+			<< "spriteo"							//spriteo
 			<< "spriteplace"						//spriteplace
 			<< "spritepoly"							//spritepoly
 			<< "spriter"							//spriter
@@ -282,6 +285,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "try"								//try
 			<< "typeof"								//typeof
 			<< "unassign"							//unassign
+			<< "unserialize"						//unserialize
 			<< "until"								//until
 			<< "upper"								//upper
 			<< "variablewatch"						//variablewatch
@@ -424,6 +428,7 @@ void EditSyntaxHighlighter::initConstants() {
 			<< "MOUSEBUTTON_LEFT"
 			<< "MOUSEBUTTON_NONE"
 			<< "MOUSEBUTTON_RIGHT"
+			<< "MOUSEBUTTON_DOUBLECLICK"
 			<< "IMAGETYPE_BMP"
 			<< "IMAGETYPE_JPG"
 			<< "IMAGETYPE_PNG"
@@ -431,6 +436,9 @@ void EditSyntaxHighlighter::initConstants() {
 			<< "OSTYPE_LINUX"
 			<< "OSTYPE_MACINTOSH"
 			<< "OSTYPE_WINDOWS"
+			<< "SLICE_ALL"
+			<< "SLICE_PAINT"
+			<< "SLICE_SPRITE"
 			;
 	for (QStringList::iterator it = constantPatterns.begin(); it != constantPatterns.end(); ++it ) {
 		HighlightRule *rule = new HighlightRule;
