@@ -323,6 +323,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_SLICESIZE:
 			errormessage = tr("Invalid Slice dimensions");
 			break;
+		case ERROR_ARRAYLENGTH2D:
+			errormessage = tr("Can not get a single length if a two dimensional array");
+			break;
 
 			
 	  

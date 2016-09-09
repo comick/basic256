@@ -265,7 +265,7 @@ int Variables::arraysize(int varnum) {
     return(0);
 }
 
-int Variables::arraysizex(int varnum) {
+int Variables::arraysizerows(int varnum) {
     // return number of columns of array as if it was a two dimensional array - 0 = not an array
     Variable *v = get(varnum);
 
@@ -279,7 +279,7 @@ int Variables::arraysizex(int varnum) {
     return(0);
 }
 
-int Variables::arraysizey(int varnum) {
+int Variables::arraysizecols(int varnum) {
     // return number of rows of array as if it was a two dimensional array - 0 = not an array
     Variable *v = get(varnum);
 

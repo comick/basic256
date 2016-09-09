@@ -80,8 +80,8 @@ class Variables
         void arrayunassign(int, int, int);
         //
         int arraysize(int);
-        int arraysizex(int);
-        int arraysizey(int);
+        int arraysizerows(int);
+        int arraysizecols(int);
         //
         void makeglobal(int);
 

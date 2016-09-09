@@ -310,8 +310,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_DEREF) return QString("OP_DEREF");
 	else if (op==OP_REDIM) return QString("OP_REDIM");
 	else if (op==OP_ALEN) return QString("OP_ALEN");
-	else if (op==OP_ALENX) return QString("OP_ALENX");
-	else if (op==OP_ALENY) return QString("OP_ALENY");
+	else if (op==OP_ALENROWS) return QString("OP_ALENROWS");
+	else if (op==OP_ALENCOLS) return QString("OP_ALENCOLS");
 	else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
 	else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
 	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
@@ -1299,18 +1299,23 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_ALEN:
-				case OP_ALENX:
-				case OP_ALENY: {
+				case OP_ALENROWS:
+				case OP_ALENCOLS: {
 					// return array lengths
 					switch(opcode) {
 						case OP_ALEN:
-							stack->pushint(variables->arraysize(i));
+							if (variables->arraysizerows(i)==1) {
+								stack->pushint(variables->arraysize(i));
+							} else {
+								stack->pushint(0);
+								error->q(ERROR_ARRAYLENGTH2D);
+							}
 							break;
-						case OP_ALENX:
-							stack->pushint(variables->arraysizex(i));
+						case OP_ALENROWS:
+							stack->pushint(variables->arraysizerows(i));
 							break;
-						case OP_ALENY:
-							stack->pushint(variables->arraysizey(i));
+						case OP_ALENCOLS:
+							stack->pushint(variables->arraysizecols(i));
 							break;
 					}
 				}
@@ -1396,8 +1401,8 @@ Interpreter::execByteCode() {
 					// Push all of the elements of an array to the stack and then push the length to the stack
 					// expects one integer - variable number
 					// all arrays are 2 dimensional - push each column, column size, then number of rows
-					int columns = variables->arraysizey(i);
-					int rows = variables->arraysizex(i);
+					int columns = variables->arraysizecols(i);
+					int rows = variables->arraysizerows(i);
 					for(int row = 0; row<rows && !error->pending(); row++) {
 						for (int col = 0; col<columns && !error->pending(); col++) {
 							DataElement *av = variables->arraygetdata(i, row, col);
@@ -1422,8 +1427,8 @@ Interpreter::execByteCode() {
 					DataElement *e = stack->popelement();	// fill value
 					Variable *v = variables->get(i);
 					if (v->data->type==T_ARRAY) {
-						int columns = variables->arraysizey(i);
-						int rows = variables->arraysizex(i);
+						int columns = variables->arraysizecols(i);
+						int rows = variables->arraysizerows(i);
 						for(int row = 0; row<rows && !error->pending(); row++) {
 							for (int col = 0; col<columns && !error->pending(); col++) {
 								if(mode==1 || variables->arraygetdata(i, row, col)->type == T_UNASSIGNED) {
@@ -1460,8 +1465,8 @@ Interpreter::execByteCode() {
 				case OP_VARIABLEWATCH: {
 					if (variables->get(i)->data->type == T_ARRAY) {
 						// an array - trigger dim and dumping of the elements
-						int ydim = variables->arraysizey(i);
-						int xdim = variables->arraysizex(i);
+						int ydim = variables->arraysizecols(i);
+						int xdim = variables->arraysizerows(i);
 						watchdim(true, i , xdim, ydim);
 					} else {
 						// regular variable - show it
@@ -1523,7 +1528,7 @@ Interpreter::execByteCode() {
 					int columns = stack->popint(); //pop the first row length - the following rows must have the same length
 
 					// create array if we need to (wrong dimensions)
-					if (variables->get(i)->data->type != T_ARRAY || variables->arraysizey(i)!=columns || variables->arraysizey(i)!=rows) {
+					if (variables->get(i)->data->type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
 						variables->arraydim(i, rows, columns, false);
 						if(error->pending()) break;
 						watchdim(debugMode, i, rows, columns);

@@ -557,11 +557,12 @@ compoundstmt:
 /* array reference - make everything 2d */
 
 arrayref:
-			'[' expr ']' {
+			'[' expr ',' expr ']'
+			| '[' expr ']' '[' expr ']'
+			| '[' expr ']' {
 				addIntOp(OP_PUSHINT, 0);
                                 addOp(OP_STACKSWAP);
 			}
-			| '[' expr ',' expr ']'
 			;
 
 /* array assigment a[]={0, 1, 2}*/
@@ -2643,8 +2644,10 @@ expr:
 			/* *** variable and function expressions *** */
 
 			| args_v '[' '?' ']' { addIntOp(OP_ALEN, varnumber[--nvarnumber]); }
-			| args_v '[' '?' ',' ']' { addIntOp(OP_ALENX, varnumber[--nvarnumber]); }
-			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENY, varnumber[--nvarnumber]); }
+			| args_v '[' '?' ',' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
+			| args_v '[' '?' ']' '[' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
+			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
+			| args_v '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
 			| args_v '(' exprlist ')' {
 				// function call with arguments
 				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION); // used to check of function was really called

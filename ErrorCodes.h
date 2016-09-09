@@ -92,6 +92,7 @@
 #define ERROR_LONGRANGE					80
 #define ERROR_INTEGERRANGE				81
 #define ERROR_SLICESIZE					82
+#define ERROR_ARRAYLENGTH2D					83
 
 // Insert new error codes here
 
