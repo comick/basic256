@@ -440,7 +440,7 @@ tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 trim [Tt][Rr][Ii][Mm]
 try [Tt][Rr][Yy]
 type_unassigned [Tt][Yy][Pp][Ee][_][Un][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
-type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]
+type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]([Ee][Gg][Ee][Rr])*
 type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
 type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
 type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]

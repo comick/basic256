@@ -3100,10 +3100,9 @@ Interpreter::execByteCode() {
 										error->q(ERROR_ARRAYEVEN);
 									}
 								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									int ypoint = stack->popint();
-									int xpoint = stack->popint();
-									points[j].setX(xpoint);
-									points[j++].setY(ypoint);
+									points[j].setY(stack->popfloat());
+									points[j].setX(stack->popfloat());
+									j++;
 								}
 							}
 
@@ -3162,10 +3161,9 @@ Interpreter::execByteCode() {
 										error->q(ERROR_ARRAYEVEN);
 									}
 								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									int y = stack->popint();
-									int x = stack->popint();
-									points[j].setX(x);
-									points[j++].setY(y);
+									points[j].setY(stack->popfloat());
+									points[j].setX(stack->popfloat());
+									j++;
 								}
 							}
 							if (!error->pending()) {
@@ -3632,14 +3630,15 @@ Interpreter::execByteCode() {
 										error->q(ERROR_ARRAYEVEN);
 									}
 								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									int y = stack->popint();
-									int x = stack->popint();
+									double y = stack->popfloat();
+									double x = stack->popfloat();
 									if(x<minx) minx=x;
 									if(y<miny) miny=y;
 									if(x>maxx) maxx=x;
 									if(y>maxy) maxy=y;
+									points[j].setY(y);
 									points[j].setX(x);
-									points[j++].setY(y);
+									j++;
 								}
 							}
 							if (!error->pending()) {
