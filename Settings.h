@@ -26,8 +26,6 @@
 	#define SETTINGSPORTABLEINI	"BASIC256_IDE.ini"
 
 	// main window
-    #define SETTINGSMAINRESTORE "Main/Restore/"
-    #define SETTINGSMAINRESTOREDEFAULT false
     #define SETTINGSMAINGEOMETRY "Main/Geometry/"
     #define SETTINGSMAINSTATE "Main/State/"
 
@@ -60,8 +58,13 @@
 	// other IDE preferences
 	#define SETTINGSIDESAVEONRUN "IDE/SaveOnRun"
 	#define SETTINGSIDESAVEONRUNDEFAULT false
-	
-	
+
+    // startup
+    #define SETTINGSWINDOWSRESTORE "Startup/Restore"
+    #define SETTINGSWINDOWSRESTOREDEFAULT true
+    #define SETTINGSCHECKFORUPDATE "Startup/CheckForUpdate"
+    #define SETTINGSCHECKFORUPDATEDEFAULT true
+
 	// documentation window
 	#define SETTINGSDOCSIZE "Doc/Size"
 	#define SETTINGSDOCPOS "Doc/Pos"

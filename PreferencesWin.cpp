@@ -78,6 +78,17 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     usertabwidget = new QWidget();
     usertabwidget->setLayout(usertablayout);
     r=0;
+    // Startup - restore last windows position on start or check for update
+    r++;
+    startuplabel = new QLabel(tr("Startup"),this);
+    usertablayout->addWidget(startuplabel,r,1,1,1);
+    windowsrestorecheckbox = new QCheckBox(tr("Restore last windows position on start"),this);
+    windowsrestorecheckbox->setChecked(settings.value(SETTINGSWINDOWSRESTORE, SETTINGSWINDOWSRESTOREDEFAULT).toBool());
+    usertablayout->addWidget(windowsrestorecheckbox,r,2,1,1);
+    r++;
+    checkupdatecheckbox = new QCheckBox(tr("Check for an update on start"),this);
+    checkupdatecheckbox->setChecked(settings.value(SETTINGSCHECKFORUPDATE, SETTINGSCHECKFORUPDATEDEFAULT).toBool());
+    usertablayout->addWidget(checkupdatecheckbox,r,2,1,2);
     //
     r++;
     {
@@ -118,7 +129,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     }
     //
     r++;
-    saveonruncheckbox = new QCheckBox(tr("Automatically save program when it is successfully run."),this);
+    saveonruncheckbox = new QCheckBox(tr("Automatically save program when it is successfully run"),this);
     saveonruncheckbox->setChecked(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool());
     usertablayout->addWidget(saveonruncheckbox,r,2,1,2);
 	//
@@ -144,7 +155,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	decdigsslider->setValue(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
 	// show trailing .0 on floatingpoint numbers (python style numbers)
 	r++;
-	floattailcheckbox = new QCheckBox(tr("Always show decimal point on floating point numbers."),this);
+    floattailcheckbox = new QCheckBox(tr("Always show decimal point on floating point numbers"),this);
 	floattailcheckbox->setChecked(settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool());
 	usertablayout->addWidget(floattailcheckbox,r,2,1,2);
 
@@ -169,11 +180,6 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	usertablayout->addWidget(debugspeedlabel,r,1,1,1);
 	usertablayout->addLayout(debugspeedsliderlayout,r,2,1,2);
 	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
-	// restore layout and geometry to default on next load
-	r++;
-	mainrestorecheckbox = new QCheckBox(tr("Restore GUI layout to default on next restart."),this);
-	mainrestorecheckbox->setChecked(SETTINGSMAINRESTOREDEFAULT);
-	usertablayout->addWidget(mainrestorecheckbox,r,2,1,2);
 
     //
     // *******************************************************************************************
@@ -375,11 +381,7 @@ void PreferencesWin::clickSaveButton() {
     // validate file name if PDF
     if (printerscombo->itemData(printerscombo->currentIndex())==-1 && pdffileinput->text()=="") {
         //
-        QMessageBox msgBox;
-        msgBox.setText(tr("File name required for PDF output."));
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
+        QMessageBox::information(this, tr(SETTINGSAPP), tr("File name required for PDF output."),QMessageBox::Ok, QMessageBox::Ok);
         validate = false;
     }
     // add other validation here
@@ -423,7 +425,8 @@ void PreferencesWin::clickSaveButton() {
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
         settings.setValue(SETTINGSFLOATTAIL, floattailcheckbox->isChecked());
-        settings.setValue(SETTINGSMAINRESTORE, mainrestorecheckbox->isChecked());
+        settings.setValue(SETTINGSWINDOWSRESTORE, windowsrestorecheckbox->isChecked());
+        settings.setValue(SETTINGSCHECKFORUPDATE, checkupdatecheckbox->isChecked());
 
         // *******************************************************************************************
         // sound settings
@@ -455,11 +458,7 @@ void PreferencesWin::clickSaveButton() {
 
         // *******************************************************************************************
         // all done
-        QMessageBox msgBox;
-        msgBox.setText(tr("Preferences and settings have been saved."));
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
+        QMessageBox::information(this, tr(SETTINGSAPP), tr("Preferences and settings have been saved."),QMessageBox::Ok, QMessageBox::Ok);
         //
         close();
     }

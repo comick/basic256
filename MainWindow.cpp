@@ -64,14 +64,13 @@ std::list<int> pressedKeys;
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring, int guistate)
     :	QMainWindow(parent, f) {
 
-	localecode = localestring;
+    localecode = localestring;
 	locale = new QLocale(localecode);
-
+    guiState = guistate;
+    mainwin = this;
     undoButtonValue = false;
     redoButtonValue = false;
-	guiState = guistate;
-	
-    mainwin = this;
+    autoCheckForUpdate = false;
 
     // create the global mymutexes and waits
     mymutex = new QMutex(QMutex::NonRecursive);
@@ -319,12 +318,16 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     addAction (helpthis);
 #else
     // in installed mode make doc offline and online and context help offline
-    QAction *docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help..."));
+    docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help..."));
     docact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
     addAction (helpthis);
     QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
+#endif
+#ifndef ANDROID
+    helpmenu->addSeparator();
+    checkupdate = helpmenu->addAction(QObject::tr("&Check for update..."));
 #endif
     helpmenu->addSeparator();
     QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256..."));
@@ -415,6 +418,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
     QObject::connect(aboutact, SIGNAL(triggered()), this, SLOT(about()));
 
+#ifndef ANDROID
+    QObject::connect(checkupdate, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+#endif
 #if defined(WIN32PORTABLE) || defined(ANDROID)
     QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showOnlineContextDocumentation()));
 #else
@@ -422,64 +428,64 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showContextDocumentation()));
 #endif
 
+    if(autoCheckForUpdate) checkForUpdate();
 }
 
 void MainWindow::loadCustomizations() {
 	// from settings - load the customizations to the screen
 
 	SETTINGS;
-	bool v;
+    bool v, restoreWindows;
 
-	v = settings.value(SETTINGSMAINRESTORE, SETTINGSMAINRESTOREDEFAULT).toBool();
-	if (v) {
-		settings.setValue(SETTINGSMAINRESTORE, SETTINGSMAINRESTOREDEFAULT);
-	} else {
+    restoreWindows = settings.value(SETTINGSWINDOWSRESTORE, SETTINGSWINDOWSRESTOREDEFAULT).toBool();
+    if(restoreWindows){
+        restoreGeometry(settings.value(SETTINGSMAINGEOMETRY + QString::number(guiState)).toByteArray());
+        QByteArray state = settings.value(SETTINGSMAINSTATE + QString::number(guiState)).toByteArray();
+        restoreState(state);
+        // edit window
+        v = settings.value(SETTINGSEDITVISIBLE + QString::number(guiState), SETTINGSEDITVISIBLEDEFAULT).toBool();
+        editwin_visible_act->setChecked(v);
+        // graph window
+        v = settings.value(SETTINGSGRAPHVISIBLE + QString::number(guiState), SETTINGSGRAPHVISIBLEDEFAULT).toBool();
+        graphwin_visible_act->setChecked(v);
+        // out window
+        v = settings.value(SETTINGSOUTVISIBLE + QString::number(guiState), SETTINGSOUTVISIBLEDEFAULT).toBool();
+        outwin_visible_act->setChecked(v);
+        // var window - variable watch
+        v = settings.value(SETTINGSVARVISIBLE + QString::number(guiState), SETTINGSVARVISIBLEDEFAULT).toBool();
+        varwin_visible_act->setChecked(v);
+    }
 
-		restoreGeometry(settings.value(SETTINGSMAINGEOMETRY + QString::number(guiState)).toByteArray());
-		QByteArray state = settings.value(SETTINGSMAINSTATE + QString::number(guiState)).toByteArray();
-		restoreState(state);
+    // main toolbar
+    v = settings.value(SETTINGSTOOLBARVISIBLE + QString::number(guiState), SETTINGSTOOLBARVISIBLEDEFAULT).toBool();
+    main_toolbar->setVisible(v);
+    main_toolbar_visible_act->setChecked(v);
 
-		// main
-		v = settings.value(SETTINGSTOOLBARVISIBLE + QString::number(guiState), SETTINGSTOOLBARVISIBLEDEFAULT).toBool();
-		main_toolbar->setVisible(v);
-		main_toolbar_visible_act->setChecked(v);
+    // edit whitespace
+    v = settings.value(SETTINGSEDITWHITESPACE + QString::number(guiState), SETTINGSEDITWHITESPACEDEFAULT).toBool();
+    edit_whitespace_act->setChecked(v);
 
-		// Edit
-		v = settings.value(SETTINGSEDITVISIBLE + QString::number(guiState), SETTINGSEDITVISIBLEDEFAULT).toBool();
-		editwin_visible_act->setChecked(v);
-		v = settings.value(SETTINGSEDITWHITESPACE + QString::number(guiState), SETTINGSEDITWHITESPACEDEFAULT).toBool();
-		edit_whitespace_act->setChecked(v);
+    // graph toolbar and grid
+    v = settings.value(SETTINGSGRAPHGRIDLINES + QString::number(guiState), SETTINGSGRAPHGRIDLINESDEFAUT).toBool();
+    graph_grid_visible_act->setChecked(v);
+    v = settings.value(SETTINGSGRAPHTOOLBARVISIBLE + QString::number(guiState), SETTINGSGRAPHTOOLBARVISIBLEDEFAULT).toBool();
+    graphwin_widget->slotShowToolBar(v);
+    graphwin_toolbar_visible_act->setChecked(v);
 
-		// graph
-		v = settings.value(SETTINGSGRAPHVISIBLE + QString::number(guiState), SETTINGSGRAPHVISIBLEDEFAULT).toBool();
-		graphwin_visible_act->setChecked(v);
-		v = settings.value(SETTINGSGRAPHGRIDLINES + QString::number(guiState), SETTINGSGRAPHGRIDLINESDEFAUT).toBool();
-		graph_grid_visible_act->setChecked(v);
-		v = settings.value(SETTINGSGRAPHTOOLBARVISIBLE + QString::number(guiState), SETTINGSGRAPHTOOLBARVISIBLEDEFAULT).toBool();
-		graphwin_widget->slotShowToolBar(v);
-		graphwin_toolbar_visible_act->setChecked(v);
+    // out toolbar
+    v = settings.value(SETTINGSOUTTOOLBARVISIBLE + QString::number(guiState), SETTINGSOUTTOOLBARVISIBLEDEFAULT).toBool();
+    outwin_widget->slotShowToolBar(v);
+    outwin_toolbar_visible_act->setChecked(v);
 
-		// out
-		v = settings.value(SETTINGSOUTVISIBLE + QString::number(guiState), SETTINGSOUTVISIBLEDEFAULT).toBool();
-		outwin_visible_act->setChecked(v);
-		v = settings.value(SETTINGSOUTTOOLBARVISIBLE + QString::number(guiState), SETTINGSOUTTOOLBARVISIBLEDEFAULT).toBool();
-		outwin_widget->slotShowToolBar(v);
-		outwin_toolbar_visible_act->setChecked(v);
+    // set initial font
+    QFont initialFont;
+    QString initialFontString = settings.value(SETTINGSFONT + QString::number(guiState),SETTINGSFONTDEFAULT).toString();
+    if (initialFont.fromString(initialFontString)) {
+        editwin->setFont(initialFont);
+        outwin->setFont(initialFont);
+    }
 
-		// var - variable watch
-		v = settings.value(SETTINGSVARVISIBLE + QString::number(guiState), SETTINGSVARVISIBLEDEFAULT).toBool();
-		varwin_visible_act->setChecked(v);
-
-		// set initial font
-		QFont initialFont;
-		QString initialFontString = settings.value(SETTINGSFONT + QString::number(guiState),SETTINGSFONTDEFAULT).toString();
-		if (initialFont.fromString(initialFontString)) {
-			editwin->setFont(initialFont);
-			outwin->setFont(initialFont);
-		}
-		
-	}
-
+    autoCheckForUpdate = (guiState==GUISTATENORMAL&&settings.value(SETTINGSCHECKFORUPDATE, SETTINGSCHECKFORUPDATEDEFAULT).toBool());
 }
 
 
@@ -752,3 +758,70 @@ void MainWindow::setRunState(int state) {
     clearbreakpointsact->setEnabled(state!=RUNSTATERUN);
 }
 
+//Check for an update
+#ifndef ANDROID
+void MainWindow::checkForUpdate(void){
+    QNetworkRequest request;
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+    config.setProtocol(QSsl::SecureProtocols);
+    request.setSslConfiguration(config);
+#ifdef WIN32PORTABLE
+    request.setUrl(QUrl("https://sourceforge.net/projects/basic256prtbl/best_release.json"));
+#else
+    request.setUrl(QUrl("https://sourceforge.net/projects/kidbasic/best_release.json"));
+#endif
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
+    manager->get(request);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(sourceforgeReplyFinished(QNetworkReply*)));
+}
+
+void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
+    QString url;
+    QString filename;
+    if(reply->error() == QNetworkReply::NoError) {
+        QByteArray  strReply = reply->readAll();
+        //qDebug() << strReply;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply);
+        QJsonObject jsonObject = jsonResponse.object();
+#if defined(WIN32PORTABLE) || defined(WIN32)
+        filename = jsonObject["platform_releases"].toObject()["windows"].toObject()["filename"].toString();
+        url = jsonObject["platform_releases"].toObject()["windows"].toObject()["url"].toString();
+#elif defined(LINUX)
+        filename = jsonObject["platform_releases"].toObject()["linux"].toObject()["filename"].toString();
+        url = jsonObject["platform_releases"].toObject()["linux"].toObject()["url"].toString();
+#elif defined(MACX)
+        filename = jsonObject["platform_releases"].toObject()["mac"].toObject()["filename"].toString();
+        url = jsonObject["platform_releases"].toObject()["mac"].toObject()["url"].toString();
+#endif
+        //qDebug() << text;
+        QRegExp rx("\\d+\\.\\d+\\.\\d+\\.\\d+");
+        rx.indexIn(filename);
+        QString siteversion = rx.cap(0);
+        rx.indexIn(VERSION);
+        QString thisversion = rx.cap(0);
+        if(siteversion=="" || thisversion==""){
+            //Unknown error
+            if(!autoCheckForUpdate)QMessageBox::warning(this, tr("Check for an update"), tr("Unknown error."),QMessageBox::Ok, QMessageBox::Ok);
+        }else if(siteversion>thisversion){
+            //New version to download
+            if(QMessageBox::information(this, tr("Check for an update"), tr("BASIC-256") + " " + siteversion + " " + tr("is now available - you have") + " " + thisversion + ". " + tr("Would you like to download the new version now?"),QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)==QMessageBox::Yes){
+                QDesktopServices::openUrl(QUrl(url));
+            }
+        }else if(thisversion>siteversion){
+            //Beta version
+            if(!autoCheckForUpdate)QMessageBox::information(this, tr("Check for an update"), tr("You are currently using a development version."),QMessageBox::Ok, QMessageBox::Ok);
+        }else{
+            //No new version to download
+            if(!autoCheckForUpdate)QMessageBox::information(this, tr("Check for an update"), tr("You are using the latest software version for your current OS."),QMessageBox::Ok, QMessageBox::Ok);
+        }
+        autoCheckForUpdate = false; //do automatically check for update only once
+
+    } else {
+        //Network error
+        QMessageBox::warning(this, tr("Check for an update"), tr("We are unable to connect right now. Please check your network connection and try again."),QMessageBox::Ok, QMessageBox::Ok);
+    }
+    reply->deleteLater();
+}
+#endif

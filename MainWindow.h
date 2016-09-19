@@ -21,6 +21,16 @@
 
 #include <qglobal.h>
 
+
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QUrl>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
+
+
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QAction>
@@ -54,6 +64,7 @@ public:
 	void closeEvent(QCloseEvent *);
     void setEnabledEditorButtons(bool val);
     void setRunState(int);
+
     
 
 	// Main IU Widgets
@@ -109,7 +120,9 @@ public:
     QAction * clearbreakpointsact;
 
     // help menu
+    QAction * docact;
     QAction * helpthis;
+    QAction * checkupdate;
 
     RunController *rc;
     EditSyntaxHighlighter * editsyntax;
@@ -122,6 +135,9 @@ public:
 public slots:
   void updateStatusBar(QString);
   void updateWindowTitle(QString);
+#ifndef ANDROID
+  void checkForUpdate(void);
+#endif
 
 private:
 
@@ -136,6 +152,7 @@ private:
 	// SEE GUISTATE* Constants
 	void configureGuiState();
 	int guiState;
+    bool autoCheckForUpdate;
 	
 	void loadCustomizations();
 	void saveCustomizations();
@@ -152,6 +169,9 @@ private slots:
     void updateCopyCutButtons(bool);
     void slotUndoAvailable(bool val);
     void slotRedoAvailable(bool val);
+#ifndef ANDROID
+    void sourceforgeReplyFinished(QNetworkReply* reply);
+#endif
 };
 
 #endif
