@@ -1129,8 +1129,7 @@ Interpreter::waitForGraphics() {
 int
 Interpreter::execByteCode() {
 	int opcode;
-	SETTINGS;
-	if (status == R_INPUTREADY) {
+    if (status == R_INPUTREADY) {
 		stack->pushvariant(inputString, inputType);
 		status = R_RUNNING;
 		return 0;
@@ -1510,7 +1509,8 @@ Interpreter::execByteCode() {
 								mydebugmutex->unlock();
 							} else {
 								// when debugging to breakpoint slow execution down so that the
-								// trace on the screen keeps caught up
+                                // trace on the screen keeps caught up
+                                SETTINGS;
 								sleeper->sleepMS(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
 							}
 						}
@@ -2825,6 +2825,7 @@ Interpreter::execByteCode() {
 
 				case OP_SYSTEM: {
 					QString temp = stack->popstring();
+                    SETTINGS;
 
 					if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
 						mymutex->lock();
@@ -4391,6 +4392,7 @@ Interpreter::execByteCode() {
 					QString stuff = stack->popstring();
 					QString key = stack->popstring();
 					QString app = stack->popstring();
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
@@ -4406,6 +4408,7 @@ Interpreter::execByteCode() {
 				case OP_GETSETTING: {
 					QString key = stack->popstring();
 					QString app = stack->popstring();
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
 						if(app==QString("SYSTEM")) {
 							stack->pushstring(settings.value(key, "").toString());
@@ -4427,6 +4430,7 @@ Interpreter::execByteCode() {
 				case OP_PORTOUT: {
 					int data = stack->popint();
 					int port = stack->popint();
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
@@ -4456,6 +4460,7 @@ Interpreter::execByteCode() {
 				case OP_PORTIN: {
 					int data=0;
 					int port = stack->popint();
+                    SETTINGS;
 					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
 #ifdef WIN32PORTABLE
@@ -4918,6 +4923,7 @@ Interpreter::execByteCode() {
 					if (printing) {
 						error->q(ERROR_PRINTERNOTOFF);
 					} else {
+                        SETTINGS;
 						int resolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
 						int printer = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
 						int paper = settings.value(SETTINGSPRINTERPAPER, SETTINGSPRINTERPAPERDEFAULT).toInt();
