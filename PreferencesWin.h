@@ -33,6 +33,7 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
+#include <QToolTip>
 
 #ifndef PREFERENCESWINH
 
@@ -49,6 +50,8 @@ class PreferencesWin : public QDialog
 private slots:
 	void clickCancelButton();
 	void clickSaveButton();
+    void setDigitsValue(int);
+    void setDebugSpeedValue(int);
 
   
 private:
@@ -71,9 +74,12 @@ private:
 	QLabel *varnotassignedlabel;
 	QComboBox *varnotassignedcombo;
 	QLabel *decdigslabel;
+    QLabel *decdigsvalue;
 	QSlider *decdigsslider;
-	QCheckBox *floattailcheckbox;
-	QLabel *debugspeedlabel;
+    QCheckBox *floattailcheckbox;
+    QCheckBox *floatlocalecheckbox;
+    QLabel *debugspeedlabel;
+    QLabel *debugspeedvalue;
 	QSlider *debugspeedslider;
     QCheckBox *windowsrestorecheckbox;
     QLabel *startuplabel;

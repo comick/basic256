@@ -118,10 +118,11 @@ Interpreter::Interpreter(QLocale *applocale) {
 	directorypointer=NULL;
 	status = R_STOPPED;
 	printing = false;
-	sleeper = new Sleeper();
-	error = new Error();
+    sleeper = new Sleeper();
+    error = new Error();
 	locale = applocale;
 	mediaplayer = NULL;
+    downloader = NULL;
 
 #ifdef WIN32
 	// WINDOWS
@@ -154,7 +155,8 @@ Interpreter::~Interpreter() {
 #ifdef WIN32
 	WSACleanup();
 #endif
-	delete sleeper;
+    delete downloader;
+    delete sleeper;
 	delete error;
 }
 
@@ -795,6 +797,8 @@ Interpreter::cleanup() {
 	// called by run() once the run is terminated
 	//
 	// Clean up run time objects
+    delete (downloader);
+    downloader = NULL;
 	delete(stack);
 	delete(variables);
 	delete(convert);
@@ -861,12 +865,18 @@ Interpreter::runHalted() {
 	// force the interperter ops that block to go ahead and quit
 	
 	// stop timers
-	sleeper->wake();
+    sleeper->wake();
+
+    // stop downloading
+    if(downloader!=NULL) downloader->stop();
 	
-	// stop playing any wav files
-	if(mediaplayer) mediaplayer->stop();
-	
-	
+    // stop playing any wav files
+    if(mediaplayer) mediaplayer->stop();
+
+    // stop playing any sound
+    sound.stop();
+
+
 	// close network connections
 	netSockCloseAll(); 
 
@@ -876,6 +886,7 @@ Interpreter::runHalted() {
 void
 Interpreter::run() {
 	// main run loop
+    downloader = new BasicDownloader();
 	srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
 	onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
@@ -1180,7 +1191,7 @@ Interpreter::execByteCode() {
 			// int i is the symbol/variable number
 			//
 			int i = *op;
-			op++;
+            op++;
 
 			switch(opcode) {
 
@@ -2777,41 +2788,40 @@ Interpreter::execByteCode() {
 
 				case OP_SOUND_LIST: {
 					// play an immediate list of sounds
-					// from a 2d array pushed on the stack or a list of lists
+                    // from a array pushed on the stack or a list of lists
 					// fill the sound array backwrds because of pulling from the stack
+                    // Multiple rows = multiple voices mixed
 
-					int rows = stack->popint();
-					int columns = stack->popint();
-					int j=rows*columns;
+                    const int rows = stack->popint();
+                    int columns;
+                    int j=0, total=0;
 
-					int* freqdur;
+                    int* freqdur=NULL;
 
-					if ((rows==1&&columns%2==0)||columns==2) {
-						freqdur = (int*) malloc(rows*columns * sizeof(int));
-						for(int row = 0; row < rows && !error->pending(); row++) {
-							//pop row length only if is not first row - already popped
-							if(row != 0)
-								if(stack->popint()!=2){
-									error->q(ERROR_ARRAYEVEN);
-								}
-							for (int col = 0; col < columns && !error->pending(); col++) {
-								freqdur[--j] = stack->popint();
-							}
-						}
-
-						if (!error->pending()) sound.playSounds(rows*columns/2 , freqdur);
-						free(freqdur);
-					} else {
-						error->q(ERROR_ARRAYEVEN);
-					}
-				}
+                    for(int r=0;r<rows;r++){
+                        columns = stack->popint();
+                        if(columns%2!=0){
+                            error->q(ERROR_ARRAYEVEN);
+                            break;
+                        }
+                        total=total+columns+1;
+                        j=total;
+                        freqdur = (int*) realloc(freqdur, total * sizeof(int));
+                        for (int col = 0; col < columns && !error->pending(); col++) {
+                            freqdur[--j] = stack->popint();
+                        }
+                        freqdur[--j] = columns;
+                    }
+                    if (!error->pending()) sound.playSounds(rows, freqdur);
+                    if(freqdur!=NULL) free(freqdur);
+                }
 				break;
 
 
 				case OP_VOLUME: {
 					// set the wave output height (volume 0-10)
 					double volume = stack->popfloat();
-					sound.setVolume(volume);
+                    sound.setVolume(volume);
 				}
 				break;
 
@@ -3258,34 +3268,37 @@ Interpreter::execByteCode() {
 					double y = stack->popint();
 					double x = stack->popint();
 
-					if (scale<0) {
-						error->q(ERROR_IMAGESCALE);
-					} else {
-						QImage i(file);
-						if(i.isNull()) {
-							error->q(ERROR_IMAGEFILE);
-						} else {
-							QPainter *ian;
-							if (printing) {
-								ian = printdocumentpainter;
-							} else {
-								ian = new QPainter(graphwin->image);
-							}
+                    QImage i;
+                    if(QFileInfo(file).exists()){
+                        i = QImage(file);
+                    }else{
+                        downloader->download(QUrl::fromUserInput(file));
+                        i.loadFromData(downloader->data());
+                    }
 
-							if (rotate != 0 || scale != 1) {
-								QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
-								i = i.transformed(transform);
-							}
-							if (i.width() != 0 && i.height() != 0) {
-								ian->drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
-							}
-							if (!printing) {
-								ian->end();
-								delete ian;
-								if (!fastgraphics) waitForGraphics();
-							}
-						}
-					}
+                    if(i.isNull()) {
+                        error->q(ERROR_IMAGEFILE);
+                    } else {
+                        QPainter *ian;
+                        if (printing) {
+                            ian = printdocumentpainter;
+                        } else {
+                            ian = new QPainter(graphwin->image);
+                        }
+
+                        if (rotate != 0 || scale != 1) {
+                            QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
+                            i = i.transformed(transform);
+                        }
+                        if (i.width() != 0 && i.height() != 0) {
+                            ian->drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+                        }
+                        if (!printing) {
+                            ian->end();
+                            delete ian;
+                            if (!fastgraphics) waitForGraphics();
+                        }
+                    }
 				}
 				break;
 
@@ -3717,10 +3730,21 @@ Interpreter::execByteCode() {
 
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
-					} else {
+                    } else {
 						sprite_prepare_for_new_content(n);
-						QImage *tmp = new QImage(file);
-						if(tmp->isNull()) {
+
+
+                        QImage *tmp;
+                        if(QFileInfo(file).exists()){
+                            tmp = new QImage(file);
+                        }else{
+                            tmp = new QImage();
+                            downloader->download(QUrl::fromUserInput(file));
+                            tmp->loadFromData(downloader->data());
+                        }
+
+
+                        if(tmp->isNull()) {
 							delete tmp;
 							error->q(ERROR_IMAGEFILE);
 						}else{

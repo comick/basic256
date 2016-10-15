@@ -31,7 +31,7 @@
 PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     :QDialog(parent) {
 
-    int r=0;
+    int r=0, i;
     SETTINGS;
 
     // *******************************************************************************************
@@ -135,51 +135,67 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	//
 	// decimal digits slider
 	r++;
-	decdigslabel = new QLabel(tr("Digits of Precission to Display:"),this);
-	decdigsslider = new QSlider(Qt::Horizontal);
+    decdigslabel = new QLabel(tr("Number of digits to print numbers:"),this);
+    decdigsvalue = new QLabel("",this);
+    QHBoxLayout * decdigslabellayout = new QHBoxLayout();
+    decdigslabellayout->addWidget(decdigslabel);
+    decdigslabellayout->addWidget(decdigsvalue);
+    decdigslabellayout->addStretch();
+
+    decdigsslider = new QSlider(Qt::Horizontal);
 	decdigsslider->setMinimum(SETTINGSDECDIGSMIN);
 	decdigsslider->setMaximum(SETTINGSDECDIGSMAX);
-	QLabel *decdigsbefore = new QLabel(tr("8"),this);
-	QLabel *decdigsafter = new QLabel(tr("14"),this);
-	QLabel *decdigsvalue = new QLabel("",this);
-	connect(decdigsslider, SIGNAL(valueChanged(int)), decdigsvalue, SLOT(setNum(int)));
-	QLabel *decdigsunits = new QLabel(tr("digits"),this);
+    decdigsslider->setSingleStep(1);
+    decdigsslider->setPageStep(1);
+    QLabel *decdigsbefore = new QLabel(QString::number(SETTINGSDECDIGSMIN),this);
+    QLabel *decdigsafter = new QLabel(QString::number(SETTINGSDECDIGSMAX),this);
+    connect(decdigsslider, SIGNAL(valueChanged(int)), this, SLOT(setDigitsValue(int)));
 	QHBoxLayout * decdigssliderlayout = new QHBoxLayout();
 	decdigssliderlayout->addWidget(decdigsbefore);
 	decdigssliderlayout->addWidget(decdigsslider);
 	decdigssliderlayout->addWidget(decdigsafter);
-	decdigssliderlayout->addWidget(decdigsvalue);
-	decdigssliderlayout->addWidget(decdigsunits);
-	usertablayout->addWidget(decdigslabel,r,1,1,1);
+    usertablayout->addLayout(decdigslabellayout,r,1,1,1);
 	usertablayout->addLayout(decdigssliderlayout,r,2,1,2);
-	decdigsslider->setValue(settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt());
-	// show trailing .0 on floatingpoint numbers (python style numbers)
-	r++;
+    i = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
+    decdigsslider->setValue(i);
+    setDigitsValue(i);
+    decdigsvalue->setText(decdigsvalue->text() + "        "); //ensure space for label to grow without resizing window
+    // show trailing .0 on floatingpoint numbers (python style numbers)
+    r++;
+    floatlocalecheckbox = new QCheckBox(tr("Use localized decimal point on floating point numbers"),this);
+    floatlocalecheckbox->setChecked(settings.value(SETTINGSFLOATLOCALE, SETTINGSFLOATLOCALEDEFAULT).toBool());
+    usertablayout->addWidget(floatlocalecheckbox,r,2,1,2);
+    r++;
     floattailcheckbox = new QCheckBox(tr("Always show decimal point on floating point numbers"),this);
-	floattailcheckbox->setChecked(settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool());
-	usertablayout->addWidget(floattailcheckbox,r,2,1,2);
+    floattailcheckbox->setChecked(settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool());
+    usertablayout->addWidget(floattailcheckbox,r,2,1,2);
 
 	//
 	// speed of next statement in run to breakpoint
 	r++;
-	debugspeedlabel = new QLabel(tr("Debugging Speed:"),this);
-	debugspeedslider = new QSlider(Qt::Horizontal);
+    debugspeedlabel = new QLabel(tr("Debugging Speed:"),this);
+    debugspeedvalue = new QLabel("",this);
+    QHBoxLayout * debugspeedlabellayout = new QHBoxLayout();
+    debugspeedlabellayout->addWidget(debugspeedlabel);
+    debugspeedlabellayout->addWidget(debugspeedvalue);
+    debugspeedlabellayout->addStretch();
+
+    debugspeedslider = new QSlider(Qt::Horizontal);
 	debugspeedslider->setMinimum(SETTINGSDEBUGSPEEDMIN);
 	debugspeedslider->setMaximum(SETTINGSDEBUGSPEEDMAX);
 	QLabel *debugspeedbefore = new QLabel(tr("Fast"),this);
 	QLabel *debugspeedafter = new QLabel(tr("Slow"),this);
-	QLabel *debugspeedvalue = new QLabel("",this);
-	connect(debugspeedslider, SIGNAL(valueChanged(int)), debugspeedvalue, SLOT(setNum(int)));
-	QLabel *debugspeedunits = new QLabel(tr("ms"),this);
+    connect(debugspeedslider, SIGNAL(valueChanged(int)), this, SLOT(setDebugSpeedValue(int)));
 	QHBoxLayout * debugspeedsliderlayout = new QHBoxLayout();
 	debugspeedsliderlayout->addWidget(debugspeedbefore);
 	debugspeedsliderlayout->addWidget(debugspeedslider);
 	debugspeedsliderlayout->addWidget(debugspeedafter);
-	debugspeedsliderlayout->addWidget(debugspeedvalue);
-	debugspeedsliderlayout->addWidget(debugspeedunits);
-	usertablayout->addWidget(debugspeedlabel,r,1,1,1);
+    usertablayout->addLayout(debugspeedlabellayout,r,1,1,1);
 	usertablayout->addLayout(debugspeedsliderlayout,r,2,1,2);
-	debugspeedslider->setValue(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
+    i = settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt();
+    debugspeedslider->setValue(i);
+    setDebugSpeedValue(i);
+    debugspeedvalue->setText(debugspeedvalue->text() + "        "); //ensure space for label to grow without resizing window
 
     //
     // *******************************************************************************************
@@ -425,6 +441,7 @@ void PreferencesWin::clickSaveButton() {
         settings.setValue(SETTINGSDECDIGS, decdigsslider->value());
         settings.setValue(SETTINGSDEBUGSPEED, debugspeedslider->value());
         settings.setValue(SETTINGSFLOATTAIL, floattailcheckbox->isChecked());
+        settings.setValue(SETTINGSFLOATLOCALE, floatlocalecheckbox->isChecked());
         settings.setValue(SETTINGSWINDOWSRESTORE, windowsrestorecheckbox->isChecked());
         settings.setValue(SETTINGSCHECKFORUPDATE, checkupdatecheckbox->isChecked());
 
@@ -471,5 +488,19 @@ void PreferencesWin::closeEvent(QCloseEvent *e) {
     //settings.setValue(SETTINGSPREFSIZE, size());
     settings.setValue(SETTINGSPREFPOS, pos());
 
+}
+
+void PreferencesWin::setDigitsValue(int i){
+    QString t = QString::number(i) + " " + tr("digits");
+    QToolTip::showText(QCursor::pos(), t);
+    decdigsvalue->setText(t);
+    decdigsslider->setToolTip(t);
+}
+
+void PreferencesWin::setDebugSpeedValue(int i){
+    QString t = tr("pause") + " " + QString::number(i) + " " + tr("ms");
+    QToolTip::showText(QCursor::pos(),t);
+    debugspeedvalue->setText(t);
+    debugspeedslider->setToolTip(t);
 }
 

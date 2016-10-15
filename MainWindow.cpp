@@ -536,13 +536,16 @@ MainWindow::~MainWindow() {
 void MainWindow::about() {
     QString title;
     QString message;
+    SETTINGS;
+    bool usefloatlocale = settings.value(SETTINGSFLOATLOCALE, SETTINGSFLOATLOCALEDEFAULT).toBool();
+
 
 #ifdef ANDROID
     // android does not have webkit dialogs - make plain text
     title = QObject::tr("About BASIC-256") +  QObject::tr(" Android");
     message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
               QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
-			QObject::tr("Locale Name: ") + locale->name() + QObject::tr("Decimal Point: ")+  "'" +locale->decimalPoint() + "'\n" +
+            QObject::tr("Locale Name: ") + locale->name() + QObject::tr("Decimal Point: ")+  "'" + (usefloatlocale?locale->decimalPoint():'.') + "'\n" +
               QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "\n" +
               QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
               QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
@@ -558,7 +561,7 @@ void MainWindow::about() {
 #endif	// WIN32PORTABLE
 
 	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
-			"<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + locale->decimalPoint() + "'</b>" +
+            "<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + (usefloatlocale?locale->decimalPoint():'.') + "'</b>" +
 			"<p>" + QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "</p>" +
 			"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
 			"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +

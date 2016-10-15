@@ -9,9 +9,13 @@ Convert::Convert(Error *e, QLocale *applocale) {
 	SETTINGS;
 	decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
 	floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool();
+    replaceDecimalPoint = settings.value(SETTINGSFLOATLOCALE, SETTINGSFLOATLOCALEDEFAULT).toBool();
+
 	// build international safe regular expression for numbers
 	locale = applocale;
-	isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + locale->decimalPoint() + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
+    replaceDecimalPoint = replaceDecimalPoint && locale->decimalPoint()!='.'; //use locale decimal point only if !="."
+    decimalPoint = (replaceDecimalPoint?locale->decimalPoint():'.');
+    isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + decimalPoint + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
 }
 
 Convert::~Convert() {
@@ -105,7 +109,11 @@ double Convert::getFloat(DataElement *e) {
 		} else if (e->type == T_STRING) {
 			if (e->stringval.length()!=0) {
 				bool ok;
-				f = locale->toDouble(e->stringval, &ok);
+                if(replaceDecimalPoint){
+                    f = locale->toDouble(e->stringval, &ok);
+                }else{
+                    f = e->stringval.toDouble(&ok);
+                }
 				if(!ok) {
 					if (error) error->q(ERROR_TYPECONV);
 				}
@@ -131,22 +139,35 @@ QString Convert::getString(DataElement *e, int ddigits) {
 		} else if (e->type == T_INT || e->type == T_REF) {
 			s = QString::number(e->intval);
 		} else if (e->type == T_FLOAT) {
-			double xp = log10(e->floatval*(e->floatval<0?-1:1)); // size in powers of 10
-			if (xp*2<-ddigits || xp>ddigits) {
-				s = locale->toString(e->floatval,'g',ddigits);
-			} else {
-				s = locale->toString(e->floatval,'f',ddigits - (xp>0?xp:0));
-				// strip trailing zeros and decimal point
-				// need to test for locales with a comma as a currency seperator
-				if (s.contains(locale->decimalPoint(),Qt::CaseInsensitive)) {
-					while(s.endsWith("0")) s.chop(1);
-					if(s.endsWith(locale->decimalPoint())) s.chop(1);
-				}
-			}
-			if (floattail&&!s.contains(locale->decimalPoint(),Qt::CaseInsensitive)) {
-				s.append(locale->decimalPoint());
-				s.append("0");
-			}
+            double xp = log10(e->floatval*(e->floatval<0?-1:1)+(e->floatval>9.0?1.0:0)); // size in powers of 10
+            //check if adding of ".0" will exceed the number of digits to print numbers
+            if(((int)xp)==ddigits-1 && floattail){
+                s.setNum(e->floatval,'e',ddigits - (xp>0?xp:1));
+                s.replace(QRegExp("0+e"), "e");
+                s.replace(".e", ".0e");
+                if(replaceDecimalPoint){
+                    s.replace('.', decimalPoint);
+                }
+            }else if (xp*2<-ddigits || xp>ddigits) {
+                s.setNum(e->floatval,'g',ddigits);
+                if(replaceDecimalPoint){
+                    s.replace('.', decimalPoint);
+                }
+            } else {
+                s.setNum(e->floatval,'f',ddigits - (xp>0?xp:1));
+                if (s.contains('.',Qt::CaseInsensitive)) {
+                    while(s.endsWith("0")) s.chop(1);
+                    if(s.endsWith('.')){
+                        s.chop(1);
+                        if(floattail)
+                            s.append(decimalPoint + '0');
+                    }else if(replaceDecimalPoint){
+                        s.replace('.', decimalPoint);
+                    }
+                }else if(floattail){
+                        s.append(decimalPoint + '0');
+                }
+            }
 		} else if (e->type==T_ARRAY) {
 			if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
 		} else if (e->type==T_UNASSIGNED) {

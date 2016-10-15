@@ -37,6 +37,7 @@
 #include "Sound.h"
 #include "Sleeper.h"
 #include "BasicMediaPlayer.h"
+#include "BasicDownloader.h"
 
 #include <QElapsedTimer>
 #include <QDebug>
@@ -179,6 +180,7 @@ class Interpreter : public QThread
 	private:
 		QLocale *locale;
 		Sleeper *sleeper;
+        BasicDownloader *downloader;
 		int optype(int op);
 		QString opname(int);
 		void waitForGraphics();

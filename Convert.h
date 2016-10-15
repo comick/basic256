@@ -3,13 +3,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <cmath>
 #include <limits>
 
 #include <QString>
 #include <QLocale>
 #include <QVariant>
+#include <QDebug>
 
 #include "Settings.h"
 #include "Error.h"
@@ -49,5 +49,7 @@ class Convert
 		int ec(int, int);
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
 		bool floattail;		// display floats with a tail of ".0" if whole numbers
+        bool replaceDecimalPoint; // user can chose if INPUT and PRINT should use localized decimal point
+        QChar decimalPoint;
 
 };

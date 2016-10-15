@@ -23,8 +23,11 @@ BasicMediaPlayer::BasicMediaPlayer() {
 
 
 void BasicMediaPlayer::loadFile(QString file) {
-    // blocking load adapted from http://qt-project.org/wiki/seek_in_sound_file
-    setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
+    if(QFileInfo(file).exists()){
+        setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
+    }else{
+        setMedia(QUrl::fromUserInput(file));
+    }
     waitForSeekable(2000);
 }
 
