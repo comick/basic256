@@ -9,10 +9,11 @@ REM # 2014-04-19 j.m.reneau    1.1.1.3		moved development to qt 5.2.1
 REM # 2014-06-01 j.m.reneau    1.1.2.4      changed paths to qt 5.3
 REM # 2014-10-26 j.m.reneau    1.1.4.0      added serialport
 REM # 2016-01-01 j.m.reneau    1.99.99.08	moved to 5.5
+REM # 2016-10-31 j.m.reneau    1.99.99.72	moved to qt 5.7
 
-set SDK_BIN=C:\Qt\5.5\mingw492_32\bin
-set SDK_LIB=C:\Qt\5.5\mingw492_32\lib
-set SDK_PLUGINS=C:\Qt\5.5\mingw492_32\plugins
+set SDK_BIN=C:\Qt\5.7\mingw53_32\bin
+set SDK_LIB=C:\Qt\5.7\mingw53_32\lib
+set SDK_PLUGINS=C:\Qt\5.7\mingw53_32\plugins
 
 # folder where app will live and support files need to be
 set INSTDIR=BASIC256Portable\App\BASIC256

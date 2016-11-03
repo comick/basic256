@@ -25,7 +25,7 @@ class VariableArrayPart
     public:
         int xdim;
         int ydim;
-        std::vector<DataElement*> datavector;
+        std::vector<DataElement> datavector;
 };
 
 class Variable
@@ -34,7 +34,7 @@ class Variable
         Variable(int);
         ~Variable();
 
-        DataElement *data;
+        DataElement data;
         VariableArrayPart *arr;
 };
 
@@ -91,7 +91,7 @@ class Variables
         int numsyms;		// size of the symbol table
         int recurselevel;
         std::unordered_map<int, std::vector<Variable*> > varmap;
-        std::unordered_map<int, bool> globals;
+        std::vector<bool> globals;
         void allocateRecurseLevel();
         void freeRecurseLevel();
         void clearvariable(Variable *);

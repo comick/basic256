@@ -162,10 +162,10 @@ class Interpreter : public QThread
 		void speakWords(QString);
 		void goToLine(int);
 		void seekLine(int);
-		void varWinAssign(Variables*, int);
-		void varWinAssign(Variables*, int, int, int);
+        void varWinAssign(Variables**, int);
+        void varWinAssign(Variables**, int, int, int);
 		void varWinDropLevel(int);
-		void varWinDimArray(Variables*, int, int, int);
+        void varWinDimArray(Variables**, int, int, int);
 		void mainWindowsResize(int, int, int);
 		void mainWindowsVisible(int, bool);
 		void dialogAlert(QString);
@@ -220,17 +220,17 @@ class Interpreter : public QThread
 		int nsprites;
 		void closeDatabase(int);
 		// watch... functions trigger the variablewatch window to display
-		void watchvariable(bool, int);
-		void watchvariable(bool, int, int, int);
-		void watchdim(bool, int, int, int);
-		void watchdecurse(bool);
+        void watchvariable(bool, int);
+        void watchvariable(bool, int, int, int);
+        void watchdim(bool, int, int, int);
+        void watchdecurse(bool);
 
 		int listensockfd;				// temp socket used in netlisten
 		int netsockfd[NUMSOCKETS];
 		
 		DIR *directorypointer;		// used by DIR function
 		QTime runtimer;				// used by MSEC function
-		Sound sound;
+        Sound *sound;
 		QString currentIncludeFile;	// set to current included file name for runtime error messages
 		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
 

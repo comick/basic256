@@ -52,6 +52,8 @@
 	unsigned int listlen = 0;
         unsigned int numberoflists = 0;
 
+	unsigned int voicelistlen = 0;		// sound number of voices
+
 	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
 	int nvarnumber=0;
 
@@ -69,6 +71,8 @@
 	char *symtable[SYMTABLESIZE];
 	int symtableaddress[SYMTABLESIZE];
 	int numsyms = 0;
+        int symtableaddresstype[SYMTABLESIZE];
+
 
 
 	// array to hold stack of if statement branch locations
@@ -93,6 +97,7 @@
 	#define IFTABLETYPECATCH 8
 	#define IFTABLETYPEBEGINCASE 9
 	#define IFTABLETYPECASE 10
+        #define IFTABLETYPESUBROUTINE 11
 
 
 	// store the function variables here during a function definition
@@ -129,15 +134,16 @@
 		return((size + sizeof(int) - 1) / sizeof(int));
 	}
 
-        void addOp(int op) {
-                checkWordMem(1);
-                wordCode[wordOffset] = op;
-                wordOffset++;
-        }
+	void addOp(int op) {
+		checkWordMem(1);
+		wordCode[wordOffset] = op;
+		wordOffset++;
+		//printf("line=%i addOp op=%i\n",linenumber, op);
+	}
 
-        void addIntOp(int op, int data) {
+	void addIntOp(int op, int data) {
 		addOp(op);
-                addOp(data);
+		addOp(data);
 	}
 
 
@@ -198,6 +204,7 @@
 				if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
 				if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
 				if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
+                                if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) return COMPERR_SUBROUTINENOEND;
 			}
 		}
 		return 0;
@@ -210,6 +217,7 @@
 			for (j = 0; j < SYMTABLESIZE; j++) {
 				symtable[j] = 0;
 				symtableaddress[j] = -1;
+                                symtableaddresstype[j] = -1;
 			}
 		}
 		for (j = 0; j < numsyms; j++) {
@@ -218,6 +226,7 @@
 			}
 			symtable[j] = NULL;
 			symtableaddress[j] = -1;
+                        symtableaddresstype[j] = -1;
 		}
 		numsyms = 0;
 	}
@@ -260,19 +269,23 @@
 		}
 		symtable[numsyms] = strdup(name);
 		symtableaddress[numsyms] = -1;
+                symtableaddresstype[numsyms] = -1;
 		numsyms++;
 		return numsyms - 1;
 	}
 
 	#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
 	#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
-	#define INTERNALSYMBOLTOP 2 // at the end of the loop - all done
+        #define INTERNALSYMBOLTOP 2 // at the top of the loop - all done
 
 	int getInternalSymbol(int id, int type) {
 		// an internal symbol used to jump an if
+                int i;
 		char name[32];
-		sprintf(name,"___%d_%d", id, type);
-		return getSymbol(name);
+		//sprintf(name,"___%d_%d", id, type);
+                i = getSymbol(name);
+                symtableaddresstype[i]=ADDRESSTYPE_SYSTEMCALL;
+                return i;
 	}
 
 	int newWordCode() {
@@ -375,8 +388,6 @@
 %token B256ERROR_ARGUMENTCOUNT
 %token B256ERROR_MAXRECURSE
 %token B256ERROR_STACKUNDERFLOW
-%token B256ERROR_BADCALLFUNCTION
-%token B256ERROR_BADCALLSUBROUTINE
 %token B256ERROR_FILENUMBER
 %token B256ERROR_FILEOPEN
 %token B256ERROR_FILENOTOPEN
@@ -389,7 +400,6 @@
 %token B256ERROR_ARRAYINDEX
 %token B256ERROR_STRSTART
 %token B256ERROR_RGB
-%token B256ERROR_PUTBITFORMAT
 %token B256ERROR_POLYPOINTS
 %token B256ERROR_IMAGEFILE
 %token B256ERROR_SPRITENUMBER
@@ -438,13 +448,18 @@
 %token B256ERROR_PRINTEROPEN
 %token B256ERROR_WAVFILEFORMAT
 %token B256ERROR_WAVNOTOPEN
-%token B256ERROR_WAVNOTSEEKABLE
-%token B256ERROR_WAVNODURATION
 %token B256ERROR_FILEOPERATION
 %token B256ERROR_SERIALPARAMETER
 %token B256ERROR_LONGRANGE
 %token B256ERROR_INTEGERRANGE
 %token B256ERROR_NOTIMPLEMENTED
+%token B256ERROR_ARRAYEVEN
+%token B256ERROR_ARRAYLENGTH2D
+%token B256ERROR_NEXTWRONGFOR
+%token B256ERROR_NOSUCHFUNCTION
+%token B256ERROR_NOSUCHSUBROUTINE
+%token B256ERROR_SLICESIZE
+%token B256ERROR_UNSERIALIZEFORMAT
 %token B256WARNING_START
 %token B256WARNING_TYPECONV
 %token B256WARNING_WAVNOTSEEKABLE
@@ -491,6 +506,7 @@
 %nonassoc B256UMINUS B256BINARYNOT
 %left '^'
 
+
 %%
 
 program: 		programline programnewline program
@@ -520,17 +536,24 @@ label:			B256LABEL {
 						errorcode = COMPERR_FUNCTIONGOTO;
 						return -1;
 					}
+					//
+					//check if name of label is already used by a function, subroutine or another label
 					if (symtableaddress[$1] != -1) {
 						errorcode = COMPERR_LABELREDEFINED;
 						return -1;
 					}
 					symtableaddress[$1] = wordOffset;
+					symtableaddresstype[$1] = ADDRESSTYPE_LABEL;
 				}
 				;
 
 functionvariable:
 			args_v {
 				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVALUE; numargs++;
+				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
+			}
+			| array_empty {
+				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARREF; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
 			| B256REF '(' args_v ')' {
@@ -551,8 +574,8 @@ functionvariables:
 				;
 
 compoundstmt:
-			compoundstmt ':' statement
-			| statement
+                        compoundstmt ':' statement
+                        | statement
 			;
 /* array reference - make everything 2d */
 
@@ -561,7 +584,7 @@ arrayref:
 			| '[' expr ']' '[' expr ']'
 			| '[' expr ']' {
 				addIntOp(OP_PUSHINT, 0);
-                                addOp(OP_STACKSWAP);
+				addOp(OP_STACKSWAP);
 			}
 			;
 
@@ -581,40 +604,36 @@ args_none:
 /* a - array element with [e] or [e,e] following */
 /* A - array data pushed to the stack exactly like listoflists */
 /* e - data element */
-/* i - listoflists {} or {{},{}} */
 /* v - variable	*/
 
 
 args_a:
 			args_v arrayref
-			| '(' args_a ')';
+			| '(' args_a ')'
+			;
 
 // Array Variable Data as a list of lists
 args_A:
 			array_empty {
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 			}
-			| args_v {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-			}
+						| listoflists
+			;
 
 args_v:
 			B256VARIABLE {
 				varnumber[nvarnumber++] = $1;
 			}
-			| '(' args_v ')';
+			| '(' args_v ')'
+			;
+
 
 
 /* two arguments */
 
-
 args_ee:
 			expr ',' expr
 			| '(' args_ee ')';
-
-args_ei:
-			expr ',' listoflists
-			| '(' args_ei ')';
 
 args_eA:
 			expr ',' args_A
@@ -632,22 +651,11 @@ args_Ae:
 			args_A ',' expr
 			|'(' args_Ae ')';
 
-args_ie:
-			listoflists ',' expr
-			| '(' args_ie ')';
-
-
-
 /* three arguments */
 
 args_eee:
 			expr ',' expr ',' expr
 			| '(' args_eee ')';
-
-
-args_eei:
-			expr ',' expr ',' listoflists
-			| '(' args_eei ')';
 
 
 args_eeA:
@@ -658,24 +666,15 @@ args_Aee:
 			args_A ',' expr ',' expr
 			|'(' args_Aee ')';
 
-args_iee:
-			listoflists ',' expr ',' expr
-			| '(' args_iee ')';
-
 /* four arguments */
+
 args_eeee:
 			expr ',' expr ',' expr ',' expr
 			| '(' args_eeee ')';
 
-args_eeei:
-			expr ',' expr ',' expr ',' listoflists
-			| '(' args_eeei ')';
-
 args_eeeA:
 			expr ',' expr ',' expr ',' args_A
 			| '(' args_eeeA ')';
-
-
 
 /* five arguments */
 
@@ -684,27 +683,22 @@ args_eeeee:
 			| '(' args_eeeee ')';
 
 
-args_eeeei:
-			expr ',' expr ',' expr ',' expr ',' listoflists
-			| '(' args_eeeei ')';
-
-
 args_eeeeA:
 			expr ',' expr ',' expr ',' expr ',' args_A
 			| '(' args_eeeeA ')';
 
-
 /* six arguments */
+
 args_eeeeee:
 			expr ',' expr ',' expr ',' expr ',' expr ',' expr
 			| '(' args_eeeeee ')';
-
 
 /* seven arguments */
 
 args_eeeeeee:
 			expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
 			| '(' args_eeeeeee ')';
+
 
 
 
@@ -1099,7 +1093,7 @@ ifthenelse:
 trystmt: 	B256TRY	{
 				//
 				// add on error branch
-				addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+                                addIntOp(OP_ONERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// put new if on the frame for the TRY
 				newIf(linenumber, IFTABLETYPETRY, -1);
@@ -1191,13 +1185,7 @@ dimstmt: 	B256DIM args_a {
 				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256DIM args_v '=' listoflists {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
 			| B256DIM args_v '=' args_A {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| B256DIM array_empty '=' listoflists {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
 			| B256DIM array_empty '=' args_A {
@@ -1516,20 +1504,20 @@ gosubstmt:	B256GOSUB args_v {
 					errorcode = COMPERR_FUNCTIONGOTO;
 					return -1;
 				}
-				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			;
 
 callstmt:	B256CALL args_v args_none {
-				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE); // used to check of subroutine was really called
-				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
+                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
-			| B256CALL args_v '(' exprlist ')' {
-				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE); // used to check of subroutine was really called
-				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+			| B256CALL args_v '(' callexprlist ')' {
+                                addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
+                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			;
 
@@ -1599,15 +1587,15 @@ colorstmt:	B256SETCOLOR args_eee {
 			}
 			;
 
-soundstmt:	B256SOUND args_A {
-				addOp(OP_SOUND_LIST);
-			}
-			| B256SOUND listoflists {
+soundstmt:	B256SOUND voicelist {
+				addIntOp(OP_PUSHINT, voicelistlen);
+				voicelistlen = 0;
 				addOp(OP_SOUND_LIST);
 			}
 			| B256SOUND args_ee {
 				addIntOp(OP_PUSHINT, 2);	// 2 columns
 				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addIntOp(OP_PUSHINT, 1);	// 1 voice
 				addOp(OP_SOUND_LIST);
 			}
 			;
@@ -1629,34 +1617,34 @@ circlestmt:
 			}
 			;
 
-arcstmt: 	B256ARC args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+arcstmt: 	B256ARC args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_ARC);
 			}
-			| B256ARC args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
+			| B256ARC args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
 				addOp(OP_ARC);
 			}
 			;
 
 chordstmt:
-			B256CHORD args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+			B256CHORD args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_CHORD);
 			}
-			| B256CHORD args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
+			| B256CHORD args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
 				addOp(OP_CHORD);
 			}
 			;
 
 piestmt:
-			B256PIE args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+			B256PIE args_eeeee {
+				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_PIE);
 			}
-			| B256PIE args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
+			| B256PIE args_eeeeee {
+				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
 				addOp(OP_PIE);
 			}
 			;
@@ -1697,32 +1685,19 @@ volumestmt:
 			;
 
 polystmt:
-			B256POLY args_v {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-				addOp(OP_POLY_LIST);
-			}
-			| B256POLY listoflists {
+			B256POLY args_A {
 				addOp(OP_POLY_LIST);
 			}
 			;
 
-stampstmt: 	B256STAMP args_eeeA {
-				addOp(OP_STAMP_S_LIST);
+stampstmt: 	B256STAMP args_eeeeA {
+				addOp(OP_STAMP_SR_LIST);
 			}
-			| B256STAMP args_eeei {
+			| B256STAMP args_eeeA {
 				addOp(OP_STAMP_S_LIST);
 			}
 			| B256STAMP args_eeA {
 				addOp(OP_STAMP_LIST);
-			}
-			| B256STAMP args_eei {
-				addOp(OP_STAMP_LIST);
-			}
-			| B256STAMP args_eeeeA {
-				addOp(OP_STAMP_SR_LIST);
-			}
-			| B256STAMP args_eeeei {
-				addOp(OP_STAMP_SR_LIST);
 			}
 			;
 
@@ -1990,9 +1965,6 @@ putslicestmt:
 			B256PUTSLICE args_eeA  {
 				addOp(OP_PUTSLICE);
 			}
-			| B256PUTSLICE args_eei  {
-				addOp(OP_PUTSLICE);
-			}
 			;
 
 imgloadstmt:
@@ -2036,9 +2008,6 @@ spriteslicestmt:
 
 spritepolystmt:
 			B256SPRITEPOLY args_eA {
-				addOp(OP_SPRITEPOLY_LIST);
-			}
-			| B256SPRITEPOLY args_ei {
 				addOp(OP_SPRITEPOLY_LIST);
 			}
 			;
@@ -2332,7 +2301,7 @@ continuewhilestmt:
 				if (n>=0) {
 					addIntOp(OP_GOTO, getInternalSymbol(iftableid[n],INTERNALSYMBOLCONTINUE));
 				} else {
-					errorcode = COMPERR_EXITWHILE;
+                                        errorcode = COMPERR_CONTINUEWHILE;
 					return -1;
 				}
 			}
@@ -2419,28 +2388,23 @@ functionstmt:
 				//
 				// $2 is the symbol for the function - add the start to the label table
 				functionDefSymbol = varnumber[--nvarnumber];
-				//
+                                //
+                                //check if name of function is already used by a label, subroutine or another function
+                                if (symtableaddress[functionDefSymbol] != -1) {
+                                        errorcode = COMPERR_LABELREDEFINED;
+                                        return -1;
+                                }
+                                //
 				// create jump around function definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this function
 				symtableaddress[functionDefSymbol] = wordOffset;
-				newIf(linenumber, IFTABLETYPEFUNCTION, -1);
-				//
-				// test that this is a real function call or error - before the call a CALLSIG
-				// should have bene pushed to the stack.  Pop it and test that it is the correct one
-				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION);
-				addOp(OP_NEQUAL);
-				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				newIf(linenumber, IFTABLETYPEIF, -1);
-				addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION);
-				addOp(OP_THROWERROR);
-				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
-				numifs--;
+                                symtableaddresstype[functionDefSymbol] = ADDRESSTYPE_FUNCTION;
+                                newIf(linenumber, IFTABLETYPEFUNCTION, -1);
 				//
 				// check to see if there are enough values on the stack
-				addIntOp(OP_PUSHINT, numargs);
-				addOp(OP_ARGUMENTCOUNTTEST);
+                                addIntOp(OP_ARGUMENTCOUNTTEST, numargs);
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
@@ -2468,28 +2432,23 @@ subroutinestmt:
 				//
 				// $2 is the symbol for the subroutine - add the start to the label table
 				subroutineDefSymbol = varnumber[--nvarnumber];
-				//
+                                //
+                                //check if name of subroutine is already used by a label, function or another subroutine
+                                if (symtableaddress[subroutineDefSymbol] != -1) {
+                                        errorcode = COMPERR_LABELREDEFINED;
+                                        return -1;
+                                }
+                                //
 				// create jump around subroutine definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this subroutine
 				symtableaddress[subroutineDefSymbol] = wordOffset;
-				newIf(linenumber, IFTABLETYPEFUNCTION, -1);
-				//
-				// test that this is a real subroutine call or error - before the call a CALLSIG
-				// should have bene pushed to the stack.  Pop it and test that it is the correct one
-				addIntOp(OP_PUSHINT, CALLSIG_SUBROUTINE);
-				addOp(OP_NEQUAL);
-				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				newIf(linenumber, IFTABLETYPEIF, -1);
-				addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE);
-				addOp(OP_THROWERROR);
-				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
-				numifs--;
+                                symtableaddresstype[subroutineDefSymbol] = ADDRESSTYPE_SUBROUTINE;
+                                newIf(linenumber, IFTABLETYPESUBROUTINE, -1);
 				//
 				// check to see if there are enough values on the stack
-				addIntOp(OP_PUSHINT, numargs);
-				addOp(OP_ARGUMENTCOUNTTEST);
+                                addIntOp(OP_ARGUMENTCOUNTTEST, numargs);
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
@@ -2534,7 +2493,7 @@ endfunctionstmt:
 endsubroutinestmt:
 		B256ENDSUBROUTINE {
 			if (numifs>0) {
-				if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
+                                if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) {
 					addOp(OP_DECREASERECURSE);
 					addOp(OP_RETURN);
 					//
@@ -2549,7 +2508,7 @@ endsubroutinestmt:
 					return -1;
 				}
 			} else {
-				errorcode = COMPERR_ENDFUNCTION;
+                                errorcode = COMPERR_ENDSUBROUTINE;
 				return -1;
 			}
 		}
@@ -2599,31 +2558,49 @@ listoflists:
 			|  B256EXPLODEX args_ee{
 				addOp(OP_EXPLODEX);
 			}
-			| B256GETSLICE args_eeeee {
-				addOp(OP_GETSLICE);
-			}
 			| B256GETSLICE args_eeee {
 				addIntOp(OP_PUSHINT, SLICE_ALL);	// get everything
+				addOp(OP_GETSLICE);
+			}
+			| B256GETSLICE args_eeeee {
 				addOp(OP_GETSLICE);
 			}
 			;
 
 listinlist:
-			exprlist {addIntOp(OP_PUSHINT, listlen); listlen = 0; numberoflists = 1; }
-			| immediatelist {numberoflists = 1; }
-			| immediatelist ',' listinlist {numberoflists++;}
+			listitems {addIntOp(OP_PUSHINT, listlen); listlen = 0; numberoflists = 1; }
+			| listofitems {numberoflists = 1; }
+			| listofitems ',' listinlist {numberoflists++;}
 			;
 
-immediatelist:
-			'{' exprlist '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
+listofitems:
+			'{' listitems '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
 			;
 
-
-exprlist:
+listitems:
 			expr { listlen = 1; }
-			| expr ',' exprlist {listlen++;}
+			| expr ',' listitems {listlen++;}
 			;
 
+/* USED ONLY IN CALLING Functions and subroutines */
+callexprlist:
+			callexpr { listlen = 1; }
+			| callexpr ',' callexprlist {listlen++;}
+			;
+			
+/* USED ONLY IN CALLING Functions and subroutines */
+callexpr:
+			expr
+			| array_empty  { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			;
+			
+
+
+voicelist:
+		args_A { voicelistlen = 1; }
+		| args_A ',' voicelist {voicelistlen++;}
+		;
 
 
 
@@ -2649,17 +2626,17 @@ expr:
 			| args_v '[' '?' ']' '[' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
 			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
 			| args_v '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
-			| args_v '(' exprlist ')' {
+			| args_v '(' callexprlist ')' {
 				// function call with arguments
-				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION); // used to check of function was really called
-				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
+                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| args_v '(' ')' {
 				// function call without arguments
-				addIntOp(OP_PUSHINT, CALLSIG_FUNCTION); // used to check of function was really called
-				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-				addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
+                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| args_v {
 				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
@@ -3098,7 +3075,6 @@ expr:
 			| B256TEXTHEIGHT args_none { addOp(OP_TEXTHEIGHT); }
 			| B256READBYTE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' expr ')' { addOp(OP_READBYTE); }
-			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
 			| B256FREEDB args_none { addOp(OP_FREEDB); }
 			| B256FREEDBSET args_none {
 				addIntOp(OP_PUSHINT,0);	// default db number
@@ -3156,8 +3132,6 @@ expr:
 			| B256ERROR_ARGUMENTCOUNT args_none { addIntOp(OP_PUSHINT, ERROR_ARGUMENTCOUNT); }
 			| B256ERROR_MAXRECURSE args_none { addIntOp(OP_PUSHINT, ERROR_MAXRECURSE); }
 			| B256ERROR_STACKUNDERFLOW args_none { addIntOp(OP_PUSHINT, ERROR_STACKUNDERFLOW); }
-			| B256ERROR_BADCALLFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_BADCALLFUNCTION); }
-			| B256ERROR_BADCALLSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_BADCALLSUBROUTINE); }
 			| B256ERROR_FILENUMBER args_none { addIntOp(OP_PUSHINT, ERROR_FILENUMBER); }
 			| B256ERROR_FILEOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILEOPEN); }
 			| B256ERROR_FILENOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_FILENOTOPEN); }
@@ -3218,13 +3192,18 @@ expr:
 			| B256ERROR_PRINTEROPEN args_none { addIntOp(OP_PUSHINT, ERROR_PRINTEROPEN); }
 			| B256ERROR_WAVFILEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_WAVFILEFORMAT); }
 			| B256ERROR_WAVNOTOPEN args_none { addIntOp(OP_PUSHINT, ERROR_WAVNOTOPEN); }
-			| B256ERROR_WAVNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, ERROR_WAVNOTSEEKABLE); }
-			| B256ERROR_WAVNODURATION args_none { addIntOp(OP_PUSHINT, ERROR_WAVNODURATION); }
 			| B256ERROR_FILEOPERATION args_none { addIntOp(OP_PUSHINT, ERROR_FILEOPERATION); }
 			| B256ERROR_SERIALPARAMETER args_none { addIntOp(OP_PUSHINT, ERROR_SERIALPARAMETER); }
 			| B256ERROR_LONGRANGE args_none { addIntOp(OP_PUSHINT, ERROR_LONGRANGE); }
 			| B256ERROR_INTEGERRANGE args_none { addIntOp(OP_PUSHINT, ERROR_INTEGERRANGE); }
 			| B256ERROR_NOTIMPLEMENTED args_none { addIntOp(OP_PUSHINT, ERROR_NOTIMPLEMENTED); }
+                        | B256ERROR_ARRAYEVEN args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYEVEN); }
+                        | B256ERROR_ARRAYLENGTH2D args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYLENGTH2D); }
+                        | B256ERROR_NEXTWRONGFOR args_none { addIntOp(OP_PUSHINT, ERROR_NEXTWRONGFOR); }
+                        | B256ERROR_NOSUCHFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHFUNCTION); }
+                        | B256ERROR_NOSUCHSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHSUBROUTINE); }
+                        | B256ERROR_SLICESIZE args_none { addIntOp(OP_PUSHINT, ERROR_SLICESIZE); }
+                        | B256ERROR_UNSERIALIZEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_UNSERIALIZEFORMAT); }
 			| B256WARNING_START args_none { addIntOp(OP_PUSHINT, WARNING_START); }
 			| B256WARNING_TYPECONV args_none { addIntOp(OP_PUSHINT, WARNING_TYPECONV); }
 			| B256WARNING_WAVNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, WARNING_WAVNOTSEEKABLE); }
@@ -3302,9 +3281,6 @@ expr:
 			}
 			| B256REPLACE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACEX); }
-			| B256SERIALIZE '(' listoflists ')' {
-				addOp(OP_SERIALIZE);
-			}
 			| B256SERIALIZE '(' args_A ')' {
 				addOp(OP_SERIALIZE);
 			}
@@ -3318,18 +3294,6 @@ expr:
 				addOp(OP_IMPLODE_LIST);
 			}
 			| B256IMPLODE '(' args_Aee ')' {
-				addOp(OP_IMPLODE_LIST);
-			}
-			| B256IMPLODE '(' listoflists ')' {
-				addStringOp(OP_PUSHSTRING, ""); // no delimiter
-				addOp(OP_STACKDUP);
-				addOp(OP_IMPLODE_LIST);
-			}
-			| B256IMPLODE '(' args_ie ')' {
-				addOp(OP_STACKDUP);				// same delimiter for rows and columns
-				addOp(OP_IMPLODE_LIST);
-			}
-			| B256IMPLODE '(' args_iee ')' {
 				addOp(OP_IMPLODE_LIST);
 			}
 			| B256PROMPT '(' expr ')' {

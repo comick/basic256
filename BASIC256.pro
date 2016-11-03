@@ -40,6 +40,8 @@ win32 {
 								-lws2_32 \
 								-lwinmm
 
+	####CONFIG += console  ## enable for printf debugging in windows
+
     QMAKE_CXXFLAGS				+=	-std=c++11
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign

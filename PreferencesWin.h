@@ -52,6 +52,9 @@ private slots:
 	void clickSaveButton();
     void setDigitsValue(int);
     void setDebugSpeedValue(int);
+    void setVolumeValue(int);
+    void setNormalizeValue(int);
+    void setVolumeRestoreValue(int);
 
   
 private:
@@ -90,6 +93,17 @@ private:
 	QGridLayout * soundtablayout;
 	QLabel *voicelabel;
 	QComboBox *voicecombo;
+    QLabel *soundvolumelabel;
+    QLabel *soundvolumevalue;
+    QSlider *soundvolumeslider;
+    QLabel *soundnormalizelabel;
+    QLabel *soundnormalizevalue;
+    QSlider *soundnormalizeslider;
+    QLabel *soundvolumerestorelabel;
+    QLabel *soundvolumerestorevalue;
+    QSlider *soundvolumerestoreslider;
+    QLabel *soundsampleratelabel;
+    QComboBox *soundsampleratecombo;
 
 	// printer tab
 	QWidget * printertabwidget;

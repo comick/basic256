@@ -13,7 +13,7 @@ color black
 for x = 0 to 200 step 20
     for y = 0 to 200 step 20
         s = rand * 5
-        stamp x, y, s, a
+        stamp x, y, s, a[]
     next y
 next x
 

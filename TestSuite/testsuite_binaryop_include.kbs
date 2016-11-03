@@ -70,7 +70,7 @@ a = maxi - 1	# not overflow
 call n("-a=2147483646",a,2147483646)
 call n("typeof(a)",typeof(a),1)
 a = mini - 1	# overflow
-call n(-"a=-2147483649",a,-2147483649)
+call n("a=-2147483649",a,-2147483649)
 call n("typeof(a)",typeof(a),2)
 a = mini - -1	# not overflow
 call n("-a=-2147483647",a,-2147483647)

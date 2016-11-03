@@ -1,5 +1,5 @@
 Compiling Instructions and Dependencies
-2014-04-18 VERSION 1.1.1.3
+2016-10-31 VERSION 1.99.99.72+
 
 
 LINUX you will need:
@@ -14,16 +14,14 @@ LINUX you will need:
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
 
 
-WINDOWS (QT5.2.1)
+WINDOWS (QT5.7)
 
 * QT SDK with MINGW Compiler
 	** Available from:
-		http://download.qt-project.org/official_releases/qt/5.1/5.1.1/qt-windows-opensource-5.1.1-mingw48_opengl-x86-offline.exe
+		http://qt.io - use the online installer
 	** BE SURE to choose the mingw compiler from tools it will be the correct version
 		for the QT binary support files
-	** add paths C:\Qt\5.2.1\mingw48_32\bin;C:\Qt\Tools\mingw48_32\bin; to your system environment variable
-	** in folder C:\Qt\Tools\mingw48_32\bin
-		copy mingw32-make.exe make.exe
+	** add paths C:\Qt\5.7\mingw53_32\bin;C:\Qt\Tools\mingw530_32\bin; to your system environment variable
 
 * MSYS developer tools and libraries
 	** Available from:
@@ -37,17 +35,17 @@ WINDOWS (QT5.2.1)
 		http://jarek.katowice.pl/other/forum/viewtopic.php?f=5&t=17
 	** or download binary bundle
 	** copy libspeak.dll, libportaudio-2.dll, libpthread-2.dll
-		to C:\Qt\5.2.1\mingw48_32\lib
+		to C:\Qt\5.7\mingw53_32\lib
 		and basic256/trunk/debug
 		and basic256/trunk/release
 	** copy portaudio.h and speak_lib.h
-		to C:\Qt\5.2.1\mingw48_32\include
+		to C:\Qt\5.7\mingw53_32\include
 
 * inpout32 Serial Driver
 	** download version 1.500
 		from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
 	** copy the files inpout32.dll, inpout32.lib, and InstallDriver.exe
-		to C:\Qt\5.2.1\mingw48_32\lib
+		to C:\Qt\5.7\mingw53_32\lib
 		and basic256/trunk/debug
 		and basic256/trunk/release
 

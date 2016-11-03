@@ -204,6 +204,133 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     soundtabwidget = new QWidget();
     soundtabwidget->setLayout(soundtablayout);
     r=0;
+
+
+
+
+    // sound volume slider
+    r++;
+    soundvolumelabel = new QLabel(tr("Volume:"),this);
+    soundvolumevalue = new QLabel("",this);
+    QHBoxLayout * soundvolumelabellayout = new QHBoxLayout();
+    soundvolumelabellayout->addWidget(soundvolumelabel);
+    soundvolumelabellayout->addWidget(soundvolumevalue);
+    soundvolumelabellayout->addStretch();
+    soundvolumeslider = new QSlider(Qt::Horizontal);
+    soundvolumeslider->setMinimum(SETTINGSSOUNDVOLUMEMIN);
+    soundvolumeslider->setMaximum(SETTINGSSOUNDVOLUMEMAX);
+    soundvolumeslider->setSingleStep(1);
+    soundvolumeslider->setPageStep(1);
+    QLabel *soundvolumebefore = new QLabel(QString::number(SETTINGSSOUNDVOLUMEMIN),this);
+    QLabel *soundvolumeafter = new QLabel(QString::number(SETTINGSSOUNDVOLUMEMAX),this);
+    connect(soundvolumeslider, SIGNAL(valueChanged(int)), this, SLOT(setVolumeValue(int)));
+    QHBoxLayout * soundvolumesliderlayout = new QHBoxLayout();
+    soundvolumesliderlayout->addWidget(soundvolumebefore);
+    soundvolumesliderlayout->addWidget(soundvolumeslider);
+    soundvolumesliderlayout->addWidget(soundvolumeafter);
+    soundtablayout->addLayout(soundvolumelabellayout,r,1,1,1);
+    soundtablayout->addLayout(soundvolumesliderlayout,r,2,1,2);
+    i = settings.value(SETTINGSSOUNDVOLUME, SETTINGSSOUNDVOLUMEDEFAULT).toInt();
+    soundvolumeslider->setValue(i);
+    setVolumeValue(i);
+    soundvolumevalue->setText(soundvolumevalue->text() + "        "); //ensure space for label to grow without resizing window
+
+
+
+    // sample rate
+    r++;
+    {
+        int setsoundsamplerate;
+        soundsampleratelabel = new QLabel(tr("Sound sample rate:"));
+        soundtablayout->addWidget(soundsampleratelabel,r,1,1,1);
+        soundsampleratecombo = new QComboBox();
+        soundsampleratecombo->addItem(tr("44100 Hz"), 44100);
+        soundsampleratecombo->addItem(tr("32000 Hz"), 32000);
+        soundsampleratecombo->addItem(tr("22050 Hz"), 22050);
+        soundsampleratecombo->addItem(tr("16000 Hz"), 16000);
+        soundsampleratecombo->addItem(tr("11025 Hz"), 11025);
+        soundsampleratecombo->addItem(tr("8000 Hz"), 8000);
+        soundsampleratecombo->addItem(tr("4400 Hz"), 4400);
+        // set setting and select
+        setsoundsamplerate = settings.value(SETTINGSSOUNDSAMPLERATE, SETTINGSSOUNDSAMPLERATEDEFAULT).toInt();
+        int index = soundsampleratecombo->findData(setsoundsamplerate);
+        if ( index != -1 ) { // -1 for not found
+            soundsampleratecombo->setCurrentIndex(index);
+        }
+        // add to layout
+        soundtablayout->addWidget(soundsampleratecombo,r,2,1,2);
+    }
+
+
+
+    // sound normalize slider
+    r++;
+    soundnormalizelabel = new QLabel(tr("Min. period to normalize louder sounds:"),this);
+    soundnormalizevalue = new QLabel("",this);
+    QHBoxLayout * soundnormalizelabellayout = new QHBoxLayout();
+    soundnormalizelabellayout->addWidget(soundnormalizelabel);
+    soundnormalizelabellayout->addWidget(soundnormalizevalue);
+    soundnormalizelabellayout->addStretch();
+    soundnormalizeslider = new QSlider(Qt::Horizontal);
+    soundnormalizeslider->setMinimum(SETTINGSSOUNDNORMALIZEMIN/10);
+    soundnormalizeslider->setMaximum(SETTINGSSOUNDNORMALIZEMAX/10);
+    soundnormalizeslider->setSingleStep(1);
+    soundnormalizeslider->setPageStep(10);
+    QLabel *soundnormalizebefore = new QLabel(QString::number(SETTINGSSOUNDNORMALIZEMIN),this);
+    QLabel *soundnormalizeafter = new QLabel(QString::number(SETTINGSSOUNDNORMALIZEMAX),this);
+    connect(soundnormalizeslider, SIGNAL(valueChanged(int)), this, SLOT(setNormalizeValue(int)));
+    QHBoxLayout * soundnormalizesliderlayout = new QHBoxLayout();
+    soundnormalizesliderlayout->addWidget(soundnormalizebefore);
+    soundnormalizesliderlayout->addWidget(soundnormalizeslider);
+    soundnormalizesliderlayout->addWidget(soundnormalizeafter);
+    soundtablayout->addLayout(soundnormalizelabellayout,r,1,1,1);
+    soundtablayout->addLayout(soundnormalizesliderlayout,r,2,1,2);
+    i = settings.value(SETTINGSSOUNDNORMALIZE, SETTINGSSOUNDNORMALIZEDEFAULT).toInt()/10;
+    soundnormalizeslider->setValue(i);
+    setNormalizeValue(i);
+    soundnormalizevalue->setText(soundnormalizevalue->text() + "        "); //ensure space for label to grow without resizing window
+
+
+
+
+
+
+    // sound volume restore slider
+    r++;
+    soundvolumerestorelabel = new QLabel(tr("Period to restore volume after louder sound:"),this);
+    soundvolumerestorevalue = new QLabel("",this);
+    QHBoxLayout * soundvolumerestorelabellayout = new QHBoxLayout();
+    soundvolumerestorelabellayout->addWidget(soundvolumerestorelabel);
+    soundvolumerestorelabellayout->addWidget(soundvolumerestorevalue);
+    soundvolumerestorelabellayout->addStretch();
+    soundvolumerestoreslider = new QSlider(Qt::Horizontal);
+    soundvolumerestoreslider->setMinimum(SETTINGSSOUNDVOLUMERESTOREMIN/10);
+    soundvolumerestoreslider->setMaximum(SETTINGSSOUNDVOLUMERESTOREMAX/10);
+    soundvolumerestoreslider->setSingleStep(1);
+    soundvolumerestoreslider->setPageStep(10);
+    QLabel *soundvolumerestorebefore = new QLabel(QString::number(SETTINGSSOUNDVOLUMERESTOREMIN),this);
+    QLabel *soundvolumerestoreafter = new QLabel(QString::number(SETTINGSSOUNDVOLUMERESTOREMAX),this);
+    connect(soundvolumerestoreslider, SIGNAL(valueChanged(int)), this, SLOT(setVolumeRestoreValue(int)));
+    QHBoxLayout * soundvolumerestoresliderlayout = new QHBoxLayout();
+    soundvolumerestoresliderlayout->addWidget(soundvolumerestorebefore);
+    soundvolumerestoresliderlayout->addWidget(soundvolumerestoreslider);
+    soundvolumerestoresliderlayout->addWidget(soundvolumerestoreafter);
+    soundtablayout->addLayout(soundvolumerestorelabellayout,r,1,1,1);
+    soundtablayout->addLayout(soundvolumerestoresliderlayout,r,2,1,2);
+    i = settings.value(SETTINGSSOUNDVOLUMERESTORE, SETTINGSSOUNDVOLUMERESTOREDEFAULT).toInt()/10;
+    soundvolumerestoreslider->setValue(i);
+    setVolumeRestoreValue(i);
+    soundvolumerestorevalue->setText(soundvolumerestorevalue->text() + "        "); //ensure space for label to grow without resizing window
+
+
+
+
+
+
+
+
+
+
 #ifdef ESPEAK
     r++;
     {
@@ -362,8 +489,8 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     // now that we have the tab layouts built - make the main window
     QTabWidget * tabs = new QTabWidget();
     tabs->addTab(usertabwidget,tr("User"));
-    tabs->addTab(printertabwidget,tr("Printing"));
     tabs->addTab(soundtabwidget,tr("Sound"));
+    tabs->addTab(printertabwidget,tr("Printing"));
     if (showAdvanced) tabs->addTab(advancedtabwidget,tr("Advanced"));
 
     QGridLayout * mainlayout = new QGridLayout();
@@ -447,6 +574,12 @@ void PreferencesWin::clickSaveButton() {
 
         // *******************************************************************************************
         // sound settings
+        settings.setValue(SETTINGSSOUNDVOLUME, soundvolumeslider->value());
+        settings.setValue(SETTINGSSOUNDNORMALIZE, soundnormalizeslider->value()*10);
+        settings.setValue(SETTINGSSOUNDVOLUMERESTORE, soundvolumerestoreslider->value()*10);
+        if (soundsampleratecombo->currentIndex()!=-1) {
+            settings.setValue(SETTINGSSOUNDSAMPLERATE, soundsampleratecombo->itemData(soundsampleratecombo->currentIndex()));
+        }
 #ifdef ESPEAK
         //
         if (voicecombo->currentIndex()!=-1) {
@@ -502,5 +635,26 @@ void PreferencesWin::setDebugSpeedValue(int i){
     QToolTip::showText(QCursor::pos(),t);
     debugspeedvalue->setText(t);
     debugspeedslider->setToolTip(t);
+}
+
+void PreferencesWin::setVolumeValue(int i){
+    QString t = QString::number(i);
+    QToolTip::showText(QCursor::pos(), t);
+    soundvolumevalue->setText(t);
+    soundvolumeslider->setToolTip(t);
+}
+
+void PreferencesWin::setNormalizeValue(int i){
+    QString t = QString::number(i*10) + " " + tr("ms");
+    QToolTip::showText(QCursor::pos(), t);
+    soundnormalizevalue->setText(t);
+    soundnormalizeslider->setToolTip(t);
+}
+
+void PreferencesWin::setVolumeRestoreValue(int i){
+    QString t = QString::number(i*10) + " " + tr("ms");
+    QToolTip::showText(QCursor::pos(), t);
+    soundvolumerestorevalue->setText(t);
+    soundvolumerestoreslider->setToolTip(t);
 }
 

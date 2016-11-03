@@ -171,8 +171,6 @@ error_notarray [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Rr][Rr][Aa][Yy]
 error_argumentcount [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Gg][Uu][Mm][Ee][Nn][Tt][Cc][Oo][Uu][Nn][Tt]
 error_maxrecurse [Ee][Rr][Rr][Oo][Rr][_][Mm][Aa][Xx][Rr][Ee][Cc][Uu][Rr][Ss][Ee]
 error_stackunderflow [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Aa][Cc][Kk][Uu][Nn][Dd][Ee][Rr][Ff][Ll][Oo][Ww]
-error_badcallfunction [Ee][Rr][Rr][Oo][Rr][_][Bb][Aa][Dd][Cc][Aa][Ll][Ll][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
-error_badcallsubroutine [Ee][Rr][Rr][Oo][Rr][_][Bb][Aa][Dd][Cc][Aa][Ll][Ll][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
 error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
 error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
@@ -185,7 +183,6 @@ error_arraynitems [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Nn][Ii][Tt][Ee][Mm
 error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
 error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
 error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
-error_putbitformat [Ee][Rr][Rr][Oo][Rr][_][Pp][Uu][Tt][Bb][Ii][Tt][Ff][Oo][Rr][Mm][Aa][Tt]
 error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
 error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
 error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
@@ -234,13 +231,18 @@ error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][
 error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
 error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
 error_wavnotopen [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
-error_wavnotseekable [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
-error_wavnoduration [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Dd][Uu][Rr][Aa][Tt][Ii][Oo][Nn]
 error_fileoperation [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn]
 error_serialparameter [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Rr][Ii][Aa][Ll][Pp][Aa][Rr][Aa][Mm][Ee][Tt][Ee][Rr]
 error_longrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
 error_integerrange [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
 error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
+error_arrayeven [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Vv][Ee][Nn]
+error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][22][Dd]
+error_nextwrongfor [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Xx][Tt][Ww][Rr][Oo][Nn][Gg][Ff][Oo][Rr]
+error_nosuchfunction [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+error_slicesize [Ee][Rr][Rr][Oo][Rr][_][Ss][Ll][Ii][Cc][Ee][Ss][Ii][Zz][Ee]
+error_unserializeformat [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
 warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
 warning_typeconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]
 warning_wavnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
@@ -562,8 +564,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_argumentcount}	{ count(); return B256ERROR_ARGUMENTCOUNT; }
 {error_maxrecurse}	{ count(); return B256ERROR_MAXRECURSE; }
 {error_stackunderflow}	{ count(); return B256ERROR_STACKUNDERFLOW; }
-{error_badcallfunction}	{ count(); return B256ERROR_BADCALLFUNCTION; }
-{error_badcallsubroutine}	{ count(); return B256ERROR_BADCALLSUBROUTINE; }
 {error_filenumber}	{ count(); return B256ERROR_FILENUMBER; }
 {error_fileopen}	{ count(); return B256ERROR_FILEOPEN; }
 {error_filenotopen}	{ count(); return B256ERROR_FILENOTOPEN; }
@@ -576,7 +576,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_arrayindex}	{ count(); return B256ERROR_ARRAYINDEX; }
 {error_strstart}	{ count(); return B256ERROR_STRSTART; }
 {error_rgb}	{ count(); return B256ERROR_RGB; }
-{error_putbitformat}	{ count(); return B256ERROR_PUTBITFORMAT; }
 {error_polypoints}	{ count(); return B256ERROR_POLYPOINTS; }
 {error_imagefile}	{ count(); return B256ERROR_IMAGEFILE; }
 {error_spritenumber}	{ count(); return B256ERROR_SPRITENUMBER; }
@@ -625,13 +624,18 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_printeropen}	{ count(); return B256ERROR_PRINTEROPEN; }
 {error_wavfileformat}	{ count(); return B256ERROR_WAVFILEFORMAT; }
 {error_wavnotopen}	{ count(); return B256ERROR_WAVNOTOPEN; }
-{error_wavnotseekable}	{ count(); return B256ERROR_WAVNOTSEEKABLE; }
-{error_wavnoduration}	{ count(); return B256ERROR_WAVNODURATION; }
 {error_fileoperation}	{ count(); return B256ERROR_FILEOPERATION; }
 {error_serialparameter}	{ count(); return B256ERROR_SERIALPARAMETER; }
 {error_longrange}	{ count(); return B256ERROR_LONGRANGE; }
 {error_integerrange}	{ count(); return B256ERROR_INTEGERRANGE; }
 {error_notimplemented}	{ count(); return B256ERROR_NOTIMPLEMENTED; }
+{error_arrayeven}	{ count(); return B256ERROR_ARRAYEVEN; }
+{error_arraylength2d}	{ count(); return B256ERROR_ARRAYLENGTH2D; }
+{error_nextwrongfor}	{ count(); return B256ERROR_NEXTWRONGFOR; }
+{error_nosuchfunction}	{ count(); return B256ERROR_NOSUCHFUNCTION; }
+{error_nosuchsubroutine}    { count(); return B256ERROR_NOSUCHSUBROUTINE; }
+{error_slicesize}	{ count(); return B256ERROR_SLICESIZE; }
+{error_unserializeformat}	{ count(); return B256ERROR_UNSERIALIZEFORMAT; }
 {warning_start}	{ count(); return B256WARNING_START; }
 {warning_typeconv}	{ count(); return B256WARNING_TYPECONV; }
 {warning_wavnotseekable}	{ count(); return B256WARNING_WAVNOTSEEKABLE; }

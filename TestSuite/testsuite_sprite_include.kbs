@@ -5,10 +5,11 @@
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
 #				moved to a statement and not a stand alone line (1010002)
 # 20160510      j.m.reneau      use new form of the clg statetement to clear to a color
-# 20160603      j.m.reneau      updated to use more sprite features for better testing
-# 20160805		j.m.reneau		changed lists to listsoflists (1.99.99.53)
+# 20160603  j.m.reneau      updated to use more sprite features for better testing
+# 20160805	j.m.reneau		changed lists to listsoflists (1.99.99.53)
 #								Added additional sprite testing logic
-# 2016-09-08	j.m.reneau		changes getslice to return an array - added serialize
+# 20160908	j.m.reneau		changes getslice to return an array - added serialize
+# 20161101  j.m.reneau  added [] to all array passing to functions
 
 
 graphsize 150,150
@@ -27,9 +28,9 @@ penwidth 3
 points =  {0,0,40,0,40,40,0,40}
 penwidth 1
 color black,red
-spritepoly 0, points
+spritepoly 0, points[]
 color black,green
-spritepoly 1, points
+spritepoly 1, points[]
 # two small right triangles
 points =  {{20,0},{20,10},{15,5}}
 color black, blue

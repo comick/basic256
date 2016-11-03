@@ -79,126 +79,124 @@ void VariableWin::removeArrayEntries(QString name) {
 	}
 }
 
-void VariableWin::varWinAssign(Variables* variables, int varnum, int x, int y) {
-
-	mymutex->lock();
-
+void VariableWin::varWinAssign(Variables **variables, int varnum, int x, int y) {
 	QTreeWidgetItem *rowItem = NULL;
 	QString name;
 	VariableInfo *vi;
 	DataElement *d;
 	
-	vi = variables->getInfo(varnum);
-	name = QString::number(vi->level) + " - " + symtable[vi->varnum];
-	d = variables->arraygetdata(varnum,x,y);
+    mymutex->lock();
+    if(*variables){
+        vi = (*variables)->getInfo(varnum);
+        name = QString::number(vi->level) + " - " + symtable[vi->varnum];
+        delete vi;
+        d = (*variables)->arraygetdata(varnum,x,y);
 
-	// find either name[x] or name[x,y]
-	QString tname;
-	tname = name + "[" + QString::number(x) + "]";
-	QList<QTreeWidgetItem *> list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
-	if (list.size()>0) {
-		rowItem = list[0];
-	} else {
-		tname = name + "[" + QString::number(x) + "," + QString::number(y) + "]";
-		QList<QTreeWidgetItem *> list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
-		if (list.size()>0) rowItem = list[0];
-	}
-	// set the data and data type
-	setTypeAndValue(rowItem, d);
-	
-	waitCond->wakeAll();
-	mymutex->unlock();
-
+        // find either name[x] or name[x,y]
+        QString tname;
+        tname = name + "[" + QString::number(x) + "]";
+        QList<QTreeWidgetItem *> list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
+        if (list.size()>0) {
+            rowItem = list[0];
+        } else {
+            tname = name + "[" + QString::number(x) + "," + QString::number(y) + "]";
+            QList<QTreeWidgetItem *> list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, 0);
+            if (list.size()>0) rowItem = list[0];
+        }
+        // set the data and data type
+        setTypeAndValue(rowItem, d);
+    }
+    waitCond->wakeAll();
+    mymutex->unlock();
 }
 
-void VariableWin::varWinAssign(Variables* variables, int varnum) {
+void VariableWin::varWinAssign(Variables **variables, int varnum) {
 	// simple variable assignmemnt
-
-	mymutex->lock();
-	
 	QTreeWidgetItem *rowItem;
 	QString name;
 	VariableInfo *vi;
 	DataElement *d;
 	
-	vi = variables->getInfo(varnum);
-	name = QString::number(vi->level) + " - " + symtable[vi->varnum];
-	d = variables->getdata(varnum);
+    mymutex->lock();
+    if(*variables){
+        vi = (*variables)->getInfo(varnum);
+        name = QString::number(vi->level) + " - " + symtable[vi->varnum];
+        delete vi;
+        d = (*variables)->getdata(varnum);
 
-	// not an array element - just add or replace name
-	QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-	if (list.size() > 0) {
-		rowItem = list[0];
-		if (rowItem->data(1,0)=="A") removeArrayEntries(name);
-	} else {
-		// add new element for a simple variable
-		rowItem = new QTreeWidgetItem();
-		rowItem->setText(0, name);
-		addTopLevelItem(rowItem);
-	}
-	// display the data type and the data
-	setTypeAndValue(rowItem, d);
-	
-	waitCond->wakeAll();
-	mymutex->unlock();
+        // not an array element - just add or replace name
+        QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
+        if (list.size() > 0) {
+            rowItem = list[0];
+            if (rowItem->data(1,0)=="A") removeArrayEntries(name);
+        } else {
+            // add new element for a simple variable
+            rowItem = new QTreeWidgetItem();
+            rowItem->setText(0, name);
+            addTopLevelItem(rowItem);
+        }
+        // display the data type and the data
+        setTypeAndValue(rowItem, d);
+    }
+    waitCond->wakeAll();
+    mymutex->unlock();
 }
 
 
 
-void VariableWin::varWinDimArray(Variables* variables, int varnum, int arraylenx, int arrayleny) {
-
-	mymutex->lock();
-
+void VariableWin::varWinDimArray(Variables **variables, int varnum, int arraylenx, int arrayleny) {
 	QTreeWidgetItem *rowItem;
 	QString name;
 	VariableInfo *vi;
 	DataElement *d;
 
+    mymutex->lock();
+    if(*variables){
+        vi = (*variables)->getInfo(varnum);
+        name = QString::number(vi->level) + " - " + symtable[vi->varnum];
+        delete vi;
 
-	vi = variables->getInfo(varnum);
-	name = QString::number(vi->level) + " - " + symtable[vi->varnum];
+        // create the top level for the new array
+        // see if element is on the list and change value or add
+        QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
 
-	// create the top level for the new array
-	// see if element is on the list and change value or add
-	QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, 0);
-
-	if (list.size() > 0) {
-		// get existing element
-		rowItem = list[0];
-		if (rowItem->data(1,0)=="A") removeArrayEntries(name);
-	} else {
-		// add new element
-		rowItem = new QTreeWidgetItem();
-		rowItem->setText(0, name);
-		addTopLevelItem(rowItem);
-	}
-	rowItem->setText(1,  "A");
-	rowItem->setText(2,  QString::number(arraylenx) + (arrayleny > 1?"," + QString::number(arrayleny):""));
-	// add place holders for the array elements as children for a new array
-	if (arrayleny <= 1) {
-		// 1d array
-		for(int x=0; x<arraylenx; x++) {
-			QTreeWidgetItem *childItem = new QTreeWidgetItem();
-			childItem->setText(0, name + "[" + QString::number(x) + "]");
-			d = variables->arraygetdata(varnum,x,0);
-			setTypeAndValue(childItem, d);
-			rowItem->addChild(childItem);
-		}
-	} else {
-		// 2d array
-		for(int x=0; x<arraylenx; x++) {
-			for(int y=0; y<arrayleny; y++) {
-				QTreeWidgetItem *childItem = new QTreeWidgetItem();
-				childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
-				d = variables->arraygetdata(varnum,x,y);
-				setTypeAndValue(childItem, d);
-				rowItem->addChild(childItem);
-			}
-		}
-	}
-	
-	waitCond->wakeAll();
-	mymutex->unlock();
+        if (list.size() > 0) {
+            // get existing element
+            rowItem = list[0];
+            if (rowItem->data(1,0)=="A") removeArrayEntries(name);
+        } else {
+            // add new element
+            rowItem = new QTreeWidgetItem();
+            rowItem->setText(0, name);
+            addTopLevelItem(rowItem);
+        }
+        rowItem->setText(1,  "A");
+        rowItem->setText(2,  QString::number(arraylenx) + (arrayleny > 1?"," + QString::number(arrayleny):""));
+        // add place holders for the array elements as children for a new array
+        if (arrayleny <= 1) {
+            // 1d array
+            for(int x=0; x<arraylenx; x++) {
+                QTreeWidgetItem *childItem = new QTreeWidgetItem();
+                childItem->setText(0, name + "[" + QString::number(x) + "]");
+                d = (*variables)->arraygetdata(varnum,x,0);
+                setTypeAndValue(childItem, d);
+                rowItem->addChild(childItem);
+            }
+        } else {
+            // 2d array
+            for(int x=0; x<arraylenx; x++) {
+                for(int y=0; y<arrayleny; y++) {
+                    QTreeWidgetItem *childItem = new QTreeWidgetItem();
+                    childItem->setText(0, name + "[" + QString::number(x) + "," + QString::number(y) + "]");
+                    d = (*variables)->arraygetdata(varnum,x,y);
+                    setTypeAndValue(childItem, d);
+                    rowItem->addChild(childItem);
+                }
+            }
+        }
+    }
+    waitCond->wakeAll();
+    mymutex->unlock();
 }
 
 

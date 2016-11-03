@@ -3,8 +3,9 @@
 # Modification History
 # date		programmer	description
 # 20140204	j.m.reneau	split from testsuite
-# 2014-08-06     j.m.reneau      added midx and regexminimal
-# 2016-03-28	j.m.reneau	Added ltrim, rtrim, trim
+# 20140806  j.m.reneau      added midx and regexminimal
+# 20160328	j.m.reneau	Added ltrim, rtrim, trim
+# 20161101  j.m.reneau  added [] to all array passing to functions
 
 # String Assignment
 b$ = "string" : call s('b$ = "string"', b$, "string")
@@ -19,11 +20,11 @@ call s("chr(98)='b'", chr(98), "b")
 call n('count("Hello", "lo")', count("Hello", "lo"), 1)
 call n('count("Buffalo buffalo buffalo.","BUFFALO",true)', count("Buffalo buffalo buffalo.","BUFFALO",true), 3)
 c$ = Explode("How now brown cow"," ")
-call s("implode-", implode(c$,"-"), "How-now-brown-cow")
-call s("implode", implode(c$), "Hownowbrowncow")
+call s("implode-", implode(c$[],"-"), "How-now-brown-cow")
+call s("implode", implode(c$[]), "Hownowbrowncow")
 c = Explode("1,2,3.33,4.44,5.55",",")
-call s("implode, ", implode(c,", "), "1, 2, 3.33, 4.44, 5.55")
-call s("implode", implode(c), "123.334.445.55")
+call s("implode, ", implode(c[],", "), "1, 2, 3.33, 4.44, 5.55")
+call s("implode", implode(c[]), "123.334.445.55")
 call s("upper", upper('upper'), "UPPER")
 call s("lower", lower('LOWER'), "lower")
 call n('instr("Hello", "lo")',instr("Hello", "lo"),4)

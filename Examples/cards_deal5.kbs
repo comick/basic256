@@ -114,10 +114,10 @@ gosub drawcardborder
 color black
 if mid(card$,1,1) = "H" or mid(card$,1,1) = "D" then color red
 # stamp suit on card
-if mid(card$,1,1) = "H" then stamp x+7, y+26, 4, heart
-if mid(card$,1,1) = "D" then stamp x+7, y+26, 4, diamond
-if mid(card$,1,1) = "S" then stamp x+7, y+26, 4, spade
-if mid(card$,1,1) = "C" then stamp x+7, y+26, 4, club
+if mid(card$,1,1) = "H" then stamp x+7, y+26, 4, heart[]
+if mid(card$,1,1) = "D" then stamp x+7, y+26, 4, diamond[]
+if mid(card$,1,1) = "S" then stamp x+7, y+26, 4, spade[]
+if mid(card$,1,1) = "C" then stamp x+7, y+26, 4, club[]
 # now show card value
 font "tahoma",13,100
 text x + 4, y + 1, mid(card$,2,2)

@@ -15,9 +15,9 @@
 global unattended
 unattended = false
 
-subroutine section(sec$)
+subroutine section(sec)
    print "###########"
-   print sec$
+   print sec
    print "###########"
 end subroutine
 

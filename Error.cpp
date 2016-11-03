@@ -97,7 +97,13 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_NOSUCHLABEL:
 			errormessage = tr("No such label %VARNAME%");
 			break;
-		case ERROR_NEXTNOFOR:
+        case ERROR_NOSUCHSUBROUTINE:
+            errormessage = tr("No such SUBROUTINE %VARNAME%");
+            break;
+        case ERROR_NOSUCHFUNCTION:
+            errormessage = tr("No such FUNCTION %VARNAME%");
+            break;
+        case ERROR_NEXTNOFOR:
 			errormessage = tr("Next without FOR");
 			break;
 		case ERROR_FILENUMBER:
@@ -126,7 +132,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			break;
 		case ERROR_NOTARRAY:
 			errormessage = tr("Variable %VARNAME% is not an array");
-			break;
 			break;
 		case ERROR_ARRAYINDEX:
 			errormessage = tr("Array %VARNAME% index out of bounds");
@@ -308,14 +313,8 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
 			break;
-		case ERROR_BADCALLFUNCTION:
-			errormessage = tr("Function was not called correctly");
-			break;
-		case ERROR_BADCALLSUBROUTINE:
-			errormessage = tr("Subroutine was not called correctly");
-			break;
 		case ERROR_NEXTWRONGFOR:
-			errormessage = tr("Variable in NEXT does not match FOR");
+            errormessage = tr("Variable in NEXT does not match FOR");
 			break;
 		case ERROR_UNSERIALIZEFORMAT:
 			errormessage = tr("Unable to UnSrialize string");

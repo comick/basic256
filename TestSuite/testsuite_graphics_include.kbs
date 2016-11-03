@@ -5,6 +5,7 @@
 # 2012????	j.m.reneau	original coding
 # 20140529	j.m.reneau	split to own include
 # 20160805	j.m.reneau	added tests to make more complete
+# 20161101  j.m.reneau  added [] to all array passing to functions
 
 # test the basic graphics statements
 
@@ -63,7 +64,7 @@ penwidth 10
 color green, blue
 redim c(1)
 c = {100, 100, 200, 200, 100, 200}
-poly c
+poly c[]
 penwidth 5
 color orange, black
 poly {{100, 100}, {200, 200}, {200, 100}}
@@ -89,12 +90,12 @@ c[4] = 15
 c[5] = 10
 color yellow
 for r = 0 to (2 * pi) step (pi/8)
-        stamp graphwidth/2, graphheight/2, 6, r, c
+        stamp graphwidth/2, graphheight/2, 6, r, c[]
 next r
 c = {{0,0}, {20,20}, {15,10}}
 color darkorange
 for r = 0 to (2 * pi) step (pi/8)
-        stamp graphwidth/2, graphheight/2, 4, r, c
+        stamp graphwidth/2, graphheight/2, 4, r, c[]
 next r
 color red
 for r = 0 to (2 * pi) step (pi/8)

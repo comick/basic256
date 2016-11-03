@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20140606	j.m.reneau	split from test suite
 # 20160806	j.m.reneau	added list of list tests
+# 20161031  j.m.reneau  added polysoud 2 3 and 4 voices
+# 20161101  j.m.reneau  added [] to all array passing to functions
 
 say "hello."
 call q("did the computer say 'hello'")
@@ -21,9 +23,26 @@ sound {{440,200},{220,100},{300,200}}
 call q("did same three sounds play from a list of lists")
 
 c = {440,200,220,100,300,200}
-sound c
+sound c[]
 call q("did same three sounds play from an array assigned a list")
 
 c = {{440,200},{220,100},{300,200}}
-sound c
+sound c[]
 call q("did same three sounds play from an array assigned a list of lists")
+
+a = {261,2000}
+sound a[]
+call q("did c play for 2 seconds")
+
+b = {0,200,329,1600}
+sound a[],b[]
+call q("did c then e play for 2 seconds")
+
+c = {0,400,391,1200}
+sound a[],b[],c[]
+call q("did c then e then g play for 2 seconds")
+
+sound a[],b[],c[],{0,600,523,800}
+
+call q("did c then e then g then c play for 2 seconds")
+

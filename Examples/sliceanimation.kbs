@@ -39,10 +39,10 @@ while true
    if y < 1 or y > 200 then dy = dy * -1
    # get whet is there before putting slice
    original = getslice(x,y,100,100)
-   putslice x,y,slice
+   putslice x,y,slice[]
    refresh
    # change it back to what it was before the slice
-   putslice x,y,original
+   putslice x,y,original[]
 end while
 end
 

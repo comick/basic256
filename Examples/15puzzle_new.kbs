@@ -1,6 +1,6 @@
 # 15puzzle_new.kbs - slide the tiles to get them back in order
 # this is a conversion from the old gosub to the new function/subroutines
-# 2012-10-06 j.m.reneau
+# 2016-11-02 j.m.reneau
 
 fastgraphics
 
@@ -19,10 +19,10 @@ yw = (graphheight - ((ny+1)*bw)) / ny
 print "slide puzzle"
 print "click on tile to slide.  try to get all tiles in order."
 
-call initialboard(ref(board))
-call drawboard(ref(board))
-call shuffle(ref(board))
-call drawboard(ref(board))
+call initialboard(board[])
+call drawboard(board[])
+call shuffle(board[])
+call drawboard(board[])
 
 clickclear
 moves = 0
@@ -40,17 +40,17 @@ do
    clickclear
    # if a real click then make move
    if (zx = cx) or (zy = cy) then
-      call makemove(ref(board), cx, cy)
+      call makemove(board[], cx, cy)
       moves = moves + 1
-      call drawboard(ref(board))
+      call drawboard(board[])
    end if
-until isdone(ref(board))
+until isdone(board[])
 
 print "Game Over - You solved it in "+ moves +"."
 
 end
 
-subroutine shuffle(ref(b))
+subroutine shuffle(b[])
    #for t = 1 to nx * ny * 10
    for t = 1 to 100
       x = zx
@@ -66,12 +66,12 @@ subroutine shuffle(ref(b))
          zx = x
          zy = y
       end if
-      call drawboard(ref(b))
+      call drawboard(b[])
       pause .01
    next t
 end subroutine
 
-subroutine makemove(ref(b),x,y)
+subroutine makemove(b[],x,y)
    # shift cells
    if zx<>x then
       # row shift
@@ -101,7 +101,7 @@ subroutine makemove(ref(b),x,y)
    end while
 end subroutine
 
-subroutine initialboard(ref(b))
+subroutine initialboard(b[])
    # setup the initial board array
    for x= 0 to b[?,]-1
       for y = 0 to b[,?]-1
@@ -113,7 +113,7 @@ subroutine initialboard(ref(b))
    b[zx, zy] = 0
 end subroutine
 
-subroutine drawboard(ref(b))
+subroutine drawboard(b[])
    font "Tahoma", 24, 100
    clg
    color black
@@ -137,7 +137,7 @@ subroutine drawboard(ref(b))
    refresh
 end subroutine
 
-function isdone(ref(b))
+function isdone(b[])
    # return 1 if we have solved the puzzle
    for x= 0 to b[?,]-1
       for y = 0 to b[,?]-1

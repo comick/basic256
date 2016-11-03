@@ -18,5 +18,5 @@ while true
    imgload x, y, 1, r, "help.png"
    refresh
    pause .05
-   putslice x-15,y-15,save$
+   putslice x-15,y-15,save$[]
 end while

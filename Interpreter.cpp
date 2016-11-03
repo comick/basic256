@@ -102,8 +102,9 @@ extern "C" {
 	extern unsigned int maxwordoffset;
 
 	extern char *symtable[];		// table of variables and labels (strings)
-	extern int symtableaddress[];	// associated label address
-	extern int numsyms;				// number of symbols
+    extern int symtableaddress[];	// associated label address
+    extern int symtableaddresstype[];	// associated address type
+    extern int numsyms;				// number of symbols
 
 	// arrays to return warnings from compiler
 	// defined in basicParse.y
@@ -120,9 +121,10 @@ Interpreter::Interpreter(QLocale *applocale) {
 	printing = false;
     sleeper = new Sleeper();
     error = new Error();
-	locale = applocale;
+    locale = applocale;
 	mediaplayer = NULL;
     downloader = NULL;
+    sound = NULL;
 
 #ifdef WIN32
 	// WINDOWS
@@ -155,9 +157,10 @@ Interpreter::~Interpreter() {
 #ifdef WIN32
 	WSACleanup();
 #endif
+    delete sound;
     delete downloader;
     delete sleeper;
-	delete error;
+    delete error;
 }
 
 
@@ -285,8 +288,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_STACKTOPTO2) return QString("OP_STACKTOPTO2");
 	else if (op==OP_STACKDUP) return QString("OP_STACKDUP");
 	else if (op==OP_STACKDUP2) return QString("OP_STACKDUP2");
-	else if (op==OP_STACKSWAP2) return QString("OP_STACKSWAP2");
-	else if (op==OP_GOTO) return QString("OP_GOTO");
+    else if (op==OP_STACKSWAP2) return QString("OP_STACKSWAP2");
+    else if (op==OP_GOTO) return QString("OP_GOTO");
 	else if (op==OP_GOSUB) return QString("OP_GOSUB");
 	else if (op==OP_BRANCH) return QString("OP_BRANCH");
 	else if (op==OP_ASSIGN) return QString("OP_ASSIGN");
@@ -423,6 +426,8 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_PUSHLABEL) return QString("OP_PUSHLABEL");
 	else if (op==OP_SERIALIZE) return QString("OP_SERIALIZE");
 	else if (op==OP_UNSERIALIZE) return QString("OP_UNSERIALIZE");
+    else if (op==OP_CALLFUNCTION) return QString("OP_CALLFUNCTION");
+    else if (op==OP_CALLSUBROUTINE) return QString("OP_CALLSUBROUTINE");
 
 	else return QString("OP_UNKNOWN");
 }
@@ -503,42 +508,42 @@ Interpreter::isStopped() {
 void Interpreter::watchvariable(bool doit, int i) {
 	// send an event to the variable watch window to display a simple variable's value
 	// wait for the event to complete by watching the mutex
-	if (doit) {
-		mymutex->lock();
-		emit(varWinAssign(variables, i));
-		waitCond->wait(mymutex);
-		mymutex->unlock();
-	}
+    if (doit) {
+        mymutex->lock();
+        emit(varWinAssign(&variables, i));
+        waitCond->wait(mymutex);
+        mymutex->unlock();
+    }
 }
 void Interpreter::watchvariable(bool doit, int i, int x, int y) {
 	// send an event to the variable watch window to display aan array element's value
 	// wait for the event to complete by watching the mutex
-	if (doit) {
-		mymutex->lock();
-		emit(varWinAssign(variables, i, x ,y));
-		waitCond->wait(mymutex);
-		mymutex->unlock();
-	}
+    if (doit) {
+        mymutex->lock();
+        emit(varWinAssign(&variables, i, x ,y));
+        waitCond->wait(mymutex);
+        mymutex->unlock();
+    }
 }
 void Interpreter::watchdim(bool doit, int i, int x, int y) {
 	// send an event to the variable watch window to display an array dim or redim
 	// wait for the event to complete by watching the mutex
-	if (doit) {
-		mymutex->lock();
-		emit(varWinDimArray(variables ,i , x, y));
-		waitCond->wait(mymutex);
-		mymutex->unlock();
-	}
+    if (doit) {
+        mymutex->lock();
+        emit(varWinDimArray(&variables ,i , x, y));
+        waitCond->wait(mymutex);
+        mymutex->unlock();
+    }
 }
 void Interpreter::watchdecurse(bool doit) {
 	// send an event to the variable watch window to remove a function's variables
 	// wait for the event to complete by watching the mutex
-	if (doit) {
-		mymutex->lock();
-		emit(varWinDropLevel(variables->getrecurse()));
-		waitCond->wait(mymutex);
-		mymutex->unlock();
-	}
+    if (doit) {
+        mymutex->lock();
+        emit(varWinDropLevel(variables->getrecurse()));
+        waitCond->wait(mymutex);
+        mymutex->unlock();
+    }
 }
 
 int
@@ -546,7 +551,6 @@ Interpreter::compileProgram(char *code) {
 	if (newWordCode() < 0) {
 		return -1;
 	}
-
 
 	int result = basicParse(code);
 	//
@@ -585,12 +589,6 @@ Interpreter::compileProgram(char *code) {
 		}
 		msg += tr(" on line ") + QString::number(linenumber) + tr(": ");
 		switch(result) {
-			case COMPERR_ASSIGNS2N:
-				msg += tr("Error assigning a string to a numeric variable");
-				break;
-			case COMPERR_ASSIGNN2S:
-				msg += tr("Error assigning a number to a string variable");
-				break;
 			case COMPERR_FUNCTIONGOTO:
 				msg += tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration");
 				break;
@@ -599,14 +597,20 @@ Interpreter::compileProgram(char *code) {
 				break;
 			case COMPERR_FUNCTIONNOTHERE:
 				msg += tr("You may not define a FUNCTION/SUBROUTINE inside an IF, loop, TRY, CATCH, or other FUNCTION/SUBROUTINE");
-				break;
+                break;
 			case COMPERR_ENDFUNCTION:
-				msg += tr("END FUNCTION/SUBROUTINE without matching FUNCTION/SUBROUTINE");
+                msg += tr("END FUNCTION without matching FUNCTION");
 				break;
-			case COMPERR_FUNCTIONNOEND:
-				msg += tr("FUNCTION/SUBROUTINE without matching END FUNCTION/SUBROUTINE statement");
-				break;
-			case COMPERR_FORNOEND:
+            case COMPERR_ENDSUBROUTINE:
+                msg += tr("END SUBROUTINE without matching SUBROUTINE");
+                break;
+            case COMPERR_FUNCTIONNOEND:
+                msg += tr("FUNCTION without matching END FUNCTION statement");
+                break;
+            case COMPERR_SUBROUTINENOEND:
+                msg += tr("SUBROUTINE without matching END SUBROUTINE statement");
+                break;
+            case COMPERR_FORNOEND:
 				msg += tr("FOR without matching NEXT statement");
 				break;
 			case COMPERR_WHILENOEND:
@@ -638,9 +642,6 @@ Interpreter::compileProgram(char *code) {
 				break;
 			case COMPERR_RETURNVALUE:
 				msg += tr("RETURN with a value is only valid inside a FUNCTION");
-				break;
-			case COMPERR_RETURNTYPE:
-				msg += tr("RETURN value type is not the same as FUNCTION");
 				break;
 			case COMPERR_CONTINUEDO:
 				msg += tr("CONTINUE DO without matching DO");
@@ -697,7 +698,7 @@ Interpreter::compileProgram(char *code) {
 				msg += tr("CASE whthout next CASE or matching END CASE statement");
 				break;
 			case COMPERR_LABELREDEFINED:
-				msg += tr("Label may only be defined once");
+                msg += tr("Labels, functions and subroutines must have a unique name");
 				break;
 			case COMPERR_NEXTWRONGFOR:
 				msg += tr("Variable in NEXT does not match FOR");
@@ -739,8 +740,8 @@ Interpreter::initialize() {
     //initialize random
     double_random_max = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
 	currentLine = 1;
-	currentIncludeFile = QString("");
-	emit(mainWindowsResize(1, 300, 300));
+    currentIncludeFile = QString("");
+    emit(mainWindowsResize(1, 300, 300));
 	fontfamily = QString("");
 	fontpoint = 0;
 	fontweight = 0;
@@ -756,13 +757,13 @@ Interpreter::initialize() {
 	graphwin->clickB = 0;
 	
 	// create the convert and comparer object
-	convert = new Convert(error, locale);
+    convert = new Convert(error, locale);
 	
 	// now build the new stack object
 	stack = new Stack(error, convert, locale);
 
 	// now create the variable storage
-	variables = new Variables(numsyms, error);
+    variables = new Variables(numsyms, error);
 
 	// initialize the sockets to nothing
 	listensockfd = -1;
@@ -797,15 +798,24 @@ Interpreter::cleanup() {
 	// called by run() once the run is terminated
 	//
 	// Clean up run time objects
+
+    if(mediaplayer!=NULL){
+        mediaplayer->stop(); //stop asynchronous sounds if program is ended normally
+        delete (mediaplayer);
+        mediaplayer = NULL;
+    }
     delete (downloader);
     downloader = NULL;
-	delete(stack);
-	delete(variables);
-	delete(convert);
-	// Clean up sprites
-	clearsprites();
+    delete (sound);
+    sound = NULL;
+    delete(stack);
+    delete(variables);
+    variables=NULL;
+    delete(convert);
+    // Clean up sprites
+    clearsprites();
 	// Clean up, for frames, etc.
-	freeBasicParse();
+    freeBasicParse();
 	// close open files (set to NULL if closed)
 	for (int t=0; t<NUMFILES; t++) {
 		if (filehandle[t]) {
@@ -813,8 +823,10 @@ Interpreter::cleanup() {
 			filehandle[t] = NULL;
 			filehandletype[t] = 0;
 		}
-	}
-	
+    }
+    free(filehandle);
+    free(filehandletype);
+
 	// close open database connections and record sets
 	for (int t=0; t<NUMDBCONN; t++) {
 		closeDatabase(t);
@@ -838,6 +850,30 @@ Interpreter::cleanup() {
 
 	// remove any queued errors
 	error->deq();
+
+    //delete stack used by function calls, subroutine calls, and gosubs for return location
+    frame *temp_callstack;
+    while (callstack!=NULL) {
+        temp_callstack = callstack;
+        callstack = temp_callstack->next;
+        delete(temp_callstack);
+        }
+
+    //delete stack used to track nested on-error and try/catch definitions
+    onerrorframe *temp_onerrorstack;
+    while (onerrorstack!=NULL) {
+        temp_onerrorstack = onerrorstack;
+        onerrorstack = temp_onerrorstack->next;
+        delete(temp_onerrorstack);
+        }
+
+    //delete stack used by nested for statements
+    forframe *temp_forstack;
+    while (forstack!=NULL) {
+        temp_forstack = forstack;
+        forstack = temp_forstack->next;
+        delete(temp_forstack);
+    }
 }
 
 void Interpreter::closeDatabase(int t) {
@@ -874,7 +910,7 @@ Interpreter::runHalted() {
     if(mediaplayer) mediaplayer->stop();
 
     // stop playing any sound
-    sound.stop();
+    if(sound!=NULL) sound->stop();
 
 
 	// close network connections
@@ -885,19 +921,20 @@ Interpreter::runHalted() {
 
 void
 Interpreter::run() {
-	// main run loop
+    // main run loop
     downloader = new BasicDownloader();
-	srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
+    sound = new Sound();
+    srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
 	onerrorstack = NULL;
 	if (debugMode!=0) {			// highlight first line correctly in debugging mode
 		emit(seekLine(2));
 		emit(seekLine(1));
 	}
-	while (status != R_STOPING && execByteCode() >= 0) {} //continue
-	status = R_STOPPED;
+    while (status != R_STOPING && execByteCode() >= 0) {} //continue
+    status = R_STOPPED;
 	debugMode = 0;
-	cleanup(); // cleanup the variables, databases, files, stack and everything
-	emit(stopRunFinalized());
+    cleanup(); // cleanup the variables, databases, files, stack and everything
+    emit(stopRunFinalized());
 }
 
 
@@ -1183,7 +1220,7 @@ Interpreter::execByteCode() {
 	opcode = *op;
 	op++;
 
-	switch (optype(opcode)) {
+    switch (optype(opcode)) {
 
 		case OPTYPE_VARIABLE: {
 			//
@@ -1207,7 +1244,7 @@ Interpreter::execByteCode() {
 					bool goodloop;	// set to true if we should do the loop atleast once
 
 					variables->setdata(i, startE);	// set variable to initial value
-					watchvariable(debugMode, i);
+                    watchvariable(debugMode, i);
 
 					if (startE->type==T_INT && stepE->type==T_INT) {
 						// an integer start and step (do an integer loop)
@@ -1287,7 +1324,7 @@ Interpreter::execByteCode() {
 									delete temp;
 								}
 							}
-							watchvariable(debugMode, i);
+                            watchvariable(debugMode, i);
 						} else {
 							error->q(ERROR_NEXTWRONGFOR);
 						}
@@ -1303,7 +1340,7 @@ Interpreter::execByteCode() {
 					if (xdim<=0) xdim=1; // need to dimension as 1d
 					variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
 					if(!error->pending()) {
-						watchdim(debugMode, i , xdim, ydim);
+                        watchdim(debugMode, i , xdim, ydim);
 					}
 				}
 				break;
@@ -1350,7 +1387,7 @@ Interpreter::execByteCode() {
 					} else {
 						variables->arraysetdata(i, xindex, yindex, e);
 						if (!error->pending()) {
-							watchvariable(debugMode, i, xindex, yindex);
+                            watchvariable(debugMode, i, xindex, yindex);
 						}
 					}
 					// dont delete to an assign of variable
@@ -1391,7 +1428,7 @@ Interpreter::execByteCode() {
 					} else {
 						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
 						variables->setdata(i, e);
-						watchvariable(debugMode, i);
+                        watchvariable(debugMode, i);
 					}
 				}
 				break;
@@ -1436,7 +1473,7 @@ Interpreter::execByteCode() {
 					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
 					DataElement *e = stack->popelement();	// fill value
 					Variable *v = variables->get(i);
-					if (v->data->type==T_ARRAY) {
+                    if (v->data.type==T_ARRAY) {
 						int columns = variables->arraysizecols(i);
 						int rows = variables->arraysizerows(i);
 						for(int row = 0; row<rows && !error->pending(); row++) {
@@ -1444,7 +1481,7 @@ Interpreter::execByteCode() {
 								if(mode==1 || variables->arraygetdata(i, row, col)->type == T_UNASSIGNED) {
 									variables->arraysetdata(i, row, col, e);
 									if (!error->pending()) {
-										watchvariable(debugMode, i, row, col);
+                                        watchvariable(debugMode, i, row, col);
 									}
 								}
 							}
@@ -1452,14 +1489,14 @@ Interpreter::execByteCode() {
 					} else {
 						// trying to fill a regular variable - just do an assign
 						variables->setdata(i, e);
-						watchvariable(debugMode, i);
+                        watchvariable(debugMode, i);
 					}
 				}
 				break;
 
 				case OP_UNASSIGN: {
 					variables->unassign(i);
-					watchvariable(debugMode, i);
+                    watchvariable(debugMode, i);
 				}
 				break;
 
@@ -1468,19 +1505,19 @@ Interpreter::execByteCode() {
 					int yindex = stack->popint();
 					int xindex = stack->popint();
 					variables->arrayunassign(i, xindex, yindex);
-					watchvariable(debugMode, i, xindex, yindex);
+                    watchvariable(debugMode, i, xindex, yindex);
 				}
 				break;
 				
 				case OP_VARIABLEWATCH: {
-					if (variables->get(i)->data->type == T_ARRAY) {
+                    if (variables->get(i)->data.type == T_ARRAY) {
 						// an array - trigger dim and dumping of the elements
 						int ydim = variables->arraysizecols(i);
 						int xdim = variables->arraysizerows(i);
-						watchdim(true, i , xdim, ydim);
+                        watchdim(true, i , xdim, ydim);
 					} else {
 						// regular variable - show it
-						watchvariable(true, i);
+                        watchvariable(true, i);
 					}
 				}
 				break;
@@ -1505,6 +1542,7 @@ Interpreter::execByteCode() {
 					// opcode currentline is compound and includes level and line number
 					int includelevel = i / 0x1000000;
 					currentLine = i % 0x1000000;
+
 					if (debugMode != 0) {
 						if (includelevel==0) {
 							// do debug for the main program not included parts
@@ -1539,10 +1577,10 @@ Interpreter::execByteCode() {
 					int columns = stack->popint(); //pop the first row length - the following rows must have the same length
 
 					// create array if we need to (wrong dimensions)
-					if (variables->get(i)->data->type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
+                    if (variables->get(i)->data.type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
 						variables->arraydim(i, rows, columns, false);
 						if(error->pending()) break;
-						watchdim(debugMode, i, rows, columns);
+                        watchdim(debugMode, i, rows, columns);
 					}
 
 					for(int row = rows-1; row>=0 && !error->pending(); row--) {
@@ -1561,12 +1599,25 @@ Interpreter::execByteCode() {
 								variables->arraysetdata(i, row, col, e);
 							}
 							if(!error->pending()) {
-								watchvariable(debugMode, i, row, col);
+                                watchvariable(debugMode, i, row, col);
 							}
 						}
 					}
 				}
-				break;
+                break;
+
+                case OP_ARGUMENTCOUNTTEST: {
+                     // Throw error if stack does not have enough values
+                     // used to check if functions and subroutines have the proper number
+                     // of datas on the stack to fill the parameters
+                     int a = stack->popint();
+                     if (a!=i) error->q(ERROR_ARGUMENTCOUNT);
+                 }
+                 break;
+
+
+
+
 				}
 
 
@@ -1626,20 +1677,25 @@ Interpreter::execByteCode() {
 			//
 			// int i is the new execution location offset within the array wordCode
 			//
-			int i = *op;    // label/symbol number
-			op++;
+            int l = *op;    // label/symbol number
+            int i; // address
+            op++;
 
 			// lookup address for the label
-			if (symtableaddress[i] >=0) {
-				i = symtableaddress[i];
-			} else {
-				error->q(ERROR_NOSUCHLABEL, i);
+            if (symtableaddress[l] >=0) {
+                i = symtableaddress[l];
+            } else {
+                error->q(ERROR_NOSUCHLABEL, l);
 				break;
 			}
 
 			switch(opcode) {
 				case OP_GOTO: {
-					op = wordCode + i;
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL && symtableaddresstype[l]!=ADDRESSTYPE_SYSTEMCALL){
+                        error->q(ERROR_NOSUCHLABEL, l);
+                    }else{
+                        op = wordCode + i;
+                    }
 				}
 				break;
 
@@ -1653,26 +1709,67 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_GOSUB: {
-					// setup return
-					frame *temp = new frame;
-					temp->returnAddr = op;
-					temp->next = callstack;
-					callstack = temp;
-					// do jump
-					op = wordCode + i;
-				}
-				break;
+                case OP_GOSUB: {
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL){
+                        error->q(ERROR_NOSUCHLABEL, l);
+                    }else{
+                        // setup return
+                        frame *temp = new frame;
+                        temp->returnAddr = op;
+                        temp->next = callstack;
+                        callstack = temp;
+                        // do jump
+                        op = wordCode + i;
+                    }
+                }
+                break;
 
-				case OP_ONERRORGOSUB: {
-					// setup onerror frame and put on top of onerrorstack
-					onerrorframe *temp = new onerrorframe;
-					temp->onerroraddress = i;
-					temp->onerrorgosub = true;
-					temp->next = onerrorstack;
-					onerrorstack = temp;
+                case OP_CALLFUNCTION: {
+                    //OP_CALLFUNCTION is used when program expect the result to be pushed on stack
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_FUNCTION){
+                        error->q(ERROR_NOSUCHFUNCTION, l);
+                    }else{
+                        // setup return
+                        frame *temp = new frame;
+                        temp->returnAddr = op;
+                        temp->next = callstack;
+                        callstack = temp;
+                        // do jump
+                        op = wordCode + i;
+                    }
+                }
+                break;
+
+
+                case OP_CALLSUBROUTINE: {
+                    //OP_CALLSUBROUTINE is used to call subroutines
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_SUBROUTINE){
+                        error->q(ERROR_NOSUCHSUBROUTINE, l);
+                    }else{
+                        // setup return
+                        frame *temp = new frame;
+                        temp->returnAddr = op;
+                        temp->next = callstack;
+                        callstack = temp;
+                        // do jump
+                        op = wordCode + i;
+                    }
+                }
+                break;
+
+                case OP_ONERRORGOSUB: {
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL){
+                        error->q(ERROR_NOSUCHLABEL, l);
+                    }else{
+                        // setup onerror frame and put on top of onerrorstack
+                        onerrorframe *temp = new onerrorframe;
+                        temp->onerroraddress = i;
+                        temp->onerrorgosub = true;
+                        temp->next = onerrorstack;
+                        onerrorstack = temp;
+                    }
 				}
-				break;
+                break;
 
 				case OP_ONERRORCATCH: {
 					// setup onerror frame and put on top of onerrorstack
@@ -1724,10 +1821,10 @@ Interpreter::execByteCode() {
 					if (temp) {
 						op = temp->returnAddr;
 						callstack = temp->next;
+                        delete temp;
 					} else {
 						return -1;
 					}
-					delete temp;
 				}
 				break;
 
@@ -2792,28 +2889,64 @@ Interpreter::execByteCode() {
 					// fill the sound array backwrds because of pulling from the stack
                     // Multiple rows = multiple voices mixed
 
-                    const int rows = stack->popint();
-                    int columns;
-                    int j=0, total=0;
+                    //const int rows = stack->popint();
+                    //int columns;
+                    //int j=0, total=0;
 
-                    int* freqdur=NULL;
+                    //int* freqdur=NULL;
 
-                    for(int r=0;r<rows;r++){
-                        columns = stack->popint();
-                        if(columns%2!=0){
-                            error->q(ERROR_ARRAYEVEN);
-                            break;
-                        }
-                        total=total+columns+1;
-                        j=total;
-                        freqdur = (int*) realloc(freqdur, total * sizeof(int));
-                        for (int col = 0; col < columns && !error->pending(); col++) {
-                            freqdur[--j] = stack->popint();
-                        }
-                        freqdur[--j] = columns;
-                    }
-                    if (!error->pending()) sound.playSounds(rows, freqdur);
-                    if(freqdur!=NULL) free(freqdur);
+                    //for(int r=0;r<rows;r++){
+                    //    columns = stack->popint();
+                    //    if(columns%2!=0){
+                   //         error->q(ERROR_ARRAYEVEN);
+                    //        break;
+                    //    }
+                    //    total=total+columns+1;
+                    //    j=total;
+                    //    freqdur = (int*) realloc(freqdur, total * sizeof(int));
+                    //    for (int col = 0; col < columns && !error->pending(); col++) {
+                    //        freqdur[--j] = stack->popint();
+                    //    }
+                    //    freqdur[--j] = columns;
+                    //}
+                    //if (!error->pending()) sound->playSounds(rows, freqdur);
+                    //if(freqdur!=NULL) free(freqdur);
+                    
+					// play an immediate list of sounds
+					// from a 2d array pushed on the stack or a list of lists
+					// fill the sound array backwrds because of pulling from the stack
+					// make a list containing voices
+					// each voice is a list of freq/dir pairs
+
+					int voices = stack->popint();
+					std::vector < std::vector<int> > sounddata;
+
+					for(int voice=0; voice<voices; voice++) {
+						std::vector < int > v;	// vector containing duration
+
+						int rows = stack->popint();
+						int columns = stack->popint();
+						
+						if ((rows==1&&columns%2!=0)||(rows>1&&columns!=2)) error->q(ERROR_ARRAYEVEN);
+							
+						for(int row = 0; row < rows ; row++) {
+							//pop columns only if is not first row - already popped
+							if(row != 0) {
+								if(stack->popint()!=2){
+									error->q(ERROR_ARRAYEVEN);
+								}
+							}
+							for (int col = 0; col < columns ; col++) {
+								int i = stack->popint();
+								//printf(">>%i\n",i);
+								v.insert(v.begin(),i);
+							}
+						}
+						sounddata.push_back( v );
+					}
+					
+					if (!error->pending()) sound->playSounds(sounddata);
+
                 }
 				break;
 
@@ -2821,7 +2954,7 @@ Interpreter::execByteCode() {
 				case OP_VOLUME: {
 					// set the wave output height (volume 0-10)
 					double volume = stack->popfloat();
-                    sound.setVolume(volume);
+                    sound->setVolume(volume);
 				}
 				break;
 
@@ -3611,13 +3744,12 @@ Interpreter::execByteCode() {
 					// and pop any unfinished for statements off of forstack
 				{
 					while (forstack&&forstack->recurselevel == variables->getrecurse()) {
-						forframe *temp = new forframe;
-						temp = forstack;
+                        forframe *temp = forstack;
 						forstack = temp->next;
 						delete temp;
 					}
 
-					watchdecurse(debugMode);
+                    watchdecurse(debugMode);
 					variables->decreaserecurse();
 				}
 				break;
@@ -4270,7 +4402,7 @@ Interpreter::execByteCode() {
 						if (netsockfd[fn] < 0) {
 							error->q(ERROR_NETNONE);
 							stack->pushint(0);
-						} else {
+                        } else {
 							memset(strarray, 0, MAXSIZE);
 							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
 							if (n < 0) {
@@ -5130,16 +5262,6 @@ Interpreter::execByteCode() {
 					// 0, 1, 2, 3...  becomes 1, 2, 0, 3...
 					stack->topto2();
                 }
-				break;
-
-				case OP_ARGUMENTCOUNTTEST: {
-					// Throw error if stack does not have enough values
-					// used to check if functions and subroutines have the proper number
-					// of datas on the stack to fill the parameters
-					int a = stack->popint();
-					if (stack->height()<a) error->q(ERROR_ARGUMENTCOUNT);
-					//printf("ac args=%i stack=%i\n",a,stack->height());
-				}
 				break;
 
 				case OP_THROWERROR: {

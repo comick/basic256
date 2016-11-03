@@ -120,14 +120,14 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
 	// for debugging and controlling the variable watch window
-	QObject::connect(i, SIGNAL(varWinAssign(Variables*, int)), varwin,
-		SLOT(varWinAssign(Variables*, int)));
-	QObject::connect(i, SIGNAL(varWinAssign(Variables*, int, int, int)), varwin,
-		SLOT(varWinAssign(Variables*, int, int, int)));
+    QObject::connect(i, SIGNAL(varWinAssign(Variables**, int)), varwin,
+        SLOT(varWinAssign(Variables**, int)));
+    QObject::connect(i, SIGNAL(varWinAssign(Variables**, int, int, int)), varwin,
+        SLOT(varWinAssign(Variables**, int, int, int)));
 	QObject::connect(i, SIGNAL(varWinDropLevel(int)), varwin,
 		SLOT(varWinDropLevel(int)));
-	QObject::connect(i, SIGNAL(varWinDimArray(Variables*, int, int, int)), varwin,
-		SLOT(varWinDimArray(Variables*, int, int, int)));
+    QObject::connect(i, SIGNAL(varWinDimArray(Variables**, int, int, int)), varwin,
+        SLOT(varWinDimArray(Variables**, int, int, int)));
 
     QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
 
@@ -381,11 +381,11 @@ void RunController::stopRun() {
 
 void RunController::stopRunFinalized() {
 	// event when the interperter actually finishes the run
-	mainwin->statusBar()->showMessage(tr("Ready."));
+    mainwin->statusBar()->showMessage(tr("Ready."));
 
 	mainwin->setRunState(RUNSTATESTOP);
 
-	mainwin->ifGuiStateClose();
+    mainwin->ifGuiStateClose();
 }
 
 void
