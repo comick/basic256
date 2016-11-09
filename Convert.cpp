@@ -19,7 +19,7 @@ Convert::Convert(Error *e, QLocale *applocale) {
 }
 
 Convert::~Convert() {
-	delete(isnumeric);
+    //delete(isnumeric); //this is just a memo: https://sourceforge.net/p/kidbasic/bugs/66/
 }
 
 		

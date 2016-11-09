@@ -52,7 +52,7 @@ end
 
 subroutine shuffle(b[])
    #for t = 1 to nx * ny * 10
-   for t = 1 to 100
+   for t = 1 to b[,?] * b[?,] * 10
       x = zx
       y = zy
       r = int(rand*4)

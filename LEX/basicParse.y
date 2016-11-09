@@ -282,7 +282,7 @@
 		// an internal symbol used to jump an if
                 int i;
 		char name[32];
-		//sprintf(name,"___%d_%d", id, type);
+		sprintf(name,"__INT_%d_%d", id, type);
                 i = getSymbol(name);
                 symtableaddresstype[i]=ADDRESSTYPE_SYSTEMCALL;
                 return i;

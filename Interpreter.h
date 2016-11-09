@@ -149,7 +149,7 @@ class Interpreter : public QThread
 		void debugNextStep();
 		void fastGraphics();
 		void stopRun();
-		void stopRunFinalized();
+        void stopRunFinalized(bool);
 		void goutputReady();
 		void outputReady(QString);
 		void outputError(QString);
@@ -190,6 +190,7 @@ class Interpreter : public QThread
 		Variables *variables;
 		Stack *stack;
 		Error *error;
+        bool isError; //flag set if program stops because of an error
 		Convert *convert;
 		QIODevice **filehandle;
 		int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort

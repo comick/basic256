@@ -59,7 +59,7 @@ class RunController : public QObject
   void debugNextStep();
   void startRun();
   void stopRun();				// user pressed the stop button
-  void stopRunFinalized();		// called when interperter finally finished stoprun
+  void stopRunFinalized(bool ok);		// called when interperter finally finished stoprun and pass if there was an error or not
   void stepThrough();
   void stepBreakPoint();
   void showDocumentation();

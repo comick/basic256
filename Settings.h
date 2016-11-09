@@ -140,7 +140,7 @@
 
 	// store history of files as SaveHistory/0 ... SaveHistory/8 
 	#define SETTINGSGROUPHIST "SaveHistory"
-	#define SETTINGSGROUPHISTN 9
+    #define SETTINGSGROUPHISTN 10
 
 	// store user settings (setsetting/getsetting) in seperate group
 	#define SETTINGSGROUPUSER "UserSettings"

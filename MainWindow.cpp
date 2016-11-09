@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     mainwin = this;
     undoButtonValue = false;
     redoButtonValue = false;
-    autoCheckForUpdate = false;
+    setAcceptDrops(true);
 
     // create the global mymutexes and waits
     mymutex = new QMutex(QMutex::NonRecursive);
@@ -79,8 +79,24 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     waitDebugCond = new QWaitCondition();
 
     setWindowIcon(QIcon(":/images/basic256.png"));
-	
-	// Basic* *win go into BasicWidget *win_widget to get menus and toolbars
+
+#ifndef ANDROID
+    manager = new QNetworkAccessManager(this);
+    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+    config.setProtocol(QSsl::SecureProtocols);
+    request.setSslConfiguration(config);
+#ifdef WIN32PORTABLE
+    request.setUrl(QUrl("https://sourceforge.net/projects/basic256prtbl/best_release.json"));
+#else
+    request.setUrl(QUrl("https://sourceforge.net/projects/kidbasic/best_release.json"));
+#endif
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(sourceforgeReplyFinished(QNetworkReply*)));
+#endif
+
+
+    // Basic* *win go into BasicWidget *win_widget to get menus and toolbars
 	// *win_widget go into BasicDock *win_dock to create the GUI docks
 	
     editwin = new BasicEdit();
@@ -150,8 +166,21 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     filemenu = menuBar()->addMenu(QObject::tr("&File"));
     filemenu_new_act = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
     filemenu_new_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::New));
-    filemenu_open_act = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open"));
+    filemenu_open_act = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open..."));
     filemenu_open_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Open));
+
+    // Recent files menu
+    filemenu_recentfiles = filemenu->addMenu(QObject::tr("Open &Recent"));
+    for(int i=0;i<SETTINGSGROUPHISTN;i++){
+        recentfiles_act[i] = filemenu_recentfiles->addAction(QIcon(":images/open.png"), QObject::tr(""));
+        if(i<10)
+            recentfiles_act[i]->setShortcut(Qt::Key_0 + ((i+1)%SETTINGSGROUPHISTN) + Qt::CTRL);
+    }
+    filemenu_recentfiles->addSeparator();
+    recentfiles_empty_act = filemenu_recentfiles->addAction(QObject::tr("&Clear list"));
+    updateRecent();
+
+    // File menu - continue
     filemenu_save_act = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
     filemenu_save_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Save));
     filemenu_saveas_act = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As..."));
@@ -160,28 +189,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     filemenu_print_act = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print..."));
     filemenu_print_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
     filemenu->addSeparator();
-    filemenu_recent_act[0] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[0]->setShortcut(Qt::Key_1 + Qt::CTRL);
-    filemenu_recent_act[1] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[1]->setShortcut(Qt::Key_2 + Qt::CTRL);
-    filemenu_recent_act[2] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[2]->setShortcut(Qt::Key_3 + Qt::CTRL);
-    filemenu_recent_act[3] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[3]->setShortcut(Qt::Key_4 + Qt::CTRL);
-    filemenu_recent_act[4] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[4]->setShortcut(Qt::Key_5 + Qt::CTRL);
-    filemenu_recent_act[5] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[5]->setShortcut(Qt::Key_6 + Qt::CTRL);
-    filemenu_recent_act[6] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[6]->setShortcut(Qt::Key_7 + Qt::CTRL);
-    filemenu_recent_act[7] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[7]->setShortcut(Qt::Key_8 + Qt::CTRL);
-    filemenu_recent_act[8] = filemenu->addAction(QIcon(":images/open.png"), QObject::tr(""));
-    filemenu_recent_act[8]->setShortcut(Qt::Key_9 + Qt::CTRL);
-    filemenu->addSeparator();
     filemenu_exit_act = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
     filemenu_exit_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Quit));
-    //
+
 
     // Edit menu
     editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
@@ -236,25 +246,21 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     editwin_visible_act->setCheckable(true);
     editwin_dock->setActionCheck(editwin_visible_act);
     editwin_visible_act->setChecked(SETTINGSEDITVISIBLEDEFAULT);
-    editwin_dock->setVisible(SETTINGSEDITVISIBLEDEFAULT);
 
     outwin_visible_act = viewmenu->addAction(QObject::tr("&Text Window"));
     outwin_visible_act->setCheckable(true);
     outwin_dock->setActionCheck(outwin_visible_act);
     outwin_visible_act->setChecked(SETTINGSOUTVISIBLEDEFAULT);
-    outwin_dock->setVisible(SETTINGSOUTVISIBLEDEFAULT);
 
     graphwin_visible_act = viewmenu->addAction(QObject::tr("&Graphics Window"));
     graphwin_visible_act->setCheckable(true);
     graphwin_dock->setActionCheck(graphwin_visible_act);
     graphwin_visible_act->setChecked(SETTINGSGRAPHVISIBLEDEFAULT);
-    graphwin_dock->setVisible(SETTINGSGRAPHVISIBLEDEFAULT);
 
     varwin_visible_act = viewmenu->addAction(QObject::tr("&Variable Watch Window"));
     varwin_visible_act->setCheckable(true);
     varwin_dock->setActionCheck(varwin_visible_act);
     varwin_visible_act->setChecked(SETTINGSVARVISIBLEDEFAULT);
-    varwin_dock->setVisible(SETTINGSVARVISIBLEDEFAULT);
 
 
     // Editor and Output font and Editor settings
@@ -278,15 +284,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     main_toolbar_visible_act = viewtbars->addAction(QObject::tr("&Main"));
     main_toolbar_visible_act->setCheckable(true);
     main_toolbar_visible_act->setChecked(SETTINGSTOOLBARVISIBLEDEFAULT);
-    main_toolbar->setVisible(SETTINGSTOOLBARVISIBLEDEFAULT);
     outwin_toolbar_visible_act = viewtbars->addAction(QObject::tr("&Text Output"));
     outwin_toolbar_visible_act->setCheckable(true);
     outwin_toolbar_visible_act->setChecked(SETTINGSOUTTOOLBARVISIBLEDEFAULT);
-    outwin_widget->slotShowToolBar(SETTINGSOUTTOOLBARVISIBLEDEFAULT);
     graphwin_toolbar_visible_act = viewtbars->addAction(QObject::tr("&Graphics Output"));
     graphwin_toolbar_visible_act->setCheckable(true);
     graphwin_toolbar_visible_act->setChecked(SETTINGSGRAPHTOOLBARVISIBLEDEFAULT);
-    graphwin_widget->slotShowToolBar(SETTINGSGRAPHTOOLBARVISIBLEDEFAULT);
  
     // Run menu
     runmenu = menuBar()->addMenu(QObject::tr("&Run"));
@@ -311,7 +314,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
 #if defined(WIN32PORTABLE) || defined(ANDROID)
     // in portable or android make doc online and context help online
-    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
+    onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
     onlinehact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
@@ -323,7 +326,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
     addAction (helpthis);
-    QAction *onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
+    onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
 #endif
 #ifndef ANDROID
     helpmenu->addSeparator();
@@ -349,10 +352,20 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     main_toolbar->addAction(cutact);
     main_toolbar->addAction(copyact);
     main_toolbar->addAction(pasteact);
-
 	//
+
 	loadCustomizations();
 	configureGuiState();
+
+    //Display windows and toolbars acording their final settings
+    editwin_dock->setVisible(editwin_visible_act->isChecked());
+    graphwin_dock->setVisible(graphwin_visible_act->isChecked());
+    outwin_dock->setVisible(outwin_visible_act->isChecked());
+    varwin_dock->setVisible(varwin_visible_act->isChecked());
+    main_toolbar->setVisible(main_toolbar_visible_act->isChecked());
+    graphwin_widget->slotShowToolBar(graphwin_toolbar_visible_act->isChecked());
+    outwin_widget->slotShowToolBar(outwin_toolbar_visible_act->isChecked());
+
 
 	// connect the signals
 	QObject::connect(editwin, SIGNAL(changeStatusBar(QString)), this, SLOT(updateStatusBar(QString)));
@@ -360,34 +373,29 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	QObject::connect(editwin, SIGNAL(undoAvailable(bool)), this, SLOT(slotUndoAvailable(bool)));
 	QObject::connect(editwin, SIGNAL(redoAvailable(bool)), this, SLOT(slotRedoAvailable(bool)));
 	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), this, SLOT(updateCopyCutButtons(bool)));
-
 	QObject::connect(editwin_visible_act, SIGNAL(triggered(bool)), editwin_dock, SLOT(setVisible(bool)));
+    QObject::connect(editwin, SIGNAL(updateRecent()), this, SLOT(updateRecent()));
+    QObject::connect(editwin, SIGNAL(addFileToRecentList(QString)), this, SLOT(addFileToRecentList(QString)));
 
-    QObject::connect(filemenu, SIGNAL(aboutToShow()), this, SLOT(updateRecent()));
+
     QObject::connect(filemenu_new_act, SIGNAL(triggered()), editwin, SLOT(newProgram()));
     QObject::connect(filemenu_open_act, SIGNAL(triggered()), editwin, SLOT(loadProgram()));
     QObject::connect(filemenu_save_act, SIGNAL(triggered()), editwin, SLOT(saveProgram()));
     QObject::connect(filemenu_saveas_act, SIGNAL(triggered()), editwin, SLOT(saveAsProgram()));
     QObject::connect(filemenu_print_act, SIGNAL(triggered()), editwin, SLOT(slotPrint()));
-    QObject::connect(filemenu_recent_act[0], SIGNAL(triggered()), editwin, SLOT(loadRecent0()));
-    QObject::connect(filemenu_recent_act[1], SIGNAL(triggered()), editwin, SLOT(loadRecent1()));
-    QObject::connect(filemenu_recent_act[2], SIGNAL(triggered()), editwin, SLOT(loadRecent2()));
-    QObject::connect(filemenu_recent_act[3], SIGNAL(triggered()), editwin, SLOT(loadRecent3()));
-    QObject::connect(filemenu_recent_act[4], SIGNAL(triggered()), editwin, SLOT(loadRecent4()));
-    QObject::connect(filemenu_recent_act[5], SIGNAL(triggered()), editwin, SLOT(loadRecent5()));
-    QObject::connect(filemenu_recent_act[6], SIGNAL(triggered()), editwin, SLOT(loadRecent6()));
-    QObject::connect(filemenu_recent_act[7], SIGNAL(triggered()), editwin, SLOT(loadRecent7()));
-    QObject::connect(filemenu_recent_act[8], SIGNAL(triggered()), editwin, SLOT(loadRecent8()));
+    QObject::connect(filemenu_recentfiles, SIGNAL(aboutToShow()), this, SLOT(updateRecent())); //in case that another instance modify history
+    for(int i=0;i<SETTINGSGROUPHISTN;i++){
+        QObject::connect(recentfiles_act[i], SIGNAL(triggered()), this, SLOT(openRecent()));
+    }
+    QObject::connect(recentfiles_empty_act, SIGNAL(triggered()), this, SLOT(emptyRecent()));
     QObject::connect(filemenu_exit_act, SIGNAL(triggered()), this, SLOT(close()));
 
 	QObject::connect(graphwin_toolbar_visible_act, SIGNAL(toggled(bool)), graphwin_widget, SLOT(slotShowToolBar(const bool)));
-
 	QObject::connect(graphwin_visible_act, SIGNAL(triggered(bool)), graphwin_dock, SLOT(setVisible(bool)));
 
 	QObject::connect(main_toolbar_visible_act, SIGNAL(toggled(bool)), main_toolbar, SLOT(setVisible(bool)));
 
 	QObject::connect(outwin_visible_act, SIGNAL(triggered(bool)), outwin_dock, SLOT(setVisible(bool)));
-
 	QObject::connect(outwin_toolbar_visible_act, SIGNAL(toggled(bool)), outwin_widget, SLOT(slotShowToolBar(const bool)));
 
 	QObject::connect(varwin_visible_act, SIGNAL(triggered(bool)), varwin_dock, SLOT(setVisible(bool)));
@@ -458,7 +466,6 @@ void MainWindow::loadCustomizations() {
 
     // main toolbar
     v = settings.value(SETTINGSTOOLBARVISIBLE + QString::number(guiState), SETTINGSTOOLBARVISIBLEDEFAULT).toBool();
-    main_toolbar->setVisible(v);
     main_toolbar_visible_act->setChecked(v);
 
     // edit whitespace
@@ -469,12 +476,10 @@ void MainWindow::loadCustomizations() {
     v = settings.value(SETTINGSGRAPHGRIDLINES + QString::number(guiState), SETTINGSGRAPHGRIDLINESDEFAUT).toBool();
     graph_grid_visible_act->setChecked(v);
     v = settings.value(SETTINGSGRAPHTOOLBARVISIBLE + QString::number(guiState), SETTINGSGRAPHTOOLBARVISIBLEDEFAULT).toBool();
-    graphwin_widget->slotShowToolBar(v);
     graphwin_toolbar_visible_act->setChecked(v);
 
     // out toolbar
     v = settings.value(SETTINGSOUTTOOLBARVISIBLE + QString::number(guiState), SETTINGSOUTTOOLBARVISIBLEDEFAULT).toBool();
-    outwin_widget->slotShowToolBar(v);
     outwin_toolbar_visible_act->setChecked(v);
 
     // set initial font
@@ -490,37 +495,36 @@ void MainWindow::loadCustomizations() {
 
 
 void MainWindow::saveCustomizations() {
-	// save user customizations on close
+    // save user customizations on close
 
 	SETTINGS;
 	settings.setValue(SETTINGSMAINGEOMETRY + QString::number(guiState), saveGeometry());
 	settings.setValue(SETTINGSMAINSTATE + QString::number(guiState), saveState());
 
-	// main
+    // main
 	settings.setValue(SETTINGSTOOLBARVISIBLE + QString::number(guiState), main_toolbar->isVisible());
 
-	// edit
+    // edit
 	settings.setValue(SETTINGSEDITVISIBLE + QString::number(guiState), editwin_visible_act->isChecked());
 	settings.setValue(SETTINGSEDITWHITESPACE + QString::number(guiState), edit_whitespace_act->isChecked());
 
-	// graph
+    // graph
 	settings.setValue(SETTINGSGRAPHVISIBLE + QString::number(guiState), graphwin_visible_act->isChecked());
 	settings.setValue(SETTINGSGRAPHTOOLBARVISIBLE + QString::number(guiState), graphwin_widget->isVisibleToolBar());
 	settings.setValue(SETTINGSGRAPHGRIDLINES + QString::number(guiState), graphwin->isVisibleGridLines());
 
-	// out
+    // out
 	settings.setValue(SETTINGSOUTVISIBLE + QString::number(guiState), outwin_visible_act->isChecked());
 	settings.setValue(SETTINGSOUTTOOLBARVISIBLE + QString::number(guiState), outwin_widget->isVisibleToolBar());
 
-	// var
+    // var
 	settings.setValue(SETTINGSVARVISIBLE + QString::number(guiState), varwin_visible_act->isChecked());
 
-	// font
+    // font
 	settings.setValue(SETTINGSFONT + QString::number(guiState), editwin->font().toString());
 }
 
 MainWindow::~MainWindow() {
-    //printf("mwdestroy\n");
     delete rc;
     delete editsyntax;
     delete mymutex;
@@ -530,7 +534,6 @@ MainWindow::~MainWindow() {
     delete graphwin;
     delete main_toolbar;
     if (locale) delete(locale);
-    
 }
 
 void MainWindow::about() {
@@ -571,42 +574,18 @@ void MainWindow::about() {
     QMessageBox::about(this, title, message);
 }
 
-void MainWindow::updateRecent() {
-    //update recent list on file menu
-    if (guiState==GUISTATENORMAL) {
-        SETTINGS;
-        settings.beginGroup(SETTINGSGROUPHIST);
-        for (int i=0; i<SETTINGSGROUPHISTN; i++) {
-            QString fn = settings.value(QString::number(i), "").toString();
-            QString path = QDir::currentPath() + "/";
-            if (QString::compare(path, fn.left(path.length()))==0) {
-                fn = fn.right(fn.length()-path.length());
-            }
-            filemenu_recent_act[i]->setEnabled(fn.length()!=0 && filemenu_new_act->isEnabled());
-            filemenu_recent_act[i]->setVisible(fn.length()!=0);
-            filemenu_recent_act[i]->setText("&" + QString::number(i+1) + " - " + fn);
-        }
-        settings.endGroup();
-    } else {
-        for (int i=0; i<SETTINGSGROUPHISTN; i++) {
-            filemenu_recent_act[i]->setEnabled(false);
-            filemenu_recent_act[i]->setVisible(false);
-        }
-    }
-}
+
 
 void MainWindow::configureGuiState() {
 	//disable everything except what is needed to quit, stop and run a program.
 	if (guiState==GUISTATERUN||guiState==GUISTATEAPP) {
 		// common UI changes for both states
-		varwin->setVisible(false);
 		filemenu_new_act->setVisible(false);
 		filemenu_open_act->setVisible(false);
 		filemenu_save_act->setVisible(false);
 		filemenu_saveas_act->setVisible(false);
 		filemenu_print_act->setVisible(false);
-		editmenu->setTitle("");
-		editmenu->setVisible(false);
+        editmenu->menuAction()->setVisible(false);
 		undoact->setVisible(false);
 		redoact->setVisible(false);
 		cutact->setVisible(false);
@@ -617,32 +596,27 @@ void MainWindow::configureGuiState() {
 		bpact->setVisible(false);
 		edit_whitespace_act->setVisible(false);
 		clearbreakpointsact->setVisible(false);
+
 		editwin->blockSignals(true);
 		findact->blockSignals(true);
 		findagain->blockSignals(true);
 		replaceact->blockSignals(true);
 		helpthis->blockSignals(true);
 		varwin_visible_act->setVisible(false);
-		varwin_dock->setVisible(false);
-		for (int i=0; i<SETTINGSGROUPHISTN; i++) {
-			filemenu_recent_act[i]->setEnabled(false);
-			filemenu_recent_act[i]->setVisible(false);
-			filemenu_recent_act[i]->blockSignals(false);
-		}
-		
-		// run state additional changes
-		if (guiState==GUISTATERUN) {
-			editwin->setReadOnly(true);
-		}
-		
+        editwin->setReadOnly(true);
+
 		// application state additional changes
 		if (guiState==GUISTATEAPP) {
-			editwin_dock->setVisible(false);
-			editwin_visible_act->setVisible(false);
+            onlinehact->setVisible(false);
+            docact->setVisible(false);
+            editwin_visible_act->setVisible(false);
 			main_toolbar_visible_act->setVisible(false);
+            main_toolbar_visible_act->setChecked(false);
 			runact->setVisible(false);
+            stopact->setVisible(false);
+            runmenu->menuAction()->setVisible(false);
 		}
-	}
+    }
 }
 
 
@@ -654,10 +628,16 @@ void MainWindow::ifGuiStateRun() {
 		}
 }
 
-void MainWindow::ifGuiStateClose() {
+void MainWindow::ifGuiStateClose(bool ok) {
 	// optionally force close if application
 	// from runtimecontroller when interperter stopps
-	if (guiState==GUISTATEAPP) close();
+    if (guiState==GUISTATEAPP){
+        if(!ok){
+            statusBar()->showMessage("Error.");
+            QMessageBox::warning(this, tr("Error"), tr("Current program has terminated in an unusual way."));
+        }
+        close();
+    }
 }
 
 
@@ -671,17 +651,15 @@ void MainWindow::closeEvent(QCloseEvent *e) {
             QMessageBox::No));
     }
     if (doquit) {
-        // actually quitting
-        e->accept();
         // save current screen posision, visibility and floating
         saveCustomizations();
+        // actually quitting
+        e->accept();
         qApp->quit();
     } else {
         // not quitting
         e->ignore();
     }
-
-
 }
 
 //Buttons section
@@ -740,7 +718,7 @@ void MainWindow::setRunState(int state) {
     filemenu_saveas_act->setEnabled(state==RUNSTATESTOP);
     filemenu_print_act->setEnabled(state==RUNSTATESTOP);
     for(int t=0; t<SETTINGSGROUPHISTN; t++)
-		filemenu_recent_act[t]->setEnabled(state==RUNSTATESTOP);
+        recentfiles_act[t]->setEnabled(state==RUNSTATESTOP);
     filemenu_exit_act->setEnabled(true);
 
     // edit menu
@@ -764,20 +742,7 @@ void MainWindow::setRunState(int state) {
 //Check for an update
 #ifndef ANDROID
 void MainWindow::checkForUpdate(void){
-    QNetworkRequest request;
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
-    config.setProtocol(QSsl::SecureProtocols);
-    request.setSslConfiguration(config);
-#ifdef WIN32PORTABLE
-    request.setUrl(QUrl("https://sourceforge.net/projects/basic256prtbl/best_release.json"));
-#else
-    request.setUrl(QUrl("https://sourceforge.net/projects/kidbasic/best_release.json"));
-#endif
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
     manager->get(request);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(sourceforgeReplyFinished(QNetworkReply*)));
 }
 
 void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
@@ -828,3 +793,120 @@ void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
     reply->deleteLater();
 }
 #endif
+
+
+
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event){
+    if (event->mimeData()->hasFormat("text/uri-list")){
+        event->acceptProposedAction();
+    }else{
+        event->ignore();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event){
+        if(event->mimeData()->hasFormat("text/uri-list")){
+        QList<QUrl> urls = event->mimeData()->urls();
+        if (urls.isEmpty())
+            return;
+        QString fileName = urls.first().toLocalFile();
+        if (fileName.isEmpty())
+            return;
+        rc->stopRun();
+        editwin->loadFile(fileName);
+    }
+        return;
+}
+
+
+void MainWindow::updateRecent() {
+    //update recent list on file menu
+    int counter=0;
+
+    if (guiState==GUISTATENORMAL) {
+        SETTINGS;
+        settings.beginGroup(SETTINGSGROUPHIST);
+        for (int i=0; i<SETTINGSGROUPHISTN; i++) {
+            QString fn = settings.value(QString::number(i), "").toString().trimmed();
+            if(!fn.isEmpty()){
+                recentfiles_act[counter]->setData(fn);
+                QString path = QDir::currentPath() + "/";
+                if (QString::compare(path, fn.left(path.length()))==0) {
+                    fn = fn.right(fn.length()-path.length());
+                }
+                recentfiles_act[counter]->setEnabled(fn.length()!=0 && filemenu_new_act->isEnabled());
+                recentfiles_act[counter]->setVisible(fn.length()!=0);
+                recentfiles_act[counter]->setText((counter>=9?QString::number(int((counter+1)/10)):QString("")) + "&" + QString::number((counter+1)%10) + " - " + fn);
+                counter++; //next slot - skip empty values deleted manually by user
+            }
+        }
+        settings.endGroup();
+        //hide unused slots
+        for (int i=counter; i<SETTINGSGROUPHISTN; i++) {
+            recentfiles_act[i]->setEnabled(false);
+            recentfiles_act[i]->setVisible(false);
+        }
+    }else{
+        filemenu_recentfiles->menuAction()->setVisible(false);
+    }
+
+    //if(guiState!=GUISTATENORMAL) or we have unused slots
+    for (int i=counter; i<SETTINGSGROUPHISTN; i++) {
+        recentfiles_act[i]->setEnabled(false);
+        recentfiles_act[i]->setVisible(false);
+    }
+    //if we have no history to show
+    if(counter==0){
+        recentfiles_empty_act->setEnabled(false);
+        recentfiles_empty_act->setVisible(false);
+        filemenu_recentfiles->setEnabled(false);
+    }else{
+        recentfiles_empty_act->setEnabled(true);
+        recentfiles_empty_act->setVisible(true);
+        filemenu_recentfiles->setEnabled(true);
+    }
+}
+
+void MainWindow::openRecent(){
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action){
+        QString f = action->data().toString().trimmed();
+        if(!f.isEmpty()){
+            editwin->loadFile(f);
+        }
+    }
+}
+
+void MainWindow::emptyRecent(){
+    SETTINGS;
+    settings.beginGroup(SETTINGSGROUPHIST);
+        for (int i=0; i<SETTINGSGROUPHISTN; i++) {
+            settings.setValue(QString::number(i), "");
+        }
+    settings.endGroup();
+    updateRecent();
+}
+
+void MainWindow::addFileToRecentList(QString fn) {
+    // keep list of recently open or saved files
+    // put file name at position 0 on list
+    fn=fn.trimmed();
+    if(!fn.isEmpty()){
+        SETTINGS;
+        settings.beginGroup(SETTINGSGROUPHIST);
+        // if program is at top then do nothing
+        if (settings.value(QString::number(0), "").toString() != fn) {
+            // find end of scootdown
+            int e;
+            for(e=1; e<SETTINGSGROUPHISTN && settings.value(QString::number(e), "").toString() != fn; e++) {}
+            // scoot entries down
+            for (int i=(e<SETTINGSGROUPHISTN?e:SETTINGSGROUPHISTN-1); i>=1; i--) {
+                settings.setValue(QString::number(i), settings.value(QString::number(i-1), ""));
+            }
+            settings.setValue(QString::number(0), fn);
+        }
+        settings.endGroup();
+        updateRecent();
+    }
+}

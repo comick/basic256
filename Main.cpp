@@ -172,13 +172,14 @@ int main(int argc, char *argv[]) {
 #else
     // load initial file and optionally start
     if (!fileName.isEmpty()) {
-        if (fileName.endsWith(".kbs")) {
             QFileInfo fi(fileName);
-            if (fi.exists()) {
-                editwin->loadFile(fi.absoluteFilePath());
-                mainwin.ifGuiStateRun();
-            }
+        bool ok = editwin->loadFile(fi.absoluteFilePath());
+        if(guimode!=0 && !ok){
+            return 0;
         }
+        mainwin.ifGuiStateRun();
+    }else if(guimode!=0){
+        return 0;
     }
 #endif
 

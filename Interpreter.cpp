@@ -922,6 +922,7 @@ Interpreter::runHalted() {
 void
 Interpreter::run() {
     // main run loop
+    isError=false;
     downloader = new BasicDownloader();
     sound = new Sound();
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
@@ -934,7 +935,7 @@ Interpreter::run() {
     status = R_STOPPED;
 	debugMode = 0;
     cleanup(); // cleanup the variables, databases, files, stack and everything
-    emit(stopRunFinalized());
+    emit(stopRunFinalized(!isError));
 }
 
 
@@ -1203,6 +1204,7 @@ Interpreter::execByteCode() {
 			op = wordCode + onerrorstack->onerroraddress;
 			return 0;
 		} else {
+            isError=true;
 			// no error handler defined or FATAL error - display message
 			printError();
 			// if error number less than the start of warnings then

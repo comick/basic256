@@ -60,10 +60,12 @@ public:
   	MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring, int guistate);
 	~MainWindow();
 	void ifGuiStateRun();
-	void ifGuiStateClose();
+    void ifGuiStateClose(bool ok);
 	void closeEvent(QCloseEvent *);
     void setEnabledEditorButtons(bool val);
     void setRunState(int);
+    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
 
     
 
@@ -75,13 +77,17 @@ public:
 
 	// file menu and choices
 	QMenu * filemenu;
-	QAction * filemenu_new_act;
+    QMenu * filemenu_recentfiles;
+    QAction * filemenu_new_act;
 	QAction * filemenu_open_act;
 	QAction * filemenu_save_act;
 	QAction * filemenu_saveas_act;
 	QAction * filemenu_print_act;
-	QAction *filemenu_recent_act[SETTINGSGROUPHISTN]; 
 	QAction * filemenu_exit_act;
+
+    // recent files submenu
+    QAction * recentfiles_act[SETTINGSGROUPHISTN];
+    QAction * recentfiles_empty_act;
 
 	// edit menu and choices
 	QMenu * editmenu;
@@ -120,6 +126,7 @@ public:
     QAction * clearbreakpointsact;
 
     // help menu
+    QAction * onlinehact;
     QAction * docact;
     QAction * helpthis;
     QAction * checkupdate;
@@ -157,18 +164,25 @@ private:
 	void loadCustomizations();
 	void saveCustomizations();
 
+#ifndef ANDROID
+    QNetworkRequest request;
+    QNetworkAccessManager *manager;
+#endif
 
 	// void pointer to the run controller
 	// can't specify type because of circular reference
 	//void *rcvoidpointer;		
 
 private slots:
-	void updateRecent();
-	void about();
+    void updateRecent();
+    void emptyRecent();
+    void addFileToRecentList(QString);
+    void about();
     void updatePasteButton();
     void updateCopyCutButtons(bool);
     void slotUndoAvailable(bool val);
     void slotRedoAvailable(bool val);
+    void openRecent();
 #ifndef ANDROID
     void sourceforgeReplyFinished(QNetworkReply* reply);
 #endif

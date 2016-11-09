@@ -205,7 +205,7 @@ void BasicEdit::saveFile(bool overwrite) {
             document()->setModified(false);
             setWindowTitle(fi.fileName());
 			QDir::setCurrent(fi.absolutePath());
-			addFileToRecentList(filename);
+            emit(addFileToRecentList(filename));
 		}
 	}
 }
@@ -224,31 +224,6 @@ BasicEdit::saveAsProgram() {
     }
 }
 
-void BasicEdit::addFileToRecentList(QString fn) {
-    // keep list of recently open or saved files
-    // put file name at position 0 on list
-    SETTINGS;
-    settings.beginGroup(SETTINGSGROUPHIST);
-    // if program is at top then do nothing
-    if (settings.value(QString::number(0), "").toString() != fn) {
-        // find end of scootdown
-        int e;
-        for(e=1; e<SETTINGSGROUPHISTN && settings.value(QString::number(e), "").toString() != fn; e++) {}
-        // scoot entries down
-        for (int i=e; i>=1; i--) {
-            settings.setValue(QString::number(i), settings.value(QString::number(i-1), ""));
-        }
-        settings.setValue(QString::number(0), fn);
-    }
-    settings.endGroup();
-
-    // print out for debugging
-    //settings.beginGroup(SETTINGSGROUPHIST);
-    //for (int i=0; i<SETTINGSGROUPHISTN; i++) {
-    //	printf("%i %s\n", i, settings.value(QString::number(i), "").toString().toUtf8().data());
-    //}
-    //settings.endGroup();
-}
 
 void
 BasicEdit::loadProgram() {
@@ -256,44 +231,9 @@ BasicEdit::loadProgram() {
     loadFile(s);
 }
 
-void BasicEdit::loadRecent0() {
-    loadRecent(0);
-}
-void BasicEdit::loadRecent1() {
-    loadRecent(1);
-}
-void BasicEdit::loadRecent2() {
-    loadRecent(2);
-}
-void BasicEdit::loadRecent3() {
-    loadRecent(3);
-}
-void BasicEdit::loadRecent4() {
-    loadRecent(4);
-}
-void BasicEdit::loadRecent5() {
-    loadRecent(5);
-}
-void BasicEdit::loadRecent6() {
-    loadRecent(6);
-}
-void BasicEdit::loadRecent7() {
-    loadRecent(7);
-}
-void BasicEdit::loadRecent8() {
-    loadRecent(8);
-}
 
-void
-BasicEdit::loadRecent(int i) {
-    SETTINGS;
-    settings.beginGroup(SETTINGSGROUPHIST);
-    loadFile(settings.value(QString::number(i), "").toString());
-    settings.endGroup();
-}
-
-void
-BasicEdit::loadFile(QString s) {
+bool BasicEdit::loadFile(QString s) {
+    s = s.trimmed();
 	if (s != NULL) {
 		bool doload = true;
         if (document()->isModified()) {
@@ -311,13 +251,19 @@ BasicEdit::loadFile(QString s) {
                     QMimeType mime = db.mimeTypeForFile(fi);
                     // Get user confirmation for non-text files
                     //Remember that empty ".kbs" files are detected as non-text files
-                    if (!(mime.inherits("text/plain") || (fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
+                    if (!(mime.inherits("text/plain") && !(fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
                         doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
                             tr("It does not seem to be a text file.")+ "\n" + tr("Load it anyway?"),
                             QMessageBox::Yes | QMessageBox::No,
                             QMessageBox::No));
+                    }else if (!fi.fileName().endsWith(".kbs",Qt::CaseInsensitive)) {
+                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
+                            tr("You're about to load a file that does not end with the .kbs extension.")+ "\n" + tr("Load it anyway?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No));
                     }
                     if (doload) {
+                        emit(changeStatusBar(tr("Loading file...")));
                         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
                         QByteArray ba = f.readAll();
                         this->setPlainText(QString::fromUtf8(ba.data()));
@@ -326,8 +272,10 @@ BasicEdit::loadFile(QString s) {
                         setWindowTitle(fi.fileName());
                         QDir::setCurrent(fi.absolutePath());
                         clearBreakPoints();
-                        addFileToRecentList(s);
+                        emit(addFileToRecentList(s));
                         QApplication::restoreOverrideCursor();
+                        emit(changeStatusBar(tr("Ready.")));
+                        return true;
                     }
                     f.close();
                 } else {
@@ -342,7 +290,7 @@ BasicEdit::loadFile(QString s) {
 			}
 		}
 	}
-
+return false;
 }
 
 
@@ -1058,21 +1006,20 @@ void BasicEdit::updateTitle(){
 }
 
 void BasicEdit::dragEnterEvent(QDragEnterEvent *event){
-    if (event->mimeData()->hasFormat("text/uri-list") || event->mimeData()->hasFormat("text/plain"))
+    if (event->mimeData()->hasFormat("text/plain")){
         event->acceptProposedAction();
+        QPlainTextEdit::dragEnterEvent(event);
+    }else{
+        event->ignore();
+    }
 }
 
 
 void BasicEdit::dropEvent(QDropEvent *event){
-    if(event->mimeData()->hasFormat("text/uri-list")){
-        QList<QUrl> urls = event->mimeData()->urls();
-        if (urls.isEmpty())
-            return;
-        QString fileName = urls.first().toLocalFile();
-        if (fileName.isEmpty())
-            return;
-        loadFile(fileName);
-    }else if (event->mimeData()->hasFormat("text/plain")){
+    if (event->mimeData()->hasFormat("text/plain")){
         event->acceptProposedAction();
+        QPlainTextEdit::dropEvent(event);
+    }else{
+        event->ignore();
     }
 }

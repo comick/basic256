@@ -108,7 +108,7 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
     QObject::connect(i, SIGNAL(outputError(QString)), this, SLOT(outputError(QString)));
     QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
-    QObject::connect(i, SIGNAL(stopRunFinalized()), this, SLOT(stopRunFinalized()));
+    QObject::connect(i, SIGNAL(stopRunFinalized(bool)), this, SLOT(stopRunFinalized(bool)));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 #ifdef ANDROID
 	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
@@ -241,7 +241,7 @@ RunController::startDebug() {
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         if (result < 0) {
             i->debugMode = 0;
-            stopRunFinalized();
+            stopRunFinalized(false);
             return;
         }
         i->initialize();
@@ -273,7 +273,7 @@ RunController::startRun() {
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         i->debugMode = 0;
         if (result < 0) {
-            stopRunFinalized();
+            stopRunFinalized(false);
             return;
         }
         // if successful compile see if we need to save it
@@ -361,6 +361,7 @@ RunController::stepBreakPoint() {
 }
 
 void RunController::stopRun() {
+    if(!i->isStopped()){
 	// event when the user clicks on the stop button
 	mainwin->statusBar()->showMessage(tr("Stopping."));
 
@@ -378,14 +379,15 @@ void RunController::stopRun() {
 
 	emit(runHalted());
 }
+}
 
-void RunController::stopRunFinalized() {
+void RunController::stopRunFinalized(bool ok) {
 	// event when the interperter actually finishes the run
     mainwin->statusBar()->showMessage(tr("Ready."));
 
 	mainwin->setRunState(RUNSTATESTOP);
 
-    mainwin->ifGuiStateClose();
+    mainwin->ifGuiStateClose(ok);
 }
 
 void
@@ -475,9 +477,18 @@ void RunController::findAgain() {
 
 void
 RunController::mainWindowsVisible(int w, bool v) {
-    if (w==0) mainwin->editwin_visible_act->setChecked(v);
-    if (w==1) mainwin->graphwin_visible_act->setChecked(v);
-    if (w==2) mainwin->outwin_visible_act->setChecked(v);
+    if (w==0) {
+        mainwin->editwin_visible_act->setChecked(v);
+        mainwin->editwin_visible_act->triggered(v);
+    }
+    if (w==1) {
+        mainwin->graphwin_visible_act->setChecked(v);
+        mainwin->graphwin_visible_act->triggered(v);
+    }
+    if (w==2) {
+        mainwin->outwin_visible_act->setChecked(v);
+        mainwin->outwin_visible_act->triggered(v);
+    }
 }
 
 void

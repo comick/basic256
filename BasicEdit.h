@@ -40,7 +40,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		BasicEdit();
 		~BasicEdit();
 
-		void loadFile(QString);
+        bool loadFile(QString);
 		void saveFile(bool);
 		void findString(QString, bool, bool, bool);
         void replaceString(QString, QString, bool, bool, bool, bool);
@@ -70,16 +70,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void slotPrint();
 		void beautifyProgram();
 		void slotWhitespace(bool);
-		void loadRecent0();
-		void loadRecent1();
-		void loadRecent2();
-		void loadRecent3();
-		void loadRecent4();
-		void loadRecent5();
-		void loadRecent6();
-		void loadRecent7();
-		void loadRecent8();
-		void highlightCurrentLine();
+        void highlightCurrentLine();
 		int  indentSelection();
 		void unindentSelection();
         void clearBreakPoints();
@@ -88,7 +79,9 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 
 	signals:
 		void changeStatusBar(QString);
-		void changeWindowTitle(QString);
+        void changeWindowTitle(QString);
+        void updateRecent();
+        void addFileToRecentList(QString);
 
 	protected:
 		void keyPressEvent(QKeyEvent *);
@@ -102,9 +95,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		int startPos;
 		int linePos;
 		QString filename;
-		void addFileToRecentList(QString);
-		void loadRecent(int);
-		QWidget *lineNumberArea;
+        QWidget *lineNumberArea;
         int rightClickBlockNumber;
 
 	private slots:

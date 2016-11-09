@@ -38,6 +38,9 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   char *inputString;
   int currentKey;			// store the last key pressed for key function
   void inputStart();
+  QAction *copyAct;
+  QAction *pasteAct;
+  QAction *printAct;
 
   virtual bool initActions(QMenu *, QToolBar *);
 
@@ -46,6 +49,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   void stopInput();
   void slotPrint();
   void cursorChanged();
+  void updatePasteButton();
 
  signals:
   void inputEntered(QString);

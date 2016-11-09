@@ -63,11 +63,13 @@ BasicOutput::getInput() {
 	startPos = t.position();
 	setReadOnly(false);
 	setFocus();
+    updatePasteButton();
 }
 
 void BasicOutput::stopInput() {
 	gettingInput = false;
 	setReadOnly(true);
+    updatePasteButton();
 }
 
 
@@ -101,6 +103,7 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
 		}else{
 				pressedKeys.remove(Qt::Key_Meta);
 		}
+        QTextEdit::keyPressEvent(e);
 		mymutex->unlock();
     } else {
         if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
@@ -108,8 +111,7 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
             t.setPosition(startPos, QTextCursor::KeepAnchor);
             emit(inputEntered(t.selectedText())); // send the string back to the interperter and run controller
             insertPlainText("\n");
-            gettingInput = false;
-            setReadOnly(true);
+            stopInput();
        } else if (e->key() == Qt::Key_Backspace) {
             QTextCursor t(textCursor());
             t.movePosition(QTextCursor::PreviousCharacter);
@@ -151,6 +153,7 @@ void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 		}else{
 				pressedKeys.remove(Qt::Key_Meta);
 		}
+        QTextEdit::keyReleaseEvent(e);
 		mymutex->unlock();
 	}
 }
@@ -164,9 +167,17 @@ bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {
 	vToolBar->setObjectName("outtoolbar");
 
 
-	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-	QAction *pasteAct = vMenu->addAction(QObject::tr("Paste"));
-	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+    copyAct = vMenu->addAction(QObject::tr("Copy"));
+    copyAct->setShortcutContext(Qt::WidgetShortcut);
+    copyAct->setShortcuts(QKeySequence::keyBindings(QKeySequence::Copy));
+    copyAct->setEnabled(false);
+    pasteAct = vMenu->addAction(QObject::tr("Paste"));
+    pasteAct->setShortcutContext(Qt::WidgetShortcut);
+    pasteAct->setShortcuts(QKeySequence::keyBindings(QKeySequence::Paste));
+    pasteAct->setEnabled(false);
+    printAct = vMenu->addAction(QObject::tr("Print"));
+    printAct->setShortcutContext(Qt::WidgetShortcut);
+    printAct->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
 
 	vToolBar->addAction(copyAct);
 	vToolBar->addAction(pasteAct);
@@ -175,6 +186,8 @@ bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {
 	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
 	QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
 	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+    QObject::connect(this, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
+    QObject::connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(updatePasteButton()));
 
 	m_usesToolBar = true;
 	m_usesMenu = true;
@@ -247,5 +260,9 @@ void BasicOutput::insertFromMimeData(const QMimeData* source)
 		textCursor().insertText(l.at(0));
 		setFocus();
 	}
+}
+
+void BasicOutput::updatePasteButton(){
+     pasteAct->setEnabled(this->canPaste());
 }
 
