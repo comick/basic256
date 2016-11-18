@@ -44,13 +44,14 @@
 # 21060807	j.m.reneau		split out arrays and rewrite - updated to 1.99.99.55
 # 20160908	j.m.reneau		change sprite for new slice logic
 #							added serialize and unserialize test to arrays
+# 20161117  j.m.reneau      adjusted function calling for ref defined at call
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1999965)
+call versiontest(1999972)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -253,37 +254,7 @@ include "testsuite_radix_include.kbs"
 ###################################################
 call section("Functions and Subroutines")
 ###################################################
-function funone(a, ref(b), c$, ref(d$))
-   # old way of returning (prev to 0.9.9.21)
-   a *= 2
-   funone = a + b
-   c$ = funtwo$(ref(b), ref(d$))
-end function
-
-function funtwo$(ref(r), ref(s$))
-   r *=3
-   s$ += s$
-   return "squiggy"
-end function
-
-subroutine subone(a, b$)
-   # set globals
-   globala += a
-   globalb$ += b$
-end subroutine
-
-global globala, globalb$
-globala = 99
-globalb$ = "globalb"
-call subone(1,"foo")
-call n("globala=100 after sub",globala,100)
-call s("globalb$='globalbfoo' after sub",globalb$,"globalbfoo")
-a = 9
-b$ = "hi"
-c = funone(7, ref(a), "junk", ref(b$))
-call n("return from funone",c,23)
-call n("a=27 return from funone",a,27)
-call s("b$='hihi' return from funone",b$,"hihi")
+include "testsuite_function_include.kbs"
 
 section_error:
 ###################################################

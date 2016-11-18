@@ -3,7 +3,7 @@
 // These type definitions are the data types stored in DataElement, the stack, and variables
 
 
-// stack and variable type T_REF used to pass a variable reference to a subroutine or function (BYREF passing)
+// stack and variable type T_REF used to pass a variable reference
 
 #define T_UNASSIGNED	0
 #define T_INT			1

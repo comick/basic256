@@ -5,14 +5,15 @@
 
 // variables are limited to types (defined in Types.h):
 
-// T_REF is a variable number in the previous recursion level
+// T_REF is a variable number in the specified recursion level
 
 // ************************************************************
 // * the Variable object - defines a single value or an array *
 // ************************************************************
 
-Variable::Variable(int v) {
+Variable::Variable(int v, int level) {
     data.intval = v;			// store variable number in intval for unassigned
+    data.level = level;
     arr = NULL;
 }
 
@@ -65,7 +66,7 @@ void Variables::allocateRecurseLevel() {
     // to access an element it does not matter
     varmap[recurselevel].resize(numsyms);
     for(int i=0; i<numsyms; i++) {
-		varmap[recurselevel][i] = new Variable(i);
+        varmap[recurselevel][i] = new Variable(i, recurselevel);
 	}
 }
 
@@ -106,88 +107,172 @@ Variables::decreaserecurse() {
     }
 }
 
-Variable* Variables::get(int varnum) {
-	// get v from map or follow REF to previous recurse level if needed
 
-    if(recurselevel==0 || isglobal(varnum))
-        return varmap[0][varnum];
-
-    Variable *v = varmap[recurselevel][varnum];
-    if (v->data.type==T_REF) {
-        recurselevel--;
-        v = get(v->data.intval);
-        recurselevel++;
+Variable* Variables::get(int varnum, int level) {
+    // get v from map or follow REF to recurse level if needed
+    if(level!=0){
+        if(isglobal(varnum)) level=0;
     }
+
+    Variable *v = varmap[level][varnum];
+    if((v->data.type!=T_REF))
+        return(v);
+
+    // make a stack of varnum/level needed to check for circular reference and put the original first
+    std::vector<std::pair<int, int>> track = {{varnum, level}};
+    std::vector<std::pair<int, int>>::iterator it;
+    std::pair <int,int> item;
+
+    do{
+        level=v->data.level;
+        if(level!=0){
+            if(isglobal(v->data.intval)){
+                level=0;
+            }else if(level>recurselevel){
+                //error: Variable points to a non-existent variable
+                //this can be done by assign a global variable inside a subroutine and return to previous level
+                //where we use the value of global var
+                error->q(ERROR_VARNULL);
+                return v;
+            }
+        }
+
+        // check in stack for v->data.intval/v->data.level and if it is founded then trow error for circular reference
+        // store v->data.intval/v->data.level in stack
+
+        item = std::make_pair(v->data.intval, v->data.level);
+        it = std::find(track.begin(), track.end(), item);
+        if (it != track.end()){
+            error->q(ERROR_VARCIRCULAR);
+            return v;
+        }
+        track.push_back(item);
+        v = varmap[level][v->data.intval];
+
+
+    }while(v->data.type==T_REF);
+
     return(v);
 }
 
+Variable* Variables::get(int varnum) {
+    return get(varnum, recurselevel);
+}
 
 VariableInfo* Variables::getInfo(int varnum) {
 	// used ONLY by VariableWin to get the real variable being effected
 	// by the assignment
-	// returns the actual variable number and recurse level the variable pointed
-	// to
-	//
-	VariableInfo  *vi;
-	Variable *v;
-	int level = recurselevel;
-    if(level!=0 && isglobal(varnum)) level = 0;
+	// returns the actual variable number and recurse level the variable pointed to
 
-	v = varmap[level][varnum];
-    if (v->data.type==T_REF && recurselevel>0) {
-		// recurse for a reference
-		recurselevel--;
-        vi = getInfo(v->data.intval);
-		recurselevel++;
-		return(vi);
-	}
-	// has data or not send back current recurse info
-	vi = new VariableInfo();
-	vi->level = level;
-	vi->varnum = varnum;
-	return(vi);
+    Variable *v = get(varnum, recurselevel);
+    VariableInfo *vi = new VariableInfo();
+    vi->level = v->data.level; //recurselevel==0?0:(isglobal(varnum)?0:recurselevel);
+    vi->varnum = varnum;
+    //vi->varnum = varnum;
+    return(vi);
 }
 
 DataElement* Variables::getdata(int varnum) {
     // get data from v - return varnum's data
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     return &v->data;
+}
 
+DataElement* Variables::getdata(DataElement* e) {
+    // get data from a REF() - already check for type==T_REF
+    if(e->level>recurselevel){
+        error->q(ERROR_VARNULL);
+        return e;
+    }
+    Variable *v = get(e->intval, e->level);
+    return &v->data;
 }
 
 void Variables::setdata(int varnum, DataElement* e) {
     // recieves a DataElement pointed pulled from the stack
     // e is a pointer in the stack vector AND MUST NOT BE DELETED
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     v->data.copy(e);
+//    if (v->arr){
+//        delete(v->arr);
+//        v->arr=NULL;
+//    }
 }
 
 void Variables::setdata(int varnum, long l) {
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     v->data.type = T_INT;
     v->data.intval = l;
+//    if (v->arr){
+//        delete(v->arr);
+//        v->arr=NULL;
+//    }
 }
 
 void Variables::setdata(int varnum, double f) {
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     v->data.type = T_FLOAT;
     v->data.floatval = f;
+//    if (v->arr){
+//        delete(v->arr);
+//        v->arr=NULL;
+//    }
 }
 
 void Variables::setdata(int varnum, QString s) {
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     v->data.type = T_STRING;
     v->data.stringval = s;
+//    if (v->arr){
+//        delete(v->arr);
+//        v->arr=NULL;
+//    }
 }
 
-void Variables::unassign(int varnum) {
-    Variable *v = get(varnum);
+void Variables::unassign(int varnum) { //unassign true variable, not the reference (unlink)
+    int level=recurselevel;
+    if(level!=0){
+        if(isglobal(varnum)) level=0;
+    }
+
+    Variable *v = varmap[level][varnum];
     v->data.type = T_UNASSIGNED;
     v->data.intval = varnum;
+//    if (v->arr){
+//        delete(v->arr);
+//        v->arr=NULL;
+//    }
 }
 
+void Variables::copyarray(int varnum1, DataElement* e) {
+    // suitable for copy arrays and any type of variable
+    // for T_REF
+    if(e->level>recurselevel){
+        error->q(ERROR_VARNULL);
+        return;
+    }
+    Variable *v1 = get(varnum1, recurselevel); //get the destination variable
+    Variable *v2 = get(e->intval, e->level); //get the source variable
+    v1->data.type = T_ARRAY;
+    if (v1->arr){
+        delete(v1->arr);
+        v1->arr=NULL;
+    }
+    if (v2->arr){
+        v1->arr = new VariableArrayPart;
+        v1->arr->xdim = v2->arr->xdim;
+        v1->arr->ydim = v2->arr->ydim;
+        int size = v2->arr->xdim * v2->arr->ydim;
+        v1->arr->datavector.resize(size);
+        for(int i=0;i<size;i++) {
+            v1->arr->datavector[i].copy(&v2->arr->datavector[i]);
+        }
+    }
+}
+
+
 void Variables::arraydim(int varnum, int xdim, int ydim, bool redim) {
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     int size = xdim * ydim;
     
     if (size <= VARIABLE_MAXARRAYELEMENTS) {
@@ -226,7 +311,7 @@ void Variables::arraydim(int varnum, int xdim, int ydim, bool redim) {
 
 int Variables::arraysize(int varnum) {
     // return length of array as if it was a one dimensional array - 0 = not an array
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
 
     if (v->data.type == T_ARRAY) {
         return(v->arr->xdim * v->arr->ydim);
@@ -240,7 +325,7 @@ int Variables::arraysize(int varnum) {
 
 int Variables::arraysizerows(int varnum) {
     // return number of columns of array as if it was a two dimensional array - 0 = not an array
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
 
     if (v->data.type == T_ARRAY) {
         return(v->arr->xdim);
@@ -254,7 +339,7 @@ int Variables::arraysizerows(int varnum) {
 
 int Variables::arraysizecols(int varnum) {
     // return number of rows of array as if it was a two dimensional array - 0 = not an array
-    Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
 
     if (v->data.type == T_ARRAY) {
         return(v->arr->ydim);
@@ -269,7 +354,7 @@ int Variables::arraysizecols(int varnum) {
 DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 	// get data from array elements in v from map (using x, y)
 	// if there is an error return an unassigned value
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
@@ -286,7 +371,7 @@ DataElement* Variables::arraygetdata(int varnum, int x, int y) {
 void Variables::arraysetdata(int varnum, int x, int y, DataElement *e) {
 	// DataElement's data is copied to the variable and it should be deleted
 	// by whomever created it
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
@@ -300,7 +385,7 @@ void Variables::arraysetdata(int varnum, int x, int y, DataElement *e) {
 }
 
 void Variables::arraysetdata(int varnum, int x, int y, long l) {
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
@@ -315,7 +400,7 @@ void Variables::arraysetdata(int varnum, int x, int y, long l) {
 }
 
 void Variables::arraysetdata(int varnum, int x, int y, double f) {
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
@@ -330,7 +415,7 @@ void Variables::arraysetdata(int varnum, int x, int y, double f) {
 }
 
 void Variables::arraysetdata(int varnum, int x, int y, QString s) {
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
@@ -345,7 +430,7 @@ void Variables::arraysetdata(int varnum, int x, int y, QString s) {
 }
 
 void Variables::arrayunassign(int varnum, int x, int y) {
-	Variable *v = get(varnum);
+    Variable *v = get(varnum, recurselevel);
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;

@@ -31,7 +31,7 @@ class VariableArrayPart
 class Variable
 {
     public:
-        Variable(int);
+        Variable(int, int);
         ~Variable();
 
         DataElement data;
@@ -62,14 +62,18 @@ class Variables
         //
         int type(int);
         //
+        Variable* get(int, int);
         Variable* get(int);
         VariableInfo* getInfo(int);
         DataElement *getdata(int);
+        DataElement *getdata(DataElement* e);
         void setdata(int, DataElement *);
         void setdata(int, long);
         void setdata(int, double);
         void setdata(int, QString);
 		void unassign(int);
+        //
+        void copyarray(int varnum1, DataElement *e);
         //
         void arraydim(int, int, int, bool);
         DataElement* arraygetdata(int, int, int);

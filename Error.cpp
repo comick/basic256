@@ -226,8 +226,8 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_DIVZERO:
 			errormessage = tr("Division by zero");
 			break;
-		case ERROR_BYREF:
-			errormessage = tr("Function/Subroutine expecting variable reference in call");
+        case ERROR_EXPECTEDARRAY:
+            errormessage = tr("Expected array");
 			break;
 		case ERROR_FREEFILE:
 			errormessage = tr("There are no free file numbers to allocate");
@@ -325,6 +325,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_ARRAYLENGTH2D:
 			errormessage = tr("Can not get a single length if a two dimensional array");
 			break;
+        case ERROR_VARNULL:
+            errormessage = tr("Variable refers to a non-existent variable.");
+            break;
+        case ERROR_VARCIRCULAR:
+            errormessage = tr("Circular reference in variable");
+            break;
 
 			
 	  

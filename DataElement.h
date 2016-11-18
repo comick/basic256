@@ -26,6 +26,7 @@ class DataElement
 		QString stringval;
 		double floatval;
 		long intval;
+        int level;
 
 		DataElement();
 		

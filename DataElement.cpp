@@ -10,13 +10,21 @@ DataElement::DataElement() {
 
 DataElement::DataElement(DataElement *source) {
 	// create a new DataElement from as a copy of another
-	type = source->type;
-	if (type!=T_STRING) {
-		floatval = source->floatval;
-		intval = source->intval;
-	} else {
-		stringval = source->stringval;
-	}
+
+    type = source->type;
+    switch (type){
+        case T_FLOAT:
+            floatval = source->floatval;
+            break;
+        case T_STRING:
+            stringval = source->stringval;
+            break;
+        case T_ARRAY:
+        case T_REF:
+            level = source->level;
+        case T_INT:
+        intval = source->intval;
+    }
 }
 
 DataElement::DataElement(QString s) {
@@ -25,7 +33,8 @@ DataElement::DataElement(QString s) {
 }
 
 DataElement::DataElement(int i) {
-	DataElement((long) i);
+    type = T_INT;
+    intval = i;
 }
 
 DataElement::DataElement(long l) {
@@ -39,20 +48,27 @@ DataElement::DataElement(double d) {
 }
 
 void DataElement::copy(DataElement *source) {
-	// fill an existing from as a copy of another
-	type = source->type;
-	if (type!=T_STRING) {
-		floatval = source->floatval;
-		intval = source->intval;
-	} else {
-		stringval = source->stringval;
-	}
+    // fill an existing from as a copy of another
+    type = source->type;
+    switch (type){
+        case T_FLOAT:
+            floatval = source->floatval;
+            break;
+        case T_STRING:
+            stringval = source->stringval;
+            break;
+        case T_ARRAY:
+        case T_REF:
+            level = source->level;
+        case T_INT:
+        intval = source->intval;
+    }
 }
 
 QString DataElement::debug() {
     // return a string representing the DataElement contents
         if(type==T_INT) return("int(" + QString::number(intval) + ") ");
-        if(type==T_REF) return("varref=" + QString::number(intval) + " ");
+        if(type==T_REF) return("varref(" + QString::number(intval) + ", level: " + QString::number(level) + ") ");
         if(type==T_FLOAT) return("float(" + QString::number(floatval) + ") ");
         if(type==T_STRING) return("string(" + stringval + ") ");
         if(type==T_ARRAY) return("array=" + QString::number(floatval) + " ");

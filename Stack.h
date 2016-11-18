@@ -33,11 +33,10 @@ class Stack
 		void pushdataelement(DataElement*);
 		void pushbool(bool);
 		void pushstring(QString);
-		void pushvariant(QString);
 		void pushvariant(QString, int);
 		void pushint(int);
 		void pushlong(long);
-		void pushvarref(int);
+        void pushvarref(int, int);
 		void pushfloat(double);
 		void swap();
 		void swap2();
@@ -45,7 +44,7 @@ class Stack
 		void dup();
 		void dup2();
 		int peekType();
-		int peekType(unsigned int);
+        int peekType(int);
 		DataElement *popelement();
 		int popint();
 		int popbool();
@@ -58,7 +57,8 @@ class Stack
 
 	private:
 		std::vector<DataElement*> stackdata;
-		unsigned int stackpointer;
-		void stackGrow();
+        int stackpointer; //faster than unsigned int and is quite enough as size
+        int stacksize;
+        void stackGrow();
 		QLocale *locale;
 };

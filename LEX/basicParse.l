@@ -64,6 +64,8 @@ extern int parsewarningtablecolumn[];
 extern char *parsewarningcolumnlexingfilename[];
 extern int numparsewarnings;
 
+extern int numargs; //need to be set to 0 when basicParse() start otherwise after a COMPILER_ERROR, the next rul will use the last value
+
 int linenumber;
 int column;
 char *lexingfilename;
@@ -209,7 +211,9 @@ error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][
 error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
 error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
 error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]
-error_byref [Ee][Rr][Rr][Oo][Rr][_][Bb][Yy][Rr][Ee][Ff]
+error_expectedarray [Ee][Rr][Rr][Oo][Rr][_][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Aa][Rr][Rr][Aa][Yy]
+error_varnull [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Uu][Ll][Ll]
+error_varcircular [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Cc][Ii][Rr][Cc][Uu][Ll][Aa][Rr]
 error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
 error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
 error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]
@@ -402,6 +406,7 @@ slice_all [Ss][Ll][Ii][Cc][Ee]_[Aa][Ll][Ll]
 slice_paint [Ss][Ll][Ii][Cc][Ee]_[Pp][Aa][Ii][Nn][Tt]
 slice_sprite [Ss][Ll][Ii][Cc][Ee]_[Ss][Pp][Rr][Ii][Tt][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
+polysound [Pp][Oo][Ll][Yy][Ss][Oo][Uu][Nn][Dd]
 spritecollide [Ss][Pp][Rr][Ii][Tt][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]
 spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
@@ -602,7 +607,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_permission}	{ count(); return B256ERROR_PERMISSION; }
 {error_imagesavetype}	{ count(); return B256ERROR_IMAGESAVETYPE; }
 {error_divzero}	{ count(); return B256ERROR_DIVZERO; }
-{error_byref}	{ count(); return B256ERROR_BYREF; }
+{error_expectedarray}	{ count(); return B256ERROR_EXPECTEDARRAY; }
+{error_varnull}	{ count(); return B256ERROR_VARNULL; }
+{error_varcircular}	{ count(); return B256ERROR_VARCIRCULAR; }
 {error_freefile}	{ count(); return B256ERROR_FREEFILE; }
 {error_freenet}	{ count(); return B256ERROR_FREENET; }
 {error_freedb}	{ count(); return B256ERROR_FREEDB; }
@@ -876,6 +883,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {pie}						{ count(); return B256PIE; }
 {plot}						{ count(); return B256PLOT; }
 {poly}						{ count(); return B256POLY; }
+{polysound}					{ count(); return B256POLYSOUND; }
 {portout}					{ count(); return B256PORTOUT; }
 {print}						{ count(); return B256PRINT; }
 {print}":"					{ count(); unputcolon(); return B256PRINT; }
@@ -1125,6 +1133,7 @@ int basicParse(char *code) {
 	//	yy_delete_buffer( include_stack[t]  );
 	//	include_stack[t] = NULL;
 	//}
+        numargs=0;
 	YY_BUFFER_STATE bp;
 	
 	numincludes=0;

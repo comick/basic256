@@ -106,7 +106,7 @@
 	int numargs = 0;
 
 	#define ARGSTYPEVALUE 0
-	#define ARGSTYPEVARREF 1
+        #define ARGSTYPEVARARRAY 1
 
 	// compiler workings - store in array so that interperter can display all of them
 	int parsewarningtable[PARSEWARNINGTABLESIZE];
@@ -282,7 +282,7 @@
 		// an internal symbol used to jump an if
                 int i;
 		char name[32];
-		sprintf(name,"__INT_%d_%d", id, type);
+                sprintf(name,"___%d_%d", id, type);
                 i = getSymbol(name);
                 symtableaddresstype[i]=ADDRESSTYPE_SYSTEMCALL;
                 return i;
@@ -342,7 +342,7 @@
 %token B256TOINT B256TOSTRING B256LENGTH B256MID B256LEFT B256RIGHT B256UPPER B256LOWER B256INSTR B256INSTRX B256MIDX
 %token B256CEIL B256FLOOR B256RAND B256SIN B256COS B256TAN B256ASIN B256ACOS B256ATAN B256ABS B256PI B256DEGREES B256RADIANS B256LOG B256LOGTEN B256SQR B256EXP
 %token B256AND B256OR B256XOR B256NOT
-%token B256PAUSE B256SOUND
+%token B256PAUSE B256SOUND B256POLYSOUND
 %token B256ASC B256CHR B256TOFLOAT B256READLINE B256WRITELINE B256BOOLEOF B256MOD B256INTDIV
 %token B256YEAR B256MONTH B256DAY B256HOUR B256MINUTE B256SECOND B256TEXT B256FONT B256TEXTWIDTH B256TEXTHEIGHT
 %token B256SAY B256SYSTEM
@@ -426,7 +426,9 @@
 %token B256ERROR_PERMISSION
 %token B256ERROR_IMAGESAVETYPE
 %token B256ERROR_DIVZERO
-%token B256ERROR_BYREF
+%token B256ERROR_EXPECTEDARRAY
+%token B256ERROR_VARNULL
+%token B256ERROR_VARCIRCULAR
 %token B256ERROR_FREEFILE
 %token B256ERROR_FREENET
 %token B256ERROR_FREEDB
@@ -553,13 +555,16 @@ functionvariable:
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
 			| array_empty {
-				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARREF; numargs++;
+                                args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARARRAY; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
-			| B256REF '(' args_v ')' {
-				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARREF; numargs++;
-				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
-			}
+                        // Warning, but keep compatibility with older programs
+                        //You should use REF() when passing arguments, not into SUBROUTINE/FUNCTION definition.
+                        | B256REF '(' args_v ')' {
+                                args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARARRAY; numargs++;
+                                newParseWarning(COMPWARNING_DEPRECATED_REF);
+                                //printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
+                        }
 			;
 
 functionvariablelist:
@@ -617,7 +622,10 @@ args_A:
 			array_empty {
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 			}
-						| listoflists
+                        | listoflists
+                        | args_v {
+                            addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+                        }
 			;
 
 args_v:
@@ -789,6 +797,7 @@ statement:
 			| seedstmt
 			| seekstmt
 			| setsettingstmt
+			| polysoundstmt
 			| soundstmt
 			| spritedimstmt
 			| spritehidestmt
@@ -1149,9 +1158,11 @@ whilestmt: 	while expr {
 letstmt:	B256LET assign
 			| B256LET arrayassign
 			| B256LET arrayelementassign
+                        | B256LET referenceassign
 			| assign
 			| arrayassign
 			| arrayelementassign
+                        | referenceassign
 			;
 
 dimstmt: 	B256DIM args_a {
@@ -1286,6 +1297,15 @@ endstmt: 	B256END args_none {
 			}
 			;
 
+/* assign a reference to a variable */
+referenceassign:
+                        args_v '=' refexpr {
+                                addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+                        }
+                        | array_empty '=' refexpr {
+                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
+                        }
+                        ;
 
 /* assign an expression to a single array element */
 arrayelementassign:
@@ -1388,7 +1408,19 @@ arrayassign:
 			| array_empty '=' listoflists {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
-			;
+                        | array_empty '=' array_empty {
+                            addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]);
+                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
+                        }
+                        | array_empty '=' args_v {
+                            addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
+                        }
+                        | args_v '=' array_empty {
+                            addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]);
+                            addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+                        }
+                        ;
 
 /* assign an expression to a normal variable */
 assign:
@@ -1587,8 +1619,15 @@ colorstmt:	B256SETCOLOR args_eee {
 			}
 			;
 
-soundstmt:	B256SOUND voicelist {
+polysoundstmt:	B256POLYSOUND voicelist {
 				addIntOp(OP_PUSHINT, voicelistlen);
+				voicelistlen = 0;
+				addOp(OP_SOUND_LIST);
+			}
+			;
+
+soundstmt:	B256SOUND args_A {
+				addIntOp(OP_PUSHINT, 1);
 				voicelistlen = 0;
 				addOp(OP_SOUND_LIST);
 			}
@@ -2411,7 +2450,7 @@ functionstmt:
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
 						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
-						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+                                                if (argstype[t]==ARGSTYPEVARARRAY) addIntOp(OP_ASSIGNARRAY, args[t]);
 					}
 				}
 				//
@@ -2455,7 +2494,7 @@ subroutinestmt:
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
 						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
-						if (argstype[t]==ARGSTYPEVARREF) addIntOp(OP_VARREFASSIGN, args[t]);
+                                                if (argstype[t]==ARGSTYPEVARARRAY) addIntOp(OP_ASSIGNARRAY, args[t]);
 					}
 				}
 				numargs=0;	// clear the list for next function
@@ -2524,10 +2563,13 @@ unassignstmt:
 			B256UNASSIGN args_v {
 				addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256UNASSIGN args_a {
-				addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
-			}
-			;
+                        | B256UNASSIGN args_a {
+                                addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
+                        }
+                        | B256UNASSIGN array_empty {
+                                addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
+                        }
+                        ;
 
 
 variablewatchstmt:
@@ -2591,10 +2633,15 @@ callexprlist:
 /* USED ONLY IN CALLING Functions and subroutines */
 callexpr:
 			expr
-			| array_empty  { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
-			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
-			;
+                        | array_empty  { addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]); }
+                        | refexpr
+                        ;
 			
+refexpr:
+                        B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+                        | B256REF '(' array_empty ')' { addIntOp(OP_PUSHVARARRAYREF, varnumber[--nvarnumber]); }
+                        ;
+
 
 
 voicelist:
@@ -2639,14 +2686,14 @@ expr:
                                 addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
 			}
 			| args_v {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+                                addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 			}
-			| args_a {
+                        | args_a {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-			}
+                        }
 
 
-			/* *** numeric Experssions *** */
+                        /* *** numeric Experssions *** */
 
 			| expr '-' expr {
 				addOp(OP_SUB);
@@ -3170,7 +3217,9 @@ expr:
 			| B256ERROR_PERMISSION args_none { addIntOp(OP_PUSHINT, ERROR_PERMISSION); }
 			| B256ERROR_IMAGESAVETYPE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGESAVETYPE); }
 			| B256ERROR_DIVZERO args_none { addIntOp(OP_PUSHINT, ERROR_DIVZERO); }
-			| B256ERROR_BYREF args_none { addIntOp(OP_PUSHINT, ERROR_BYREF); }
+                        | B256ERROR_EXPECTEDARRAY args_none { addIntOp(OP_PUSHINT, ERROR_EXPECTEDARRAY); }
+                        | B256ERROR_VARNULL args_none { addIntOp(OP_PUSHINT, ERROR_VARNULL); }
+                        | B256ERROR_VARCIRCULAR args_none { addIntOp(OP_PUSHINT, ERROR_VARCIRCULAR); }
 			| B256ERROR_FREEFILE args_none { addIntOp(OP_PUSHINT, ERROR_FREEFILE); }
 			| B256ERROR_FREENET args_none { addIntOp(OP_PUSHINT, ERROR_FREENET); }
 			| B256ERROR_FREEDB args_none { addIntOp(OP_PUSHINT, ERROR_FREEDB); }

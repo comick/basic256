@@ -63,7 +63,6 @@
 #define ERROR_PERMISSION 				46
 #define ERROR_IMAGESAVETYPE 			47
 #define ERROR_DIVZERO 					50
-#define ERROR_BYREF 					51
 #define ERROR_FREEFILE 					53
 #define ERROR_FREENET 					54
 #define ERROR_FREEDB 					55
@@ -93,6 +92,9 @@
 #define ERROR_INTEGERRANGE				81
 #define ERROR_SLICESIZE					82
 #define ERROR_ARRAYLENGTH2D				83
+#define ERROR_EXPECTEDARRAY				84
+#define ERROR_VARNULL      				85
+#define ERROR_VARCIRCULAR				86
 
 // Insert new error codes here
 

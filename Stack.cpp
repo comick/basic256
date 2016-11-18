@@ -7,6 +7,7 @@ Stack::Stack(Error *e, Convert *c, QLocale *applocale) {
 	error = e;	// save error object as private pointer
 	convert = c;
 	stackpointer = 0;	// height of stack
+    stacksize = 0;       //max size of stack to avoid calling stackdata.size()
 	stackGrow();
 	locale = applocale;
 
@@ -22,17 +23,19 @@ Stack::~Stack() {
 
 void Stack::stackGrow() {
 	// add 10 elements to the size of the stack
-	int oldsize = stackdata.size();
-	stackdata.resize(oldsize+10);
-	for(unsigned int i = oldsize; i< stackdata.size(); i++) {
+    int i = stacksize;
+    stackdata.resize(stacksize+10);
+    stacksize=stackdata.size();
+    while(i< stacksize) {
 		stackdata[i] = new DataElement();
+        i++;
 	}
 }
 
 QString Stack::debug() {
     // return a string representing the stack
     QString s("");
-    for (unsigned int i=0; i<stackpointer; i++) {
+    for (int i=0; i<stackpointer; i++) {
         s += stackdata[i]->debug() +  " ";
     }
     return s;
@@ -49,7 +52,7 @@ int Stack::height() {
 //
 
 void Stack::pushdataelement(DataElement *source) {
-	if (stackpointer >= stackdata.size())  stackGrow();
+    if (stackpointer >= stacksize)  stackGrow();
 	// push to stack a copy of he dataelement
 	if (source) {
 		stackdata[stackpointer]->copy(source);
@@ -60,40 +63,55 @@ void Stack::pushdataelement(DataElement *source) {
 }
 
 void Stack::pushlong(long i) {
-	if (stackpointer >= stackdata.size())  stackGrow();
+    if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer]->type = T_INT;
 	stackdata[stackpointer]->intval = i;
 	stackpointer++;
 }
 
-void Stack::pushvarref(int i) {
-	if (stackpointer >= stackdata.size())  stackGrow();
+void Stack::pushvarref(int i, int level) {
+    if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer]->type = T_REF;
 	stackdata[stackpointer]->intval = i;
-	stackpointer++;
+    stackdata[stackpointer]->level = level;
+    stackpointer++;
 }
 
 void Stack::pushfloat(double d) {
-	if (stackpointer >= stackdata.size())  stackGrow();
+    if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer]->type = T_FLOAT;
 	stackdata[stackpointer]->floatval = d;
 	stackpointer++;
 }
 
 void Stack::pushstring(QString string) {
-	if (stackpointer >= stackdata.size())  stackGrow();
+    if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer]->type = T_STRING;
 	stackdata[stackpointer]->stringval = string;
 	stackpointer++;
 }
 
+void Stack::pushint(int i) {
+    if (stackpointer >= stacksize)  stackGrow();
+    stackdata[stackpointer]->type = T_INT;
+    stackdata[stackpointer]->intval = (long)i;
+    stackpointer++;
+}
+
+void Stack::pushbool(bool i) {
+    if (stackpointer >= stacksize)  stackGrow();
+    stackdata[stackpointer]->type = T_INT;
+    if (i)
+        stackdata[stackpointer]->intval = 1;
+    else
+        stackdata[stackpointer]->intval = 0;
+    stackpointer++;
+}
+
+
 //
 // Pushes derived from RAW pushes
 //
-
-void Stack::pushvariant(QString string) {
-	pushvariant(string, T_UNASSIGNED);
-}
 
 void Stack::pushvariant(QString string, int type) {
 	// try to convert a string to an int or float and push that type
@@ -148,17 +166,6 @@ void Stack::pushvariant(QString string, int type) {
 	}
 }
 	
-void Stack::pushbool(bool i) {
-	if (i) {
-		pushlong(1);
-	} else {
-		pushlong(0);
-	}
-}
-
-void Stack::pushint(int i) {
-    pushlong((long) i);
-}
 
 
 //
@@ -168,7 +175,7 @@ int Stack::peekType() {
 	return peekType(0);
 }
 
-int Stack::peekType(unsigned int i) {
+int Stack::peekType(int i) {
 	if (stackpointer<=i) {
 		error->q(ERROR_STACKUNDERFLOW);
 		return T_UNASSIGNED;
@@ -190,32 +197,44 @@ DataElement *Stack::popelement() {
 	return stackdata[stackpointer];
 }
 
-//
-// Pops derivedfrom RAW pop
-
 int Stack::popbool() {
-	DataElement *top=popelement();
-	return convert->getBool(top);
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return 0;
+    }
+    return convert->getBool(stackdata[--stackpointer]);
 }
 
 int Stack::popint() {
-	DataElement *top=popelement();
-	return convert->getInt(top);
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return 0;
+    }
+    return convert->getInt(stackdata[--stackpointer]);
 }
 
 long Stack::poplong() {
-	DataElement *top=popelement();
-	return convert->getLong(top);
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return 0;
+    }
+    return convert->getLong(stackdata[--stackpointer]);
 }
 
 double Stack::popfloat() {
-	DataElement *top=popelement();
-	return convert->getFloat(top);
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return 0.0;
+    }
+    return convert->getFloat(stackdata[--stackpointer]);
 }
 
 QString Stack::popstring() {
-	DataElement *top=popelement();
-	return convert->getString(top);
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return QString("");
+    }
+    return convert->getString(stackdata[--stackpointer]);
 }
 
 //

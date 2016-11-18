@@ -294,8 +294,10 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_BRANCH) return QString("OP_BRANCH");
 	else if (op==OP_ASSIGN) return QString("OP_ASSIGN");
 	else if (op==OP_ARRAYASSIGN) return QString("OP_ARRAYASSIGN");
-	else if (op==OP_PUSHVAR) return QString("OP_PUSHVAR");
-	else if (op==OP_PUSHINT) return QString("OP_PUSHINT");
+    else if (op==OP_PUSHVAR) return QString("OP_PUSHVAR");
+    else if (op==OP_PUSHVARARRAY) return QString("OP_PUSHVARARRAY");
+    else if (op==OP_PUSHVARARRAYREF) return QString("OP_PUSHVARARRAYREF");
+    else if (op==OP_PUSHINT) return QString("OP_PUSHINT");
 	else if (op==OP_FOR) return QString("OP_FOR");
 	else if (op==OP_NEXT) return QString("OP_NEXT");
 	else if (op==OP_CURRLINE) return QString("OP_CURRLINE");
@@ -318,7 +320,7 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_ALENROWS) return QString("OP_ALENROWS");
 	else if (op==OP_ALENCOLS) return QString("OP_ALENCOLS");
 	else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
-	else if (op==OP_VARREFASSIGN) return QString("OP_VARREFASSIGN");
+    else if (op==OP_ASSIGNARRAY) return QString("OP_ASSIGNARRAY");
 	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
 	else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
 	else if (op==OP_ARRAYFILL) return QString("OP_ARRAYFILL");
@@ -570,6 +572,9 @@ Interpreter::compileProgram(char *code) {
 			case COMPWARNING_DEPRECATED_FORM:
 				msg += tr("Statement format has been deprecated. It is recommended that you reauthor");
 				break;
+            case COMPWARNING_DEPRECATED_REF:
+                msg += tr("You should use REF() when passing arguments, not in the SUBROUTINE/FUNCTION definition");
+                break;
 
 			default:
 				msg += tr("Unknown compiler warning #") + QString::number(parsewarningtable[i]);
@@ -1408,25 +1413,53 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PUSHVAR: {
-					DataElement *e = variables->getdata(i);
-					if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
-						stack->pushint(0);
-					} else {
-						stack->pushdataelement(e);
-					}
+                    DataElement *e = variables->getdata(i);
+                    stack->pushdataelement(e);
 				}
 				break;
 
-				case OP_PUSHVARREF: {
-					stack->pushvarref(i);
-				}
-				break;
+                case OP_PUSHVARARRAY: {
+                    //just like OP_PUSHVAR but array is expected
+                    //1) if [] are used incorrect
+                    //2) when passing to subbroutine/function
+                    DataElement *e = variables->getdata(i);
+                    if (e->type==T_ARRAY) {
+                        stack->pushdataelement(e);
+                    }else if (e->type==T_UNASSIGNED){
+                        error->q(ERROR_VARNOTASSIGNED, i);
+                        stack->pushint(0);
+                    }else {
+                        error->q(ERROR_NOTARRAY, i);
+                        stack->pushint(0);
+                    }
+                }
+                break;
 
-				case OP_ASSIGN: {
+                case OP_PUSHVARREF: {
+                    stack->pushvarref(i, variables->getrecurse());
+                }
+                break;
+
+                case OP_PUSHVARARRAYREF: {
+                    //just like OP_PUSHVARREF but array is expected
+                    DataElement *e = variables->getdata(i);
+                    if (e->type==T_ARRAY) {
+                        stack->pushvarref(i, variables->getrecurse());
+                    }else if (e->type==T_UNASSIGNED){
+                        error->q(ERROR_VARNOTASSIGNED, i);
+                        stack->pushint(0);
+                    } else {
+                        error->q(ERROR_NOTARRAY, i);
+                        stack->pushint(0);
+                    }
+                }
+                break;
+
+                case OP_ASSIGN: {
 					DataElement *e = stack->popelement();
 					if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+                        variables->copyarray(i, e); //copy entire array
+                        watchvariable(debugMode, i);
 					} else {
 						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
 						variables->setdata(i, e);
@@ -1435,15 +1468,25 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_VARREFASSIGN: {
-					// assign a variable reference
-					DataElement *e = stack->popelement();
-					if (e->type==T_REF) {
-						 variables->setdata(i, e);
-					} else {
-						error->q(ERROR_BYREF);
-					}
-				}
+                case OP_ASSIGNARRAY: {
+                    //just like OP_ASSIGN but array is expected
+                    // assign an array (array expected when [] are used)
+                    DataElement *e = stack->popelement();
+                    if (e->type==T_ARRAY) {
+                        variables->copyarray(i, e);
+                        watchvariable(debugMode, i);
+                    }else if (e->type==T_REF) { ///////////////////////////////////////////////////////////
+                        DataElement *ee = variables->getdata(e); //get the final content to check if is an array
+                        if(ee->type==T_ARRAY){
+                            variables->setdata(i, e);
+                            watchvariable(debugMode, i);
+                        }else{
+                            error->q(ERROR_EXPECTEDARRAY, i);//ERROR: Array expected
+                        }
+                    }else{
+                        error->q(ERROR_EXPECTEDARRAY, i);//ERROR: Array expected
+                    }
+                }
 				break;
 
 				case OP_ARRAY2STACK: {
@@ -1461,10 +1504,10 @@ Interpreter::execByteCode() {
 					}
 					stack->pushint(rows);
 					
-					//mymutex->lock();
-					//emit(dialogAlert(stack->debug()));
-					//waitCond->wait(mymutex);
-					//mymutex->unlock();
+                    //mymutex->lock();
+                    //emit(dialogAlert(stack->debug()));
+                    //waitCond->wait(mymutex);
+                    //mymutex->unlock();
 
 					
 				}
@@ -1474,7 +1517,7 @@ Interpreter::execByteCode() {
 					// fill an array with a single value
 					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
 					DataElement *e = stack->popelement();	// fill value
-					Variable *v = variables->get(i);
+                    Variable *v = variables->get(i);
                     if (v->data.type==T_ARRAY) {
 						int columns = variables->arraysizecols(i);
 						int rows = variables->arraysizerows(i);
@@ -1570,7 +1613,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PUSHINT: {
-					stack->pushint(i);
+                    stack->pushint(i);
 				}
 				break;
 
@@ -5441,7 +5484,7 @@ Interpreter::execByteCode() {
 						expr.setMinimal(regexMinimal);
 						if (expr.captureCount()>0) {
 							// if we have captures in our regex then return them
-							int pos = expr.indexIn(qhaystack);
+                            expr.indexIn(qhaystack);
 							list = expr.capturedTexts();
 						} else {
 							// if it is a simple regex without captures then split
