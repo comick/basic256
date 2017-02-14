@@ -26,6 +26,7 @@ extern MainWindow * mainwin;
 
 ReplaceWin::ReplaceWin () {
     replaceMode = true;
+    QSizePolicy sp_retain;
 
     // position where it was last on screen
     SETTINGS;
@@ -36,19 +37,25 @@ ReplaceWin::ReplaceWin () {
     //
     findLabel = new QLabel(tr("Find:"),this);
     layout->addWidget(findLabel,r,1,1,1);
-    findText = new QLineEdit;
+    findTextCombo = new QComboBox;
+    findTextCombo->setEditable(true);
+    findTextCombo->setInsertPolicy(QComboBox::InsertAtTop);
+    findText = findTextCombo->lineEdit();
     findText->setMaxLength(100);
-    findText->setClearButtonEnabled(true);
+    //findText->setClearButtonEnabled(true);
     connect(findText, SIGNAL(textChanged(QString)), this, SLOT (changeFindText(QString)));
-    layout->addWidget(findText,r,2,1,3);
+    layout->addWidget(findTextCombo,r,2,1,3);
     //
     r++;
     replaceLabel = new QLabel(tr("Replace with:"),this);
     layout->addWidget(replaceLabel,r,1,1,1);
-    replaceText = new QLineEdit;
+    replaceTextCombo = new QComboBox;
+    replaceTextCombo->setEditable(true);
+    replaceTextCombo->setInsertPolicy(QComboBox::InsertAtTop);
+    replaceText = replaceTextCombo->lineEdit();
     replaceText->setMaxLength(100);
-    replaceText->setClearButtonEnabled(true);
-    layout->addWidget(replaceText,r,2,1,3);
+    //replaceText->setClearButtonEnabled(true);
+    layout->addWidget(replaceTextCombo,r,2,1,3);
     //
     r++;
     caseCheckbox = new QCheckBox(tr("Case sensitive"),this);
@@ -67,9 +74,15 @@ ReplaceWin::ReplaceWin () {
     connect(findButton, SIGNAL(clicked()), this, SLOT (clickFindButton()));
     layout->addWidget(findButton,r,1,1,1);
     replaceButton = new QPushButton(tr("&Replace"), this);
+    sp_retain = replaceButton->sizePolicy();
+    sp_retain.setRetainSizeWhenHidden(true);
+    replaceButton->setSizePolicy(sp_retain);
     connect(replaceButton, SIGNAL(clicked()), this, SLOT (clickReplaceButton()));
     layout->addWidget(replaceButton,r,2,1,1);
     replaceAllButton = new QPushButton(tr("Replace &All"), this);
+    sp_retain = replaceAllButton->sizePolicy();
+    sp_retain.setRetainSizeWhenHidden(true);
+    replaceAllButton->setSizePolicy(sp_retain);
     connect(replaceAllButton, SIGNAL(clicked()), this, SLOT (clickReplaceAllButton()));
     layout->addWidget(replaceAllButton,r,3,1,1);
     cancelButton = new QPushButton(tr("Cancel"), this);
@@ -106,8 +119,8 @@ void ReplaceWin::setReplaceMode(bool m) {
     replaceMode = m;
     replaceLabel->setEnabled(replaceMode);
     replaceLabel->setVisible(replaceMode);
-    replaceText->setEnabled(replaceMode);
-    replaceText->setVisible(replaceMode);
+    replaceTextCombo->setEnabled(replaceMode);
+    replaceTextCombo->setVisible(replaceMode);
     replaceAllButton->setEnabled(replaceMode);
     replaceAllButton->setVisible(replaceMode);
     replaceButton->setEnabled(replaceMode);
@@ -139,16 +152,19 @@ void ReplaceWin::clickFindButton() {
 }
 
 void ReplaceWin::findAgain() {
+    saveHistory();
     if(findText->text().length() != 0)
         editwin->findString(findText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked());
 }
 
 void ReplaceWin::clickReplaceButton() {
+    saveHistory();
     if(findText->text().length() != 0)
         editwin->replaceString(findText->text(), replaceText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked(), false);
 }
 
 void ReplaceWin::clickReplaceAllButton() {
+    saveHistory();
     if(findText->text().length() != 0)
         editwin->replaceString(findText->text(), replaceText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked(), true);
 }
@@ -159,3 +175,15 @@ void ReplaceWin::closeEvent(QCloseEvent *e) {
     settings.setValue(SETTINGSREPLACEPOS, pos());
 }
 
+void ReplaceWin::saveHistory() {
+    QString f = findText->text();
+    QString r = replaceText->text();
+    if(f.length() != 0){
+        if(findTextCombo->findText(f)==-1)
+            findTextCombo->insertItem(0, f);
+    }
+    if(r.length() != 0){
+        if(replaceTextCombo->findText(r)==-1)
+            replaceTextCombo->insertItem(0, r);
+    }
+}

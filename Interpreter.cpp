@@ -77,6 +77,7 @@ InpOut32OutType Out32 = NULL;
 #include "Constants.h"
 
 
+extern SoundSystem *sound;
 extern QMutex *mymutex;
 extern QMutex *mydebugmutex;
 extern QWaitCondition *waitCond;
@@ -115,7 +116,7 @@ extern "C" {
 }
 
 Interpreter::Interpreter(QLocale *applocale) {
-	fastgraphics = false;
+    fastgraphics = false;
 	directorypointer=NULL;
 	status = R_STOPPED;
 	printing = false;
@@ -124,7 +125,6 @@ Interpreter::Interpreter(QLocale *applocale) {
     locale = applocale;
 	mediaplayer = NULL;
     downloader = NULL;
-    sound = NULL;
 
 #ifdef WIN32
 	// WINDOWS
@@ -157,7 +157,6 @@ Interpreter::~Interpreter() {
 #ifdef WIN32
 	WSACleanup();
 #endif
-    delete sound;
     delete downloader;
     delete sleeper;
     delete error;
@@ -313,8 +312,20 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_STAMP_SR_LIST) return QString("OP_STAMP_SR_LIST");
 	else if (op==OP_POLY_LIST) return QString("OP_POLY_LIST");
 	else if (op==OP_WRITELINE) return QString("OP_WRITELINE");
-	else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
-	else if (op==OP_DEREF) return QString("OP_DEREF");
+    else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
+    else if (op==OP_SOUND) return QString("OP_SOUND");
+    else if (op==OP_SOUNDPLAY_LIST) return QString("OP_SOUNDPLAY_LIST");
+    else if (op==OP_SOUNDPLAY) return QString("OP_SOUNDPLAY");
+    else if (op==OP_SOUNDPAUSE) return QString("OP_SOUNDPAUSE");
+    else if (op==OP_SOUNDRESUME) return QString("OP_SOUNDRESUME");
+    else if (op==OP_SOUNDSTOP) return QString("OP_SOUNDSTOP");
+    else if (op==OP_SOUNDWAIT) return QString("OP_SOUNDWAIT");
+    else if (op==OP_SOUNDSEEK) return QString("OP_SOUNDSEEK");
+    else if (op==OP_SOUNDVOLUME) return QString("OP_SOUNDVOLUME");
+    else if (op==OP_SOUNDPOSITION) return QString("OP_SOUNDPOSITION");
+    else if (op==OP_SOUNDLENGTH) return QString("OP_SOUNDLENGTH");
+    else if (op==OP_SOUNDSTATE) return QString("OP_SOUNDSTATE");
+    else if (op==OP_DEREF) return QString("OP_DEREF");
 	else if (op==OP_REDIM) return QString("OP_REDIM");
 	else if (op==OP_ALEN) return QString("OP_ALEN");
 	else if (op==OP_ALENROWS) return QString("OP_ALENROWS");
@@ -430,6 +441,23 @@ QString Interpreter::opname(int op) {
 	else if (op==OP_UNSERIALIZE) return QString("OP_UNSERIALIZE");
     else if (op==OP_CALLFUNCTION) return QString("OP_CALLFUNCTION");
     else if (op==OP_CALLSUBROUTINE) return QString("OP_CALLSUBROUTINE");
+    else if (op==OP_UNLOAD) return QString("OP_UNLOAD");
+    else if (op==OP_IMAGELOAD) return QString("OP_IMAGELOAD");
+    else if (op==OP_IMAGENEW) return QString("OP_IMAGENEW");
+    else if (op==OP_IMAGECOPY) return QString("OP_IMAGECOPY");
+    else if (op==OP_IMAGECROP) return QString("OP_IMAGECROP");
+    else if (op==OP_IMAGEAUTOCROP) return QString("OP_IMAGEAUTOCROP");
+    else if (op==OP_IMAGERESIZE) return QString("OP_IMAGERESIZE");
+    else if (op==OP_IMAGESETPIXEL) return QString("OP_IMAGESETPIXEL");
+    else if (op==OP_IMAGEWIDTH) return QString("OP_IMAGEWIDTH");
+    else if (op==OP_IMAGEHEIGHT) return QString("OP_IMAGEHEIGHT");
+    else if (op==OP_IMAGEPIXEL) return QString("OP_IMAGEPIXEL");
+    else if (op==OP_IMAGEDRAW) return QString("OP_IMAGEDRAW");
+    else if (op==OP_IMAGEFLIP) return QString("OP_IMAGEFLIP");
+    else if (op==OP_IMAGEROTATE) return QString("OP_IMAGEROTATE");
+    else if (op==OP_IMAGESMOOTH) return QString("OP_IMAGESMOOTH");
+    else if (op==OP_IMAGECENTERED) return QString("OP_IMAGECENTERED");
+    else if (op==OP_IMAGETRANSFORMED) return QString("OP_IMAGETRANSFORMED");
 
 	else return QString("OP_UNKNOWN");
 }
@@ -446,7 +474,7 @@ void Interpreter::printError() {
 		msg += tr(" in included file ") + currentIncludeFile;
 	}
 	msg += tr(" on line ") + QString::number(error->line) + tr(": ") + error->getErrorMessage(symtable);
-	if (error->extra!="") msg+= " " + error->extra;
+    if (error->extra!="") msg+= " (" + error->extra + ")";
 	msg += ".\n";
 	emit(outputError(msg));
 }
@@ -477,34 +505,24 @@ void Interpreter::netSockCloseAll() {
 	}
 }
 
-void
-Interpreter::setInputReady() {
+void Interpreter::setInputReady() {
 	status = R_INPUTREADY;
 }
 
-bool
-Interpreter::isAwaitingInput() {
-	if (status == R_INPUT) {
-		return true;
-	}
-	return false;
+bool Interpreter::isAwaitingInput() {
+    return (status == R_INPUT);
 }
 
-bool
-Interpreter::isRunning() {
-	if (status != R_STOPPED) {
-		return true;
-	}
-	return false;
+bool Interpreter::isRunning() {
+    return (status != R_STOPPED);
 }
 
+bool Interpreter::isStopped() {
+    return (status == R_STOPPED);
+}
 
-bool
-Interpreter::isStopped() {
-	if (status == R_STOPPED) {
-		return true;
-	}
-	return false;
+void Interpreter::setStopped() {
+    status = R_STOPPED;
 }
 
 void Interpreter::watchvariable(bool doit, int i) {
@@ -732,6 +750,7 @@ Interpreter::compileProgram(char *code) {
 void
 Interpreter::initialize() {
 	error->loadSettings();
+    imageSmooth = false;
 	op = wordCode;
 	callstack = NULL;
 	onerrorstack = NULL;
@@ -770,7 +789,7 @@ Interpreter::initialize() {
 	// now create the variable storage
     variables = new Variables(numsyms, error);
 
-	// initialize the sockets to nothing
+    // initialize the sockets to nothing
 	listensockfd = -1;
 	for (int t=0; t<NUMSOCKETS; t++) netsockfd[t]=-1;
 	
@@ -811,8 +830,6 @@ Interpreter::cleanup() {
     }
     delete (downloader);
     downloader = NULL;
-    delete (sound);
-    sound = NULL;
     delete(stack);
     delete(variables);
     variables=NULL;
@@ -879,6 +896,15 @@ Interpreter::cleanup() {
         forstack = temp_forstack->next;
         delete(temp_forstack);
     }
+
+    //clear images
+    QMap<QString, QImage*>::const_iterator it = images.constBegin();
+    while (it != images.constEnd()) {
+        delete(it.value());
+        ++it;
+    }
+    images.clear();
+
 }
 
 void Interpreter::closeDatabase(int t) {
@@ -915,7 +941,7 @@ Interpreter::runHalted() {
     if(mediaplayer) mediaplayer->stop();
 
     // stop playing any sound
-    if(sound!=NULL) sound->stop();
+    if(sound!=NULL) sound->exit();
 
 
 	// close network connections
@@ -928,24 +954,23 @@ void
 Interpreter::run() {
     // main run loop
     isError=false;
-    downloader = new BasicDownloader();
-    sound = new Sound();
+    downloader = new BasicDownloader(error);
+    //link sound system to error mechanism
+    sound->error = &error;
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
-	onerrorstack = NULL;
-	if (debugMode!=0) {			// highlight first line correctly in debugging mode
-		emit(seekLine(2));
-		emit(seekLine(1));
-	}
+    onerrorstack = NULL;
+    if (debugMode!=0) {			// highlight first line correctly in debugging mode
+        emit(seekLine(2));
+        emit(seekLine(1));
+    }
     while (status != R_STOPING && execByteCode() >= 0) {} //continue
-    status = R_STOPPED;
-	debugMode = 0;
+    //status = R_STOPPED;
+    debugMode = 0;
     cleanup(); // cleanup the variables, databases, files, stack and everything
     emit(stopRunFinalized(!isError));
 }
 
-
-void
-Interpreter::inputEntered(QString text) {
+void Interpreter::inputEntered(QString text) {
 	if (status!=R_STOPPED) {
 		inputString = text;
 		status = R_INPUTREADY;
@@ -2797,18 +2822,13 @@ Interpreter::execByteCode() {
 					// always return a float value with power "^"
 					double oneval = stack->popfloat();
 					double twoval = stack->popfloat();
-					if (oneval==0) {
-						error->q(ERROR_DIVZERO);
-						stack->pushfloat(0);
-					} else {
-						double ans = pow(twoval, oneval);
-						if (std::isinf(ans)) {
-							error->q(ERROR_INFINITY);
-							stack->pushfloat(0);
-						} else {
-							stack->pushfloat(ans);
-						}
-					}
+                    double ans = pow(twoval, oneval);
+                    if (std::isinf(ans)) {
+                        error->q(ERROR_INFINITY);
+                        stack->pushfloat(0);
+                    } else {
+                        stack->pushfloat(ans);
+                    }
 				}
 				break;
 
@@ -2927,79 +2947,208 @@ Interpreter::execByteCode() {
 				break;
 
 
+                case OP_SOUND:
+                case OP_SOUNDPLAY:
+                case OP_SOUNDLOAD:
+                {
+                    DataElement *e = stack->popelement();
+                    if (e->type == T_STRING) {
+                        if(opcode==OP_SOUND){
+                            mymutex->lock();
+                            emit(playSound(e->stringval));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAY){
+                            mymutex->lock();
+                            emit(playSound(e->stringval));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            stack->pushint(id);
+                        }else{
+                            QString s = e->stringval;
+                            QUrl url(s);
+                            if(QFileInfo(s).exists()){
+                                QFile file(s);
+                                file.open(QIODevice::ReadOnly);
+                                QByteArray arr = file.readAll();
+                                file.close();
+                                stack->pushstring(sound->loadSoundFromArray(s, &arr));
+                            }else if (url.isValid() && (url.scheme()=="http" || url.scheme()=="https" || url.scheme()=="ftp")){
+                                downloader->download(QUrl::fromUserInput(s));
+                                QByteArray arr = downloader->data();
+                                stack->pushstring(sound->loadSoundFromArray(s, &arr));
+                            }else{
+                                error->q(ERROR_SOUNDFILE);
+                            }
+                        }
+                        break;
+                     } else if(e->type != T_ARRAY){
+                        //error invalid SOUND syntax
+                        error->q(ERROR_EXPECTEDSOUND);
+                        if(opcode==OP_SOUNDPLAY) stack->pushint(0);
+                        if(opcode==OP_SOUNDLOAD) stack->pushstring("");
+                        break;
+                    }
 
-				case OP_SOUND_LIST: {
-					// play an immediate list of sounds
-                    // from a array pushed on the stack or a list of lists
-					// fill the sound array backwrds because of pulling from the stack
-                    // Multiple rows = multiple voices mixed
+                    int a = e->intval; //array variable
+                    int columns = variables->arraysizecols(a);
+                    if(columns%2!=0){
+                        error->q(ERROR_ARRAYEVEN);
+                        break;
+                    }
 
-                    //const int rows = stack->popint();
-                    //int columns;
-                    //int j=0, total=0;
+                    double i;
+                    int rows = variables->arraysizerows(a);
 
-                    //int* freqdur=NULL;
+                    std::vector < std::vector<double> > sounddata;
 
-                    //for(int r=0;r<rows;r++){
-                    //    columns = stack->popint();
-                    //    if(columns%2!=0){
-                   //         error->q(ERROR_ARRAYEVEN);
-                    //        break;
-                    //    }
-                    //    total=total+columns+1;
-                    //    j=total;
-                    //    freqdur = (int*) realloc(freqdur, total * sizeof(int));
-                    //    for (int col = 0; col < columns && !error->pending(); col++) {
-                    //        freqdur[--j] = stack->popint();
-                    //    }
-                    //    freqdur[--j] = columns;
-                    //}
-                    //if (!error->pending()) sound->playSounds(rows, freqdur);
-                    //if(freqdur!=NULL) free(freqdur);
-                    
-					// play an immediate list of sounds
-					// from a 2d array pushed on the stack or a list of lists
-					// fill the sound array backwrds because of pulling from the stack
-					// make a list containing voices
-					// each voice is a list of freq/dir pairs
+                    for(int row = 0; row < rows && !error->pending() ; row++) {
+                        std::vector < double > v;	// vector containing duration
+                       for (int col = 0; col < columns && !error->pending() ; col++) {
+                            DataElement *av = variables->arraygetdata(a, row, col);
+                            if(col%2==0)
+                                i = convert->getMusicalNote(av);
+                            else
+                                i = convert->getFloat(av);
+                            //printf(">>%i\n",i);
+                            v.push_back(i);
+                        }
+                        sounddata.push_back( v );
+                    }
 
-					int voices = stack->popint();
-					std::vector < std::vector<int> > sounddata;
+                    if (!error->pending()){
+                        if(opcode==OP_SOUND){
+                            mymutex->lock();
+                            emit(playSound(sounddata));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAY){
+                            mymutex->lock();
+                            emit(playSound(sounddata));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            stack->pushint(id);
+                        }else{
+                            stack->pushstring(sound->loadSoundFromVector(sounddata));
+                        }
+                    }
+                }
+                break;
 
-					for(int voice=0; voice<voices; voice++) {
-						std::vector < int > v;	// vector containing duration
 
-						int rows = stack->popint();
-						int columns = stack->popint();
-						
-						if ((rows==1&&columns%2!=0)||(rows>1&&columns!=2)) error->q(ERROR_ARRAYEVEN);
-							
-						for(int row = 0; row < rows ; row++) {
-							//pop columns only if is not first row - already popped
-							if(row != 0) {
-								if(stack->popint()!=2){
-									error->q(ERROR_ARRAYEVEN);
-								}
-							}
-							for (int col = 0; col < columns ; col++) {
-								int i = stack->popint();
-								//printf(">>%i\n",i);
-								v.insert(v.begin(),i);
-							}
-						}
-						sounddata.push_back( v );
-					}
-					
-					if (!error->pending()) sound->playSounds(sounddata);
+                case OP_SOUND_LIST:
+                case OP_SOUNDPLAY_LIST:
+                case OP_SOUNDLOAD_LIST:
+                {
+                    std::vector < std::vector<double> > sounddata;
 
+                    int rows = stack->popint();
+                    double i;
+                    for(int row = 0; row < rows ; row++) {
+                        std::vector < double > v;	// vector containing duration
+                        int columns = stack->popint();
+                        if(columns%2!=0){
+                            error->q(ERROR_ARRAYEVEN);
+                            break;
+                        }
+                        for (int col = 0; col < columns ; col++) {
+                            if(col%2!=0)
+                                i = stack->popnote();
+                            else
+                                i = stack->popfloat();
+                            //printf(">>%i\n",i);
+                            v.insert(v.begin(),i);
+                        }
+                        sounddata.push_back( v );
+                    }
+                    if (!error->pending()){
+                        if(opcode==OP_SOUND_LIST){
+                            mymutex->lock();
+                            emit(playSound(sounddata));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAY_LIST){
+                            mymutex->lock();
+                            emit(playSound(sounddata));
+                            waitCond->wait(mymutex);
+                            int id = sound->lastIdUsed;
+                            mymutex->unlock();
+                            stack->pushint(id);
+                        }else{
+                            stack->pushstring(sound->loadSoundFromVector(sounddata));
+                        }
+                    }
                 }
 				break;
 
+                case OP_SOUNDPAUSE: {
+                    int i = stack->popint();
+                    sound->pause(i);
+                }
+                break;
+
+                case OP_SOUNDRESUME: {
+                    int i = stack->popint();
+                    sound->play(i);
+                }
+                break;
+
+                case OP_SOUNDSTOP: {
+                    int i = stack->popint();
+                    sound->stop(i);
+                }
+                break;
+
+                case OP_SOUNDWAIT: {
+                    int i = stack->popint();
+                    sound->wait(i);
+                }
+                break;
+
+                case OP_SOUNDSEEK: {
+                    double p = stack->popfloat();
+                    int i = stack->popint();
+                    sound->seek(i, p);
+                }
+                break;
+
+                case OP_SOUNDVOLUME: {
+                    double v = stack->popfloat();
+                    int i = stack->popint();
+                    sound->volume(i, v);
+                }
+                break;
+
+                case OP_SOUNDPOSITION: {
+                    int i = stack->popint();
+                    stack->pushfloat(sound->position(i));
+                }
+                break;
+
+                case OP_SOUNDLENGTH: {
+                    int i = stack->popint();
+                    stack->pushfloat(sound->length(i));
+                }
+                break;
+
+                case OP_SOUNDSTATE: {
+                    int i = stack->popint();
+                    stack->pushint(sound->state(i));
+                }
+                break;
 
 				case OP_VOLUME: {
 					// set the wave output height (volume 0-10)
 					double volume = stack->popfloat();
-                    sound->setVolume(volume);
+                    sound->setMasterVolume(volume);
 				}
 				break;
 
@@ -5309,7 +5458,7 @@ Interpreter::execByteCode() {
                 }
 				break;
 
-				case OP_THROWERROR: {
+                case OP_THROWERROR: {
 					// Throw a user defined error number
 					int fn = stack->popint();
 					error->q(fn);
@@ -5548,7 +5697,512 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-					// insert additional OPTYPE_NONE operations here
+                case OP_IMAGELOAD: {
+                    QString s = stack->popstring();
+                    QString id = QString("image:") + s;
+                    if (images.contains(id)){
+                        delete(images[id]);
+                        images.remove(id);
+                    }
+                    if(QFileInfo(s).exists()){
+                        images[id] = new QImage(QImage(s).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                    }else{
+                        QImage *temp = new QImage();
+                        downloader->download(QUrl::fromUserInput(s));
+                        temp->loadFromData(downloader->data());
+                        images[id] = new QImage(temp->convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                        delete temp;
+                    }
+                    stack->pushstring(id);
+                    if(images[id]->isNull())
+                        error->q(ERROR_IMAGEFILE);
+                }
+                break;
+
+
+                case OP_IMAGENEW: {
+                    unsigned long c = stack->poplong();
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    lastImageId++;
+                    QString id = QString("image:") + QString::number(lastImageId);
+
+                    if (images.contains(id)){
+                        delete(images[id]);
+                        images.remove(id);
+                    }
+
+                    images[id] = new QImage(w, h, QImage::Format_ARGB32);
+                    images[id]->fill(QColor::fromRgba((QRgb) c));
+                    stack->pushstring(id);
+                }
+                break;
+
+
+                case OP_IMAGECOPY: {
+                    int nr = stack->popint();
+
+                    lastImageId++;
+                    QString id = QString("image:") + QString::number(lastImageId);
+
+                    if (images.contains(id)){
+                        delete(images[id]);
+                        images.remove(id);
+                    }
+
+                    switch (nr){
+                    case 0:{
+                        images[id] = new QImage(*graphwin->image);
+                        break;
+                    }
+                    case 4:{
+                        int h = stack->popint();
+                        int w = stack->popint();
+                        int y = stack->popint();
+                        int x = stack->popint();
+                        images[id] = new QImage(graphwin->image->copy(x, y, w, h));
+                        break;
+                    }
+                    case 1:{
+                        QString id2 = stack->popstring();
+                        if (images.contains(id2)){
+                            images[id] = new QImage(*images[id2]);
+                        }else{
+                            error->q(ERROR_IMAGERESOURCE);
+                        }
+                        break;
+                    }
+                    case 5:{
+                        int h = stack->popint();
+                        int w = stack->popint();
+                        int y = stack->popint();
+                        int x = stack->popint();
+                        QString id2 = stack->popstring();
+                        if (images.contains(id2)){
+                            images[id] = new QImage(images[id2]->copy(x, y, w, h));
+                        }else{
+                            error->q(ERROR_IMAGERESOURCE);
+                        }
+                        break;
+                    }
+                    }
+                    stack->pushstring(id);
+                }
+                break;
+
+                case OP_IMAGECROP: {
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    int y = stack->popint();
+                    int x = stack->popint();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        QImage *tmp = new QImage(images[id]->copy(x, y, w, h));
+                        delete (images[id]);
+                        images[id] = tmp;
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGEAUTOCROP: {
+                    int x,y,w,h,y1,y2,x1=0,x2=0;
+                    unsigned long c=0;
+                    int nr = stack->popint();
+                    if(nr==2)
+                        c = stack->poplong();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        w=images[id]->width();
+                        h=images[id]->height();
+                        if(w>0 && h>0){
+                            if(nr==2){
+                                for(y=0;y<h;y++){
+                                    for(x=0;x<w;x++){
+                                        if(images[id]->pixel(x,y)!=c) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y1=y;
+                                for(y=h-1;y>y1;y--){
+                                    for(x=0;x<w;x++){
+                                        if(images[id]->pixel(x,y)!=c) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y2=y;
+                                if(y1!=y2){
+                                    for(x=0;x<w;x++){
+                                        for(y=y1;y<y2;y++){
+                                            if(images[id]->pixel(x,y)!=c) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x1=x;
+                                    for(x=w-1;x>x1;x--){
+                                        for(y=y1;y<y2;y++){
+                                            if(images[id]->pixel(x,y)!=c) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x2=x;
+                                }
+                            }else{
+                                for(y=0;y<h;y++){
+                                    for(x=0;x<w;x++){
+                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y1=y;
+                                for(y=h-1;y>y1;y--){
+                                    for(x=0;x<w;x++){
+                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y2=y;
+                                if(y1!=y2){
+                                    for(x=0;x<w;x++){
+                                        for(y=y1;y<y2;y++){
+                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x1=x;
+                                    for(x=w-1;x>x1;x--){
+                                        for(y=y1;y<y2;y++){
+                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x2=x;
+                                }
+                            }
+                            if(y2>y1){
+                                QImage *tmp = new QImage(images[id]->copy(x1, y1, x2-x1+1, y2-y1+1));
+                                delete (images[id]);
+                                images[id] = tmp;
+                            }else{
+                                delete (images[id]);
+                                images[id] = new QImage();
+                            }
+                        }
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGERESIZE: {
+                    int h, w, nr;
+                    double s;
+                    QImage *tmp;
+                    nr = stack->popint();
+                    if(nr==3){
+                        h = stack->popint();
+                        w = stack->popint();
+                    }else{
+                        s = stack->popfloat();
+                    }
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        if(nr==3){
+                            tmp = new QImage(images[id]->scaled(w,h,Qt::IgnoreAspectRatio,imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        }else{
+                            QTransform transform = QTransform().scale(s,s);
+                            tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        }
+                        delete (images[id]);
+                        images[id] = tmp;
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGESETPIXEL: {
+                    unsigned long c = stack->poplong();
+                    int y = stack->popint();
+                    int x = stack->popint();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        images[id]->setPixel(x,y,c);
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGEWIDTH: {
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        stack->pushint(images[id]->width());
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGEHEIGHT: {
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        stack->pushint(images[id]->height());
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGEPIXEL: {
+                    int y = stack->popint();
+                    int x = stack->popint();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        unsigned long c = images[id]->pixel(x,y);
+                        stack->pushlong(c);
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+
+                case OP_IMAGEDRAW: {
+                    int nr = stack->popint();
+                    double o = 1;
+                    int x, y, h, w;
+                    QString id;
+
+                    QPainter *ian;
+                    if (printing) {
+                        ian = printdocumentpainter;
+                    } else {
+                        ian = new QPainter(graphwin->image);
+                    }
+
+                    switch (nr){
+                    case 4:
+                        o = stack->popfloat();
+                        if(o!=1)
+                            ian->setOpacity(o);
+                    case 3:
+                        y = stack->popint();
+                        x = stack->popint();
+                        id = stack->popstring();
+                        if (images.contains(id)){
+                            ian->drawImage(x, y, *images[id]);
+                        }else{
+                            error->q(ERROR_IMAGERESOURCE);
+                        }
+                        break;
+                    case 6:
+                        o = stack->popfloat();
+                        if(o!=1)
+                            ian->setOpacity(o);
+                    case 5:
+                        h = stack->popint();
+                        w = stack->popint();
+                        y = stack->popint();
+                        x = stack->popint();
+                        id = stack->popstring();
+                        if (images.contains(id)){
+                            bool r=false;
+                            if (printing)
+                                r = ian->testRenderHint(QPainter::SmoothPixmapTransform);
+                            ian->setRenderHint(QPainter::SmoothPixmapTransform,imageSmooth);
+                            if(w<0 || h<0){
+                                ian->drawImage(QRectF(x,y,w<0?w*-1:w,h<0?h*-1:h), images[id]->mirrored(w<0, h<0), QRectF(0,0,images[id]->width(),images[id]->height()));
+                            }else{
+                                ian->drawImage(QRectF(x,y,w,h), *images[id], QRectF(0,0,images[id]->width(),images[id]->height()));
+                            }
+                            if (printing)
+                                ian->setRenderHints(QPainter::SmoothPixmapTransform, r);
+                        }else{
+                            error->q(ERROR_IMAGERESOURCE);
+                        }
+                        break;
+                    }
+
+                    if (!printing) {
+                        ian->end();
+                        delete ian;
+                        if (!fastgraphics) waitForGraphics();
+                    }else{
+                        if (o!=1.0) ian->setOpacity(1.0);
+                    }
+                }
+                break;
+
+
+                case OP_IMAGEFLIP: {
+                    bool h = stack->popbool();
+                    bool w = stack->popbool();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        QImage *tmp = new QImage(images[id]->mirrored(w, h));
+                        delete (images[id]);
+                        images[id] = tmp;
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGEROTATE: {
+                    int d = stack->popint();
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        QTransform rot;
+                        rot.rotateRadians(d);
+                        QImage *tmp = new QImage(images[id]->transformed(rot, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        delete (images[id]);
+                        images[id] = tmp;
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGESMOOTH: {
+                    bool v = stack->popbool();
+                    imageSmooth = v;
+                }
+                break;
+
+                case OP_IMAGECENTERED: {
+                    double o=1, r=0, s=1, y=0, x=0;
+
+                    QPainter *ian;
+                    if (printing) {
+                        ian = printdocumentpainter;
+                    } else {
+                        ian = new QPainter(graphwin->image);
+                    }
+
+                    int nr = stack->popint(); // number of arguments (3-6)
+                    switch(nr){
+                        case 6  :
+                           o = stack->popfloat();
+                        case 5  :
+                           r = stack->popfloat();
+                        case 4  :
+                           s = stack->popfloat();
+                        case 3 :
+                           y = stack->popfloat();
+                           x = stack->popfloat();
+                    }
+                    QString id = stack->popstring();
+                    if (images.contains(id)){
+                        QTransform transform = QTransform().translate(images[id]->width()/2, images[id]->height()/2).rotateRadians(r).scale(s,s);
+                        QImage *tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        if(o!=1)
+                            ian->setOpacity(o);
+
+                        ian->drawImage(x-(tmp->width()/2),y-(tmp->height()/2), *tmp);
+                        delete tmp;
+
+
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+
+                    if (!printing) {
+                        ian->end();
+                        delete ian;
+                        if (!fastgraphics) waitForGraphics();
+                    }else{
+                        if (o!=1.0) ian->setOpacity(1.0);
+                    }
+                }
+                break;
+
+                case OP_UNLOAD: {
+                    QString id = stack->popstring();
+                    if(id.startsWith("image:")){
+                        if (images.contains(id)){
+                            delete(images[id]);
+                            images.remove(id);
+                        }else{
+                            error->q(ERROR_IMAGERESOURCE);
+                        }
+                    }else if(id.startsWith("sound:") || id.startsWith("beep:")){
+                        if(!sound->unloadSound(id)){
+                            error->q(ERROR_SOUNDRESOURCE);
+                        }
+                    }else{
+                        error->q(ERROR_INVALIDRESOURCE);
+                    }
+                }
+                break;
+
+                case OP_IMAGETRANSFORMED: {
+                    double o = stack->popfloat();
+                    int y4 = stack->popint();
+                    int x4 = stack->popint();
+                    int y3 = stack->popint();
+                    int x3 = stack->popint();
+                    int y2 = stack->popint();
+                    int x2 = stack->popint();
+                    int y1 = stack->popint();
+                    int x1 = stack->popint();
+                    QString id = stack->popstring();
+
+                    QPainter *ian;
+                    if (printing) {
+                        ian = printdocumentpainter;
+                    } else {
+                        ian = new QPainter(graphwin->image);
+                    }
+
+                    if (images.contains(id)){
+                        double w = images[id]->width();
+                        double h = images[id]->height();
+                        QPolygonF polygon1, polygon2;
+                        polygon2 << QPointF(x1, y1) << QPointF(x2, y2) << QPointF(x3, y3) << QPointF(x4, y4);
+                        polygon1 << QPointF(0.0, 0.0) << QPointF(w-1.0, 0.0) << QPointF(w-1.0, h-1.0) << QPointF(0.0, h-1.0);
+                        QTransform transform;
+                        QTransform::quadToQuad(polygon1,polygon2,transform);
+                        QImage *tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        if(o!=1)
+                            ian->setOpacity(o);
+
+                        if(x1>x2) x1=x2;
+                        if(x1>x3) x1=x3;
+                        if(x1>x4) x1=x4;
+                        if(y1>y2) y1=y2;
+                        if(y1>y3) y1=y3;
+                        if(y1>y4) y1=y4;
+
+                        ian->drawImage((int) x1, (int) y1, *tmp);
+                        delete tmp;
+
+
+                    }else{
+                        error->q(ERROR_IMAGERESOURCE);
+                    }
+
+                    if (!printing) {
+                        ian->end();
+                        delete ian;
+                        if (!fastgraphics) waitForGraphics();
+                    }else{
+                        if (o!=1.0) ian->setOpacity(1.0);
+                    }
+                }
+                break;
+
+
+
+
+
+
+
+
+
+
+                // insert additional OPTYPE_NONE operations here
 
 
 

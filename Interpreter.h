@@ -125,25 +125,26 @@ class Interpreter : public QThread
 {
   Q_OBJECT;
 	public:
-		Interpreter(QLocale*);
+        Interpreter(QLocale*);
 		~Interpreter();
 		int compileProgram(char *);
 		void initialize();
 		bool isRunning();
 		bool isStopped();
+        void setStopped();
 		bool isAwaitingInput();
 		void setInputReady();
 		void cleanup();
-		void run();
-		int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
+        void run();
+        int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
 		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
 		QString returnString;		// return value from runcontroller emit
 		int returnInt;			// return value from runcontroller emit
 
-	public slots:
+    public slots:
 		int execByteCode();
 		void runHalted();
-		void inputEntered(QString);
+        void inputEntered(QString);
 
 	signals:
 		void debugNextStep();
@@ -170,7 +171,9 @@ class Interpreter : public QThread
 		void mainWindowsVisible(int, bool);
 		void dialogAlert(QString);
 		void dialogConfirm(QString, int);
-		void dialogPrompt(QString, QString);
+        void dialogPrompt(QString, QString);
+        void playSound(QString);
+        void playSound(std::vector<std::vector<double>>);
 #if ANDROID
 		void playWAV(QString);
 		void waitWAV();
@@ -231,8 +234,8 @@ class Interpreter : public QThread
 		
 		DIR *directorypointer;		// used by DIR function
 		QTime runtimer;				// used by MSEC function
-        Sound *sound;
-		QString currentIncludeFile;	// set to current included file name for runtime error messages
+        //SoundSystem *sound;
+        QString currentIncludeFile;	// set to current included file name for runtime error messages
 		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
 
 		bool printing;
@@ -242,6 +245,10 @@ class Interpreter : public QThread
 		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
 		BasicMediaPlayer *mediaplayer;
+
+        QMap <QString, QImage*> images;
+        int lastImageId;
+        bool imageSmooth;
 
 };
 

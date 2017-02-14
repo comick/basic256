@@ -43,14 +43,15 @@ class Stack
 		void topto2();
 		void dup();
 		void dup2();
-		int peekType();
+        int peekType();
         int peekType(int);
 		DataElement *popelement();
 		int popint();
 		int popbool();
 		long poplong();
 		double popfloat();
-		QString popstring();
+        double popnote();
+        QString popstring();
 		QString debug();
 		int height();
 

@@ -21,6 +21,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QAction>
+#include <QComboBox>
 
 #include "BasicEdit.h"
 
@@ -37,6 +38,7 @@ public:
 	void setReplaceMode(bool);
     void findAgain();
     QLineEdit *findText;
+    QComboBox *findTextCombo;
 
 private slots:
     void changeFindText(QString);
@@ -50,6 +52,7 @@ private:
     QLabel *findLabel;
     QLabel *replaceLabel;
     QLineEdit *replaceText;
+    QComboBox *replaceTextCombo;
     QCheckBox *backCheckbox;
     QCheckBox *caseCheckbox;
     QCheckBox *wordsCheckbox;
@@ -58,6 +61,7 @@ private:
     QPushButton *replaceButton;
     QPushButton *replaceAllButton;
     bool replaceMode;
+    void saveHistory();
 };
 
 #endif

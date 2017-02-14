@@ -80,9 +80,11 @@ extern BasicOutput * outwin;
 extern BasicGraph * graphwin;
 extern VariableWin * varwin;
 
+SoundSystem *sound;
 
 
 RunController::RunController() {
+    sound = NULL;
     i = new Interpreter(mainwin->locale);
 
     replacewin = NULL;
@@ -110,22 +112,28 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
     QObject::connect(i, SIGNAL(stopRunFinalized(bool)), this, SLOT(stopRunFinalized(bool)));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
+
+    QObject::connect(i, SIGNAL(playSound(QString)), this, SLOT(playSound(QString)));
+    QObject::connect(i, SIGNAL(playSound(std::vector<std::vector<double>>)), this, SLOT(playSound(std::vector<std::vector<double>>)));
+
+
+
 #ifdef ANDROID
-	QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
-	QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
-	QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
+    QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
+    QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
+    QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
 #endif
 
 
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
-	// for debugging and controlling the variable watch window
+    // for debugging and controlling the variable watch window
     QObject::connect(i, SIGNAL(varWinAssign(Variables**, int)), varwin,
         SLOT(varWinAssign(Variables**, int)));
     QObject::connect(i, SIGNAL(varWinAssign(Variables**, int, int, int)), varwin,
         SLOT(varWinAssign(Variables**, int, int, int)));
-	QObject::connect(i, SIGNAL(varWinDropLevel(int)), varwin,
-		SLOT(varWinDropLevel(int)));
+    QObject::connect(i, SIGNAL(varWinDropLevel(int)), varwin,
+        SLOT(varWinDropLevel(int)));
     QObject::connect(i, SIGNAL(varWinDimArray(Variables**, int, int, int)), varwin,
         SLOT(varWinDimArray(Variables**, int, int, int)));
 
@@ -244,6 +252,7 @@ RunController::startDebug() {
             stopRunFinalized(false);
             return;
         }
+        sound = new SoundSystem();
         i->initialize();
         i->debugMode = 1;
         editwin->updateBreakPointsList();
@@ -259,13 +268,15 @@ RunController::startDebug() {
 
 void
 RunController::debugNextStep() {
-	// show step buttons for next debug step
+    // show step buttons for next debug step
     mainwin->setRunState(RUNSTATEDEBUG);
 }
 
 
 void
 RunController::startRun() {
+    //qDebug() << "";
+    //qDebug() << "RunController::startRun()";
     if (i->isStopped()) {
         //
         outputClear();
@@ -284,6 +295,7 @@ RunController::startRun() {
         }
         //
         // now setup and start the run
+        sound = new SoundSystem();
         i->initialize();
         mainwin->statusBar()->showMessage(tr("Running"));
         graphwin->setFocus();
@@ -307,96 +319,101 @@ RunController::inputEntered(QString text) {
 void
 RunController::outputClear() {
     mymutex->lock();
-	outwin->setTextColor(Qt::black);
+    outwin->setTextColor(Qt::black);
     outwin->clear();
     waitCond->wakeAll();
     mymutex->unlock();
 }
 
 void RunController::outputReady(QString text) {
-	mymutex->lock();
-	mainWindowsVisible(2,true);
-	QTextCursor t(outwin->textCursor());
-	if(!t.atEnd() || t.hasSelection()){
-		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-		outwin->setTextCursor(t);
-	}
-	outwin->insertPlainText(text);
-	outwin->ensureCursorVisible();
-	waitCond->wakeAll();
-	mymutex->unlock();
+    mymutex->lock();
+    mainWindowsVisible(2,true);
+    QTextCursor t(outwin->textCursor());
+    if(!t.atEnd() || t.hasSelection()){
+        t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+        outwin->setTextCursor(t);
+    }
+    outwin->insertPlainText(text);
+    outwin->ensureCursorVisible();
+    waitCond->wakeAll();
+    mymutex->unlock();
 }
 
 void RunController::outputError(QString text) {
-	outwin->setTextColor(Qt::red); //color red
-	outputReady(text);
-	outwin->setTextColor(Qt::black); //back to black color
+    outwin->setTextColor(Qt::red); //color red
+    outputReady(text);
+    outwin->setTextColor(Qt::black); //back to black color
 }
 
 void
 RunController::goutputReady() {
-	mymutex->lock();
-	graphwin->updateScreenImage();
-	graphwin->repaint();
-	waitCond->wakeAll();
-	mymutex->unlock();
+    mymutex->lock();
+    graphwin->updateScreenImage();
+    graphwin->repaint();
+    waitCond->wakeAll();
+    mymutex->unlock();
 }
 
 void
 RunController::stepThrough() {
-	i->debugMode = 1; // step through debugging
-	mainwin->setRunState(RUNSTATERUNDEBUG);
-	mydebugmutex->lock();
-	waitDebugCond->wakeAll();
-	mydebugmutex->unlock();
+    i->debugMode = 1; // step through debugging
+    mainwin->setRunState(RUNSTATERUNDEBUG);
+    mydebugmutex->lock();
+    waitDebugCond->wakeAll();
+    mydebugmutex->unlock();
 }
 void
 
 RunController::stepBreakPoint() {
-	i->debugMode = 2; // run to break point debugging
-	mainwin->setRunState(RUNSTATERUNDEBUG);
-	mydebugmutex->lock();
-	waitDebugCond->wakeAll();
-	mydebugmutex->unlock();
+    i->debugMode = 2; // run to break point debugging
+    mainwin->setRunState(RUNSTATERUNDEBUG);
+    mydebugmutex->lock();
+    waitDebugCond->wakeAll();
+    mydebugmutex->unlock();
 }
 
 void RunController::stopRun() {
     if(!i->isStopped()){
-	// event when the user clicks on the stop button
-	mainwin->statusBar()->showMessage(tr("Stopping."));
+    // event when the user clicks on the stop button
+    mainwin->statusBar()->showMessage(tr("Stopping."));
 
-	mainwin->setRunState(RUNSTATESTOPING);
+    mainwin->setRunState(RUNSTATESTOPING);
 
-	mymutex->lock();
-	outwin->stopInput();
-	waitCond->wakeAll();
-	mymutex->unlock();
+    mymutex->lock();
+    outwin->stopInput();
+    waitCond->wakeAll();
+    mymutex->unlock();
 
-	mydebugmutex->lock();
-	i->debugMode = 0;
-	waitDebugCond->wakeAll();
-	mydebugmutex->unlock();
+    mydebugmutex->lock();
+    i->debugMode = 0;
+    waitDebugCond->wakeAll();
+    mydebugmutex->unlock();
 
-	emit(runHalted());
+    emit(runHalted());
 }
 }
 
 void RunController::stopRunFinalized(bool ok) {
-	// event when the interperter actually finishes the run
+    //qDebug() << "stopRunFinalized";
+    // event when the interperter actually finishes the run
+    if(sound){
+        delete sound;
+        sound = NULL;
+    }
     mainwin->statusBar()->showMessage(tr("Ready."));
-
-	mainwin->setRunState(RUNSTATESTOP);
-
+    mainwin->setRunState(RUNSTATESTOP);
     mainwin->ifGuiStateClose(ok);
+    i->setStopped();
+    //qDebug() << "stopRunFinalized i->setStopped()";
 }
 
 void
 RunController::showDocumentation() {
-	if (!docwin) docwin = new DocumentationWin(mainwin);
-	docwin->show();
-	if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
-	docwin->go("");
-	docwin->activateWindow();
+    if (!docwin) docwin = new DocumentationWin(mainwin);
+    docwin->show();
+    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+    docwin->go("");
+    docwin->activateWindow();
 }
 
 
@@ -406,13 +423,13 @@ void RunController::showOnlineDocumentation() {
 
 void
 RunController::showContextDocumentation() {
-	QString w = editwin->getCurrentWord();
-	if (!docwin) docwin = new DocumentationWin(mainwin);
-	docwin->show();
-	if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
-	docwin->raise();
-	docwin->go(w);
-	docwin->activateWindow();
+    QString w = editwin->getCurrentWord();
+    if (!docwin) docwin = new DocumentationWin(mainwin);
+    docwin->show();
+    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+    docwin->raise();
+    docwin->go(w);
+    docwin->activateWindow();
 }
 
 void RunController::showOnlineContextDocumentation() {
@@ -556,15 +573,31 @@ RunController::dialogPrompt(QString prompt, QString dflt) {
 }
 
 void RunController::dialogFontSelect() {
-	bool ok;
-	SETTINGS;
-	QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin, QString(), QFontDialog::MonospacedFonts);
+    bool ok;
+    SETTINGS;
+    QFont newf = QFontDialog::getFont(&ok, editwin->font(), mainwin, QString(), QFontDialog::MonospacedFonts);
 
-	if (ok) {
-		mymutex->lock();
-		editwin->setFont(newf);
-		outwin->setFont(newf);
-		waitCond->wakeAll();
-		mymutex->unlock();
-	}
+    if (ok) {
+        mymutex->lock();
+        editwin->setFont(newf);
+        outwin->setFont(newf);
+        waitCond->wakeAll();
+        mymutex->unlock();
+    }
+}
+
+void RunController::playSound(std::vector<std::vector<double>> sounddata){
+    mymutex->lock();
+    ////qDebug() << "playSound ";
+    sound->playSound(sounddata);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::playSound(QString s){
+    mymutex->lock();
+    ////qDebug() << "playSound " << s;
+    sound->playSound(s);
+    waitCond->wakeAll();
+    mymutex->unlock();
 }

@@ -33,6 +33,7 @@
 #include <QStatusBar>
 #include <QtPlugin>
 #include <QTranslator>
+#include <QMetaType>
 
 #include "Settings.h"
 #include "Version.h"
@@ -90,6 +91,7 @@ static void associateFileTypes(const QStringList &fileTypes)
 
 int main(int argc, char *argv[]) {
     QApplication qapp(argc, argv);
+    qRegisterMetaType<std::vector<std::vector<double>>>("std::vector<std::vector<double>>");
     int guimode = 0;		// 0=normal, 1- r option, 2- app option
     QString localecode;		// either lang or the system localle - stored on mainwin for help display
 

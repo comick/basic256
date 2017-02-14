@@ -52,9 +52,7 @@
 	unsigned int listlen = 0;
         unsigned int numberoflists = 0;
 
-	unsigned int voicelistlen = 0;		// sound number of voices
-
-	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
+        unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
 	int nvarnumber=0;
 
 
@@ -342,7 +340,7 @@
 %token B256TOINT B256TOSTRING B256LENGTH B256MID B256LEFT B256RIGHT B256UPPER B256LOWER B256INSTR B256INSTRX B256MIDX
 %token B256CEIL B256FLOOR B256RAND B256SIN B256COS B256TAN B256ASIN B256ACOS B256ATAN B256ABS B256PI B256DEGREES B256RADIANS B256LOG B256LOGTEN B256SQR B256EXP
 %token B256AND B256OR B256XOR B256NOT
-%token B256PAUSE B256SOUND B256POLYSOUND
+%token B256PAUSE B256SOUND B256SOUNDPLAY B256SOUNDLOAD B256SOUNDPAUSE B256SOUNDRESUME B256SOUNDSEEK B256SOUNDSTOP B256SOUNDWAIT B256SOUNDVOLUME B256SOUNDPOSITION B256SOUNDSTATE B256SOUNDLENGTH
 %token B256ASC B256CHR B256TOFLOAT B256READLINE B256WRITELINE B256BOOLEOF B256MOD B256INTDIV
 %token B256YEAR B256MONTH B256DAY B256HOUR B256MINUTE B256SECOND B256TEXT B256FONT B256TEXTWIDTH B256TEXTHEIGHT
 %token B256SAY B256SYSTEM
@@ -367,6 +365,8 @@
 %token B256KILL B256MD5 B256SETSETTING B256GETSETTING B256PORTIN B256PORTOUT
 %token B256BINARYOR B256AMP B256AMPEQUAL B256BINARYNOT
 %token B256IMGSAVE
+%token B256IMAGETRANSFORMED B256IMAGECENTERED B256IMAGEDRAW B256IMAGESETPIXEL B256IMAGERESIZE B256IMAGEAUTOCROP B256IMAGECROP B256IMAGESMOOTH
+%token B256IMAGENEW B256IMAGELOAD B256IMAGECOPY B256IMAGEWIDTH B256IMAGEHEIGHT B256IMAGEPIXEL B256IMAGEFLIP B256IMAGEROTATE B256UNLOAD
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
@@ -619,14 +619,14 @@ args_a:
 
 // Array Variable Data as a list of lists
 args_A:
-			array_empty {
+                        array_empty {
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 			}
                         | listoflists
                         | args_v {
                             addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
                         }
-			;
+                        ;
 
 args_v:
 			B256VARIABLE {
@@ -707,6 +707,18 @@ args_eeeeeee:
 			expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
 			| '(' args_eeeeeee ')';
 
+/* nine arguments */
+
+args_eeeeeeeee:
+                        expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
+                        | '(' args_eeeeeeeee ')';
+
+/* ten arguments */
+
+args_eeeeeeeeee:
+                        expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
+                        | '(' args_eeeeeeeeee ')';
+
 
 
 
@@ -760,6 +772,16 @@ statement:
 			| ifstmt
 			| ifthenstmt
 			| ifthenelsestmt
+                        | imageautocropstmt
+                        | imagecenteredstmt
+                        | imagecropstmt
+                        | imagedrawstmt
+                        | imageflipstmt
+                        | imagesetpixelstmt
+                        | imageresizestmt
+                        | imagerotatestmt
+                        | imagesmoothstmt
+                        | imagetransformedstmt
 			| imgloadstmt
 			| imgsavestmt
 			| inputstmt
@@ -797,9 +819,14 @@ statement:
 			| seedstmt
 			| seekstmt
 			| setsettingstmt
-			| polysoundstmt
 			| soundstmt
-			| spritedimstmt
+                        | soundpausestmt
+                        | soundresumestmt
+                        | soundstopstmt
+                        | soundwaitstmt
+                        | soundseekstmt
+                        | soundvolumestmt
+                        | spritedimstmt
 			| spritehidestmt
 			| spriteloadstmt
 			| spritemovestmt
@@ -814,6 +841,7 @@ statement:
 			| throwerrorstmt
 			| trystmt
 			| unassignstmt
+                        | unloadstmt
 			| untilstmt
 			| variablewatchstmt
 			| volumestmt
@@ -1619,25 +1647,82 @@ colorstmt:	B256SETCOLOR args_eee {
 			}
 			;
 
-polysoundstmt:	B256POLYSOUND voicelist {
-				addIntOp(OP_PUSHINT, voicelistlen);
-				voicelistlen = 0;
-				addOp(OP_SOUND_LIST);
-			}
-			;
+soundstmt:	B256SOUND expr {
+                                addOp(OP_SOUND);
+                        }
+                        | B256SOUND args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUND);
+                        }
+                        | B256SOUND args_ee {
+                                addIntOp(OP_PUSHINT, 2);	// 2 columns
+                                addIntOp(OP_PUSHINT, 1);	// 1 row
+                                addOp(OP_SOUND_LIST);
+                        }
+                        | B256SOUND listoflists {
+                                addOp(OP_SOUND_LIST);
+                        }
+                        | B256SOUND array_empty {
+                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+                                addOp(OP_SOUND_LIST);
+                        }
+                        ;
 
-soundstmt:	B256SOUND args_A {
-				addIntOp(OP_PUSHINT, 1);
-				voicelistlen = 0;
-				addOp(OP_SOUND_LIST);
-			}
-			| B256SOUND args_ee {
-				addIntOp(OP_PUSHINT, 2);	// 2 columns
-				addIntOp(OP_PUSHINT, 1);	// 1 row
-				addIntOp(OP_PUSHINT, 1);	// 1 voice
-				addOp(OP_SOUND_LIST);
-			}
-			;
+soundpausestmt:  B256SOUNDPAUSE expr {
+                                addOp(OP_SOUNDPAUSE);
+                        }
+                        | B256SOUNDPAUSE args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDPAUSE);
+                        }
+                        ;
+
+soundresumestmt:  B256SOUNDRESUME expr {
+                                addOp(OP_SOUNDRESUME);
+                        }
+                        | B256SOUNDRESUME args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDRESUME);
+                        }
+                        ;
+
+soundstopstmt:  B256SOUNDSTOP expr {
+                                addOp(OP_SOUNDSTOP);
+                        }
+                        | B256SOUNDSTOP args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDSTOP);
+                        }
+                        ;
+
+soundwaitstmt:  B256SOUNDWAIT expr {
+                                addOp(OP_SOUNDWAIT);
+                        }
+                        | B256SOUNDWAIT args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDWAIT);
+                        }
+                        ;
+
+soundseekstmt:  B256SOUNDSEEK args_ee {
+                                addOp(OP_SOUNDSEEK);
+                        }
+                        | B256SOUNDSEEK expr {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_STACKSWAP);
+                                addOp(OP_SOUNDSEEK);
+                        }
+                        ;
+
+soundvolumestmt:  B256SOUNDVOLUME args_ee {
+                                addOp(OP_SOUNDVOLUME);
+                        }
+                        | B256SOUNDVOLUME expr {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_STACKSWAP);
+                                addOp(OP_SOUNDVOLUME);
+                        }
+                        ;
 
 plotstmt: 	B256PLOT args_ee {
 				addOp(OP_PLOT);
@@ -1734,8 +1819,8 @@ stampstmt: 	B256STAMP args_eeeeA {
 			}
 			| B256STAMP args_eeeA {
 				addOp(OP_STAMP_S_LIST);
-			}
-			| B256STAMP args_eeA {
+                        }
+                        | B256STAMP args_eeA {
 				addOp(OP_STAMP_LIST);
 			}
 			;
@@ -2578,6 +2663,121 @@ variablewatchstmt:
 			}
 			;
 
+imagecropstmt:
+                        B256IMAGECROP args_eeeee {
+                                addOp(OP_IMAGECROP);
+                        }
+                        ;
+
+imageautocropstmt:
+                        B256IMAGEAUTOCROP expr {
+                                addIntOp(OP_PUSHINT,1);	// nr of arguments
+                                addOp(OP_IMAGEAUTOCROP);
+                        }
+                        | B256IMAGEAUTOCROP args_ee {
+                                addIntOp(OP_PUSHINT,2);	// nr of arguments
+                                addOp(OP_IMAGEAUTOCROP);
+                        }
+                        ;
+
+imageresizestmt:
+                        B256IMAGERESIZE args_eee {
+                                addIntOp(OP_PUSHINT,3);	// nr of arguments
+                                addOp(OP_IMAGERESIZE);
+                        }
+                        | B256IMAGERESIZE args_ee {
+                            addIntOp(OP_PUSHINT,2);	// nr of arguments
+                            addOp(OP_IMAGERESIZE);
+                        }
+                        ;
+
+imagesetpixelstmt:
+                        B256IMAGESETPIXEL args_eeee {
+                                addOp(OP_IMAGESETPIXEL);
+                        }
+                        | B256IMAGESETPIXEL args_eee {
+                                addOp(OP_GETCOLOR);
+                                addOp(OP_IMAGESETPIXEL);
+                        }
+                        ;
+
+imagedrawstmt:
+                        B256IMAGEDRAW args_eeeeee {
+                                addIntOp(OP_PUSHINT,6);	// nr of arguments
+                                addOp(OP_IMAGEDRAW);
+                        }
+                        | B256IMAGEDRAW args_eeeee {
+                                addIntOp(OP_PUSHINT,5);	// nr of arguments
+                                addOp(OP_IMAGEDRAW);
+                        }
+                        | B256IMAGEDRAW args_eeee {
+                                addIntOp(OP_PUSHINT,4);	// nr of arguments
+                                addOp(OP_IMAGEDRAW);
+                        }
+                        | B256IMAGEDRAW args_eee {
+                                addIntOp(OP_PUSHINT,3);	// nr of arguments
+                                addOp(OP_IMAGEDRAW);
+                        }
+                        ;
+
+imagecenteredstmt:
+                        B256IMAGECENTERED args_eeeeee
+                        {
+                                addIntOp(OP_PUSHINT,6);	// nr of arguments
+                                addOp(OP_IMAGECENTERED);
+                        }
+                        | B256IMAGECENTERED args_eeeee  {
+                                addIntOp(OP_PUSHINT,5);	// nr of arguments
+                                addOp(OP_IMAGECENTERED);
+                        }
+                        | B256IMAGECENTERED args_eeee {
+                                addIntOp(OP_PUSHINT,4);	// nr of arguments
+                                addOp(OP_IMAGECENTERED);
+                        }
+                        | B256IMAGECENTERED args_eee {
+                                addIntOp(OP_PUSHINT,3);	// nr of arguments
+                                addOp(OP_IMAGECENTERED);
+                        }
+                        ;
+
+imagetransformedstmt:
+                        B256IMAGETRANSFORMED args_eeeeeeeeee {
+                                addOp(OP_IMAGETRANSFORMED);
+                        }
+                        | B256IMAGETRANSFORMED args_eeeeeeeee {
+                                addIntOp(OP_PUSHINT,1); // opacity
+                                addOp(OP_IMAGETRANSFORMED);
+                        }
+                        ;
+
+imagerotatestmt:
+                        B256IMAGEROTATE args_ee {
+                                addOp(OP_IMAGEROTATE);
+                        }
+                        ;
+
+
+imageflipstmt:
+                        B256IMAGEFLIP args_eee {
+                                addOp(OP_IMAGEFLIP);
+                        }
+                        | B256IMAGEFLIP args_ee {
+                                addIntOp(OP_PUSHINT,0);
+                                addOp(OP_IMAGEFLIP);
+                        }
+                        ;
+
+imagesmoothstmt:
+                        B256IMAGESMOOTH expr {
+                                addOp(OP_IMAGESMOOTH);
+                        }
+                        ;
+
+unloadstmt:
+                        B256UNLOAD expr {
+                                addOp(OP_UNLOAD);
+                        }
+                        ;
 
 
 
@@ -2644,13 +2844,6 @@ refexpr:
 
 
 
-voicelist:
-		args_A { voicelistlen = 1; }
-		| args_A ',' voicelist {voicelistlen++;}
-		;
-
-
-
 expr:
 
 			/* *** expressions that can ge EITHER numeric or string *** */
@@ -2691,6 +2884,7 @@ expr:
                         | args_a {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
                         }
+
 
 
                         /* *** numeric Experssions *** */
@@ -3280,8 +3474,51 @@ expr:
 			| B256OSTYPE_WINDOWS args_none { addIntOp(OP_PUSHINT, OSTYPE_WINDOWS); }
 			| B256SLICE_ALL args_none { addIntOp(OP_PUSHINT, SLICE_ALL); }
 			| B256SLICE_PAINT args_none { addIntOp(OP_PUSHINT, SLICE_PAINT); }
-			| B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
-			
+                        | B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
+                        | B256SOUNDPLAY '(' expr ')' { addOp(OP_SOUNDPLAY); }
+                        | B256SOUNDPLAY '(' args_ee ')' {
+                                addIntOp(OP_PUSHINT, 2);	// 2 columns
+                                addIntOp(OP_PUSHINT, 1);	// 1 row
+                                addOp(OP_SOUNDPLAY_LIST);
+                        }
+                        | B256SOUNDPLAY '(' listoflists ')' { addOp(OP_SOUNDPLAY_LIST); }
+                        | B256SOUNDPLAY '(' array_empty ')' {
+                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+                                addOp(OP_SOUNDPLAY_LIST);
+                        }
+                        | B256SOUNDPOSITION '(' expr ')' {
+                                addOp(OP_SOUNDPOSITION);
+                        }
+                        | B256SOUNDPOSITION args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDPOSITION);
+                        }
+                        | B256SOUNDSTATE '(' expr ')' {
+                                addOp(OP_SOUNDSTATE);
+                        }
+                        | B256SOUNDSTATE args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDSTATE);
+                        }
+                        | B256SOUNDLENGTH '(' expr ')' {
+                                addOp(OP_SOUNDLENGTH);
+                        }
+                        | B256SOUNDLENGTH args_none {
+                                addIntOp(OP_PUSHINT, -1);
+                                addOp(OP_SOUNDLENGTH);
+                        }
+                        | B256IMAGEWIDTH '(' expr ')' {
+                                addOp(OP_IMAGEWIDTH);
+                        }
+                        | B256IMAGEHEIGHT '(' expr ')' {
+                                addOp(OP_IMAGEHEIGHT);
+                        }
+                        | B256IMAGEPIXEL '(' args_eee ')' {
+                                addOp(OP_IMAGEPIXEL);
+                        }
+
+
+
 
 			/* ###########################################
 			   ### INSERT NEW Numeric Functions BEFORE ###
@@ -3375,6 +3612,43 @@ expr:
 			| B256IMAGETYPE_BMP args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_BMP); }
 			| B256IMAGETYPE_JPG args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_JPG); }
 			| B256IMAGETYPE_PNG args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_PNG); }
+                        | B256SOUNDLOAD '(' expr ')' { addOp(OP_SOUNDLOAD); }
+                        | B256SOUNDLOAD '(' args_ee ')' {
+                                addIntOp(OP_PUSHINT, 2);	// 2 columns
+                                addIntOp(OP_PUSHINT, 1);	// 1 row
+                                addOp(OP_SOUNDLOAD_LIST);
+                        }
+                        | B256SOUNDLOAD '(' listoflists ')' { addOp(OP_SOUNDLOAD_LIST); }
+                        | B256SOUNDLOAD '(' array_empty ')' {
+                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+                                addOp(OP_SOUNDLOAD_LIST);
+                        }
+                        | B256IMAGENEW '(' expr ',' expr ',' expr ')' {
+                                addOp(OP_IMAGENEW);
+                        }
+                        | B256IMAGENEW '(' expr ',' expr ')' {
+                                addIntOp(OP_PUSHINT, 0x00);
+                                addOp(OP_IMAGENEW);
+                        }
+                        | B256IMAGELOAD '(' expr ')' {
+                                addOp(OP_IMAGELOAD);
+                        }
+                        | B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ',' expr ')' {
+                                addIntOp(OP_PUSHINT, 5); //number of arguments
+                                addOp(OP_IMAGECOPY);
+                        }
+                        | B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ')' {
+                                addIntOp(OP_PUSHINT, 4); //number of arguments
+                                addOp(OP_IMAGECOPY);
+                        }
+                        | B256IMAGECOPY '(' expr ')' {
+                                addIntOp(OP_PUSHINT, 1); //number of arguments
+                                addOp(OP_IMAGECOPY);
+                        }
+                        | B256IMAGECOPY args_none {
+                                addIntOp(OP_PUSHINT, 0); //number of arguments
+                                addOp(OP_IMAGECOPY);
+                        }
 
 
 			/* ##########################################

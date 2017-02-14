@@ -18,9 +18,10 @@
 
 #include "BasicDownloader.h"
 
-BasicDownloader::BasicDownloader() :
+BasicDownloader::BasicDownloader(Error *e) :
     QObject()
 {
+    error = e;
     m_data = NULL;
     netreply = NULL;
     reply = true;
@@ -30,11 +31,13 @@ BasicDownloader::BasicDownloader() :
 }
 
 BasicDownloader::~BasicDownloader() {
+    //qDebug() << "~BasicDownloader()";
     stop();
 }
 
 
 void BasicDownloader::download(QUrl url){
+    //qDebug() << "BasicDownloader download()" << url;
     reply = false;
     inprogress = true;
     QNetworkRequest request(url);
@@ -50,8 +53,11 @@ void BasicDownloader::download(QUrl url){
 
 
 void BasicDownloader::fileDownloaded(QNetworkReply* ) {
+    //qDebug() << "BasicDownloader fileDownloaded()";
     if(netreply->error() == QNetworkReply::NoError) {
         m_data = netreply->readAll();
+    }else{
+        error->q(ERROR_DOWNLOAD, -1, netreply->errorString());
     }
     netreply->deleteLater();
     reply = true;
@@ -60,6 +66,7 @@ void BasicDownloader::fileDownloaded(QNetworkReply* ) {
 }
 
 QByteArray BasicDownloader::data() const {
+    //qDebug() << "BasicDownloader data()";
     if(!reply){
         QEventLoop loop;
         connect(this, SIGNAL(done()), &loop, SLOT(quit()));
@@ -69,8 +76,10 @@ QByteArray BasicDownloader::data() const {
 }
 
 void BasicDownloader::stop() {
+    //qDebug() << "BasicDownloader stop()";
     if(inprogress){
         cancel=true;
+        ////qDebug() << "BasicDownloader emit(cancelDownload())";
         emit(cancelDownload());
     }
 }

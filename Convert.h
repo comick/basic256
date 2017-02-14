@@ -37,6 +37,7 @@ class Convert
 		double getFloat(DataElement*);
 		QString getString(DataElement*);
 		QString getString(DataElement*, int);
+        double getMusicalNote(DataElement*);
 		int getBool(DataElement*);
 
 		int compare(DataElement*, DataElement*);
@@ -45,8 +46,10 @@ class Convert
 	private:
 		Error *error;
 		QLocale *locale;
-		QRegExp *isnumeric;
-		int ec(int, int);
+        QRegExp *isnumeric;
+        QRegExp *musicalnote;
+        QMap<QString, int> notesmap{{"do", 0}, {"re", 2}, {"mi", 4}, {"fa", 5}, {"sol", 7}, {"la", 9}, {"si", 11}, {"c", 0}, {"d", 2}, {"e", 4}, {"f", 5}, {"g", 7}, {"a", 9}, {"b", 11}, {"h", 11}, {"ni", 0}, {"pa", 2}, {"vu", 4}, {"ga", 5}, {"di", 7}, {"ke", 9}, {"zo", 11},};
+        int ec(int, int);
 		int decimaldigits;	// display n decinal digits 12 default - 8 to 15 valid
 		bool floattail;		// display floats with a tail of ".0" if whole numbers
         bool replaceDecimalPoint; // user can chose if INPUT and PRINT should use localized decimal point

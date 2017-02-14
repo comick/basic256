@@ -229,6 +229,14 @@ double Stack::popfloat() {
     return convert->getFloat(stackdata[--stackpointer]);
 }
 
+double Stack::popnote() {
+    if (stackpointer==0) {
+        error->q(ERROR_STACKUNDERFLOW);
+        return 0.0;
+    }
+    return convert->getMusicalNote(stackdata[--stackpointer]);
+}
+
 QString Stack::popstring() {
     if (stackpointer==0) {
         error->q(ERROR_STACKUNDERFLOW);

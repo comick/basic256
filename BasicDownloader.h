@@ -25,12 +25,13 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include "Error.h"
 
 class BasicDownloader : public QObject
 {
     Q_OBJECT
 public:
-    explicit BasicDownloader();
+    explicit BasicDownloader(Error* e);
     virtual ~BasicDownloader();
     QByteArray data() const;
     bool reply;
@@ -52,6 +53,7 @@ private:
     QNetworkAccessManager netmanager;
     QNetworkReply* netreply;
     QByteArray m_data;
+    Error *error;
 };
 
 #endif // BASICDOWNLOADER_H

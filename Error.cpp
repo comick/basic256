@@ -331,9 +331,27 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_VARCIRCULAR:
             errormessage = tr("Circular reference in variable");
             break;
+        case ERROR_IMAGERESOURCE:
+            errormessage = tr("Specified image resource not found");
+            break;
+        case ERROR_SOUNDRESOURCE:
+            errormessage = tr("Specified sound resource not found");
+            break;
+        case ERROR_INVALIDRESOURCE:
+            errormessage = tr("Specified resource not found");
+            break;
+        case ERROR_SOUNDFILE:
+            errormessage = tr("Unable to load sound file");
+            break;
+        case ERROR_DOWNLOAD:
+            errormessage = tr("Error downloading file");
+            break;
+        case ERROR_EXPECTEDSOUND:
+            errormessage = tr("Expected sound");
+            break;
 
-			
-	  
+
+
 
 		// put ERROR new messages here
 		case ERROR_NOTIMPLEMENTED:
@@ -358,6 +376,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case WARNING_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr("), zero used");
 			break;
+        case WARNING_SOUNDNOTSEEKABLE:
+            errormessage = tr("Media file is not seekable");
+            break;
+        case WARNING_SOUNDLENGTH:
+            errormessage = tr("Duration is not available for media file");
+            break;
 
 
 

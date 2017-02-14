@@ -16,10 +16,12 @@ Convert::Convert(Error *e, QLocale *applocale) {
     replaceDecimalPoint = replaceDecimalPoint && locale->decimalPoint()!='.'; //use locale decimal point only if !="."
     decimalPoint = (replaceDecimalPoint?locale->decimalPoint():'.');
     isnumeric = new QRegExp(QString("^[-+]?[0-9]*") + decimalPoint + QString("?[0-9]+([eE][-+]?[0-9]+)?$"));
+    musicalnote = new QRegExp("^(do|re|mi|fa|sol|la|si|c|d|e|f|g|a|b|h|ni|pa|vu|ga|di|ke|zo)([-]?[0-9]+)?(#{1,2}|b{1,2})?$", Qt::CaseInsensitive);
 }
 
 Convert::~Convert() {
-    //delete(isnumeric); //this is just a memo: https://sourceforge.net/p/kidbasic/bugs/66/
+    delete(isnumeric); //this is just a memo: https://sourceforge.net/p/kidbasic/bugs/66/
+    delete(musicalnote);
 }
 
 		
@@ -71,8 +73,8 @@ int Convert::getInt(DataElement *e) {
 }
 
 long Convert::getLong(DataElement *e) {
-	long i=0;
-	if (e) {
+    long i=0;
+    if (e) {
 		if (e->type == T_INT || e->type == T_REF) {
 			i = e->intval;
 		} else if (e->type == T_FLOAT) {
@@ -94,9 +96,9 @@ long Convert::getLong(DataElement *e) {
 			if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
 		} else if (e->type==T_UNASSIGNED) {
 			if (error) error->q(ERROR_VARNOTASSIGNED, e->intval);
-		}
-	}
-	return i;
+        }
+    }
+    return i;
 }
 
 double Convert::getFloat(DataElement *e) {
@@ -125,6 +127,33 @@ double Convert::getFloat(DataElement *e) {
 		}
 	}
 	return f;
+}
+
+double Convert::getMusicalNote(DataElement *e) {
+    double f=0;
+    if (e) {
+        if (e->type == T_STRING) {
+            if (musicalnote->indexIn(e->stringval) != -1) {
+                QString note, octave, accidentals;
+                int oct = 4, acc = 0, n;
+                double s;
+                note = musicalnote->cap(1).toLower();
+                n = notesmap[note];
+                octave = musicalnote->cap(2);
+                if(octave!="") oct = octave.toInt();
+                accidentals = musicalnote->cap(3).toLower();
+                if(accidentals=="#") acc = 1;
+                if(accidentals=="##") acc = 2;
+                if(accidentals=="b") acc = -1;
+                if(accidentals=="bb") acc = -2;
+
+                s=oct*12+n+acc-57; //if s==0 then s==440Hz
+                f=pow(2.0,s/12.0)*440;
+                return f;
+            }
+        }
+    }
+    return getFloat(e);
 }
 
 QString Convert::getString(DataElement *e) {

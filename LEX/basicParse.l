@@ -291,6 +291,22 @@ gray [Gg][Rr][AaEe][Yy]
 green [Gg][Rr][Ee][Ee][Nn]
 hour [Hh][Oo][Uu][Rr]
 if [Ii][Ff]
+imageautocrop [Ii][Mm][Aa][Gg][Ee][Aa][Uu][Tt][Oo][Cc][Rr][Oo][Pp]
+imagecentered [Ii][Mm][Aa][Gg][Ee][Cc][Ee][Nn][Tt][Ee][Rr][Ee][Dd]
+imagecopy [Ii][Mm][Aa][Gg][Ee][Cc][Oo][Pp][Yy]
+imagecrop [Ii][Mm][Aa][Gg][Ee][Cc][Rr][Oo][Pp]
+imagedraw [Ii][Mm][Aa][Gg][Ee][Dd][Rr][Aa][Ww]
+imageflip [Ii][Mm][Aa][Gg][Ee][Ff][Ll][Ii][Pp]
+imageheight [Ii][Mm][Aa][Gg][Ee][Hh][Ee][Ii][Gg][Hh][Tt]
+imageload [Ii][Mm][Aa][Gg][Ee][Ll][Oo][Aa][Dd]
+imagenew [Ii][Mm][Aa][Gg][Ee][Nn][Ee][Ww]
+imagepixel [Ii][Mm][Aa][Gg][Ee][Pp][Ii][Xx][Ee][Ll]
+imagesetpixel [Ii][Mm][Aa][Gg][Ee][Ss][Ee][Tt][Pp][Ii][Xx][Ee][Ll]
+imageresize [Ii][Mm][Aa][Gg][Ee][Rr][Ee][Ss][Ii][Zz][Ee]
+imagerotate [Ii][Mm][Aa][Gg][Ee][Rr][Oo][Tt][Aa][Tt][Ee]
+imagesmooth [Ii][Mm][Aa][Gg][Ee][Ss][Mm][Oo][Oo][Tt][Hh]
+imagetransformed [Ii][Mm][Aa][Gg][Ee][Tt][Rr][Aa][Nn][Ss][Ff][Oo][Rr][Mm][Ee][Dd]
+imagewidth [Ii][Mm][Aa][Gg][Ee][Ww][Ii][Dd][Tt][Hh]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
@@ -406,7 +422,17 @@ slice_all [Ss][Ll][Ii][Cc][Ee]_[Aa][Ll][Ll]
 slice_paint [Ss][Ll][Ii][Cc][Ee]_[Pp][Aa][Ii][Nn][Tt]
 slice_sprite [Ss][Ll][Ii][Cc][Ee]_[Ss][Pp][Rr][Ii][Tt][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
-polysound [Pp][Oo][Ll][Yy][Ss][Oo][Uu][Nn][Dd]
+soundload [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Aa][Dd]
+soundplay [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy]
+soundpause [Ss][Oo][Uu][Nn][Dd][Pp][Aa][Uu][Ss][Ee]
+soundresume [Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Uu][Mm][Ee]
+soundseek [Ss][Oo][Uu][Nn][Dd][Ss][Ee][Ee][Kk]
+soundstop [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Oo][Pp]
+soundwait [Ss][Oo][Uu][Nn][Dd][Ww][Aa][Ii][Tt]
+soundvolume [Ss][Oo][Uu][Nn][Dd][Vv][Oo][Ll][Uu][Mm][Ee]
+soundposition [Ss][Oo][Uu][Nn][Dd][Pp][Oo][Ss][Ii][Tt][Ii][Oo][Nn]
+soundstate [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Aa][Tt][Ee]
+soundlength [Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
 spritecollide [Ss][Pp][Rr][Ii][Tt][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]
 spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
@@ -454,6 +480,7 @@ type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
 type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
 typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 unassign [Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]
+unload [Uu][Nn][Ll][Oo][Aa][Dd]
 unserialize [Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]
 until [Uu][Nn][Tt][Ii][Ll]
 upper [Uu][Pp][Pp][Ee][Rr]
@@ -674,9 +701,15 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {gray}						{ count(); return B256GREY; }
 {green}						{ count(); return B256GREEN; }
 {hour}						{ count(); return B256HOUR; }
+{imagecopy}					{ count(); return B256IMAGECOPY; }
+{imageheight}					{ count(); return B256IMAGEHEIGHT; }
+{imageload}					{ count(); return B256IMAGELOAD; }
+{imagenew}					{ count(); return B256IMAGENEW; }
+{imagepixel}					{ count(); return B256IMAGEPIXEL; }
 {imagetype_bmp}				{ count(); return B256IMAGETYPE_BMP; }
 {imagetype_jpg}				{ count(); return B256IMAGETYPE_JPG; }
 {imagetype_png}				{ count(); return B256IMAGETYPE_PNG; }
+{imagewidth}					{ count(); return B256IMAGEWIDTH; }
 {implode}					{ count(); return B256IMPLODE; }
 {instr}						{ count(); return B256INSTR; }
 {instrx}					{ count(); return B256INSTRX; }
@@ -857,6 +890,16 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {graphvisible}				{ count(); return B256GRAPHVISIBLE; }
 {if}						{ count(); return B256IF; }
 {imgload}					{ count(); return B256IMGLOAD; }
+{imageautocrop}					{ count(); return B256IMAGEAUTOCROP; }
+{imagecentered}					{ count(); return B256IMAGECENTERED; }
+{imagecrop}					{ count(); return B256IMAGECROP; }
+{imagedraw}					{ count(); return B256IMAGEDRAW; }
+{imageflip}					{ count(); return B256IMAGEFLIP; }
+{imagesetpixel}					{ count(); return B256IMAGESETPIXEL; }
+{imageresize}					{ count(); return B256IMAGERESIZE; }
+{imagerotate}					{ count(); return B256IMAGEROTATE; }
+{imagesmooth}					{ count(); return B256IMAGESMOOTH; }
+{imagetransformed}				{ count(); return B256IMAGETRANSFORMED; }
 {imgsave}					{ count(); return B256IMGSAVE; }
 {input}						{ count(); return B256INPUT; }
 {inputstring}				{ count(); return B256INPUTSTRING; }
@@ -883,7 +926,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {pie}						{ count(); return B256PIE; }
 {plot}						{ count(); return B256PLOT; }
 {poly}						{ count(); return B256POLY; }
-{polysound}					{ count(); return B256POLYSOUND; }
 {portout}					{ count(); return B256PORTOUT; }
 {print}						{ count(); return B256PRINT; }
 {print}":"					{ count(); unputcolon(); return B256PRINT; }
@@ -913,6 +955,25 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {seek}						{ count(); return B256SEEK; }
 {setsetting}				{ count(); return B256SETSETTING; }
 {sound}						{ count(); return B256SOUND; }
+{soundplay}					{ count(); return B256SOUNDPLAY; }
+{soundplay}":"					{ count(); unputcolon(); return B256SOUNDPLAY; }
+{soundload}					{ count(); return B256SOUNDLOAD; }
+{soundpause}					{ count(); return B256SOUNDPAUSE; }
+{soundpause}":"					{ count(); unputcolon(); return B256SOUNDPAUSE; }
+{soundresume}					{ count(); return B256SOUNDRESUME; }
+{soundresume}":"				{ count(); unputcolon(); return B256SOUNDRESUME; }
+{soundseek}					{ count(); return B256SOUNDSEEK; }
+{soundstop}					{ count(); return B256SOUNDSTOP; }
+{soundstop}":"					{ count(); unputcolon(); return B256SOUNDSTOP; }
+{soundwait}					{ count(); return B256SOUNDWAIT; }
+{soundwait}":"					{ count(); unputcolon(); return B256SOUNDWAIT; }
+{soundvolume}					{ count(); return B256SOUNDVOLUME; }
+{soundposition}					{ count(); return B256SOUNDPOSITION; }
+{soundposition}":"				{ count(); unputcolon(); return B256SOUNDPOSITION; }
+{soundstate}					{ count(); return B256SOUNDSTATE; }
+{soundstate}":"					{ count(); unputcolon(); return B256SOUNDSTATE; }
+{soundlength}					{ count(); return B256SOUNDLENGTH; }
+{soundlength}":"				{ count(); unputcolon(); return B256SOUNDLENGTH; }
 {spritedim}					{ count(); return B256SPRITEDIM; }
 {spritehide}				{ count(); return B256SPRITEHIDE; }
 {spriteload}				{ count(); return B256SPRITELOAD; }
@@ -933,6 +994,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {try}						{ count(); return B256TRY; }
 {try}":"					{ count(); unputcolon(); return B256TRY; }
 {unassign}					{ count(); return B256UNASSIGN; }
+{unload}					{ count(); return B256UNLOAD; }
 {until}						{ count(); return B256UNTIL; }
 {volume}					{ count(); return B256VOLUME; }
 {wavpause}					{ count(); return B256WAVPAUSE; }

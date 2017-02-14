@@ -305,6 +305,33 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "writeline"							//writeline
 			<< "xor"								//xor
 			<< "year"								//year
+            << "soundload"                      	//soundload
+            << "soundplay"                  		//soundplay
+            << "soundpause"                 		//soundpause
+            << "soundresume"                 		//soundresume
+            << "soundseek"                  		//soundseek
+            << "soundstop"                  		//soundstop
+            << "soundwait"                  		//soundwait
+            << "soundvolume"						//soundvolume
+            << "soundposition"						//soundposition
+            << "soundstate"                 		//soundstate
+            << "soundlength"						//soundlength
+            << "imageautocrop"						//imageautocrop
+            << "imagecentered"						//imagecentered
+            << "imagecopy"                      	//imagecopy
+            << "imagecrop"              			//imagecrop
+            << "imagedraw"                  		//imagedraw
+            << "imageflip"                  		//imageflip
+            << "imageheight"						//imageheight
+            << "imageload"                  		//imageload
+            << "imagenew"                   		//imagenew
+            << "imagepixel"                 		//imagepixel
+            << "imagesetpixel"						//imagesetpixel
+            << "imageresize"						//imageresize
+            << "imagerotate"						//imagerotate
+            << "imagesmooth"						//imagesmooth
+            << "imagetransformed"					//imagetransformed
+            << "imagewidth"                 		//imagewidth
 			;
 	for (QStringList::iterator it = keywordPatterns.begin(); it != keywordPatterns.end(); ++it) {
 		HighlightRule *rule = new HighlightRule;
