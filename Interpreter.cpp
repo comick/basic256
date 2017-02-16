@@ -6051,7 +6051,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_IMAGEROTATE: {
-                    int d = stack->popint();
+                    double d = stack->popfloat();
                     QString id = stack->popstring();
                     if (images.contains(id)){
                         QTransform rot;

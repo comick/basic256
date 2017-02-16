@@ -624,9 +624,7 @@ args_A:
 				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
 			}
 			| listoflists
-			| args_v {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-			}
+			| '(' args_A ')'
 			;
 
 args_v:
@@ -1959,7 +1957,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-                        | B256INPUT args_a {
+			| B256INPUT args_a {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
@@ -2878,9 +2876,9 @@ expr:
 			| args_v {
                                 addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 			}
-                        | args_a {
+			| args_a {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-                        }
+			}
 
 
 
