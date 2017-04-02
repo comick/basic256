@@ -62,8 +62,8 @@ class Variables
         //
         int type(int);
         //
-        Variable* get(int, int);
-        Variable* get(int);
+        Variable* get(const int, int);
+        Variable* get(const int);
         VariableInfo* getInfo(int);
         DataElement *getdata(int);
         DataElement *getdata(DataElement* e);
@@ -71,7 +71,7 @@ class Variables
         void setdata(int, long);
         void setdata(int, double);
         void setdata(int, QString);
-		void unassign(int);
+        void unassign(const int);
         //
         void copyarray(int varnum1, DataElement *e);
         //
@@ -92,12 +92,14 @@ class Variables
 
     private:
         Error *error;
-        int numsyms;		// size of the symbol table
+        const int numsyms;		// size of the symbol table
         int recurselevel;
+        int maxrecurselevel;
         std::unordered_map<int, std::vector<Variable*> > varmap;
         std::vector<bool> globals;
         void allocateRecurseLevel();
         void freeRecurseLevel();
+        void clearRecurseLevel();
         void clearvariable(Variable *);
         bool isglobal(int);
 

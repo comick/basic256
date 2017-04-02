@@ -8,24 +8,7 @@ DataElement::DataElement() {
 	type = T_UNASSIGNED;
 }
 
-DataElement::DataElement(DataElement *source) {
-	// create a new DataElement from as a copy of another
 
-    type = source->type;
-    switch (type){
-        case T_FLOAT:
-            floatval = source->floatval;
-            break;
-        case T_STRING:
-            stringval = source->stringval;
-            break;
-        case T_ARRAY:
-        case T_REF:
-            level = source->level;
-        case T_INT:
-        intval = source->intval;
-    }
-}
 
 DataElement::DataElement(QString s) {
 	type = T_STRING;
@@ -57,11 +40,32 @@ void DataElement::copy(DataElement *source) {
         case T_STRING:
             stringval = source->stringval;
             break;
-        case T_ARRAY:
+        case T_REF:
+            level = source->level;
+        default: //T_INT or T_UNASSIGNED (variable number)
+            intval = source->intval;
+        //T_ARRAY never should be here
+    }
+}
+
+void DataElement::copy(DataElement *source, int varnum) {
+    // fill an existing from as a copy of another and set the variable number
+    type = source->type;
+    switch (type){
+        case T_UNASSIGNED:
+            intval = (long) varnum;
+            break;
+        case T_FLOAT:
+            floatval = source->floatval;
+            break;
+        case T_STRING:
+            stringval = source->stringval;
+            break;
         case T_REF:
             level = source->level;
         case T_INT:
-        intval = source->intval;
+            intval = source->intval;
+        //T_ARRAY never should be here
     }
 }
 

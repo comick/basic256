@@ -55,27 +55,42 @@ void Error::q(int errornumber, int variablenumber) {
 }
 
 void Error::q(int errornumber, int variablenumber, QString extratext) {
-	// queue up an error with all three
-	if (errornumber==ERROR_TYPECONV) {
-		if (typeconverror==SETTINGSERRORNONE) return;
-		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
-	}
-	if (errornumber==ERROR_LONGRANGE) {
-		if (typeconverror==SETTINGSERRORNONE) return;
-		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_LONGRANGE;
-	}
-	if (errornumber==ERROR_INTEGERRANGE) {
-		if (typeconverror==SETTINGSERRORNONE) return;
-		if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_INTEGERRANGE;
-	}
+    // queue up an error with all three
+    if (errornumber==ERROR_TYPECONV) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
+    }
+    if (errornumber==ERROR_LONGRANGE) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_LONGRANGE;
+    }
+    if (errornumber==ERROR_INTEGERRANGE) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_INTEGERRANGE;
+    }
+    if (errornumber==ERROR_STRING2NOTE) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_STRING2NOTE;
+    }
 
-	if (errornumber==ERROR_VARNOTASSIGNED) {
-		if (varnotassignederror==SETTINGSERRORNONE) return;
-		if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
-	}
-	newe = errornumber;
-	newvar = variablenumber;
-	newextra = extratext;
+    if (errornumber==ERROR_VARNOTASSIGNED) {
+        if (varnotassignederror==SETTINGSERRORNONE) return;
+        if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_VARNOTASSIGNED;
+    }
+    if (errornumber==ERROR_ARRAYELEMENT) {
+        if (varnotassignederror==SETTINGSERRORNONE) return;
+        if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_ARRAYELEMENT;
+    }
+    if(newe == ERROR_NONE){
+        //store only first error from last operation
+        //example: print a/b
+        //will print error: "ERROR on line 1: Division by zero."
+        //but the first error is the most important to debug the problem:
+        //"ERROR on line 1: Variable b has not been assigned a value."
+        newe = errornumber;
+        newvar = variablenumber;
+        newextra = extratext;
+    }
 }
 
 
@@ -310,8 +325,8 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_NEXTWRONGFOR:
             errormessage = tr("Variable in NEXT does not match FOR");
 			break;
-		case ERROR_UNSERIALIZEFORMAT:
-			errormessage = tr("Unable to UnSrialize string");
+        case ERROR_UNSERIALIZEFORMAT:
+            errormessage = tr("Unable to UnSerialize string");
 			break;
 		case ERROR_SLICESIZE:
 			errormessage = tr("Invalid Slice dimensions");
@@ -364,6 +379,14 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_WAVEFORMLOGICAL:
             errormessage = tr("Creating custom waveform using logical coordinates it request at least 3 elements");
             break;
+        case ERROR_STRING2NOTE:
+            errormessage = tr("Unable to convert string to musical note");
+            break;
+        case ERROR_ARRAYELEMENT:
+            errormessage = tr("Element of array %VARNAME% has not been assigned a value");
+            break;
+
+
 
 
 
@@ -400,6 +423,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case WARNING_SOUNDERROR:
             errormessage = tr("Unable to play the sound");
             break;
+        case WARNING_ARRAYELEMENT:
+            errormessage = tr("Element of array %VARNAME% has not been assigned a value");
+            break;
 
 
 
@@ -411,7 +437,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 	if (variablenumber>=0) {
 		if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
 			if (symtable[variablenumber]) {
-				errormessage.replace(QString("%VARNAME%"),QString(symtable[variablenumber]),Qt::CaseInsensitive);
+                errormessage.replace(QString("%VARNAME%"),QString("'") + QString(symtable[variablenumber]) + QString("'"),Qt::CaseInsensitive);
 			} else {
 				errormessage.replace(QString("%VARNAME%"),QString("unknown"),Qt::CaseInsensitive);
 			}

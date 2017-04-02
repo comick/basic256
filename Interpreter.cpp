@@ -483,6 +483,12 @@ QString Interpreter::opname(int op) {
     case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
     case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
     case OP_INCLUDEFILE : return QString("OP_INCLUDEFILE");
+    case OP_LAZYIFTRUE : return QString("OP_LAZYIFTRUE");
+    case OP_LAZYIFFALSE : return QString("OP_LAZYIFFALSE");
+    case OP_ADD1VAR : return QString("OP_ADD1VAR");
+    case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
+    case OP_SUB1VAR : return QString("OP_SUB1VAR");
+    case OP_SUB1ARRAY : return QString("OP_SUB1ARRAY");
 
     default: return QString("OP_UNKNOWN");
     }
@@ -1223,21 +1229,26 @@ Interpreter::waitForGraphics() {
 
 int
 Interpreter::execByteCode() {
-	int opcode;
+    int opcode;
     if (status == R_INPUTREADY) {
 		stack->pushvariant(inputString, inputType);
 		status = R_RUNNING;
 		return 0;
-	} else if (status == R_PAUSED) {
-		sleep(1);
-		return 0;
+//	} else if (status == R_PAUSED) {
+//		sleep(1);
+//		return 0;
 	} else if (status == R_INPUT) {
 		return 0;
 	}
 
 	// if errnum is set then handle the last thrown error
 	if (error->pending()) {
-		error->process(currentLine);
+        //change ERROR_VARNOTASSIGNED into ERROR_ARRAYELEMENT if variable implied is in fact an array element
+        if(error->newe==ERROR_VARNOTASSIGNED && error->newvar>=0){
+            DataElement *e = variables->getdata(error->newvar);
+            if(e->type==T_ARRAY) error->newe=ERROR_ARRAYELEMENT;
+        }
+        error->process(currentLine);
 		if(onerrorstack && error->e > 0) {
 			// progess call to subroutine for error handling
 			// or jump to the catch label
@@ -1265,7 +1276,7 @@ Interpreter::execByteCode() {
 	//emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack->debug() + "\n"));
 
 
-	opcode = *op;
+    opcode = *op;
 	op++;
 
     switch (optype(opcode)) {
@@ -1434,11 +1445,8 @@ Interpreter::execByteCode() {
 						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 					} else {
 						variables->arraysetdata(i, xindex, yindex, e);
-						if (!error->pending()) {
-                            watchvariable(debugMode, i, xindex, yindex);
-						}
+                        watchvariable(debugMode, i, xindex, yindex);
 					}
-					// dont delete to an assign of variable
 				}
 				break;
 
@@ -1449,7 +1457,7 @@ Interpreter::execByteCode() {
 					int yindex = stack->popint();
 					int xindex = stack->popint();
 					DataElement *e = variables->arraygetdata(i, xindex, yindex);
-					stack->pushdataelement(e);
+                    stack->pushdataelement(e);
 				}
 				break;
 
@@ -1466,9 +1474,6 @@ Interpreter::execByteCode() {
                     DataElement *e = variables->getdata(i);
                     if (e->type==T_ARRAY) {
                         stack->pushdataelement(e);
-                    }else if (e->type==T_UNASSIGNED){
-                        error->q(ERROR_VARNOTASSIGNED, i);
-                        stack->pushint(0);
                     }else {
                         error->q(ERROR_NOTARRAY, i);
                         stack->pushint(0);
@@ -1486,9 +1491,6 @@ Interpreter::execByteCode() {
                     DataElement *e = variables->getdata(i);
                     if (e->type==T_ARRAY) {
                         stack->pushvarref(i, variables->getrecurse());
-                    }else if (e->type==T_UNASSIGNED){
-                        error->q(ERROR_VARNOTASSIGNED, i);
-                        stack->pushint(0);
                     } else {
                         error->q(ERROR_NOTARRAY, i);
                         stack->pushint(0);
@@ -1498,15 +1500,13 @@ Interpreter::execByteCode() {
 
                 case OP_ASSIGN: {
 					DataElement *e = stack->popelement();
-					if (e->type==T_ARRAY) {
+                    if (e->type==T_ARRAY) {
                         variables->copyarray(i, e); //copy entire array
-                        watchvariable(debugMode, i);
-					} else {
-						if (e->type==T_UNASSIGNED) error->q(ERROR_VARNOTASSIGNED, e->intval);
-						variables->setdata(i, e);
-                        watchvariable(debugMode, i);
-					}
-				}
+                    } else {
+                        variables->setdata(i, e); //setdata() checks also for T_UNASSIGNED
+                    }
+                    watchvariable(debugMode, i);
+                }
 				break;
 
                 case OP_ASSIGNARRAY: {
@@ -1516,8 +1516,8 @@ Interpreter::execByteCode() {
                     if (e->type==T_ARRAY) {
                         variables->copyarray(i, e);
                         watchvariable(debugMode, i);
-                    }else if (e->type==T_REF) { ///////////////////////////////////////////////////////////
-                        DataElement *ee = variables->getdata(e); //get the final content to check if is an array
+                    }else if (e->type==T_REF) {
+                        DataElement *ee = variables->getdata(e); //get the final content to ensure that this is an array
                         if(ee->type==T_ARRAY){
                             variables->setdata(i, e);
                             watchvariable(debugMode, i);
@@ -1536,21 +1536,22 @@ Interpreter::execByteCode() {
 					// all arrays are 2 dimensional - push each column, column size, then number of rows
 					int columns = variables->arraysizecols(i);
 					int rows = variables->arraysizerows(i);
-					for(int row = 0; row<rows && !error->pending(); row++) {
-						for (int col = 0; col<columns && !error->pending(); col++) {
-							DataElement *av = variables->arraygetdata(i, row, col);
-							stack->pushdataelement(av);
-						}
-						stack->pushint(columns);
-					}
-					stack->pushint(rows);
-					
-                    //mymutex->lock();
-                    //emit(dialogAlert(stack->debug()));
-                    //waitCond->wait(mymutex);
-                    //mymutex->unlock();
-
-					
+                    Variable *v = variables->get(i);
+                    if(!error->pending()){
+                        for(int row = 0; row<rows; row++) {
+                            for (int col = 0; col<columns; col++) {
+                                int index=row*columns+col;
+                                //direct access array's data
+                                stack->pushdataelement(&v->arr->datavector[index]);
+                            }
+                            stack->pushint(columns);
+                        }
+                        stack->pushint(rows);
+                    }else{
+                        //0 rows, 0 columns if error
+                        stack->pushint(0);
+                        stack->pushint(0);
+                    }
 				}
 				break;
 				
@@ -1558,27 +1559,76 @@ Interpreter::execByteCode() {
 					// fill an array with a single value
 					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
 					DataElement *e = stack->popelement();	// fill value
-                    Variable *v = variables->get(i);
-                    if (v->data.type==T_ARRAY) {
-						int columns = variables->arraysizecols(i);
-						int rows = variables->arraysizerows(i);
-						for(int row = 0; row<rows && !error->pending(); row++) {
-							for (int col = 0; col<columns && !error->pending(); col++) {
-								if(mode==1 || variables->arraygetdata(i, row, col)->type == T_UNASSIGNED) {
-									variables->arraysetdata(i, row, col, e);
-									if (!error->pending()) {
-                                        watchvariable(debugMode, i, row, col);
-									}
-								}
-							}
-						}
-					} else {
-						// trying to fill a regular variable - just do an assign
-						variables->setdata(i, e);
-                        watchvariable(debugMode, i);
-					}
-				}
+
+                    if (e->type==T_UNASSIGNED) {
+                        error->q(ERROR_VARNOTASSIGNED, e->intval);
+                    } else if (e->type==T_ARRAY) {
+                        error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+                    } else {
+                        Variable *v = variables->get(i);
+                        if (v->data.type==T_ARRAY) {
+                            int columns = variables->arraysizecols(i);
+                            int rows = variables->arraysizerows(i);
+                            if(!error->pending()){
+                                for(int row = 0; row<rows; row++) {
+                                    for (int col = 0; col<columns; col++) {
+                                        int index=row*columns+col;
+                                        //direct access to array's data
+                                        if(mode==1 || v->arr->datavector[index].type == T_UNASSIGNED) {
+                                            v->arr->datavector[index].copy(e, i);
+                                            watchvariable(debugMode, i, row, col);
+                                        }
+                                    }
+                                }
+                            }
+                         } else {
+                            // trying to fill a regular variable - just do an assign
+                            variables->setdata(i, e);
+                            watchvariable(debugMode, i);
+                        }
+                    }
+                }
 				break;
+
+                case OP_ARRAYLISTASSIGN: {
+                    int rows = stack->popint();
+                    int columns = stack->popint(); //pop the first row length - the following rows must have the same length
+                    int columns2 = columns;
+                    Variable *v = variables->get(i);
+
+                    // create array if we need to (wrong dimensions or not array)
+                    if (v->data.type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
+                        variables->arraydim(i, rows, columns, false);
+                        watchdim(debugMode, i, rows, columns);
+                    }
+
+                    for(int row = rows-1; row>=0; row--) {
+                        //pop row length only if is not first row - already popped
+                        if(row != rows-1)
+                            columns2=stack->popint();
+                            if(columns2!=columns){
+                                error->q(ERROR_ARRAYNITEMS, i);
+                            }
+                        for (int col = columns2 - 1; col >= 0; col--) {
+                            DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
+                            if(!error->pending()){
+                                int index=row*columns+col;
+                                if (e->type==T_ARRAY) {
+                                    error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+                                } else if (e->type==T_UNASSIGNED) {
+                                    error->q(ERROR_VARNOTASSIGNED, e->intval);
+                                } else {
+                                    //direct access to array's data
+                                    v->arr->datavector[index].copy(e, i);
+                                }
+                                if(!error->pending()) {
+                                    watchvariable(debugMode, i, row, col);
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
 
 				case OP_UNASSIGN: {
 					variables->unassign(i);
@@ -1608,6 +1658,138 @@ Interpreter::execByteCode() {
 				}
 				break;
 
+                case OP_ADD1VAR: {
+                    //safe increment of variable
+                    DataElement *e = variables->getdata(i);
+                    if (e->type==T_INT){
+                        if(e->intval==LONG_MAX){
+                            e->type=T_FLOAT;
+                            e->floatval=(double)e->intval + 1.0;
+                        }else{
+                            e->intval++;
+                        }
+                        watchvariable(debugMode, i);
+                        break;
+                    }else if(e->type==T_FLOAT){
+                        e->floatval += 1.0;
+                        if (std::isinf(e->floatval)) {
+                            error->q(ERROR_INFINITY);
+                        }
+                        watchvariable(debugMode, i);
+                        break;
+                    }
+                    double f = convert->getFloat(e);
+                    f += 1.0;
+                    if (std::isinf(e->floatval)) {
+                        error->q(ERROR_INFINITY);
+                    }else{
+                        e->type=T_FLOAT;
+                        e->floatval=f;
+                    }
+                    watchvariable(debugMode, i);
+                }
+                break;
+
+                case OP_ADD1ARRAY:{
+                    //safe increment of array's element
+                    int yindex = stack->popint();
+                    int xindex = stack->popint();
+                    DataElement *e = variables->arraygetdata(i, xindex, yindex);
+                    if (e->type==T_INT){
+                        if(e->intval==LONG_MAX){
+                            e->type=T_FLOAT;
+                            e->floatval=(double)e->intval + 1.0;
+                        }else{
+                            e->intval++;
+                        }
+                        watchvariable(debugMode, i, xindex, yindex);
+                        break;
+                    }else if(e->type==T_FLOAT){
+                        e->floatval += 1.0;
+                        if (std::isinf(e->floatval)) {
+                            error->q(ERROR_INFINITY);
+                        }
+                        watchvariable(debugMode, i, xindex, yindex);
+                        break;
+                    }
+                    double f = convert->getFloat(e);
+                    f += 1.0;
+                    if (std::isinf(e->floatval)) {
+                        error->q(ERROR_INFINITY);
+                    }else{
+                        e->type=T_FLOAT;
+                        e->floatval=f;
+                    }
+                    watchvariable(debugMode, i, xindex, yindex);
+                }
+                break;
+
+                case OP_SUB1VAR: {
+                    //safe decrement of variable
+                    DataElement *e = variables->getdata(i);
+                   if (e->type==T_INT){
+                        if(e->intval==LONG_MIN){
+                            e->type=T_FLOAT;
+                            e->floatval=(double)e->intval - 1.0;
+                        }else{
+                            e->intval--;
+                        }
+                        watchvariable(debugMode, i);
+                        break;
+                    }else if(e->type==T_FLOAT){
+                        e->floatval -= 1.0;
+                        if (std::isinf(e->floatval)) {
+                            error->q(ERROR_INFINITY);
+                        }
+                        watchvariable(debugMode, i);
+                        break;
+                    }
+                    double f = convert->getFloat(e);
+                    f -= 1.0;
+                    if (std::isinf(e->floatval)) {
+                        error->q(ERROR_INFINITY);
+                    }else{
+                        e->type=T_FLOAT;
+                        e->floatval=f;
+                    }
+                    watchvariable(debugMode, i);
+                }
+                break;
+
+                case OP_SUB1ARRAY: {
+                    //safe decrement of array's element
+                    int yindex = stack->popint();
+                    int xindex = stack->popint();
+                    DataElement *e = variables->arraygetdata(i, xindex, yindex);
+                    if (e->type==T_INT){
+                        if(e->intval==LONG_MIN){
+                            e->type=T_FLOAT;
+                            e->floatval=(double)e->intval - 1.0;
+                        }else{
+                            e->intval--;
+                        }
+                        watchvariable(debugMode, i, xindex, yindex);
+                        break;
+                    }else if(e->type==T_FLOAT){
+                        e->floatval -= 1.0;
+                        if (std::isinf(e->floatval)) {
+                            error->q(ERROR_INFINITY);
+                        }
+                        watchvariable(debugMode, i, xindex, yindex);
+                        break;
+                    }
+                    double f = convert->getFloat(e);
+                    f -= 1.0;
+                    if (std::isinf(e->floatval)) {
+                        error->q(ERROR_INFINITY);
+                    }else{
+                        e->type=T_FLOAT;
+                        e->floatval=f;
+                    }
+                    watchvariable(debugMode, i, xindex, yindex);
+                }
+                break;
+
 
 
 
@@ -1626,10 +1808,12 @@ Interpreter::execByteCode() {
 
 				case OP_CURRLINE: {
 					// opcode currentline is compound and includes level and line number
-					int includelevel = i / 0x1000000;
-					currentLine = i % 0x1000000;
+                    //int includelevel = i / 0x1000000;
+                    //currentLine = i % 0x1000000;
+                    int includelevel = i >> 24;
+                    currentLine = i & 0xffffff;
 
-					if (debugMode != 0) {
+                    if (debugMode != 0) {
 						if (includelevel==0) {
 							// do debug for the main program not included parts
 							// edit needs to eventually have tabs for includes and tracing and debugging
@@ -1657,40 +1841,6 @@ Interpreter::execByteCode() {
                     stack->pushint(i);
 				}
 				break;
-
-				case OP_ARRAYLISTASSIGN: {
-					int rows = stack->popint();
-					int columns = stack->popint(); //pop the first row length - the following rows must have the same length
-
-					// create array if we need to (wrong dimensions)
-                    if (variables->get(i)->data.type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
-						variables->arraydim(i, rows, columns, false);
-						if(error->pending()) break;
-                        watchdim(debugMode, i, rows, columns);
-					}
-
-					for(int row = rows-1; row>=0 && !error->pending(); row--) {
-						//pop row length only if is not first row - already popped
-						if(row != rows-1)
-							if(stack->popint()!=columns){
-								error->q(ERROR_ARRAYNITEMS, i);
-							}
-						for (int col = columns - 1; col >= 0 && !error->pending(); col--) {
-							DataElement *e = stack->popelement();
-							if (e->type==T_ARRAY) {
-								error->q(ERROR_ARRAYINDEXMISSING, e->intval);
-							} else if (e->type==T_UNASSIGNED) {
-								variables->arrayunassign(i, row, col);
-							} else {
-								variables->arraysetdata(i, row, col, e);
-							}
-							if(!error->pending()) {
-                                watchvariable(debugMode, i, row, col);
-							}
-						}
-					}
-				}
-                break;
 
                 case OP_ARGUMENTCOUNTTEST: {
                      // Throw error if stack does not have enough values
@@ -1771,8 +1921,18 @@ Interpreter::execByteCode() {
             if (symtableaddress[l] >=0) {
                 i = symtableaddress[l];
             } else {
-                error->q(ERROR_NOSUCHLABEL, l);
-				break;
+                //chose the proper error code if there is no valid address for this label/function/subroutine
+                switch (opcode) {
+                case OP_CALLFUNCTION:
+                    error->q(ERROR_NOSUCHFUNCTION, l);
+                    break;
+                case OP_CALLSUBROUTINE:
+                    error->q(ERROR_NOSUCHSUBROUTINE, l);
+                    break;
+                default:
+                    error->q(ERROR_NOSUCHLABEL, l);
+                    break;
+                }
 			}
 
 			switch(opcode) {
@@ -1786,14 +1946,32 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_BRANCH: {
-					// goto if true
-					int val = stack->popbool();
+                    // goto if true
+                    int val = stack->popbool();
 
 					if (val == 0) { // jump on false
 						op = wordCode + i;
 					}
 				}
 				break;
+
+                case OP_LAZYIFFALSE: {
+                    bool val = stack->popbool();
+                    if (!val) { // jump on false but push false on stack // Eg. "false AND expr"
+                        stack->pushbool(val);
+                        op = wordCode + i;
+                    }
+                }
+                break;
+
+                case OP_LAZYIFTRUE: {
+                    bool val = stack->popbool();
+                    if (val) { // jump on true but push true on stack // Eg. "true OR expr"
+                        stack->pushbool(val);
+                        op = wordCode + i;
+                    }
+                }
+                break;
 
                 case OP_GOSUB: {
                     if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL){
@@ -2719,107 +2897,118 @@ Interpreter::execByteCode() {
 					}
 					break;
 
+                case OP_ADD: {
+                        // integer and float safe ADD operation
+                        DataElement *one = stack->popelement();
+                        DataElement *two = stack->popelement();
+                        // add - if both integer then add as integers (if no ovverflow)
+                        // else if both are numbers then convert and add as floats
+                        // otherwise concatenate (string & number or strings)
+                        if (one->type==T_INT){
+                            if(two->type==T_INT) {
+                                long a = two->intval + one->intval;
+                                if((two->intval<=0||one->intval<=0||a>=0)&&(two->intval>=0||one->intval>=0||a<=0)) {
+                                    // integer add - without overflow
+                                    stack->pushlong(a);
+                                }else{
+                                    //overflow
+                                    stack->pushfloat((double)(two->intval) + (double)(one->intval));
+                                }
+                                break;
+                            }else if(two->type==T_FLOAT){
+                                double ans = two->floatval + (double) one->intval;
+                                if (std::isinf(ans)) {
+                                    error->q(ERROR_INFINITY);
+                                    ans = 0.0;
+                                }
+                                stack->pushfloat(ans);
+                                break;
+                            }
+                        }else if(one->type==T_FLOAT){
+                            if(two->type==T_FLOAT){
+                                double ans = two->floatval + one->floatval;
+                                if (std::isinf(ans)) {
+                                    error->q(ERROR_INFINITY);
+                                    ans = 0.0;
+                                }
+                                stack->pushfloat(ans);
+                                break;
+                            }else if(two->type==T_INT){
+                                double ans = (double) two->intval + one->floatval;
+                                if (std::isinf(ans)) {
+                                    error->q(ERROR_INFINITY);
+                                    ans = 0.0;
+                                }
+                                stack->pushfloat(ans);
+                                break;
+                            }
+                        }
 
-				case OP_ADD:
-				case OP_SUB:
-				case OP_MUL: {
-					// integer and float safe operations
+                        // concatenate (if one or both ar not numbers)
+                        QString sone = convert->getString(one);
+                        QString stwo = convert->getString(two);
+                        QString final = stwo + sone;
+                        if (final.length()>STRINGMAXLEN) {
+                            error->q(ERROR_STRINGMAXLEN);
+                            final.truncate(STRINGMAXLEN);
+                        }
+                        stack->pushstring(final);
+                    }
+                    break;
 
-					DataElement *one = stack->popelement();
-					DataElement *two = stack->popelement();
-					switch (opcode) {
-						case OP_ADD:
-							{
-								// add - if both integer then add as integers (if no ovverflow)
-								// else if both are numbers then convert and add as floats
-								// otherwise concatenate (string & number or strings)
-								if (one->type==T_INT && two->type==T_INT) {
-									long a = two->intval + one->intval;
-									if((two->intval<=0||one->intval<=0||a>=0)&&(two->intval>=0||one->intval>=0||a<=0)) {
-										// integer add - without overflow
-										stack->pushlong(a);
-										break;
-									}
-								}
-								if ((one->type==T_INT || one->type==T_FLOAT) && (two->type==T_INT || two->type==T_FLOAT)) {
-									// float add (if floats, numeric strings, or overflow
-									double fone = convert->getFloat(one);
-									double ftwo = convert->getFloat(two);
-									double ans = ftwo + fone;
-									if (std::isinf(ans)) {
-										error->q(ERROR_INFINITY);
-                                        stack->pushfloat(0.0);
-									} else {
-										stack->pushfloat(ans);
-									}
-								} else {
-									// concatenate (if one or both ar not numbers)
-									QString sone = convert->getString(one);
-									QString stwo = convert->getString(two);
-                                    QString final = stwo + sone;
-                                    if (final.length()>STRINGMAXLEN) {
-										error->q(ERROR_STRINGMAXLEN);
-                                        final.truncate(STRINGMAXLEN);
-                                    }
-                                    stack->pushstring(final);
-								}
-							}
-							break;
+                case OP_SUB: {
+                        // integer and float safe SUB operation
+                        DataElement *one = stack->popelement();
+                        DataElement *two = stack->popelement();
+                        if (one->type==T_INT && two->type==T_INT) {
+                            long a = two->intval - one->intval;
+                            if((two->intval<=0||one->intval>0||a>=0)&&(two->intval>=0||one->intval<0||a<=0)) {
+                                // integer subtract - without overflow
+                                stack->pushlong(a);
+                                break;
+                            }
+                        }
+                        // float subtract
+                        double fone = convert->getFloat(one);
+                        double ftwo = convert->getFloat(two);
+                        double ans = ftwo - fone;
+                        if (std::isinf(ans)) {
+                            error->q(ERROR_INFINITY);
+                            stack->pushfloat(0.0);
+                        } else {
+                            stack->pushfloat(ans);
+                        }
+                    }
+                    break;
 
-						case OP_SUB:
-							{
-								if (one->type==T_INT && two->type==T_INT) {
-									long a = two->intval - one->intval;
-									if((two->intval<=0||one->intval>0||a>=0)&&(two->intval>=0||one->intval<0||a<=0)) {
-										// integer subtract - without overflow
-										stack->pushlong(a);
-										break;
-									}
-								}
-								// float subtract
-								double fone = convert->getFloat(one);
-								double ftwo = convert->getFloat(two);
-								double ans = ftwo - fone;
-								if (std::isinf(ans)) {
-									error->q(ERROR_INFINITY);
-                                    stack->pushfloat(0.0);
-								} else {
-									stack->pushfloat(ans);
-								}
-							}
-							break;
-
-						case OP_MUL:
-							{
-								if (one->type==T_INT && two->type==T_INT) {
-									if(two->intval==0||one->intval==0) {
-										stack->pushlong(0);
-										break;
-									}
-									if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
-										long a = two->intval * one->intval;
-										// integer multiply - without overflow
-										stack->pushlong(a);
-										break;
-									}
-								}
-								// float multiply
-								double fone = convert->getFloat(one);
-								double ftwo = convert->getFloat(two);
-								double ans = ftwo * fone;
-								if (std::isinf(ans)) {
-									error->q(ERROR_INFINITY);
-                                    stack->pushfloat(0.0);
-								} else {
-									stack->pushfloat(ans);
-								}
-							}
-							break;
-
-
-						}
-						break;
-					}
+                case OP_MUL: {
+                        // integer and float safe MUL operation
+                        DataElement *one = stack->popelement();
+                        DataElement *two = stack->popelement();
+                        if (one->type==T_INT && two->type==T_INT) {
+                            if(two->intval==0||one->intval==0) {
+                                stack->pushlong(0);
+                                break;
+                            }
+                            if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
+                                long a = two->intval * one->intval;
+                                // integer multiply - without overflow
+                                stack->pushlong(a);
+                                break;
+                            }
+                        }
+                        // float multiply
+                        double fone = convert->getFloat(one);
+                        double ftwo = convert->getFloat(two);
+                        double ans = ftwo * fone;
+                        if (std::isinf(ans)) {
+                            error->q(ERROR_INFINITY);
+                            stack->pushfloat(0.0);
+                        } else {
+                            stack->pushfloat(ans);
+                        }
+                    }
+                    break;
 
 				case OP_ABS:
 				{
@@ -2891,17 +3080,30 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_AND: {
-					int one = stack->popbool();
-					int two = stack->popbool();
-					stack->pushbool(one && two);
+                //lazy evaluation...
+                //if first op is false then the OP_AND is skipped and false will be on stack
+                //this is executed only if first expr is true (it is not on stack anymore)
+                //this can be excluded but it is still necessary because we can find a non-boolean value on stack
+                    //int one = stack->popbool();
+                    //int two = stack->popbool();
+                    //stack->pushbool(one && two);
+                int val = stack->popbool();
+                stack->pushbool(val);
+
 				}
 				break;
 
 				case OP_OR: {
-					int one = stack->popbool();
-					int two = stack->popbool();
-					stack->pushbool(one || two);
-				}
+                //lazy evaluation...
+                //if first op is tre then the OP_OR is skipped and true will be on stack
+                //this is executed only if first expr is false (it is not on stack anymore)
+                //this can be excluded but it is still necessary because we can find a non-boolean value on stack
+                    //int one = stack->popbool();
+                    //int two = stack->popbool();
+                    //stack->pushbool(one || two);
+                int val = stack->popbool();
+                stack->pushbool(val);
+                }
 				break;
 
 				case OP_XOR: {
@@ -2921,45 +3123,64 @@ Interpreter::execByteCode() {
 					// integer save negate
 					DataElement *e = stack->popelement();
 					if (e->type==T_INT) {
-						stack->pushlong(e->intval * -1);
+                        if(e->intval<=LONG_MIN){
+                            stack->pushfloat( (double)e->intval * -1.0);
+                        }else{
+                            stack->pushlong(e->intval * -1);
+                        }
 					} else {
                         stack->pushfloat(convert->getFloat(e) * -1.0);
 					}
 				}
 				break;
 
-				case OP_EQUAL:
-				case OP_NEQUAL:
-				case OP_GT:
-				case OP_LTE:
-				case OP_LT:
-				case OP_GTE:
-				{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
-					int ans = convert->compare(one,two);
-					switch(opcode) {
-						case OP_EQUAL:
-							stack->pushbool(ans==0);
-							break;
-						case OP_NEQUAL:
-							stack->pushbool(ans!=0);
-							break;
-						case OP_GT:
-							stack->pushbool(ans==1);
-							break;
-						case OP_LTE:
-							stack->pushbool(ans!=1);
-							break;
-						case OP_LT:
-							stack->pushbool(ans==-1);
-							break;
-						case OP_GTE:
-							stack->pushbool(ans!=-1);
-							break;
-					}
-				}
-				break;
+                case OP_EQUAL:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans==0);
+                }
+                break;
+
+                case OP_NEQUAL:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans!=0);
+                }
+                break;
+
+                case OP_GT:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans==1);
+                }
+                break;
+
+                case OP_LTE:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans!=1);
+                }
+                break;
+
+                case OP_LT:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans==-1);
+                }
+                break;
+
+                case OP_GTE:{
+                    DataElement *two = stack->popelement();
+                    DataElement *one = stack->popelement();
+                    int ans = convert->compare(one,two);
+                    stack->pushbool(ans!=-1);
+                }
+                break;
 
                 case OP_SOUND:
                 case OP_SOUNDPLAY:
@@ -5867,7 +6088,7 @@ Interpreter::execByteCode() {
 					DataElement *e;
 					QString stuff = "";
 					int rows = stack->popint();
-					int cols;
+                    int cols = 0;
 					for (int row=0; row<rows; row++) {
 						if (row!=0) stuff.prepend(SERALIZE_DELIMITER);
 						cols = stack->popint();

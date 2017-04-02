@@ -26,10 +26,10 @@ Variable::~Variable() {
 // * Variables contain the individual variable(s) for the recursion level *
 // ************************************************************************
 
-Variables::Variables(int n, Error *e) {
+Variables::Variables(int n, Error *e) :  numsyms(n){
 	// n is the size of the symbol table
-	recurselevel = 0;
-	numsyms = n;
+    recurselevel = 0;
+    maxrecurselevel = -1;
     allocateRecurseLevel();
     error = e;
     globals.resize(numsyms, false);
@@ -64,10 +64,13 @@ void Variables::allocateRecurseLevel() {
     // create a NULL pointer for each symbol at this recurse level
     // wasteful for the labels and jump points but vector is so fast
     // to access an element it does not matter
-    varmap[recurselevel].resize(numsyms);
-    for(int i=0; i<numsyms; i++) {
-        varmap[recurselevel][i] = new Variable(i, recurselevel);
-	}
+    if(maxrecurselevel<recurselevel){
+        varmap[recurselevel].resize(numsyms);
+        for(int i=0; i<numsyms; i++) {
+            varmap[recurselevel][i] = new Variable(i, recurselevel);
+        }
+        maxrecurselevel=recurselevel;
+    }
 }
 
 void Variables::freeRecurseLevel() {
@@ -78,6 +81,25 @@ void Variables::freeRecurseLevel() {
     }
     varmap[recurselevel].clear();
     varmap.erase(recurselevel);
+}
+
+void Variables::clearRecurseLevel() {
+    // clear a recurse level
+    //it can be reused faster than create/delete all variables
+    int i=numsyms;
+    while(--i > 0) {
+        Variable *v = varmap[recurselevel][i];
+        v->data.type=T_UNASSIGNED;
+        v->data.level=recurselevel; // in case we got a T_REF defined in this level
+        //free also long texts - do not use QString("") or "" because of the low speed
+        v->data.stringval.clear();
+        //clear array if exists
+        if(v->arr){
+            //free memory from arrays
+            delete(v->arr);
+            v->arr=NULL;
+        }
+    }
 }
 
 void
@@ -99,24 +121,30 @@ Variables::getrecurse() {
 void
 Variables::decreaserecurse() {
     if (recurselevel>0) {
-        // erase all variables in the current recurse level before we return
+        // clear all variables in the current recurse level before we return
         // to the previous level
-        freeRecurseLevel();
+        clearRecurseLevel();
         // return back to prev variable context
         recurselevel--;
     }
 }
 
 
-Variable* Variables::get(int varnum, int level) {
+Variable* Variables::get(const int varnum, int level) {
     // get v from map or follow REF to recurse level if needed
-    if(level!=0){
-        if(isglobal(varnum)) level=0;
+    Variable *v;
+    if(level==0 || isglobal(varnum)){
+        v = varmap[0][varnum];
+        if(v->data.type!=T_REF)
+            return(v);
+        level=0;
+    }else{
+        v = varmap[level][varnum];
+        if(v->data.type!=T_REF)
+            return(v);
     }
 
-    Variable *v = varmap[level][varnum];
-    if((v->data.type!=T_REF))
-        return(v);
+
 
     // make a stack of varnum/level needed to check for circular reference and put the original first
     std::vector<std::pair<int, int>> track = {{varnum, level}};
@@ -155,7 +183,7 @@ Variable* Variables::get(int varnum, int level) {
     return(v);
 }
 
-Variable* Variables::get(int varnum) {
+Variable* Variables::get(const int varnum) {
     return get(varnum, recurselevel);
 }
 
@@ -192,7 +220,12 @@ void Variables::setdata(int varnum, DataElement* e) {
     // recieves a DataElement pointed pulled from the stack
     // e is a pointer in the stack vector AND MUST NOT BE DELETED
     Variable *v = get(varnum, recurselevel);
-    v->data.copy(e);
+    if (e->type==T_UNASSIGNED){
+        error->q(ERROR_VARNOTASSIGNED, e->intval);
+        v->data.type = T_UNASSIGNED;
+    }else{
+        v->data.copy(e);
+    }
 //    if (v->arr){
 //        delete(v->arr);
 //        v->arr=NULL;
@@ -229,23 +262,21 @@ void Variables::setdata(int varnum, QString s) {
 //    }
 }
 
-void Variables::unassign(int varnum) { //unassign true variable, not the reference (unlink)
-    int level=recurselevel;
-    if(level!=0){
-        if(isglobal(varnum)) level=0;
-    }
-
-    Variable *v = varmap[level][varnum];
+void Variables::unassign(const int varnum) {
+    //unassign true variable, not the reference (unlink)
+    Variable *v = varmap[(recurselevel==0||isglobal(varnum))?0:recurselevel][varnum];
     v->data.type = T_UNASSIGNED;
     v->data.intval = varnum;
-//    if (v->arr){
-//        delete(v->arr);
-//        v->arr=NULL;
-//    }
+    v->data.stringval.clear();
+    v->data.level = recurselevel;
+    if (v->arr){
+        delete(v->arr);
+        v->arr=NULL;
+    }
 }
 
 void Variables::copyarray(int varnum1, DataElement* e) {
-    // suitable for copy arrays and any type of variable
+    // fast copy arrays
     // for T_REF
     if(e->level>recurselevel){
         error->q(ERROR_VARNULL);
@@ -265,7 +296,7 @@ void Variables::copyarray(int varnum1, DataElement* e) {
         int size = v2->arr->xdim * v2->arr->ydim;
         v1->arr->datavector.resize(size);
         for(int i=0;i<size;i++) {
-            v1->arr->datavector[i].copy(&v2->arr->datavector[i]);
+            v1->arr->datavector[i].copy(&v2->arr->datavector[i], varnum1);
         }
     }
 }
@@ -375,7 +406,7 @@ void Variables::arraysetdata(int varnum, int x, int y, DataElement *e) {
     if (v->data.type == T_ARRAY) {
 		if (x >=0 && x < v->arr->xdim && y >=0 && y < v->arr->ydim) {
 			int i = x * v->arr->ydim + y;
-            v->arr->datavector[i].copy(e);
+            v->arr->datavector[i].copy(e, varnum);
 		} else {
 			error->q(ERROR_ARRAYINDEX, varnum);
 		}

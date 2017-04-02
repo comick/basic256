@@ -97,6 +97,7 @@
 	#define IFTABLETYPEBEGINCASE 9
 	#define IFTABLETYPECASE 10
         #define IFTABLETYPESUBROUTINE 11
+        #define IFTABLETYPEINTERNAL 12
 
 
 	// store the function variables here during a function definition
@@ -263,7 +264,7 @@
 		// get a symbol if it exists or create a new one on the symbol table
 		int i;
 		for (i = 0; i < numsyms; i++) {
-			if (symtable[i] && !strcmp(name, symtable[i]))
+                        if (symtable[i] && !strcasecmp(name, symtable[i]))
 				return i;
 		}
 		symtable[numsyms] = strdup(name);
@@ -276,6 +277,7 @@
 	#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
 	#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
         #define INTERNALSYMBOLTOP 2 // at the top of the loop - all done
+        #define INTERNALSYMBOLBOOL 3 // lazy bool - Lazy evaluation of conditions Eg. true AND exp skip exp if false
 
 	int getInternalSymbol(int id, int type) {
 		// an internal symbol used to jump an if
@@ -511,13 +513,12 @@
 %token <number> B256LABEL
 
 
-%left B256XOR
-%left B256OR
-%left B256AND
+%left B256XOR B256OR B256AND
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
+%left B256SEMICOLON
 %left B256BINARYOR B256AMP
-%left '-' '+' B256SEMICOLON
+%left '-' '+'
 %left '*' '/' B256MOD B256INTDIV
 %nonassoc B256UMINUS B256BINARYNOT
 %left '^'
@@ -526,26 +527,26 @@
 %%
 
 program: 		programline programnewline program
-				| programline
-				;
+                                | programline
+                                ;
 
 programnewline:
-				'\n' {
-					linenumber++;
-					column=0;
-					addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
-				}
-				;
+                                '\n' {
+                                        linenumber++;
+                                        column=0;
+                                        addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                }
+                                ;
 
 programline: 	label compoundstmt
-				| label compoundstmt B256REM
-				| compoundstmt
-				| compoundstmt B256REM
-				| label
-				| label B256REM
-				| B256REM
-				| /* empty */
-				;
+                                | label compoundstmt B256REM
+                                | compoundstmt
+                                | compoundstmt B256REM
+                                | label
+                                | label B256REM
+                                | B256REM
+                                | /* empty */
+                                ;
 
 label:			B256LABEL {
 					if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
@@ -601,10 +602,10 @@ compoundstmt:
 arrayref:
 			'[' expr ',' expr ']'
 			| '[' expr ']' '[' expr ']'
-			| '[' expr ']' {
-				addIntOp(OP_PUSHINT, 0);
-				addOp(OP_STACKSWAP);
-			}
+                        | '[' expr ']' {
+                                addIntOp(OP_PUSHINT, 0);
+                                addOp(OP_STACKSWAP);
+                        }
 			;
 
 /* array assigment a[]={0, 1, 2}*/
@@ -1362,18 +1363,10 @@ arrayelementassign:
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
 			| args_a B256ADD1 {
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_ADD1ARRAY,varnumber[--nvarnumber]);
 			}
 			| args_a B256SUB1 {
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_SUB1ARRAY,varnumber[--nvarnumber]);
 			}
 			| args_a B256ADDEQUAL expr {
 				// a[b,c] += n
@@ -1477,17 +1470,11 @@ assign:
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
 			| args_v B256ADD1 {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
 			}
 			| args_v B256SUB1 {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
-			}
+                                addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
+                        }
 			| args_v B256ADDEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
@@ -3028,7 +3015,11 @@ expr:
 			| expr B256MOD expr {
 				addOp(OP_MOD);
 			}
-			| expr B256INTDIV expr {
+                        | expr B256MOD %prec B256UMINUS{
+                                addIntOp(OP_PUSHINT, 100);
+                                addOp(OP_DIV);
+                        }
+                        | expr B256INTDIV expr {
 				addOp(OP_INTDIV);
 			}
 			| expr '/' expr {
@@ -3038,10 +3029,26 @@ expr:
 			| expr B256BINARYOR expr { addOp(OP_BINARYOR); }
 			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
 			| '-' expr %prec B256UMINUS { addOp(OP_NEGATE); }
-			| expr B256AND expr {addOp(OP_AND); }
-			| expr B256OR expr { addOp(OP_OR); }
-			| expr B256XOR expr { addOp(OP_XOR); }
-			| B256NOT expr %prec B256UMINUS { addOp(OP_NOT); }
+                        //| expr B256AND expr {addOp(OP_AND); }
+                        | expr B256AND {
+                            addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
+                            newIf(linenumber, IFTABLETYPEINTERNAL, -1);
+                            } expr {
+                            addOp(OP_AND);
+                            symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
+                            numifs--;
+                        }
+                        //| expr B256OR expr { addOp(OP_OR); }
+                        | expr B256OR {
+                            addIntOp(OP_LAZYIFTRUE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
+                            newIf(linenumber, IFTABLETYPEINTERNAL, -1);
+                            } expr {
+                            addOp(OP_OR);
+                            symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
+                            numifs--;
+                        }
+                        | expr B256XOR expr { addOp(OP_XOR); }
+                        | B256NOT expr %prec B256AND { addOp(OP_NOT); }
 			| expr '=' expr { addOp(OP_EQUAL); }
 			| expr B256NE expr { addOp(OP_NEQUAL); }
 			| expr '<' expr { addOp(OP_LT); }
@@ -3055,69 +3062,41 @@ expr:
 				addOp(OP_STACKDUP2);
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_ADD1ARRAY, varnumber[nvarnumber]);
 			}
 			| args_a B256SUB1 {
 				// a[b,c]--
 				addOp(OP_STACKDUP2);
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF, varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_SUB1ARRAY, varnumber[nvarnumber]);
 			}
 			| B256ADD1 args_a {
 				// ++a[b,c]
 				addOp(OP_STACKDUP2);
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_ADD1ARRAY, varnumber[--nvarnumber]);
 				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
 			| B256SUB1 args_a {
 				// --a[b,c]
 				addOp(OP_STACKDUP2);
-				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_SUB1ARRAY, varnumber[--nvarnumber]);
 				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
 			| args_v B256ADD1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
-			}
+                                addIntOp(OP_ADD1VAR,varnumber[nvarnumber]);
+                        }
 			| args_v B256SUB1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
-			}
+                                addIntOp(OP_SUB1VAR,varnumber[nvarnumber]);
+                        }
 			| B256ADD1 args_v {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_ADD);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
 			| B256SUB1 args_v {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHINT,1);
-				addOp(OP_SUB);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+                                addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
 			| B256TOINT '(' expr ')' { addOp(OP_INT); }

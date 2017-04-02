@@ -30,12 +30,12 @@ class DataElement
 
 		DataElement();
 		
-		DataElement(DataElement *);
 		DataElement(QString);
 		DataElement(double);
 		DataElement(long);
 		DataElement(int);
 
 		QString debug();
-		void copy(DataElement *);
+        void copy(DataElement *);
+        void copy(DataElement *, int);
 };
