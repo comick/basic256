@@ -292,12 +292,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_TYPECONV:
 			errormessage = tr("Unable to convert string to number");
 			break;
-		case ERROR_WAVFILEFORMAT:
-			errormessage = tr("Media file does not exist or in an unsupported format");
-			break;
-		case ERROR_WAVNOTOPEN:
-			errormessage = tr("Media file not open");
-			break;
 		case ERROR_FILEOPERATION:
 			errormessage = tr("Can not perform that operation on a Serial Port");
 			break;
@@ -349,6 +343,27 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_EXPECTEDSOUND:
             errormessage = tr("Expected sound");
             break;
+        case ERROR_TOOMANYSOUNDS:
+            errormessage = tr("Too many sound instances");
+            break;
+        case ERROR_ENVELOPEODD:
+            errormessage = tr("Envelope data must contain at least 4 elements and an odd number of elements");
+            break;
+        case ERROR_ENVELOPEMAX:
+            errormessage = tr("It was exceeded the maximum length of an envelope, which is 20 seconds");
+            break;
+        case ERROR_HARMONICNUMBER:
+            errormessage = tr("Harmonic number must be an integer greater than zero");
+            break;
+        case ERROR_HARMONICLIST:
+            errormessage = tr("Harmonics list must be one dimensional array with an even number of elements or two dimemsional array with two elements in each row");
+            break;
+        case ERROR_ONEDIMENSIONAL:
+            errormessage = tr("Expects one dimensional array or one dimensional list of elements");
+            break;
+        case ERROR_WAVEFORMLOGICAL:
+            errormessage = tr("Creating custom waveform using logical coordinates it request at least 3 elements");
+            break;
 
 
 
@@ -360,12 +375,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		// warnings
 		case WARNING_TYPECONV:
 			errormessage = tr("Unable to convert string to number, zero used");
-			break;
-		case WARNING_WAVNOTSEEKABLE:
-			errormessage = tr("Media file is not seekable");
-			break;
-		case WARNING_WAVNODURATION:
-			errormessage = tr("Duration is not available for media file");
 			break;
 		case WARNING_VARNOTASSIGNED:
 			errormessage = tr("Variable %VARNAME% has not been assigned a value");
@@ -381,6 +390,15 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             break;
         case WARNING_SOUNDLENGTH:
             errormessage = tr("Duration is not available for media file");
+            break;
+        case WARNING_WAVOBSOLETE:
+            errormessage = tr("WAVPLAY suite is obsolete. Use SOUND/SOUNDPLAY/SOUNDPLAYER instead");
+            break;
+        case WARNING_SOUNDFILEFORMAT:
+            errormessage = tr("Unable to play the selected file");
+            break;
+        case WARNING_SOUNDERROR:
+            errormessage = tr("Unable to play the sound");
             break;
 
 

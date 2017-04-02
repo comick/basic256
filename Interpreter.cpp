@@ -89,6 +89,7 @@ extern int lastKey;
 extern std::list<int> pressedKeys;
 
 extern "C" {
+//extern int yydebug;
 	extern int basicParse(char *);
 	extern int linenumber;			// linenumber being LEXd
 	extern int column;				// column on line being LEXd
@@ -116,6 +117,8 @@ extern "C" {
 }
 
 Interpreter::Interpreter(QLocale *applocale) {
+    //yydebug = 1;
+
     fastgraphics = false;
 	directorypointer=NULL;
 	status = R_STOPPED;
@@ -123,7 +126,6 @@ Interpreter::Interpreter(QLocale *applocale) {
     sleeper = new Sleeper();
     error = new Error();
     locale = applocale;
-	mediaplayer = NULL;
     downloader = NULL;
 
 #ifdef WIN32
@@ -170,298 +172,321 @@ int Interpreter::optype(int op) {
 
 QString Interpreter::opname(int op) {
 	// used to convert opcode number in debuginfo to opcode name
-	if (op==OP_END) return QString("OP_END");
-	else if (op==OP_NOP) return QString("OP_NOP");
-	else if (op==OP_RETURN) return QString("OP_RETURN");
-	else if (op==OP_EQUAL) return QString("OP_EQUAL");
-	else if (op==OP_NEQUAL) return QString("OP_NEQUAL");
-	else if (op==OP_GT) return QString("OP_GT");
-	else if (op==OP_LT) return QString("OP_LT");
-	else if (op==OP_GTE) return QString("OP_GTE");
-	else if (op==OP_LTE) return QString("OP_LTE");
-	else if (op==OP_AND) return QString("OP_AND");
-	else if (op==OP_NOT) return QString("OP_NOT");
-	else if (op==OP_OR) return QString("OP_OR");
-	else if (op==OP_XOR) return QString("OP_XOR");
-	else if (op==OP_INT) return QString("OP_INT");
-	else if (op==OP_STRING) return QString("OP_STRING");
-	else if (op==OP_ADD) return QString("OP_ADD");
-	else if (op==OP_CONCATENATE) return QString("OP_CONCATNATE");
-	else if (op==OP_SUB) return QString("OP_SUB");
-	else if (op==OP_MUL) return QString("OP_MUL");
-	else if (op==OP_DIV) return QString("OP_DIV");
-	else if (op==OP_EX) return QString("OP_EX");
-	else if (op==OP_NEGATE) return QString("OP_NEGATE");
-	else if (op==OP_PRINT) return QString("OP_PRINT");
-	else if (op==OP_PRINTN) return QString("OP_PRINTN");
-	else if (op==OP_INPUT) return QString("OP_INPUT");
-	else if (op==OP_KEY) return QString("OP_KEY");
-	else if (op==OP_PLOT) return QString("OP_PLOT");
-	else if (op==OP_RECT) return QString("OP_RECT");
-	else if (op==OP_CIRCLE) return QString("OP_CIRCLE");
-	else if (op==OP_LINE) return QString("OP_LINE");
-	else if (op==OP_REFRESH) return QString("OP_REFRESH");
-	else if (op==OP_FASTGRAPHICS) return QString("OP_FASTGRAPHICS");
-	else if (op==OP_CLS) return QString("OP_CLS");
-	else if (op==OP_CLG) return QString("OP_CLG");
-	else if (op==OP_GRAPHSIZE) return QString("OP_GRAPHSIZE");
-	else if (op==OP_GRAPHWIDTH) return QString("OP_GRAPHWIDTH");
-	else if (op==OP_GRAPHHEIGHT) return QString("OP_GRAPHHEIGHT");
-	else if (op==OP_SIN) return QString("OP_SIN");
-	else if (op==OP_COS) return QString("OP_COS");
-	else if (op==OP_TAN) return QString("OP_TAN");
-	else if (op==OP_RAND) return QString("OP_RAND");
-	else if (op==OP_CEIL) return QString("OP_CEIL");
-	else if (op==OP_FLOOR) return QString("OP_FLOOR");
-	else if (op==OP_ABS) return QString("OP_ABS");
-	else if (op==OP_PAUSE) return QString("OP_PAUSE");
-	else if (op==OP_LENGTH) return QString("OP_LENGTH");
-	else if (op==OP_MID) return QString("OP_MID");
-	else if (op==OP_MIDX) return QString("OP_MIDX");
-	else if (op==OP_INSTR) return QString("OP_INSTR");
-	else if (op==OP_INSTRX) return QString("OP_INSTRX");
-	else if (op==OP_OPEN) return QString("OP_OPEN");
-	else if (op==OP_READ) return QString("OP_READ");
-	else if (op==OP_WRITE) return QString("OP_WRITE");
-	else if (op==OP_CLOSE) return QString("OP_CLOSE");
-	else if (op==OP_RESET) return QString("OP_RESET");
-	else if (op==OP_INCREASERECURSE) return QString("OP_INCREASERECURSE");
-	else if (op==OP_DECREASERECURSE) return QString("OP_DECREASERECURSE");
-	else if (op==OP_ASC) return QString("OP_ASC");
-	else if (op==OP_CHR) return QString("OP_CHR");
-	else if (op==OP_FLOAT) return QString("OP_FLOAT");
-	else if (op==OP_READLINE) return QString("OP_READLINE");
-	else if (op==OP_EOF) return QString("OP_EOF");
-	else if (op==OP_MOD) return QString("OP_MOD");
-	else if (op==OP_YEAR) return QString("OP_YEAR");
-	else if (op==OP_MONTH) return QString("OP_MONTH");
-	else if (op==OP_DAY) return QString("OP_DAY");
-	else if (op==OP_HOUR) return QString("OP_HOUR");
-	else if (op==OP_MINUTE) return QString("OP_MINUTE");
-	else if (op==OP_SECOND) return QString("OP_SECOND");
-	else if (op==OP_MOUSEX) return QString("OP_MOUSEX");
-	else if (op==OP_MOUSEY) return QString("OP_MOUSEY");
-	else if (op==OP_MOUSEB) return QString("OP_MOUSEB");
-	else if (op==OP_CLICKCLEAR) return QString("OP_CLICKCLEAR");
-	else if (op==OP_CLICKX) return QString("OP_CLICKX");
-	else if (op==OP_CLICKY) return QString("OP_CLICKY");
-	else if (op==OP_CLICKB) return QString("OP_CLICKB");
-	else if (op==OP_TEXT) return QString("OP_TEXT");
-	else if (op==OP_FONT) return QString("OP_FONT");
-	else if (op==OP_SAY) return QString("OP_SAY");
-	else if (op==OP_WAVPAUSE) return QString("OP_WAVPAUSE");
-	else if (op==OP_WAVPLAY) return QString("OP_WAVPLAY");
-	else if (op==OP_WAVSTOP) return QString("OP_WAVSTOP");
-	else if (op==OP_SEED) return QString("OP_SEED");
-	else if (op==OP_SEEK) return QString("OP_SEEK");
-	else if (op==OP_SIZE) return QString("OP_SIZE");
-	else if (op==OP_EXISTS) return QString("OP_EXISTS");
-	else if (op==OP_LEFT) return QString("OP_LEFT");
-	else if (op==OP_RIGHT) return QString("OP_RIGHT");
-	else if (op==OP_UPPER) return QString("OP_UPPER");
-	else if (op==OP_LOWER) return QString("OP_LOWER");
-	else if (op==OP_SYSTEM) return QString("OP_SYSTEM");
-	else if (op==OP_VOLUME) return QString("OP_VOLUME");
-	else if (op==OP_SETCOLOR) return QString("OP_SETCOLOR");
-	else if (op==OP_RGB) return QString("OP_RGB");
-	else if (op==OP_PIXEL) return QString("OP_PIXEL");
-	else if (op==OP_GETCOLOR) return QString("OP_GETCOLOR");
-	else if (op==OP_ASIN) return QString("OP_ASIN");
-	else if (op==OP_ACOS) return QString("OP_ACOS");
-	else if (op==OP_ATAN) return QString("OP_ATAN");
-	else if (op==OP_DEGREES) return QString("OP_DEGREES");
-	else if (op==OP_RADIANS) return QString("OP_RADIANS");
-	else if (op==OP_INTDIV) return QString("OP_INTDIV");
-	else if (op==OP_LOG) return QString("OP_LOG");
-	else if (op==OP_LOGTEN) return QString("OP_LOGTEN");
-	else if (op==OP_GETSLICE) return QString("OP_GETSLICE");
-	else if (op==OP_PUTSLICE) return QString("OP_PUTSLICE");
-	else if (op==OP_IMGLOAD) return QString("OP_IMGLOAD");
-	else if (op==OP_SQR) return QString("OP_SQR");
-	else if (op==OP_EXP) return QString("OP_EXP");
-	else if (op==OP_ARGUMENTCOUNTTEST) return QString("OP_ARGUMENTCOUNTTEST");
-	else if (op==OP_THROWERROR) return QString("OP_THROWERROR");
-	else if (op==OP_READBYTE) return QString("OP_READBYTE");
-	else if (op==OP_WRITEBYTE) return QString("OP_WRITEBYTE");
-	else if (op==OP_STACKSWAP) return QString("OP_STACKSWAP");
-	else if (op==OP_STACKTOPTO2) return QString("OP_STACKTOPTO2");
-	else if (op==OP_STACKDUP) return QString("OP_STACKDUP");
-	else if (op==OP_STACKDUP2) return QString("OP_STACKDUP2");
-    else if (op==OP_STACKSWAP2) return QString("OP_STACKSWAP2");
-    else if (op==OP_GOTO) return QString("OP_GOTO");
-	else if (op==OP_GOSUB) return QString("OP_GOSUB");
-	else if (op==OP_BRANCH) return QString("OP_BRANCH");
-	else if (op==OP_ASSIGN) return QString("OP_ASSIGN");
-	else if (op==OP_ARRAYASSIGN) return QString("OP_ARRAYASSIGN");
-    else if (op==OP_PUSHVAR) return QString("OP_PUSHVAR");
-    else if (op==OP_PUSHVARARRAY) return QString("OP_PUSHVARARRAY");
-    else if (op==OP_PUSHVARARRAYREF) return QString("OP_PUSHVARARRAYREF");
-    else if (op==OP_PUSHINT) return QString("OP_PUSHINT");
-	else if (op==OP_FOR) return QString("OP_FOR");
-	else if (op==OP_NEXT) return QString("OP_NEXT");
-	else if (op==OP_CURRLINE) return QString("OP_CURRLINE");
-	else if (op==OP_DIM) return QString("OP_DIM");
-	else if (op==OP_ONERRORGOSUB) return QString("OP_ONERRORGOSUB");
-	else if (op==OP_ONERRORCATCH) return QString("OP_ONERRORCATCH");
-	else if (op==OP_EXPLODE) return QString("OP_EXPLODE");
-	else if (op==OP_EXPLODEX) return QString("OP_EXPLODEX");
-	else if (op==OP_IMPLODE_LIST) return QString("OP_IMPLODE_LIST");
-	else if (op==OP_GLOBAL) return QString("OP_GLOBAL");
-	else if (op==OP_STAMP_LIST) return QString("OP_STAMP_LIST");
-	else if (op==OP_STAMP_S_LIST) return QString("OP_STAMP_S_LIST");
-	else if (op==OP_STAMP_SR_LIST) return QString("OP_STAMP_SR_LIST");
-	else if (op==OP_POLY_LIST) return QString("OP_POLY_LIST");
-	else if (op==OP_WRITELINE) return QString("OP_WRITELINE");
-    else if (op==OP_SOUND_LIST) return QString("OP_SOUND_LIST");
-    else if (op==OP_SOUND) return QString("OP_SOUND");
-    else if (op==OP_SOUNDPLAY_LIST) return QString("OP_SOUNDPLAY_LIST");
-    else if (op==OP_SOUNDPLAY) return QString("OP_SOUNDPLAY");
-    else if (op==OP_SOUNDPAUSE) return QString("OP_SOUNDPAUSE");
-    else if (op==OP_SOUNDRESUME) return QString("OP_SOUNDRESUME");
-    else if (op==OP_SOUNDSTOP) return QString("OP_SOUNDSTOP");
-    else if (op==OP_SOUNDWAIT) return QString("OP_SOUNDWAIT");
-    else if (op==OP_SOUNDSEEK) return QString("OP_SOUNDSEEK");
-    else if (op==OP_SOUNDVOLUME) return QString("OP_SOUNDVOLUME");
-    else if (op==OP_SOUNDPOSITION) return QString("OP_SOUNDPOSITION");
-    else if (op==OP_SOUNDLENGTH) return QString("OP_SOUNDLENGTH");
-    else if (op==OP_SOUNDSTATE) return QString("OP_SOUNDSTATE");
-    else if (op==OP_DEREF) return QString("OP_DEREF");
-	else if (op==OP_REDIM) return QString("OP_REDIM");
-	else if (op==OP_ALEN) return QString("OP_ALEN");
-	else if (op==OP_ALENROWS) return QString("OP_ALENROWS");
-	else if (op==OP_ALENCOLS) return QString("OP_ALENCOLS");
-	else if (op==OP_PUSHVARREF) return QString("OP_PUSHVARREF");
-    else if (op==OP_ASSIGNARRAY) return QString("OP_ASSIGNARRAY");
-	else if (op==OP_ARRAYLISTASSIGN) return QString("OP_ARRAYLISTASSIGN");
-	else if (op==OP_ARRAY2STACK) return QString("OP_ARRAY2STACK");
-	else if (op==OP_ARRAYFILL) return QString("OP_ARRAYFILL");
-	else if (op==OP_PUSHFLOAT) return QString("OP_PUSHFLOAT");
-	else if (op==OP_PUSHSTRING) return QString("OP_PUSHSTRING");
-	else if (op==OP_INCLUDEFILE) return QString("OP_INCLUDEFILE");
-	else if (op==OP_SPRITEPOLY_LIST) return QString("OP_SPRITEPOLY");
-	else if (op==OP_SPRITEDIM) return QString("OP_SPRITEDIM");
-	else if (op==OP_SPRITELOAD) return QString("OP_SPRITELOAD");
-	else if (op==OP_SPRITESLICE) return QString("OP_SPRITESLICE");
-	else if (op==OP_SPRITEMOVE) return QString("OP_SPRITEMOVE");
-	else if (op==OP_SPRITEHIDE) return QString("OP_SPRITEHIDE");
-	else if (op==OP_SPRITESHOW) return QString("OP_SPRITESHOW");
-	else if (op==OP_SPRITECOLLIDE) return QString("OP_SPRITECOLLIDE");
-	else if (op==OP_SPRITEPLACE) return QString("OP_SPRITEPLACE");
-	else if (op==OP_SPRITEX) return QString("OP_SPRITEX");
-	else if (op==OP_SPRITEY) return QString("OP_SPRITEY");
-	else if (op==OP_SPRITEH) return QString("OP_SPRITEH");
-	else if (op==OP_SPRITEW) return QString("OP_SPRITEW");
-	else if (op==OP_SPRITEV) return QString("OP_SPRITEV");
-	else if (op==OP_CHANGEDIR) return QString("OP_CHANGEDIR");
-	else if (op==OP_CURRENTDIR) return QString("OP_CURRENTDIR");
-	else if (op==OP_DBOPEN) return QString("OP_DBOPEN");
-	else if (op==OP_DBCLOSE) return QString("OP_DBCLOSE");
-	else if (op==OP_DBEXECUTE) return QString("OP_DBEXECUTE");
-	else if (op==OP_DBOPENSET) return QString("OP_DBOPENSET");
-	else if (op==OP_DBCLOSESET) return QString("OP_DBCLOSESET");
-	else if (op==OP_DBROW) return QString("OP_DBROW");
-	else if (op==OP_DBINT) return QString("OP_DBINT");
-	else if (op==OP_DBFLOAT) return QString("OP_DBFLOAT");
-	else if (op==OP_DBSTRING) return QString("OP_DBSTRING");
-	else if (op==OP_LASTERROR) return QString("OP_LASTERROR");
-	else if (op==OP_LASTERRORLINE) return QString("OP_LASTERRORLINE");
-	else if (op==OP_LASTERRORMESSAGE) return QString("OP_LASTERRORMESSAGE");
-	else if (op==OP_LASTERROREXTRA) return QString("OP_LASTERROREXTRA");
-	else if (op==OP_OFFERROR) return QString("OP_OFFERROR");
-	else if (op==OP_NETLISTEN) return QString("OP_NETLISTEN");
-	else if (op==OP_NETCONNECT) return QString("OP_NETCONNECT");
-	else if (op==OP_NETREAD) return QString("OP_NETREAD");
-	else if (op==OP_NETWRITE) return QString("OP_NETWRITE");
-	else if (op==OP_NETCLOSE) return QString("OP_NETCLOSE");
-	else if (op==OP_NETDATA) return QString("OP_NETDATA");
-	else if (op==OP_NETADDRESS) return QString("OP_NETADDRESS");
-	else if (op==OP_KILL) return QString("OP_KILL");
-	else if (op==OP_MD5) return QString("OP_MD5");
-	else if (op==OP_SETSETTING) return QString("OP_SETSETTING");
-	else if (op==OP_GETSETTING) return QString("OP_GETSETTING");
-	else if (op==OP_PORTIN) return QString("OP_PORTIN");
-	else if (op==OP_PORTOUT) return QString("OP_PORTOUT");
-	else if (op==OP_BINARYOR) return QString("OP_BINARYOR");
-	else if (op==OP_BINARYAND) return QString("OP_BINARYAND");
-	else if (op==OP_BINARYNOT) return QString("OP_BINARYNOT");
-	else if (op==OP_IMGSAVE) return QString("OP_IMGSAVE");
-	else if (op==OP_DIR) return QString("OP_DIR");
-	else if (op==OP_REPLACE) return QString("OP_REPLACE");
-	else if (op==OP_REPLACEX) return QString("OP_REPLACEX");
-	else if (op==OP_COUNT) return QString("OP_COUNT");
-	else if (op==OP_COUNTX) return QString("OP_COUNTX");
-	else if (op==OP_OSTYPE) return QString("OP_OSTYPE");
-	else if (op==OP_MSEC) return QString("OP_MSEC");
-	else if (op==OP_EDITVISIBLE) return QString("OP_EDITVISIBLE");
-	else if (op==OP_GRAPHVISIBLE) return QString("OP_GRAPHVISIBLE");
-	else if (op==OP_OUTPUTVISIBLE) return QString("OP_OUTPUTVISIBLE");
-	else if (op==OP_TEXTHEIGHT) return QString("OP_TEXTHEIGHT");
-	else if (op==OP_TEXTWIDTH) return QString("OP_TEXTWIDTH");
-	else if (op==OP_SPRITER) return QString("OP_SPRITER");
-	else if (op==OP_SPRITES) return QString("OP_SPRITES");
-	else if (op==OP_SPRITEO) return QString("OP_SPRITEO");
-	else if (op==OP_FREEFILE) return QString("OP_FREEFILE");
-	else if (op==OP_FREENET) return QString("OP_FREENET");
-	else if (op==OP_FREEDB) return QString("OP_FREEDB");
-	else if (op==OP_FREEDBSET) return QString("OP_FREEDBSET");
-	else if (op==OP_DBNULL) return QString("OP_DBNULL");
-	else if (op==OP_DBNULLS) return QString("OP_DBNULLS");
-	else if (op==OP_ARC) return QString("OP_ARC");
-	else if (op==OP_CHORD) return QString("OP_CHORD");
-	else if (op==OP_PIE) return QString("OP_PIE");
-	else if (op==OP_PENWIDTH) return QString("OP_PENWIDTH");
-	else if (op==OP_GETPENWIDTH) return QString("OP_GETPENWIDTH");
-	else if (op==OP_GETBRUSHCOLOR) return QString("OP_GETBRUSHCOLOR");
-	else if (op==OP_ALERT) return QString("OP_ALERT");
-	else if (op==OP_CONFIRM) return QString("OP_CONFIRM");
-	else if (op==OP_PROMPT) return QString("OP_PROMPT");
-	else if (op==OP_FROMRADIX) return QString("OP_FROMRADIX");
-	else if (op==OP_TORADIX) return QString("OP_TORADIX");
-	else if (op==OP_PRINTERPAGE) return QString("OP_PRINTERPAGE");
-	else if (op==OP_PRINTEROFF) return QString("OP_PRINTERON");
-	else if (op==OP_PRINTERON) return QString("OP_PRINTEROFF");
-	else if (op==OP_DEBUGINFO) return QString("OP_DEBUGINFO");
-	else if (op==OP_WAVLENGTH) return QString("OP_WAVLENGTH");
-	else if (op==OP_WAVPOS) return QString("OP_WAVPOS");
-	else if (op==OP_WAVSEEK) return QString("OP_WAVSEEK");
-	else if (op==OP_WAVSTATE) return QString("OP_WAVSTATE");
-	else if (op==OP_REGEXMINIMAL) return QString("OP_REGEXMINIMAL");
-	else if (op==OP_OPENSERIAL) return QString("OP_OPENSERIAL");
-	else if (op==OP_TYPEOF) return QString("OP_TYPEOF");
-	else if (op==OP_UNASSIGN) return QString("OP_UNASSIGN");
-	else if (op==OP_UNASSIGNA) return QString("OP_UNASSIGNA");
-	else if (op==OP_ISNUMERIC) return QString("OP_ISNUMERIC");
-	else if (op==OP_LTRIM) return QString("OP_LTRIM");
-	else if (op==OP_RTRIM) return QString("OP_RTRIM");
-	else if (op==OP_TRIM) return QString("OP_TRIM");
-	else if (op==OP_EXITFOR) return QString("OP_EXITFOR");
-	else if (op==OP_VARIABLEWATCH) return QString("OP_VARIABLEWATCH");
-	else if (op==OP_PUSHLABEL) return QString("OP_PUSHLABEL");
-	else if (op==OP_SERIALIZE) return QString("OP_SERIALIZE");
-	else if (op==OP_UNSERIALIZE) return QString("OP_UNSERIALIZE");
-    else if (op==OP_CALLFUNCTION) return QString("OP_CALLFUNCTION");
-    else if (op==OP_CALLSUBROUTINE) return QString("OP_CALLSUBROUTINE");
-    else if (op==OP_UNLOAD) return QString("OP_UNLOAD");
-    else if (op==OP_IMAGELOAD) return QString("OP_IMAGELOAD");
-    else if (op==OP_IMAGENEW) return QString("OP_IMAGENEW");
-    else if (op==OP_IMAGECOPY) return QString("OP_IMAGECOPY");
-    else if (op==OP_IMAGECROP) return QString("OP_IMAGECROP");
-    else if (op==OP_IMAGEAUTOCROP) return QString("OP_IMAGEAUTOCROP");
-    else if (op==OP_IMAGERESIZE) return QString("OP_IMAGERESIZE");
-    else if (op==OP_IMAGESETPIXEL) return QString("OP_IMAGESETPIXEL");
-    else if (op==OP_IMAGEWIDTH) return QString("OP_IMAGEWIDTH");
-    else if (op==OP_IMAGEHEIGHT) return QString("OP_IMAGEHEIGHT");
-    else if (op==OP_IMAGEPIXEL) return QString("OP_IMAGEPIXEL");
-    else if (op==OP_IMAGEDRAW) return QString("OP_IMAGEDRAW");
-    else if (op==OP_IMAGEFLIP) return QString("OP_IMAGEFLIP");
-    else if (op==OP_IMAGEROTATE) return QString("OP_IMAGEROTATE");
-    else if (op==OP_IMAGESMOOTH) return QString("OP_IMAGESMOOTH");
-    else if (op==OP_IMAGECENTERED) return QString("OP_IMAGECENTERED");
-    else if (op==OP_IMAGETRANSFORMED) return QString("OP_IMAGETRANSFORMED");
 
-	else return QString("OP_UNKNOWN");
+    switch (op) {
+    case OP_END : return QString("OP_END");
+    case OP_NOP : return QString("OP_NOP");
+    case OP_RETURN : return QString("OP_RETURN");
+    case OP_EQUAL : return QString("OP_EQUAL");
+    case OP_NEQUAL : return QString("OP_NEQUAL");
+    case OP_GT : return QString("OP_GT");
+    case OP_LT : return QString("OP_LT");
+    case OP_GTE : return QString("OP_GTE");
+    case OP_LTE : return QString("OP_LTE");
+    case OP_AND : return QString("OP_AND");
+    case OP_NOT : return QString("OP_NOT");
+    case OP_OR : return QString("OP_OR");
+    case OP_XOR : return QString("OP_XOR");
+    case OP_INT : return QString("OP_INT");
+    case OP_STRING : return QString("OP_STRING");
+    case OP_ADD : return QString("OP_ADD");
+    case OP_SUB : return QString("OP_SUB");
+    case OP_MUL : return QString("OP_MUL");
+    case OP_DIV : return QString("OP_DIV");
+    case OP_EX : return QString("OP_EX");
+    case OP_NEGATE : return QString("OP_NEGATE");
+    case OP_PRINT : return QString("OP_PRINT");
+    case OP_PRINTN : return QString("OP_PRINTN");
+    case OP_INPUT : return QString("OP_INPUT");
+    case OP_KEY : return QString("OP_KEY");
+    case OP_PLOT : return QString("OP_PLOT");
+    case OP_RECT : return QString("OP_RECT");
+    case OP_CIRCLE : return QString("OP_CIRCLE");
+    case OP_LINE : return QString("OP_LINE");
+    case OP_REFRESH : return QString("OP_REFRESH");
+    case OP_FASTGRAPHICS : return QString("OP_FASTGRAPHICS");
+    case OP_CLS : return QString("OP_CLS");
+    case OP_CLG : return QString("OP_CLG");
+    case OP_GRAPHSIZE : return QString("OP_GRAPHSIZE");
+    case OP_GRAPHWIDTH : return QString("OP_GRAPHWIDTH");
+    case OP_GRAPHHEIGHT : return QString("OP_GRAPHHEIGHT");
+    case OP_SIN : return QString("OP_SIN");
+    case OP_COS : return QString("OP_COS");
+    case OP_TAN : return QString("OP_TAN");
+    case OP_RAND : return QString("OP_RAND");
+    case OP_CEIL : return QString("OP_CEIL");
+    case OP_FLOOR : return QString("OP_FLOOR");
+    case OP_ABS : return QString("OP_ABS");
+    case OP_PAUSE : return QString("OP_PAUSE");
+    case OP_LENGTH : return QString("OP_LENGTH");
+    case OP_MID : return QString("OP_MID");
+    case OP_INSTR : return QString("OP_INSTR");
+    case OP_INSTRX : return QString("OP_INSTRX");
+    case OP_OPEN : return QString("OP_OPEN");
+    case OP_READ : return QString("OP_READ");
+    case OP_WRITE : return QString("OP_WRITE");
+    case OP_CLOSE : return QString("OP_CLOSE");
+    case OP_RESET : return QString("OP_RESET");
+    case OP_INCREASERECURSE : return QString("OP_INCREASERECURSE");
+    case OP_DECREASERECURSE : return QString("OP_DECREASERECURSE");
+    case OP_ASC : return QString("OP_ASC");
+    case OP_CHR : return QString("OP_CHR");
+    case OP_FLOAT : return QString("OP_FLOAT");
+    case OP_READLINE : return QString("OP_READLINE");
+    case OP_EOF : return QString("OP_EOF");
+    case OP_MOD : return QString("OP_MOD");
+    case OP_YEAR : return QString("OP_YEAR");
+    case OP_MONTH : return QString("OP_MONTH");
+    case OP_DAY : return QString("OP_DAY");
+    case OP_HOUR : return QString("OP_HOUR");
+    case OP_MINUTE : return QString("OP_MINUTE");
+    case OP_SECOND : return QString("OP_SECOND");
+    case OP_MOUSEX : return QString("OP_MOUSEX");
+    case OP_MOUSEY : return QString("OP_MOUSEY");
+    case OP_MOUSEB : return QString("OP_MOUSEB");
+    case OP_CLICKCLEAR : return QString("OP_CLICKCLEAR");
+    case OP_CLICKX : return QString("OP_CLICKX");
+    case OP_CLICKY : return QString("OP_CLICKY");
+    case OP_CLICKB : return QString("OP_CLICKB");
+    case OP_TEXT : return QString("OP_TEXT");
+    case OP_FONT : return QString("OP_FONT");
+    case OP_SAY : return QString("OP_SAY");
+    case OP_WAVPLAY : return QString("OP_WAVPLAY");
+    case OP_WAVSTOP : return QString("OP_WAVSTOP");
+    case OP_SEEK : return QString("OP_SEEK");
+    case OP_SIZE : return QString("OP_SIZE");
+    case OP_EXISTS : return QString("OP_EXISTS");
+    case OP_LEFT : return QString("OP_LEFT");
+    case OP_RIGHT : return QString("OP_RIGHT");
+    case OP_UPPER : return QString("OP_UPPER");
+    case OP_LOWER : return QString("OP_LOWER");
+    case OP_SYSTEM : return QString("OP_SYSTEM");
+    case OP_VOLUME : return QString("OP_VOLUME");
+    case OP_SETCOLOR : return QString("OP_SETCOLOR");
+    case OP_RGB : return QString("OP_RGB");
+    case OP_PIXEL : return QString("OP_PIXEL");
+    case OP_GETCOLOR : return QString("OP_GETCOLOR");
+    case OP_ASIN : return QString("OP_ASIN");
+    case OP_ACOS : return QString("OP_ACOS");
+    case OP_ATAN : return QString("OP_ATAN");
+    case OP_DEGREES : return QString("OP_DEGREES");
+    case OP_RADIANS : return QString("OP_RADIANS");
+    case OP_INTDIV : return QString("OP_INTDIV");
+    case OP_LOG : return QString("OP_LOG");
+    case OP_LOGTEN : return QString("OP_LOGTEN");
+    case OP_GETSLICE : return QString("OP_GETSLICE");
+    case OP_PUTSLICE : return QString("OP_PUTSLICE");
+    case OP_IMGLOAD : return QString("OP_IMGLOAD");
+    case OP_SQR : return QString("OP_SQR");
+    case OP_EXP : return QString("OP_EXP");
+    case OP_THROWERROR : return QString("OP_THROWERROR");
+    case OP_READBYTE : return QString("OP_READBYTE");
+    case OP_WRITEBYTE : return QString("OP_WRITEBYTE");
+    case OP_STACKSWAP : return QString("OP_STACKSWAP");
+    case OP_STACKTOPTO2 : return QString("OP_STACKTOPTO2");
+    case OP_STACKDUP : return QString("OP_STACKDUP");
+    case OP_STACKDUP2 : return QString("OP_STACKDUP2");
+    case OP_STACKSWAP2 : return QString("OP_STACKSWAP2");
+    case OP_STAMP_LIST : return QString("OP_STAMP_LIST");
+    case OP_STAMP_S_LIST : return QString("OP_STAMP_S_LIST");
+    case OP_STAMP_SR_LIST : return QString("OP_STAMP_SR_LIST");
+    case OP_POLY_LIST : return QString("OP_POLY_LIST");
+    case OP_WRITELINE : return QString("OP_WRITELINE");
+    case OP_SOUND_LIST : return QString("OP_SOUND_LIST");
+    case OP_SPRITEPOLY_LIST : return QString("OP_SPRITEPOLY_LIST");
+    case OP_SPRITEDIM : return QString("OP_SPRITEDIM");
+    case OP_SPRITELOAD : return QString("OP_SPRITELOAD");
+    case OP_SPRITESLICE : return QString("OP_SPRITESLICE");
+    case OP_SPRITEMOVE : return QString("OP_SPRITEMOVE");
+    case OP_SPRITEHIDE : return QString("OP_SPRITEHIDE");
+    case OP_SPRITESHOW : return QString("OP_SPRITESHOW");
+    case OP_SPRITECOLLIDE : return QString("OP_SPRITECOLLIDE");
+    case OP_SPRITEPLACE : return QString("OP_SPRITEPLACE");
+    case OP_SPRITEX : return QString("OP_SPRITEX");
+    case OP_SPRITEY : return QString("OP_SPRITEY");
+    case OP_SPRITEH : return QString("OP_SPRITEH");
+    case OP_SPRITEW : return QString("OP_SPRITEW");
+    case OP_SPRITEV : return QString("OP_SPRITEV");
+    case OP_CHANGEDIR : return QString("OP_CHANGEDIR");
+    case OP_CURRENTDIR : return QString("OP_CURRENTDIR");
+    case OP_WAVWAIT : return QString("OP_WAVWAIT");
+    case OP_DBOPEN : return QString("OP_DBOPEN");
+    case OP_DBCLOSE : return QString("OP_DBCLOSE");
+    case OP_DBEXECUTE : return QString("OP_DBEXECUTE");
+    case OP_DBOPENSET : return QString("OP_DBOPENSET");
+    case OP_DBCLOSESET : return QString("OP_DBCLOSESET");
+    case OP_DBROW : return QString("OP_DBROW");
+    case OP_DBINT : return QString("OP_DBINT");
+    case OP_DBFLOAT : return QString("OP_DBFLOAT");
+    case OP_DBSTRING : return QString("OP_DBSTRING");
+    case OP_LASTERROR : return QString("OP_LASTERROR");
+    case OP_LASTERRORLINE : return QString("OP_LASTERRORLINE");
+    case OP_LASTERRORMESSAGE : return QString("OP_LASTERRORMESSAGE");
+    case OP_LASTERROREXTRA : return QString("OP_LASTERROREXTRA");
+    case OP_OFFERROR : return QString("OP_OFFERROR");
+    case OP_NETLISTEN : return QString("OP_NETLISTEN");
+    case OP_NETCONNECT : return QString("OP_NETCONNECT");
+    case OP_NETREAD : return QString("OP_NETREAD");
+    case OP_NETWRITE : return QString("OP_NETWRITE");
+    case OP_NETCLOSE : return QString("OP_NETCLOSE");
+    case OP_NETDATA : return QString("OP_NETDATA");
+    case OP_NETADDRESS : return QString("OP_NETADDRESS");
+    case OP_KILL : return QString("OP_KILL");
+    case OP_MD5 : return QString("OP_MD5");
+    case OP_SETSETTING : return QString("OP_SETSETTING");
+    case OP_GETSETTING : return QString("OP_GETSETTING");
+    case OP_PORTIN : return QString("OP_PORTIN");
+    case OP_PORTOUT : return QString("OP_PORTOUT");
+    case OP_BINARYOR : return QString("OP_BINARYOR");
+    case OP_BINARYAND : return QString("OP_BINARYAND");
+    case OP_BINARYNOT : return QString("OP_BINARYNOT");
+    case OP_IMGSAVE : return QString("OP_IMGSAVE");
+    case OP_DIR : return QString("OP_DIR");
+    case OP_REPLACE : return QString("OP_REPLACE");
+    case OP_REPLACEX : return QString("OP_REPLACEX");
+    case OP_COUNT : return QString("OP_COUNT");
+    case OP_COUNTX : return QString("OP_COUNTX");
+    case OP_OSTYPE : return QString("OP_OSTYPE");
+    case OP_MSEC : return QString("OP_MSEC");
+    case OP_EDITVISIBLE : return QString("OP_EDITVISIBLE");
+    case OP_GRAPHVISIBLE : return QString("OP_GRAPHVISIBLE");
+    case OP_OUTPUTVISIBLE : return QString("OP_OUTPUTVISIBLE");
+    case OP_TEXTWIDTH : return QString("OP_TEXTWIDTH");
+    case OP_TEXTHEIGHT : return QString("OP_TEXTHEIGHT");
+    case OP_SPRITER : return QString("OP_SPRITER");
+    case OP_SPRITES : return QString("OP_SPRITES");
+    case OP_FREEFILE : return QString("OP_FREEFILE");
+    case OP_FREENET : return QString("OP_FREENET");
+    case OP_FREEDB : return QString("OP_FREEDB");
+    case OP_FREEDBSET : return QString("OP_FREEDBSET");
+    case OP_DBNULL : return QString("OP_DBNULL");
+    case OP_DBNULLS : return QString("OP_DBNULLS");
+    case OP_ARC : return QString("OP_ARC");
+    case OP_CHORD : return QString("OP_CHORD");
+    case OP_PIE : return QString("OP_PIE");
+    case OP_PENWIDTH : return QString("OP_PENWIDTH");
+    case OP_GETPENWIDTH : return QString("OP_GETPENWIDTH");
+    case OP_GETBRUSHCOLOR : return QString("OP_GETBRUSHCOLOR");
+    case OP_ALERT : return QString("OP_ALERT");
+    case OP_CONFIRM : return QString("OP_CONFIRM");
+    case OP_PROMPT : return QString("OP_PROMPT");
+    case OP_FROMRADIX : return QString("OP_FROMRADIX");
+    case OP_TORADIX : return QString("OP_TORADIX");
+    case OP_PRINTERON : return QString("OP_PRINTERON");
+    case OP_PRINTEROFF : return QString("OP_PRINTEROFF");
+    case OP_PRINTERPAGE : return QString("OP_PRINTERPAGE");
+    case OP_PRINTERCANCEL : return QString("OP_PRINTERCANCEL");
+    case OP_DEBUGINFO : return QString("OP_DEBUGINFO");
+    case OP_WAVLENGTH : return QString("OP_WAVLENGTH");
+    case OP_WAVPOS : return QString("OP_WAVPOS");
+    case OP_WAVPAUSE : return QString("OP_WAVPAUSE");
+    case OP_WAVSEEK : return QString("OP_WAVSEEK");
+    case OP_WAVSTATE : return QString("OP_WAVSTATE");
+    case OP_MIDX : return QString("OP_MIDX");
+    case OP_REGEXMINIMAL : return QString("OP_REGEXMINIMAL");
+    case OP_OPENSERIAL : return QString("OP_OPENSERIAL");
+    case OP_TYPEOF : return QString("OP_TYPEOF");
+    case OP_CONCATENATE : return QString("OP_CONCATENATE");
+    case OP_ISNUMERIC : return QString("OP_ISNUMERIC");
+    case OP_LTRIM : return QString("OP_LTRIM");
+    case OP_RTRIM : return QString("OP_RTRIM");
+    case OP_TRIM : return QString("OP_TRIM");
+    case OP_KEYPRESSED : return QString("OP_KEYPRESSED");
+    case OP_IMPLODE_LIST : return QString("OP_IMPLODE_LIST");
+    case OP_EXPLODE : return QString("OP_EXPLODE");
+    case OP_EXPLODEX : return QString("OP_EXPLODEX");
+    case OP_SPRITEO : return QString("OP_SPRITEO");
+    case OP_SERIALIZE : return QString("OP_SERIALIZE");
+    case OP_UNSERIALIZE : return QString("OP_UNSERIALIZE");
+    case OP_SEED : return QString("OP_SEED");
+    case OP_SOUND : return QString("OP_SOUND");
+    case OP_SOUNDPLAY : return QString("OP_SOUNDPLAY");
+    case OP_SOUNDPLAY_LIST : return QString("OP_SOUNDPLAY_LIST");
+    case OP_SOUNDLOAD : return QString("OP_SOUNDLOAD");
+    case OP_SOUNDLOAD_LIST : return QString("OP_SOUNDLOAD_LIST");
+    case OP_SOUNDLOADRAW : return QString("OP_SOUNDLOADRAW");
+    case OP_SOUNDPAUSE : return QString("OP_SOUNDPAUSE");
+    case OP_SOUNDSEEK : return QString("OP_SOUNDSEEK");
+    case OP_SOUNDSTOP : return QString("OP_SOUNDSTOP");
+    case OP_SOUNDWAIT : return QString("OP_SOUNDWAIT");
+    case OP_SOUNDVOLUME : return QString("OP_SOUNDVOLUME");
+    case OP_SOUNDPOSITION : return QString("OP_SOUNDPOSITION");
+    case OP_SOUNDID : return QString("OP_SOUNDID");
+    case OP_SOUNDSTATE : return QString("OP_SOUNDSTATE");
+    case OP_SOUNDLENGTH : return QString("OP_SOUNDLENGTH");
+    case OP_IMAGENEW : return QString("OP_IMAGENEW");
+    case OP_IMAGELOAD : return QString("OP_IMAGELOAD");
+    case OP_IMAGECOPY : return QString("OP_IMAGECOPY");
+    case OP_IMAGECROP : return QString("OP_IMAGECROP");
+    case OP_IMAGERESIZE : return QString("OP_IMAGERESIZE");
+    case OP_IMAGESETPIXEL : return QString("OP_IMAGESETPIXEL");
+    case OP_IMAGEDRAW : return QString("OP_IMAGEDRAW");
+    case OP_IMAGECENTERED : return QString("OP_IMAGECENTERED");
+    case OP_IMAGETRANSFORMED : return QString("OP_IMAGETRANSFORMED");
+    case OP_IMAGEWIDTH : return QString("OP_IMAGEWIDTH");
+    case OP_IMAGEHEIGHT : return QString("OP_IMAGEHEIGHT");
+    case OP_IMAGEPIXEL : return QString("OP_IMAGEPIXEL");
+    case OP_IMAGEFLIP : return QString("OP_IMAGEFLIP");
+    case OP_IMAGEROTATE : return QString("OP_IMAGEROTATE");
+    case OP_IMAGESMOOTH : return QString("OP_IMAGESMOOTH");
+    case OP_UNLOAD : return QString("OP_UNLOAD");
+    case OP_IMAGEAUTOCROP : return QString("OP_IMAGEAUTOCROP");
+    case OP_SOUNDPLAYER : return QString("OP_SOUNDPLAYER");
+    case OP_SOUNDPLAYER_LIST : return QString("OP_SOUNDPLAYER_LIST");
+    case OP_SOUNDWAVEFORM : return QString("OP_SOUNDWAVEFORM");
+    case OP_SOUNDWAVEFORM_LIST : return QString("OP_SOUNDWAVEFORM_LIST");
+    case OP_SOUNDFADE : return QString("OP_SOUNDFADE");
+    case OP_SOUNDLOOP : return QString("OP_SOUNDLOOP");
+    case OP_SOUNDENVELOPE : return QString("OP_SOUNDENVELOPE");
+    case OP_SOUNDENVELOPE_LIST : return QString("OP_SOUNDENVELOPE_LIST");
+    case OP_SOUNDHARMONICS : return QString("OP_SOUNDHARMONICS");
+    case OP_SOUNDNOHARMONICS : return QString("OP_SOUNDNOHARMONICS");
+    case OP_SOUNDHARMONICS_LIST : return QString("OP_SOUNDHARMONICS_LIST");
+    case OP_SOUNDPLAYEROFF : return QString("OP_SOUNDPLAYEROFF");
+    case OP_SOUNDSYSTEM : return QString("OP_SOUNDSYSTEM");
+    case OP_SOUNDSAMPLERATE : return QString("OP_SOUNDSAMPLERATE");
+    case OP_GOTO : return QString("OP_GOTO");
+    case OP_GOSUB : return QString("OP_GOSUB");
+    case OP_BRANCH : return QString("OP_BRANCH");
+    case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
+    case OP_ONERRORCATCH : return QString("OP_ONERRORCATCH");
+    case OP_EXITFOR : return QString("OP_EXITFOR");
+    case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
+    case OP_CALLFUNCTION : return QString("OP_CALLFUNCTION");
+    case OP_CALLSUBROUTINE : return QString("OP_CALLSUBROUTINE");
+    case OP_ASSIGN : return QString("OP_ASSIGN");
+    case OP_ARRAYASSIGN : return QString("OP_ARRAYASSIGN");
+    case OP_PUSHVAR : return QString("OP_PUSHVAR");
+    case OP_FOR : return QString("OP_FOR");
+    case OP_NEXT : return QString("OP_NEXT");
+    case OP_DIM : return QString("OP_DIM");
+    case OP_DEREF : return QString("OP_DEREF");
+    case OP_REDIM : return QString("OP_REDIM");
+    case OP_ALEN : return QString("OP_ALEN");
+    case OP_ALENROWS : return QString("OP_ALENROWS");
+    case OP_ALENCOLS : return QString("OP_ALENCOLS");
+    case OP_PUSHVARREF : return QString("OP_PUSHVARREF");
+    case OP_ARRAY2STACK : return QString("OP_ARRAY2STACK");
+    case OP_ARRAYFILL : return QString("OP_ARRAYFILL");
+    case OP_GLOBAL : return QString("OP_GLOBAL");
+    case OP_UNASSIGN : return QString("OP_UNASSIGN");
+    case OP_UNASSIGNA : return QString("OP_UNASSIGNA");
+    case OP_VARIABLEWATCH : return QString("OP_VARIABLEWATCH");
+    case OP_VARIABLECOPY : return QString("OP_VARIABLECOPY");
+    case OP_ASSIGNARRAY : return QString("OP_ASSIGNARRAY");
+    case OP_PUSHVARARRAY : return QString("OP_PUSHVARARRAY");
+    case OP_PUSHVARARRAYREF : return QString("OP_PUSHVARARRAYREF");
+    case OP_PUSHINT : return QString("OP_PUSHINT");
+    case OP_CURRLINE : return QString("OP_CURRLINE");
+    case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
+    case OP_ARGUMENTCOUNTTEST : return QString("OP_ARGUMENTCOUNTTEST");
+    case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
+    case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
+    case OP_INCLUDEFILE : return QString("OP_INCLUDEFILE");
+
+    default: return QString("OP_UNKNOWN");
+    }
 }
-
 
 void Interpreter::printError() {
 	QString msg;
@@ -823,11 +848,6 @@ Interpreter::cleanup() {
 	//
 	// Clean up run time objects
 
-    if(mediaplayer!=NULL){
-        mediaplayer->stop(); //stop asynchronous sounds if program is ended normally
-        delete (mediaplayer);
-        mediaplayer = NULL;
-    }
     delete (downloader);
     downloader = NULL;
     delete(stack);
@@ -937,16 +957,11 @@ Interpreter::runHalted() {
     // stop downloading
     if(downloader!=NULL) downloader->stop();
 	
-    // stop playing any wav files
-    if(mediaplayer) mediaplayer->stop();
-
     // stop playing any sound
     if(sound!=NULL) sound->exit();
 
-
 	// close network connections
 	netSockCloseAll(); 
-
 }
 
 
@@ -955,6 +970,7 @@ Interpreter::run() {
     // main run loop
     isError=false;
     downloader = new BasicDownloader(error);
+    mediaplayer_id_legacy = 0;
     //link sound system to error mechanism
     sound->error = &error;
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
@@ -2102,12 +2118,12 @@ Interpreter::execByteCode() {
 					int fn = stack->popint();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushint(0);
+                        stack->pushstring("");
 					} else {
 
 						if (filehandle[fn] == NULL) {
 							error->q(ERROR_FILENOTOPEN);
-							stack->pushint(0);
+                            stack->pushstring("");
 						} else {
 							//read entire line
 							filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
@@ -2274,11 +2290,10 @@ Interpreter::execByteCode() {
 				case OP_SIZE: {
 					// push the current open file size on the stack
 					int fn = stack->popint();
-					if (fn<0||fn>=NUMFILES) {
+                    int size = 0;
+                    if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushint(0);
 					} else {
-						int size = 0;
 						if (filehandle[fn] == NULL) {
 							error->q(ERROR_FILENOTOPEN);
 						} else {
@@ -2295,10 +2310,10 @@ Interpreter::execByteCode() {
 									break;
 							}
 						}
-						stack->pushint(size);
 					}
-				}
-				break;
+                    stack->pushint(size);
+                }
+                break;
 
 				case OP_EXISTS: {
 					// push a 1 if file exists else zero
@@ -2405,7 +2420,7 @@ Interpreter::execByteCode() {
 
 					if (pos == 0){
 						error->q(ERROR_STRSTART);
-						stack->pushint(0);
+                        stack->pushstring(QString(""));
 					}else{
 						if(pos<0)
 							pos=qtemp.length()+pos;
@@ -2695,12 +2710,12 @@ Interpreter::execByteCode() {
 					{
 						QString sone = stack->popstring();
 						QString stwo = stack->popstring();
-						if (stwo.length() + sone.length()>STRINGMAXLEN) {
+                        QString final = stwo + sone;
+                        if (final.length()>STRINGMAXLEN) {
 							error->q(ERROR_STRINGMAXLEN);
-							stack->pushint(0);
-						} else {
-							stack->pushstring(stwo + sone);
-						}
+                            final.truncate(STRINGMAXLEN);
+                        }
+                        stack->pushstring(final);
 					}
 					break;
 
@@ -2733,7 +2748,7 @@ Interpreter::execByteCode() {
 									double ans = ftwo + fone;
 									if (std::isinf(ans)) {
 										error->q(ERROR_INFINITY);
-										stack->pushint(0);
+                                        stack->pushfloat(0.0);
 									} else {
 										stack->pushfloat(ans);
 									}
@@ -2741,12 +2756,12 @@ Interpreter::execByteCode() {
 									// concatenate (if one or both ar not numbers)
 									QString sone = convert->getString(one);
 									QString stwo = convert->getString(two);
-									if (stwo.length() + sone.length()>STRINGMAXLEN) {
+                                    QString final = stwo + sone;
+                                    if (final.length()>STRINGMAXLEN) {
 										error->q(ERROR_STRINGMAXLEN);
-										stack->pushint(0);
-									} else {
-										stack->pushstring(stwo + sone);
-									}
+                                        final.truncate(STRINGMAXLEN);
+                                    }
+                                    stack->pushstring(final);
 								}
 							}
 							break;
@@ -2767,7 +2782,7 @@ Interpreter::execByteCode() {
 								double ans = ftwo - fone;
 								if (std::isinf(ans)) {
 									error->q(ERROR_INFINITY);
-									stack->pushint(0);
+                                    stack->pushfloat(0.0);
 								} else {
 									stack->pushfloat(ans);
 								}
@@ -2794,7 +2809,7 @@ Interpreter::execByteCode() {
 								double ans = ftwo * fone;
 								if (std::isinf(ans)) {
 									error->q(ERROR_INFINITY);
-									stack->pushint(0);
+                                    stack->pushfloat(0.0);
 								} else {
 									stack->pushfloat(ans);
 								}
@@ -2825,7 +2840,7 @@ Interpreter::execByteCode() {
                     double ans = pow(twoval, oneval);
                     if (std::isinf(ans)) {
                         error->q(ERROR_INFINITY);
-                        stack->pushfloat(0);
+                        stack->pushfloat(0.0);
                     } else {
                         stack->pushfloat(ans);
                     }
@@ -2838,12 +2853,12 @@ Interpreter::execByteCode() {
 					double twoval = stack->popfloat();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushfloat(0);
+                        stack->pushfloat(0.0);
 					} else {
 						double ans = twoval / oneval;
 						if (std::isinf(ans)) {
 							error->q(ERROR_INFINITY);
-							stack->pushfloat(0);
+							stack->pushfloat(0.0);
 						} else {
 							stack->pushfloat(ans);
 						}
@@ -2908,7 +2923,7 @@ Interpreter::execByteCode() {
 					if (e->type==T_INT) {
 						stack->pushlong(e->intval * -1);
 					} else {
-						stack->pushfloat(convert->getFloat(e) * -1);
+                        stack->pushfloat(convert->getFloat(e) * -1.0);
 					}
 				}
 				break;
@@ -2946,25 +2961,25 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-
                 case OP_SOUND:
                 case OP_SOUNDPLAY:
+                case OP_SOUNDPLAYER:
                 case OP_SOUNDLOAD:
                 {
                     DataElement *e = stack->popelement();
                     if (e->type == T_STRING) {
-                        if(opcode==OP_SOUND){
+                        if(opcode==OP_SOUND || opcode==OP_SOUNDPLAY){
                             mymutex->lock();
-                            emit(playSound(e->stringval));
+                            emit(playSound(e->stringval, false));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
-                            sound->wait(id);
-                        }else if(opcode==OP_SOUNDPLAY){
+                            if(opcode==OP_SOUND) sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAYER){
                             mymutex->lock();
-                            emit(playSound(e->stringval));
+                            emit(playSound(e->stringval, true));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
                             stack->pushint(id);
                         }else{
@@ -2975,22 +2990,41 @@ Interpreter::execByteCode() {
                                 file.open(QIODevice::ReadOnly);
                                 QByteArray arr = file.readAll();
                                 file.close();
-                                stack->pushstring(sound->loadSoundFromArray(s, &arr));
+                                QString id = QString("sound:") + s;
+                                mymutex->lock();
+                                emit(loadSoundFromArray(id, &arr));
+                                waitCond->wait(mymutex);
+                                mymutex->unlock();
+                                stack->pushstring(id);
                             }else if (url.isValid() && (url.scheme()=="http" || url.scheme()=="https" || url.scheme()=="ftp")){
                                 downloader->download(QUrl::fromUserInput(s));
                                 QByteArray arr = downloader->data();
-                                stack->pushstring(sound->loadSoundFromArray(s, &arr));
+                                QString id = QString("sound:") + s;
+                                mymutex->lock();
+                                emit(loadSoundFromArray(id, &arr));
+                                waitCond->wait(mymutex);
+                                mymutex->unlock();
+                                stack->pushstring(id);
                             }else{
+                                stack->pushstring("");
                                 error->q(ERROR_SOUNDFILE);
                             }
                         }
                         break;
                      } else if(e->type != T_ARRAY){
-                        //error invalid SOUND syntax
-                        error->q(ERROR_EXPECTEDSOUND);
-                        if(opcode==OP_SOUNDPLAY) stack->pushint(0);
-                        if(opcode==OP_SOUNDLOAD) stack->pushstring("");
-                        break;
+                        if(opcode==OP_SOUNDPLAY){
+                            mymutex->lock();
+                            emit(soundPlay(convert->getInt(e)));
+                            waitCond->wait(mymutex);
+                            mymutex->unlock();
+                            break;
+                        }else{
+                            //error invalid SOUND syntax
+                            error->q(ERROR_EXPECTEDSOUND);
+                            if(opcode==OP_SOUNDPLAYER) stack->pushint(0);
+                            if(opcode==OP_SOUNDLOAD) stack->pushstring("");
+                            break;
+                        }
                     }
 
                     int a = e->intval; //array variable
@@ -3005,9 +3039,9 @@ Interpreter::execByteCode() {
 
                     std::vector < std::vector<double> > sounddata;
 
-                    for(int row = 0; row < rows && !error->pending() ; row++) {
+                    for(int row = 0; row < rows; row++) {
                         std::vector < double > v;	// vector containing duration
-                       for (int col = 0; col < columns && !error->pending() ; col++) {
+                       for (int col = 0; col < columns; col++) {
                             DataElement *av = variables->arraygetdata(a, row, col);
                             if(col%2==0)
                                 i = convert->getMusicalNote(av);
@@ -3020,18 +3054,18 @@ Interpreter::execByteCode() {
                     }
 
                     if (!error->pending()){
-                        if(opcode==OP_SOUND){
+                        if(opcode==OP_SOUND || opcode==OP_SOUNDPLAY){
                             mymutex->lock();
-                            emit(playSound(sounddata));
+                            emit(playSound(sounddata, false));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
-                            sound->wait(id);
-                        }else if(opcode==OP_SOUNDPLAY){
+                            if(opcode==OP_SOUND) sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAYER){
                             mymutex->lock();
-                            emit(playSound(sounddata));
+                            emit(playSound(sounddata, true));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
                             stack->pushint(id);
                         }else{
@@ -3044,6 +3078,7 @@ Interpreter::execByteCode() {
 
                 case OP_SOUND_LIST:
                 case OP_SOUNDPLAY_LIST:
+                case OP_SOUNDPLAYER_LIST:
                 case OP_SOUNDLOAD_LIST:
                 {
                     std::vector < std::vector<double> > sounddata;
@@ -3054,6 +3089,9 @@ Interpreter::execByteCode() {
                         std::vector < double > v;	// vector containing duration
                         int columns = stack->popint();
                         if(columns%2!=0){
+                            //empty stack from the rest of data
+                            stack->drop(columns);
+                            for(row++; row < rows ; row++) stack->drop(stack->popint());
                             error->q(ERROR_ARRAYEVEN);
                             break;
                         }
@@ -3068,26 +3106,52 @@ Interpreter::execByteCode() {
                         sounddata.push_back( v );
                     }
                     if (!error->pending()){
-                        if(opcode==OP_SOUND_LIST){
+                        if(opcode==OP_SOUND_LIST || opcode==OP_SOUNDPLAY_LIST){
                             mymutex->lock();
-                            emit(playSound(sounddata));
+                            emit(playSound(sounddata, false));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
-                            sound->wait(id);
-                        }else if(opcode==OP_SOUNDPLAY_LIST){
+                            if(opcode==OP_SOUND_LIST) sound->wait(id);
+                        }else if(opcode==OP_SOUNDPLAYER_LIST){
                             mymutex->lock();
-                            emit(playSound(sounddata));
+                            emit(playSound(sounddata, true));
                             waitCond->wait(mymutex);
-                            int id = sound->lastIdUsed;
+                            int id = sound->soundID;
                             mymutex->unlock();
                             stack->pushint(id);
                         }else{
                             stack->pushstring(sound->loadSoundFromVector(sounddata));
                         }
+                    }else{
+                        if(opcode==OP_SOUNDPLAYER_LIST) stack->pushint(0);
+                        if(opcode==OP_SOUNDLOAD_LIST) stack->pushstring("");
                     }
                 }
 				break;
+
+                case OP_SOUNDLOADRAW: {
+                    std::vector<double> sounddata;
+                    int rows = stack->popint();
+                    if(rows>1){
+                        for(int f=0;f<rows;f++) stack->drop(stack->popint()); //clear the rest of array from stack in case of ONERROR or TRY/CATCH
+                        error->q(ERROR_ONEDIMENSIONAL);//error 1 dimensional!
+                        stack->pushstring("");
+                        break;
+                    }
+                    int columns = stack->popint();
+                    sounddata.resize(columns);
+                    while(columns>1){
+                        columns--;
+                        double d = stack->popfloat();
+                        sounddata[columns]=d;
+                    }
+                    if(!error->pending())
+                        stack->pushstring(sound->loadRaw(sounddata));
+                    else
+                        stack->pushstring("");
+                }
+                break;
 
                 case OP_SOUNDPAUSE: {
                     int i = stack->popint();
@@ -3095,21 +3159,201 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_SOUNDRESUME: {
+                case OP_SOUNDSTOP: {
                     int i = stack->popint();
-                    sound->play(i);
+                    mymutex->lock();
+                    emit(soundStop(i));
+                    waitCond->wait(mymutex);
+                    mymutex->unlock();
                 }
                 break;
 
-                case OP_SOUNDSTOP: {
+                case OP_SOUNDPLAYEROFF: {
                     int i = stack->popint();
-                    sound->stop(i);
+                    mymutex->lock();
+                    emit(soundPlayerOff(i));
+                    waitCond->wait(mymutex);
+                    mymutex->unlock();
+                }
+                break;
+
+                case OP_SOUNDSYSTEM: {
+                    int i = stack->popint();
+                    mymutex->lock();
+                    emit(soundSystem(i));
+                    waitCond->wait(mymutex);
+                    mymutex->unlock();
+                }
+                break;
+
+                case OP_SOUNDSAMPLERATE: {
+                    stack->pushint(sound->samplerate());
                 }
                 break;
 
                 case OP_SOUNDWAIT: {
                     int i = stack->popint();
                     sound->wait(i);
+                }
+                break;
+
+                case OP_SOUNDNOHARMONICS: {
+                    sound->noharmonics();
+                }
+                break;
+
+                case OP_SOUNDHARMONICS: {
+                    double a = stack->popfloat();
+                    int h = stack->popint();
+                    if(h<1){
+                        error->q(ERROR_HARMONICNUMBER);
+                    }else{
+                        sound->harmonics(h, a);
+                    }
+                }
+                break;
+
+                case OP_SOUNDHARMONICS_LIST: {
+                    std::map<int,bool> repeated;
+                    int rows = stack->popint();
+                    for(int i=0;i<rows;i++){
+                        int columns = stack->popint();
+                        if((rows>1 && columns!=2) || (rows==1 && columns%2!=0)){
+                            //clear stack from the rest of data
+                            stack->drop(columns);
+                            for(i++;i<rows;i++) stack->drop(stack->popint());
+                            error->q(ERROR_HARMONICLIST);
+                            break;
+                        }
+                        while(columns>1){
+                            columns-=2;
+                            double a = stack->popfloat();
+                            int h = stack->popint();
+                            if(h<1){
+                                //clear stack from the rest of data
+                                stack->drop(columns);
+                                for(i++;i<rows;i++) stack->drop(stack->popint());
+                                error->q(ERROR_HARMONICNUMBER);
+                                break;
+                            }else{
+                                //because we extract in reverse order from stack
+                                //eg: soundharmonics {3, 0, 3, 1}
+                                //in this case the 3th harmonic will be set to 1, not to 0
+                                if(repeated.count(h)==0){
+                                    sound->harmonics(h, a);
+                                    repeated[h]=true;
+                                }
+                            }
+                        }
+                        rows--;
+                    }
+                }
+                break;
+
+                case OP_SOUNDNOENVELOPE: {
+                    sound->noenvelope();
+                }
+                break;
+
+                case OP_SOUNDENVELOPE: {
+                    std::vector<double> envelope;
+                    double r = stack->popfloat(); //release
+                    double s = stack->popfloat(); //sustain
+                    double d = stack->popfloat(); //decrease
+                    double a = stack->popfloat(); //attack
+                    envelope.resize(6);
+                    envelope[0] = 0.0;
+                    envelope[1] = a;
+                    envelope[2] = 1.0;
+                    envelope[3] = d;
+                    envelope[4] = s;
+                    envelope[5] = r;
+                    if(!error->pending()) sound->envelope(envelope);
+                }
+                break;
+
+                case OP_SOUNDENVELOPE_LIST: {
+                    std::vector<double> envelope;
+                    int rows = stack->popint();
+                    int columns = stack->popint();
+
+                    if(rows!=1 || columns%2!=1 || columns<4){
+                        //clear stack from the rest of data
+                        stack->drop(columns);
+                        for(int i=1;i<rows;i++) stack->drop(stack->popint());
+                        if(rows!=1)
+                            error->q(ERROR_ONEDIMENSIONAL);
+                        else
+                            error->q(ERROR_ENVELOPEODD);
+                        break;
+                    }else{
+                        envelope.resize(columns);
+                        while(columns>0){
+                            columns--;
+                            double v=stack->popfloat();
+                            envelope[columns]=v;
+                        }
+                        if(!error->pending())
+                            sound->envelope(envelope);
+                        }
+                }
+                break;
+
+                case OP_SOUNDWAVEFORM: {
+                    DataElement *e = stack->popelement();
+                    //this is an array without [] - act like OP_SOUNDWAVEFORM_LIST
+                    if (e->type==T_ARRAY){
+                        int a = e->intval; //array variable
+                        int columns = variables->arraysizecols(a);
+                        int rows = variables->arraysizerows(a);
+                        std::vector<double> wave;
+
+                        if(rows!=1){
+                            //clear stack from the rest of data
+                            stack->drop(columns);
+                            for(int i=1;i<rows;i++) stack->drop(stack->popint());
+                            error->q(ERROR_ONEDIMENSIONAL); //Creating custom waveform request one dimensional array data
+                            break;
+                        }else{
+                            wave.resize(columns,0);
+                            while(columns>0){
+                                columns--;
+                                DataElement *av = variables->arraygetdata(a, 0, columns);
+                                wave[columns]=convert->getInt(av);
+                            }
+                            if(!error->pending())
+                                sound->customWaveform(wave, false);
+                        }
+
+                    }else{
+                        sound->waveform(convert->getInt(e));
+                    }
+                }
+                break;
+
+                case OP_SOUNDWAVEFORM_LIST: {
+                    std::vector<double> wave;
+                    bool logic = stack->popbool(); //if data is logical, not raw
+                    int rows = stack->popint();
+                    int columns = stack->popint();
+
+                    if(rows!=1 || (logic && columns<3)){
+                        //clear stack from the rest of data
+                        stack->drop(columns);
+                        for(int i=1;i<rows;i++) stack->drop(stack->popint());
+                        if(rows!=1)
+                            error->q(ERROR_ONEDIMENSIONAL); //Creating custom waveform request one dimensional array data
+                        else
+                            error->q(ERROR_WAVEFORMLOGICAL); //Creating custom waveform using logical coordinates it request at least 3 elements
+                        break;
+                    }
+                    wave.resize(columns,0);
+                    while(columns>0){
+                        columns--;
+                        wave[columns]=stack->popfloat();
+                    }
+                    if(!error->pending())
+                        sound->customWaveform(wave, logic);
                 }
                 break;
 
@@ -3122,14 +3366,55 @@ Interpreter::execByteCode() {
 
                 case OP_SOUNDVOLUME: {
                     double v = stack->popfloat();
-                    int i = stack->popint();
-                    sound->volume(i, v);
+                    DataElement *e = stack->popelement();
+                    if (e->type == T_STRING) {
+                        //because it do not stop any timer, it is safe to do it from current thread
+                        sound->volume(e->stringval, v);
+                    }else{
+                        mymutex->lock();
+                        emit(soundVolume(convert->getInt(e), v));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                    }
+                }
+                break;
+
+                case OP_SOUNDLOOP: {
+                    int l = stack->popint();
+                    DataElement *e = stack->popelement();
+                    if (e->type == T_STRING) {
+                        sound->loop(e->stringval, l);
+                    }else{
+                        sound->loop(convert->getInt(e), l);
+                    }
+                }
+                break;
+
+                case OP_SOUNDID: {
+                    stack->pushint(sound->soundID);
                 }
                 break;
 
                 case OP_SOUNDPOSITION: {
                     int i = stack->popint();
                     stack->pushfloat(sound->position(i));
+                }
+                break;
+
+                case OP_SOUNDFADE: {
+                    double delay = stack->popfloat();
+                    double ms = stack->popfloat();
+                    double v = stack->popfloat();
+                    DataElement *e = stack->popelement();
+                    if (e->type == T_STRING) {
+                        //because it do not stop any timer, it is safe to do it from current thread
+                        sound->fade(e->stringval, v, int(ms*1000), int(delay*1000));
+                    }else{
+                    mymutex->lock();
+                    emit(soundFade(convert->getInt(e), v, int(ms*1000), int(delay*1000)));
+                    waitCond->wait(mymutex);
+                    mymutex->unlock();
+                    }
                 }
                 break;
 
@@ -3145,7 +3430,7 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-				case OP_VOLUME: {
+                case OP_VOLUME: {
 					// set the wave output height (volume 0-10)
 					double volume = stack->popfloat();
                     sound->setMasterVolume(volume);
@@ -3175,41 +3460,36 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_WAVPLAY: {
-					QString file = stack->popstring();
-					if(file.compare("")!=0) {
-						// load new file and start playback
-						if (mediaplayer) {
-							delete(mediaplayer);
-							mediaplayer = NULL;
-						}
-						mediaplayer = new BasicMediaPlayer();
-						mediaplayer->loadFile(file);
-						mediaplayer->play();
-						if (mediaplayer->error()!=0) {
-							error->q(ERROR_WAVFILEFORMAT);
-							delete(mediaplayer);
-							mediaplayer = NULL;
-						}
-					} else {
-						// start playing an existing mediaplayer
-						if (mediaplayer) {
-							mediaplayer->play();
-						} else {
-							error->q(ERROR_WAVNOTOPEN);
-						}
-					}
-				}
-				break;
+                case OP_WAVPLAY: {
+                //obsolete
+                    QString file = stack->popstring();
+                    if(file.compare("")!=0) {
+                        //warning
+                        error->q(WARNING_WAVOBSOLETE);
+                        //stop previous mediaplayer
+                        mymutex->lock();
+                        emit(playSound(file, true));
+                        waitCond->wait(mymutex);
+                        mediaplayer_id_legacy = sound->soundID;
+                        mymutex->unlock();
+                    } else {
+                        // start playing an existing mediaplayer
+                        mymutex->lock();
+                        emit(soundPlay(mediaplayer_id_legacy));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                    }
+                }
+                break;
 
-				case OP_WAVSTOP: {
-					if(mediaplayer) {
-						mediaplayer->stop();
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
-				}
-				break;
+                case OP_WAVSTOP: {
+                //obsolete
+                    mymutex->lock();
+                    emit(soundStop(mediaplayer_id_legacy));
+                    waitCond->wait(mymutex);
+                    mymutex->unlock();
+                }
+                break;
 
 				case OP_SETCOLOR: {
 					unsigned long brushval = stack->poplong();
@@ -3240,6 +3520,7 @@ Interpreter::execByteCode() {
 					int rval = stack->popint();
 					if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
 						error->q(ERROR_RGB);
+                        stack->pushlong(0);
                     } else {
 						stack->pushlong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
 					}
@@ -3418,62 +3699,65 @@ Interpreter::execByteCode() {
 				break;
 
 
-				case OP_POLY_LIST: {
-					// doing a polygon from an immediate list or an array's data
+                case OP_POLY_LIST: {
+                    // doing a polygon from an immediate list or an array's data
+                    int rows = stack->popint();
+                    int columns = stack->popint();
+                    if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
+                        //clear stack from the data
+                        stack->drop(columns);
+                        for(int row=1;row<rows;row++) stack->drop(stack->popint());
+                        error->q(ERROR_ARRAYEVEN);
+                        break;
+                    }
+                    QPointF *points = new QPointF[rows*columns];
+                    int pairs = 0;
 
-					int rows = stack->popint();
-					int columns = stack->popint();
+                    for(int row = 0; row < rows; row++){
+                        if(row!=0) columns = stack->popint();
+                        if(rows>1&&columns!=2){
+                            //clear stack from the data
+                            stack->drop(columns);
+                            for(row++;row<rows;row++) stack->drop(stack->popint());
+                            error->q(ERROR_ARRAYEVEN);
+                            break;
+                        }
+                        for (int col = 0; col < columns; col+=2) {
+                            points[pairs].setY(stack->popfloat());
+                            points[pairs].setX(stack->popfloat());
+                            pairs++;
+                        }
+                    }
 
-					if ((rows==1&&columns%2==0)||columns==2) {
-						int pairs = rows*columns/2;
 
-						if (pairs >= 3) {
-							// allocate points array and fill from array data on stack
-							QPointF *points = new QPointF[pairs];
-							int j = 0;
-							for(int row = 0; row < rows && !error->pending(); row++) {
-								//pop row length only if is not first row - already popped
-								if(row != 0)
-									if(stack->popint()!=2){
-										error->q(ERROR_ARRAYEVEN);
-									}
-								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									points[j].setY(stack->popfloat());
-									points[j].setX(stack->popfloat());
-									j++;
-								}
-							}
+                    if (!error->pending()) {
+                        if (pairs < 3){
+                            error->q(ERROR_POLYPOINTS);
+                        }else{
+                            QPainter *poly;
+                            if (printing) {
+                                poly = printdocumentpainter;
+                            } else {
+                                poly = new QPainter(graphwin->image);
+                            }
 
-							if (!error->pending()) {
-								QPainter *poly;
-								if (printing) {
-									poly = printdocumentpainter;
-								} else {
-									poly = new QPainter(graphwin->image);
-								}
+                            poly->setPen(drawingpen);
+                            poly->setBrush(drawingbrush);
+                            if (CompositionModeClear) {
+                                poly->setCompositionMode(QPainter::CompositionMode_Clear);
+                            }
+                            poly->drawPolygon(points, pairs);
 
-								poly->setPen(drawingpen);
-								poly->setBrush(drawingbrush);
-                                if (CompositionModeClear) {
-									poly->setCompositionMode(QPainter::CompositionMode_Clear);
-								}
-								poly->drawPolygon(points, pairs);
-
-								if(!printing) {
-									poly->end();
-									delete poly;
-									if (!fastgraphics) waitForGraphics();
-								}
-							}
-							delete points;
-						} else {
-							error->q(ERROR_POLYPOINTS);
-						}
-					} else {
-						error->q(ERROR_ARRAYEVEN);
-					}
-				}
-				break;
+                            if(!printing) {
+                                poly->end();
+                                delete poly;
+                                if (!fastgraphics) waitForGraphics();
+                            }
+                        }
+                    }
+                    delete points;
+                }
+                break;
 
 				case OP_STAMP_LIST:
 				case OP_STAMP_S_LIST:
@@ -3486,73 +3770,81 @@ Interpreter::execByteCode() {
 					// create an array of points from an immediate list on the stack
 					int rows = stack->popint();
 					int columns = stack->popint();
-					if ((rows==1&&columns%2==0)||columns==2) {
-						int pairs = rows*columns/2;
-						if (pairs >= 3) {
-							// allocate points array and fill from array data on stack
-							QPointF *points = new QPointF[pairs];
-							int j = 0;
-							for(int row = 0; row < rows && !error->pending(); row++) {
-								//pop row length only if is not first row - already popped
-								if(row != 0)
-									if(stack->popint()!=2){
-										error->q(ERROR_ARRAYEVEN);
-									}
-								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									points[j].setY(stack->popfloat());
-									points[j].setX(stack->popfloat());
-									j++;
-								}
-							}
-							if (!error->pending()) {
-								//
-								// now get scaling, rotation, and position to stamp the poly
-								if (opcode==OP_STAMP_SR_LIST) rotate = stack->popfloat();
-								if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack->popfloat();
-								int y = stack->popint();
-								int x = stack->popint();
-								if (scale<0) {
-									error->q(ERROR_IMAGESCALE);
-								} else {
-									// scale, rotate, and position the points
-									for (int j = 0; j < pairs; j++) {
-										tx = scale * points[j].x();
-										ty = scale * points[j].y();
-										if (rotate!=0) {
-											savetx = tx;
-											tx = cos(rotate) * tx - sin(rotate) * ty;
-											ty = cos(rotate) * ty + sin(rotate) * savetx;
-										}
-										points[j].setX(tx + x);
-										points[j].setY(ty + y);
-									}
-									// draw on screen or printer
-									QPainter *poly;
-									if (printing) {
-										poly = printdocumentpainter;
-									} else {
-										poly = new QPainter(graphwin->image);
-									}
-									poly->setPen(drawingpen);
-									poly->setBrush(drawingbrush);
-                                    if (CompositionModeClear) {
-										poly->setCompositionMode(QPainter::CompositionMode_Clear);
-									}
-									poly->drawPolygon(points, pairs);
-									if (!printing) {
-										poly->end();
-										delete poly;
-										if (!fastgraphics) waitForGraphics();
-									}
-								}
-							}
-							delete points;
-						} else {
-							error->q(ERROR_POLYPOINTS);
-						}
-					} else {
-						error->q(ERROR_ARRAYEVEN);
-					}
+
+                    if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
+                        //clear stack from the data
+                        stack->drop(columns);
+                        for(int row=1;row<rows;row++) stack->drop(stack->popint());
+                        error->q(ERROR_ARRAYEVEN);
+                        break;
+                    }
+
+                    QPointF *points = new QPointF[rows*columns];
+                    int pairs = 0;
+
+                    for(int row = 0; row < rows; row++){
+                        if(row!=0) columns = stack->popint();
+                        if(rows>1&&columns!=2){
+                            //clear stack from the data
+                            stack->drop(columns);
+                            for(row++;row<rows;row++) stack->drop(stack->popint());
+                            error->q(ERROR_ARRAYEVEN);
+                            break;
+                        }
+                        for (int col = 0; col < columns; col+=2) {
+                            points[pairs].setY(stack->popfloat());
+                            points[pairs].setX(stack->popfloat());
+                            pairs++;
+                        }
+                    }
+
+                    if (!error->pending()) {
+                        if (pairs < 3){
+                            error->q(ERROR_POLYPOINTS);
+                        }else{
+                            //
+                            // now get scaling, rotation, and position to stamp the poly
+                            if (opcode==OP_STAMP_SR_LIST) rotate = stack->popfloat();
+                            if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack->popfloat();
+                            int y = stack->popint();
+                            int x = stack->popint();
+                            if (scale<0) {
+                                error->q(ERROR_IMAGESCALE);
+                            } else {
+                                // scale, rotate, and position the points
+                                for (int j = 0; j < pairs; j++) {
+                                    tx = scale * points[j].x();
+                                    ty = scale * points[j].y();
+                                    if (rotate!=0) {
+                                        savetx = tx;
+                                        tx = cos(rotate) * tx - sin(rotate) * ty;
+                                        ty = cos(rotate) * ty + sin(rotate) * savetx;
+                                    }
+                                    points[j].setX(tx + x);
+                                    points[j].setY(ty + y);
+                                }
+                                // draw on screen or printer
+                                QPainter *poly;
+                                if (printing) {
+                                    poly = printdocumentpainter;
+                                } else {
+                                    poly = new QPainter(graphwin->image);
+                                }
+                                poly->setPen(drawingpen);
+                                poly->setBrush(drawingbrush);
+                                if (CompositionModeClear) {
+                                    poly->setCompositionMode(QPainter::CompositionMode_Clear);
+                                }
+                                poly->drawPolygon(points, pairs);
+                                if (!printing) {
+                                    poly->end();
+                                    delete poly;
+                                    if (!fastgraphics) waitForGraphics();
+                                }
+                            }
+                        }
+                    }
+                    delete points;
 				}
 				break;
 
@@ -3953,74 +4245,83 @@ Interpreter::execByteCode() {
 					// first stack element is the number of points*2 to pull from the stack
 					int maxx=0, maxy=0;
 					int minx=0, miny=0;
-					int rows = stack->popint();
-					int columns = stack->popint();
 
-					if ((rows==1&&columns%2==0)||columns==2) {
-						int pairs = rows*columns/2;
+                    // doing a polygon from an immediate list or an array's data
+                    int rows = stack->popint();
+                    int columns = stack->popint();
+                    if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
+                        //clear stack from the data
+                        stack->drop(columns);
+                        for(int row=1;row<rows;row++) stack->drop(stack->popint());
+                        stack->drop(1); // sprite number
+                        error->q(ERROR_ARRAYEVEN);
+                        break;
+                    }
+                    QPointF *points = new QPointF[rows*columns];
+                    int pairs = 0;
 
-						if (pairs >= 3) {
-							// allocate points array and fill from array data on stack
-							QPointF *points = new QPointF[pairs];
-							int j = 0;
-							for(int row = 0; row < rows && !error->pending(); row++) {
-								//pop row length only if is not first row - already popped
-								if(row != 0)
-									if(stack->popint()!=2){
-										error->q(ERROR_ARRAYEVEN);
-									}
-								for (int col = 0; col < columns && !error->pending(); col+=2) {
-									double y = stack->popfloat();
-									double x = stack->popfloat();
-									if(x<minx) minx=x;
-									if(y<miny) miny=y;
-									if(x>maxx) maxx=x;
-									if(y>maxy) maxy=y;
-									points[j].setY(y);
-									points[j].setX(x);
-									j++;
-								}
-							}
-							if (!error->pending()) {
-								//
-								// now move points to the top left (if they are not there)
-								for(j=0;j<pairs;j++) {
-									points[j].rx()-=minx;
-									points[j].ry()-=miny;
-								}
-								//
-								// now build sprite
-								int n = stack->popint(); // sprite number
-								if(n >= 0 && n < nsprites) {
-									// free old, draw, and capture sprite
-									sprite_prepare_for_new_content(n);
-									sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32_Premultiplied);
-									if(!sprites[n].image->isNull()){
-										sprites[n].image->fill(Qt::transparent);
-										if (!CompositionModeClear) {
-											QPainter *poly = new QPainter(sprites[n].image);
-											poly->setPen(drawingpen);
-											poly->setBrush(drawingbrush);
-											poly->drawPolygon(points, pairs);
-											poly->end();
-											delete poly;
-											double img_w=maxx+1;
-											double img_h=maxy+1;
-											sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
-										}
-									}
-								} else {
-									error->q(ERROR_SPRITENUMBER);
-								}
-							}
-							delete points;
-						} else {
-							error->q(ERROR_POLYPOINTS);
-						}
-					} else {
-						error->q(ERROR_ARRAYEVEN);
-					}
-				}
+                    for(int row = 0; row < rows; row++){
+                        if(row!=0) columns = stack->popint();
+                        if(rows>1&&columns!=2){
+                            //clear stack from the data
+                            stack->drop(columns);
+                            for(row++;row<rows;row++) stack->drop(stack->popint());
+                            stack->drop(1); // sprite number
+                            error->q(ERROR_ARRAYEVEN);
+                            break;
+                        }
+                        for (int col = 0; col < columns; col+=2) {
+                            double y = stack->popfloat();
+                            double x = stack->popfloat();
+                            if(x<minx) minx=x;
+                            if(y<miny) miny=y;
+                            if(x>maxx) maxx=x;
+                            if(y>maxy) maxy=y;
+                            points[pairs].setY(y);
+                            points[pairs].setX(x);
+                            pairs++;
+                        }
+                    }
+
+
+                    if (!error->pending()) {
+                        if (pairs < 3){
+                            error->q(ERROR_POLYPOINTS);
+                        }else{
+                            //
+                            // now move points to the top left (if they are not there)
+                            for(int j=0;j<pairs;j++) {
+                                points[j].rx()-=minx;
+                                points[j].ry()-=miny;
+                            }
+                            //
+                            // now build sprite
+                            int n = stack->popint(); // sprite number
+                            if(n >= 0 && n < nsprites) {
+                                // free old, draw, and capture sprite
+                                sprite_prepare_for_new_content(n);
+                                sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32_Premultiplied);
+                                if(!sprites[n].image->isNull()){
+                                    sprites[n].image->fill(Qt::transparent);
+                                    if (!CompositionModeClear) {
+                                        QPainter *poly = new QPainter(sprites[n].image);
+                                        poly->setPen(drawingpen);
+                                        poly->setBrush(drawingbrush);
+                                        poly->drawPolygon(points, pairs);
+                                        poly->end();
+                                        delete poly;
+                                        double img_w=maxx+1;
+                                        double img_h=maxy+1;
+                                        sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
+                                    }
+                                }
+                            } else {
+                                error->q(ERROR_SPRITENUMBER);
+                            }
+                        }
+                    }
+                    delete points;
+                }
 				break;
 
 				case OP_SPRITEDIM: {
@@ -4273,11 +4574,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_WAVWAIT: {
-					if(mediaplayer) {
-						mediaplayer->wait();
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
+                //obsolete
+                    sound->wait(mediaplayer_id_legacy);
 				}
 				break;
 
@@ -4441,7 +4739,7 @@ Interpreter::execByteCode() {
 									}
 									if (col < 0 || col >= dbSet[n][set]->record().count()) {
 										error->q(ERROR_DBCOLNO);
-									} else {
+                                    } else if (!error->pending()){
 										switch(opcode) {
 											case OP_DBINT:
 												stack->pushint(dbSet[n][set]->record().value(col).toInt());
@@ -4460,7 +4758,13 @@ Interpreter::execByteCode() {
 												stack->pushstring(dbSet[n][set]->record().value(col).toString());
 												break;
 										}
-									}
+                                    }else{
+                                        //in case of an error
+                                        if(opcode==OP_DBSTRING)
+                                            stack->pushstring("");
+                                        else
+                                            stack->pushint(0);
+                                    }
 								}
 							}
 						}
@@ -4591,17 +4895,17 @@ Interpreter::execByteCode() {
 					int fn = stack->popint();
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
-						stack->pushint(0);
+                        stack->pushstring("");
 					} else {
 						if (netsockfd[fn] < 0) {
 							error->q(ERROR_NETNONE);
-							stack->pushint(0);
+                            stack->pushstring("");
                         } else {
 							memset(strarray, 0, MAXSIZE);
 							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
 							if (n < 0) {
 								error->q(ERROR_NETREAD, 0, strerror(errno));
-								stack->pushint(0);
+                                stack->pushstring("");
 							} else {
 								stack->pushstring(QString::fromUtf8(strarray));
 							}
@@ -4648,8 +4952,9 @@ Interpreter::execByteCode() {
 					// wait 1 ms for each poll
 					int fn = stack->popint();
 					if (fn<0||fn>=NUMSOCKETS) {
-						error->q(ERROR_NETSOCKNUMBER);
-					} else {
+                        stack->pushint(0);
+                        error->q(ERROR_NETSOCKNUMBER);
+                    } else {
 #ifdef WIN32
 						unsigned long n;
 						if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
@@ -4693,6 +4998,8 @@ Interpreter::execByteCode() {
 #else
 #ifdef ANDROID
 					error->q(ERROR_NOTIMPLEMENTED);
+                    // on error give local loopback
+                    stack->pushstring(QString("127.0.0.1"));
 #else
 					bool good = false;
 					struct ifaddrs *myaddrs, *ifa;
@@ -4771,7 +5078,7 @@ Interpreter::execByteCode() {
 						}
 					} else {
 						error->q(ERROR_PERMISSION);
-						stack->pushint(0);
+                        stack->pushstring("");
 					}
 				}
 				break;
@@ -4857,12 +5164,12 @@ Interpreter::execByteCode() {
 						// concatenate (if one or both at not numbers or cant be converted to numbers)
 						QString sone = convert->getString(one);
 						QString stwo = convert->getString(two);
-						if (stwo.length() + sone.length()>STRINGMAXLEN) {
+                        QString final = stwo + sone;
+                        if (final.length()>STRINGMAXLEN) {
+                            final.truncate(STRINGMAXLEN);
 							error->q(ERROR_STRINGMAXLEN);
-							stack->pushint(0);
-						} else {
-							stack->pushstring(stwo + sone);
-						}
+                        }
+                        stack->pushstring(stwo + sone);
 					}
 				}
 				break;
@@ -4912,7 +5219,7 @@ Interpreter::execByteCode() {
 						}
 					} else {
 						error->q(ERROR_FOLDER);
-						stack->pushint(0);
+                        stack->pushstring(QString(""));
 					}
 				}
 				break;
@@ -5252,7 +5559,7 @@ Interpreter::execByteCode() {
 						stack->pushstring(out);
 					} else {
 						error->q(ERROR_RADIX);
-						stack->pushint(0);
+                        stack->pushstring(QString("0"));
 					}
 				}
 				break;
@@ -5466,57 +5773,33 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_WAVLENGTH: {
-					double d = 0.0;
-					if (mediaplayer) {
-						if ((d = mediaplayer->length())==0)
-							error->q(WARNING_WAVNODURATION);
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
-					stack->pushfloat(d);
+                //obsolete
+                    stack->pushfloat(sound->length(mediaplayer_id_legacy));
 				}
 				break;
 
 				case OP_WAVPAUSE: {
-					if (mediaplayer) {
-						mediaplayer->pause();
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
+                //obsolete
+                    sound->pause(mediaplayer_id_legacy);
 				}
 				break;
 
 				case OP_WAVPOS: {
-					double p = 0.0;
-					if (mediaplayer) {
-						p = mediaplayer->position();
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
-					stack->pushfloat(p);
+                //obsolete
+                    stack->pushfloat(sound->position(mediaplayer_id_legacy));
 				}
 				break;
 
 				case OP_WAVSEEK: {
+                //obsolete
 					double pos = stack->popfloat();
-					if (mediaplayer) {
-						if (!mediaplayer->seek(pos)) {
-							error->q(WARNING_WAVNOTSEEKABLE);
-						}
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
+                    sound->seek(mediaplayer_id_legacy, pos);
 				}
 				break;
 
 				case OP_WAVSTATE: {
-					int s = 0;
-					if (mediaplayer) {
-						s = mediaplayer->state();
-					} else {
-						error->q(ERROR_WAVNOTOPEN);
-					}
-					stack->pushint(s);
+                //obsolete
+                    stack->pushint(sound->state(mediaplayer_id_legacy));
 				}
 				break;
 
@@ -5641,15 +5924,12 @@ Interpreter::execByteCode() {
 						}
 					}
 					// push 1d array to stack as a listoflists
-					if (!error->pending()) {
-
-						for(int y=0; y<list.size(); y++) {
-							// fill the string array
-							stack->pushstring(list.at(y));
-						}
-						stack->pushint(list.size());		// columns
-						stack->pushint(1);				// rows
-					}
+                    for(int y=0; y<list.size(); y++) {
+                        // fill the string array
+                        stack->pushstring(list.at(y));
+                    }
+                    stack->pushint(list.size());		// columns
+                    stack->pushint(1);				// rows
 				}
 				break;
 
@@ -5662,8 +5942,8 @@ Interpreter::execByteCode() {
 						int cols = list[1].toInt(&goodcols);
 						if (goodrows&&goodcols) {
 							if (list.count()==rows*cols+2) {
-								for (int row=0; row<rows&&!error->pending(); row++) {
-									for (int col=0; col<cols&&!error->pending(); col++) {
+                                for (int row=0; row<rows; row++) {
+                                    for (int col=0; col<cols; col++) {
 										int i = row * cols + col + 2;
 										switch (list[i].at(0).toLatin1()) {
 											case SERALIZE_STRING:
@@ -5679,7 +5959,8 @@ Interpreter::execByteCode() {
 												stack->pushdataelement(NULL);
 												break;
 											default:
-												error->q(ERROR_UNSERIALIZEFORMAT);
+                                                stack->pushdataelement(NULL);
+                                                error->q(ERROR_UNSERIALIZEFORMAT);
 										}
 									}
 									stack->pushint(cols);
@@ -5687,13 +5968,19 @@ Interpreter::execByteCode() {
 								stack->pushint(rows);
 							} else {
 								error->q(ERROR_UNSERIALIZEFORMAT);
-							}
+                                stack->pushint(0);//zero columns
+                                stack->pushint(1);//one row
+                            }
 						} else {
 							error->q(ERROR_UNSERIALIZEFORMAT);
-						}
+                            stack->pushint(0);//zero columns
+                            stack->pushint(1);//one row
+                        }
 					} else {
 						error->q(ERROR_UNSERIALIZEFORMAT);
-					}
+                        stack->pushint(0);//zero columns
+                        stack->pushint(1);//one row
+                    }
 				}
 				break;
 
@@ -5964,6 +6251,7 @@ Interpreter::execByteCode() {
                         stack->pushlong(c);
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
+                        stack->pushint(0);
                     }
                 }
                 break;

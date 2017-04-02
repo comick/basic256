@@ -36,7 +36,6 @@
 #include "Variables.h"
 #include "Sound.h"
 #include "Sleeper.h"
-#include "BasicMediaPlayer.h"
 #include "BasicDownloader.h"
 
 #include <QElapsedTimer>
@@ -172,13 +171,16 @@ class Interpreter : public QThread
 		void dialogAlert(QString);
 		void dialogConfirm(QString, int);
         void dialogPrompt(QString, QString);
-        void playSound(QString);
-        void playSound(std::vector<std::vector<double>>);
-#if ANDROID
-		void playWAV(QString);
-		void waitWAV();
-		void stopWAV();
-#endif
+        void playSound(QString, bool);
+        void playSound(std::vector<std::vector<double>>, bool);
+        void loadSoundFromArray(QString, QByteArray*);
+        void soundStop(int);
+        void soundPlay(int);
+        void soundFade(int, double, int, int);
+        void soundVolume(int, double);
+        //void soundExit();
+        void soundPlayerOff(int);
+        void soundSystem(int);
 
 	private:
 		QLocale *locale;
@@ -244,7 +246,7 @@ class Interpreter : public QThread
 
 		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
-		BasicMediaPlayer *mediaplayer;
+        int mediaplayer_id_legacy;
 
         QMap <QString, QImage*> images;
         int lastImageId;

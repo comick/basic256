@@ -38,7 +38,7 @@ class Stack
 		void pushlong(long);
         void pushvarref(int, int);
 		void pushfloat(double);
-		void swap();
+        void swap();
 		void swap2();
 		void topto2();
 		void dup();
@@ -54,6 +54,7 @@ class Stack
         QString popstring();
 		QString debug();
 		int height();
+        void drop(int);
 
 
 	private:

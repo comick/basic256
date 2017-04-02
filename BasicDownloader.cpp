@@ -31,16 +31,15 @@ BasicDownloader::BasicDownloader(Error *e) :
 }
 
 BasicDownloader::~BasicDownloader() {
-    //qDebug() << "~BasicDownloader()";
     stop();
 }
 
-
 void BasicDownloader::download(QUrl url){
-    //qDebug() << "BasicDownloader download()" << url;
     reply = false;
     inprogress = true;
     QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
     if(!cancel){
         netreply = netmanager.get(request);
         connect(this, SIGNAL(cancelDownload()), netreply, SLOT(abort()));
@@ -51,13 +50,14 @@ void BasicDownloader::download(QUrl url){
     }
 }
 
-
 void BasicDownloader::fileDownloaded(QNetworkReply* ) {
-    //qDebug() << "BasicDownloader fileDownloaded()";
-    if(netreply->error() == QNetworkReply::NoError) {
-        m_data = netreply->readAll();
-    }else{
+    //qDebug() << "BasicDownloader fileDownloaded() attr:" << netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString() << "err:" << netreply->error();
+    if(netreply->error() != QNetworkReply::NoError) {
         error->q(ERROR_DOWNLOAD, -1, netreply->errorString());
+    }else if(netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute) >= 300) {
+        error->q(ERROR_DOWNLOAD, -1, netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString());
+    }else{
+        m_data = netreply->readAll();
     }
     netreply->deleteLater();
     reply = true;
@@ -66,7 +66,6 @@ void BasicDownloader::fileDownloaded(QNetworkReply* ) {
 }
 
 QByteArray BasicDownloader::data() const {
-    //qDebug() << "BasicDownloader data()";
     if(!reply){
         QEventLoop loop;
         connect(this, SIGNAL(done()), &loop, SLOT(quit()));
@@ -76,10 +75,8 @@ QByteArray BasicDownloader::data() const {
 }
 
 void BasicDownloader::stop() {
-    //qDebug() << "BasicDownloader stop()";
     if(inprogress){
         cancel=true;
-        ////qDebug() << "BasicDownloader emit(cancelDownload())";
         emit(cancelDownload());
     }
 }

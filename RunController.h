@@ -75,8 +75,16 @@ class RunController : public QObject
   void dialogConfirm(QString, int);
   void dialogPrompt(QString, QString);
   void dialogFontSelect();
-  void playSound(QString);
-  void playSound(std::vector<std::vector<double>>);
+  void playSound(QString, bool);
+  void playSound(std::vector<std::vector<double>>, bool);
+  void loadSoundFromArray(QString, QByteArray*);
+  void soundStop(int);
+  void soundPlay(int);
+  void soundFade(int, double, int, int);
+  void soundVolume(int, double);
+  //void soundExit();
+  void soundPlayerOff(int);
+  void soundSystem(int);
 
  private:
   Interpreter *i;

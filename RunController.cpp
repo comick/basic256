@@ -113,16 +113,16 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(stopRunFinalized(bool)), this, SLOT(stopRunFinalized(bool)));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 
-    QObject::connect(i, SIGNAL(playSound(QString)), this, SLOT(playSound(QString)));
-    QObject::connect(i, SIGNAL(playSound(std::vector<std::vector<double>>)), this, SLOT(playSound(std::vector<std::vector<double>>)));
-
-
-
-#ifdef ANDROID
-    QObject::connect(i, SIGNAL(playWAV(QString)), this, SLOT(playWAV(QString)));
-    QObject::connect(i, SIGNAL(stopWAV()), this, SLOT(stopWAV()));
-    QObject::connect(i, SIGNAL(waitWAV()), this, SLOT(waitWAV()));
-#endif
+    QObject::connect(i, SIGNAL(playSound(QString, bool)), this, SLOT(playSound(QString, bool)));
+    QObject::connect(i, SIGNAL(playSound(std::vector<std::vector<double>>, bool)), this, SLOT(playSound(std::vector<std::vector<double>>, bool)));
+    QObject::connect(i, SIGNAL(loadSoundFromArray(QString, QByteArray*)), this, SLOT(loadSoundFromArray(QString, QByteArray*)));
+    QObject::connect(i, SIGNAL(soundStop(int)), this, SLOT(soundStop(int)));
+    QObject::connect(i, SIGNAL(soundPlay(int)), this, SLOT(soundPlay(int)));
+    QObject::connect(i, SIGNAL(soundFade(int, double, int, int)), this, SLOT(soundFade(int, double, int, int)));
+    QObject::connect(i, SIGNAL(soundVolume(int, double)), this, SLOT(soundVolume(int, double)));
+    //QObject::connect(i, SIGNAL(soundExit()), this, SLOT(soundExit()));
+    QObject::connect(i, SIGNAL(soundPlayerOff(int)), this, SLOT(soundPlayerOff(int)));
+    QObject::connect(i, SIGNAL(soundSystem(int)), this, SLOT(soundSystem(int)));
 
 
     QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
@@ -275,8 +275,6 @@ RunController::debugNextStep() {
 
 void
 RunController::startRun() {
-    //qDebug() << "";
-    //qDebug() << "RunController::startRun()";
     if (i->isStopped()) {
         //
         outputClear();
@@ -394,7 +392,6 @@ void RunController::stopRun() {
 }
 
 void RunController::stopRunFinalized(bool ok) {
-    //qDebug() << "stopRunFinalized";
     // event when the interperter actually finishes the run
     if(sound){
         delete sound;
@@ -404,7 +401,6 @@ void RunController::stopRunFinalized(bool ok) {
     mainwin->setRunState(RUNSTATESTOP);
     mainwin->ifGuiStateClose(ok);
     i->setStopped();
-    //qDebug() << "stopRunFinalized i->setStopped()";
 }
 
 void
@@ -586,18 +582,74 @@ void RunController::dialogFontSelect() {
     }
 }
 
-void RunController::playSound(std::vector<std::vector<double>> sounddata){
+void RunController::playSound(std::vector<std::vector<double>> sounddata, bool player){
     mymutex->lock();
-    ////qDebug() << "playSound ";
-    sound->playSound(sounddata);
+    sound->playSound(sounddata, player);
     waitCond->wakeAll();
     mymutex->unlock();
 }
 
-void RunController::playSound(QString s){
+void RunController::playSound(QString s, bool player){
     mymutex->lock();
-    ////qDebug() << "playSound " << s;
-    sound->playSound(s);
+    sound->playSound(s, player);
     waitCond->wakeAll();
     mymutex->unlock();
 }
+
+void RunController::loadSoundFromArray(QString s, QByteArray* arr){
+    mymutex->lock();
+    sound->loadSoundFromArray(s, arr);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundStop(int i){
+    mymutex->lock();
+    sound->stop(i);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundPlayerOff(int i){
+    mymutex->lock();
+    sound->playerOff(i);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundPlay(int i){
+    mymutex->lock();
+    sound->play(i);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundFade(int i, double v, int ms, int delay){
+    mymutex->lock();
+    sound->fade(i, v, ms, delay);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundVolume(int i, double v){
+    mymutex->lock();
+    sound->volume(i, v);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::soundSystem(int i){
+    mymutex->lock();
+    sound->system(i);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+
+//void RunController::soundExit(){
+//    mymutex->lock();
+//    qDebug() << "soundExit ";
+//    sound->exit();
+//    waitCond->wakeAll();
+//    mymutex->unlock();
+//}

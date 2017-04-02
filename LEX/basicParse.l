@@ -233,8 +233,6 @@ error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][L
 error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
 error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
 error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
-error_wavfileformat [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
-error_wavnotopen [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
 error_fileoperation [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn]
 error_serialparameter [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Rr][Ii][Aa][Ll][Pp][Aa][Rr][Aa][Mm][Ee][Tt][Ee][Rr]
 error_longrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
@@ -247,10 +245,25 @@ error_nosuchfunction [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ff][Uu][Nn]
 error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 error_slicesize [Ee][Rr][Rr][Oo][Rr][_][Ss][Ll][Ii][Cc][Ee][Ss][Ii][Zz][Ee]
 error_unserializeformat [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
+error_download [Ee][Rr][Rr][Oo][Rr][_][Dd][Oo][Ww][Nn][Ll][Oo][Aa][Dd]
+error_envelopemax [Ee][Rr][Rr][Oo][Rr][_][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee][Mm][Aa][Xx]
+error_envelopeodd [Ee][Rr][Rr][Oo][Rr][_][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee][Oo][Dd][Dd]
+error_expectedsound [Ee][Rr][Rr][Oo][Rr][_][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Ss][Oo][Uu][Nn][Dd]
+error_harmoniclist [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ll][Ii][Ss][Tt]
+error_harmonicnumber [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Nn][Uu][Mm][Bb][Ee][Rr]
+error_invalidresource [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Vv][Aa][Ll][Ii][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+error_soundfile [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee]
+error_soundresource [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+error_toomanysounds [Ee][Rr][Rr][Oo][Rr][_][Tt][Oo][Oo][Mm][Aa][Nn][Yy][Ss][Oo][Uu][Nn][Dd][Ss]
+error_onedimensional [Ee][Rr][Rr][Oo][Rr][_][Oo][Nn][Ee][Dd][Ii][Mm][Ee][Nn][Ss][Ii][Oo][Nn][Aa][Ll]
+error_waveformlogical [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ee][Ff][Oo][Rr][Mm][Ll][Oo][Gg][Ii][Cc][Aa][Ll]
+warning_sounderror [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ee][Rr][Rr][Oo][Rr]
+warning_soundfileformat [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
+warning_soundlength [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
+warning_soundnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
+warning_wavobsolete [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
 warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
 warning_typeconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]
-warning_wavnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
-warning_wavnoduration [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Nn][Oo][Dd][Uu][Rr][Aa][Tt][Ii][Oo][Nn]
 warning_varnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 warning_longrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
 warning_integerrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
@@ -422,14 +435,24 @@ slice_all [Ss][Ll][Ii][Cc][Ee]_[Aa][Ll][Ll]
 slice_paint [Ss][Ll][Ii][Cc][Ee]_[Pp][Aa][Ii][Nn][Tt]
 slice_sprite [Ss][Ll][Ii][Cc][Ee]_[Ss][Pp][Rr][Ii][Tt][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
+soundid [Ss][Oo][Uu][Nn][Dd][Ii][Dd]
 soundload [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Aa][Dd]
+soundloadraw [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Aa][Dd][Rr][Aa][Ww]
 soundplay [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy]
+soundplayer [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy][Ee][Rr]
+soundplayeroff [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy][Ee][Rr][Oo][Ff][Ff]
 soundpause [Ss][Oo][Uu][Nn][Dd][Pp][Aa][Uu][Ss][Ee]
-soundresume [Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Uu][Mm][Ee]
 soundseek [Ss][Oo][Uu][Nn][Dd][Ss][Ee][Ee][Kk]
 soundstop [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Oo][Pp]
 soundwait [Ss][Oo][Uu][Nn][Dd][Ww][Aa][Ii][Tt]
+soundwaveform [Ss][Oo][Uu][Nn][Dd][Ww][Aa][Vv][Ee][Ff][Oo][Rr][Mm]
+soundsystem [Ss][Oo][Uu][Nn][Dd][Ss][Yy][Ss][Tt][Ee][Mm]
+soundsamplerate [Ss][Oo][Uu][Nn][Dd][Ss][Aa][Mm][Pp][Ll][Ee][Rr][Aa][Tt][Ee]
+soundenvelope [Ss][Oo][Uu][Nn][Dd][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee]
+soundharmonics [Ss][Oo][Uu][Nn][Dd][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ss]
+soundfade [Ss][Oo][Uu][Nn][Dd][Ff][Aa][Dd][Ee]
 soundvolume [Ss][Oo][Uu][Nn][Dd][Vv][Oo][Ll][Uu][Mm][Ee]
+soundloop [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Oo][Pp]
 soundposition [Ss][Oo][Uu][Nn][Dd][Pp][Oo][Ss][Ii][Tt][Ii][Oo][Nn]
 soundstate [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Aa][Tt][Ee]
 soundlength [Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
@@ -656,8 +679,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_printernoton}	{ count(); return B256ERROR_PRINTERNOTON; }
 {error_printernotoff}	{ count(); return B256ERROR_PRINTERNOTOFF; }
 {error_printeropen}	{ count(); return B256ERROR_PRINTEROPEN; }
-{error_wavfileformat}	{ count(); return B256ERROR_WAVFILEFORMAT; }
-{error_wavnotopen}	{ count(); return B256ERROR_WAVNOTOPEN; }
 {error_fileoperation}	{ count(); return B256ERROR_FILEOPERATION; }
 {error_serialparameter}	{ count(); return B256ERROR_SERIALPARAMETER; }
 {error_longrange}	{ count(); return B256ERROR_LONGRANGE; }
@@ -670,10 +691,25 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_nosuchsubroutine}    { count(); return B256ERROR_NOSUCHSUBROUTINE; }
 {error_slicesize}	{ count(); return B256ERROR_SLICESIZE; }
 {error_unserializeformat}	{ count(); return B256ERROR_UNSERIALIZEFORMAT; }
+{error_download}       { count(); return B256ERROR_DOWNLOAD; }
+{error_envelopemax}       { count(); return B256ERROR_ENVELOPEMAX; }
+{error_envelopeodd}       { count(); return B256ERROR_ENVELOPEODD; }
+{error_expectedsound}       { count(); return B256ERROR_EXPECTEDSOUND; }
+{error_harmoniclist}       { count(); return B256ERROR_HARMONICLIST; }
+{error_harmonicnumber}       { count(); return B256ERROR_HARMONICNUMBER; }
+{error_invalidresource}       { count(); return B256ERROR_INVALIDRESOURCE; }
+{error_soundfile}       { count(); return B256ERROR_SOUNDFILE; }
+{error_soundresource}       { count(); return B256ERROR_SOUNDRESOURCE; }
+{error_toomanysounds}       { count(); return B256ERROR_TOOMANYSOUNDS; }
+{error_onedimensional}       { count(); return B256ERROR_ONEDIMENSIONAL; }
+{error_waveformlogical}       { count(); return B256ERROR_WAVEFORMLOGICAL; }
+{warning_sounderror}       { count(); return B256WARNING_SOUNDERROR; }
+{warning_soundfileformat}       { count(); return B256WARNING_SOUNDFILEFORMAT; }
+{warning_soundlength}       { count(); return B256WARNING_SOUNDLENGTH; }
+{warning_soundnotseekable}       { count(); return B256WARNING_SOUNDNOTSEEKABLE; }
+{warning_wavobsolete}       { count(); return B256WARNING_WAVOBSOLETE; }
 {warning_start}	{ count(); return B256WARNING_START; }
 {warning_typeconv}	{ count(); return B256WARNING_TYPECONV; }
-{warning_wavnotseekable}	{ count(); return B256WARNING_WAVNOTSEEKABLE; }
-{warning_wavnoduration}	{ count(); return B256WARNING_WAVNODURATION; }
 {warning_varnotassigned}	{ count(); return B256WARNING_VARNOTASSIGNED; }
 {warning_longrange}	{ count(); return B256WARNING_LONGRANGE; }
 {warning_integerrange}	{ count(); return B256WARNING_INTEGERRANGE; }
@@ -811,6 +847,15 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {white}						{ count(); return B256WHITE; }
 {year}						{ count(); return B256YEAR; }
 {yellow}					{ count(); return B256YELLOW; }
+{soundplay}					{ count(); return B256SOUNDPLAY; }
+{soundplayer}					{ count(); return B256SOUNDPLAYER; }
+{soundload}					{ count(); return B256SOUNDLOAD; }
+{soundloadraw}					{ count(); return B256SOUNDLOADRAW; }
+{soundposition}					{ count(); return B256SOUNDPOSITION; }
+{soundid}					{ count(); return B256SOUNDID; }
+{soundstate}					{ count(); return B256SOUNDSTATE; }
+{soundlength}					{ count(); return B256SOUNDLENGTH; }
+{soundsamplerate}				{ count(); return B256SOUNDSAMPLERATE; }
 
  /**********************************************************************/
  /* statement rules                                                    */
@@ -955,25 +1000,24 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {seek}						{ count(); return B256SEEK; }
 {setsetting}				{ count(); return B256SETSETTING; }
 {sound}						{ count(); return B256SOUND; }
-{soundplay}					{ count(); return B256SOUNDPLAY; }
-{soundplay}":"					{ count(); unputcolon(); return B256SOUNDPLAY; }
-{soundload}					{ count(); return B256SOUNDLOAD; }
+{soundplayeroff}				{ count(); return B256SOUNDPLAYEROFF; }
+{soundplayeroff}":"				{ count(); unputcolon(); return B256SOUNDPLAYEROFF; }
 {soundpause}					{ count(); return B256SOUNDPAUSE; }
 {soundpause}":"					{ count(); unputcolon(); return B256SOUNDPAUSE; }
-{soundresume}					{ count(); return B256SOUNDRESUME; }
-{soundresume}":"				{ count(); unputcolon(); return B256SOUNDRESUME; }
 {soundseek}					{ count(); return B256SOUNDSEEK; }
 {soundstop}					{ count(); return B256SOUNDSTOP; }
 {soundstop}":"					{ count(); unputcolon(); return B256SOUNDSTOP; }
 {soundwait}					{ count(); return B256SOUNDWAIT; }
 {soundwait}":"					{ count(); unputcolon(); return B256SOUNDWAIT; }
+{soundwaveform}					{ count(); return B256SOUNDWAVEFORM; }
+{soundsystem}					{ count(); return B256SOUNDSYSTEM; }
+{soundenvelope}					{ count(); return B256SOUNDENVELOPE; }
+{soundenvelope}":"				{ count(); unputcolon(); return B256SOUNDENVELOPE; }
+{soundharmonics}				{ count(); return B256SOUNDHARMONICS; }
+{soundharmonics}":"				{ count(); unputcolon(); return B256SOUNDHARMONICS; }
+{soundfade}					{ count(); return B256SOUNDFADE; }
 {soundvolume}					{ count(); return B256SOUNDVOLUME; }
-{soundposition}					{ count(); return B256SOUNDPOSITION; }
-{soundposition}":"				{ count(); unputcolon(); return B256SOUNDPOSITION; }
-{soundstate}					{ count(); return B256SOUNDSTATE; }
-{soundstate}":"					{ count(); unputcolon(); return B256SOUNDSTATE; }
-{soundlength}					{ count(); return B256SOUNDLENGTH; }
-{soundlength}":"				{ count(); unputcolon(); return B256SOUNDLENGTH; }
+{soundloop}					{ count(); return B256SOUNDLOOP; }
 {spritedim}					{ count(); return B256SPRITEDIM; }
 {spritehide}				{ count(); return B256SPRITEHIDE; }
 {spriteload}				{ count(); return B256SPRITELOAD; }

@@ -305,15 +305,25 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "writeline"							//writeline
 			<< "xor"								//xor
 			<< "year"								//year
+            << "soundenvelope"                      //soundenvelope
+            << "soundharmonics"                     //soundharmonics
+            << "soundfade"                      	//soundfade
             << "soundload"                      	//soundload
+            << "soundloadraw"                      	//soundloadraw
+            << "soundloop"                      	//soundloop
             << "soundplay"                  		//soundplay
+            << "soundplayer"                  		//soundplayer
+            << "soundplayeroff"                  	//soundplayeroff
             << "soundpause"                 		//soundpause
-            << "soundresume"                 		//soundresume
             << "soundseek"                  		//soundseek
             << "soundstop"                  		//soundstop
             << "soundwait"                  		//soundwait
+            << "soundwaveform"                  	//soundwaveform
+            << "soundsystem"                        //soundsystem
             << "soundvolume"						//soundvolume
             << "soundposition"						//soundposition
+            << "soundsamplerate"					//soundsamplerate
+            << "soundid"                            //soundid
             << "soundstate"                 		//soundstate
             << "soundlength"						//soundlength
             << "imageautocrop"						//imageautocrop
@@ -380,7 +390,11 @@ void EditSyntaxHighlighter::initConstants() {
             << "ERROR_DBQUERY"
             << "ERROR_DBSETNUMBER"
             << "ERROR_DIVZERO"
+            << "ERROR_DOWNLOAD"
+            << "ERROR_ENVELOPEMAX"
+            << "ERROR_ENVELOPEODD"
             << "ERROR_EXPECTEDARRAY"
+            << "ERROR_EXPECTEDSOUND"
             << "ERROR_FILENOTOPEN"
             << "ERROR_FILENUMBER"
             << "ERROR_FILEOPEN"
@@ -394,11 +408,15 @@ void EditSyntaxHighlighter::initConstants() {
             << "ERROR_FREEDBSET"
             << "ERROR_FREEFILE"
             << "ERROR_FREENET"
+            << "ERROR_HARMONICLIST"
+            << "ERROR_HARMONICNUMBER"
             << "ERROR_IMAGEFILE"
+            << "ERROR_IMAGERESOURCE"
             << "ERROR_IMAGESAVETYPE"
             << "ERROR_IMAGESCALE"
             << "ERROR_INFINITY"
             << "ERROR_INTEGERRANGE"
+            << "ERROR_INVALIDRESOURCE"
             << "ERROR_LOGRANGE"
             << "ERROR_LONGRANGE"
             << "ERROR_MAXRECURSE"
@@ -414,11 +432,11 @@ void EditSyntaxHighlighter::initConstants() {
             << "ERROR_NETWRITE"
             << "ERROR_NEXTNOFOR"
             << "ERROR_NEXTWRONGFOR"
+            << "ERROR_NOTIMPLEMENTED"
             << "ERROR_NOSUCHFUNCTION"
             << "ERROR_NOSUCHLABEL"
             << "ERROR_NOSUCHSUBROUTINE"
             << "ERROR_NOTARRAY"
-            << "ERROR_NOTIMPLEMENTED"
             << "ERROR_PENWIDTH"
             << "ERROR_PERMISSION"
             << "ERROR_POLYPOINTS"
@@ -430,26 +448,33 @@ void EditSyntaxHighlighter::initConstants() {
             << "ERROR_RGB"
             << "ERROR_SERIALPARAMETER"
             << "ERROR_SLICESIZE"
+            << "ERROR_SOUNDFILE"
+            << "ERROR_SOUNDRESOURCE"
             << "ERROR_SPRITENA"
             << "ERROR_SPRITENUMBER"
             << "ERROR_SPRITESLICE"
             << "ERROR_STACKUNDERFLOW"
             << "ERROR_STRINGMAXLEN"
             << "ERROR_STRSTART"
+            << "ERROR_TOOMANYSOUNDS"
             << "ERROR_TYPECONV"
             << "ERROR_UNSERIALIZEFORMAT"
             << "ERROR_VARCIRCULAR"
             << "ERROR_VARNOTASSIGNED"
             << "ERROR_VARNULL"
-            << "ERROR_WAVFILEFORMAT"
-            << "ERROR_WAVNOTOPEN"
+            << "ERROR_ONEDIMENSIONAL"
+            << "ERROR_WAVEFORMLOGICAL"
             << "WARNING_INTEGERRANGE"
             << "WARNING_LONGRANGE"
+            << "WARNING_SOUNDFILEFORMAT"
+            << "WARNING_SOUNDERROR"
+            << "WARNING_SOUNDLENGTH"
+            << "WARNING_SOUNDNOTSEEKABLE"
+            << "WARNING_START"
             << "WARNING_TYPECONV"
             << "WARNING_VARNOTASSIGNED"
-            << "WARNING_WAVNODURATION"
-            << "WARNING_WAVNOTSEEKABLE"
-			<< "TYPE_ARRAY"
+            << "WARNING_WAVOBSOLETE"
+            << "TYPE_ARRAY"
 			<< "TYPE_FLOAT"
 			<< "TYPE_INT"
 			<< "TYPE_STRING"

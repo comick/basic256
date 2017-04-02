@@ -320,3 +320,13 @@ void Stack::dup2() {
     pushdataelement(stackdata[stackpointer-2]);
 }
 
+void Stack::drop(int n){
+    //quick drop a number of elements from stack
+    //usefull to clear the stack when an array from stack is not needed anymore
+    //in case that error is catched and we want to pass over that (ONERROR or TRY/CATCH)
+    stackpointer-=n;
+    if (stackpointer<0) {
+        stackpointer=0;
+        error->q(ERROR_STACKUNDERFLOW);
+    }
+}
