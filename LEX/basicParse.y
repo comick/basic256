@@ -333,7 +333,7 @@
 %}
 
 %token B256PRINT B256INPUT B256INPUTSTRING B256INPUTINT B256INPUTFLOAT B256KEY
-%token B256PIXEL B256RGB B256PLOT B256CIRCLE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
+%token B256PIXEL B256RGB B256PLOT B256CIRCLE B256ELLIPSE B256RECT B256POLY B256STAMP B256LINE B256FASTGRAPHICS B256GRAPHSIZE B256REFRESH B256CLS B256CLG
 %token B256IF B256THEN B256ELSE B256ENDIF B256BEGINCASE B256CASE B256ENDCASE
 %token B256WHILE B256ENDWHILE B256DO B256UNTIL B256FOR B256TO B256STEP B256NEXT
 %token B256OPEN B256OPENB B256OPENSERIAL B256READ B256WRITE B256CLOSE B256RESET
@@ -369,7 +369,7 @@
 %token B256BINARYOR B256AMP B256AMPEQUAL B256BINARYNOT
 %token B256IMGSAVE
 %token B256IMAGETRANSFORMED B256IMAGECENTERED B256IMAGEDRAW B256IMAGESETPIXEL B256IMAGERESIZE B256IMAGEAUTOCROP B256IMAGECROP B256IMAGESMOOTH
-%token B256IMAGENEW B256IMAGELOAD B256IMAGECOPY B256IMAGEWIDTH B256IMAGEHEIGHT B256IMAGEPIXEL B256IMAGEFLIP B256IMAGEROTATE B256UNLOAD
+%token B256IMAGENEW B256IMAGELOAD B256IMAGECOPY B256IMAGEWIDTH B256IMAGEHEIGHT B256IMAGEPIXEL B256IMAGEFLIP B256IMAGEROTATE B256UNLOAD B256SETGRAPH
 %token B256REPLACE B256COUNT B256EXPLODE B256REPLACEX B256COUNTX B256EXPLODEX B256IMPLODE
 %token B256OSTYPE B256MSEC
 %token B256EDITVISIBLE B256GRAPHVISIBLE B256OUTPUTVISIBLE B256EDITSIZE B256OUTPUTSIZE
@@ -442,8 +442,6 @@
 %token B256ERROR_PENWIDTH
 %token B256ERROR_ARRAYINDEXMISSING
 %token B256ERROR_IMAGESCALE
-%token B256ERROR_FONTSIZE
-%token B256ERROR_FONTWEIGHT
 %token B256ERROR_RADIXSTRING
 %token B256ERROR_RADIX
 %token B256ERROR_LOGRANGE
@@ -763,8 +761,10 @@ statement:
 			| dbopenstmt
 			| dimstmt
 			| dostmt
+                        | setgraphstmt
 			| editvisiblestmt
-			| elsestmt
+                        | ellipsestmt
+                        | elsestmt
 			| endcasestmt
 			| endfunctionstmt
 			| endifstmt
@@ -1855,9 +1855,14 @@ linestmt:	B256LINE args_eeee {
 circlestmt:
 			B256CIRCLE args_eee {
 				addOp(OP_CIRCLE);
-			}
-			;
+                        }
+                        ;
 
+ellipsestmt:
+                        B256ELLIPSE args_eeee {
+                                addOp(OP_ELLIPSE);
+                        }
+                        ;
 arcstmt: 	B256ARC args_eeeee {
 				addIntOp(OP_PUSHINT, 5); // with bounding circle
 				addOp(OP_ARC);
@@ -1894,18 +1899,47 @@ rectstmt:
 			B256RECT args_eeee {
 				addOp(OP_RECT);
 			}
+                        | B256RECT args_eeeee {
+                            addOp(OP_STACKDUP);
+                            addOp(OP_ROUNDEDRECT);
+                        }
+                        | B256RECT args_eeeeee {
+                            addOp(OP_ROUNDEDRECT);
+                        }
 			;
 
 textstmt:
 			B256TEXT args_eee {
 				addOp(OP_TEXT);
 			}
+                        | B256TEXT args_eeeee {
+                            addIntOp(OP_PUSHINT, 0); // flags
+                            addOp(OP_TEXTBOX);
+                        }
+                        | B256TEXT args_eeeeee {
+                            addOp(OP_TEXTBOX);
+                        }
 			;
 
 fontstmt:
-			B256FONT args_eee {
+                        B256FONT args_eeee {
 				addOp(OP_FONT);
 			}
+                        | B256FONT args_eee {
+                            addIntOp(OP_PUSHINT, 0); // font is not italic
+                            addOp(OP_FONT);
+                        }
+                        | B256FONT args_ee {
+                            addIntOp(OP_PUSHINT, -1); // default weight
+                            addIntOp(OP_PUSHINT, 0); // font is not italic
+                            addOp(OP_FONT);
+                        }
+                        | B256FONT expr {
+                            addIntOp(OP_PUSHINT, -1); // default size
+                            addIntOp(OP_PUSHINT, -1); // default weight
+                            addIntOp(OP_PUSHINT, 0); // font is not italic
+                            addOp(OP_FONT);
+                        }
 			;
 
 saystmt: 	B256SAY expr {
@@ -2896,6 +2930,17 @@ unloadstmt:
                         }
                         ;
 
+setgraphstmt:
+                        B256SETGRAPH expr {
+                                addOp(OP_SETGRAPH);
+                        }
+                        | B256SETGRAPH args_none {
+                                addStringOp(OP_PUSHSTRING, "");
+                                addOp(OP_SETGRAPH);
+                        }
+                        ;
+
+
 
 
 /* ####################################
@@ -3422,8 +3467,10 @@ expr:
 			| B256OSTYPE args_none { addOp(OP_OSTYPE); }
 			| B256MSEC args_none { addOp(OP_MSEC); }
 			| B256TEXTWIDTH '(' expr ')' { addOp(OP_TEXTWIDTH); }
-			| B256TEXTHEIGHT args_none { addOp(OP_TEXTHEIGHT); }
-			| B256READBYTE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
+                        | B256TEXTWIDTH '(' expr ',' expr ')' { addOp(OP_TEXTBOXWIDTH); }
+                        | B256TEXTHEIGHT args_none { addOp(OP_TEXTHEIGHT); }
+                        | B256TEXTHEIGHT '(' expr ',' expr ')' { addOp(OP_TEXTBOXHEIGHT); }
+                        | B256READBYTE args_none { addIntOp(OP_PUSHINT, 0); addOp(OP_READBYTE); }
 			| B256READBYTE '(' expr ')' { addOp(OP_READBYTE); }
 			| B256FREEDB args_none { addOp(OP_FREEDB); }
 			| B256FREEDBSET args_none {
@@ -3533,8 +3580,6 @@ expr:
 			| B256ERROR_PENWIDTH args_none { addIntOp(OP_PUSHINT, ERROR_PENWIDTH); }
 			| B256ERROR_ARRAYINDEXMISSING args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYINDEXMISSING); }
 			| B256ERROR_IMAGESCALE args_none { addIntOp(OP_PUSHINT, ERROR_IMAGESCALE); }
-			| B256ERROR_FONTSIZE args_none { addIntOp(OP_PUSHINT, ERROR_FONTSIZE); }
-			| B256ERROR_FONTWEIGHT args_none { addIntOp(OP_PUSHINT, ERROR_FONTWEIGHT); }
 			| B256ERROR_RADIXSTRING args_none { addIntOp(OP_PUSHINT, ERROR_RADIXSTRING); }
 			| B256ERROR_RADIX args_none { addIntOp(OP_PUSHINT, ERROR_RADIX); }
 			| B256ERROR_LOGRANGE args_none { addIntOp(OP_PUSHINT, ERROR_LOGRANGE); }

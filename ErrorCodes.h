@@ -73,8 +73,6 @@
 #define ERROR_PENWIDTH 					60
 #define ERROR_ARRAYINDEXMISSING			62
 #define ERROR_IMAGESCALE 				63
-#define ERROR_FONTSIZE 					64
-#define ERROR_FONTWEIGHT 				65
 #define ERROR_RADIXSTRING 				66
 #define ERROR_RADIX 					67
 #define ERROR_LOGRANGE 					68

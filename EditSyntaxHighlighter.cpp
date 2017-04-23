@@ -342,7 +342,10 @@ void EditSyntaxHighlighter::initKeywords() {
             << "imagesmooth"						//imagesmooth
             << "imagetransformed"					//imagetransformed
             << "imagewidth"                 		//imagewidth
-			;
+            << "setgraph"                           //setgraph
+            << "unload"                             //unload
+            << "ellipse"                            //ellipse
+            ;
 	for (QStringList::iterator it = keywordPatterns.begin(); it != keywordPatterns.end(); ++it) {
 		HighlightRule *rule = new HighlightRule;
 		rule->pattern = QRegExp("\\b" + *it + "\\b", Qt::CaseInsensitive);
@@ -402,8 +405,6 @@ void EditSyntaxHighlighter::initConstants() {
             << "ERROR_FILERESET"
             << "ERROR_FILEWRITE"
             << "ERROR_FOLDER"
-            << "ERROR_FONTSIZE"
-            << "ERROR_FONTWEIGHT"
             << "ERROR_FREEDB"
             << "ERROR_FREEDBSET"
             << "ERROR_FREEFILE"

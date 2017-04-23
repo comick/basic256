@@ -274,12 +274,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_IMAGESCALE:
 			errormessage = tr("Image scale must be greater than or equal to zero");
 			break;
-		case ERROR_FONTSIZE:
-			errormessage = tr("Font size, in points, must be greater than or equal to zero");
-			break;
-		case ERROR_FONTWEIGHT:
-			errormessage = tr("Font weight must be greater than or equal to zero");
-			break;
 		case ERROR_RADIXSTRING:
 			errormessage = tr("Unable to convert radix string back to a decimal number");
 			break;

@@ -157,7 +157,9 @@ degrees [Dd][Ee][Gg][Rr][Ee][Ee][Ss]
 dim [Dd][Ii][Mm]
 dir [Dd][Ii][Rr]
 do [Dd][Oo]
+setgraph [Ss][Ee][Tt][Gg][Rr][Aa][Pp][Hh]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+ellipse [Ee][Ll][Ll][Ii][Pp][Ss][Ee]
 else [Ee][Ll][Ss][Ee]
 end [Ee][Nn][Dd]
 endcase [Ee][Nn][Dd][ \t]*[Cc][Aa][Ss][Ee]
@@ -224,8 +226,6 @@ error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo
 error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
 error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
-error_fontsize [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ss][Ii][Zz][Ee]
-error_fontweight [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Nn][Tt][Ww][Ee][Ii][Gg][Hh][Tt]
 error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]
 error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]
 error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]
@@ -670,8 +670,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_penwidth}	{ count(); return B256ERROR_PENWIDTH; }
 {error_arrayindexmissing}	{ count(); return B256ERROR_ARRAYINDEXMISSING; }
 {error_imagescale}	{ count(); return B256ERROR_IMAGESCALE; }
-{error_fontsize}	{ count(); return B256ERROR_FONTSIZE; }
-{error_fontweight}	{ count(); return B256ERROR_FONTWEIGHT; }
 {error_radixstring}	{ count(); return B256ERROR_RADIXSTRING; }
 {error_radix}	{ count(); return B256ERROR_RADIX; }
 {error_logrange}	{ count(); return B256ERROR_LOGRANGE; }
@@ -900,7 +898,10 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {dim}						{ count(); return B256DIM; }
 {do}						{ count(); return B256DO; }
 {do}":"						{ count(); unputcolon(); return B256DO; }
+{setgraph}						{ count(); return B256SETGRAPH; }
+{setgraph}":"					{ count(); unputcolon(); return B256SETGRAPH; }
 {editvisible}				{ count(); return B256EDITVISIBLE; }
+{ellipse}					{ count(); return B256ELLIPSE; }
 {else}						{ count(); return B256ELSE; }
 {else}":"					{ count(); unputcolon(); return B256ELSE; }
 {end}						{ count(); return B256END; }

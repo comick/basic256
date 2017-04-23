@@ -203,10 +203,6 @@ class Interpreter : public QThread
 		frame *callstack;
 		forframe *forstack;
 		onerrorframe *onerrorstack;
-		QPen drawingpen;
-		QBrush drawingbrush;
-        int CompositionModeClear;
-        int PenColorIsClear;
 		run_status status;
 		run_status oldstatus;
 		bool fastgraphics;
@@ -214,9 +210,6 @@ class Interpreter : public QThread
 		int inputType;				// data type to convert the input into
         double double_random_max;
         int currentLine;
-		QString fontfamily;
-		int fontpoint;
-		int fontweight;
 		void clearsprites();
         void update_sprite_screen();
         void sprite_prepare_for_new_content(int);
@@ -242,7 +235,32 @@ class Interpreter : public QThread
 
 		bool printing;
 		QPrinter *printdocument;
-		QPainter *printdocumentpainter;
+
+        QPainter *painter;
+        bool painter_pen_need_update;
+        bool painter_brush_need_update;
+        bool painter_last_compositionModeClear;
+        unsigned long painter_brush_color; //last color value for comparison
+        unsigned long painter_pen_color; //last color value for comparison
+        void setGraph(QString id);
+        QString drawto;
+        bool setPainterTo(QPaintDevice *destination);
+        QPen drawingpen;
+        QBrush drawingbrush;
+        int CompositionModeClear;
+        int PenColorIsClear;
+        bool drawingOnScreen;
+
+        QFont font;
+        QString defaultfontfamily;
+        int defaultfontpointsize;
+        int defaultfontweight;
+        bool defaultfontitalic;
+
+        bool painter_font_need_update;
+        bool painter_custom_font_flag;
+
+
 
 		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 

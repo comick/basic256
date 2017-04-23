@@ -75,6 +75,7 @@ InpOut32OutType Out32 = NULL;
 #include "Settings.h"
 #include "Sound.h"
 #include "Constants.h"
+#include "BasicEdit.h"
 
 
 extern SoundSystem *sound;
@@ -84,6 +85,8 @@ extern QWaitCondition *waitCond;
 extern QWaitCondition *waitDebugCond;
 
 extern BasicGraph * graphwin;
+extern BasicEdit * editwin;
+
 
 extern int lastKey;
 extern std::list<int> pressedKeys;
@@ -489,6 +492,11 @@ QString Interpreter::opname(int op) {
     case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
     case OP_SUB1VAR : return QString("OP_SUB1VAR");
     case OP_SUB1ARRAY : return QString("OP_SUB1ARRAY");
+    case OP_SETGRAPH : return QString("OP_SETGRAPH");
+    case OP_TEXTBOXHEIGHT : return QString("OP_TEXTBOXHEIGHT");
+    case OP_TEXTBOXWIDTH : return QString("OP_TEXTBOXWIDTH");
+    case OP_ELLIPSE : return QString("OP_ELLIPSE");
+    case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
 
     default: return QString("OP_UNKNOWN");
     }
@@ -786,21 +794,29 @@ Interpreter::initialize() {
 	callstack = NULL;
 	onerrorstack = NULL;
 	forstack = NULL;
-	fastgraphics = false;
-	drawingpen = QPen(Qt::black);
-	drawingbrush = QBrush(Qt::black, Qt::SolidPattern);
-    CompositionModeClear = false;
-    PenColorIsClear = false;
     status = R_RUNNING;
     //initialize random
     double_random_max = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
 	currentLine = 1;
     currentIncludeFile = QString("");
     emit(mainWindowsResize(1, 300, 300));
-	fontfamily = QString("");
-	fontpoint = 0;
-	fontweight = 0;
-	nsprites = 0;
+
+    painter = new QPainter();
+    painter_custom_font_flag = false;
+    setGraph(""); //after mainWindowsResize
+    defaultfontfamily = painter->font().family();
+    defaultfontpointsize = painter->font().pointSize();
+    defaultfontweight = painter->font().weight();
+    defaultfontitalic = painter->font().italic();
+    drawingpen = QPen(Qt::black); // default pen color
+    drawingbrush = QBrush(Qt::black, Qt::SolidPattern); // default brush color
+    painter_pen_color = Qt::black; //last color
+    painter_brush_color = Qt::black; //last color
+    CompositionModeClear = false;
+    PenColorIsClear = false;
+    fastgraphics = false;
+
+    nsprites = 0;
 	printing = false;
 	regexMinimal = false;
 	lastKey = 0;
@@ -886,14 +902,18 @@ Interpreter::cleanup() {
 		directorypointer = NULL;
 	}
 	
-	// close a print document if it is open
-	if (printing) {
-		printing = false;
-		printdocumentpainter->end();
-		delete printdocumentpainter;
-	}   
-	
-	// close network connections
+    // close and delete painter
+    if (painter) {
+        if(painter->isActive()) painter->end();
+        delete painter;
+        painter=NULL;
+    }
+    if(printing){
+        printdocument->abort(); //try to abort printing
+        delete printdocument;
+    }
+
+    // close network connections
 	netSockCloseAll(); 
 
 	// remove any queued errors
@@ -1096,20 +1116,20 @@ bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
 
 	QImage *scan = new QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
 	scan->fill(Qt::transparent);
-	QPainter *painter = new QPainter(scan);
+    QPainter *sprite_painter = new QPainter(scan);
 	if(sprites[n1].r==0 && sprites[n1].s==1){
-		painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].image);
+        sprite_painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].image);
 	}else{
-		painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].transformed_image);
+        sprite_painter->drawImage(sprites[n1].position.x()-rect.x(),sprites[n1].position.y()-rect.y(), *sprites[n1].transformed_image);
 	}
-	painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    sprite_painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
 	if(sprites[n2].r==0 && sprites[n2].s==1){
-		painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].image);
+        sprite_painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].image);
 	}else{
-		painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].transformed_image);
+        sprite_painter->drawImage(sprites[n2].position.x()-rect.x(),sprites[n2].position.y()-rect.y(), *sprites[n2].transformed_image);
 	}
-	painter->end();
-	delete painter;
+    sprite_painter->end();
+    delete sprite_painter;
 
 	//check collision comparing only alpha channel
 	const uchar* scanbits = scan->bits();
@@ -1123,11 +1143,8 @@ bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
 	}
 
 	//debug - print collision zone
-	//    QPainter *ian;
-	//    ian = new QPainter(graphwin->image);
-	//    ian->drawImage(0,0,*scan);
-	//    ian->end();
-	//    delete ian;
+    //    painter->drawImage(0,0,*scan);
+    //    painter->end();
 
 	delete scan;
 	return flag;
@@ -1145,9 +1162,9 @@ void Interpreter::update_sprite_screen(){
 		return;
 	}
 
-	QPainter *painter;
+    QPainter *sprite_painter;
 	QRegion region = QRegion(0,0,0,0);
-	painter = new QPainter(graphwin->spritesimage);
+    sprite_painter = new QPainter(graphwin->spritesimage);
 	bool flag=false;
 
 	for(int n=0;n<nsprites;n++){
@@ -1172,21 +1189,21 @@ void Interpreter::update_sprite_screen(){
 	}
 
 	graphwin->sprites_clip_region = region;
-	painter->setClipRegion(region);
-	painter->setCompositionMode(QPainter::CompositionMode_Clear);
-	painter->fillRect(region.boundingRect(),Qt::transparent);
-	painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+    sprite_painter->setClipRegion(region);
+    sprite_painter->setCompositionMode(QPainter::CompositionMode_Clear);
+    sprite_painter->fillRect(region.boundingRect(),Qt::transparent);
+    sprite_painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
 	double lasto=1.0;
 	for(int n=0;n<nsprites;n++){
 		if(sprites[n].visible){
 				if(lasto!=sprites[n].o){
 					lasto=sprites[n].o;
-					painter->setOpacity(lasto);
+                    sprite_painter->setOpacity(lasto);
 				}
 				if(sprites[n].s==1 && sprites[n].r==0){
 					if(sprites[n].image){
 						if(graphwin->sprites_clip_region.intersects(sprites[n].position)){
-							painter->drawImage(sprites[n].position, *sprites[n].image);
+                            sprite_painter->drawImage(sprites[n].position, *sprites[n].image);
 							sprites[n].last_position=sprites[n].position;
 							sprites[n].was_printed=true;
 							sprites[n].changed=false;
@@ -1197,7 +1214,7 @@ void Interpreter::update_sprite_screen(){
 				}else{
 					if(sprites[n].transformed_image){
 						if(graphwin->sprites_clip_region.intersects(sprites[n].position)){
-							painter->drawImage(sprites[n].position, *sprites[n].transformed_image);
+                            sprite_painter->drawImage(sprites[n].position, *sprites[n].transformed_image);
 							sprites[n].last_position=sprites[n].position;
 							sprites[n].was_printed=true;
 							sprites[n].changed=false;
@@ -1209,15 +1226,14 @@ void Interpreter::update_sprite_screen(){
 
 		}
 	}
-	painter->end();
-	delete painter;
+    sprite_painter->end();
+    delete sprite_painter;
 	graphwin->draw_sprites_flag = flag;
 
 }
 
-void
-Interpreter::waitForGraphics() {
-	update_sprite_screen();
+void Interpreter::waitForGraphics() {
+    update_sprite_screen();
 	// wait for graphics operation to complete
 	mymutex->lock();
 	emit(goutputReady());
@@ -1225,6 +1241,33 @@ Interpreter::waitForGraphics() {
 	mymutex->unlock();
 }
 
+bool Interpreter::setPainterTo(QPaintDevice *destination) {
+    drawingOnScreen = (destination == graphwin->image);
+    if(painter->isActive()) painter->end();
+    painter_pen_need_update=true;
+    painter_brush_need_update=true;
+    painter_font_need_update=painter_custom_font_flag; //need update only if there is a custom font loaded
+    painter_last_compositionModeClear=false;
+    return (painter->begin(destination));
+}
+
+void Interpreter::setGraph(QString id){
+    if(id.isEmpty()){
+        setPainterTo(graphwin->image);
+        drawto = QString("");
+    } else if(id.startsWith("image:")){
+        if (images.contains(id)){
+            setPainterTo(images[id]);
+            drawto = id;
+        }else{
+            setPainterTo(graphwin->image);
+            drawto = QString("");
+            error->q(ERROR_IMAGERESOURCE);
+        }
+    }else{
+        error->q(ERROR_INVALIDRESOURCE);
+    }
+}
 
 
 int
@@ -3713,24 +3756,33 @@ Interpreter::execByteCode() {
                 break;
 
 				case OP_SETCOLOR: {
-					unsigned long brushval = stack->poplong();
-					unsigned long penval = stack->poplong();
+                    const unsigned long brushval = stack->poplong();
+                    const unsigned long penval = stack->poplong();
 
-                    //set PenColorIsClear and CompositionModeClear flags here for speed
-                    if (penval == COLOR_CLEAR){
-                        PenColorIsClear = true;
-                        if (brushval == COLOR_CLEAR){
-                            CompositionModeClear = true;
+                    if(penval!=painter_pen_color){
+                        drawingpen.setColor(QColor::fromRgba((QRgb) penval));
+                        painter_pen_need_update=true;
+                        painter_pen_color=penval;
+
+                        //set PenColorIsClear and CompositionModeClear flags here for speed
+                        if (penval == COLOR_CLEAR){
+                            PenColorIsClear = true;
+                            if (brushval == COLOR_CLEAR){
+                                CompositionModeClear = true;
+                            }else{
+                                CompositionModeClear = false;
+                            }
                         }else{
+                            PenColorIsClear = false;
                             CompositionModeClear = false;
                         }
-                    }else{
-                        PenColorIsClear = false;
-                        CompositionModeClear = false;
                     }
 
-					drawingpen.setColor(QColor::fromRgba((QRgb) penval));
-					drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
+                    if(brushval!=painter_brush_color){
+                        drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
+                        painter_brush_need_update=true;
+                        painter_brush_color=brushval;
+                    }
 				}
 				break;
 
@@ -3739,7 +3791,8 @@ Interpreter::execByteCode() {
 					int bval = stack->popint();
 					int gval = stack->popint();
 					int rval = stack->popint();
-					if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
+                    if (((rval | gval | bval | aval)&(~0xff))!=0) {
+                    //if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
 						error->q(ERROR_RGB);
                         stack->pushlong(0);
                     } else {
@@ -3751,8 +3804,13 @@ Interpreter::execByteCode() {
 				case OP_PIXEL: {
 					int y = stack->popint();
 					int x = stack->popint();
-					QRgb rgb = graphwin->image->pixel(x,y);
-					stack->pushlong((unsigned long) rgb);
+                    if(drawingOnScreen || drawto.isEmpty()){
+                        QRgb rgb = graphwin->image->pixel(x,y);
+                        stack->pushlong((unsigned long) rgb);
+                    }else{
+                        QRgb rgb = images[drawto]->pixel(x,y);
+                        stack->pushlong((unsigned long) rgb);
+                    }
 				}
 				break;
 
@@ -3771,7 +3829,11 @@ Interpreter::execByteCode() {
 					QImage *layerimage;
 					switch(layer) {
 						case SLICE_PAINT:
-							layerimage = graphwin->image;
+                            if(drawingOnScreen || drawto.isEmpty()){
+                                layerimage = graphwin->image;
+                            }else{
+                                layerimage = images[drawto];
+                            }
 							break;
 						case SLICE_SPRITE:
 							layerimage = graphwin->spritesimage;
@@ -3780,17 +3842,20 @@ Interpreter::execByteCode() {
 							layerimage = graphwin->displayedimage;
 							break;
 					}
-					if (x<0||y<0||x>layerimage->width()||y>layerimage->height()||x+w-1>layerimage->width()||y+h-1>layerimage->height()) {
+                    if (w<=0 || h<=0) {
 						error->q(ERROR_SLICESIZE);
 						stack->pushint(0);
 						stack->pushint(0);
 					} else {
-						QRgb rgb;
+                        QImage tmp = QImage(layerimage->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32));
+                        const uchar* p = tmp.constBits();
+                        QRgb *r = (QRgb *) p;
+                        int counter = 0;
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								rgb = layerimage->pixel(x+tw,y+th);
-								stack->pushlong(rgb);
+                                stack->pushlong(r[counter]);
+                                counter++;
 							}
 							stack->pushint(w);
 						}
@@ -3801,122 +3866,187 @@ Interpreter::execByteCode() {
 
 				case OP_PUTSLICE: {
 					// get image array
-					int th, tw;
-					int h = stack->popint();
-					int w = stack->popint();
-					stack->pushint(w);		// put back on stack to make pull off easier
-					int data[h][w];
-					for(th=h-1; th>=0; th--) {
-						stack->popint();	// get extra cols
-						for(tw=w-1; tw>=0; tw--) {
-							data[th][tw] = stack->popint();
-						}
-					}
-					// get where
-					int y = stack->popint();
-					int x = stack->popint();
-					// draw
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
+                    int th, tw;
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    stack->pushint(w);		// put back on stack to make pull off easier
 
-					for(th=0; th<h; th++) {
-						for(tw=0; tw<w; tw++) {
-							if(data[th][tw]!=COLOR_CLEAR) {
-								ian->setPen(data[th][tw]);
-								ian->drawPoint(x + tw, y + th);
-							}
-						}
-					}
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if(h<=0 || w<=0){
+                        error->q(ERROR_SLICESIZE);
+                        //free stack in case of error catching
+                        while(h>0){
+                            stack->drop(stack->popint());
+                            h--;
+                        }
+                        stack->drop(2); //y and x
+                        break;
+                    }
+
+                    QImage tmp = QImage(w, h, QImage::Format_ARGB32);
+                    const uchar* p = tmp.constBits();
+
+                    QRgb *r = (QRgb *) p;
+                    int counter = w*h;
+                    counter--;
+
+                    for(th=h-1; th>=0; th--) {
+                        int test = stack->popint();	// get extra cols
+                        if(test!=w){
+                            //error: number of columns is not the same (case of list of lists {})
+                            error->q(ERROR_SLICESIZE);
+                            //free stack in case of error catching
+                            stack->drop(test);
+                            th--;
+                            for(; th>=0; th--) stack->drop(stack->popint());
+                            stack->drop(2); //y and x
+                            break;
+                        }
+                        for(tw=w-1; tw>=0; tw--) {
+                            r[counter] = (QRgb) stack->poplong();
+                            counter--;
+                        }
+                    }
+                    //update painter only if needed (faster)
+                    if(CompositionModeClear){
+                        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=false;
+                    }
+                    //end update painter
+                    // get where
+                    int y = stack->popint();
+                    int x = stack->popint();
+                    painter->drawImage(x, y, tmp);
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 				case OP_LINE: {
 					int y1val = stack->popint();
 					int x1val = stack->popint();
 					int y0val = stack->popint();
-					int x0val = stack->popint();
+                    int x0val = stack->popint();
 
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
+                    //update painter's attributes only if needed (only pen)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=PenColorIsClear){
+                        if(PenColorIsClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=PenColorIsClear;
+                    }
+                    //end painter update
 
-                    ian->setPen(drawingpen);
-//					ian->setBrush(drawingbrush);
-                    if (CompositionModeClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
-					if (x1val >= 0 && y1val >= 0) {
-						ian->drawLine(x0val, y0val, x1val, y1val);
-					 }
+                    painter->drawLine(x0val, y0val, x1val, y1val);
 
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 
-				case OP_RECT: {
+                case OP_ROUNDEDRECT:{
+                    double y_rad = stack->popfloat();
+                    double x_rad = stack->popfloat();
+                    int y1val = stack->popint();
+                    int x1val = stack->popint();
+                    int y0val = stack->popint();
+                    int x0val = stack->popint();
+
+                    if(x1val<0) {
+                        x0val+=x1val+1;
+                        x1val*=-1;
+                    }
+                    if(y1val<0) {
+                        y0val+=y1val+1;
+                        y1val*=-1;
+                    }
+
+                    //update painter's attributes only if needed (pen and brush)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_brush_need_update){
+                        painter->setBrush(drawingbrush);
+                        painter_brush_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=CompositionModeClear){
+                        if(CompositionModeClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=CompositionModeClear;
+                    }
+                    //end painter update
+
+                    if (x1val > 1 && y1val > 1) {
+                        painter->drawRoundedRect(x0val, y0val, x1val-1, y1val-1, x_rad, y_rad);
+                    } else if (x1val==1 && y1val==1) {
+                        // rect 1x1 is actually a point
+                        painter->drawPoint(x0val, y0val);
+                    } else if (x1val==1 && y1val!=0) {
+                        // rect 1xn is actually a line
+                        painter->drawLine(x0val, y0val, x0val, y0val+y1val);
+                    } else if (x1val!=0 && y1val==1) {
+                        // rect nx1 is actually a line
+                        painter->drawLine(x0val, y0val, x0val + x1val, y0val);
+                    }
+
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
+                break;
+
+                case OP_RECT: {
 					int y1val = stack->popint();
 					int x1val = stack->popint();
 					int y0val = stack->popint();
 					int x0val = stack->popint();
 
-					QPainter *ian;
-                    if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
+                    if(x1val<0) {
+                        x0val+=x1val+1;
+                        x1val*=-1;
+                    }
+                    if(y1val<0) {
+                        y0val+=y1val+1;
+                        y1val*=-1;
+                    }
 
-					if(x1val<0) {
-						x0val+=x1val;
-						x1val*=-1;
-					}
-					if(y1val<0) {
-						y0val+=y1val;
-						y1val*=-1;
-					}
+                    //update painter's attributes only if needed (pen and brush)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_brush_need_update){
+                        painter->setBrush(drawingbrush);
+                        painter_brush_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=CompositionModeClear){
+                        if(CompositionModeClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=CompositionModeClear;
+                    }
+                    //end painter update
 
-                    ian->setBrush(drawingbrush);
-                    ian->setPen(drawingpen);
-                    if (CompositionModeClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
+                    if (x1val > 1 && y1val > 1) {
+                        painter->drawRect(x0val, y0val, x1val-1, y1val-1);
+                    } else if (x1val==1 && y1val==1) {
+                        // rect 1x1 is actually a point
+                        painter->drawPoint(x0val, y0val);
+                    } else if (x1val==1 && y1val!=0) {
+                        // rect 1xn is actually a line
+                        painter->drawLine(x0val, y0val, x0val, y0val+y1val);
+                    } else if (x1val!=0 && y1val==1) {
+                        // rect nx1 is actually a line
+                        painter->drawLine(x0val, y0val, x0val + x1val, y0val);
+                    }
 
-					if (x1val > 1 && y1val > 1) {
-						ian->drawRect(x0val, y0val, x1val-1, y1val-1);
-					} else if (x1val==1 && y1val==1) {
-						// rect 1x1 is actually a point
-						ian->drawPoint(x0val, y0val);
-					} else if (x1val==1 && y1val!=0) {
-						// rect 1xn is actually a line
-						ian->drawLine(x0val, y0val, x0val, y0val+y1val);
-					} else if (x1val!=0 && y1val==1) {
-						// rect nx1 is actually a line
-						ian->drawLine(x0val, y0val, x0val + x1val, y0val);
-					}
-
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 
@@ -3955,25 +4085,28 @@ Interpreter::execByteCode() {
                         if (pairs < 3){
                             error->q(ERROR_POLYPOINTS);
                         }else{
-                            QPainter *poly;
-                            if (printing) {
-                                poly = printdocumentpainter;
-                            } else {
-                                poly = new QPainter(graphwin->image);
-                            }
 
-                            poly->setPen(drawingpen);
-                            poly->setBrush(drawingbrush);
-                            if (CompositionModeClear) {
-                                poly->setCompositionMode(QPainter::CompositionMode_Clear);
+                            //update painter's attributes only if needed (pen and brush)
+                            if(painter_pen_need_update){
+                                painter->setPen(drawingpen);
+                                painter_pen_need_update=false;
                             }
-                            poly->drawPolygon(points, pairs);
+                            if(painter_brush_need_update){
+                                painter->setBrush(drawingbrush);
+                                painter_brush_need_update=false;
+                            }
+                            if(painter_last_compositionModeClear!=CompositionModeClear){
+                                if(CompositionModeClear)
+                                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                                else
+                                    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                                painter_last_compositionModeClear=CompositionModeClear;
+                            }
+                            //end painter update
 
-                            if(!printing) {
-                                poly->end();
-                                delete poly;
-                                if (!fastgraphics) waitForGraphics();
-                            }
+                            painter->drawPolygon(points, pairs);
+
+                            if (!fastgraphics && drawingOnScreen) waitForGraphics();
                         }
                     }
                     delete points;
@@ -4029,40 +4162,39 @@ Interpreter::execByteCode() {
                             if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack->popfloat();
                             int y = stack->popint();
                             int x = stack->popint();
-                            if (scale<0) {
-                                error->q(ERROR_IMAGESCALE);
-                            } else {
-                                // scale, rotate, and position the points
-                                for (int j = 0; j < pairs; j++) {
-                                    tx = scale * points[j].x();
-                                    ty = scale * points[j].y();
-                                    if (rotate!=0) {
-                                        savetx = tx;
-                                        tx = cos(rotate) * tx - sin(rotate) * ty;
-                                        ty = cos(rotate) * ty + sin(rotate) * savetx;
-                                    }
-                                    points[j].setX(tx + x);
-                                    points[j].setY(ty + y);
+                            // scale, rotate, and position the points
+                            for (int j = 0; j < pairs; j++) {
+                                tx = scale * points[j].x();
+                                ty = scale * points[j].y();
+                                if (rotate!=0) {
+                                    savetx = tx;
+                                    tx = cos(rotate) * tx - sin(rotate) * ty;
+                                    ty = cos(rotate) * ty + sin(rotate) * savetx;
                                 }
-                                // draw on screen or printer
-                                QPainter *poly;
-                                if (printing) {
-                                    poly = printdocumentpainter;
-                                } else {
-                                    poly = new QPainter(graphwin->image);
-                                }
-                                poly->setPen(drawingpen);
-                                poly->setBrush(drawingbrush);
-                                if (CompositionModeClear) {
-                                    poly->setCompositionMode(QPainter::CompositionMode_Clear);
-                                }
-                                poly->drawPolygon(points, pairs);
-                                if (!printing) {
-                                    poly->end();
-                                    delete poly;
-                                    if (!fastgraphics) waitForGraphics();
-                                }
+                                points[j].setX(tx + x);
+                                points[j].setY(ty + y);
                             }
+
+                            //update painter's attributes only if needed (pen and brush)
+                            if(painter_pen_need_update){
+                                painter->setPen(drawingpen);
+                                painter_pen_need_update=false;
+                            }
+                            if(painter_brush_need_update){
+                                painter->setBrush(drawingbrush);
+                                painter_brush_need_update=false;
+                            }
+                            if(painter_last_compositionModeClear!=CompositionModeClear){
+                                if(CompositionModeClear)
+                                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                                else
+                                    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                                painter_last_compositionModeClear=CompositionModeClear;
+                            }
+                            //end painter update
+
+                            painter->drawPolygon(points, pairs);
+                            if (!fastgraphics && drawingOnScreen) waitForGraphics();
                         }
                     }
                     delete points;
@@ -4075,27 +4207,59 @@ Interpreter::execByteCode() {
 					int yval = stack->popint();
 					int xval = stack->popint();
 
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
+                    //update painter's attributes only if needed (pen and brush)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_brush_need_update){
+                        painter->setBrush(drawingbrush);
+                        painter_brush_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=CompositionModeClear){
+                        if(CompositionModeClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=CompositionModeClear;
+                    }
+                    //end painter update
 
-					ian->setPen(drawingpen);
-					ian->setBrush(drawingbrush);
-                    if (CompositionModeClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
-					ian->drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
+                    painter->drawEllipse(xval - rval, yval - rval, 2 * rval, 2 * rval);
 
-					if(!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
+
+                case OP_ELLIPSE: {
+                    int hval = stack->popint();
+                    int wval = stack->popint();
+                    int yval = stack->popint();
+                    int xval = stack->popint();
+
+                    //update painter's attributes only if needed (pen and brush)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_brush_need_update){
+                        painter->setBrush(drawingbrush);
+                        painter_brush_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=CompositionModeClear){
+                        if(CompositionModeClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=CompositionModeClear;
+                    }
+                    //end painter update
+
+                    painter->drawEllipse(xval, yval, wval, hval);
+
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
+                break;
 
 				case OP_IMGLOAD: {
 					// Image Load - with scale and rotate
@@ -4119,25 +4283,24 @@ Interpreter::execByteCode() {
                     if(i.isNull()) {
                         error->q(ERROR_IMAGEFILE);
                     } else {
-                        QPainter *ian;
-                        if (printing) {
-                            ian = printdocumentpainter;
-                        } else {
-                            ian = new QPainter(graphwin->image);
-                        }
+
 
                         if (rotate != 0 || scale != 1) {
                             QTransform transform = QTransform().translate(0,0).rotateRadians(rotate).scale(scale, scale);
                             i = i.transformed(transform);
                         }
                         if (i.width() != 0 && i.height() != 0) {
-                            ian->drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
+
+                            //update painter only if needed (faster)
+                            if(CompositionModeClear){
+                                painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                                painter_last_compositionModeClear=false;
+                            }
+                            //end update painter
+
+                            painter->drawImage((int)(x - .5 * i.width()), (int)(y - .5 * i.height()), i);
                         }
-                        if (!printing) {
-                            ian->end();
-                            delete ian;
-                            if (!fastgraphics) waitForGraphics();
-                        }
+                        if (!fastgraphics && drawingOnScreen) waitForGraphics();
                     }
 				}
 				break;
@@ -4147,47 +4310,116 @@ Interpreter::execByteCode() {
 					int y0val = stack->popint();
 					int x0val = stack->popint();
 
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
-						
-					ian->setPen(QPen(drawingpen.color()));
-					
-                    if (PenColorIsClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
-					if(!fontfamily.isEmpty()) {
-						ian->setFont(QFont(fontfamily, fontpoint, fontweight));
-					}
-					ian->drawText(x0val, y0val+(QFontMetrics(ian->font()).ascent()), txt);
+                    //update painter's attributes only if needed (only pen)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=PenColorIsClear){
+                        if(PenColorIsClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=PenColorIsClear;
+                    }
+                    //end painter update
 
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if(painter_font_need_update){
+                        painter->setFont(font);
+                        painter_font_need_update=false;
+                    }
+                    painter->drawText(x0val, y0val+(QFontMetrics(painter->font()).ascent()), txt);
+
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 
+                case OP_TEXTBOX: {
+                    int flags = stack->popint();
+                    QString txt = stack->popstring();
+                    int h = stack->popint();
+                    int w = stack->popint();
+                    int y = stack->popint();
+                    int x = stack->popint();
+
+                    if(h<0){
+                        y+=h;
+                        h=-h;
+                    }
+                    if(w<0){
+                        x+=w;
+                        w=-w;
+                    }
+
+                    //update painter's attributes only if needed (only pen)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=PenColorIsClear){
+                        if(PenColorIsClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=PenColorIsClear;
+                    }
+                    //end painter update
+
+                    if(painter_font_need_update){
+                        painter->setFont(font);
+                        painter_font_need_update=false;
+                    }
+                    painter->drawText(x, y, w, h, flags|Qt::TextWordWrap|Qt::TextExpandTabs, txt);
+
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
+                break;
+
+                case OP_TEXTBOXHEIGHT:
+                case OP_TEXTBOXWIDTH: {
+                    int w = stack->popint();
+                    QString txt = stack->popstring();
+
+                    if(w<0) w=-w;
+
+                    //update painter's attributes only if needed (only pen)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    //end painter update
+
+                    if(painter_font_need_update){
+                        painter->setFont(font);
+                        painter_font_need_update=false;
+                    }
+                    QRect boundingRect;
+                    painter->drawText(-1, -1, w, 0, Qt::TextWordWrap, txt, &boundingRect);
+                    if(opcode==OP_TEXTBOXHEIGHT){
+                        stack->pushint(boundingRect.height());
+                    }else{
+                        stack->pushint(boundingRect.width());
+                    }
+                }
+                break;
+
 				case OP_FONT: {
-					int weight = stack->popint();
-					int point = stack->popint();
-					QString family = stack->popstring();
-					if (point<0) {
-						error->q(ERROR_FONTSIZE);
-					} else {
-						if (weight<0) {
-							error->q(ERROR_FONTWEIGHT);
-						} else {
-							fontpoint = point;
-							fontweight = weight;
-							fontfamily = family;
-						}
-					}
+                    bool italic = stack->popbool();
+                    int weight = stack->popint();
+                    int size = stack->popint();
+                    QString family = stack->popstring().trimmed();
+                    if(family.isEmpty())
+                        font = QFont(defaultfontfamily, size, weight, italic);
+                    else
+                        font = QFont(family, size, weight, italic);
+
+                    if(defaultfontpointsize == font.pointSize() && defaultfontweight == font.weight() && defaultfontfamily == painter->font().family() && defaultfontitalic == font.italic())
+                        painter_custom_font_flag = false;
+                    else
+                        painter_custom_font_flag = true;
+
+                    painter_font_need_update=true;
 				}
 				break;
 
@@ -4200,10 +4432,31 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_CLG: {
-					
 					unsigned long clearcolor = stack->poplong();
-					graphwin->image->fill(QColor::fromRgba((QRgb) clearcolor));
-					if (!fastgraphics) waitForGraphics();
+                    QColor c = QColor::fromRgba((QRgb) clearcolor);
+
+                    if (drawingOnScreen){
+                        graphwin->image->fill(c);
+                        if (!fastgraphics) waitForGraphics();
+                    }else if(printing){
+                        if(printdocument->pageRect()==printdocument->paperRect()){
+                            //printer is in full page mode already
+                            painter->fillRect(printdocument->paperRect(),c);
+                        }else{
+                            //a good solution is to end painter and begin after setFullPage(true)
+                            //this will reset origins for painter to top-left of the page
+                            //but swiching back setFullPage(false) and starting again painter (begin) to page
+                            //clear the page entirely.
+                            QRect r = printdocument->pageRect();
+                            printdocument->setFullPage(true);
+                            painter->translate(-r.left(),-r.top());
+                            painter->fillRect(printdocument->paperRect(),c);
+                            printdocument->setFullPage(false);
+                            painter->translate(r.topLeft());
+                        }
+                    }else{
+                        images[drawto]->fill(c);
+                    }
 				}
 				break;
 
@@ -4211,26 +4464,24 @@ Interpreter::execByteCode() {
 					int oneval = stack->popint();
 					int twoval = stack->popint();
 
-					QPainter *ian;
+                    //update painter's attributes only if needed (only pen)
+                    if(painter_pen_need_update){
+                        painter->setPen(drawingpen);
+                        painter_pen_need_update=false;
+                    }
+                    if(painter_last_compositionModeClear!=PenColorIsClear){
+                        if(PenColorIsClear)
+                            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                        else
+                            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                        painter_last_compositionModeClear=PenColorIsClear;
+                    }
+                    //end painter update
 
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
+                    painter->drawPoint(twoval, oneval);
 
-					ian->setPen(drawingpen);
-                    if (PenColorIsClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
-					ian->drawPoint(twoval, oneval);
-
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 				case OP_FASTGRAPHICS: {
@@ -4240,37 +4491,60 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_GRAPHSIZE: {
-					int width = 300, height = 300;
-					int oneval = stack->popint();
-					int twoval = stack->popint();
-					if (oneval>0) height = oneval;
-					if (twoval>0) width = twoval;
-					if (width > 0 && height > 0) {
-						mymutex->lock();
-						emit(mainWindowsResize(1, width, height));
-						waitCond->wait(mymutex);
-						mymutex->unlock();
-					}
-					force_redraw_all_sprites_next_time();
-					waitForGraphics();
-				}
+					int height = stack->popint();
+					int width = stack->popint();
+
+                    if (height<=0 || width<=0){
+                        height = GSIZE_INITIAL_HEIGHT;
+                        width = GSIZE_INITIAL_WIDTH;
+                    }
+                    if(drawingOnScreen || drawto.isEmpty()){
+                        //change graph size if current graph is on screen (it may be printing also)
+                        if(drawingOnScreen) painter->end();
+                        mymutex->lock();
+                        emit(mainWindowsResize(1, width, height));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        if(drawingOnScreen) setPainterTo(graphwin->image);
+                        force_redraw_all_sprites_next_time();
+                        waitForGraphics();
+                    }else{
+                        QImage tmp = QImage(width, height, QImage::Format_ARGB32);
+                        tmp.fill(Qt::transparent);
+                        if(!printing){
+                            painter->end();
+                            images[drawto]->swap(tmp);
+                            setPainterTo(images[drawto]);
+                        }else{
+                            images[drawto]->swap(tmp);
+                        }
+                    }
+                }
 				break;
 
 				case OP_GRAPHWIDTH: {
-					if (printing) {
-						stack->pushint(printdocument->width());
-					} else {
-						stack->pushint((int) graphwin->image->width());
-					}
+                    int w = 0;
+					if (drawingOnScreen){
+                        w = graphwin->image->width();
+                    }else if(printing){
+                        w = printdocument->width();
+                    }else{
+                        w = images[drawto]->width();
+                    }
+                    stack->pushint(w);
 				}
 				break;
 
 				case OP_GRAPHHEIGHT: {
-					if (printing) {
-						stack->pushint(printdocument->height());
-					} else {
-						stack->pushint((int) graphwin->image->height());
-					}
+                    int h = 0;
+					if (drawingOnScreen) {
+                        h = graphwin->image->height();
+                    }else if(printing){
+                        h = printdocument->height();
+                    }else{
+                        h = images[drawto]->height();
+                    }
+                    stack->pushint(h);
 				}
 				break;
 
@@ -4618,8 +4892,12 @@ Interpreter::execByteCode() {
 						error->q(ERROR_SPRITENUMBER);
 					} else {
 						sprite_prepare_for_new_content(n);
-						sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32_Premultiplied));
-						if(sprites[n].image->isNull()) {
+                        if(drawingOnScreen || drawto.isEmpty()){
+                            sprites[n].image = new QImage(graphwin->image->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                        }else{
+                            sprites[n].image = new QImage(images[drawto]->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                        }
+                        if(sprites[n].image->isNull()) {
 							error->q(ERROR_SPRITESLICE);
 						}else{
 							double img_w=sprites[n].image->width();
@@ -5409,7 +5687,11 @@ Interpreter::execByteCode() {
 					QStringList validtypes;
 					validtypes << IMAGETYPE_BMP << IMAGETYPE_JPG << IMAGETYPE_JPEG << IMAGETYPE_PNG ;
 					if (validtypes.contains(type, Qt::CaseInsensitive)) {
-						graphwin->image->save(file, type.toUpper().toUtf8().data());
+                        if(drawingOnScreen || drawto.isEmpty()){
+                            graphwin->image->save(file, type.toUpper().toUtf8().data());
+                        }else{
+                            images[drawto]->save(file, type.toUpper().toUtf8().data());
+                        }
 					} else {
 						error->q(ERROR_IMAGESAVETYPE);
 					}
@@ -5536,34 +5818,25 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_TEXTHEIGHT:
+                case OP_TEXTHEIGHT: {
+                    // returns the height of the font.
+                    if(painter_font_need_update){
+                        painter->setFont(font);
+                        painter_font_need_update=false;
+                    }
+                    stack->pushint((int) (QFontMetrics(painter->font()).height()));
+                }
+                break;
+
 				case OP_TEXTWIDTH: {
 					// return the number of pixels the font requires for diaplay
 					// a string is required for width but not for height
-					int v = 0;
-
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
-
-					if(!fontfamily.isEmpty()) {
-						ian->setFont(QFont(fontfamily, fontpoint, fontweight));
-					}
-
-					if (opcode==OP_TEXTWIDTH) {
-						QString txt = stack->popstring();
-						v = QFontMetrics(ian->font()).width(txt);
-					}
-					if (opcode==OP_TEXTHEIGHT) v = QFontMetrics(ian->font()).height();
-
-					if (!printing) {
-						ian->end();
-						delete ian;
-					}
-					stack->pushint((int) (v));
+                    QString txt = stack->popstring();
+                    if(painter_font_need_update){
+                        painter->setFont(font);
+                        painter_font_need_update=false;
+                    }
+                    stack->pushint((int) (QFontMetrics(painter->font()).width(txt)));
 				}
 				break;
 
@@ -5662,34 +5935,53 @@ Interpreter::execByteCode() {
 					// transform to clockwise from 12'oclock
 					s = 1440-s-aw;
 
-					QPainter *ian;
-					if (printing) {
-						ian = printdocumentpainter;
-					} else {
-						ian = new QPainter(graphwin->image);
-					}
 
-					ian->setPen(drawingpen);
-					ian->setBrush(drawingbrush);
-                    if (CompositionModeClear) {
-						ian->setCompositionMode(QPainter::CompositionMode_Clear);
-					}
+                    if(opcode==OP_ARC) {
+                        //update painter's attributes only if needed (only pen)
+                        if(painter_pen_need_update){
+                            painter->setPen(drawingpen);
+                            painter_pen_need_update=false;
+                        }
+                        if(painter_last_compositionModeClear!=PenColorIsClear){
+                            if(PenColorIsClear)
+                                painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                            else
+                                painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                            painter_last_compositionModeClear=PenColorIsClear;
+                        }
+                        //end painter update
+                    }else{
+                        //update painter's attributes only if needed (pen and brush)
+                        if(painter_pen_need_update){
+                            painter->setPen(drawingpen);
+                            painter_pen_need_update=false;
+                        }
+                        if(painter_brush_need_update){
+                            painter->setBrush(drawingbrush);
+                            painter_brush_need_update=false;
+                        }
+                                if(painter_last_compositionModeClear!=CompositionModeClear){
+                                    if(CompositionModeClear)
+                                        painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                                    else
+                                        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                                    painter_last_compositionModeClear=CompositionModeClear;
+                                }
+                        //end painter update
+                    }
+
 					if(opcode==OP_ARC) {
-						ian->drawArc(xval, yval, wval, hval, s, aw);
+                        painter->drawArc(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OP_CHORD) {
-						ian->drawChord(xval, yval, wval, hval, s, aw);
+                        painter->drawChord(xval, yval, wval, hval, s, aw);
 					}
 					if(opcode==OP_PIE) {
-						ian->drawPie(xval, yval, wval, hval, s, aw);
+                        painter->drawPie(xval, yval, wval, hval, s, aw);
 					}
 
-					if (!printing) {
-						ian->end();
-						delete ian;
-						if (!fastgraphics) waitForGraphics();
-					}
-				}
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
+                }
 				break;
 
 				case OP_PENWIDTH: {
@@ -5703,6 +5995,7 @@ Interpreter::execByteCode() {
 						} else {
 							drawingpen.setStyle(Qt::SolidLine);
 						}
+                        painter_pen_need_update=true;
 					}
 				}
 				break;
@@ -5723,7 +6016,6 @@ Interpreter::execByteCode() {
 					emit(dialogAlert(temp));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					waitForGraphics();
 				}
 				break;
 
@@ -5735,7 +6027,6 @@ Interpreter::execByteCode() {
 					waitCond->wait(mymutex);
 					mymutex->unlock();
 					stack->pushint(returnInt);
-					waitForGraphics();
 				}
 				break;
 
@@ -5747,7 +6038,6 @@ Interpreter::execByteCode() {
 					waitCond->wait(mymutex);
 					mymutex->unlock();
 					stack->pushstring(returnString);
-					waitForGraphics();
 				}
 				break;
 
@@ -5787,11 +6077,10 @@ Interpreter::execByteCode() {
 
 				case OP_PRINTEROFF: {
 					if (printing) {
-						printing = false;
-						printdocumentpainter->end();
-						delete printdocumentpainter;
-						delete printdocument;
-					} else {
+                        printing = false;
+                        setGraph(drawto);
+                        delete printdocument;
+                    } else {
 						error->q(ERROR_PRINTERNOTON);
 					}
 				}
@@ -5818,16 +6107,23 @@ Interpreter::execByteCode() {
 							printdocument = new QPrinter(printerList[printer], (QPrinter::PrinterMode) resolution);
 						}
 						if (printdocument) {
-							printdocument->setPaperSize((QPrinter::PaperSize) paper);
-							printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
-							printdocumentpainter = new QPainter();
-							if (!printdocumentpainter->begin(printdocument)) {
-								error->q(ERROR_PRINTEROPEN);
-							} else {
-								printing = true;
-							}
+                            if(printdocument->isValid()){
+                                printdocument->setCreator(QString(SETTINGSAPP));
+                                printdocument->setDocName(editwin->winTitle);
+                                printdocument->setPaperSize((QPrinter::PaperSize) paper);
+                                printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
+                                if (!setPainterTo(printdocument)) {
+                                    error->q(ERROR_PRINTEROPEN);
+                                    setGraph(drawto); //if drawing on printer fails, then fall back to graph area
+                                } else {
+                                    printing = true;
+                                }
+                            }else{
+                                delete printdocument;
+                                error->q(ERROR_PRINTEROPEN);
+                            }
 						} else {
-							error->q(99999);
+                            error->q(ERROR_PRINTEROPEN);
 						}
 					}
 				}
@@ -5844,11 +6140,10 @@ Interpreter::execByteCode() {
 
 				case OP_PRINTERCANCEL: {
 					if (printing) {
-						printing = false;
-						printdocumentpainter->end();
-						delete printdocumentpainter;
-						printdocument->abort();
-						delete printdocument;
+                        printing = false;
+                        setGraph(drawto);
+                        printdocument->abort();
+                        delete printdocument;
 					} else {
 						error->q(ERROR_PRINTERNOTON);
 					}
@@ -6207,18 +6502,15 @@ Interpreter::execByteCode() {
 
                 case OP_IMAGELOAD: {
                     QString s = stack->popstring();
-                    QString id = QString("image:") + s;
-                    if (images.contains(id)){
-                        delete(images[id]);
-                        images.remove(id);
-                    }
+                    lastImageId++;
+                    QString id = QString("image:") + QString::number(lastImageId) + QStringLiteral(":") + s;
                     if(QFileInfo(s).exists()){
-                        images[id] = new QImage(QImage(s).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                        images[id] = new QImage(QImage(s).convertToFormat(QImage::Format_ARGB32));
                     }else{
                         QImage *temp = new QImage();
                         downloader->download(QUrl::fromUserInput(s));
                         temp->loadFromData(downloader->data());
-                        images[id] = new QImage(temp->convertToFormat(QImage::Format_ARGB32_Premultiplied));
+                        images[id] = new QImage(temp->convertToFormat(QImage::Format_ARGB32));
                         delete temp;
                     }
                     stack->pushstring(id);
@@ -6234,12 +6526,6 @@ Interpreter::execByteCode() {
                     int w = stack->popint();
                     lastImageId++;
                     QString id = QString("image:") + QString::number(lastImageId);
-
-                    if (images.contains(id)){
-                        delete(images[id]);
-                        images.remove(id);
-                    }
-
                     images[id] = new QImage(w, h, QImage::Format_ARGB32);
                     images[id]->fill(QColor::fromRgba((QRgb) c));
                     stack->pushstring(id);
@@ -6249,18 +6535,15 @@ Interpreter::execByteCode() {
 
                 case OP_IMAGECOPY: {
                     int nr = stack->popint();
-
                     lastImageId++;
                     QString id = QString("image:") + QString::number(lastImageId);
-
-                    if (images.contains(id)){
-                        delete(images[id]);
-                        images.remove(id);
-                    }
-
                     switch (nr){
                     case 0:{
-                        images[id] = new QImage(*graphwin->image);
+                        if(drawingOnScreen || drawto.isEmpty()){
+                            images[id] = new QImage(*graphwin->image);
+                        }else{
+                            images[id] = new QImage(*images[drawto]);
+                        }
                         break;
                     }
                     case 4:{
@@ -6268,7 +6551,11 @@ Interpreter::execByteCode() {
                         int w = stack->popint();
                         int y = stack->popint();
                         int x = stack->popint();
-                        images[id] = new QImage(graphwin->image->copy(x, y, w, h));
+                        if(drawingOnScreen || drawto.isEmpty()){
+                            images[id] = new QImage(graphwin->image->copy(x, y, w, h));
+                        }else{
+                            images[id] = new QImage(images[drawto]->copy(x, y, w, h));
+                        }
                         break;
                     }
                     case 1:{
@@ -6305,9 +6592,14 @@ Interpreter::execByteCode() {
                     int x = stack->popint();
                     QString id = stack->popstring();
                     if (images.contains(id)){
-                        QImage *tmp = new QImage(images[id]->copy(x, y, w, h));
-                        delete (images[id]);
-                        images[id] = tmp;
+                        QImage tmp = QImage(images[id]->copy(x, y, w, h));
+                        if(id==drawto){
+                            painter->end();
+                            images[id]->swap(tmp);
+                            setPainterTo(images[id]);
+                        }else{
+                            images[id]->swap(tmp);
+                        }
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
@@ -6318,8 +6610,7 @@ Interpreter::execByteCode() {
                     int x,y,w,h,y1,y2,x1=0,x2=0;
                     unsigned long c=0;
                     int nr = stack->popint();
-                    if(nr==2)
-                        c = stack->poplong();
+                    if(nr==2) c = stack->poplong();
                     QString id = stack->popstring();
                     if (images.contains(id)){
                         w=images[id]->width();
@@ -6388,13 +6679,19 @@ Interpreter::execByteCode() {
                                     x2=x;
                                 }
                             }
+                            QImage tmp;
                             if(y2>y1){
-                                QImage *tmp = new QImage(images[id]->copy(x1, y1, x2-x1+1, y2-y1+1));
-                                delete (images[id]);
-                                images[id] = tmp;
+                                 tmp = QImage(images[id]->copy(x1, y1, x2-x1+1, y2-y1+1));
                             }else{
-                                delete (images[id]);
-                                images[id] = new QImage();
+                                tmp = QImage();
+                            }
+
+                            if(id==drawto){
+                                painter->end();
+                                images[id]->swap(tmp);
+                                setPainterTo(images[id]);
+                            }else{
+                                images[id]->swap(tmp);
                             }
                         }
                     }else{
@@ -6406,7 +6703,6 @@ Interpreter::execByteCode() {
                 case OP_IMAGERESIZE: {
                     int h, w, nr;
                     double s;
-                    QImage *tmp;
                     nr = stack->popint();
                     if(nr==3){
                         h = stack->popint();
@@ -6416,14 +6712,20 @@ Interpreter::execByteCode() {
                     }
                     QString id = stack->popstring();
                     if (images.contains(id)){
+                        QImage tmp;
                         if(nr==3){
-                            tmp = new QImage(images[id]->scaled(w,h,Qt::IgnoreAspectRatio,imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                            tmp = QImage(images[id]->scaled(w,h,Qt::IgnoreAspectRatio,imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
                         }else{
                             QTransform transform = QTransform().scale(s,s);
-                            tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                            tmp = QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
                         }
-                        delete (images[id]);
-                        images[id] = tmp;
+                        if(id==drawto){
+                            painter->end();
+                            images[id]->swap(tmp);
+                            setPainterTo(images[id]);
+                        }else{
+                            images[id]->swap(tmp);
+                        }
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
@@ -6484,32 +6786,25 @@ Interpreter::execByteCode() {
                     int x, y, h, w;
                     QString id;
 
-                    QPainter *ian;
-                    if (printing) {
-                        ian = printdocumentpainter;
-                    } else {
-                        ian = new QPainter(graphwin->image);
-                    }
+
 
                     switch (nr){
                     case 4:
                         o = stack->popfloat();
-                        if(o!=1)
-                            ian->setOpacity(o);
                     case 3:
                         y = stack->popint();
                         x = stack->popint();
                         id = stack->popstring();
                         if (images.contains(id)){
-                            ian->drawImage(x, y, *images[id]);
+                            if(o!=1.0) painter->setOpacity(o);
+                            painter->drawImage(x, y, *images[id]);
+                            if(o!=1.0) painter->setOpacity(1.0);
                         }else{
                             error->q(ERROR_IMAGERESOURCE);
                         }
                         break;
                     case 6:
                         o = stack->popfloat();
-                        if(o!=1)
-                            ian->setOpacity(o);
                     case 5:
                         h = stack->popint();
                         w = stack->popint();
@@ -6518,29 +6813,23 @@ Interpreter::execByteCode() {
                         id = stack->popstring();
                         if (images.contains(id)){
                             bool r=false;
-                            if (printing)
-                                r = ian->testRenderHint(QPainter::SmoothPixmapTransform);
-                            ian->setRenderHint(QPainter::SmoothPixmapTransform,imageSmooth);
+                            r = painter->testRenderHint(QPainter::SmoothPixmapTransform);
+                            painter->setRenderHint(QPainter::SmoothPixmapTransform,imageSmooth);
+                            if(o!=1.0) painter->setOpacity(o);
                             if(w<0 || h<0){
-                                ian->drawImage(QRectF(x,y,w<0?w*-1:w,h<0?h*-1:h), images[id]->mirrored(w<0, h<0), QRectF(0,0,images[id]->width(),images[id]->height()));
+                                painter->drawImage(QRectF(x,y,w<0?w*-1:w,h<0?h*-1:h), images[id]->mirrored(w<0, h<0), QRectF(0,0,images[id]->width(),images[id]->height()));
                             }else{
-                                ian->drawImage(QRectF(x,y,w,h), *images[id], QRectF(0,0,images[id]->width(),images[id]->height()));
+                                painter->drawImage(QRectF(x,y,w,h), *images[id], QRectF(0,0,images[id]->width(),images[id]->height()));
                             }
-                            if (printing)
-                                ian->setRenderHints(QPainter::SmoothPixmapTransform, r);
+                            painter->setRenderHints(QPainter::SmoothPixmapTransform, r);
+                            if (o!=1.0) painter->setOpacity(1.0);
                         }else{
                             error->q(ERROR_IMAGERESOURCE);
                         }
                         break;
                     }
 
-                    if (!printing) {
-                        ian->end();
-                        delete ian;
-                        if (!fastgraphics) waitForGraphics();
-                    }else{
-                        if (o!=1.0) ian->setOpacity(1.0);
-                    }
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
                 }
                 break;
 
@@ -6550,9 +6839,14 @@ Interpreter::execByteCode() {
                     bool w = stack->popbool();
                     QString id = stack->popstring();
                     if (images.contains(id)){
-                        QImage *tmp = new QImage(images[id]->mirrored(w, h));
-                        delete (images[id]);
-                        images[id] = tmp;
+                        QImage tmp = QImage(images[id]->mirrored(w, h));
+                        if(id==drawto){
+                            painter->end();
+                            images[id]->swap(tmp);
+                            setPainterTo(images[id]);
+                        }else{
+                            images[id]->swap(tmp);
+                        }
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
@@ -6565,9 +6859,14 @@ Interpreter::execByteCode() {
                     if (images.contains(id)){
                         QTransform rot;
                         rot.rotateRadians(d);
-                        QImage *tmp = new QImage(images[id]->transformed(rot, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
-                        delete (images[id]);
-                        images[id] = tmp;
+                        QImage tmp = QImage(images[id]->transformed(rot, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
+                        if(id==drawto){
+                            painter->end();
+                            images[id]->swap(tmp);
+                            setPainterTo(images[id]);
+                        }else{
+                            images[id]->swap(tmp);
+                        }
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
@@ -6582,14 +6881,6 @@ Interpreter::execByteCode() {
 
                 case OP_IMAGECENTERED: {
                     double o=1, r=0, s=1, y=0, x=0;
-
-                    QPainter *ian;
-                    if (printing) {
-                        ian = printdocumentpainter;
-                    } else {
-                        ian = new QPainter(graphwin->image);
-                    }
-
                     int nr = stack->popint(); // number of arguments (3-6)
                     switch(nr){
                         case 6  :
@@ -6606,24 +6897,16 @@ Interpreter::execByteCode() {
                     if (images.contains(id)){
                         QTransform transform = QTransform().translate(images[id]->width()/2, images[id]->height()/2).rotateRadians(r).scale(s,s);
                         QImage *tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
-                        if(o!=1)
-                            ian->setOpacity(o);
-
-                        ian->drawImage(x-(tmp->width()/2),y-(tmp->height()/2), *tmp);
+                        if(o!=1.0) painter->setOpacity(o);
+                        painter->drawImage(x-(tmp->width()/2),y-(tmp->height()/2), *tmp);
                         delete tmp;
-
+                        if (o!=1.0) painter->setOpacity(1.0);
 
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
 
-                    if (!printing) {
-                        ian->end();
-                        delete ian;
-                        if (!fastgraphics) waitForGraphics();
-                    }else{
-                        if (o!=1.0) ian->setOpacity(1.0);
-                    }
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
                 }
                 break;
 
@@ -6631,6 +6914,7 @@ Interpreter::execByteCode() {
                     QString id = stack->popstring();
                     if(id.startsWith("image:")){
                         if (images.contains(id)){
+                            if(drawto==id) setGraph("");
                             delete(images[id]);
                             images.remove(id);
                         }else{
@@ -6658,13 +6942,6 @@ Interpreter::execByteCode() {
                     int x1 = stack->popint();
                     QString id = stack->popstring();
 
-                    QPainter *ian;
-                    if (printing) {
-                        ian = printdocumentpainter;
-                    } else {
-                        ian = new QPainter(graphwin->image);
-                    }
-
                     if (images.contains(id)){
                         double w = images[id]->width();
                         double h = images[id]->height();
@@ -6674,8 +6951,6 @@ Interpreter::execByteCode() {
                         QTransform transform;
                         QTransform::quadToQuad(polygon1,polygon2,transform);
                         QImage *tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
-                        if(o!=1)
-                            ian->setOpacity(o);
 
                         if(x1>x2) x1=x2;
                         if(x1>x3) x1=x3;
@@ -6684,24 +6959,24 @@ Interpreter::execByteCode() {
                         if(y1>y3) y1=y3;
                         if(y1>y4) y1=y4;
 
-                        ian->drawImage((int) x1, (int) y1, *tmp);
+                        if(o!=1.0) painter->setOpacity(o);
+                        painter->drawImage((int) x1, (int) y1, *tmp);
                         delete tmp;
-
+                        if (o!=1.0) painter->setOpacity(1.0);
 
                     }else{
                         error->q(ERROR_IMAGERESOURCE);
                     }
 
-                    if (!printing) {
-                        ian->end();
-                        delete ian;
-                        if (!fastgraphics) waitForGraphics();
-                    }else{
-                        if (o!=1.0) ian->setOpacity(1.0);
-                    }
+                    if (!fastgraphics && drawingOnScreen) waitForGraphics();
                 }
                 break;
 
+                case OP_SETGRAPH: {
+                    QString id = stack->popstring();
+                    setGraph(id);
+                }
+                break;
 
 
 

@@ -347,9 +347,10 @@ void
 RunController::goutputReady() {
     mymutex->lock();
     graphwin->updateScreenImage();
-    graphwin->repaint();
+    //graphwin->repaint();
     waitCond->wakeAll();
     mymutex->unlock();
+    graphwin->repaint();
 }
 
 void
