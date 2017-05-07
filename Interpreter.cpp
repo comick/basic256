@@ -6616,69 +6616,37 @@ Interpreter::execByteCode() {
                         w=images[id]->width();
                         h=images[id]->height();
                         if(w>0 && h>0){
-                            if(nr==2){
-                                for(y=0;y<h;y++){
-                                    for(x=0;x<w;x++){
-                                        if(images[id]->pixel(x,y)!=c) break;
-                                    }
+                           for(y=0;y<h;y++){
+                                for(x=0;x<w;x++){
+                                    if(images[id]->pixel(x,y)!=c) break;
+                                }
                                 if(x<w) break;
-                                }
-                                y1=y;
-                                for(y=h-1;y>y1;y--){
-                                    for(x=0;x<w;x++){
-                                        if(images[id]->pixel(x,y)!=c) break;
-                                    }
-                                if(x<w) break;
-                                }
-                                y2=y;
-                                if(y1!=y2){
-                                    for(x=0;x<w;x++){
-                                        for(y=y1;y<y2;y++){
-                                            if(images[id]->pixel(x,y)!=c) break;
-                                        }
-                                    if(y<y2) break;
-                                    }
-                                    x1=x;
-                                    for(x=w-1;x>x1;x--){
-                                        for(y=y1;y<y2;y++){
-                                            if(images[id]->pixel(x,y)!=c) break;
-                                        }
-                                    if(y<y2) break;
-                                    }
-                                    x2=x;
-                                }
-                            }else{
-                                for(y=0;y<h;y++){
-                                    for(x=0;x<w;x++){
-                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
-                                    }
-                                if(x<w) break;
-                                }
-                                y1=y;
-                                for(y=h-1;y>y1;y--){
-                                    for(x=0;x<w;x++){
-                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
-                                    }
-                                if(x<w) break;
-                                }
-                                y2=y;
-                                if(y1!=y2){
-                                    for(x=0;x<w;x++){
-                                        for(y=y1;y<y2;y++){
-                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
-                                        }
-                                    if(y<y2) break;
-                                    }
-                                    x1=x;
-                                    for(x=w-1;x>x1;x--){
-                                        for(y=y1;y<y2;y++){
-                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
-                                        }
-                                    if(y<y2) break;
-                                    }
-                                    x2=x;
-                                }
                             }
+                            y1=y;
+                            for(y=h-1;y>y1;y--){
+                                for(x=0;x<w;x++){
+                                    if(images[id]->pixel(x,y)!=c) break;
+                                }
+                                if(x<w) break;
+                            }
+                            y2=y;
+                            if(y1!=y2){
+                                for(x=0;x<w;x++){
+                                    for(y=y1;y<y2;y++){
+                                        if(images[id]->pixel(x,y)!=c) break;
+                                    }
+                                    if(y<y2) break;
+                                }
+                                x1=x;
+                                for(x=w-1;x>x1;x--){
+                                    for(y=y1;y<y2;y++){
+                                        if(images[id]->pixel(x,y)!=c) break;
+                                    }
+                                    if(y<y2) break;
+                                }
+                                x2=x;
+                            }
+                            //
                             QImage tmp;
                             if(y2>y1){
                                  tmp = QImage(images[id]->copy(x1, y1, x2-x1+1, y2-y1+1));

@@ -45,13 +45,14 @@
 # 20160908	j.m.reneau		change sprite for new slice logic
 #							added serialize and unserialize test to arrays
 # 20161117  j.m.reneau      adjusted function calling for ref defined at call
+# 20170506  j.m.reneau      added image... test
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1999972)
+call versiontest(1999977)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -119,6 +120,12 @@ section_graphics:
 call section("Basic Graphics")
 ###################################################
 include "testsuite_graphics_include.kbs"
+
+section_image:
+###################################################
+call section("Image... Statements")
+###################################################
+include "testsuite_image_include.kbs"
 
 section_sound:
 ###################################################
