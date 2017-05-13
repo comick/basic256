@@ -40,6 +40,7 @@
 
 #include <QElapsedTimer>
 #include <QDebug>
+#include <QProcess>
 
 
 #include <QtPrintSupport/QPrinter>
@@ -139,6 +140,8 @@ class Interpreter : public QThread
 		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
 		QString returnString;		// return value from runcontroller emit
 		int returnInt;			// return value from runcontroller emit
+        int settingsAllowPort;
+        int settingsAllowSystem;
 
     public slots:
 		int execByteCode();
@@ -148,7 +151,7 @@ class Interpreter : public QThread
 	signals:
 		void debugNextStep();
 		void fastGraphics();
-		void stopRun();
+        //void stopRun();
         void stopRunFinalized(bool);
 		void goutputReady();
 		void outputReady(QString);
@@ -158,7 +161,7 @@ class Interpreter : public QThread
 		void getKey();
 		void playSounds(int, int*);
 		void setVolume(int);
-		void executeSystem(QString);
+        //void executeSystem(QString);
 		void speakWords(QString);
 		void goToLine(int);
 		void seekLine(int);
@@ -171,6 +174,8 @@ class Interpreter : public QThread
 		void dialogAlert(QString);
 		void dialogConfirm(QString, int);
         void dialogPrompt(QString, QString);
+        void dialogAllowPortInOut(QString);
+        void dialogAllowSystem(QString);
         void playSound(QString, bool);
         void playSound(std::vector<std::vector<double>>, bool);
         void loadSoundFromArray(QString, QByteArray*);
@@ -269,6 +274,19 @@ class Interpreter : public QThread
         QMap <QString, QImage*> images;
         int lastImageId;
         bool imageSmooth;
+
+        int settingsDebugSpeed;
+        bool settingsAllowSetting;
+        int settingsSettingsAccess;
+        int settingsSettingsMax;
+        QString programName;
+        int settingsPrinterResolution;
+        int settingsPrinterPrinter;
+        int settingsPrinterPaper;
+        QString settingsPrinterPdfFile;
+        int settingsPrinterOrient;
+        QMap<QString, QMap<QString, QString>> fakeSettings;
+        QProcess *sys;
 
 };
 

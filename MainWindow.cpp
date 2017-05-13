@@ -733,7 +733,7 @@ void MainWindow::setRunState(int state) {
     // run menu
     runact->setEnabled(state==RUNSTATESTOP);
     debugact->setEnabled(state==RUNSTATESTOP);
-    stepact->setEnabled(state==RUNSTATEDEBUG);
+    stepact->setEnabled(state==RUNSTATEDEBUG || state==RUNSTATERUNDEBUG);
     bpact->setEnabled(state==RUNSTATEDEBUG);
     stopact->setEnabled(state!=RUNSTATESTOP && state!=RUNSTATESTOPING);
     clearbreakpointsact->setEnabled(state!=RUNSTATERUN);
@@ -827,11 +827,12 @@ void MainWindow::updateRecent() {
     if (guiState==GUISTATENORMAL) {
         SETTINGS;
         settings.beginGroup(SETTINGSGROUPHIST);
+        QString path = QDir::currentPath() + "/";
         for (int i=0; i<SETTINGSGROUPHISTN; i++) {
             QString fn = settings.value(QString::number(i), "").toString().trimmed();
             if(!fn.isEmpty()){
                 recentfiles_act[counter]->setData(fn);
-                QString path = QDir::currentPath() + "/";
+                recentfiles_act[counter]->setStatusTip(fn);
                 if (QString::compare(path, fn.left(path.length()))==0) {
                     fn = fn.right(fn.length()-path.length());
                 }

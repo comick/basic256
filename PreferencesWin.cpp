@@ -31,14 +31,16 @@
 PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     :QDialog(parent) {
 
+    settingsbrowser = NULL;
+
     int r=0, i;
     SETTINGS;
 
     // *******************************************************************************************
     // build the advanced tab
     if (showAdvanced) {
-        advancedtablayout = new QGridLayout();
-        advancedtabwidget = new QWidget();
+        advancedtablayout = new QGridLayout(this);
+        advancedtabwidget = new QWidget(this);
         advancedtabwidget->setLayout(advancedtablayout);
         r=0;
         //
@@ -51,31 +53,88 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
         advancedtablayout->addWidget(passwordinput,r,2,1,2);
         //
         r++;
-        systemcheckbox = new QCheckBox(tr("Allow SYSTEM statement"),this);
-        systemcheckbox->setChecked(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool());
-        advancedtablayout->addWidget(systemcheckbox,r,2,1,2);
-        //
-        r++;
-        settingcheckbox = new QCheckBox(tr("Allow GETSETTING/SETSETTING statements"),this);
-        settingcheckbox->setChecked(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool());
-        advancedtablayout->addWidget(settingcheckbox,r,2,1,2);
+        allowsystemlabel = new QLabel(tr("Allow SYSTEM statement:"), this);
+        advancedtablayout->addWidget(allowsystemlabel,r,1,1,1);
+        allowsystemcombo = new QComboBox(this);
+        //allowsystemcombo->addItem(tr("Ignore"), -1);
+        allowsystemcombo->addItem(tr("Do not allow"), 0);
+        allowsystemcombo->addItem(tr("Ask confirmation from user"), 1);
+        allowsystemcombo->addItem(tr("Allow"), 2);
+        int s = settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toInt();
+        int system = allowsystemcombo->findData(s);
+        if (system != -1) allowsystemcombo->setCurrentIndex(system);
+        advancedtablayout->addWidget(allowsystemcombo,r,2,1,2);
         //
 #ifdef WIN32
 #ifndef WIN32PORTABLE
         r++;
-        portcheckbox = new QCheckBox(tr("Allow PORTIN/PORTOUT statements"),this);
-        portcheckbox->setChecked(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool());
-        advancedtablayout->addWidget(portcheckbox,r,2,1,2);
+        allowportlabel = new QLabel(tr("Allow PORTIN/PORTOUT statements:"), this);
+        advancedtablayout->addWidget(allowportlabel,r,1,1,1);
+        allowportcombo = new QComboBox(this);
+        //allowportcombo->addItem(tr("Ignore"), -1);
+        allowportcombo->addItem(tr("Do not allow"), 0);
+        allowportcombo->addItem(tr("Ask confirmation from user"), 1);
+        allowportcombo->addItem(tr("Allow"), 2);
+        int p = settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toInt();
+        int port = allowportcombo->findData(p);
+        if (port != -1) allowportcombo->setCurrentIndex(port);
+        advancedtablayout->addWidget(allowportcombo,r,2,1,2);
 #endif
 #endif
         //
+        /*
+        r++;
+        QFrame *separator = new QFrame;
+        separator->setFrameShape(QFrame::HLine);
+        separator->setFrameShadow(QFrame::Sunken);
+        advancedtablayout->addWidget(separator,r,1,1,3);
+        */
+        //
+        r++;
+        settingsaccesslabel = new QLabel(tr("GETSETTING/SETSETTING access level:"), this);
+        advancedtablayout->addWidget(settingsaccesslabel,r,1,1,1);
+        settingsaccesscombo = new QComboBox(this);
+        settingsaccesscombo->addItem(tr("Get / set only owned settings"), 0);
+        settingsaccesscombo->addItem(tr("Get any settings / set only owned settings"), 1);
+        settingsaccesscombo->addItem(tr("Full access (get/set) to settings"), 2);
+        int l = settings.value(SETTINGSSETTINGSACCESS, SETTINGSSETTINGSACCESSDEFAULT).toInt();
+        int index = settingsaccesscombo->findData(l);
+        if (index != -1) settingsaccesscombo->setCurrentIndex(index);
+        advancedtablayout->addWidget(settingsaccesscombo,r,2,1,2);
+        //
+        r++;
+        settingcheckbox = new QCheckBox(tr("Allow programs to use persistent settings (SETSETTING statement)"),this);
+        settingcheckbox->setChecked(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool());
+        advancedtablayout->addWidget(settingcheckbox,r,2,1,2);
+        //
+        r++;
+        browsesaveddata = new QPushButton(tr("Browse persistent settings"), this);
+        connect(browsesaveddata, SIGNAL(clicked()), this, SLOT (clickBrowseSavedData()));
+        advancedtablayout->addWidget(browsesaveddata,r,2,1,1);
+        clearsaveddata = new QPushButton(tr("Clear all persistent settings"), this);
+        connect(clearsaveddata, SIGNAL(clicked()), this, SLOT (clickClearSavedData()));
+        advancedtablayout->addWidget(clearsaveddata,r,3,1,1);
+        //
+        r++;
+        settingsmaxlabel = new QLabel(tr("Max number of settings for each program:"), this);
+        advancedtablayout->addWidget(settingsmaxlabel,r,1,1,1);
+        settingsmaxcombo = new QComboBox(this);
+        settingsmaxcombo->addItem(tr("No limit"), 0);
+        settingsmaxcombo->addItem(tr("50 keys"), 50);
+        settingsmaxcombo->addItem(tr("100 keys"), 100);
+        settingsmaxcombo->addItem(tr("200 keys"), 200);
+        int m = settings.value(SETTINGSSETTINGSMAX, SETTINGSSETTINGSMAXDEFAULT).toInt();
+        int max = settingsmaxcombo->findData(m);
+        if (max != -1) settingsmaxcombo->setCurrentIndex(max);
+        advancedtablayout->addWidget(settingsmaxcombo,r,2,1,2);
+
     }
 
 
     // *******************************************************************************************
     // build the user tab
-    usertablayout = new QGridLayout();
-    usertabwidget = new QWidget();
+    usertablayout = new QGridLayout(this);
+    usertabwidget = new QWidget(this);
     usertabwidget->setLayout(usertablayout);
     r=0;
     // Startup - restore last windows position on start or check for update
@@ -93,9 +152,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     r++;
     {
         int settypeconv;
-        typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"));
+        typeconvlabel = new QLabel(tr("Runtime handling of bad type conversions:"), this);
         usertablayout->addWidget(typeconvlabel,r,1,1,1);
-        typeconvcombo = new QComboBox();
+        typeconvcombo = new QComboBox(this);
         typeconvcombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
         typeconvcombo->addItem(tr("Warn"), SETTINGSERRORWARN);
         typeconvcombo->addItem(tr("Error"), SETTINGSERROR);
@@ -112,9 +171,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     r++;
     {
         int setvarnotassigned;
-        varnotassignedlabel = new QLabel(tr("Runtime handling of unassigned variables:"));
+        varnotassignedlabel = new QLabel(tr("Runtime handling of unassigned variables:"), this);
         usertablayout->addWidget(varnotassignedlabel,r,1,1,1);
-        varnotassignedcombo = new QComboBox();
+        varnotassignedcombo = new QComboBox(this);
         varnotassignedcombo->addItem(tr("Ignore"), SETTINGSERRORNONE);
         varnotassignedcombo->addItem(tr("Warn"), SETTINGSERRORWARN);
         varnotassignedcombo->addItem(tr("Error"), SETTINGSERROR);
@@ -142,7 +201,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     decdigslabellayout->addWidget(decdigsvalue);
     decdigslabellayout->addStretch();
 
-    decdigsslider = new QSlider(Qt::Horizontal);
+    decdigsslider = new QSlider(Qt::Horizontal, this);
 	decdigsslider->setMinimum(SETTINGSDECDIGSMIN);
 	decdigsslider->setMaximum(SETTINGSDECDIGSMAX);
     decdigsslider->setSingleStep(1);
@@ -150,7 +209,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     QLabel *decdigsbefore = new QLabel(QString::number(SETTINGSDECDIGSMIN),this);
     QLabel *decdigsafter = new QLabel(QString::number(SETTINGSDECDIGSMAX),this);
     connect(decdigsslider, SIGNAL(valueChanged(int)), this, SLOT(setDigitsValue(int)));
-	QHBoxLayout * decdigssliderlayout = new QHBoxLayout();
+    QHBoxLayout * decdigssliderlayout = new QHBoxLayout();
 	decdigssliderlayout->addWidget(decdigsbefore);
 	decdigssliderlayout->addWidget(decdigsslider);
 	decdigssliderlayout->addWidget(decdigsafter);
@@ -180,13 +239,13 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     debugspeedlabellayout->addWidget(debugspeedvalue);
     debugspeedlabellayout->addStretch();
 
-    debugspeedslider = new QSlider(Qt::Horizontal);
+    debugspeedslider = new QSlider(Qt::Horizontal, this);
 	debugspeedslider->setMinimum(SETTINGSDEBUGSPEEDMIN);
 	debugspeedslider->setMaximum(SETTINGSDEBUGSPEEDMAX);
 	QLabel *debugspeedbefore = new QLabel(tr("Fast"),this);
 	QLabel *debugspeedafter = new QLabel(tr("Slow"),this);
     connect(debugspeedslider, SIGNAL(valueChanged(int)), this, SLOT(setDebugSpeedValue(int)));
-	QHBoxLayout * debugspeedsliderlayout = new QHBoxLayout();
+    QHBoxLayout * debugspeedsliderlayout = new QHBoxLayout();
 	debugspeedsliderlayout->addWidget(debugspeedbefore);
 	debugspeedsliderlayout->addWidget(debugspeedslider);
 	debugspeedsliderlayout->addWidget(debugspeedafter);
@@ -201,7 +260,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     // *******************************************************************************************
     // build the sound tab
     soundtablayout = new QGridLayout();
-    soundtabwidget = new QWidget();
+    soundtabwidget = new QWidget(this);
     soundtabwidget->setLayout(soundtablayout);
     r=0;
 
@@ -216,7 +275,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     soundvolumelabellayout->addWidget(soundvolumelabel);
     soundvolumelabellayout->addWidget(soundvolumevalue);
     soundvolumelabellayout->addStretch();
-    soundvolumeslider = new QSlider(Qt::Horizontal);
+    soundvolumeslider = new QSlider(Qt::Horizontal,this);
     soundvolumeslider->setMinimum(SETTINGSSOUNDVOLUMEMIN);
     soundvolumeslider->setMaximum(SETTINGSSOUNDVOLUMEMAX);
     soundvolumeslider->setSingleStep(1);
@@ -241,9 +300,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     r++;
     {
         int setsoundsamplerate;
-        soundsampleratelabel = new QLabel(tr("Sound sample rate:"));
+        soundsampleratelabel = new QLabel(tr("Sound sample rate:"),this);
         soundtablayout->addWidget(soundsampleratelabel,r,1,1,1);
-        soundsampleratecombo = new QComboBox();
+        soundsampleratecombo = new QComboBox(this);
         soundsampleratecombo->addItem(tr("44100 Hz"), 44100);
         soundsampleratecombo->addItem(tr("32000 Hz"), 32000);
         soundsampleratecombo->addItem(tr("22050 Hz"), 22050);
@@ -271,7 +330,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     soundnormalizelabellayout->addWidget(soundnormalizelabel);
     soundnormalizelabellayout->addWidget(soundnormalizevalue);
     soundnormalizelabellayout->addStretch();
-    soundnormalizeslider = new QSlider(Qt::Horizontal);
+    soundnormalizeslider = new QSlider(Qt::Horizontal, this);
     soundnormalizeslider->setMinimum(SETTINGSSOUNDNORMALIZEMIN/10);
     soundnormalizeslider->setMaximum(SETTINGSSOUNDNORMALIZEMAX/10);
     soundnormalizeslider->setSingleStep(1);
@@ -303,7 +362,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     soundvolumerestorelabellayout->addWidget(soundvolumerestorelabel);
     soundvolumerestorelabellayout->addWidget(soundvolumerestorevalue);
     soundvolumerestorelabellayout->addStretch();
-    soundvolumerestoreslider = new QSlider(Qt::Horizontal);
+    soundvolumerestoreslider = new QSlider(Qt::Horizontal,this);
     soundvolumerestoreslider->setMinimum(SETTINGSSOUNDVOLUMERESTOREMIN/10);
     soundvolumerestoreslider->setMaximum(SETTINGSSOUNDVOLUMERESTOREMAX/10);
     soundvolumerestoreslider->setSingleStep(1);
@@ -343,9 +402,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 #endif
 
         QString setvoice;
-        voicelabel = new QLabel(tr("SAY Voice:"));
+        voicelabel = new QLabel(tr("SAY Voice:"),this);
         soundtablayout->addWidget(voicelabel,r,1,1,1);
-        voicecombo = new QComboBox();
+        voicecombo = new QComboBox(this);
 
         const espeak_VOICE **voices;
         voices = espeak_ListVoices(NULL);
@@ -371,15 +430,15 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     // *******************************************************************************************
     // build the printer tab
     printertablayout = new QGridLayout();
-    printertabwidget = new QWidget();
+    printertabwidget = new QWidget(this);
     printertabwidget->setLayout(printertablayout);
     r=0;
     {
         int dflt = -1;
         int setprinter;
-        printerslabel = new QLabel(tr("Printer:"));
+        printerslabel = new QLabel(tr("Printer:"),this);
         printertablayout->addWidget(printerslabel,r,1,1,1);
-        printerscombo = new QComboBox();
+        printerscombo = new QComboBox(this);
         // build list of printers
         QList<QPrinterInfo> printerList=QPrinterInfo::availablePrinters();
         for (int i=0; i< printerList.count(); i++) {
@@ -401,9 +460,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     r++;
     {
         int setpaper;
-        paperlabel = new QLabel(tr("Paper:"));
+        paperlabel = new QLabel(tr("Paper:"),this);
         printertablayout->addWidget(paperlabel,r,1,1,1);
-        papercombo = new QComboBox();
+        papercombo = new QComboBox(this);
         papercombo->addItem("A0 (841 x 1189 mm)",	QPrinter::A0);
         papercombo->addItem("A1 (594 x 841 mm)", QPrinter::A1);
         papercombo->addItem("A2 (420 x 594 mm", QPrinter::A2);
@@ -456,9 +515,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     //
     r++;
     {
-        resolutiongroup = new QGroupBox(tr("Printer Resolution:"));
-        resolutionhigh = new QRadioButton(tr("High"));
-        resolutionscreen = new QRadioButton(tr("Screen"));
+        resolutiongroup = new QGroupBox(tr("Printer Resolution:"),this);
+        resolutionhigh = new QRadioButton(tr("High"),this);
+        resolutionscreen = new QRadioButton(tr("Screen"),this);
         QVBoxLayout *resolutionbox = new QVBoxLayout;
         resolutionbox->addWidget(resolutionhigh);
         resolutionbox->addWidget(resolutionscreen);
@@ -470,9 +529,9 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     //
     r++;
     {
-        orientgroup = new QGroupBox(tr("Orientation:"));
-        orientportrait = new QRadioButton(tr("Portrait"));
-        orientlandscape = new QRadioButton(tr("Landscape"));
+        orientgroup = new QGroupBox(tr("Orientation:"),this);
+        orientportrait = new QRadioButton(tr("Portrait"),this);
+        orientlandscape = new QRadioButton(tr("Landscape"),this);
         QVBoxLayout *orientbox = new QVBoxLayout;
         orientbox->addWidget(orientportrait);
         orientbox->addWidget(orientlandscape);
@@ -487,7 +546,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     // *******************************************************************************************
     // *******************************************************************************************
     // now that we have the tab layouts built - make the main window
-    QTabWidget * tabs = new QTabWidget();
+    QTabWidget * tabs = new QTabWidget(this);
     tabs->addTab(usertabwidget,tr("User"));
     tabs->addTab(soundtabwidget,tr("Sound"));
     tabs->addTab(printertabwidget,tr("Printing"));
@@ -508,8 +567,6 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 
     move(settings.value(SETTINGSPREFPOS, QPoint(200, 200)).toPoint());
     setWindowTitle(tr("BASIC-256 Preferences and Settings"));
-    this->show();
-
 }
 
 void PreferencesWin::clickCancelButton() {
@@ -546,11 +603,14 @@ void PreferencesWin::clickSaveButton() {
                 settings.setValue(SETTINGSPREFPASSWORD, pw);
             }
             //
-            settings.setValue(SETTINGSALLOWSYSTEM, systemcheckbox->isChecked());
+            settings.setValue(SETTINGSALLOWSYSTEM, allowsystemcombo->itemData(allowsystemcombo->currentIndex()));
             settings.setValue(SETTINGSALLOWSETTING, settingcheckbox->isChecked());
+            settings.setValue(SETTINGSSETTINGSACCESS, settingsaccesscombo->itemData(settingsaccesscombo->currentIndex()));
+            settings.setValue(SETTINGSSETTINGSMAX, settingsmaxcombo->itemData(settingsmaxcombo->currentIndex()));
 #ifdef WIN32
 #ifndef WIN32PORTABLE
-            settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
+            settings.setValue(SETTINGSALLOWPORT, allowportcombo->itemData(allowportcombo->currentIndex()));
+            //settings.setValue(SETTINGSALLOWPORT, portcheckbox->isChecked());
 #endif
 #endif
         }
@@ -620,7 +680,6 @@ void PreferencesWin::closeEvent(QCloseEvent *e) {
     SETTINGS;
     //settings.setValue(SETTINGSPREFSIZE, size());
     settings.setValue(SETTINGSPREFPOS, pos());
-
 }
 
 void PreferencesWin::setDigitsValue(int i){
@@ -656,5 +715,115 @@ void PreferencesWin::setVolumeRestoreValue(int i){
     QToolTip::showText(QCursor::pos(), t);
     soundvolumerestorevalue->setText(t);
     soundvolumerestoreslider->setToolTip(t);
+}
+
+void PreferencesWin::clickClearSavedData() {
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("Delete persistent settings"), tr("Do you really want to delete persistent settings for all programs?"), QMessageBox::Yes|QMessageBox::No, QMessageBox::No)){
+        SETTINGS;
+        settings.beginGroup(SETTINGSGROUPUSER);
+        settings.remove("");
+        settings.endGroup();
+    }
+}
+
+void PreferencesWin::clickBrowseSavedData() {
+    settingsbrowser = new SettingsBrowser(this);
+    settingsbrowser->exec();
+    delete settingsbrowser;
+}
+
+
+
+
+SettingsBrowser::SettingsBrowser (QWidget * parent):QDialog(parent) {
+    setWindowTitle(tr("BASIC-256 Persistent settings"));
+    QGridLayout *layout = new QGridLayout(this);
+    setLayout(layout);
+    QFileIconProvider iconProvider;
+    treeWidgetSettings = new QTreeWidget(this);
+    treeWidgetSettings->setColumnCount(2);
+    treeWidgetSettings->setHeaderLabels(QStringList() << tr("Program/Key") << tr("Value"));
+    QList<QTreeWidgetItem *> items;
+
+    SETTINGS;
+    settings.beginGroup(SETTINGSGROUPUSER);
+    QStringList applications = settings.childGroups();
+
+    for (int p = 0; p < applications.size(); p++){
+        QString app(applications.at(p));
+        settings.beginGroup(app);
+        QStringList keys = settings.childKeys();
+        QTreeWidgetItem *item = new QTreeWidgetItem(treeWidgetSettings, (QStringList() << app << QString::number(keys.count())) );
+        item->setFlags(item->flags() | Qt::ItemIsTristate | Qt::ItemIsUserCheckable);
+        item->setCheckState(0, Qt::Unchecked);
+        item->setIcon(0,iconProvider.icon(QFileIconProvider::Folder));
+        for (int k = 0; k < keys.size(); k++){
+            QString key(keys.at(k));
+            QTreeWidgetItem *i = new QTreeWidgetItem(item, QStringList() << key << settings.value(key, "").toString());
+            i->setCheckState(0, Qt::Unchecked);
+            item->addChild(i);
+        }
+        settings.endGroup();
+        items.append(item);
+    }
+    settings.endGroup();
+    treeWidgetSettings->insertTopLevelItems(0, items);
+    treeWidgetSettings->setSortingEnabled(true);
+    treeWidgetSettings->sortItems(0, Qt::AscendingOrder);
+    treeWidgetSettings->resizeColumnToContents(0);
+    layout->addWidget(treeWidgetSettings, 1, 1, 1, 2);
+
+    deleteselectedsettings = new QPushButton(tr("Delete selected settings"), this);
+    deleteselectedsettings->setEnabled(false);
+    connect(deleteselectedsettings, SIGNAL(clicked()), this, SLOT (clickDeleteButton()));
+    layout->addWidget(deleteselectedsettings, 2, 1);
+
+    canceldeletesettings = new QPushButton(tr("Cancel"), this);
+    canceldeletesettings->setDefault(true);
+    connect(canceldeletesettings, SIGNAL(clicked()), this, SLOT (reject()));
+    layout->addWidget(canceldeletesettings,2,2);
+
+    connect(treeWidgetSettings, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT (treeWidgetCheckboxChanged()));
+}
+
+void SettingsBrowser::treeWidgetCheckboxChanged() {
+    QTreeWidgetItemIterator it(treeWidgetSettings);
+    while (*it) {
+        if ((*it)->checkState(0) != Qt::Unchecked){
+            deleteselectedsettings->setEnabled(true);
+            return;
+        }
+        ++it;
+    }
+    deleteselectedsettings->setEnabled(false);
+}
+
+void SettingsBrowser::clickDeleteButton() {
+    if(QMessageBox::Yes == QMessageBox::question(this, tr("Delete selected settings"), tr("Do you really want to delete selected persistent settings?"), QMessageBox::Yes|QMessageBox::No, QMessageBox::No)){
+        SETTINGS;
+        settings.beginGroup(SETTINGSGROUPUSER);
+
+        deleteselectedsettings->setEnabled(false);
+        int top=treeWidgetSettings->topLevelItemCount()-1;
+        while(top>=0){
+            QTreeWidgetItem *topitem = treeWidgetSettings->topLevelItem(top);
+            if(topitem->checkState(0) == Qt::Checked){
+                settings.remove(topitem->text(0));
+                delete topitem;
+            }
+            top--;
+        }
+
+        QTreeWidgetItemIterator it(treeWidgetSettings);
+        while (*it) {
+            QTreeWidgetItem * item = (*it);
+            ++it;
+            if (item->checkState(0) == Qt::Checked){
+                    settings.remove(item->parent()->text(0) + QString("/") + item->text(0));
+                    delete item;
+            }
+        }
+        settings.endGroup();
+    }
 }
 

@@ -96,20 +96,23 @@ RunController::RunController() {
 
     //signals for the Interperter (i)
     QObject::connect(i, SIGNAL(goToLine(int)), editwin, SLOT(goToLine(int)));
-    QObject::connect(i, SIGNAL(seekLine(int)), editwin, SLOT(seekLine(int)));
+    QObject::connect(i, SIGNAL(seekLine(int)), editwin, SLOT(seekLine(int)), Qt::BlockingQueuedConnection);
 
     QObject::connect(i, SIGNAL(debugNextStep()), this, SLOT(debugNextStep()));
     QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
     QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
     QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
     QObject::connect(i, SIGNAL(dialogPrompt(QString, QString)), this, SLOT(dialogPrompt(QString, QString)));
-    QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
+    QObject::connect(i, SIGNAL(dialogAllowPortInOut(QString)), this, SLOT(dialogAllowPortInOut(QString)));
+    QObject::connect(i, SIGNAL(dialogAllowSystem(QString)), this, SLOT(dialogAllowSystem(QString)));
+
+    //QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
     QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputReady()));
     QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
     QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
     QObject::connect(i, SIGNAL(outputError(QString)), this, SLOT(outputError(QString)));
-    QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
+    //QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
     QObject::connect(i, SIGNAL(stopRunFinalized(bool)), this, SLOT(stopRunFinalized(bool)));
     QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
 
@@ -245,6 +248,7 @@ RunController::executeSystem(QString text) {
 void
 RunController::startDebug() {
     if (i->isStopped()) {
+        i->debugMode = 1;
         outputClear();
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
         if (result < 0) {
@@ -254,7 +258,6 @@ RunController::startDebug() {
         }
         sound = new SoundSystem();
         i->initialize();
-        i->debugMode = 1;
         editwin->updateBreakPointsList();
         i->debugBreakPoints = editwin->breakPoints;
         mainwin->statusBar()->showMessage(tr("Running"));
@@ -276,11 +279,10 @@ RunController::debugNextStep() {
 void
 RunController::startRun() {
     if (i->isStopped()) {
-        //
+        i->debugMode = 0;
         outputClear();
         // Start Compile
         int result = i->compileProgram((editwin->toPlainText() + "\n").toUtf8().data());
-        i->debugMode = 0;
         if (result < 0) {
             stopRunFinalized(false);
             return;
@@ -356,7 +358,7 @@ RunController::goutputReady() {
 void
 RunController::stepThrough() {
     i->debugMode = 1; // step through debugging
-    mainwin->setRunState(RUNSTATERUNDEBUG);
+    mainwin->setRunState(RUNSTATEDEBUG);
     mydebugmutex->lock();
     waitDebugCond->wakeAll();
     mydebugmutex->unlock();
@@ -408,7 +410,8 @@ void
 RunController::showDocumentation() {
     if (!docwin) docwin = new DocumentationWin(mainwin);
     docwin->show();
-    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);
+    docwin->raise();
     docwin->go("");
     docwin->activateWindow();
 }
@@ -423,7 +426,7 @@ RunController::showContextDocumentation() {
     QString w = editwin->getCurrentWord();
     if (!docwin) docwin = new DocumentationWin(mainwin);
     docwin->show();
-    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);    docwin->raise();
+    if(docwin->windowState()&Qt::WindowMinimized) docwin->setWindowState(docwin->windowState()^Qt::WindowMinimized);
     docwin->raise();
     docwin->go(w);
     docwin->activateWindow();
@@ -448,9 +451,8 @@ RunController::showPreferences() {
         free(digest);
     }
     PreferencesWin *w = new PreferencesWin(mainwin, advanced);
-    w->show();
-    w->raise();
-    w->activateWindow();
+    w->exec();
+    delete w;
 }
 
 
@@ -654,3 +656,66 @@ void RunController::soundSystem(int i){
 //    waitCond->wakeAll();
 //    mymutex->unlock();
 //}
+
+void RunController::dialogAllowPortInOut(QString msg) {
+    mymutex->lock();
+    QMessageBox message(mainwin);
+    message.setWindowTitle(tr("Confirmation"));
+    message.setText(tr("Do you want to allow a PORTIN/PORTOUT command?"));
+    message.setInformativeText(msg);
+    message.setIcon(QMessageBox::Warning);
+    message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
+    message.setDefaultButton(QMessageBox::No);
+    QCheckBox *check=new QCheckBox ("Do not ask me again");
+    message.setCheckBox(check);
+    int ret = message.exec();
+    if (ret==QMessageBox::Yes) {
+        i->returnInt = 1;
+        if(message.checkBox()->isChecked()) i->settingsAllowPort = 2;
+    } else if (ret==QMessageBox::No){
+        i->returnInt = 0;
+        if(message.checkBox()->isChecked()) i->settingsAllowPort = 0;
+    } else if (ret==QMessageBox::Ignore){
+        i->returnInt = -1;
+        if(message.checkBox()->isChecked()) i->settingsAllowPort = -1;
+    } else {
+        i->returnInt = 0;
+    }
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
+
+void RunController::dialogAllowSystem(QString msg) {
+    mymutex->lock();
+    QMessageBox message(mainwin);
+    message.setWindowTitle(tr("Confirmation"));
+    message.setText(tr("Do you want to allow a SYSTEM command?"));
+    if(msg.length()>50){
+        message.setDetailedText(msg);
+        msg.truncate(45);
+        msg.append("...");
+        message.setInformativeText(msg);
+    }else{
+        message.setInformativeText(msg);
+    }
+    message.setIcon(QMessageBox::Warning);
+    message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
+    message.setDefaultButton(QMessageBox::No);
+    QCheckBox *check=new QCheckBox ("Do not ask me again");
+    message.setCheckBox(check);
+    int ret = message.exec();
+    if (ret==QMessageBox::Yes) {
+        i->returnInt = 1;
+        if(message.checkBox()->isChecked()) i->settingsAllowSystem = 2;
+    } else if (ret==QMessageBox::No){
+        i->returnInt = 0;
+        if(message.checkBox()->isChecked()) i->settingsAllowSystem = 0;
+    } else if (ret==QMessageBox::Ignore){
+        i->returnInt = -1;
+        if(message.checkBox()->isChecked()) i->settingsAllowSystem = -1;
+    } else {
+        i->returnInt = 0;
+    }
+    waitCond->wakeAll();
+    mymutex->unlock();
+}

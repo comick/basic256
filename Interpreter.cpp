@@ -613,15 +613,19 @@ Interpreter::compileProgram(char *code) {
 
 	int result = basicParse(code);
 	//
-	// display warnings from compile and free the lexing file name string
-	for(int i=0; i<numparsewarnings; i++) {
-		QString msg = tr("COMPILE WARNING");
-		if (strlen(parsewarningtablelexingfilename[i])!=0) {
-			msg += tr(" in included file ") + QString(parsewarningtablelexingfilename[i]);
-		} else {
-			emit(goToLine(parsewarningtablelinenumber[i]));
-		}
-		msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]) + tr(": ");
+    // display warnings from compile and free the lexing file name string
+        bool gotowarning = (debugMode==0);
+        // go to line only for first warning and only if program is not running in debugMode
+        // because in debugMode it already call goToLine(1) at start
+        for(int i=0; i<numparsewarnings; i++) {
+        QString msg = tr("COMPILE WARNING");
+        if (strlen(parsewarningtablelexingfilename[i])!=0) {
+            msg += tr(" in included file ") + QString(parsewarningtablelexingfilename[i]);
+        } else if(gotowarning){
+            emit(goToLine(parsewarningtablelinenumber[i]));
+            gotowarning = false;
+        }
+        msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]) + tr(": ");
 		switch(parsewarningtable[i]) {
 			case COMPWARNING_MAXIMUMWARNINGS:
 				msg += tr("The maximum number of compiler warnings have been displayed");
@@ -642,12 +646,14 @@ Interpreter::compileProgram(char *code) {
 	}
 	//
 	// now display fatal error if there is one
-	if (result != COMPERR_NONE)	{
+    bool gotoerror = true; // go to line only for first error in this file
+    if (result != COMPERR_NONE)	{
 		QString msg = tr("COMPILE ERROR");
 		if (strlen(lexingfilename)!=0) {
 			msg += tr(" in included file ") + QString(lexingfilename);
-		} else {
-			emit(goToLine(linenumber));
+        } else if(gotoerror){
+            emit(goToLine(linenumber));
+            gotoerror = false;
 		}
 		msg += tr(" on line ") + QString::number(linenumber) + tr(": ");
 		switch(result) {
@@ -975,8 +981,10 @@ Interpreter::runHalted() {
 	// event fires from runcoltroller to tell program to signal user stop
 	status = R_STOPING;
 	//
-	// force the interperter ops that block to go ahead and quit
-	
+    // force the interperter ops that block to go ahead and quit
+
+    if(sys) sys->kill();
+
 	// stop timers
     sleeper->wake();
 
@@ -993,6 +1001,22 @@ Interpreter::runHalted() {
 
 void
 Interpreter::run() {
+    //read important settings from start
+    SETTINGS;
+    settingsDebugSpeed = settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt();
+    settingsAllowSystem = settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toInt();
+    settingsAllowSetting = settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool();
+    settingsAllowPort = settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toInt();
+    settingsSettingsAccess = settings.value(SETTINGSSETTINGSACCESS, SETTINGSSETTINGSACCESSDEFAULT).toInt();
+    settingsSettingsMax = settings.value(SETTINGSSETTINGSMAX, SETTINGSSETTINGSMAXDEFAULT).toInt();
+    programName.clear();
+
+    settingsPrinterResolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
+    settingsPrinterPrinter = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
+    settingsPrinterPaper = settings.value(SETTINGSPRINTERPAPER, SETTINGSPRINTERPAPERDEFAULT).toInt();
+    settingsPrinterPdfFile = settings.value(SETTINGSPRINTERPDFFILE, "./output.pdf").toString();
+    settingsPrinterOrient = settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt();
+
     // main run loop
     isError=false;
     downloader = new BasicDownloader(error);
@@ -1001,10 +1025,6 @@ Interpreter::run() {
     sound->error = &error;
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
     onerrorstack = NULL;
-    if (debugMode!=0) {			// highlight first line correctly in debugging mode
-        emit(seekLine(2));
-        emit(seekLine(1));
-    }
     while (status != R_STOPING && execByteCode() >= 0) {} //continue
     //status = R_STOPPED;
     debugMode = 0;
@@ -1310,7 +1330,7 @@ Interpreter::execByteCode() {
 			// if error number less than the start of warnings then
 			// highlight the current line AND die
 			if (error->isFatal()) {
-				if (currentIncludeFile!="") emit(goToLine(error->line));
+                if (currentIncludeFile.isEmpty()) emit(goToLine(error->line));
 				return -1;
 			}
 		}
@@ -1861,7 +1881,7 @@ Interpreter::execByteCode() {
 							// do debug for the main program not included parts
 							// edit needs to eventually have tabs for includes and tracing and debugging
 							// would go three dimensional - but not right now
-							emit(seekLine(currentLine));
+                            emit(seekLine(currentLine));
 							if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
 								// show step and runto options
 								emit(debugNextStep());
@@ -1872,8 +1892,7 @@ Interpreter::execByteCode() {
 							} else {
 								// when debugging to breakpoint slow execution down so that the
                                 // trace on the screen keeps caught up
-                                SETTINGS;
-								sleeper->sleepMS(settings.value(SETTINGSDEBUGSPEED, SETTINGSDEBUGSPEEDDEFAULT).toInt());
+                                sleeper->sleepMS(settingsDebugSpeed);
 							}
 						}
 					}
@@ -3711,14 +3730,31 @@ Interpreter::execByteCode() {
 
 				case OP_SYSTEM: {
 					QString temp = stack->popstring();
-                    SETTINGS;
-
-					if(settings.value(SETTINGSALLOWSYSTEM, SETTINGSALLOWSYSTEMDEFAULT).toBool()) {
-						mymutex->lock();
+                    int doit = settingsAllowSystem;
+                    if(doit==1){
+                        mymutex->lock();
+                        emit(dialogAllowSystem(temp));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+                    if(doit>0) {
+                        sys = new QProcess();
+                        sys->start(temp);
+                        if (sys->waitForStarted(-1)) {
+                            if (!sys->waitForFinished(-1)) {
+                                //QByteArray result = sy.readAll();
+                            }
+                        }
+                        delete sys;
+                        sys=NULL;
+                        /*
+                        mymutex->lock();
 						emit(executeSystem(temp));
 						waitCond->wait(mymutex);
-						mymutex->unlock();
-					} else {
+                        mymutex->unlock();
+                        */
+                    } else if(doit==0){
 						error->q(ERROR_PERMISSION);
 					}
 				}
@@ -5546,38 +5582,122 @@ Interpreter::execByteCode() {
 
 				case OP_SETSETTING: {
 					QString stuff = stack->popstring();
-					QString key = stack->popstring();
-					QString app = stack->popstring();
-                    SETTINGS;
-					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
+                    QString key = stack->popstring().trimmed();
+                    QString app = stack->popstring().trimmed();
+
+                    if(app.isEmpty() || app.contains(QChar('\\')) || app.contains(QChar('/')) || app.size()>255 || QString::compare(app, "SYSTEM", Qt::CaseInsensitive)==0){
+                        error->q(ERROR_INVALIDPROGNAME);
+                        break;
+                    }
+                    if(key.isEmpty() || key.contains(QChar('\\')) || key.contains(QChar('/')) || key.size()>255){
+                        error->q(ERROR_INVALIDKEYNAME);
+                        break;
+                    }
+                    if(stuff.size()>16383){
+                        error->q(ERROR_SETTINGMAXLEN);
+                        break;
+                    }
+
+                    if(settingsSettingsAccess!=2){
+                        if(programName.isEmpty()){
+                            programName=app;
+                        }else if(programName!=app){
+                            error->q(ERROR_SETTINGSSETACCESS);
+                            break;
+                        }
+                    }
+                    if(settingsAllowSetting) {
+                        SETTINGS;
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
-						settings.setValue(key, stuff);
+                        if(stuff.isEmpty()){
+                            settings.remove(key);
+                        }else{
+                            if(settingsSettingsMax>0){
+                                QStringList list=settings.childKeys();
+                                int s=list.size();
+                                if(!(s<settingsSettingsMax || list.contains(key))){
+                                    error->q(ERROR_SETTINGMAXKEYS);
+                                    break;
+                                }
+                            }
+                            settings.setValue(key, stuff);
+                        }
 						settings.endGroup();
 						settings.endGroup();
 					} else {
-						error->q(ERROR_PERMISSION);
+                        if(stuff.isEmpty()){
+                            fakeSettings[app].remove(key);
+                        }else{
+                            if(settingsSettingsMax>0){
+                                int s=fakeSettings[app].size();
+                                if(!(s<settingsSettingsMax || fakeSettings[app].contains(key))){
+                                    error->q(ERROR_SETTINGMAXKEYS);
+                                    break;
+                                }
+                            }
+                            fakeSettings[app][key]=stuff;
+                        }
 					}
 				}
 				break;
 
 				case OP_GETSETTING: {
-					QString key = stack->popstring();
-					QString app = stack->popstring();
-                    SETTINGS;
-					if(settings.value(SETTINGSALLOWSETTING, SETTINGSALLOWSETTINGDEFAULT).toBool()) {
-						if(app==QString("SYSTEM")) {
-							stack->pushstring(settings.value(key, "").toString());
-						} else {
-							settings.beginGroup(SETTINGSGROUPUSER);
-							settings.beginGroup(app);
-							stack->pushstring(settings.value(key, "").toString());
-							settings.endGroup();
-							settings.endGroup();
-						}
-					} else {
-						error->q(ERROR_PERMISSION);
+                    QString key = stack->popstring().trimmed();
+                    QString app = stack->popstring().trimmed();
+                    if(QString::compare(app, "SYSTEM", Qt::CaseInsensitive)==0) {
+                        SETTINGS;
+                        QString v = settings.value(key, "").toString();
+                        if(v.length()!=32){
+                            //not MD5, not the password
+                            stack->pushstring(v);
+                        }else{
+                            //check if user try to get the password
+                            //user can use different keys to get the password such "////Pref//Password/" or "PREF/password"
+                            //the safest way is to compare the value with saved password to avoid user roundabouts
+                            QString p = settings.value(SETTINGSPREFPASSWORD, "").toString();
+                            if(QString::compare(v,p)==0){
+                                stack->pushstring("****");
+                            }else{
+                                stack->pushstring(v);
+                            }
+                        }
+                        break;
+                    }
+                    if(app.isEmpty() || app.contains(QChar('\\')) || app.contains(QChar('/')) || app.size()>255){
+                        error->q(ERROR_INVALIDPROGNAME);
                         stack->pushstring("");
+                        break;
+                    }
+                    if(key.isEmpty() || key.contains(QChar('\\')) || key.contains(QChar('/')) || key.size()>255){
+                        error->q(ERROR_INVALIDKEYNAME);
+                        stack->pushstring("");
+                        break;
+                    }
+
+                    if(settingsSettingsAccess==0){
+                        if(programName.isEmpty()){
+                            programName=app;
+                        }else if(programName!=app){
+                            error->q(ERROR_SETTINGSGETACCESS);
+                            stack->pushstring("");
+                            break;
+                        }
+                    }
+
+                    if(settingsAllowSetting){
+                        SETTINGS;
+                        settings.beginGroup(SETTINGSGROUPUSER);
+                        settings.beginGroup(app);
+                        stack->pushstring(settings.value(key, "").toString());
+                        settings.endGroup();
+                        settings.endGroup();
+                    } else {
+                        QString s("");
+                        if(fakeSettings.contains(app)){
+                            if(fakeSettings[app].contains(key)) s=fakeSettings[app][key];
+                        }
+                        stack->pushstring(s);
 					}
 				}
 				break;
@@ -5586,57 +5706,55 @@ Interpreter::execByteCode() {
 				case OP_PORTOUT: {
 					int data = stack->popint();
 					int port = stack->popint();
-                    SETTINGS;
-					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
-#ifdef WIN32PORTABLE
-						(void) data;
-						(void) port;
-						error->q(ERROR_NOTIMPLEMENTED);
+                    int doit = settingsAllowPort;
+                    if(doit==1){
+                        mymutex->lock();
+                        emit(dialogAllowPortInOut(QString("PORTOUT ") + QString::number(port) + ", " + QString::number(data)));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+                    if(doit>0) {
+                        if (Out32==NULL) {
+                            error->q(ERROR_NOTIMPLEMENTED);
+                        } else {
+                            Out32(port, data);
+                        }
+                    } else if(doit==0){
+                        error->q(ERROR_PERMISSION);
+                    }
 # else
-						if (Out32==NULL) {
-							(void) data;
-							(void) port;
-							error->q(ERROR_NOTIMPLEMENTED);
-						} else {
-							Out32(port, data);
-						}
-#endif
-#else
-						(void) data;
-						(void) port;
 						error->q(ERROR_NOTIMPLEMENTED);
 #endif
-					} else {
-						error->q(ERROR_PERMISSION);
-					}
 				}
 				break;
 
 				case OP_PORTIN: {
 					int data=0;
 					int port = stack->popint();
-                    SETTINGS;
-					if(settings.value(SETTINGSALLOWPORT, SETTINGSALLOWPORTDEFAULT).toBool()) {
 #ifdef WIN32
-#ifdef WIN32PORTABLE
-						(void) port;
-						error->q(ERROR_NOTIMPLEMENTED);
-# else
-						if (Inp32==NULL) {
-							(void) port;
-							error->q(ERROR_NOTIMPLEMENTED);
-						} else {
-							data = Inp32(port);
-						}
-#endif
+                    int doit = settingsAllowPort;
+                    if(doit==1){
+                        mymutex->lock();
+                        emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+
+                    if(doit>0) {
+                        if (Inp32==NULL) {
+                            error->q(ERROR_NOTIMPLEMENTED);
+                        } else {
+                            data = Inp32(port);
+                        }
+                    } else if(doit==0){
+                        error->q(ERROR_PERMISSION);
+                    }
 #else
-						(void) port;
 						error->q(ERROR_NOTIMPLEMENTED);
 #endif
-					} else {
-						error->q(ERROR_PERMISSION);
-					}
 					stack->pushint(data);
 				}
 				break;
@@ -6090,28 +6208,25 @@ Interpreter::execByteCode() {
 					if (printing) {
 						error->q(ERROR_PRINTERNOTOFF);
 					} else {
-                        SETTINGS;
-						int resolution = settings.value(SETTINGSPRINTERRESOLUTION, SETTINGSPRINTERRESOLUTIONDEFAULT).toInt();
-						int printer = settings.value(SETTINGSPRINTERPRINTER, 0).toInt();
-						int paper = settings.value(SETTINGSPRINTERPAPER, SETTINGSPRINTERPAPERDEFAULT).toInt();
-						if (printer==-1) {
+                        int printer = settingsPrinterPrinter;
+                        if (printer==-1) {
 							// pdf printer
-							printdocument = new QPrinter((QPrinter::PrinterMode) resolution);
+                            printdocument = new QPrinter((QPrinter::PrinterMode) settingsPrinterResolution);
 							printdocument->setOutputFormat(QPrinter::PdfFormat);
-							printdocument->setOutputFileName(settings.value(SETTINGSPRINTERPDFFILE, "./output.pdf").toString());
+                            printdocument->setOutputFileName(settingsPrinterPdfFile);
 
 						} else {
 							// system printer
 							QList<QPrinterInfo> printerList=QPrinterInfo::availablePrinters();
-							if (printer>=printerList.count()) printer = 0;
-							printdocument = new QPrinter(printerList[printer], (QPrinter::PrinterMode) resolution);
+                            if (printer>=printerList.count()) printer = 0;
+                            printdocument = new QPrinter(printerList[printer], (QPrinter::PrinterMode) settingsPrinterResolution);
 						}
 						if (printdocument) {
                             if(printdocument->isValid()){
                                 printdocument->setCreator(QString(SETTINGSAPP));
                                 printdocument->setDocName(editwin->winTitle);
-                                printdocument->setPaperSize((QPrinter::PaperSize) paper);
-                                printdocument->setOrientation((QPrinter::Orientation)settings.value(SETTINGSPRINTERORIENT, SETTINGSPRINTERORIENTDEFAULT).toInt());
+                                printdocument->setPaperSize((QPrinter::PaperSize) settingsPrinterPaper);
+                                printdocument->setOrientation((QPrinter::Orientation) settingsPrinterOrient);
                                 if (!setPainterTo(printdocument)) {
                                     error->q(ERROR_PRINTEROPEN);
                                     setGraph(drawto); //if drawing on printer fails, then fall back to graph area
@@ -6616,37 +6731,69 @@ Interpreter::execByteCode() {
                         w=images[id]->width();
                         h=images[id]->height();
                         if(w>0 && h>0){
-                           for(y=0;y<h;y++){
-                                for(x=0;x<w;x++){
-                                    if(images[id]->pixel(x,y)!=c) break;
-                                }
-                                if(x<w) break;
-                            }
-                            y1=y;
-                            for(y=h-1;y>y1;y--){
-                                for(x=0;x<w;x++){
-                                    if(images[id]->pixel(x,y)!=c) break;
-                                }
-                                if(x<w) break;
-                            }
-                            y2=y;
-                            if(y1!=y2){
-                                for(x=0;x<w;x++){
-                                    for(y=y1;y<y2;y++){
+                            if(nr==2){
+                                for(y=0;y<h;y++){
+                                    for(x=0;x<w;x++){
                                         if(images[id]->pixel(x,y)!=c) break;
                                     }
-                                    if(y<y2) break;
+                                if(x<w) break;
                                 }
-                                x1=x;
-                                for(x=w-1;x>x1;x--){
-                                    for(y=y1;y<y2;y++){
+                                y1=y;
+                                for(y=h-1;y>y1;y--){
+                                    for(x=0;x<w;x++){
                                         if(images[id]->pixel(x,y)!=c) break;
                                     }
-                                    if(y<y2) break;
+                                if(x<w) break;
                                 }
-                                x2=x;
+                                y2=y;
+                                if(y1!=y2){
+                                    for(x=0;x<w;x++){
+                                        for(y=y1;y<y2;y++){
+                                            if(images[id]->pixel(x,y)!=c) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x1=x;
+                                    for(x=w-1;x>x1;x--){
+                                        for(y=y1;y<y2;y++){
+                                            if(images[id]->pixel(x,y)!=c) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x2=x;
+                                }
+                            }else{
+                                for(y=0;y<h;y++){
+                                    for(x=0;x<w;x++){
+                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y1=y;
+                                for(y=h-1;y>y1;y--){
+                                    for(x=0;x<w;x++){
+                                        if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                    }
+                                if(x<w) break;
+                                }
+                                y2=y;
+                                if(y1!=y2){
+                                    for(x=0;x<w;x++){
+                                        for(y=y1;y<y2;y++){
+                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x1=x;
+                                    for(x=w-1;x>x1;x--){
+                                        for(y=y1;y<y2;y++){
+                                            if(qAlpha(images[id]->pixel(x,y))!=0) break;
+                                        }
+                                    if(y<y2) break;
+                                    }
+                                    x2=x;
+                                }
                             }
-                            //
                             QImage tmp;
                             if(y2>y1){
                                  tmp = QImage(images[id]->copy(x1, y1, x2-x1+1, y2-y1+1));

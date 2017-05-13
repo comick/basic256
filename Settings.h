@@ -76,13 +76,20 @@
 	// Replace window
 	#define SETTINGSREPLACEPOS "Replace/Pos"
 
-	// permissions
+    // permissions (SYSTEM and PORTIN/PORTOUT)
 	#define SETTINGSALLOWSYSTEM "Allow/System"
-	#define SETTINGSALLOWSYSTEMDEFAULT true
-	#define SETTINGSALLOWSETTING "Allow/Setting"
-	#define SETTINGSALLOWSETTINGDEFAULT true
+    #define SETTINGSALLOWSYSTEMDEFAULT 0
 	#define SETTINGSALLOWPORT "Allow/Port"
-	#define SETTINGSALLOWPORTDEFAULT true
+    #define SETTINGSALLOWPORTDEFAULT 2
+    //permissions (setsetting/getsetting)
+    #define SETTINGSSETTINGSACCESS "Settings/AccesLevel"
+    #define SETTINGSSETTINGSACCESSDEFAULT 0
+    #define SETTINGSSETTINGSMAX "Settings/MaxKeys"
+    #define SETTINGSSETTINGSMAXDEFAULT 100
+    #define SETTINGSALLOWSETTING "Settings/Allow"
+    #define SETTINGSALLOWSETTINGDEFAULT true
+    // store user settings (setsetting/getsetting) in seperate group
+    #define SETTINGSGROUPUSER "UserSettings"
 
 	// error reporting options
 	#define SETTINGSERRORNONE 0
@@ -142,8 +149,6 @@
 	#define SETTINGSGROUPHIST "SaveHistory"
     #define SETTINGSGROUPHISTN 10
 
-	// store user settings (setsetting/getsetting) in seperate group
-	#define SETTINGSGROUPUSER "UserSettings"
 
 
     // You need an SETTINGS; statement when you are using settings in a function

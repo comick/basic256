@@ -91,7 +91,7 @@ BasicEdit::cursorMove() {
 
 void
 BasicEdit::seekLine(int newLine) {
-	// go to a line number and set
+    // go to a line number and set
 	// the text cursor
 	//
 	// code should be proximal in that it should be closest to look at the curent
@@ -99,13 +99,12 @@ BasicEdit::seekLine(int newLine) {
     QTextCursor t = textCursor();
     int line = t.blockNumber()+1;	// current line number for the block
     // go back or forward to the line from the current position
-    if (line==newLine) return;
     if (line<newLine) {
         // advance forward
         while (line < newLine && t.movePosition(QTextCursor::NextBlock)) {
             line++;
         }
-    } else {
+    } else if (line>newLine){
         // go back to find the line
         while (line > newLine && t.movePosition(QTextCursor::PreviousBlock)) {
             line--;
@@ -129,8 +128,8 @@ void BasicEdit::slotWhitespace(bool checked) {
 
 void
 BasicEdit::goToLine(int newLine) {
-	seekLine(newLine);
-	setFocus();
+    seekLine(newLine);
+    setFocus();
 }
 
 

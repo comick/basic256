@@ -109,7 +109,12 @@
 #define ERROR_WAVEFORMLOGICAL          104
 #define ERROR_STRING2NOTE              105
 #define ERROR_ARRAYELEMENT             106
-
+#define ERROR_SETTINGSGETACCESS        107
+#define ERROR_SETTINGSSETACCESS        108
+#define ERROR_INVALIDPROGNAME          109
+#define ERROR_INVALIDKEYNAME           110
+#define ERROR_SETTINGMAXLEN            111
+#define ERROR_SETTINGMAXKEYS           112
 
 
 // Insert new error codes here

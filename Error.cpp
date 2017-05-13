@@ -379,6 +379,28 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_ARRAYELEMENT:
             errormessage = tr("Element of array %VARNAME% has not been assigned a value");
             break;
+        case ERROR_SETTINGSGETACCESS:
+            errormessage = tr("The program does not have permission to read settings from other program. Check access level from 'Preferences' panel");
+            break;
+        case ERROR_SETTINGSSETACCESS:
+            errormessage = tr("The program does not have permission to write settings for other program. Check access level from 'Preferences' panel");
+            break;
+        case ERROR_INVALIDPROGNAME:
+            errormessage = tr("Invalid program name");
+            break;
+        case ERROR_INVALIDKEYNAME:
+            errormessage = tr("Invalid key name");
+            break;
+        case ERROR_SETTINGMAXLEN:
+            errormessage = tr("Setting string exceeds maximum length of 16,383 characters");
+            break;
+        case ERROR_SETTINGMAXKEYS:
+            errormessage = tr("The maximum number of keys for this program has been exceeded");
+            break;
+
+
+
+
 
 
 
