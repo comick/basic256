@@ -1192,17 +1192,15 @@ untilstmt:	until expr {
 while: 		B256WHILE {
 				//
 				// create internal symbol and add to the label table for the top of the loop
-				symtableaddress[getInternalSymbol(nextifid,INTERNALSYMBOLCONTINUE)] = wordOffset;
+				newIf(linenumber, IFTABLETYPEWHILE, -1);
+				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
 			}
 			;
 
 whilestmt: 	while expr {
 				//
 				// add branch to end if false
-				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
-				//
-				// add to if frame
-				newIf(linenumber, IFTABLETYPEWHILE, -1);
+				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
 			};
 
 letstmt:	B256LET assign
@@ -3074,26 +3072,24 @@ expr:
 			| expr B256BINARYOR expr { addOp(OP_BINARYOR); }
 			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
 			| '-' expr %prec B256UMINUS { addOp(OP_NEGATE); }
-                        //| expr B256AND expr {addOp(OP_AND); }
-                        | expr B256AND {
-                            addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
-                            newIf(linenumber, IFTABLETYPEINTERNAL, -1);
-                            } expr {
-                            addOp(OP_AND);
-                            symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
-                            numifs--;
-                        }
-                        //| expr B256OR expr { addOp(OP_OR); }
-                        | expr B256OR {
-                            addIntOp(OP_LAZYIFTRUE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
-                            newIf(linenumber, IFTABLETYPEINTERNAL, -1);
-                            } expr {
-                            addOp(OP_OR);
-                            symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
-                            numifs--;
-                        }
-                        | expr B256XOR expr { addOp(OP_XOR); }
-                        | B256NOT expr %prec B256AND { addOp(OP_NOT); }
+			| expr B256AND {
+					addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
+					newIf(linenumber, IFTABLETYPEINTERNAL, -1);
+				} expr {
+					addOp(OP_AND);
+					symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
+					numifs--;
+			}
+			| expr B256OR {
+					addIntOp(OP_LAZYIFTRUE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
+					newIf(linenumber, IFTABLETYPEINTERNAL, -1);
+				} expr {
+					addOp(OP_OR);
+					symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLBOOL)] = wordOffset;
+					numifs--;
+			}
+			| expr B256XOR expr { addOp(OP_XOR); }
+			| B256NOT expr %prec B256AND { addOp(OP_NOT); }
 			| expr '=' expr { addOp(OP_EQUAL); }
 			| expr B256NE expr { addOp(OP_NEQUAL); }
 			| expr '<' expr { addOp(OP_LT); }

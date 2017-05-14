@@ -41,6 +41,7 @@ a = implode(c[])
 call s("implode c with no delim",a,"928.0crap6543210")
 
 b = serialize(c[])
+print b
 a = unserialize(b)
 for t = 0 to a[?]-1
 	call n("a["+t+"] = c["+t+"] after serialize and unserialize",a[t],c[t])
