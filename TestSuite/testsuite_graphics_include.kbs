@@ -6,6 +6,7 @@
 # 20140529	j.m.reneau	split to own include
 # 20160805	j.m.reneau	added tests to make more complete
 # 20161101  j.m.reneau  added [] to all array passing to functions
+# 20170514 j.m.reneau   removed penwidth 0 before text output
 
 # test the basic graphics statements
 
@@ -69,9 +70,9 @@ penwidth 5
 color orange, black
 poly {{100, 100}, {200, 200}, {200, 100}}
 call q("poly - orange/black and green/blue triangles with different fill and pen")
-penwidth 0
 #
 clg
+penwidth 1
 color red
 font "Times New Roman",18,50
 text 10,100,"This is Times New Roman"

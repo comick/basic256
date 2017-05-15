@@ -3730,32 +3730,24 @@ Interpreter::execByteCode() {
 
 				case OP_SYSTEM: {
 					QString temp = stack->popstring();
-                    int doit = settingsAllowSystem;
-                    if(doit==1){
-                        mymutex->lock();
-                        emit(dialogAllowSystem(temp));
-                        waitCond->wait(mymutex);
-                        mymutex->unlock();
-                        doit = returnInt;
-                    }
-                    if(doit>0) {
-                        sys = new QProcess();
-                        sys->start(temp);
-                        if (sys->waitForStarted(-1)) {
-                            if (!sys->waitForFinished(-1)) {
-                                //QByteArray result = sy.readAll();
-                            }
-                        }
-                        delete sys;
-                        sys=NULL;
-                        /*
-                        mymutex->lock();
-						emit(executeSystem(temp));
-						waitCond->wait(mymutex);
-                        mymutex->unlock();
-                        */
-                    } else if(doit==0){
+					int doit = settingsAllowSystem;
+					if (doit==SETTINGSALLOWNO) {
 						error->q(ERROR_PERMISSION);
+					} else {
+						if (doit==SETTINGSALLOWASK) {
+							// get user to OK if needed
+							mymutex->lock();
+							emit(dialogAllowSystem(temp));
+							waitCond->wait(mymutex);
+							mymutex->unlock();
+							doit = returnInt;
+						} 
+						if( doit!=SETTINGSALLOWNO) {
+							mymutex->lock();
+							emit(executeSystem(temp));
+							waitCond->wait(mymutex);
+							mymutex->unlock();
+						}
 					}
 				}
 				break;
@@ -5707,23 +5699,25 @@ Interpreter::execByteCode() {
 					int data = stack->popint();
 					int port = stack->popint();
 #ifdef WIN32
-                    int doit = settingsAllowPort;
-                    if(doit==1){
-                        mymutex->lock();
-                        emit(dialogAllowPortInOut(QString("PORTOUT ") + QString::number(port) + ", " + QString::number(data)));
-                        waitCond->wait(mymutex);
-                        mymutex->unlock();
-                        doit = returnInt;
-                    }
-                    if(doit>0) {
-                        if (Out32==NULL) {
-                            error->q(ERROR_NOTIMPLEMENTED);
-                        } else {
-                            Out32(port, data);
-                        }
-                    } else if(doit==0){
-                        error->q(ERROR_PERMISSION);
-                    }
+					int doit = settingsAllowPort;
+					if(doit==SETTINGSALLOWNO) {
+						error->q(ERROR_PERMISSION);
+					} else {
+						if (doit==SETTINGSALLOWASK) {
+							mymutex->lock();
+							emit(dialogAllowPortInOut(QString("PORTOUT ") + QString::number(port) + ", " + QString::number(data)));
+							waitCond->wait(mymutex);
+							mymutex->unlock();
+							doit = returnInt;
+						}
+						if (doit!=SETTINGSALLOWNO) {
+							if (Out32==NULL) {
+								error->q(ERROR_NOTIMPLEMENTED);
+							} else {
+								Out32(port, data);
+							}
+						}
+					}
 # else
 						error->q(ERROR_NOTIMPLEMENTED);
 #endif
@@ -5734,26 +5728,27 @@ Interpreter::execByteCode() {
 					int data=0;
 					int port = stack->popint();
 #ifdef WIN32
-                    int doit = settingsAllowPort;
-                    if(doit==1){
-                        mymutex->lock();
-                        emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
-                        waitCond->wait(mymutex);
-                        mymutex->unlock();
-                        doit = returnInt;
-                    }
-
-                    if(doit>0) {
-                        if (Inp32==NULL) {
-                            error->q(ERROR_NOTIMPLEMENTED);
-                        } else {
-                            data = Inp32(port);
-                        }
-                    } else if(doit==0){
-                        error->q(ERROR_PERMISSION);
-                    }
+					int doit = settingsAllowPort;
+					if (doit==SETTINGSALLOWNO){
+						error->q(ERROR_PERMISSION);
+					} else {
+						if (doit==SETTINGSALLOWASK) {
+							mymutex->lock();
+							emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
+							waitCond->wait(mymutex);
+							mymutex->unlock();
+							doit = returnInt;
+						}
+						if (doit!=SETTINGSALLOWNO) {
+							if (Inp32==NULL) {
+								error->q(ERROR_NOTIMPLEMENTED);
+							} else {
+								data = Inp32(port);
+							}
+						}
+					}
 #else
-						error->q(ERROR_NOTIMPLEMENTED);
+					error->q(ERROR_NOTIMPLEMENTED);
 #endif
 					stack->pushint(data);
 				}

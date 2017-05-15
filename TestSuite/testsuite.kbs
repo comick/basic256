@@ -46,13 +46,14 @@
 #							added serialize and unserialize test to arrays
 # 20161117  j.m.reneau      adjusted function calling for ref defined at call
 # 20170506  j.m.reneau      added image... test
+# 20170513  j.m.reneau      changed allow/system test to not 0
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1999977)
+call versiontest(1999978)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -75,13 +76,13 @@ print "On the 'Printing' tab"
 print "  'Printer' must set to PDF File Output"
 print "  'PDF FileName' must be set to a name of a temporary file with the pdf extension"
 print "On the 'Advanced' tab"
-print "  'Allow SYSTEM statement' must be checked"
+print "  'Allow SYSTEM statement' must be ask or allow"
 print
 call s("Float Tail", getSetting("SYSTEM","Runtime/FloatTail"),"true")
 call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
 call s("Variable Not Assigned", getSetting("SYSTEM","Runtime/VNA"),"1")
 # make sure printer setting are correct
-call s("Allow SYSTEM Statement", getSetting("SYSTEM","Allow/System"),"true")
+call sne("Allow SYSTEM Statement", getSetting("SYSTEM","Allow/System"),0)
 call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
 call sne("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
 

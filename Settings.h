@@ -25,6 +25,16 @@
 	#define SETTINGSAPP "BASIC-256 IDE"
 	#define SETTINGSPORTABLEINI	"BASIC256_IDE.ini"
 
+	// error reporting options
+	#define SETTINGSERRORNONE 0
+	#define SETTINGSERRORWARN 1
+	#define SETTINGSERROR 2
+	
+	// ALLOW options
+	#define SETTINGSALLOWNO 0
+	#define SETTINGSALLOWASK 1
+	#define SETTINGSALLOWYES 2
+	
 	// main window
     #define SETTINGSMAINGEOMETRY "Main/Geometry/"
     #define SETTINGSMAINSTATE "Main/State/"
@@ -78,9 +88,9 @@
 
     // permissions (SYSTEM and PORTIN/PORTOUT)
 	#define SETTINGSALLOWSYSTEM "Allow/System"
-    #define SETTINGSALLOWSYSTEMDEFAULT 0
+    #define SETTINGSALLOWSYSTEMDEFAULT SETTINGSALLOWNO
 	#define SETTINGSALLOWPORT "Allow/Port"
-    #define SETTINGSALLOWPORTDEFAULT 2
+    #define SETTINGSALLOWPORTDEFAULT SETTINGSALLOWNO
     //permissions (setsetting/getsetting)
     #define SETTINGSSETTINGSACCESS "Settings/AccesLevel"
     #define SETTINGSSETTINGSACCESSDEFAULT 0
@@ -90,11 +100,6 @@
     #define SETTINGSALLOWSETTINGDEFAULT true
     // store user settings (setsetting/getsetting) in seperate group
     #define SETTINGSGROUPUSER "UserSettings"
-
-	// error reporting options
-	#define SETTINGSERRORNONE 0
-	#define SETTINGSERRORWARN 1
-	#define SETTINGSERROR 2
 
 	// user settings
 	#define SETTINGSTYPECONV "Runtime/TypeConv"

@@ -106,7 +106,7 @@ RunController::RunController() {
     QObject::connect(i, SIGNAL(dialogAllowPortInOut(QString)), this, SLOT(dialogAllowPortInOut(QString)));
     QObject::connect(i, SIGNAL(dialogAllowSystem(QString)), this, SLOT(dialogAllowSystem(QString)));
 
-    //QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
+    QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
     QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputReady()));
     QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
     QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
@@ -658,64 +658,58 @@ void RunController::soundSystem(int i){
 //}
 
 void RunController::dialogAllowPortInOut(QString msg) {
-    mymutex->lock();
-    QMessageBox message(mainwin);
-    message.setWindowTitle(tr("Confirmation"));
-    message.setText(tr("Do you want to allow a PORTIN/PORTOUT command?"));
-    message.setInformativeText(msg);
-    message.setIcon(QMessageBox::Warning);
-    message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
-    message.setDefaultButton(QMessageBox::No);
-    QCheckBox *check=new QCheckBox ("Do not ask me again");
-    message.setCheckBox(check);
-    int ret = message.exec();
-    if (ret==QMessageBox::Yes) {
-        i->returnInt = 1;
-        if(message.checkBox()->isChecked()) i->settingsAllowPort = 2;
-    } else if (ret==QMessageBox::No){
-        i->returnInt = 0;
-        if(message.checkBox()->isChecked()) i->settingsAllowPort = 0;
-    } else if (ret==QMessageBox::Ignore){
-        i->returnInt = -1;
-        if(message.checkBox()->isChecked()) i->settingsAllowPort = -1;
-    } else {
-        i->returnInt = 0;
-    }
-    waitCond->wakeAll();
-    mymutex->unlock();
+	mymutex->lock();
+	QMessageBox message(mainwin);
+	message.setWindowTitle(tr("Confirmation"));
+	message.setText(tr("Do you want to allow a PORTIN/PORTOUT command?"));
+	message.setInformativeText(msg);
+	message.setIcon(QMessageBox::Warning);
+	message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	message.setDefaultButton(QMessageBox::No);
+	QCheckBox *check=new QCheckBox ("Do not ask me again");
+	message.setCheckBox(check);
+	int ret = message.exec();
+	if (ret==QMessageBox::Yes) {
+		i->returnInt = SETTINGSALLOWYES;
+		if(message.checkBox()->isChecked()) i->settingsAllowPort = SETTINGSALLOWYES; // no further conf needed
+	} else if (ret==QMessageBox::No){
+		i->returnInt = SETTINGSALLOWNO;
+		if(message.checkBox()->isChecked()) i->settingsAllowPort = SETTINGSALLOWNO;
+	} else {
+		i->returnInt = SETTINGSALLOWNO;
+	}
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 void RunController::dialogAllowSystem(QString msg) {
-    mymutex->lock();
-    QMessageBox message(mainwin);
-    message.setWindowTitle(tr("Confirmation"));
-    message.setText(tr("Do you want to allow a SYSTEM command?"));
-    if(msg.length()>50){
-        message.setDetailedText(msg);
-        msg.truncate(45);
-        msg.append("...");
-        message.setInformativeText(msg);
-    }else{
-        message.setInformativeText(msg);
-    }
-    message.setIcon(QMessageBox::Warning);
-    message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
-    message.setDefaultButton(QMessageBox::No);
-    QCheckBox *check=new QCheckBox ("Do not ask me again");
-    message.setCheckBox(check);
-    int ret = message.exec();
-    if (ret==QMessageBox::Yes) {
-        i->returnInt = 1;
-        if(message.checkBox()->isChecked()) i->settingsAllowSystem = 2;
-    } else if (ret==QMessageBox::No){
-        i->returnInt = 0;
-        if(message.checkBox()->isChecked()) i->settingsAllowSystem = 0;
-    } else if (ret==QMessageBox::Ignore){
-        i->returnInt = -1;
-        if(message.checkBox()->isChecked()) i->settingsAllowSystem = -1;
-    } else {
-        i->returnInt = 0;
-    }
-    waitCond->wakeAll();
-    mymutex->unlock();
+	mymutex->lock();
+	QMessageBox message(mainwin);
+	message.setWindowTitle(tr("Confirmation"));
+	message.setText(tr("Do you want to allow a SYSTEM command?"));
+	if(msg.length()>50){
+		message.setDetailedText(msg);
+		msg.truncate(45);
+		msg.append("...");
+		message.setInformativeText(msg);
+	}else{
+		message.setInformativeText(msg);
+	}
+	message.setIcon(QMessageBox::Warning);
+	message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	message.setDefaultButton(QMessageBox::No);
+	QCheckBox *check=new QCheckBox ("Do not ask me again");
+	message.setCheckBox(check);
+	int ret = message.exec();
+	if (ret==QMessageBox::Yes) {
+		i->returnInt = SETTINGSALLOWYES;
+		if(message.checkBox()->isChecked()) i->settingsAllowSystem = SETTINGSALLOWYES; // no further conf needed
+	} else if (ret==QMessageBox::No){
+		i->returnInt = SETTINGSALLOWNO;
+		if(message.checkBox()->isChecked()) i->settingsAllowSystem = SETTINGSALLOWNO;
+	} else {
+		i->returnInt = SETTINGSALLOWNO;
+	}
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
