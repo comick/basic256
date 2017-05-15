@@ -886,7 +886,8 @@ begincasestmt:
 			}
 			;
 
-caseexpr:	B256CASE {
+
+casestmt:	B256CASE {
 				// if not first case then add jump to to "endcase" and resolve the branchfalse
 				if (numifs>1) {
 					if (iftabletype[numifs-1]==IFTABLETYPECASE) {
@@ -907,10 +908,7 @@ caseexpr:	B256CASE {
 					}
 				}
 				//
-			}
-			;
-
-casestmt:	caseexpr expr {
+			} expr {
 				//
 				// add branch to the end if false
 				addIntOp(OP_BRANCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
@@ -1159,7 +1157,8 @@ trystmt: 	B256TRY	{
 			}
 			;
 
-until:		B256UNTIL {
+
+untilstmt:	B256UNTIL {
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEDO) {
 						//
@@ -1175,10 +1174,7 @@ until:		B256UNTIL {
 					errorcode = COMPERR_UNTIL;
 					return -1;
 				}
-			}
-			;
-
-untilstmt:	until expr {
+			} expr {
 				//
 				// branch back to top if condition holds
 				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLTOP));
@@ -1189,15 +1185,12 @@ untilstmt:	until expr {
 			}
 			;
 
-while: 		B256WHILE {
+whilestmt: 		B256WHILE {
 				//
 				// create internal symbol and add to the label table for the top of the loop
 				newIf(linenumber, IFTABLETYPEWHILE, -1);
 				symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
-			}
-			;
-
-whilestmt: 	while expr {
+			} expr {
 				//
 				// add branch to end if false
 				addIntOp(OP_BRANCH, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));

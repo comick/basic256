@@ -1679,7 +1679,7 @@ Interpreter::execByteCode() {
                                 if (e->type==T_ARRAY) {
                                     error->q(ERROR_ARRAYINDEXMISSING, e->intval);
                                 } else if (e->type==T_UNASSIGNED) {
-                                    error->q(ERROR_VARNOTASSIGNED, e->intval);
+                                    variables->arrayunassign(i,row,col);
                                 } else {
                                     //direct access to array's data
                                     v->arr->datavector[index].copy(e, i);
