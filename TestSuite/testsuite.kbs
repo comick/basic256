@@ -78,13 +78,13 @@ print "  'PDF FileName' must be set to a name of a temporary file with the pdf e
 print "On the 'Advanced' tab"
 print "  'Allow SYSTEM statement' must be ask or allow"
 print
-call s("Float Tail", getSetting("SYSTEM","Runtime/FloatTail"),"true")
-call s("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
-call s("Variable Not Assigned", getSetting("SYSTEM","Runtime/VNA"),"1")
+call same("Float Tail", getSetting("SYSTEM","Runtime/FloatTail"),"true")
+call same("Type Conversion Setting", getSetting("SYSTEM","Runtime/TypeConv"),"1")
+call same("Variable Not Assigned", getSetting("SYSTEM","Runtime/VNA"),"1")
 # make sure printer setting are correct
-call sne("Allow SYSTEM Statement", getSetting("SYSTEM","Allow/System"),0)
-call s("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
-call sne("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
+call different("Allow SYSTEM Statement", getSetting("SYSTEM","Allow/System"),0)
+call same("Printer - PDF setting", getsetting("SYSTEM","Printer/Printer"), "-1")
+call different("Printer - PDF setting", getsetting("SYSTEM","Printer/PDFFile"), "")
 
 ##goto section_unattended
 
@@ -168,7 +168,7 @@ for t = 0 to 2* pi step .1
 next t
 call q("imgload - did the image spin out?")
 kill "testimgsave.png"
-call n("delete temp imgsave image",exists("testimgsave.png"),false)
+call same("delete temp imgsave image",exists("testimgsave.png"),false)
 
 ###################################################
 call section("Poly and Stamp")

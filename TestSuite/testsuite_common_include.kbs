@@ -16,88 +16,96 @@ global unattended
 unattended = false
 
 subroutine section(sec)
-   print "###########"
-   print sec
-   print "###########"
+	print "###########"
+	print sec
+	print "###########"
 end subroutine
 
+subroutine boolean(message, tf)
+	print message + " " + tf + " ";
+	if tf then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
+end subroutine
+
+
 subroutine q(message$)
-   # ask user to press y if test worked or n if it failed
-   print "question " + message$ + " ";
-   if not unattended then
-      if confirm(message$, true) then
-         print "pass"
-      else
-         print "fail"
-         end
-      end if
-   endif
+	# ask user to press y if test worked or n if it failed
+	if yn(message$) then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
 end subroutine
 
 function yn(message$)
-   # ask user to press y to continue or n to fail
-   # return true for yes / false for no
-   print "question " + message$ + " ";
-   if not unattended then
-      return confirm(message$, true)
-   else
-      return true
-   endif
+	# ask user to press y to continue or n to fail
+	# return true for yes / false for no
+	print "question " + message$ + " ";
+	if not unattended then
+		return confirm(message$, true)
+	else
+		return true
+	endif
 end function
 
+subroutine same(message$,a,b)
+	# test that a and b are the same numerically or string (EXACTLY)
+	print "testing " + message$ + " (" + a + " = " + b + ") ";
+	if a = b then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
+end subroutine
+
 subroutine n(message$,a,b)
-   # test that a and b are the same numerically (EXACTLY)
-   print "testing " + message$ + " (" + a + " = " + b + ") ";
-   if a = b then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
+	call same(message$,a,b)
+end subroutine
+
+subroutine s(message$,a,b)
+	call same(message$,a,b)
+end subroutine
+
+subroutine different(message$,a,b)
+	# test that a and b$ are not the same string
+	print "testing " + message$ + " ('" + a + "' <> '" + b + "') ";
+	if a <> b then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
+end subroutine
+
+subroutine sne(message$,a,b)
+	call different(message$,a,b)
 end subroutine
 
 subroutine npercent(message$,a,b,p)
-   # test that b-b*p <= a <= b+b*p (percent variance)
-   print "testing " + message$ + " (" + a + " = " + b + " within " + p*100 + "%) ";
-   if b-b*p <= a AND a <= b+b*p then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
+	# test that b-b*p <= a <= b+b*p (percent variance)
+	print "testing " + message$ + " (" + a + " = " + b + " within " + p*100 + "%) ";
+	if b-b*p <= a AND a <= b+b*p then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
 end subroutine
 
 subroutine nclose(message$,a,b)
-   # test that a and b are the same numerically ALMOST
-   print "testing " + message$ + " (" + a + " ~ " + b + ") ";
-   if abs(a - b) < .0001 then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
+	# test that a and b are the same numerically ALMOST
+	print "testing " + message$ + " (" + a + " ~ " + b + ") ";
+	if abs(a - b) < .0001 then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
 end subroutine
-
-subroutine s(message$,a$,b$)
-   # test that a$ and b$ are the same string
-   print "testing " + message$ + " ('" + a$ + "' = '" + b$ + "') ";
-   if a$ = b$ then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
-end subroutine
-
-subroutine sne(message$,a$,b$)
-   # test that a$ and b$ are not the same string
-   print "testing " + message$ + " ('" + a$ + "' <> '" + b$ + "') ";
-   if a$ <> b$ then
-      print "pass"
-   else
-      print "fail"
-      end
-   end if
-end subroutine
-
 
