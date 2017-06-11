@@ -38,7 +38,10 @@ void BasicDownloader::download(QUrl url){
     reply = false;
     inprogress = true;
     QNetworkRequest request(url);
+//compile with older Ot (for Linux users)
+#if QT_VERSION >= 0x050600
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
     request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
     if(!cancel){
         netreply = netmanager.get(request);

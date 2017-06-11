@@ -16,7 +16,6 @@
  **/
 
 #include <QObject>
-#include <QIcon>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDialog>

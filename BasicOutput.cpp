@@ -39,6 +39,7 @@ extern int lastKey;
 extern std::list<int> pressedKeys;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
+    setReadOnly(true);
 	setInputMethodHints(Qt::ImhNoPredictiveText);
 	setFocusPolicy(Qt::StrongFocus);
 	setAcceptRichText(false);
@@ -178,16 +179,20 @@ bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {
     printAct = vMenu->addAction(QObject::tr("Print"));
     printAct->setShortcutContext(Qt::WidgetShortcut);
     printAct->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
+    clearAct = vMenu->addAction(QObject::tr("Clear"));
+    clearAct->setEnabled(false);
 
 	vToolBar->addAction(copyAct);
 	vToolBar->addAction(pasteAct);
-	vToolBar->addAction(printAct);
+    vToolBar->addAction(printAct);
+    vToolBar->addAction(clearAct);
 
 	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
 	QObject::connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
 	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
     QObject::connect(this, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
     QObject::connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(updatePasteButton()));
+    QObject::connect(clearAct, SIGNAL(triggered()), this, SLOT(slotClear()));
 
 	m_usesToolBar = true;
 	m_usesMenu = true;
@@ -264,5 +269,10 @@ void BasicOutput::insertFromMimeData(const QMimeData* source)
 
 void BasicOutput::updatePasteButton(){
      pasteAct->setEnabled(this->canPaste());
+}
+
+void BasicOutput::slotClear(){
+     clearAct->setEnabled(false);
+     clear();
 }
 

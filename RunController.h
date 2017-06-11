@@ -76,7 +76,6 @@ class RunController : public QObject
   void dialogPrompt(QString, QString);
   void dialogAllowPortInOut(QString);
   void dialogAllowSystem(QString);
-  void dialogFontSelect();
   void playSound(QString, bool);
   void playSound(std::vector<std::vector<double>>, bool);
   void loadSoundFromArray(QString, QByteArray*);
@@ -94,6 +93,7 @@ class RunController : public QObject
   run_status oldStatus;
   QString bytefilename;
   QLocale *locale;
+  BasicEdit *currentEditor;
 };
 
 

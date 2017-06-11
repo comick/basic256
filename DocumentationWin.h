@@ -68,6 +68,7 @@ class DocumentationWin : public QDialog
     void searchSetFocus();
     void userSelectLanguage(const QString s);
     void showOnlineHelpPage();
+    void toggleSearchBar(bool);
 
   private:
     bool helpFileExists(QString check);
@@ -93,6 +94,7 @@ class DocumentationWin : public QDialog
     QPushButton *closeButton;
     QComboBox *comboLanguage;
     QLabel *viewLanguage;
+    QAction *findtoggle;
 };
 
 #endif

@@ -37,6 +37,8 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QScrollArea>
+#include <QtWidgets/QFontDialog>
+#include <QtWidgets/QFileDialog>
 #include <QClipboard>
 
 #include "BasicDock.h"
@@ -50,7 +52,6 @@
 #include "RunController.h"
 #include "EditSyntaxHighlighter.h"
 #include "Settings.h"
-#include "DockWidget.h"
 
 
 class MainWindow : public QMainWindow
@@ -62,10 +63,10 @@ public:
 	void ifGuiStateRun();
     void ifGuiStateClose(bool ok);
 	void closeEvent(QCloseEvent *);
-    void setEnabledEditorButtons(bool val);
     void setRunState(int);
     void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
+    bool loadFile(QString);
 
     
 
@@ -81,9 +82,12 @@ public:
     QAction * filemenu_new_act;
 	QAction * filemenu_open_act;
 	QAction * filemenu_save_act;
-	QAction * filemenu_saveas_act;
-	QAction * filemenu_print_act;
-	QAction * filemenu_exit_act;
+    QAction * filemenu_saveas_act;
+    QAction * filemenu_saveall_act;
+    QAction * filemenu_print_act;
+    QAction * filemenu_exit_act;
+    QAction * filemenu_close_act;
+    QAction * filemenu_closeall_act;
 
     // recent files submenu
     QAction * recentfiles_act[SETTINGSGROUPHISTN];
@@ -125,6 +129,9 @@ public:
     QAction * stopact;
     QAction * clearbreakpointsact;
 
+    // window menu
+    QMenu *windowmenu;
+
     // help menu
     QAction * onlinehact;
     QAction * docact;
@@ -133,36 +140,44 @@ public:
 
     RunController *rc;
     EditSyntaxHighlighter * editsyntax;
+    QFont editorFont;
+
 
 	QString localecode;
 	QLocale *locale;
-    bool undoButtonValue;
-    bool redoButtonValue;
 	
+signals:
+    void setEditorRunState(int);
+    void saveAllStep(int);
+
 public slots:
   void updateStatusBar(QString);
-  void updateWindowTitle(QString);
+  void updateWindowTitle(BasicEdit *);
+  void newProgram();
+  void updateEditorButtons();
 #ifndef ANDROID
   void checkForUpdate(void);
 #endif
 
 private:
-
-	BasicDock * editwin_dock;
 	BasicDock * outwin_dock;
 	BasicDock * graphwin_dock;
 	QScrollArea * graph_scroll;
 	BasicDock * varwin_dock;
+    QTabWidget *editwintabs;
+
 
 	QToolBar *main_toolbar;
     
 	// SEE GUISTATE* Constants
 	void configureGuiState();
-	int guiState;
     bool autoCheckForUpdate;
 	
 	void loadCustomizations();
 	void saveCustomizations();
+    BasicEdit* newEditor(QString title);
+    int untitledNumber;
+    int runState;
 
 #ifndef ANDROID
     QNetworkRequest request;
@@ -175,14 +190,32 @@ private:
 
 private slots:
     void updateRecent();
+    void updateWindowMenu();
     void emptyRecent();
     void addFileToRecentList(QString);
     void about();
-    void updatePasteButton();
-    void updateCopyCutButtons(bool);
-    void slotUndoAvailable(bool val);
-    void slotRedoAvailable(bool val);
     void openRecent();
+    void dialogFontSelect();
+    void activeEditorPrint();
+    void activeEditorSaveProgram();
+    void activeEditorSaveAsProgram();
+    void activeEditorUndo();
+    void activeEditorRedo();
+    void activeEditorCut();
+    void activeEditorCopy();
+    void activeEditorPaste();
+    void activeEditorSelectAll();
+    void activeEditorBeautifyProgram();
+    void activeEditorClearBreakPoints();
+    void currentEditorTabChanged(int);
+    void closeEditorTab(int);
+    void loadProgram();
+    void activeEditorCloseTab();
+    bool closeAllPrograms();
+    void setCurrentEditorTab(BasicEdit*);
+    void saveAll();
+    void updateBreakPointsAction();
+
 #ifndef ANDROID
     void sourceforgeReplyFinished(QNetworkReply* reply);
 #endif

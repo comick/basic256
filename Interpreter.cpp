@@ -130,6 +130,7 @@ Interpreter::Interpreter(QLocale *applocale) {
     error = new Error();
     locale = applocale;
     downloader = NULL;
+    sys = NULL;
 
 #ifdef WIN32
 	// WINDOWS
@@ -874,7 +875,7 @@ Interpreter::cleanup() {
 	// cleanup that MUST happen for run to early terminate is in runHalted
 	// called by run() once the run is terminated
 	//
-	// Clean up run time objects
+    // Clean up run time objects
 
     delete (downloader);
     downloader = NULL;
@@ -995,7 +996,7 @@ Interpreter::runHalted() {
     if(sound!=NULL) sound->exit();
 
 	// close network connections
-	netSockCloseAll(); 
+    netSockCloseAll();
 }
 
 
@@ -1256,9 +1257,9 @@ void Interpreter::waitForGraphics() {
     update_sprite_screen();
 	// wait for graphics operation to complete
 	mymutex->lock();
-	emit(goutputReady());
+    emit(goutputReady());
 	waitCond->wait(mymutex);
-	mymutex->unlock();
+    mymutex->unlock();
 }
 
 bool Interpreter::setPainterTo(QPaintDevice *destination) {
@@ -1503,7 +1504,7 @@ Interpreter::execByteCode() {
 					int yindex = stack->popint();
 					int xindex = stack->popint();
 					if (e->type==T_UNASSIGNED) {
-						error->q(ERROR_VARNOTASSIGNED, e->intval);
+                        error->q(ERROR_VARNOTASSIGNED, e->intval);
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 					} else {
@@ -3730,24 +3731,26 @@ Interpreter::execByteCode() {
 
 				case OP_SYSTEM: {
 					QString temp = stack->popstring();
-					int doit = settingsAllowSystem;
-					if (doit==SETTINGSALLOWNO) {
-						error->q(ERROR_PERMISSION);
-					} else {
-						if (doit==SETTINGSALLOWASK) {
-							// get user to OK if needed
-							mymutex->lock();
-							emit(dialogAllowSystem(temp));
-							waitCond->wait(mymutex);
-							mymutex->unlock();
-							doit = returnInt;
-						} 
-						if( doit!=SETTINGSALLOWNO) {
-							mymutex->lock();
-							emit(executeSystem(temp));
-							waitCond->wait(mymutex);
-							mymutex->unlock();
-						}
+                    int doit = settingsAllowSystem;
+                    if(doit==SETTINGSALLOWASK){
+                        mymutex->lock();
+                        emit(dialogAllowSystem(temp));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+                    if(doit==SETTINGSALLOWNO){
+                        error->q(ERROR_PERMISSION);
+                    }else if(doit==SETTINGSALLOWYES) {
+                        sys = new QProcess();
+                        sys->start(temp);
+                        if (sys->waitForStarted(-1)) {
+                            if (!sys->waitForFinished(-1)) {
+                                //QByteArray result = sy.readAll();
+                            }
+                        }
+                        delete sys;
+                        sys=NULL;
 					}
 				}
 				break;
@@ -4137,7 +4140,7 @@ Interpreter::execByteCode() {
                             if (!fastgraphics && drawingOnScreen) waitForGraphics();
                         }
                     }
-                    delete points;
+                    delete[] points;
                 }
                 break;
 
@@ -4225,7 +4228,7 @@ Interpreter::execByteCode() {
                             if (!fastgraphics && drawingOnScreen) waitForGraphics();
                         }
                     }
-                    delete points;
+                    delete[] points;
 				}
 				break;
 
@@ -5699,25 +5702,23 @@ Interpreter::execByteCode() {
 					int data = stack->popint();
 					int port = stack->popint();
 #ifdef WIN32
-					int doit = settingsAllowPort;
-					if(doit==SETTINGSALLOWNO) {
-						error->q(ERROR_PERMISSION);
-					} else {
-						if (doit==SETTINGSALLOWASK) {
-							mymutex->lock();
-							emit(dialogAllowPortInOut(QString("PORTOUT ") + QString::number(port) + ", " + QString::number(data)));
-							waitCond->wait(mymutex);
-							mymutex->unlock();
-							doit = returnInt;
-						}
-						if (doit!=SETTINGSALLOWNO) {
-							if (Out32==NULL) {
-								error->q(ERROR_NOTIMPLEMENTED);
-							} else {
-								Out32(port, data);
-							}
-						}
-					}
+                    int doit = settingsAllowPort;
+                    if(doit==SETTINGSALLOWASK){
+                        mymutex->lock();
+                        emit(dialogAllowPortInOut(QString("PORTOUT ") + QString::number(port) + ", " + QString::number(data)));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+                    if(doit>0) {
+                        if (Out32==NULL) {
+                            error->q(ERROR_NOTIMPLEMENTED);
+                        } else {
+                            Out32(port, data);
+                        }
+                    } else if(doit==0){
+                        error->q(ERROR_PERMISSION);
+                    }
 # else
 						error->q(ERROR_NOTIMPLEMENTED);
 #endif
@@ -5728,27 +5729,26 @@ Interpreter::execByteCode() {
 					int data=0;
 					int port = stack->popint();
 #ifdef WIN32
-					int doit = settingsAllowPort;
-					if (doit==SETTINGSALLOWNO){
-						error->q(ERROR_PERMISSION);
-					} else {
-						if (doit==SETTINGSALLOWASK) {
-							mymutex->lock();
-							emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
-							waitCond->wait(mymutex);
-							mymutex->unlock();
-							doit = returnInt;
-						}
-						if (doit!=SETTINGSALLOWNO) {
-							if (Inp32==NULL) {
-								error->q(ERROR_NOTIMPLEMENTED);
-							} else {
-								data = Inp32(port);
-							}
-						}
-					}
+                    int doit = settingsAllowPort;
+                    if(doit==SETTINGSALLOWASK){
+                        mymutex->lock();
+                        emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
+                        waitCond->wait(mymutex);
+                        mymutex->unlock();
+                        doit = returnInt;
+                    }
+
+                    if(doit==SETTINGSALLOWNO){
+                        error->q(ERROR_PERMISSION);
+                    }else if(doit==SETTINGSALLOWYES) {
+                        if (Inp32==NULL) {
+                            error->q(ERROR_NOTIMPLEMENTED);
+                        } else {
+                            data = Inp32(port);
+                        }
+                    }
 #else
-					error->q(ERROR_NOTIMPLEMENTED);
+						error->q(ERROR_NOTIMPLEMENTED);
 #endif
 					stack->pushint(data);
 				}
@@ -6104,7 +6104,7 @@ Interpreter::execByteCode() {
 					} else {
 						drawingpen.setWidth(a);
 						if (a==0) {
-							drawingpen.setStyle(Qt::NoPen);
+                            drawingpen.setStyle(Qt::NoPen);
 						} else {
 							drawingpen.setStyle(Qt::SolidLine);
 						}
@@ -6219,7 +6219,7 @@ Interpreter::execByteCode() {
 						if (printdocument) {
                             if(printdocument->isValid()){
                                 printdocument->setCreator(QString(SETTINGSAPP));
-                                printdocument->setDocName(editwin->winTitle);
+                                printdocument->setDocName(editwin->title);
                                 printdocument->setPaperSize((QPrinter::PaperSize) settingsPrinterPaper);
                                 printdocument->setOrientation((QPrinter::Orientation) settingsPrinterOrient);
                                 if (!setPainterTo(printdocument)) {

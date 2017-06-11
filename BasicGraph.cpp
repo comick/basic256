@@ -34,6 +34,8 @@
 #include "BasicGraph.h"
 #include "Constants.h"
 
+#include <QDebug>
+
 extern QMutex *mymutex;
 extern int lastKey;
 extern std::list<int> pressedKeys;
@@ -47,6 +49,9 @@ BasicGraph::BasicGraph() {
     sprites_clip_region = QRegion(0,0,0,0);
     gridlines = false;
     draw_sprites_flag = false;
+    gwidth = 0;
+    gheight = 0;
+    setFocusPolicy(Qt::StrongFocus);
     resize(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT);
     setMouseTracking(true);
 }
@@ -71,13 +76,9 @@ BasicGraph::~BasicGraph() {
 }
 
 void BasicGraph::resize(int width, int height) {
-    if (image != NULL && width == image->width() && height == image->height()) {
-        return;
-    }
-    gwidth  = width;
+    if (width == gwidth && height == gheight) return;
+    gwidth = width;
     gheight = height;
-    setMinimumSize(gwidth, gheight);
-
 
     // delete the old image and then create a new one the right size
     if(image){
@@ -86,7 +87,6 @@ void BasicGraph::resize(int width, int height) {
     }
     image = new QImage(width, height, QImage::Format_ARGB32);
     image->fill(Qt::transparent);
-
 
     // delete displayed image and then create a new one the right size
     if(displayedimage){
@@ -122,14 +122,23 @@ void BasicGraph::resize(int width, int height) {
     clickY = 0;
     clickB = 0;
 
+    setFixedSize(width, height);
+
     //force resize
     //if graph window is floating, then also resize window
-    BasicWidget * gww = (BasicWidget *) parentWidget();
-    if (gww) {
-        gww->adjustSize();
-        QDockWidget * dok = (QDockWidget *) gww->parentWidget()->parentWidget()->parentWidget();
-        if(dok->isFloating())
-            dok->resize(gww->width()+2,gww->height()+2);
+    //graph-scroll-basicwidget-dock
+    if(parentWidget()){
+        QDockWidget * dock = (QDockWidget *) parentWidget()->parentWidget()->parentWidget()->parentWidget();
+        if(dock->isFloating()){
+            QScrollArea * scroll = (QScrollArea *)parentWidget()->parentWidget();
+            if (scroll) {
+                scroll->setMinimumSize(width,height);
+                QWidget *basicwidget = parentWidget()->parentWidget()->parentWidget();
+                basicwidget->adjustSize();
+                dock->adjustSize();
+                scroll->setMinimumSize(0,0);
+            }
+        }
     }
 }
 
@@ -138,17 +147,12 @@ bool BasicGraph::isVisibleGridLines() {
 }
 
 void BasicGraph::paintEvent(QPaintEvent *e) {
-    gtop = (height() - gheight) / 2;
-    gleft = (width() - gwidth) / 2;
-    QRect from = e->rect();
-    from.moveTo(from.x()-gleft, from.y()-gtop);
     QPainter painter(this);
-
+    painter.drawImage(e->rect(), *displayedimage, e->rect());
     if (gridlines) {
         if(!gridlinesimage) drawGridLines();
-        painter.drawImage(e->rect(), *gridlinesimage, from);
+        painter.drawImage(e->rect(), *gridlinesimage, e->rect());
     }
-    painter.drawImage(e->rect(), *displayedimage, from);
 }
 
 
@@ -217,9 +221,9 @@ void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
 	static int c = Qt::ArrowCursor;
-	if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
-		mouseX = e->x() - gleft;
-		mouseY = e->y() - gtop;
+    if (e->x() >= 0 && e->x() < gwidth && e->y() >= 0 && e->y() < gheight) {
+        mouseX = e->x();
+        mouseY = e->y();
 		mouseB = e->buttons();
 
 		if(gridlines){
@@ -251,9 +255,9 @@ void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mousePressEvent(QMouseEvent *e) {
-	if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
-		clickX = mouseX = e->x() - gleft;
-		clickY = mouseY = e->y() - gtop;
+    if (e->x() >= 0 && e->x() < gwidth && e->y() >= 0 && e->y() < gheight) {
+        clickX = mouseX = e->x();
+        clickY = mouseY = e->y();
 		clickB = e->button();
 		mouseB = e->buttons();
 	}
@@ -266,14 +270,17 @@ bool BasicGraph::initActions(QMenu * vMenu, QToolBar * vToolBar) {
 
 	vToolBar->setObjectName("graphtoolbar");
 
-	QAction *copyAct = vMenu->addAction(QObject::tr("Copy"));
-	QAction *printAct = vMenu->addAction(QObject::tr("Print"));
+    copyAct = vMenu->addAction(QObject::tr("Copy"));
+    printAct = vMenu->addAction(QObject::tr("Print"));
+    clearAct = vMenu->addAction(QObject::tr("Clear"));
 
 	vToolBar->addAction(copyAct);
 	vToolBar->addAction(printAct);
+    vToolBar->addAction(clearAct);
 
 	QObject::connect(copyAct, SIGNAL(triggered()), this, SLOT(slotCopy()));
 	QObject::connect(printAct, SIGNAL(triggered()), this, SLOT(slotPrint()));
+    QObject::connect(clearAct, SIGNAL(triggered()), this, SLOT(slotClear()));
 
 	m_usesToolBar = true;
 	m_usesMenu = true;
@@ -288,7 +295,7 @@ void BasicGraph::slotGridLines(bool visible) {
 
 void BasicGraph::slotCopy() {
 	QClipboard *clipboard = QApplication::clipboard();
-	clipboard->setImage(*image);
+    clipboard->setImage(*displayedimage);
 	QApplication::processEvents();
 }
 
@@ -306,11 +313,11 @@ void BasicGraph::slotPrint() {
         if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted)) {
             QPainter painter(&printer);
             QRect rect = painter.viewport();
-            QSize size = image->size();
+            QSize size = displayedimage->size();
             size.scale(rect.size(), Qt::KeepAspectRatio);
             painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-            painter.setWindow(image->rect());
-            painter.drawImage(0, 0, *image);
+            painter.setWindow(displayedimage->rect());
+            painter.drawImage(0, 0, *displayedimage);
         } else {
             QMessageBox::warning(this, QObject::tr("Print Error"), QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
         }
@@ -323,31 +330,29 @@ void BasicGraph::slotPrint() {
 void BasicGraph::drawGridLines(){
     gridlinesimage = new QImage(gwidth, gheight, QImage::Format_ARGB32_Premultiplied);
     gridlinesimage->fill(Qt::transparent);
-    unsigned int tx, ty;
+    int tx, ty;
 
-    QPainter *painter = new QPainter(gridlinesimage);
+    QPainter painter(gridlinesimage);
 
     const QColor darkColor = QColor(64,64,64,255);
     const QColor lightColor = QColor(128,128,128,255);
-    painter->setFont(QFont("Sans", 6, 100));
+    painter.setFont(QFont("Sans", 6, 100));
 
-    painter->setPen(lightColor);
-    for(tx=10; tx<gwidth; tx=tx+10) if (tx%100!=0) painter->drawLine(tx, 0, tx, gheight);
-    for(ty=10; ty<gheight; ty=ty+10) if (ty%100!=0) painter->drawLine(0, ty, gwidth, ty);
-    painter->setPen(darkColor);
-    for(tx=0; tx<gwidth; tx=tx+100) painter->drawLine(tx, 0, tx, gheight);
-    for(ty=0; ty<gheight; ty=ty+100) painter->drawLine(0, ty, gwidth, ty);
+    painter.setPen(lightColor);
+    for(tx=10; tx<gwidth; tx=tx+10) if (tx%100!=0) painter.drawLine(tx, 0, tx, gheight);
+    for(ty=10; ty<gheight; ty=ty+10) if (ty%100!=0) painter.drawLine(0, ty, gwidth, ty);
+    painter.setPen(darkColor);
+    for(tx=0; tx<gwidth; tx=tx+100) painter.drawLine(tx, 0, tx, gheight);
+    for(ty=0; ty<gheight; ty=ty+100) painter.drawLine(0, ty, gwidth, ty);
 
-    const unsigned int fontAscent = (QFontMetrics(painter->font()).ascent())+1;
+    const int fontAscent = (QFontMetrics(painter.font()).ascent())+1;
     char buffer[64];
     for(tx=0; tx<gwidth; tx=tx+100) {
         for(ty=0; ty<gheight; ty=ty+100) {
             sprintf(buffer, "%u,%u", tx, ty);
-            painter->drawText(tx+2, ty+fontAscent, buffer);
+            painter.drawText(tx+2, ty+fontAscent, buffer);
         }
     }
-    painter->end();
-    delete painter;
 }
 
 void BasicGraph::updateScreenImage(){
@@ -366,10 +371,15 @@ void BasicGraph::updateScreenImage(){
 }
 
 void BasicGraph::mouseDoubleClickEvent(QMouseEvent * e){
-    if (e->x() >= (int) gleft && e->x() < (int) (gleft+gwidth) && e->y() >= (int) gtop && e->y() < (int) (gtop+gheight)) {
-        clickX = mouseX = e->x() - gleft;
-        clickY = mouseY = e->y() - gtop;
+    if (e->x() >= 0 && e->x() < gwidth && e->y() >= 0 && e->y() < gheight) {
+        clickX = mouseX = e->x();
+        clickY = mouseY = e->y();
         clickB = e->button() | MOUSEBUTTON_DOUBLECLICK; //set doubleclick flag
         mouseB = e->buttons();
     }
+}
+
+void BasicGraph::slotClear(){
+    displayedimage->fill(Qt::transparent);
+    repaint();
 }

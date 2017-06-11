@@ -23,7 +23,6 @@ QT						+=	printsupport
 QT						+=	serialport
 
 RESOURCES					+=	resources/resource.qrc
-RC_FILE						=	resources/basic256.rc
 TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_de.ts \
 								Translations/basic256_ru.ts \
@@ -34,14 +33,15 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_it.ts
 
 win32 {
-	DEFINES 				+=	WIN32
+        DEFINES 				+=	WIN32
 	DEFINES 				+=	USEQMEDIAPLAYER
-	LIBS					+=	-lole32 \
+        RC_FILE					=	resources/windows.rc
+        LIBS					+=	-lole32 \
 								-lws2_32 \
 								-lwinmm
 
-	####CONFIG += console  ## enable for printf debugging in windows
-
+        ###CONFIG += console  ## enable for printf debugging in windows
+###QMAKE_CXXFLAGS				+=-DYYDEBUG=1
     QMAKE_CXXFLAGS				+=	-std=c++11
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign
@@ -73,6 +73,7 @@ win32 {
 unix:!macx {
 	## this is the LINUX (unix-non-mac)
 	DEFINES					+=	LINUX
+        QMAKE_CXXFLAGS				+=	-std=c++11
 
 	########
 	# TTS control - How Say statement works

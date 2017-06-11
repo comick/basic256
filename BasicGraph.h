@@ -21,16 +21,11 @@
 
 #include <stdio.h>
 
-#include <qglobal.h>
-
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QToolBar>
 #include <QPainter>
 #include <QKeyEvent>
-#include <QElapsedTimer>
-#include <QDebug>
 #include "ViewWidgetIFace.h"
-#include "BasicOutput.h"
 
 #define GSIZE_INITIAL_WIDTH   300
 #define GSIZE_INITIAL_HEIGHT   300
@@ -60,6 +55,9 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   int clickB;
   bool isVisibleGridLines();
   void updateScreenImage();
+  QAction *copyAct;
+  QAction *printAct;
+  QAction *clearAct;
 
 
  public slots:
@@ -67,6 +65,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void slotGridLines(bool);
   void slotCopy();
   void slotPrint();
+  void slotClear();
 
  protected:
   void paintEvent(QPaintEvent *);
@@ -78,13 +77,10 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void mouseDoubleClickEvent(QMouseEvent * );
 
  private:
-  unsigned int gwidth;
-  unsigned int gheight;
-  unsigned int gtop;	// position of image in basicgraph widget
-  unsigned int gleft;
+  int gwidth;
+  int gheight;
   bool gridlines;		// show the grid lines or not
   void drawGridLines();
-
 };
 
 

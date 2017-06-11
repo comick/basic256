@@ -22,25 +22,25 @@
 #include "ViewWidgetIFace.h"
 #include "BasicWidget.h"
 
-BasicWidget::BasicWidget(const QString & title, QWidget * parent, Qt::WindowFlags f)
-    :	QWidget(parent, f)
+BasicWidget::BasicWidget(const QString & title, const QString & name, QWidget * viewWidget, QScrollArea * scrollArea)
+    :	QWidget()
     ,	m_viewWidget(NULL)
     ,	m_toolBar(NULL)
     ,	m_menu(NULL) {
-    m_toolBar = new QToolBar();
-    m_toolBar->setObjectName(title + "toolbar");
-    m_menu = new QMenu(title);
-    m_menu->setObjectName(title + "menu");
+    setObjectName(name);
+    m_scrollArea = scrollArea;
+    m_toolBar = new QToolBar(this);
+    m_toolBar->setObjectName(name + "_toolbar");
+    m_menu = new QMenu(title, this);
+    m_menu->setObjectName(name + "_menu");
     m_layout = new QVBoxLayout();
+    m_layout->setContentsMargins(0,0,0,0);
 
+    setViewWidget(viewWidget);
     setLayout(m_layout);
 }
 
 BasicWidget::~BasicWidget() {
-    if (NULL != m_toolBar) {
-        delete m_toolBar;
-        m_toolBar = NULL;
-    }
 }
 
 bool BasicWidget::setViewWidget(QWidget * view) {
@@ -63,8 +63,17 @@ bool BasicWidget::setViewWidget(QWidget * view) {
                 m_menu = NULL;
             }
         }
-
-        m_layout->addWidget(view, 1);
+        if(m_scrollArea){
+            m_scrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+            m_scrollArea->setFrameShape(QFrame::NoFrame);
+            m_scrollArea->setWidget(view);
+            m_scrollArea->viewport()->setFocusProxy(view);
+            m_scrollArea->setFocusProxy(view);
+            m_layout->addWidget(m_scrollArea, 1);
+        }else{
+            m_layout->addWidget(view, 1);
+        }
+        setFocusProxy(view);
 
         return true;
     }

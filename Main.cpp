@@ -162,10 +162,9 @@ int main(int argc, char *argv[]) {
     mainwin.setObjectName( "mainwin" );
     mainwin.statusBar()->showMessage(QObject::tr("Ready."));
     mainwin.show();
- 
-    editwin->setWindowTitle(QObject::tr("Untitled"));
-   
 
+    bool loaded=false;
+ 
 #ifdef ANDROID
     // android - dont load initial file but set default folder to sdcard if exists
     if (QDir("/storage/sdcard0").exists()) {
@@ -175,8 +174,8 @@ int main(int argc, char *argv[]) {
     // load initial file and optionally start
     if (!fileName.isEmpty()) {
             QFileInfo fi(fileName);
-        bool ok = editwin->loadFile(fi.absoluteFilePath());
-        if(guimode!=0 && !ok){
+        loaded = mainwin.loadFile(fi.absoluteFilePath());
+        if(guimode!=0 && !loaded){
             return 0;
         }
         mainwin.ifGuiStateRun();
@@ -186,6 +185,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     setlocale(LC_ALL,"C");
+
+    if(!loaded) mainwin.newProgram();
     return qapp.exec();
 }
 

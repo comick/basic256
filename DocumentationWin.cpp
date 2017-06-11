@@ -20,6 +20,9 @@
 
 #include "DocumentationWin.h"
 #include "MainWindow.h"
+#include "BasicIcons.h"
+
+extern BasicIcons *basicIcons;
 
 DocumentationWin::DocumentationWin (QWidget * parent){
     setWindowFlags(Qt::Window);
@@ -55,37 +58,46 @@ DocumentationWin::DocumentationWin (QWidget * parent){
 
     //Prepare toolbar
     toolbar = new QToolBar( this );
-    QAction *home = new QAction(QIcon(":images/home.png"), tr("&Home"), this);
+    QAction *home = new QAction(basicIcons->goHomeIcon, tr("&Home"), this);
     connect(home, SIGNAL(triggered()), docs, SLOT(home()));
     toolbar->addAction(home);
-    QAction *backward = new QAction(QIcon(":images/backward.png"), tr("&Back"), this);
+    QAction *backward = new QAction(basicIcons->goPreviousIcon, tr("&Back"), this);
     connect(backward, SIGNAL(triggered()), docs, SLOT(backward()));
     connect(docs, SIGNAL(backwardAvailable(bool)), backward, SLOT(setEnabled(bool)));
     toolbar->addAction(backward);
-    QAction *forward = new QAction(QIcon(":images/forward.png"), tr("&Forward"), this);
+    QAction *forward = new QAction(basicIcons->goNextIcon, tr("&Forward"), this);
     connect(forward, SIGNAL(triggered()), docs, SLOT(forward()));
     connect(docs, SIGNAL(forwardAvailable(bool)), forward, SLOT(setEnabled(bool)));
     toolbar->addAction(forward);
     toolbar->addSeparator();
-    QAction* find = new QAction(QIcon(":images/find.png"), tr("&Find"), this);
+
+    findtoggle = new QAction(basicIcons->findIcon, tr("&Find"), this);
+    //find->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
+    findtoggle->setCheckable(true);
+    connect(findtoggle, SIGNAL(toggled(bool)), this, SLOT (toggleSearchBar(bool)));
+    toolbar->addAction(findtoggle);
+
+    QAction* find = new QAction(this);
     find->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
     connect(find, SIGNAL(triggered()), this, SLOT (searchSetFocus()));
-    toolbar->addAction(find);
-    QAction *zoomin = new QAction(QIcon(":images/zoom-in.png"), tr("Zoom in"), this);
+    this->addAction(find);
+
+
+    QAction *zoomin = new QAction(basicIcons->zoomInIcon, tr("Zoom in"), this);
     zoomin->setShortcuts(QKeySequence::keyBindings(QKeySequence::ZoomIn));
     connect(zoomin, SIGNAL(triggered()), docs, SLOT(zoomIn()));
     toolbar->addAction(zoomin);
-    QAction *zoomout = new QAction(QIcon(":images/zoom-out.png"), tr("Zoom out"), this);
+    QAction *zoomout = new QAction(basicIcons->zoomOutIcon, tr("Zoom out"), this);
     zoomout->setShortcuts(QKeySequence::keyBindings(QKeySequence::ZoomOut));
     connect(zoomout, SIGNAL(triggered()), docs, SLOT(zoomOut()));
     toolbar->addAction(zoomout);
     toolbar->addSeparator();
-    QAction *print_act = new QAction(QIcon(":images/print.png"), tr("&Print..."), this);
+    QAction *print_act = new QAction(basicIcons->printIcon, tr("&Print..."), this);
     print_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
     connect(print_act, SIGNAL(triggered()), this, SLOT(slotPrintHelp()));
     toolbar->addAction(print_act);
     toolbar->addSeparator();
-    QAction *onlinehact = new QAction(QIcon(":images/firefox.png"), tr("&Online help..."), this);
+    QAction *onlinehact = new QAction(basicIcons->webIcon, tr("&Online help..."), this);
     connect(onlinehact, SIGNAL(triggered()), this, SLOT(showOnlineHelpPage()));
     toolbar->addAction(onlinehact);
     QWidget* empty = new QWidget();
@@ -107,10 +119,10 @@ DocumentationWin::DocumentationWin (QWidget * parent){
     connect(searchinput, SIGNAL(textEdited(const QString &)), this, SLOT(searchTextChanged()));
     connect(searchinput, SIGNAL(textChanged(const QString &)), this, SLOT(searchTextChanged()));
     findprev = new QToolButton(this);
-    findprev->setIcon(QIcon(":images/previous.png"));
+    findprev->setIcon(basicIcons->goUpIcon);
     connect(findprev, SIGNAL(clicked()), this, SLOT (clickFindPrev()));
     findnext = new QToolButton(this);
-    findnext->setIcon(QIcon(":images/next.png"));
+    findnext->setIcon(basicIcons->goDownIcon);
     connect(findnext, SIGNAL(clicked()), this, SLOT (clickFindNext()));
     casecheckbox = new QCheckBox(tr("Case sensitive"),this);
     connect(casecheckbox, SIGNAL(stateChanged(int)), this, SLOT(searchTextChanged()));
@@ -119,9 +131,7 @@ DocumentationWin::DocumentationWin (QWidget * parent){
     grayPalette->setColor(QPalette::WindowText,Qt::darkGray);
     resultslabel->setPalette(*grayPalette);
     closeButton = new QPushButton(this);
-    QStyle *style = qApp->style();
-    QIcon closeIcon = style->standardIcon(QStyle::SP_TitleBarCloseButton);
-    closeButton->setIcon(closeIcon);
+    closeButton->setIcon(basicIcons->closeIcon);
     closeButton->setFlat(true);
     connect(closeButton, SIGNAL(clicked()), this, SLOT (clickCloseFind()));
 
@@ -263,11 +273,18 @@ void DocumentationWin::searchSetFocus(){
     if(cursor.hasSelection()){
         searchinput->setText(cursor.selectedText());
     }
+    findtoggle->setChecked(true);
     searchinput->selectAll();
     bottom->show();
     searchinput->setFocus();
 }
 
+void DocumentationWin::toggleSearchBar(bool val){
+    if(val)
+        searchSetFocus();
+    else
+        clickCloseFind();
+}
 
 void DocumentationWin::highlight(){
     occurrences = 0;
@@ -335,6 +352,7 @@ void DocumentationWin::keyPressEvent(QKeyEvent *e) {
     }else if(e->text()!="" && (e->modifiers()==Qt::NoModifier || e->modifiers()==Qt::ShiftModifier)){
         if(e->text()[0].isPrint()){
             e->accept();
+            findtoggle->setChecked(true);
             searchinput->setText( e->text() );
             bottom->show();
             searchinput->setFocus();
@@ -439,6 +457,7 @@ bool DocumentationWin::helpFileExists(QString check) {
 
 
 void DocumentationWin::clickCloseFind(){
+    findtoggle->setChecked(false);
     bottom->hide();
 }
 

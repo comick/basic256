@@ -153,19 +153,19 @@ void ReplaceWin::clickFindButton() {
 
 void ReplaceWin::findAgain() {
     saveHistory();
-    if(findText->text().length() != 0)
+    if(findText->text().length() != 0 && editwin)
         editwin->findString(findText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked());
 }
 
 void ReplaceWin::clickReplaceButton() {
     saveHistory();
-    if(findText->text().length() != 0)
+    if(findText->text().length() != 0 && editwin)
         editwin->replaceString(findText->text(), replaceText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked(), false);
 }
 
 void ReplaceWin::clickReplaceAllButton() {
     saveHistory();
-    if(findText->text().length() != 0)
+    if(findText->text().length() != 0 && editwin)
         editwin->replaceString(findText->text(), replaceText->text(), backCheckbox->isChecked(), caseCheckbox->isChecked(), wordsCheckbox->isChecked(), true);
 }
 

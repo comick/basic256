@@ -161,7 +161,6 @@ class Interpreter : public QThread
 		void getKey();
 		void playSounds(int, int*);
 		void setVolume(int);
-        void executeSystem(QString);
 		void speakWords(QString);
 		void goToLine(int);
 		void seekLine(int);

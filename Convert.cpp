@@ -112,9 +112,9 @@ double Convert::getFloat(DataElement *e) {
     double f=0;
     if (e) {
         if (e->type == T_FLOAT) {
-            f = e->floatval;
+            return(e->floatval);
         } else if (e->type == T_INT) {
-            f = e->intval;
+            return(e->intval);
         } else if (e->type == T_STRING) {
             if (e->stringval.length()!=0) {
                 bool ok;

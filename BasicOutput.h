@@ -41,6 +41,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   QAction *copyAct;
   QAction *pasteAct;
   QAction *printAct;
+  QAction *clearAct;
 
   virtual bool initActions(QMenu *, QToolBar *);
 
@@ -50,6 +51,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   void slotPrint();
   void cursorChanged();
   void updatePasteButton();
+  void slotClear();
 
  signals:
   void inputEntered(QString);

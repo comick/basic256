@@ -33,20 +33,18 @@
 #include <QtWidgets/QShortcut>
 #include <QtWidgets/QDesktopWidget>
 
-
-
-#include "PauseButton.h"
 #include "MainWindow.h"
 #include "Settings.h"
 #include "Version.h"
 #include "BasicDock.h"
+#include "BasicIcons.h"
 
 // global mymutexes and timers
 QMutex* mymutex;
 QMutex* mydebugmutex;
 QWaitCondition* waitCond;
 QWaitCondition* waitDebugCond;
-
+BasicIcons *basicIcons;
 
 // the three main components of the UI (define globally)
 MainWindow * mainwin;
@@ -59,6 +57,8 @@ VariableWin * varwin;
 int lastKey;
 std::list<int> pressedKeys;
 
+//global GUI state
+int guiState;
 
 
 MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring, int guistate)
@@ -68,9 +68,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	locale = new QLocale(localecode);
     guiState = guistate;
     mainwin = this;
-    undoButtonValue = false;
-    redoButtonValue = false;
     setAcceptDrops(true);
+    untitledNumber = 1;
+    runState = RUNSTATESTOP;
+    editwin=NULL;
+    basicIcons = new BasicIcons();
 
     // create the global mymutexes and waits
     mymutex = new QMutex(QMutex::NonRecursive);
@@ -78,7 +80,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     waitCond = new QWaitCondition();
     waitDebugCond = new QWaitCondition();
 
-    setWindowIcon(QIcon(":/images/basic256.png"));
+    setWindowIcon(basicIcons->basic256Icon);
 
 #ifndef ANDROID
     manager = new QNetworkAccessManager(this);
@@ -96,26 +98,21 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 #endif
 
 
-    // Basic* *win go into BasicWidget *win_widget to get menus and toolbars
-	// *win_widget go into BasicDock *win_dock to create the GUI docks
 	
-    editwin = new BasicEdit();
-    editwin->setObjectName( "editwin" );
-    editwin_widget = new BasicWidget(QObject::tr("Program Editor"));
-    editwin_widget->setObjectName( "editwin_widget" );
-    editwin_widget->setViewWidget(editwin);
-    editwin_dock = new BasicDock();
-    editwin_dock->setObjectName( "editwin_dock" );
-    editwin_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    editwin_dock->setWidget(editwin_widget);
-    editwin_dock->setWindowTitle(QObject::tr("Program Editor"));
+    // Create a QTabWidget to hold multiple editors
+    editwintabs = new QTabWidget(this);
+    editwintabs->setMovable(guiState==GUISTATENORMAL);
+    editwintabs->setTabsClosable(guiState==GUISTATENORMAL);
+    editwintabs->setDocumentMode(true);
+
+
+
+    // Basic* *win go into BasicWidget *win_widget to get menus and toolbars
+    // *win_widget go into BasicDock *win_dock to create the GUI docks
 
     outwin = new BasicOutput();
     outwin->setObjectName( "outwin" );
-    outwin->setReadOnly(true);
-    outwin_widget = new BasicWidget(QObject::tr("Text Output"));
-	outwin_widget->setObjectName( "outwin_widget" );
-    outwin_widget->setViewWidget(outwin);
+    outwin_widget = new BasicWidget(QObject::tr("Text Output"), "outwin_widget", outwin);
     outwin_dock = new BasicDock();
     outwin_dock->setObjectName( "outwin_dock" );
     outwin_dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
@@ -124,38 +121,31 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
  
     graphwin = new BasicGraph();
     graphwin->setObjectName( "graphwin" );
-    graphwin_widget = new BasicWidget(QObject::tr("Graphics Output"));
-    graphwin_widget->setObjectName( "graphwin_widget" );
-    graphwin_widget->setViewWidget(graphwin);
     graph_scroll = new QScrollArea();
-	graph_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
- 	graph_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	graph_scroll->setWidget(graphwin_widget);
+    graph_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    graph_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    graphwin_widget = new BasicWidget(QObject::tr("Graphics Output"), "graphwin_widget", graphwin, graph_scroll);
     graphwin_dock = new BasicDock();
     graphwin_dock->setObjectName( "graphwin_dock" );
     graphwin_dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
-    graphwin_dock->setWidget(graph_scroll);
+    graphwin_dock->setWidget(graphwin_widget);
     graphwin_dock->setWindowTitle(QObject::tr("Graphics Output"));
 
     varwin = new VariableWin();
     varwin->setObjectName( "varwin" );
-    varwin_widget = new BasicWidget(QObject::tr("Variable Watch"));
-    varwin_widget->setObjectName( "varwin_widget" );
-    varwin_widget->setViewWidget(varwin);
     varwin_dock = new BasicDock();
     varwin_dock->setObjectName( "varwin_dock" );
     varwin_dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
-    varwin_dock->setWidget(varwin_widget);
+    varwin_dock->setWidget(varwin);
     varwin_dock->setWindowTitle(QObject::tr("Variable Watch"));
 
-    setCentralWidget(editwin_dock);
+    setCentralWidget(editwintabs);
     addDockWidget(Qt::RightDockWidgetArea, outwin_dock);
     addDockWidget(Qt::RightDockWidgetArea, graphwin_dock);
     addDockWidget(Qt::LeftDockWidgetArea, varwin_dock);
     setContextMenuPolicy(Qt::NoContextMenu);
 
     rc = new RunController();
-    editsyntax = new EditSyntaxHighlighter(editwin->document());
 
     // Main window toolbar
     main_toolbar = new QToolBar();
@@ -164,57 +154,62 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 
     // File menu
     filemenu = menuBar()->addMenu(QObject::tr("&File"));
-    filemenu_new_act = filemenu->addAction(QIcon(":images/new.png"), QObject::tr("&New"));
+    filemenu_new_act = filemenu->addAction(basicIcons->newIcon, QObject::tr("&New"));
     filemenu_new_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::New));
-    filemenu_open_act = filemenu->addAction(QIcon(":images/open.png"), QObject::tr("&Open..."));
+    filemenu_open_act = filemenu->addAction(basicIcons->openIcon, QObject::tr("&Open..."));
     filemenu_open_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Open));
 
     // Recent files menu
     filemenu_recentfiles = filemenu->addMenu(QObject::tr("Open &Recent"));
     for(int i=0;i<SETTINGSGROUPHISTN;i++){
-        recentfiles_act[i] = filemenu_recentfiles->addAction(QIcon(":images/open.png"), QObject::tr(""));
+        recentfiles_act[i] = filemenu_recentfiles->addAction(basicIcons->openIcon, QObject::tr(""));
         if(i<10)
             recentfiles_act[i]->setShortcut(Qt::Key_0 + ((i+1)%SETTINGSGROUPHISTN) + Qt::CTRL);
     }
     filemenu_recentfiles->addSeparator();
-    recentfiles_empty_act = filemenu_recentfiles->addAction(QObject::tr("&Clear list"));
+    recentfiles_empty_act = filemenu_recentfiles->addAction(basicIcons->clearIcon, QObject::tr("&Clear list"));
     updateRecent();
 
     // File menu - continue
-    filemenu_save_act = filemenu->addAction(QIcon(":images/save.png"), QObject::tr("&Save"));
+    filemenu_save_act = filemenu->addAction(basicIcons->saveIcon, QObject::tr("&Save"));
     filemenu_save_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Save));
-    filemenu_saveas_act = filemenu->addAction(QIcon(":images/saveas.png"), QObject::tr("Save &As..."));
+    filemenu_saveas_act = filemenu->addAction(basicIcons->saveAsIcon, QObject::tr("Save &As..."));
     filemenu_saveas_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::SaveAs));
+    filemenu_saveall_act = filemenu->addAction(basicIcons->saveAllIcon, QObject::tr("Save All"));
     filemenu->addSeparator();
-    filemenu_print_act = filemenu->addAction(QIcon(":images/print.png"), QObject::tr("&Print..."));
+    filemenu_close_act = filemenu->addAction(QObject::tr("Close"));
+    filemenu_close_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Close));
+    filemenu_closeall_act = filemenu->addAction(QObject::tr("Close All"));
+    filemenu->addSeparator();
+    filemenu_print_act = filemenu->addAction(basicIcons->printIcon, QObject::tr("&Print..."));
     filemenu_print_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Print));
     filemenu->addSeparator();
-    filemenu_exit_act = filemenu->addAction(QIcon(":images/exit.png"), QObject::tr("&Exit"));
+    filemenu_exit_act = filemenu->addAction(basicIcons->exitIcon, QObject::tr("&Exit"));
     filemenu_exit_act->setShortcuts(QKeySequence::keyBindings(QKeySequence::Quit));
 
 
     // Edit menu
     editmenu = menuBar()->addMenu(QObject::tr("&Edit"));
-    undoact = editmenu->addAction(QIcon(":images/undo.png"), QObject::tr("&Undo"));
+    undoact = editmenu->addAction(basicIcons->undoIcon, QObject::tr("&Undo"));
     undoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Undo));
     undoact->setEnabled(false);
-    redoact = editmenu->addAction(QIcon(":images/redo.png"), QObject::tr("&Redo"));
+    redoact = editmenu->addAction(basicIcons->redoIcon, QObject::tr("&Redo"));
     redoact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Redo));
     redoact->setEnabled(false);
     editmenu->addSeparator();
-    cutact = editmenu->addAction(QIcon(":images/cut.png"), QObject::tr("Cu&t"));
+    cutact = editmenu->addAction(basicIcons->cutIcon, QObject::tr("Cu&t"));
     cutact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Cut));
     cutact->setEnabled(false);
-    copyact = editmenu->addAction(QIcon(":images/copy.png"), QObject::tr("&Copy"));
+    copyact = editmenu->addAction(basicIcons->copyIcon, QObject::tr("&Copy"));
     copyact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Copy));
     copyact->setEnabled(false);
-    pasteact = editmenu->addAction(QIcon(":images/paste.png"), QObject::tr("&Paste"));
+    pasteact = editmenu->addAction(basicIcons->pasteIcon, QObject::tr("&Paste"));
     pasteact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Paste));
     editmenu->addSeparator();
     selectallact = editmenu->addAction(QObject::tr("Select &All"));
     selectallact->setShortcuts(QKeySequence::keyBindings(QKeySequence::SelectAll));
     editmenu->addSeparator();
-    findact = editmenu->addAction(QObject::tr("&Find..."));
+    findact = editmenu->addAction(basicIcons->findIcon, QObject::tr("&Find..."));
     findact->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
     findagain = editmenu->addAction(QObject::tr("Find &Next"));
     findagain->setShortcuts(QKeySequence::keyBindings(QKeySequence::FindNext));
@@ -223,28 +218,17 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     editmenu->addSeparator();
     beautifyact = editmenu->addAction(QObject::tr("&Beautify"));
     editmenu->addSeparator();
-    prefact = editmenu->addAction(QIcon(":images/preferences.png"), QObject::tr("Preferences..."));
+    prefact = editmenu->addAction(basicIcons->preferencesIcon, QObject::tr("Preferences..."));
     //
-
-    bool extraSepAdded = false;
-    if (outwin_widget->usesMenu()) {
-        editmenu->addSeparator();
-        extraSepAdded = true;
-        editmenu->addMenu(outwin_widget->getMenu());
-    }
-    if (graphwin_widget->usesMenu()) {
-        if (!extraSepAdded) {
-            editmenu->addSeparator();
-        }
-        editmenu->addMenu(graphwin_widget->getMenu());
-    }
+    editmenu->addSeparator();
+    editmenu->addMenu(outwin_widget->getMenu());
+    editmenu->addMenu(graphwin_widget->getMenu());
 
     // View menuBar
     viewmenu = menuBar()->addMenu(QObject::tr("&View"));
 
     editwin_visible_act = viewmenu->addAction(QObject::tr("&Edit Window"));
     editwin_visible_act->setCheckable(true);
-    editwin_dock->setActionCheck(editwin_visible_act);
     editwin_visible_act->setChecked(SETTINGSEDITVISIBLEDEFAULT);
 
     outwin_visible_act = viewmenu->addAction(QObject::tr("&Text Window"));
@@ -265,15 +249,14 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 
     // Editor and Output font and Editor settings
     viewmenu->addSeparator();
-    fontact = viewmenu->addAction(QObject::tr("&Font..."));
+    fontact = viewmenu->addAction(basicIcons->fontIcon, QObject::tr("&Font..."));
     edit_whitespace_act = viewmenu->addAction(QObject::tr("Show &Whitespace Characters"));
     edit_whitespace_act->setCheckable(true);
     edit_whitespace_act->setChecked(SETTINGSEDITWHITESPACEDEFAULT);
-    editwin->slotWhitespace(SETTINGSEDITWHITESPACEDEFAULT);
 
     // Graphics Grid Lines
     viewmenu->addSeparator();
-    graph_grid_visible_act = viewmenu->addAction(QObject::tr("Graphics Window Grid &Lines"));
+    graph_grid_visible_act = viewmenu->addAction(basicIcons->gridIcon, QObject::tr("Graphics Window Grid &Lines"));
     graph_grid_visible_act->setCheckable(true);
     graph_grid_visible_act->setChecked(SETTINGSGRAPHGRIDLINESDEFAUT);
     graphwin->slotGridLines(SETTINGSGRAPHGRIDLINESDEFAUT);
@@ -293,47 +276,53 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
  
     // Run menu
     runmenu = menuBar()->addMenu(QObject::tr("&Run"));
-    runact = runmenu->addAction(QIcon(":images/run.png"), QObject::tr("&Run"));
+    runact = runmenu->addAction(basicIcons->runIcon, QObject::tr("&Run"));
     runact->setShortcut(Qt::Key_F5);
     editmenu->addSeparator();
-    debugact = runmenu->addAction(QIcon(":images/debug.png"), QObject::tr("&Debug"));
+    debugact = runmenu->addAction(basicIcons->debugIcon, QObject::tr("&Debug"));
     debugact->setShortcut(Qt::Key_F5 + Qt::CTRL);
-    stepact = runmenu->addAction(QIcon(":images/step.png"), QObject::tr("S&tep"));
+    stepact = runmenu->addAction(basicIcons->stepIcon, QObject::tr("S&tep"));
     stepact->setShortcut(Qt::Key_F11);
     stepact->setEnabled(false);
-    bpact = runmenu->addAction(QIcon(":images/break.png"), QObject::tr("Run &to"));
+    bpact = runmenu->addAction(basicIcons->breakIcon, QObject::tr("Run &to"));
     bpact->setShortcut(Qt::Key_F11 + Qt::CTRL);
     bpact->setEnabled(false);
-    stopact = runmenu->addAction(QIcon(":images/stop.png"), QObject::tr("&Stop"));
+    stopact = runmenu->addAction(basicIcons->stopIcon, QObject::tr("&Stop"));
     stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
     stopact->setEnabled(false);
     runmenu->addSeparator();
-    clearbreakpointsact = runmenu->addAction(QObject::tr("&Clear all breakpoints"));
+    clearbreakpointsact = runmenu->addAction(basicIcons->clearIcon, QObject::tr("&Clear all breakpoints"));
+
+    // Window menuBar
+    windowmenu = menuBar()->addMenu(QObject::tr("&Window"));
+
+
+
 
     // Help menu
     QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
 #if defined(WIN32PORTABLE) || defined(ANDROID)
     // in portable or android make doc online and context help online
-    onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
+    onlinehact = helpmenu->addAction(basicIcons->webIcon, QObject::tr("&Online help..."));
     onlinehact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
     addAction (helpthis);
 #else
     // in installed mode make doc offline and online and context help offline
-    docact = helpmenu->addAction(QIcon(":images/help.png"), QObject::tr("&Help..."));
+    docact = helpmenu->addAction(basicIcons->helpIcon, QObject::tr("&Help..."));
     docact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
     addAction (helpthis);
-    onlinehact = helpmenu->addAction(QIcon(":images/firefox.png"), QObject::tr("&Online help..."));
+    onlinehact = helpmenu->addAction(basicIcons->webIcon, QObject::tr("&Online help..."));
 #endif
 #ifndef ANDROID
     helpmenu->addSeparator();
     checkupdate = helpmenu->addAction(QObject::tr("&Check for update..."));
 #endif
     helpmenu->addSeparator();
-    QAction *aboutact = helpmenu->addAction(QObject::tr("&About BASIC-256..."));
+    QAction *aboutact = helpmenu->addAction(basicIcons->infoIcon, QObject::tr("&About BASIC-256..."));
 
     // Add actions to main window toolbar
     main_toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -355,40 +344,49 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	//
 
 	loadCustomizations();
-	configureGuiState();
+    configureGuiState();
 
     //Display windows and toolbars acording their final settings
-    editwin_dock->setVisible(editwin_visible_act->isChecked());
+    editwintabs->setVisible(editwin_visible_act->isChecked());
     graphwin_dock->setVisible(graphwin_visible_act->isChecked());
     outwin_dock->setVisible(outwin_visible_act->isChecked());
     varwin_dock->setVisible(varwin_visible_act->isChecked());
     main_toolbar->setVisible(main_toolbar_visible_act->isChecked());
     graphwin_widget->slotShowToolBar(graphwin_toolbar_visible_act->isChecked());
     outwin_widget->slotShowToolBar(outwin_toolbar_visible_act->isChecked());
+    graphwin->slotGridLines(graph_grid_visible_act->isChecked());
 
 
-	// connect the signals
-	QObject::connect(editwin, SIGNAL(changeStatusBar(QString)), this, SLOT(updateStatusBar(QString)));
-	QObject::connect(editwin, SIGNAL(changeWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
-	QObject::connect(editwin, SIGNAL(undoAvailable(bool)), this, SLOT(slotUndoAvailable(bool)));
-	QObject::connect(editwin, SIGNAL(redoAvailable(bool)), this, SLOT(slotRedoAvailable(bool)));
-	QObject::connect(editwin, SIGNAL(copyAvailable(bool)), this, SLOT(updateCopyCutButtons(bool)));
-	QObject::connect(editwin_visible_act, SIGNAL(triggered(bool)), editwin_dock, SLOT(setVisible(bool)));
-    QObject::connect(editwin, SIGNAL(updateRecent()), this, SLOT(updateRecent()));
-    QObject::connect(editwin, SIGNAL(addFileToRecentList(QString)), this, SLOT(addFileToRecentList(QString)));
+    // connect the signals
+    QObject::connect(editwintabs, SIGNAL(currentChanged(int)), this, SLOT(currentEditorTabChanged(int)));
+    QObject::connect(editwintabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeEditorTab(int)));
+    QObject::connect(editwin_visible_act, SIGNAL(triggered(bool)), editwintabs, SLOT(setVisible(bool)));
+    QObject::connect(windowmenu, SIGNAL(aboutToShow()), this, SLOT(updateWindowMenu())); //tabs can be moved by user so we need to reflect the true order in menu
 
+    QObject::connect(filemenu_print_act, SIGNAL(triggered()), this, SLOT(activeEditorPrint()));
+    QObject::connect(filemenu_save_act, SIGNAL(triggered()), this, SLOT(activeEditorSaveProgram()));
+    QObject::connect(filemenu_saveas_act, SIGNAL(triggered()), this, SLOT(activeEditorSaveAsProgram()));
+    QObject::connect(filemenu_close_act, SIGNAL(triggered()), this, SLOT(activeEditorCloseTab()));
+    QObject::connect(filemenu_closeall_act, SIGNAL(triggered()), this, SLOT(closeAllPrograms()));
+    QObject::connect(undoact, SIGNAL(triggered()), this, SLOT(activeEditorUndo()));
+    QObject::connect(redoact, SIGNAL(triggered()), this, SLOT(activeEditorRedo()));
+    QObject::connect(cutact, SIGNAL(triggered()), this, SLOT(activeEditorCut()));
+    QObject::connect(copyact, SIGNAL(triggered()), this, SLOT(activeEditorCopy()));
+    QObject::connect(pasteact, SIGNAL(triggered()), this, SLOT(activeEditorPaste()));
+    QObject::connect(selectallact, SIGNAL(triggered()), this, SLOT(activeEditorSelectAll()));
+    QObject::connect(beautifyact, SIGNAL(triggered()), this, SLOT(activeEditorBeautifyProgram()));
+    QObject::connect(clearbreakpointsact, SIGNAL(triggered()), this, SLOT(activeEditorClearBreakPoints()));
 
-    QObject::connect(filemenu_new_act, SIGNAL(triggered()), editwin, SLOT(newProgram()));
-    QObject::connect(filemenu_open_act, SIGNAL(triggered()), editwin, SLOT(loadProgram()));
-    QObject::connect(filemenu_save_act, SIGNAL(triggered()), editwin, SLOT(saveProgram()));
-    QObject::connect(filemenu_saveas_act, SIGNAL(triggered()), editwin, SLOT(saveAsProgram()));
-    QObject::connect(filemenu_print_act, SIGNAL(triggered()), editwin, SLOT(slotPrint()));
+    QObject::connect(filemenu_new_act, SIGNAL(triggered()), this, SLOT(newProgram()));
+    QObject::connect(filemenu_open_act, SIGNAL(triggered()), this, SLOT(loadProgram()));
+
     QObject::connect(filemenu_recentfiles, SIGNAL(aboutToShow()), this, SLOT(updateRecent())); //in case that another instance modify history
     for(int i=0;i<SETTINGSGROUPHISTN;i++){
         QObject::connect(recentfiles_act[i], SIGNAL(triggered()), this, SLOT(openRecent()));
     }
     QObject::connect(recentfiles_empty_act, SIGNAL(triggered()), this, SLOT(emptyRecent()));
     QObject::connect(filemenu_exit_act, SIGNAL(triggered()), this, SLOT(close()));
+    QObject::connect(filemenu_saveall_act, SIGNAL(triggered()), this, SLOT(saveAll()));
 
 	QObject::connect(graphwin_toolbar_visible_act, SIGNAL(toggled(bool)), graphwin_widget, SLOT(slotShowToolBar(const bool)));
 	QObject::connect(graphwin_visible_act, SIGNAL(triggered(bool)), graphwin_dock, SLOT(setVisible(bool)));
@@ -401,20 +399,13 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	QObject::connect(varwin_visible_act, SIGNAL(triggered(bool)), varwin_dock, SLOT(setVisible(bool)));
 
 
-    QObject::connect(undoact, SIGNAL(triggered()), editwin, SLOT(undo()));
-    QObject::connect(redoact, SIGNAL(triggered()), editwin, SLOT(redo()));
-    QObject::connect(cutact, SIGNAL(triggered()), editwin, SLOT(cut()));
-    QObject::connect(copyact, SIGNAL(triggered()), editwin, SLOT(copy()));
-    QObject::connect(pasteact, SIGNAL(triggered()), editwin, SLOT(paste()));
-    QObject::connect(selectallact, SIGNAL(triggered()), editwin, SLOT(selectAll()));
+
     QObject::connect(findact, SIGNAL(triggered()), rc, SLOT(showFind()));
     QObject::connect(findagain, SIGNAL(triggered()), rc, SLOT(findAgain()));
     QObject::connect(replaceact, SIGNAL(triggered()), rc, SLOT(showReplace()));
-    QObject::connect(beautifyact, SIGNAL(triggered()), editwin, SLOT(beautifyProgram()));
     QObject::connect(prefact, SIGNAL(triggered()), rc, SLOT(showPreferences()));
-    QObject::connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(updatePasteButton()));
-    QObject::connect(fontact, SIGNAL(triggered()), rc, SLOT(dialogFontSelect()));
-    QObject::connect(edit_whitespace_act, SIGNAL(toggled(bool)), editwin, SLOT(slotWhitespace(bool)));
+    QObject::connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(updateEditorButtons()));
+    QObject::connect(fontact, SIGNAL(triggered()), this, SLOT(dialogFontSelect()));
     QObject::connect(graph_grid_visible_act, SIGNAL(toggled(bool)), graphwin, SLOT(slotGridLines(bool)));
 
     QObject::connect(runact, SIGNAL(triggered()), rc, SLOT(startRun()));
@@ -422,7 +413,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     QObject::connect(stepact, SIGNAL(triggered()), rc, SLOT(stepThrough()));
     QObject::connect(bpact, SIGNAL(triggered()), rc, SLOT(stepBreakPoint()));
     QObject::connect(stopact, SIGNAL(triggered()), rc, SLOT(stopRun()));
-    QObject::connect(clearbreakpointsact, SIGNAL(triggered()), editwin, SLOT(clearBreakPoints()));
+    QObject::connect(runmenu, SIGNAL(aboutToShow()), this, SLOT(updateBreakPointsAction()));
+
+
     QObject::connect(onlinehact, SIGNAL(triggered()), rc, SLOT(showOnlineDocumentation()));
     QObject::connect(aboutact, SIGNAL(triggered()), this, SLOT(about()));
 
@@ -436,7 +429,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showContextDocumentation()));
 #endif
 
-    if(autoCheckForUpdate) checkForUpdate();
+#ifndef ANDROID
+    //check for update as soon as the event loop is idle (avoid GUI freezing)
+    if(autoCheckForUpdate) QTimer::singleShot(0, this, SLOT(checkForUpdate()));
+#endif
 }
 
 void MainWindow::loadCustomizations() {
@@ -483,23 +479,22 @@ void MainWindow::loadCustomizations() {
     outwin_toolbar_visible_act->setChecked(v);
 
     // set initial font
-    QFont initialFont;
     QString initialFontString = settings.value(SETTINGSFONT + QString::number(guiState),SETTINGSFONTDEFAULT).toString();
-    if (initialFont.fromString(initialFontString)) {
-        editwin->setFont(initialFont);
-        outwin->setFont(initialFont);
-    }
+    editorFont.fromString(initialFontString);
+    outwin->setFont(editorFont);
 
+#ifndef ANDROID
     autoCheckForUpdate = (guiState==GUISTATENORMAL&&settings.value(SETTINGSCHECKFORUPDATE, SETTINGSCHECKFORUPDATEDEFAULT).toBool());
+#endif
 }
 
 
 void MainWindow::saveCustomizations() {
     // save user customizations on close
 
-	SETTINGS;
-	settings.setValue(SETTINGSMAINGEOMETRY + QString::number(guiState), saveGeometry());
-	settings.setValue(SETTINGSMAINSTATE + QString::number(guiState), saveState());
+    SETTINGS;
+    settings.setValue(SETTINGSMAINGEOMETRY + QString::number(guiState), saveGeometry());
+    settings.setValue(SETTINGSMAINSTATE + QString::number(guiState), saveState());
 
     // main
 	settings.setValue(SETTINGSTOOLBARVISIBLE + QString::number(guiState), main_toolbar->isVisible());
@@ -521,15 +516,13 @@ void MainWindow::saveCustomizations() {
 	settings.setValue(SETTINGSVARVISIBLE + QString::number(guiState), varwin_visible_act->isChecked());
 
     // font
-	settings.setValue(SETTINGSFONT + QString::number(guiState), editwin->font().toString());
+    settings.setValue(SETTINGSFONT + QString::number(guiState), editorFont.toString());
 }
 
 MainWindow::~MainWindow() {
     delete rc;
-    delete editsyntax;
     delete mymutex;
     delete waitCond;
-    delete editwin;
     delete outwin;
     delete graphwin;
     delete main_toolbar;
@@ -549,7 +542,7 @@ void MainWindow::about() {
     message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
               QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
             QObject::tr("Locale Name: ") + locale->name() + QObject::tr("Decimal Point: ")+  "'" + (usefloatlocale?locale->decimalPoint():'.') + "'\n" +
-              QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "\n" +
+              QObject::tr("Copyright &copy; 2006-2017, The BASIC-256 Team") + "\n" +
               QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
               QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
               QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.");
@@ -565,7 +558,7 @@ void MainWindow::about() {
 
 	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
             "<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + (usefloatlocale?locale->decimalPoint():'.') + "'</b>" +
-			"<p>" + QObject::tr("Copyright &copy; 2006-2016, The BASIC-256 Team") + "</p>" +
+            "<p>" + QObject::tr("Copyright &copy; 2006-2017, The BASIC-256 Team") + "</p>" +
 			"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
 			"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
 			"<p><i>" + QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.")  + "</i></p>";
@@ -583,8 +576,11 @@ void MainWindow::configureGuiState() {
 		filemenu_new_act->setVisible(false);
 		filemenu_open_act->setVisible(false);
 		filemenu_save_act->setVisible(false);
-		filemenu_saveas_act->setVisible(false);
-		filemenu_print_act->setVisible(false);
+        filemenu_saveas_act->setVisible(false);
+        filemenu_saveall_act->setVisible(false);
+        filemenu_close_act->setVisible(false);
+        filemenu_closeall_act->setVisible(false);
+        filemenu_print_act->setVisible(false);
         editmenu->menuAction()->setVisible(false);
 		undoact->setVisible(false);
 		redoact->setVisible(false);
@@ -596,21 +592,26 @@ void MainWindow::configureGuiState() {
 		bpact->setVisible(false);
 		edit_whitespace_act->setVisible(false);
 		clearbreakpointsact->setVisible(false);
+        windowmenu->menuAction()->setVisible(false);
 
-		editwin->blockSignals(true);
-		findact->blockSignals(true);
+        findact->blockSignals(true);
 		findagain->blockSignals(true);
 		replaceact->blockSignals(true);
 		helpthis->blockSignals(true);
 		varwin_visible_act->setVisible(false);
-        editwin->setReadOnly(true);
 
-		// application state additional changes
+        for (int i=0; i<SETTINGSGROUPHISTN; i++) {
+            recentfiles_act[i]->setEnabled(false);
+            recentfiles_act[i]->setVisible(false);
+        }
+        filemenu_recentfiles->menuAction()->setVisible(false);
+
+        // application state additional changes
 		if (guiState==GUISTATEAPP) {
             onlinehact->setVisible(false);
-            docact->setVisible(false);
+            editwin_visible_act->setChecked(false);
             editwin_visible_act->setVisible(false);
-			main_toolbar_visible_act->setVisible(false);
+            main_toolbar_visible_act->setVisible(false);
             main_toolbar_visible_act->setChecked(false);
 			runact->setVisible(false);
             stopact->setVisible(false);
@@ -642,14 +643,8 @@ void MainWindow::ifGuiStateClose(bool ok) {
 
 
 void MainWindow::closeEvent(QCloseEvent *e) {
-    // quit the application but ask if there are unsaved changes in buffer
-    bool doquit = true;
-    if (editwin->document()->isModified()) {
-        doquit = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Program modifications have not been saved."),
-            tr("Do you want to discard your changes?"),
-            QMessageBox::Yes | QMessageBox::No,
-            QMessageBox::No));
-    }
+    // quit the application but ask if there are unsaved changes
+    bool doquit = closeAllPrograms();
     if (doquit) {
         // save current screen posision, visibility and floating
         saveCustomizations();
@@ -667,76 +662,91 @@ void MainWindow::updateStatusBar(QString status) {
     statusBar()->showMessage(status);
 }
 
-void MainWindow::updateWindowTitle(QString title) {
-    setWindowTitle(title);
+void MainWindow::updateEditorButtons(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        const bool canEdit = !e->isReadOnly() && runState==RUNSTATESTOP;
+        cutact->setEnabled(e->copyButton && canEdit);
+        copyact->setEnabled(e->copyButton);
+        undoact->setEnabled(e->undoButton && canEdit);
+        redoact->setEnabled(e->redoButton && canEdit);
+        pasteact->setEnabled(e->canPaste() && canEdit);
+    }else{
+        cutact->setEnabled(false);
+        copyact->setEnabled(false);
+        undoact->setEnabled(false);
+        redoact->setEnabled(false);
+        pasteact->setEnabled(false);
+    }
 }
-
-void MainWindow::updatePasteButton(){
-     pasteact->setEnabled(editwin->canPaste());
-}
-
-void MainWindow::updateCopyCutButtons(bool stuffToCopy) {
-    // only enable the copy buttons when there is stuff to copy
-    cutact->setEnabled(stuffToCopy && editwin->canPaste());
-    copyact->setEnabled(stuffToCopy);
-}
-
-void MainWindow::slotUndoAvailable(bool val) {
-    undoact->setEnabled(val);
-    undoButtonValue = val;
-}
-
-void MainWindow::slotRedoAvailable(bool val) {
-    redoact->setEnabled(val);
-    redoButtonValue = val;
-}
-
-
-//Update Paste, Copy, Cut, Undo, Redo buttons for Run/Stop program
-void MainWindow::setEnabledEditorButtons(bool val) {
-    updatePasteButton();
-    QTextCursor curs = editwin->textCursor();
-    updateCopyCutButtons(curs.hasSelection());
-    undoact->setEnabled(val?undoButtonValue:false);
-    redoact->setEnabled(val?redoButtonValue:false);
-}
-
 
 void MainWindow::setRunState(int state) {
     // set the menus, menu options, and tool bar items to
     // correct state based on the stop/run/debug status
     // state see RUNSTATE* constants
 
-    editwin->setReadOnly(state!=RUNSTATESTOP || guiState!=GUISTATENORMAL);
-    editwin->runState = state;
-	editwin->highlightCurrentLine();
+    if(runState == state) return;
+    runState = state;
+    emit(setEditorRunState(state));
+
+    const bool userCanInteractWithGUI = (state==RUNSTATESTOP && guiState==GUISTATENORMAL);
+    const bool isEditorWindowActive = (editwin!=NULL);
+
+    //enable/disable close buttons
+    //change tab icon acording to runState
+    QTabBar *tabBar = editwintabs->tabBar();
+    int tabBarCount = tabBar->count();
+    for (int i = 0; i < tabBarCount; i++){
+        QWidget *w = tabBar->tabButton(i, QTabBar::RightSide);
+        if(w) w->setEnabled(userCanInteractWithGUI);
+        if(i==editwintabs->currentIndex()){
+            if(state==RUNSTATEDEBUG || state==RUNSTATERUNDEBUG){
+                editwintabs->setTabIcon(i, basicIcons->debugIcon);
+            }else if(state==RUNSTATERUN){
+                editwintabs->setTabIcon(i, basicIcons->runIcon);
+            }else{
+                editwintabs->setTabIcon(i, basicIcons->documentIcon);
+            }
+        }else{
+            editwintabs->setTabIcon(i, basicIcons->documentIcon);
+        }
+    }
+
+
 
     // file menu
-    filemenu_new_act->setEnabled(state==RUNSTATESTOP);
-    filemenu_open_act->setEnabled(state==RUNSTATESTOP);
-    filemenu_save_act->setEnabled(state==RUNSTATESTOP);
-    filemenu_saveas_act->setEnabled(state==RUNSTATESTOP);
-    filemenu_print_act->setEnabled(state==RUNSTATESTOP);
-    for(int t=0; t<SETTINGSGROUPHISTN; t++)
-        recentfiles_act[t]->setEnabled(state==RUNSTATESTOP);
-    filemenu_exit_act->setEnabled(true);
+    filemenu_new_act->setEnabled(userCanInteractWithGUI);
+    filemenu_open_act->setEnabled(userCanInteractWithGUI);
+    filemenu_save_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    filemenu_saveas_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    filemenu_saveall_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    filemenu_close_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    filemenu_closeall_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    filemenu_print_act->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    recentfiles_empty_act->setEnabled(userCanInteractWithGUI);
 
     // edit menu
-    setEnabledEditorButtons(state==RUNSTATESTOP);
-    selectallact->setEnabled(state==RUNSTATESTOP);
-    findact->setEnabled(state==RUNSTATESTOP);
-    findagain->setEnabled(state==RUNSTATESTOP);
-    replaceact->setEnabled(state==RUNSTATESTOP);
-    beautifyact->setEnabled(state==RUNSTATESTOP);
-    prefact->setEnabled(state==RUNSTATESTOP);
+    updateEditorButtons();
+    selectallact->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    findact->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    findagain->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    replaceact->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    beautifyact->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
+    prefact->setEnabled(userCanInteractWithGUI);
 
     // run menu
-    runact->setEnabled(state==RUNSTATESTOP);
-    debugact->setEnabled(state==RUNSTATESTOP);
+    runact->setEnabled(state==RUNSTATESTOP && isEditorWindowActive);
+    debugact->setEnabled(userCanInteractWithGUI && isEditorWindowActive);
     stepact->setEnabled(state==RUNSTATEDEBUG || state==RUNSTATERUNDEBUG);
     bpact->setEnabled(state==RUNSTATEDEBUG);
     stopact->setEnabled(state!=RUNSTATESTOP && state!=RUNSTATESTOPING);
-    clearbreakpointsact->setEnabled(state!=RUNSTATERUN);
+    clearbreakpointsact->setEnabled(state!=RUNSTATERUN && isEditorWindowActive);
+
+    // Clear command for toolbars
+    outwin->clearAct->setEnabled(userCanInteractWithGUI && !outwin->toPlainText().isEmpty());
+    graphwin->clearAct->setEnabled(userCanInteractWithGUI);
+
+    updateRecent();
 }
 
 //Check for an update
@@ -750,7 +760,6 @@ void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
     QString filename;
     if(reply->error() == QNetworkReply::NoError) {
         QByteArray  strReply = reply->readAll();
-        //qDebug() << strReply;
         QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply);
         QJsonObject jsonObject = jsonResponse.object();
 #if defined(WIN32PORTABLE) || defined(WIN32)
@@ -763,7 +772,6 @@ void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
         filename = jsonObject["platform_releases"].toObject()["mac"].toObject()["filename"].toString();
         url = jsonObject["platform_releases"].toObject()["mac"].toObject()["url"].toString();
 #endif
-        //qDebug() << text;
         QRegExp rx("\\d+\\.\\d+\\.\\d+\\.\\d+");
         rx.indexIn(filename);
         QString siteversion = rx.cap(0);
@@ -798,7 +806,7 @@ void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
 
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event){
-    if (event->mimeData()->hasFormat("text/uri-list")){
+    if (event->mimeData()->hasFormat("text/uri-list") && guiState==GUISTATENORMAL){
         event->acceptProposedAction();
     }else{
         event->ignore();
@@ -813,18 +821,17 @@ void MainWindow::dropEvent(QDropEvent *event){
         QString fileName = urls.first().toLocalFile();
         if (fileName.isEmpty())
             return;
-        rc->stopRun();
-        editwin->loadFile(fileName);
+        if(runState != RUNSTATESTOP) rc->stopRun();
+        loadFile(fileName);
     }
-        return;
+    return;
 }
 
 
 void MainWindow::updateRecent() {
     //update recent list on file menu
-    int counter=0;
-
     if (guiState==GUISTATENORMAL) {
+        int counter=0;
         SETTINGS;
         settings.beginGroup(SETTINGSGROUPHIST);
         QString path = QDir::currentPath() + "/";
@@ -836,36 +843,26 @@ void MainWindow::updateRecent() {
                 if (QString::compare(path, fn.left(path.length()))==0) {
                     fn = fn.right(fn.length()-path.length());
                 }
-                recentfiles_act[counter]->setEnabled(fn.length()!=0 && filemenu_new_act->isEnabled());
-                recentfiles_act[counter]->setVisible(fn.length()!=0);
+                recentfiles_act[counter]->setEnabled(runState == RUNSTATESTOP);
+                recentfiles_act[counter]->setVisible(true);
                 recentfiles_act[counter]->setText((counter>=9?QString::number(int((counter+1)/10)):QString("")) + "&" + QString::number((counter+1)%10) + " - " + fn);
                 counter++; //next slot - skip empty values deleted manually by user
             }
         }
         settings.endGroup();
-        //hide unused slots
+        //disable unused slots
         for (int i=counter; i<SETTINGSGROUPHISTN; i++) {
             recentfiles_act[i]->setEnabled(false);
             recentfiles_act[i]->setVisible(false);
         }
-    }else{
-        filemenu_recentfiles->menuAction()->setVisible(false);
-    }
-
-    //if(guiState!=GUISTATENORMAL) or we have unused slots
-    for (int i=counter; i<SETTINGSGROUPHISTN; i++) {
-        recentfiles_act[i]->setEnabled(false);
-        recentfiles_act[i]->setVisible(false);
-    }
-    //if we have no history to show
-    if(counter==0){
-        recentfiles_empty_act->setEnabled(false);
-        recentfiles_empty_act->setVisible(false);
-        filemenu_recentfiles->setEnabled(false);
-    }else{
-        recentfiles_empty_act->setEnabled(true);
-        recentfiles_empty_act->setVisible(true);
-        filemenu_recentfiles->setEnabled(true);
+        //if we have no history to show
+        if(counter==0){
+            recentfiles_empty_act->setEnabled(false);
+            filemenu_recentfiles->setEnabled(false);
+        }else{
+            recentfiles_empty_act->setEnabled(runState == RUNSTATESTOP);
+            filemenu_recentfiles->setEnabled(runState == RUNSTATESTOP);
+        }
     }
 }
 
@@ -874,7 +871,7 @@ void MainWindow::openRecent(){
     if (action){
         QString f = action->data().toString().trimmed();
         if(!f.isEmpty()){
-            editwin->loadFile(f);
+            loadFile(f);
         }
     }
 }
@@ -910,4 +907,392 @@ void MainWindow::addFileToRecentList(QString fn) {
         settings.endGroup();
         updateRecent();
     }
+}
+
+
+void MainWindow::dialogFontSelect() {
+    bool ok;
+    editorFont = QFontDialog::getFont(&ok, editorFont, this, QString(), QFontDialog::MonospacedFonts);
+    if (ok) {
+        mymutex->lock();
+        if(guiState!=GUISTATEAPP){
+            for(int i=0; i<editwintabs->count(); i++){
+                ((BasicEdit*)editwintabs->widget(i))->setFont(editorFont);
+            }
+        }
+        outwin->setFont(editorFont);
+        waitCond->wakeAll();
+        mymutex->unlock();
+    }
+}
+
+
+void MainWindow::activeEditorPrint(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->slotPrint();
+    }
+}
+void MainWindow::activeEditorSaveProgram(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->saveProgram();
+    }
+}
+void MainWindow::activeEditorSaveAsProgram(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->saveAsProgram();
+    }
+}
+void MainWindow::activeEditorUndo(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->undo();
+    }
+}
+void MainWindow::activeEditorRedo(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->redo();
+    }
+}
+void MainWindow::activeEditorCut(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->cut();
+    }
+}
+void MainWindow::activeEditorCopy(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->copy();
+    }
+}
+void MainWindow::activeEditorPaste(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->paste();
+    }
+}
+void MainWindow::activeEditorSelectAll(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->selectAll();
+    }
+}
+void MainWindow::activeEditorBeautifyProgram(){
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->beautifyProgram();
+    }
+}
+void MainWindow::activeEditorClearBreakPoints() {
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e){
+        e->clearBreakPoints();
+    }
+}
+void MainWindow::updateWindowTitle(BasicEdit* editor) {
+    if(editor){
+        QString tabTitle(editor->windowtitle);
+        int i=editwintabs->indexOf((QWidget *)editor);
+        if(i>=0){
+            editwintabs->setTabText(i,tabTitle);
+            if(i==editwintabs->currentIndex()) setWindowTitle(tabTitle + QObject::tr(" - BASIC-256"));
+        }
+    }
+}
+void MainWindow::currentEditorTabChanged(int tab){
+    BasicEdit *e = (BasicEdit*)editwintabs->widget(tab);
+    if(e){
+        updateWindowTitle(e);
+        e->cursorMove();
+        e->highlightCurrentLine();
+        e->setFocus();
+        QTabBar *tabBar = editwintabs->tabBar();
+        int tabBarCount = tabBar->count();
+        for (int i = 0; i < tabBarCount; i++){
+            QWidget *w = tabBar->tabButton(i, QTabBar::RightSide);
+            if(w){
+                if (i != tab)
+                {
+                    w->hide();
+                }else{
+                    w->show();
+                }
+            }
+        }
+    }
+    updateEditorButtons();
+    editwin = e;
+
+    //Update menu if there is an opened window editor or not
+    const bool val = (editwin!=NULL && runState==RUNSTATESTOP);
+    filemenu_save_act->setEnabled(val);
+    filemenu_saveas_act->setEnabled(val);
+    filemenu_saveall_act->setEnabled(val);
+    filemenu_close_act->setEnabled(val);
+    filemenu_closeall_act->setEnabled(val);
+    filemenu_print_act->setEnabled(val);
+    // edit menu
+    selectallact->setEnabled(val);
+    findact->setEnabled(val);
+    findagain->setEnabled(val);
+    replaceact->setEnabled(val);
+    beautifyact->setEnabled(val);
+    // run menu
+    runact->setEnabled(val);
+    debugact->setEnabled(val);
+    clearbreakpointsact->setEnabled(editwin!=NULL && runState!=RUNSTATERUN);
+}
+
+void MainWindow::closeEditorTab(int tab){
+    if(runState!=RUNSTATESTOP) return;
+    BasicEdit *e = (BasicEdit*)editwintabs->widget(tab);
+    if(e){
+        bool doclose = true;
+        if (e->document()->isModified()) {
+            doclose = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Program modifications have not been saved."),
+                tr("Do you want to discard your changes?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No));
+        }
+        if (doclose) {
+            delete(e);
+            editwin=NULL;
+        }
+    }
+}
+
+void MainWindow::setCurrentEditorTab(BasicEdit* e){
+    if(e){
+        editwintabs->setCurrentWidget((QWidget *)e);
+    }
+}
+
+void MainWindow::activeEditorCloseTab(){
+    closeEditorTab(editwintabs->currentIndex());
+}
+
+BasicEdit* MainWindow::newEditor(QString title){
+    BasicEdit* editor = new BasicEdit(title);
+
+    if(guiState!=GUISTATEAPP){
+        editor->setFont(editorFont);
+        editor->slotWhitespace(edit_whitespace_act->isChecked());
+        editsyntax = new EditSyntaxHighlighter(editor->document());
+        // connect the signals
+        QObject::connect(edit_whitespace_act, SIGNAL(toggled(bool)), editor, SLOT(slotWhitespace(bool)));
+        QObject::connect(editor, SIGNAL(changeStatusBar(QString)), this, SLOT(updateStatusBar(QString)));
+        QObject::connect(editor, SIGNAL(updateWindowTitle(BasicEdit*)), this, SLOT(updateWindowTitle(BasicEdit*)));
+        QObject::connect(this, SIGNAL(setEditorRunState(int)), editor, SLOT(setEditorRunState(int)));
+        if(guiState!=GUISTATERUN){
+            QObject::connect(editor, SIGNAL(updateEditorButtons()), this, SLOT(updateEditorButtons()));
+            QObject::connect(editor, SIGNAL(addFileToRecentList(QString)), this, SLOT(addFileToRecentList(QString)));
+            QObject::connect(editor, SIGNAL(setCurrentEditorTab(BasicEdit*)), this, SLOT(setCurrentEditorTab(BasicEdit*)));
+            QObject::connect(this, SIGNAL(saveAllStep(int)), editor, SLOT(saveAllStep(int)));
+        }
+    }
+    return editor;
+}
+
+void MainWindow::newProgram(){
+    BasicEdit *neweditor = newEditor(QObject::tr("Untitled") + QString(" ") + QString::number(untitledNumber++));
+    editwin = neweditor;
+    //add tab and make it active
+    int i = editwintabs->addTab(neweditor, neweditor->title);
+    editwintabs->setTabIcon(i, basicIcons->documentIcon);
+    editwintabs->setCurrentIndex(i);
+    neweditor->setFocus();
+}
+
+void MainWindow::loadProgram() {
+    QString s = QFileDialog::getOpenFileName(this, QObject::tr("Open a file"), ".", QObject::tr("BASIC-256 file ") + "(*.kbs);;" + QObject::tr("Any File ") + "(*.*)");
+    loadFile(s);
+}
+
+bool MainWindow::loadFile(QString s) {
+    s = s.trimmed();
+    if (s != NULL) {
+        bool doload = true;
+            if (QFile::exists(s)) {
+                QFile f(s);
+                if (f.open(QIODevice::ReadOnly)) {
+                    QFileInfo fi(f);
+                    QString filename = fi.absoluteFilePath();
+
+                    //check if file is already open
+                    for(int i=0; i<editwintabs->count(); i++){
+                        BasicEdit* e = (BasicEdit*)editwintabs->widget(i);
+                        if(e && e->filename==filename){
+                            f.close();
+                            editwintabs->setCurrentIndex(i);
+                            return true;
+                        }
+                    }
+
+                    QMimeDatabase db;
+                    QMimeType mime = db.mimeTypeForFile(fi);
+                    // Get user confirmation for non-text files
+                    //Remember that empty ".kbs" files are detected as non-text files
+                    if (!(mime.inherits("text/plain") && !(fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
+                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
+                            QObject::tr("It does not seem to be a text file.")+ "\n" + QObject::tr("Load it anyway?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No));
+                    }else if (!fi.fileName().endsWith(".kbs",Qt::CaseInsensitive)) {
+                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
+                            QObject::tr("You're about to load a file that does not end with the .kbs extension.")+ "\n" + QObject::tr("Load it anyway?"),
+                            QMessageBox::Yes | QMessageBox::No,
+                            QMessageBox::No));
+                    }
+                    if (doload) {
+                        //replace empty document created by default (if exists)
+                        bool replaceEmptyDoc = false;
+                        BasicEdit *neweditor;
+                        if(untitledNumber==2){
+                            BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+                            if(e){
+                                if(e->filename.isEmpty() && !e->document()->isModified()){
+                                    neweditor=e;
+                                    replaceEmptyDoc=true;
+                                }
+                            }
+                        }
+                        if(!replaceEmptyDoc) neweditor = newEditor(fi.fileName());
+                        editwin = neweditor;
+                        neweditor->filename = filename;
+                        neweditor->path = fi.absolutePath();
+                        neweditor->title=fi.fileName();
+
+                        updateStatusBar(QObject::tr("Loading file..."));
+                        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                        QByteArray ba = f.readAll();
+                        f.close();
+                        neweditor->setPlainText(QString::fromUtf8(ba.data()));
+                        neweditor->document()->setModified(false);
+                        setWindowTitle(fi.fileName());
+                        addFileToRecentList(s);
+                        QApplication::restoreOverrideCursor();
+                        updateStatusBar(QObject::tr("Ready."));
+
+                        //add tab and make it active
+                        if(!replaceEmptyDoc){
+                            int i = editwintabs->addTab(neweditor, neweditor->title);
+                            editwintabs->setTabIcon(i, basicIcons->documentIcon);
+                            editwintabs->setCurrentIndex(i);
+                        }else{
+                            neweditor->updateTitle();
+                        }
+                        return true;
+                    }
+                    f.close();
+                } else {
+                    QMessageBox::warning(this, QObject::tr("Load File"),
+                        QObject::tr("Unable to open program file \"")+s+QObject::tr("\".\nFile permissions problem or file open by another process."),
+                        QMessageBox::Ok, QMessageBox::Ok);
+                }
+            } else {
+                QMessageBox::warning(this, QObject::tr("Load File"),
+                    QObject::tr("Program file does not exist. \"")+s+QObject::tr("\"."),
+                    QMessageBox::Ok, QMessageBox::Ok);
+            }
+        }
+return false;
+}
+
+void MainWindow::updateWindowMenu(){
+    windowmenu->addAction(filemenu_close_act);
+    windowmenu->addAction(filemenu_closeall_act);
+    windowmenu->addSeparator();
+    for(int i=0; i<editwintabs->count(); i++){
+        BasicEdit *e = (BasicEdit*)editwintabs->widget(i);
+        if(e){
+            QAction *a = e->action;
+            if(a){
+                a->setChecked(i==editwintabs->currentIndex());
+                windowmenu->addAction(a);
+            }
+        }
+    }
+}
+
+void MainWindow::saveAll(){
+    // Step 1 - save changes
+    emit(saveAllStep(1));
+    // Step 2 - save unsaved files (need user interaction)
+    emit(saveAllStep(2));
+}
+
+bool MainWindow::closeAllPrograms(){
+    QString list;
+    bool doit = true;
+    int count = 0;
+    //count for unsaved files
+    for(int i=0; i<editwintabs->count(); i++){
+        BasicEdit *e = (BasicEdit*)editwintabs->widget(i);
+        if(e){
+            if(e->document()->isModified()){
+                list.append(e->title).append("\n");
+                count++;
+            }
+        }
+    }
+    //if there are unsaved files
+    if(count!=0){
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle(QObject::tr("Save changes?"));
+        if(count==1){
+            msgBox.setText(QObject::tr("The following file have unsaved changes:"));
+        }else{
+            msgBox.setText(QObject::tr("The following files have unsaved changes:"));
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setInformativeText(list);
+        msgBox.setStandardButtons( (count==1?QMessageBox::Save:QMessageBox::SaveAll) | QMessageBox::Discard | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        int doclose = msgBox.exec();
+        if(doclose==QMessageBox::SaveAll || doclose==QMessageBox::Save){
+            saveAll();
+        }else if(doclose==QMessageBox::Cancel){
+            return false;
+        }
+
+        //double check for unsaved files - user press [Cancel] at saving time
+        count = 0;
+        for(int i=0; i<editwintabs->count(); i++){
+            BasicEdit *e = (BasicEdit*)editwintabs->widget(i);
+            if(e){
+                if(e->document()->isModified()){
+                    count++;
+                }
+            }
+        }
+        if(count>0){
+            doit = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Unsaved files"),
+                QObject::tr("There are unsaved files.")+ "\n" + QObject::tr("Do you really want to discard your changes?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No));
+        }
+
+
+
+
+    }
+    if(doit){
+        for(int i=editwintabs->count()-1; i>=0; i--){
+            BasicEdit *e = (BasicEdit*)editwintabs->widget(i);
+            delete(e);
+        }
+    }
+    return doit;
+}
+
+
+void MainWindow::updateBreakPointsAction(){
+    bool val = false;
+    BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+    if(e) val = e->isBreakPoint();
+    clearbreakpointsact->setEnabled(val);
 }

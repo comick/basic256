@@ -37,11 +37,10 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 	Q_OBJECT
 
 	public:
-		BasicEdit();
+        BasicEdit(const QString &defaulttitle = QString::null);
 		~BasicEdit();
 
-        bool loadFile(QString);
-		void saveFile(bool);
+        void saveFile(bool);
 		void findString(QString, bool, bool, bool);
         void replaceString(QString, QString, bool, bool, bool, bool);
 		QString getCurrentWord();
@@ -53,18 +52,25 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         void updateBreakPointsList();
 		void setFont(QFont);
         int runState; //0 - stop, 1-run, 2-debug
-        QString winTitle;
-        void setWindowTitle(QString title);
+        QString title;
+        QString windowtitle;
+        QString filename;
+        QString path;
+        QAction *action;
+        void setTitle(QString newTitle);
         void dropEvent(QDropEvent *event);
         void dragEnterEvent(QDragEnterEvent *event);
+        bool undoButton;
+        bool redoButton;
+        bool copyButton;
+        bool isBreakPoint();
 
 
 	public slots:
-		void newProgram();
 		void saveProgram();
+        void saveAllStep(int);
 		void saveAsProgram();
-		void loadProgram();
-		void cursorMove();
+        void cursorMove();
 		void goToLine(int);
 		void seekLine(int);
 		void slotPrint();
@@ -75,13 +81,17 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 		void unindentSelection();
         void clearBreakPoints();
         void toggleBreakPoint();
+        void updateTitle();
+        void setEditorRunState(int);
 
 
 	signals:
 		void changeStatusBar(QString);
-        void changeWindowTitle(QString);
-        void updateRecent();
+        void updateWindowTitle(BasicEdit*);
         void addFileToRecentList(QString);
+        void updateEditorButtons();
+        void setCurrentEditorTab(BasicEdit*);
+
 
 	protected:
 		void keyPressEvent(QKeyEvent *);
@@ -90,18 +100,20 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 	private:
 		const int STATECLEAR = -1;
 		const int STATEBREAKPOINT = 1;
-		QMainWindow *mainwin;
 		int currentLine;
 		int startPos;
 		int linePos;
-		QString filename;
         QWidget *lineNumberArea;
         int rightClickBlockNumber;
+        int lastLineNumberAreaWidth = -1;
 
 	private slots:
-		void updateLineNumberAreaWidth(int newBlockCount);
-		void updateLineNumberArea(const QRect &, int);
-        void updateTitle();
+        void updateLineNumberAreaWidth(int newBlockCount);
+        void updateLineNumberArea(const QRect &, int);
+        void slotUndoAvailable(bool);
+        void slotRedoAvailable(bool);
+        void slotCopyAvailable(bool);
+        void actionWasTriggered();
 };
 
 

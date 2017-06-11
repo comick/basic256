@@ -25,15 +25,11 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QStatusBar>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
-
 #include <QtWidgets/QFontDialog>
-
-
 
 #include "MainWindow.h"
 #include "BasicEdit.h"
@@ -41,25 +37,44 @@
 #include "Settings.h"
 #include "Constants.h"
 
-extern MainWindow * mainwin;
+extern int guiState;
 
-BasicEdit::BasicEdit() {
-	this->setInputMethodHints(Qt::ImhNoPredictiveText);
+BasicEdit::BasicEdit(const QString & defaulttitle) {
 	currentLine = 1;
 	runState = RUNSTATESTOP;
-    startPos = this->textCursor().position();
     rightClickBlockNumber = -1;
     breakPoints = new QList<int>;
-    lineNumberArea = new LineNumberArea(this);
-	
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-    connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(updateTitle()));
+    title = defaulttitle;
+    windowtitle = defaulttitle;
+    filename.clear();
+    path.clear();
+    undoButton = false;
+    redoButton = false;
+    copyButton = false;
+    action = new QAction(windowtitle, this);
+    action->setCheckable(true);
 
-	updateLineNumberAreaWidth(0);
-	highlightCurrentLine();
+    setReadOnly(guiState!=GUISTATENORMAL);
+    if(guiState==GUISTATEAPP){
+        startPos=0;
+        lineNumberArea = NULL;
+        setDisabled(true);
+    }else{
+        lineNumberArea = new LineNumberArea(this);
+        this->setInputMethodHints(Qt::ImhNoPredictiveText);
+        startPos = this->textCursor().position();
+        updateLineNumberAreaWidth(0);
+        connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+        connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+        connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorMove()));
+        connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+        connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(updateTitle()));
+        connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(slotUndoAvailable(bool)));
+        connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(slotRedoAvailable(bool)));
+        connect(this, SIGNAL(copyAvailable(bool)), this, SLOT(slotCopyAvailable(bool)));
+        connect(action, SIGNAL(triggered()), this, SLOT(actionWasTriggered()));
+        highlightCurrentLine();
+    }
 }
 
 
@@ -79,6 +94,7 @@ void BasicEdit::setFont(QFont f) {
 	QPlainTextEdit::setFont(f);
 	QFontMetrics metrics(f);
 	setTabStopWidth(metrics.width(" ")*EDITOR_TAB_WIDTH);
+    updateLineNumberAreaWidth(blockCount());
 }
 
 
@@ -157,30 +173,13 @@ BasicEdit::keyPressEvent(QKeyEvent *e) {
 	}
 }
 
-void
-BasicEdit::newProgram() {
-	bool donew = true;
-    if (document()->isModified()) {
-		donew = ( QMessageBox::Yes == QMessageBox::warning(this, tr("New Program"),
-			tr("Are you sure you want to completely clear this program and start a new one?"),
-			QMessageBox::Yes | QMessageBox::No,
-			QMessageBox::No));
-	}
-	if (donew) {
-        clearBreakPoints();
-        filename = "";
-        clear();
-        document()->setModified(false);
-        setWindowTitle(tr("Untitled"));
-    }
-}
-
 
 void BasicEdit::saveFile(bool overwrite) {
 	// BE SURE TO SET filename PROPERTY FIRST
 	// or set it to '' to prompt for a new file name
 	if (filename == "") {
-		filename = QFileDialog::getSaveFileName(this, tr("Save file as"), ".", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
+        emit(setCurrentEditorTab(this)); //activate editor window
+        filename = QFileDialog::getSaveFileName(this, tr("Save file as"), title+".kbs", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
 	}
 
 	if (filename != "") {
@@ -202,15 +201,26 @@ void BasicEdit::saveFile(bool overwrite) {
 			f.close();
 			QFileInfo fi(f);
             document()->setModified(false);
-            setWindowTitle(fi.fileName());
+            setTitle(fi.fileName());
 			QDir::setCurrent(fi.absolutePath());
             emit(addFileToRecentList(filename));
 		}
 	}
 }
 
-void
-BasicEdit::saveProgram() {
+void BasicEdit::saveAllStep(int s) {
+    if(document()->isModified()){
+        if(s==1){
+            // Step 1 - save changes
+            if(!filename.isEmpty()) saveFile(true);
+        }else{
+            // Step 2 - save unsaved files (need user interaction)
+            if(filename.isEmpty()) saveFile(true);
+        }
+    }
+}
+
+void BasicEdit::saveProgram() {
     saveFile(false);
 }
 
@@ -224,73 +234,6 @@ BasicEdit::saveAsProgram() {
 }
 
 
-void
-BasicEdit::loadProgram() {
-    QString s = QFileDialog::getOpenFileName(this, tr("Open a file"), ".", tr("BASIC-256 file ") + "(*.kbs);;" + tr("Any File ") + "(*.*)");
-    loadFile(s);
-}
-
-
-bool BasicEdit::loadFile(QString s) {
-    s = s.trimmed();
-	if (s != NULL) {
-		bool doload = true;
-        if (document()->isModified()) {
-			doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
-				tr("Program modifications have not been saved.")+ "\n" + tr("Do you want to discard your changes?"),
-				QMessageBox::Yes | QMessageBox::No,
-				QMessageBox::No));
-		}
-		if (doload) {
-			if (QFile::exists(s)) {
-				QFile f(s);
-				if (f.open(QIODevice::ReadOnly)) {
-                    QFileInfo fi(f);
-                    QMimeDatabase db;
-                    QMimeType mime = db.mimeTypeForFile(fi);
-                    // Get user confirmation for non-text files
-                    //Remember that empty ".kbs" files are detected as non-text files
-                    if (!(mime.inherits("text/plain") && !(fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
-                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
-                            tr("It does not seem to be a text file.")+ "\n" + tr("Load it anyway?"),
-                            QMessageBox::Yes | QMessageBox::No,
-                            QMessageBox::No));
-                    }else if (!fi.fileName().endsWith(".kbs",Qt::CaseInsensitive)) {
-                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Load File"),
-                            tr("You're about to load a file that does not end with the .kbs extension.")+ "\n" + tr("Load it anyway?"),
-                            QMessageBox::Yes | QMessageBox::No,
-                            QMessageBox::No));
-                    }
-                    if (doload) {
-                        emit(changeStatusBar(tr("Loading file...")));
-                        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                        QByteArray ba = f.readAll();
-                        this->setPlainText(QString::fromUtf8(ba.data()));
-                        filename = s;
-                        document()->setModified(false);
-                        setWindowTitle(fi.fileName());
-                        QDir::setCurrent(fi.absolutePath());
-                        clearBreakPoints();
-                        emit(addFileToRecentList(s));
-                        QApplication::restoreOverrideCursor();
-                        emit(changeStatusBar(tr("Ready.")));
-                        return true;
-                    }
-                    f.close();
-                } else {
-					QMessageBox::warning(this, tr("Load File"),
-						tr("Unable to open program file \"")+s+tr("\".\nFile permissions problem or file open by another process."),
-						QMessageBox::Ok, QMessageBox::Ok);
-				}
-			} else {
-				QMessageBox::warning(this, tr("Load File"),
-					tr("Program file does not exist. \"")+s+tr("\"."),
-					QMessageBox::Ok, QMessageBox::Ok);
-			}
-		}
-	}
-return false;
-}
 
 
 void BasicEdit::slotPrint() {
@@ -560,10 +503,9 @@ int BasicEdit::lineNumberAreaWidth() {
 void BasicEdit::updateLineNumberAreaWidth(int /* newBlockCount */) {
     //update setViewportMargins only when lineNumberAreaWidth is changed - save CPU
     //(this signal is emitted even when user scroll up or scroll down code)
-    static int last=-1;
     int w = lineNumberAreaWidth();
-    if(w!=last){
-        last=w;
+    if(w!=lastLineNumberAreaWidth){
+        lastLineNumberAreaWidth=w;
         setViewportMargins(w, 0, 0, 0);
     }
 }
@@ -574,41 +516,31 @@ void BasicEdit::updateLineNumberArea(const QRect &rect, int dy) {
     } else {
         lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
     }
-
-    if (rect.contains(viewport()->rect())) {
-        updateLineNumberAreaWidth(0);
-    }
 }
 
 
 
 void BasicEdit::highlightCurrentLine() {
+    if(guiState==GUISTATEAPP) return;
     QList<QTextEdit::ExtraSelection> extraSelections;
     QTextEdit::ExtraSelection blockSelection;
     QTextEdit::ExtraSelection selection;
     QColor lineColor;
     QColor blockColor;
-	
-	if (runState==RUNSTATERUN || runState==RUNSTATESTOPING || (runState==RUNSTATESTOP && isReadOnly())) {
-		// no highlighting when running, stopping, or in -r mode
-		setExtraSelections(extraSelections);
-		return;
-	}
-	if (runState==RUNSTATEDEBUG) {
-		// if we are waiting to execute in debug mode
+
+    if(guiState==GUISTATERUN || runState==RUNSTATERUN){
+        // editor is in readOnly mode so line will be red (forbidden)
         lineColor = QColor(Qt::red).lighter(175);
         blockColor = QColor(Qt::red).lighter(190);
-	}
-	if (runState==RUNSTATERUNDEBUG) {
-		// if we are executing in debug mode
+    }else if (runState==RUNSTATERUNDEBUG || runState==RUNSTATEDEBUG) {
+        // if we are executing in debug mode
         lineColor = QColor(Qt::green).lighter(175);
-        blockColor = QColor(Qt::green).lighter(190);
-	}
-	if (runState==RUNSTATESTOP) {
-		// in edit mode
+        blockColor = lineColor;
+    }else{
+        // in edit mode
         lineColor = QColor(Qt::yellow).lighter(165);
         blockColor = QColor(Qt::yellow).lighter(190);
-	}
+    }
 
     blockSelection.format.setBackground(blockColor);
     blockSelection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -756,8 +688,10 @@ void BasicEdit::highlightCurrentLine() {
 
 void BasicEdit::resizeEvent(QResizeEvent *e) {
     QPlainTextEdit::resizeEvent(e);
-    QRect cr = contentsRect();
-    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+    if(lineNumberArea){
+        QRect cr = contentsRect();
+        lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+    }
 }
 
 
@@ -859,7 +793,8 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
                     contextMenu.addAction ( tr("Remove breakpoint from line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
                 else
                     contextMenu.addAction ( tr("Set breakpoint at line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
-                contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
+                QAction *act = contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
+                act->setEnabled(isBreakPoint());
                 contextMenu.exec (event->globalPos());
             }
             return;
@@ -914,6 +849,16 @@ void BasicEdit::clearBreakPoints() {
     lineNumberArea->repaint();
 }
 
+bool BasicEdit::isBreakPoint() {
+    // check if there are breakpoints to be cleared (usefull to update menu)
+    QTextBlock b(document()->firstBlock());
+    while (b.isValid()){
+        if(b.userState()==STATEBREAKPOINT)
+            return true;
+        b = b.next();
+    }
+    return false;
+}
 
 void BasicEdit::updateBreakPointsList() {
     breakPoints->clear();
@@ -995,13 +940,15 @@ void BasicEdit::unindentSelection() {
 	cur.endEditBlock();
 }
 
-void BasicEdit::setWindowTitle(QString title){
-    winTitle = title;
+void BasicEdit::setTitle(QString newTitle){
+    title = newTitle;
     updateTitle();
 }
 
 void BasicEdit::updateTitle(){
-    emit(changeWindowTitle((document()->isModified()?"*":"") + winTitle + tr(" - BASIC-256")));
+    windowtitle = (document()->isModified()?"*":"") + title;
+    action->setText(windowtitle);
+    emit(updateWindowTitle(this));
 }
 
 void BasicEdit::dragEnterEvent(QDragEnterEvent *event){
@@ -1013,7 +960,6 @@ void BasicEdit::dragEnterEvent(QDragEnterEvent *event){
     }
 }
 
-
 void BasicEdit::dropEvent(QDropEvent *event){
     if (event->mimeData()->hasFormat("text/plain")){
         event->acceptProposedAction();
@@ -1021,4 +967,40 @@ void BasicEdit::dropEvent(QDropEvent *event){
     }else{
         event->ignore();
     }
+}
+
+void BasicEdit::setEditorRunState(int state){
+    if(runState == state) return;
+    runState = state;
+    if(guiState!=GUISTATEAPP){
+        if(state==RUNSTATESTOP&&guiState==GUISTATENORMAL){
+            setReadOnly(false);
+            setTextInteractionFlags(Qt::TextEditorInteraction);
+        } else if(state==RUNSTATERUN||guiState!=GUISTATENORMAL){
+            setReadOnly(true);
+        }else{
+            //Just like readonly but user can not change current line and highlight another one (need in debug mode)
+            setTextInteractionFlags(Qt::NoTextInteraction);
+        }
+        //setDisabled(!(state==RUNSTATESTOP&&guiState==GUISTATENORMAL));
+        highlightCurrentLine();
+    }
+}
+
+void BasicEdit::slotUndoAvailable(bool val){
+    undoButton = val;
+    emit(updateEditorButtons());
+}
+
+void BasicEdit::slotRedoAvailable(bool val){
+    redoButton = val;
+    emit(updateEditorButtons());
+}
+void BasicEdit::slotCopyAvailable(bool val){
+    copyButton = val;
+    emit(updateEditorButtons());
+}
+
+void BasicEdit::actionWasTriggered(){
+    emit(setCurrentEditorTab(this));
 }
