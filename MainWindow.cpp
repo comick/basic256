@@ -1060,7 +1060,6 @@ void MainWindow::closeEditorTab(int tab){
         }
         if (doclose) {
             delete(e);
-            editwin=NULL;
         }
     }
 }
