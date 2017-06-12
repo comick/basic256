@@ -2,7 +2,11 @@ Compiling Instructions and Dependencies
 2016-10-31 VERSION 1.99.99.72+
 
 
-LINUX you will need:
+###########################################################
+LINUX
+###########################################################
+
+Dependencies:
 * g++
 * qt4-dev-tools
 * flex
@@ -13,12 +17,27 @@ LINUX you will need:
 * espeak (if using the LINUX_ESPEAK_EXECUTE option in BASIC256.pro)
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
 
+###########################################################
+Raspberry Pi - Jessie
+###########################################################
 
+Packages to install with "sudo apt-get install XXX"
+ qt5-default
+ subversion
+ bison
+ flex
+ libespeak-dev
+ qtmultimedia5-dev
+ libqt5serialport-dev
+
+
+###########################################################
 WINDOWS (QT5.7)
+###########################################################
 
+Dependencies:
 * QT SDK with MINGW Compiler
-	** Available from:
-		http://qt.io - use the online installer
+	** Available from: http://qt.io - use the online installer
 	** BE SURE to choose the mingw compiler from tools it will be the correct version
 		for the QT binary support files
 	** add paths C:\Qt\5.7\mingw53_32\bin;C:\Qt\Tools\mingw530_32\bin; to your system environment variable
@@ -40,40 +59,6 @@ WINDOWS (QT5.7)
 		and basic256/trunk/release
 	** copy portaudio.h and speak_lib.h
 		to C:\Qt\5.7\mingw53_32\include
-
-* inpout32 Serial Driver
-	** download version 1.500
-		from http://www.highrez.co.uk/Downloads/InpOut32/default.htm
-	** copy the files inpout32.dll, inpout32.lib, and InstallDriver.exe
-		to C:\Qt\5.7\mingw53_32\lib
-		and basic256/trunk/debug
-		and basic256/trunk/release
-
-For MAC 10.6.4
-	- QT
-	- XCode (from apple)
-	- MACPorts (Porticus front end is handy)
-		-	flex
-		-	libsdl_dev
-		-	libsdl_dev-framework
-		-	libsdl_mixer
-		-	libsdl_mixer-framework
-
-Build Windows MINGW, LINUX, and MACX (g++):
-
-  open a command window (cmd)
-  type "make clean" and hit enter
-  type "qmake BASIC256.pro -config debug" and hit enter
-  type "make" and hit enter 
-
-  You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
-
-  linux:  "make install" will install translations, help and binary  You can then create a
-      launcher to "BASIC256" or "BASIC256 -l locale".
-
-  windows (observed under vista business sp2): make will not work because of Microsoft's command
-      line length issue.  A possible work around would be to use 'msys'.  It gives a unix like
-	 shell to work from without the problem.
 
 Release Build (Windows):
   To build a nice WIN32 installer use the nullsoft scriptable install system file
@@ -101,3 +86,31 @@ Portable Build (Windows):
   make clean
   qmake BASIC256Portable.pro -config release
   make release
+
+###########################################################
+MAC 10.6.4
+###########################################################
+
+	- QT
+	- XCode (from apple)
+	- MACPorts (Porticus front end is handy)
+		-	flex
+		-	libsdl_dev
+		-	libsdl_dev-framework
+		-	libsdl_mixer
+		-	libsdl_mixer-framework
+
+###########################################################
+Compiling ALL
+###########################################################
+
+  open a command window (cmd)
+  type "make clean" and hit enter
+  type "qmake BASIC256.pro -config debug" and hit enter
+  type "make" and hit enter 
+
+  You'll see an executable called BASIC256 either in this directory or in a "debug" directory, depending on your version of QT.
+
+  linux:  "make install" will install translations, help and binary  You can then create a
+      launcher to "BASIC256" or "BASIC256 -l locale".
+

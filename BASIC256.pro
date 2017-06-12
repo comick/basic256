@@ -9,7 +9,7 @@ TARGET						=	basic256
 DEPENDPATH					+=	.
 INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g
-QMAKE_YACCFLAGS				+=	--verbose
+QMAKE_CXXFLAGS				+=	-std=c++11
 CONFIG						+=	 qt debug_and_release
 OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
@@ -42,7 +42,6 @@ win32 {
 
         ###CONFIG += console  ## enable for printf debugging in windows
 ###QMAKE_CXXFLAGS				+=-DYYDEBUG=1
-    QMAKE_CXXFLAGS				+=	-std=c++11
 	QMAKE_CXXFLAGS			+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE	+=	-mstackrealign
 

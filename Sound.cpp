@@ -16,7 +16,7 @@
  **/
 
 #include "Sound.h"
-#include <qDebug>
+#include <QDebug>
 
 
 Sound::Sound(QObject *parent) :
