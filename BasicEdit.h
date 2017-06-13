@@ -83,6 +83,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         void toggleBreakPoint();
         void updateTitle();
         void setEditorRunState(int);
+        void fileChangedOnDiskSlot(QString);
 
 
 	signals:
@@ -106,6 +107,8 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
         QWidget *lineNumberArea;
         int rightClickBlockNumber;
         int lastLineNumberAreaWidth = -1;
+        bool fileChangedOnDiskFlag; //used to mark this event during running a program
+        void handleFileChangedOnDisk();
 
 	private slots:
         void updateLineNumberAreaWidth(int newBlockCount);

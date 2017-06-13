@@ -433,6 +433,12 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     //check for update as soon as the event loop is idle (avoid GUI freezing)
     if(autoCheckForUpdate) QTimer::singleShot(0, this, SLOT(checkForUpdate()));
 #endif
+
+    if(guiState==GUISTATENORMAL){
+        fileSystemWatcher = new QFileSystemWatcher(this);
+    }else{
+        fileSystemWatcher=NULL;
+    }
 }
 
 void MainWindow::loadCustomizations() {
@@ -936,13 +942,17 @@ void MainWindow::activeEditorPrint(){
 void MainWindow::activeEditorSaveProgram(){
     BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
     if(e){
+        if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->removePath(e->filename);
         e->saveProgram();
+        if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->addPath(e->filename);
     }
 }
 void MainWindow::activeEditorSaveAsProgram(){
     BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
     if(e){
+        if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->removePath(e->filename);
         e->saveAsProgram();
+        if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->addPath(e->filename);
     }
 }
 void MainWindow::activeEditorUndo(){
@@ -1059,6 +1069,7 @@ void MainWindow::closeEditorTab(int tab){
                 QMessageBox::No));
         }
         if (doclose) {
+            if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->removePath(e->filename);
             delete(e);
         }
     }
@@ -1091,6 +1102,7 @@ BasicEdit* MainWindow::newEditor(QString title){
             QObject::connect(editor, SIGNAL(addFileToRecentList(QString)), this, SLOT(addFileToRecentList(QString)));
             QObject::connect(editor, SIGNAL(setCurrentEditorTab(BasicEdit*)), this, SLOT(setCurrentEditorTab(BasicEdit*)));
             QObject::connect(this, SIGNAL(saveAllStep(int)), editor, SLOT(saveAllStep(int)));
+            QObject::connect(fileSystemWatcher, SIGNAL(fileChanged(QString)), editor, SLOT(fileChangedOnDiskSlot(QString)) );
         }
     }
     return editor;
@@ -1175,6 +1187,7 @@ bool MainWindow::loadFile(QString s) {
                         addFileToRecentList(s);
                         QApplication::restoreOverrideCursor();
                         updateStatusBar(QObject::tr("Ready."));
+                        fileSystemWatcher->addPath(filename);
 
                         //add tab and make it active
                         if(!replaceEmptyDoc){
@@ -1189,12 +1202,12 @@ bool MainWindow::loadFile(QString s) {
                     f.close();
                 } else {
                     QMessageBox::warning(this, QObject::tr("Load File"),
-                        QObject::tr("Unable to open program file \"")+s+QObject::tr("\".\nFile permissions problem or file open by another process."),
+                        QObject::tr("Unable to open program file")+" \""+s+"\".\n"+QObject::tr("File permissions problem or file open by another process."),
                         QMessageBox::Ok, QMessageBox::Ok);
                 }
             } else {
                 QMessageBox::warning(this, QObject::tr("Load File"),
-                    QObject::tr("Program file does not exist. \"")+s+QObject::tr("\"."),
+                    QObject::tr("Program file does not exist.")+" \""+s+QObject::tr("\"."),
                     QMessageBox::Ok, QMessageBox::Ok);
             }
         }

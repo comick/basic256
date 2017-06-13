@@ -40,6 +40,7 @@
 #include <QtWidgets/QFontDialog>
 #include <QtWidgets/QFileDialog>
 #include <QClipboard>
+#include <QFileSystemWatcher>
 
 #include "BasicDock.h"
 #include "BasicWidget.h"
@@ -178,6 +179,7 @@ private:
     BasicEdit* newEditor(QString title);
     int untitledNumber;
     int runState;
+    QFileSystemWatcher *fileSystemWatcher;
 
 #ifndef ANDROID
     QNetworkRequest request;

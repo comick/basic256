@@ -53,6 +53,7 @@ BasicEdit::BasicEdit(const QString & defaulttitle) {
     copyButton = false;
     action = new QAction(windowtitle, this);
     action->setCheckable(true);
+    fileChangedOnDiskFlag = false;
 
     setReadOnly(guiState!=GUISTATENORMAL);
     if(guiState==GUISTATEAPP){
@@ -238,14 +239,14 @@ BasicEdit::saveAsProgram() {
 
 void BasicEdit::slotPrint() {
 #ifdef ANDROID
-    QMessageBox::warning(this, QObject::tr("Print"),
-		QObject::tr("Printing is not supported in this platform at this time."));
+    QMessageBox::warning(this, tr("Print"),
+        tr("Printing is not supported in this platform at this time."));
 #else
     QTextDocument *document = this->document();
     QPrinter printer;
 
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
-    dialog->setWindowTitle(QObject::tr("Print Code"));
+    dialog->setWindowTitle(tr("Print Code"));
 
     if (dialog->exec() == QDialog::Accepted) {
         if ((printer.printerState() != QPrinter::Error) && (printer.printerState() != QPrinter::Aborted)) {
@@ -254,8 +255,8 @@ void BasicEdit::slotPrint() {
             document->print(&printer);
             QApplication::restoreOverrideCursor();
         } else {
-            QMessageBox::warning(this, QObject::tr("Print"),
-				QObject::tr("Unable to carry out printing.\nPlease check your printer settings."));
+            QMessageBox::warning(this, tr("Print"),
+                tr("Unable to carry out printing.\nPlease check your printer settings."));
         }
 
     }
@@ -976,6 +977,7 @@ void BasicEdit::setEditorRunState(int state){
         if(state==RUNSTATESTOP&&guiState==GUISTATENORMAL){
             setReadOnly(false);
             setTextInteractionFlags(Qt::TextEditorInteraction);
+            if(fileChangedOnDiskFlag) handleFileChangedOnDisk();
         } else if(state==RUNSTATERUN||guiState!=GUISTATENORMAL){
             setReadOnly(true);
         }else{
@@ -1003,4 +1005,52 @@ void BasicEdit::slotCopyAvailable(bool val){
 
 void BasicEdit::actionWasTriggered(){
     emit(setCurrentEditorTab(this));
+}
+
+void BasicEdit::fileChangedOnDiskSlot(QString fn){
+    if(fn==filename){
+        if(runState==RUNSTATESTOP){
+            if(!fileChangedOnDiskFlag){
+                //avoid fileChangedOnDiskSlot to be fired multiple times while program waits user confirmation
+                fileChangedOnDiskFlag=true;
+                handleFileChangedOnDisk();
+            }
+        }else{
+            fileChangedOnDiskFlag=true;
+        }
+    }
+}
+
+void BasicEdit::handleFileChangedOnDisk(){
+    document()->setModified(true);
+    updateTitle();
+    emit(setCurrentEditorTab(this));
+    QFileInfo check_file(filename);
+    if(!check_file.exists()){
+        QMessageBox::information(this, tr("File has been removed."),
+        tr("It seems that file %1 was removed from disk. Don't forget to save your work.").arg(filename));
+    }else{
+        if( QMessageBox::Yes == QMessageBox::warning(this, tr("File changed"),
+        tr("The file %1 has changed outside BASIC256 editor. Do you want to reload it?").arg(filename),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::No)){
+            //reload changed file from disk but keep undo history to allow reversing this action
+            QFile f(filename);
+            if(f.open(QIODevice::ReadOnly)){
+                QByteArray ba = f.readAll();
+                f.close();
+                QTextCursor cursor = this->textCursor();
+                cursor.beginEditBlock();
+                cursor.select(QTextCursor::Document);
+                cursor.insertText(QString::fromUtf8(ba.data()));
+                cursor.movePosition(QTextCursor::Start);
+                setTextCursor(cursor);
+                cursor.endEditBlock();
+                document()->setModified(false);
+                updateTitle();
+            }else{
+                QMessageBox::critical(this, tr("Load File"), tr("Unable to open program file") + " \"" + filename + "\".\n" + tr("File permissions problem or file open by another process."));
+            }
+        }
+    }
+    fileChangedOnDiskFlag=false;
 }
