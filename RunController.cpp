@@ -128,13 +128,11 @@ RunController::RunController() {
 
     // for debugging and controlling the variable watch window
     QObject::connect(i, SIGNAL(varWinAssign(Variables**, int)), varwin,
-        SLOT(varWinAssign(Variables**, int)));
+        SLOT(varWinAssign(Variables**, int)), Qt::BlockingQueuedConnection);
     QObject::connect(i, SIGNAL(varWinAssign(Variables**, int, int, int)), varwin,
-        SLOT(varWinAssign(Variables**, int, int, int)));
+        SLOT(varWinAssign(Variables**, int, int, int)), Qt::BlockingQueuedConnection);
     QObject::connect(i, SIGNAL(varWinDropLevel(int)), varwin,
-        SLOT(varWinDropLevel(int)));
-    QObject::connect(i, SIGNAL(varWinDimArray(Variables**, int, int, int)), varwin,
-        SLOT(varWinDimArray(Variables**, int, int, int)));
+        SLOT(varWinDropLevel(int)), Qt::BlockingQueuedConnection);
 
     QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
 
@@ -274,9 +272,9 @@ RunController::startDebug() {
         //if graphiscs window is floating
         graphwin->parentWidget()->parentWidget()->parentWidget()->parentWidget()->activateWindow();
         //if graphiscs window is hidden, then the main window will have the focus, which is ok
-        i->start();
         varwin->clear();
         if (replacewin) replacewin->close();
+        i->start();
     }
 }
 
@@ -326,9 +324,9 @@ RunController::startRun() {
         //if graphiscs window is floating
         graphwin->parentWidget()->parentWidget()->parentWidget()->parentWidget()->activateWindow();
         //if graphiscs window is hidden, then the main window will have the focus, which is ok
-        i->start();
         varwin->clear();
         if (replacewin) replacewin->close();
+        i->start();
      }
 }
 
@@ -399,7 +397,7 @@ RunController::stepBreakPoint() {
 }
 
 void RunController::stopRun() {
-    if(!i->isStopped()){
+    if(!i->isStopping()){
     // event when the user clicks on the stop button
     mainwin->statusBar()->showMessage(tr("Stopping."));
 
@@ -429,8 +427,8 @@ void RunController::stopRunFinalized(bool ok) {
         delete sound;
         sound = NULL;
     }
-    QObject::disconnect(i, SIGNAL(goToLine(int)), currentEditor, SLOT(goToLine(int)));
-    QObject::disconnect(i, SIGNAL(seekLine(int)), currentEditor, SLOT(seekLine(int)));
+    QObject::disconnect(i, SIGNAL(goToLine(int)), 0, 0);
+    QObject::disconnect(i, SIGNAL(seekLine(int)), 0, 0);
 
     mainwin->statusBar()->showMessage(tr("Ready."));
     mainwin->setRunState(RUNSTATESTOP);

@@ -656,7 +656,15 @@ void MainWindow::closeEvent(QCloseEvent *e) {
         saveCustomizations();
         // actually quitting
         e->accept();
-        qApp->quit();
+        QTimer::singleShot(0, qApp, SLOT(quit()));
+        // close app as soon as the event loop is idle instead of using qApp->quit() to allow dispach of other events
+        // This prevent app to not closing properly in rare situations like:
+        // Interpreter emit() a blocking function in Controller (using QWaitCondition or BlockingQueuedConnection).
+        // User request to close app while function is runnig in main loop. So, closeEvent is put in queue.
+        // Function ends and return control to Interpreter. Interpreter request to run another code in main loop using emit().
+        // Instead of running this code, the previous closeEvent() from queue is run.
+        // Using qApp->quit() this will block forever Interpreter (never return), so, i->wait() will never return.
+        // This is an old issue. It takes me a lot to manage it. (Florin)
     } else {
         // not quitting
         e->ignore();
@@ -1070,7 +1078,7 @@ void MainWindow::closeEditorTab(int tab){
         }
         if (doclose) {
             if(fileSystemWatcher && !(e->filename.isEmpty())) fileSystemWatcher->removePath(e->filename);
-            delete(e);
+            e->deleteLater();
         }
     }
 }
@@ -1187,7 +1195,7 @@ bool MainWindow::loadFile(QString s) {
                         addFileToRecentList(s);
                         QApplication::restoreOverrideCursor();
                         updateStatusBar(QObject::tr("Ready."));
-                        fileSystemWatcher->addPath(filename);
+                        if(fileSystemWatcher) fileSystemWatcher->addPath(filename);
 
                         //add tab and make it active
                         if(!replaceEmptyDoc){
@@ -1293,9 +1301,10 @@ bool MainWindow::closeAllPrograms(){
 
     }
     if(doit){
+        rc->stopRun();
         for(int i=editwintabs->count()-1; i>=0; i--){
             BasicEdit *e = (BasicEdit*)editwintabs->widget(i);
-            delete(e);
+            e->deleteLater();
         }
     }
     return doit;

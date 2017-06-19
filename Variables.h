@@ -49,8 +49,9 @@ class VariableInfo
         int varnum;
 };
 
-class Variables
+class Variables: public QObject
 {
+    Q_OBJECT;
     public:
         Variables(int, Error *);
         ~Variables();
@@ -64,7 +65,7 @@ class Variables
         //
         Variable* get(const int, int);
         Variable* get(const int);
-        VariableInfo* getInfo(int);
+        Variable* getRawVariable(const int);
         DataElement *getdata(int);
         DataElement *getdata(DataElement* e);
         void setdata(int, DataElement *);

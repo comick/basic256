@@ -187,17 +187,14 @@ Variable* Variables::get(const int varnum) {
     return get(varnum, recurselevel);
 }
 
-VariableInfo* Variables::getInfo(int varnum) {
-	// used ONLY by VariableWin to get the real variable being effected
-	// by the assignment
-	// returns the actual variable number and recurse level the variable pointed to
-
-    Variable *v = get(varnum, recurselevel);
-    VariableInfo *vi = new VariableInfo();
-    vi->level = v->data.level; //recurselevel==0?0:(isglobal(varnum)?0:recurselevel);
-    vi->varnum = varnum;
-    //vi->varnum = varnum;
-    return(vi);
+Variable* Variables::getRawVariable(const int varnum) {
+    // get variable from map without follow REF
+    // need for variable window
+    if(isglobal(varnum)){
+        return(varmap[0][varnum]);
+    }else{
+        return(varmap[recurselevel][varnum]);
+    }
 }
 
 DataElement* Variables::getdata(int varnum) {

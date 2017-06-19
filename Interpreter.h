@@ -130,14 +130,15 @@ class Interpreter : public QThread
 		int compileProgram(char *);
 		void initialize();
 		bool isRunning();
-		bool isStopped();
+        bool isStopped();
+        bool isStopping();
         void setStopped();
 		bool isAwaitingInput();
 		void setInputReady();
 		void cleanup();
         void run();
         int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
-		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
+        QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
 		QString returnString;		// return value from runcontroller emit
 		int returnInt;			// return value from runcontroller emit
         int settingsAllowPort;
@@ -225,7 +226,6 @@ class Interpreter : public QThread
 		// watch... functions trigger the variablewatch window to display
         void watchvariable(bool, int);
         void watchvariable(bool, int, int, int);
-        void watchdim(bool, int, int, int);
         void watchdecurse(bool);
 
 		int listensockfd;				// temp socket used in netlisten

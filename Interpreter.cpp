@@ -561,48 +561,33 @@ bool Interpreter::isStopped() {
     return (status == R_STOPPED);
 }
 
+bool Interpreter::isStopping() {
+    // interpreter is stopped or is about to stop
+    // to avoid RunController::stopRun() to be triggered while status == R_STOPING too
+    return (status == R_STOPPED || status == R_STOPING);
+}
+
 void Interpreter::setStopped() {
     status = R_STOPPED;
 }
 
 void Interpreter::watchvariable(bool doit, int i) {
-	// send an event to the variable watch window to display a simple variable's value
-	// wait for the event to complete by watching the mutex
+    // send an event to the variable watch window to display a variable/array content
     if (doit) {
-        mymutex->lock();
         emit(varWinAssign(&variables, i));
-        waitCond->wait(mymutex);
-        mymutex->unlock();
     }
 }
 void Interpreter::watchvariable(bool doit, int i, int x, int y) {
 	// send an event to the variable watch window to display aan array element's value
-	// wait for the event to complete by watching the mutex
     if (doit) {
-        mymutex->lock();
         emit(varWinAssign(&variables, i, x ,y));
-        waitCond->wait(mymutex);
-        mymutex->unlock();
     }
 }
-void Interpreter::watchdim(bool doit, int i, int x, int y) {
-	// send an event to the variable watch window to display an array dim or redim
-	// wait for the event to complete by watching the mutex
-    if (doit) {
-        mymutex->lock();
-        emit(varWinDimArray(&variables ,i , x, y));
-        waitCond->wait(mymutex);
-        mymutex->unlock();
-    }
-}
+
 void Interpreter::watchdecurse(bool doit) {
 	// send an event to the variable watch window to remove a function's variables
-	// wait for the event to complete by watching the mutex
     if (doit) {
-        mymutex->lock();
         emit(varWinDropLevel(variables->getrecurse()));
-        waitCond->wait(mymutex);
-        mymutex->unlock();
     }
 }
 
@@ -880,8 +865,9 @@ Interpreter::cleanup() {
     delete (downloader);
     downloader = NULL;
     delete(stack);
-    delete(variables);
-    variables=NULL;
+    //delete(variables);
+    //variables=NULL;
+    variables->deleteLater();
     delete(convert);
     // Clean up sprites
     clearsprites();
@@ -1027,7 +1013,6 @@ Interpreter::run() {
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
     onerrorstack = NULL;
     while (status != R_STOPING && execByteCode() >= 0) {} //continue
-    //status = R_STOPPED;
     debugMode = 0;
     cleanup(); // cleanup the variables, databases, files, stack and everything
     emit(stopRunFinalized(!isError));
@@ -1462,10 +1447,8 @@ Interpreter::execByteCode() {
 					int xdim = stack->popint();
 					if (xdim<=0) xdim=1; // need to dimension as 1d
 					variables->arraydim(i, xdim, ydim, opcode == OP_REDIM);
-					if(!error->pending()) {
-                        watchdim(debugMode, i , xdim, ydim);
-					}
-				}
+                    watchvariable(debugMode, i);
+                }
 				break;
 
 				case OP_ALEN:
@@ -1508,7 +1491,7 @@ Interpreter::execByteCode() {
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
 					} else {
-						variables->arraysetdata(i, xindex, yindex, e);
+                        variables->arraysetdata(i, xindex, yindex, e);
                         watchvariable(debugMode, i, xindex, yindex);
 					}
 				}
@@ -1640,7 +1623,6 @@ Interpreter::execByteCode() {
                                         //direct access to array's data
                                         if(mode==1 || v->arr->datavector[index].type == T_UNASSIGNED) {
                                             v->arr->datavector[index].copy(e, i);
-                                            watchvariable(debugMode, i, row, col);
                                         }
                                     }
                                 }
@@ -1648,8 +1630,8 @@ Interpreter::execByteCode() {
                          } else {
                             // trying to fill a regular variable - just do an assign
                             variables->setdata(i, e);
-                            watchvariable(debugMode, i);
                         }
+                        watchvariable(debugMode, i);
                     }
                 }
 				break;
@@ -1663,7 +1645,6 @@ Interpreter::execByteCode() {
                     // create array if we need to (wrong dimensions or not array)
                     if (v->data.type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
                         variables->arraydim(i, rows, columns, false);
-                        watchdim(debugMode, i, rows, columns);
                     }
 
                     for(int row = rows-1; row>=0; row--) {
@@ -1685,12 +1666,10 @@ Interpreter::execByteCode() {
                                     //direct access to array's data
                                     v->arr->datavector[index].copy(e, i);
                                 }
-                                if(!error->pending()) {
-                                    watchvariable(debugMode, i, row, col);
-                                }
                             }
                         }
                     }
+                    watchvariable(debugMode, i);
                 }
                 break;
 
@@ -1710,15 +1689,7 @@ Interpreter::execByteCode() {
 				break;
 				
 				case OP_VARIABLEWATCH: {
-                    if (variables->get(i)->data.type == T_ARRAY) {
-						// an array - trigger dim and dumping of the elements
-						int ydim = variables->arraysizecols(i);
-						int xdim = variables->arraysizerows(i);
-                        watchdim(true, i , xdim, ydim);
-					} else {
-						// regular variable - show it
-                        watchvariable(true, i);
-					}
+                    watchvariable(true, i);
 				}
 				break;
 
@@ -1883,9 +1854,9 @@ Interpreter::execByteCode() {
 							// edit needs to eventually have tabs for includes and tracing and debugging
 							// would go three dimensional - but not right now
                             emit(seekLine(currentLine));
-							if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
+                            if ((debugMode==1) || (debugMode==2 && debugBreakPoints->contains(currentLine-1))) {
 								// show step and runto options
-								emit(debugNextStep());
+                                emit(debugNextStep());
 								// wait for button if we are stepping or if we are at a break point
 								mydebugmutex->lock();
 								waitDebugCond->wait(mydebugmutex);

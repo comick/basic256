@@ -15,35 +15,56 @@
  **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  **/
 
-#include <qglobal.h>
+#ifndef __VARIABLEWIN_H
+#define __VARIABLEWIN_H
 
-#include <QtWidgets/QDockWidget>
+#define COLUMNNAME          0
+#define COLUMNTYPE          1
+#define COLUMNVALUE         2
+
 #include <QtWidgets/QTreeWidget>
-#include <QLocale>
 
 #include "ViewWidgetIFace.h"
-#include "Convert.h"
 #include "DataElement.h"
 #include "Variables.h"
+#include "Convert.h"
 
-class VariableWin : public QTreeWidget, public ViewWidgetIFace
-{
-  Q_OBJECT;
+class VariableWin : public QTreeWidget, public ViewWidgetIFace {
+    Q_OBJECT;
 
-	public:
-		VariableWin();
-		~VariableWin();
+public:
+    VariableWin();
+    ~VariableWin();
+    void clear();
 
-	public slots:
-        void varWinAssign(Variables **, int);
-        void varWinAssign(Variables **, int, int, int);
-        void varWinDimArray(Variables **, int, int, int);
-		void varWinDropLevel(int);
+public slots:
+    void varWinAssign(Variables **, int);
+    void varWinAssign(Variables **, int, int, int);
+    void varWinDropLevel(int);
 
-	private:
-		Convert *convert;
-		void removeArrayEntries(QString);
-		void setTypeAndValue(QTreeWidgetItem *, DataElement *);
-		QLocale *locale;
-
+private:
+    Convert *convert;
+    void setTypeAndValue(QTreeWidgetItem *, DataElement *);
+    QString tr_stringType;
+    QString tr_integerType;
+    QString tr_floatType;
+    QString tr_referenceType;
+    QString tr_arrayType;
+    QString tr_unknownType;
 };
+
+
+class TreeWidgetItem : public QTreeWidgetItem {
+public:
+    TreeWidgetItem():QTreeWidgetItem(){}
+
+private:
+    bool operator<(const QTreeWidgetItem &other)const {
+        const int column = treeWidget()->sortColumn();
+        if(column==COLUMNTYPE)
+            return data(column,Qt::EditRole) < other.data(column,Qt::EditRole);
+        return data(column,Qt::UserRole + 1) < other.data(column,Qt::UserRole + 1);
+    }
+};
+
+#endif

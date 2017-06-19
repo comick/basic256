@@ -34,8 +34,6 @@
 #include "BasicGraph.h"
 #include "Constants.h"
 
-#include <QDebug>
-
 extern QMutex *mymutex;
 extern int lastKey;
 extern std::list<int> pressedKeys;
