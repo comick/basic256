@@ -1283,20 +1283,12 @@ Interpreter::execByteCode() {
 		stack->pushvariant(inputString, inputType);
 		status = R_RUNNING;
 		return 0;
-//	} else if (status == R_PAUSED) {
-//		sleep(1);
-//		return 0;
 	} else if (status == R_INPUT) {
 		return 0;
 	}
 
 	// if errnum is set then handle the last thrown error
 	if (error->pending()) {
-        //change ERROR_VARNOTASSIGNED into ERROR_ARRAYELEMENT if variable implied is in fact an array element
-        if(error->newe==ERROR_VARNOTASSIGNED && error->newvar>=0){
-            DataElement *e = variables->getdata(error->newvar);
-            if(e->type==T_ARRAY) error->newe=ERROR_ARRAYELEMENT;
-        }
         error->process(currentLine);
 		if(onerrorstack && error->e > 0) {
 			// progess call to subroutine for error handling
@@ -1550,7 +1542,7 @@ Interpreter::execByteCode() {
                     if (e->type==T_ARRAY) {
                         variables->copyarray(i, e); //copy entire array
                     } else {
-                        variables->setdata(i, e); //setdata() checks also for T_UNASSIGNED
+                        variables->setdata(i, e);
                     }
                     watchvariable(debugMode, i);
                 }
@@ -1564,6 +1556,7 @@ Interpreter::execByteCode() {
                         variables->copyarray(i, e);
                         watchvariable(debugMode, i);
                     }else if (e->type==T_REF) {
+                        //follow T_REF in case of passing array as reference to a function/subroutine
                         DataElement *ee = variables->getdata(e); //get the final content to ensure that this is an array
                         if(ee->type==T_ARRAY){
                             variables->setdata(i, e);
@@ -1613,17 +1606,15 @@ Interpreter::execByteCode() {
                         error->q(ERROR_ARRAYINDEXMISSING, e->intval);
                     } else {
                         Variable *v = variables->get(i);
-                        if (v->data.type==T_ARRAY) {
-                            int columns = variables->arraysizecols(i);
-                            int rows = variables->arraysizerows(i);
-                            if(!error->pending()){
-                                for(int row = 0; row<rows; row++) {
-                                    for (int col = 0; col<columns; col++) {
-                                        int index=row*columns+col;
-                                        //direct access to array's data
-                                        if(mode==1 || v->arr->datavector[index].type == T_UNASSIGNED) {
-                                            v->arr->datavector[index].copy(e, i);
-                                        }
+                        if (!error->pending() && v->data.type==T_ARRAY) {
+                            int index=v->arr->xdim*v->arr->ydim;
+                            //direct access to array's data
+                            if(mode==1) {
+                                while(index-- > 0) v->arr->datavector[index].copy(e, i);
+                            }else{
+                                while(index-- > 0) {
+                                    if(v->arr->datavector[index].type == T_UNASSIGNED) {
+                                        v->arr->datavector[index].copy(e, i);
                                     }
                                 }
                             }
@@ -1637,37 +1628,40 @@ Interpreter::execByteCode() {
 				break;
 
                 case OP_ARRAYLISTASSIGN: {
-                    int rows = stack->popint();
-                    int columns = stack->popint(); //pop the first row length - the following rows must have the same length
+                    const int rows = stack->popint();
+                    const int columns = stack->popint(); //pop the first row length - the following rows must have the same length
                     int columns2 = columns;
                     Variable *v = variables->get(i);
 
                     // create array if we need to (wrong dimensions or not array)
-                    if (v->data.type != T_ARRAY || variables->arraysizecols(i)!=columns || variables->arraysizecols(i)!=rows) {
+                    if (v->data.type != T_ARRAY || !v->arr || v->arr->xdim!=columns || v->arr->ydim!=rows) {
                         variables->arraydim(i, rows, columns, false);
                     }
 
+                    int index=rows*columns;
                     for(int row = rows-1; row>=0; row--) {
                         //pop row length only if is not first row - already popped
                         if(row != rows-1)
                             columns2=stack->popint();
                             if(columns2!=columns){
                                 error->q(ERROR_ARRAYNITEMS, i);
+                                // empty stack to successfully pass over an OnError situation
+                                stack->drop(columns2);
+                                for(row--; row>=0 ; row--) stack->drop(stack->popint());
+                                break;
                             }
-                        for (int col = columns2 - 1; col >= 0; col--) {
-                            DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
-                            if(!error->pending()){
-                                int index=row*columns+col;
-                                if (e->type==T_ARRAY) {
-                                    error->q(ERROR_ARRAYINDEXMISSING, e->intval);
-                                } else if (e->type==T_UNASSIGNED) {
-                                    variables->arrayunassign(i,row,col);
-                                } else {
+                            int col=columns;
+                            while(col-- > 0) {
+                                DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
+                                if (e->type!=T_ARRAY) {
                                     //direct access to array's data
-                                    v->arr->datavector[index].copy(e, i);
-                                }
-                            }
-                        }
+                                    v->arr->datavector[--index].copy(e, i);
+                                } else {
+                                    index--;
+                                    error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+                                    variables->arrayunassign(i, col, row);
+                               }
+                         }
                     }
                     watchvariable(debugMode, i);
                 }

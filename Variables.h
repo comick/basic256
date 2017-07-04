@@ -4,15 +4,6 @@
 
 #pragma once
 
-#include <map>
-#include <unordered_map>
-#include <vector>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <QString>
-
 #include "Error.h"
 #include "DataElement.h"
 
@@ -31,23 +22,13 @@ class VariableArrayPart
 class Variable
 {
     public:
-        Variable(int, int);
+        Variable(const int, const int);
         ~Variable();
 
         DataElement data;
         VariableArrayPart *arr;
 };
 
-
-class VariableInfo
-{
-    // a variable's inal recurse level and final variable number
-    // after global and varref types are processed
-    // used by VariableWin to get global and referenced variable info
-    public:
-        int level;
-        int varnum;
-};
 
 class Variables: public QObject
 {
@@ -68,27 +49,24 @@ class Variables: public QObject
         Variable* getRawVariable(const int);
         DataElement *getdata(int);
         DataElement *getdata(DataElement* e);
-        void setdata(int, DataElement *);
+        void setdata(const int, DataElement *);
         void setdata(int, long);
         void setdata(int, double);
         void setdata(int, QString);
         void unassign(const int);
         //
-        void copyarray(int varnum1, DataElement *e);
+        void copyarray(const int varnum1, DataElement *e);
         //
-        void arraydim(int, int, int, bool);
-        DataElement* arraygetdata(int, int, int);
-        void arraysetdata(int, int, int, DataElement *);
-        void arraysetdata(int, int, int, long);
-        void arraysetdata(int, int, int, double);
-        void arraysetdata(int, int, int, QString);
-        void arrayunassign(int, int, int);
+        void arraydim(const int, const int, const int, const bool);
+        DataElement* arraygetdata(const int, const int, const int);
+        void arraysetdata(const int, const int, const int, DataElement *);
+        void arrayunassign(const int, const int, const int);
         //
-        int arraysize(int);
-        int arraysizerows(int);
-        int arraysizecols(int);
+        int arraysize(const int);
+        int arraysizerows(const int);
+        int arraysizecols(const int);
         //
-        void makeglobal(int);
+        void makeglobal(const int);
 
 
     private:
@@ -96,12 +74,9 @@ class Variables: public QObject
         const int numsyms;		// size of the symbol table
         int recurselevel;
         int maxrecurselevel;
-        std::unordered_map<int, std::vector<Variable*> > varmap;
-        std::vector<bool> globals;
+        std::vector<Variable**> varmap;
+        bool *isglobal;
         void allocateRecurseLevel();
-        void freeRecurseLevel();
         void clearRecurseLevel();
         void clearvariable(Variable *);
-        bool isglobal(int);
-
 };

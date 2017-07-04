@@ -81,6 +81,10 @@ void Error::q(int errornumber, int variablenumber, QString extratext) {
         if (varnotassignederror==SETTINGSERRORNONE) return;
         if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_ARRAYELEMENT;
     }
+    if (errornumber==ERROR_REFNOTASSIGNED) {
+        if (varnotassignederror==SETTINGSERRORNONE) return;
+        if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_REFNOTASSIGNED;
+    }
     if(newe == ERROR_NONE){
         //store only first error from last operation
         //example: print a/b
@@ -329,10 +333,10 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			errormessage = tr("Can not get a single length if a two dimensional array");
 			break;
         case ERROR_VARNULL:
-            errormessage = tr("Variable refers to a non-existent variable.");
+            errormessage = tr("Variable %VARNAME% refers to a non-existent variable");
             break;
         case ERROR_VARCIRCULAR:
-            errormessage = tr("Circular reference in variable");
+            errormessage = tr("Circular reference in variable %VARNAME%");
             break;
         case ERROR_IMAGERESOURCE:
             errormessage = tr("Specified image resource not found");
@@ -397,6 +401,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_SETTINGMAXKEYS:
             errormessage = tr("The maximum number of keys for this program has been exceeded");
             break;
+        case ERROR_REFNOTASSIGNED:
+            errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
+            break;
 
 
 
@@ -441,6 +448,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             break;
         case WARNING_ARRAYELEMENT:
             errormessage = tr("Element of array %VARNAME% has not been assigned a value");
+            break;
+        case WARNING_REFNOTASSIGNED:
+            errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
             break;
 
 
