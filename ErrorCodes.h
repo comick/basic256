@@ -116,6 +116,8 @@
 #define ERROR_SETTINGMAXLEN            111
 #define ERROR_SETTINGMAXKEYS           112
 #define ERROR_REFNOTASSIGNED           113
+#define ERROR_REFNOTASSIGNED           113
+#define ERROR_UNEXPECTEDRETURN         114
 
 
 // Insert new error codes here

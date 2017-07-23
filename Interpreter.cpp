@@ -783,7 +783,7 @@ Interpreter::initialize() {
 	error->loadSettings();
     imageSmooth = false;
 	op = wordCode;
-	callstack = NULL;
+    callstack = new callStack();
 	onerrorstack = NULL;
 	forstack = NULL;
     status = R_RUNNING;
@@ -913,12 +913,7 @@ Interpreter::cleanup() {
 	error->deq();
 
     //delete stack used by function calls, subroutine calls, and gosubs for return location
-    frame *temp_callstack;
-    while (callstack!=NULL) {
-        temp_callstack = callstack;
-        callstack = temp_callstack->next;
-        delete(temp_callstack);
-        }
+    delete callstack;
 
     //delete stack used to track nested on-error and try/catch definitions
     onerrorframe *temp_onerrorstack;
@@ -1294,10 +1289,7 @@ Interpreter::execByteCode() {
 			// progess call to subroutine for error handling
 			// or jump to the catch label
 			if (onerrorstack->onerrorgosub) {
-				frame *temp = new frame;
-				temp->returnAddr = op;
-				temp->next = callstack;
-				callstack = temp;
+                callstack->push(op);
 			}
 			op = wordCode + onerrorstack->onerroraddress;
 			return 0;
@@ -1942,13 +1934,11 @@ Interpreter::execByteCode() {
 			// int i is the new execution location offset within the array wordCode
 			//
             int l = *op;    // label/symbol number
-            int i; // address
+            int i = symtableaddress[l]; // address
             op++;
 
-			// lookup address for the label
-            if (symtableaddress[l] >=0) {
-                i = symtableaddress[l];
-            } else {
+            // if address is -1 then this is not a function, subroutine or label
+            if (i < 0) {
                 //chose the proper error code if there is no valid address for this label/function/subroutine
                 switch (opcode) {
                 case OP_CALLFUNCTION:
@@ -2006,10 +1996,7 @@ Interpreter::execByteCode() {
                         error->q(ERROR_NOSUCHLABEL, l);
                     }else{
                         // setup return
-                        frame *temp = new frame;
-                        temp->returnAddr = op;
-                        temp->next = callstack;
-                        callstack = temp;
+                        callstack->push(op);
                         // do jump
                         op = wordCode + i;
                     }
@@ -2022,10 +2009,7 @@ Interpreter::execByteCode() {
                         error->q(ERROR_NOSUCHFUNCTION, l);
                     }else{
                         // setup return
-                        frame *temp = new frame;
-                        temp->returnAddr = op;
-                        temp->next = callstack;
-                        callstack = temp;
+                        callstack->push(op);
                         // do jump
                         op = wordCode + i;
                     }
@@ -2039,10 +2023,7 @@ Interpreter::execByteCode() {
                         error->q(ERROR_NOSUCHSUBROUTINE, l);
                     }else{
                         // setup return
-                        frame *temp = new frame;
-                        temp->returnAddr = op;
-                        temp->next = callstack;
-                        callstack = temp;
+                        callstack->push(op);
                         // do jump
                         op = wordCode + i;
                     }
@@ -2109,13 +2090,11 @@ Interpreter::execByteCode() {
 
 
 				case OP_RETURN: {
-					frame *temp = callstack;
-					if (temp) {
-						op = temp->returnAddr;
-						callstack = temp->next;
-                        delete temp;
+                    int* addr = callstack->pop();
+                    if (addr) {
+                        op=addr;
 					} else {
-						return -1;
+                        error->q(ERROR_UNEXPECTEDRETURN);
 					}
 				}
 				break;
@@ -4720,7 +4699,8 @@ Interpreter::execByteCode() {
 					// decrease recursion level in variable hash
 					// and pop any unfinished for statements off of forstack
 				{
-					while (forstack&&forstack->recurselevel == variables->getrecurse()) {
+					const int level = variables->getrecurse();
+					while (forstack&&forstack->recurselevel == level) {
                         forframe *temp = forstack;
 						forstack = temp->next;
 						delete temp;

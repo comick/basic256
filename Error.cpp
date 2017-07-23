@@ -404,6 +404,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_REFNOTASSIGNED:
             errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
             break;
+        case ERROR_UNEXPECTEDRETURN:
+            errormessage = tr("Unexpected RETURN");
+            break;
 
 
 

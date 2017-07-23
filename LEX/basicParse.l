@@ -281,6 +281,7 @@ error_soundlength [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt
 error_soundnotseekable [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
 error_string2note [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
 error_wavobsolete [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
+error_unexpectedreturn [Uu][Nn][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Rr][Ee][Tt][Uu][Rr][Nn]
 warning_arrayelement [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
 warning_refnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Rr][Ee][Ff][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 warning_string2note [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
@@ -742,6 +743,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_soundnotseekable}                        { count(); return B256ERROR_SOUNDNOTSEEKABLE; }
 {error_string2note}                             { count(); return B256ERROR_STRING2NOTE; }
 {error_wavobsolete}                             { count(); return B256ERROR_WAVOBSOLETE; }
+{error_unexpectedreturn}                        { count(); return B256ERROR_UNEXPECTEDRETURN; }
 {warning_arrayelement}                          { count(); return B256WARNING_ARRAYELEMENT; }
 {warning_refnotassigned}                        { count(); return B256WARNING_REFNOTASSIGNED; }
 {warning_string2note}                           { count(); return B256WARNING_STRING2NOTE; }

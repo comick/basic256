@@ -78,10 +78,34 @@ struct byteCodeData
 
 
 // used by function calls, subroutine calls, and gosubs for return location
-struct frame {
-	frame *next;
-	int *returnAddr;
+class callStack {
+public:
+    callStack(){
+        size=0;
+        pointer=0;
+        stack.reserve(512);
+    };
+    ~callStack(){};
+    void push(int* address){
+        if(pointer>=size) grow();
+        stack[pointer]=address;
+        pointer++;
+    };
+    int* pop(){
+        if(pointer==0) return NULL;
+        pointer--;
+        return stack[pointer];
 };
+private:
+    int size;
+    int pointer;
+    std::vector<int*> stack;
+    void grow(){
+        size=size+50;
+        stack.resize(size);
+    };
+};
+
 
 // used to track nested on-error and try/catch definitions
 struct onerrorframe {
@@ -205,8 +229,8 @@ class Interpreter : public QThread
 		QIODevice **filehandle;
 		int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
 		int *op;
-		frame *callstack;
-		forframe *forstack;
+        callStack *callstack;
+        forframe *forstack;                     // stack FOR/NEXT for current recurse level
 		onerrorframe *onerrorstack;
 		run_status status;
 		run_status oldstatus;

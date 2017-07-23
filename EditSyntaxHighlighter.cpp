@@ -479,6 +479,7 @@ void EditSyntaxHighlighter::initConstants() {
             <<"ERROR_SETTINGMAXKEYS"
             <<"ERROR_REFNOTASSIGNED"
             <<"ERROR_NOTIMPLEMENTED"
+            <<"ERROR_UNEXPECTEDRETURN"
             <<"WARNING_START"
             <<"WARNING_TYPECONV"
             <<"WARNING_VARNOTASSIGNED"
