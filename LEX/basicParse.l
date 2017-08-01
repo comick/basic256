@@ -73,9 +73,13 @@ char *lexingfilename;
 #define MAX_INCLUDE_DEPTH 10
 YY_BUFFER_STATE include_stack[MAX_INCLUDE_DEPTH];
 int include_linenumber[MAX_INCLUDE_DEPTH];
-char* include_filename[MAX_INCLUDE_DEPTH];
+int include_filenumber[MAX_INCLUDE_DEPTH];
 int numincludes=0;
-
+#define MAX_INCLUDE_FILES 100
+char* include_filenames[MAX_INCLUDE_FILES];
+int include_filenames_counter=0;
+int filenumber=0;
+char *filename;
 #ifdef __cplusplus
 }
 #endif
@@ -86,6 +90,7 @@ void unputcolon();
 %}
 
 %x INCLUDE
+%x INCLUDE_FILE
 
 constinteger ([0-9]{1,9}|1[0-9]{9}|2(0[0-9]{8}|1([0-3][0-9]{7}|4([0-6][0-9]{6}|7([0-3][0-9]{5}|4([0-7][0-9]{4}|8([0-2][0-9]{3}|3([0-5][0-9]{2}|6([0-3][0-9]|4[0-7])))))))))
 constdecimal [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
@@ -240,7 +245,6 @@ error_integerrange [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][N
 error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
 error_arrayeven [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Vv][Ee][Nn]
 error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][22][Dd]
-error_nextwrongfor [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Xx][Tt][Ww][Rr][Oo][Nn][Gg][Ff][Oo][Rr]
 error_nosuchfunction [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 error_slicesize [Ee][Rr][Rr][Oo][Rr][_][Ss][Ll][Ii][Cc][Ee][Ss][Ii][Zz][Ee]
@@ -346,9 +350,10 @@ imagetype_jpg [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Jj][Pp][Gg]
 imagetype_png [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Pp][Nn][Gn]
 input [Ii][Nn][Pp][Uu][Tt]
 inputfloat [Ii][Nn][Pp][Uu][Tt][ \t]*[Ff][Ll][Oo][Aa][Tt]
-inputint [Ii][Nn][Pp][Uu][Tt][ \t]*[iI][nN][tT]([Ee][Gg][Ee][Rr])*
+inputint [Ii][Nn][Pp][Uu][Tt][ \t]*[iI][nN][tT]([Ee][Gg][Ee][Rr])?
 inputstring [Ii][Nn][Pp][Uu][Tt][ \t]*[Ss][Tt][Rr][Ii][Nn][Gg]
-include [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
+include ^[ \t]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*
+badinclude [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
 isnumeric [iI][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
@@ -583,10 +588,17 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
  /* compile time rules */
  /**********************************************************************/
 
-{include} 					{ 
-								count();
-								BEGIN(INCLUDE);
-							}
+{include}   {
+            count();
+            BEGIN(INCLUDE);
+}
+{badinclude} {
+            //include command must be alone in line
+            count();
+            errorcode = COMPERR_INCLUDENOTALONE;
+            return -1;
+            //printf("include command must be alone in line %i\n", column);
+}
 
  /**********************************************************************/
  /* functions and constants rules                                      */
@@ -702,7 +714,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_notimplemented}                          { count(); return B256ERROR_NOTIMPLEMENTED; }
 {error_arrayeven}                               { count(); return B256ERROR_ARRAYEVEN; }
 {error_arraylength2d}                           { count(); return B256ERROR_ARRAYLENGTH2D; }
-{error_nextwrongfor}                            { count(); return B256ERROR_NEXTWRONGFOR; }
 {error_nosuchfunction}                          { count(); return B256ERROR_NOSUCHFUNCTION; }
 {error_nosuchsubroutine}                        { count(); return B256ERROR_NOSUCHSUBROUTINE; }
 {error_slicesize}                               { count(); return B256ERROR_SLICESIZE; }
@@ -1182,52 +1193,114 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
  	column++;
  	return yytext[0];
 }
-
-<INCLUDE>[ \t]*  	{
-    // eat the whitespace before the file
+<INCLUDE>((\"[^\"\n]*\")|(\'[^\'\n]*\'))  {
+                // got the include file name (with quotes) and store it
+                //printf("<INCLUDE> nume \"%s\"\n", yytext);
+                if ( numincludes >= MAX_INCLUDE_DEPTH ) {
+                        BEGIN(INITIAL);
+                        errorcode = COMPERR_INCLUDEDEPTH;
+                        return -1;
+                }
+                if ( yyleng == 2 ) {
+                        BEGIN(INITIAL);
+                        errorcode = COMPERR_INCLUDENOFILE;
+                        return -1;
+                }
+                filename = strdup(yytext+1);
+                filename[strlen(filename)-1] = 0x00;
+                //printf("\"%s\"\n", filename);
+                BEGIN(INCLUDE_FILE);
+}
+<INCLUDE>. {
+                //fail to grab include file name
+                //printf("<INCLUDE>. \"%s\"\n", yytext);
+                BEGIN(INITIAL);
+                errorcode = COMPERR_INCLUDENOFILE;
+                return -1;
 }
 
-<INCLUDE>((\"[^\"\n]*\")|(\'[^\'\n]*\'))   {
-	// got the include file name (with quotes)
-	//original code from http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html
-               
-	if ( numincludes >= MAX_INCLUDE_DEPTH ) {
-		BEGIN(INITIAL);
-		errorcode = COMPERR_INCLUDEDEPTH;
-		return -1;
-	}
-     
-	include_stack[numincludes] = YY_CURRENT_BUFFER;
-	
-	char *filename = strdup(yytext+1);
-	filename[strlen(filename)-1] = 0x00;
-                  
-	yyin = fopen( filename, "r" );
-	if ( ! yyin ) {
-		BEGIN(INITIAL);
-		errorcode = COMPERR_INCLUDEFILE;
-		return -1;
-	}     
-     
-	include_linenumber[numincludes] = linenumber;	// save last level's line number
-	include_filename[numincludes] = lexingfilename;	// save the previous file name to the stack
-	numincludes++;  
-
-	lexingfilename = filename;
-	addStringOp(OP_INCLUDEFILE, lexingfilename);
-	linenumber = 1;  
-	addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
-
-	yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
-    BEGIN(INITIAL);
+<INCLUDE><<EOF>> {
+                 //EOF before file name
+                 //printf("<INCLUDE><<EOF>> \"%s\"\n", yytext);
+                 BEGIN(INITIAL);
+                 errorcode = COMPERR_INCLUDENOFILE;
+                 return -1;
 }
+
+<INCLUDE_FILE>(([ \t:]*)|([ \t:]*#.*)|([ \t:]*[Rr][Ee][Mm](([ \t:].+)|([ \t:]*))))$  {
+                //include line is ok - eat the rest of the line (after file name)
+                //otherwise the remaining chars will be processed just after the included file (errors)
+                //This rest is valid only if it is an empty line or a REM statement
+                //printf("<INCLUDE_FILE> rest \"%s\"\n", yytext);
+
+                include_stack[numincludes] = YY_CURRENT_BUFFER;
+
+                yyin = fopen( filename, "r" );
+                if ( ! yyin ) {
+                        BEGIN(INITIAL);
+                        free(filename);
+                        filename=NULL;
+                        errorcode = COMPERR_INCLUDEFILE;
+                        return -1;
+                }
+
+                include_linenumber[numincludes] = linenumber;	// save last level's line number
+                include_filenumber[numincludes] = filenumber;	// save the previous file name to the stack
+                numincludes++;
+
+                int addnewfilename = 1;
+
+                for(int f=1;f<include_filenames_counter;f++){
+                    if(strcmp(filename, include_filenames[f])==0){
+                        filenumber = f;
+                        free(filename);
+                        filename=NULL;
+                        addnewfilename=0;
+                        break;
+                    }
+                }
+
+                if(addnewfilename==1){
+                    include_filenames_counter++;
+                    if ( include_filenames_counter >= MAX_INCLUDE_FILES ) {
+                            BEGIN(INITIAL);
+                            include_filenames_counter--; //to clean up correctly in freeBasicParse()
+                            free(filename);
+                            filename=NULL;
+                            errorcode = COMPERR_INCLUDEMAX;
+                            return -1;
+                    }
+                    filenumber = include_filenames_counter;
+                    include_filenames[filenumber] = filename;
+                }
+
+                lexingfilename = include_filenames[filenumber];
+                linenumber = 1;
+                column=0;
+                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+
+                yy_switch_to_buffer( yy_create_buffer( yyin, YY_BUF_SIZE ) );
+                BEGIN(INITIAL);
+}
+
+<INCLUDE_FILE>.   {
+                //include line contains other chars - not ok
+                //printf("<INCLUDE_FILE>. \"%s\"\n", yytext);
+                BEGIN(INITIAL);
+                errorcode = COMPERR_INCLUDENOTALONE;
+                return -1;
+}
+
 
 
 <<EOF>> {
 	if ( numincludes == 0 ) {
 		// eof of the top level program
 		yyterminate();
-	} else {
+                //fclose(YY_CURRENT_BUFFER->yy_input_file);
+                //YY_CURRENT_BUFFER->yy_input_file = NULL;
+                //yy_delete_buffer( YY_CURRENT_BUFFER );
+        } else {
 
 		// check for unclosed if and other structures
 		if (testIfOnTable(numincludes)!=-1) {
@@ -1237,15 +1310,14 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
 		// eof of an include - return to the includer
 		numincludes--;
-		linenumber=include_linenumber[numincludes];
-		addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                linenumber = include_linenumber[numincludes];	// restore last level's line number
+                filenumber = include_filenumber[numincludes];	// restore the previous file name/number from the stack
+                lexingfilename=include_filenames[filenumber];
 		
-		free(lexingfilename);
-		lexingfilename=include_filename[numincludes];
-		addStringOp(OP_INCLUDEFILE, lexingfilename);
-		
-		yy_delete_buffer( YY_CURRENT_BUFFER );
-		yy_switch_to_buffer(include_stack[numincludes] );
+                fclose(YY_CURRENT_BUFFER->yy_input_file);
+                YY_CURRENT_BUFFER->yy_input_file = NULL;
+                yy_delete_buffer( YY_CURRENT_BUFFER );
+                yy_switch_to_buffer(include_stack[numincludes] );
 	}
 }
 
@@ -1262,44 +1334,55 @@ void unputcolon() {
 }
 
 void count() {
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++)
-		column++;
-	// printf("\"%s\" %i\n", yytext, column);
+        int i=0;
+        while(yytext[i] != '\0'){
+            i++;
+            column++;
+        }
+        //printf("\"%s\" %i\n", yytext, column);
 }
 
 int basicParse(char *code) {
-
-	//int t;
-	//for(t=0;t<MAX_INCLUDE_DEPTH;t++) {
-	//	yy_delete_buffer( include_stack[t]  );
-	//	include_stack[t] = NULL;
-	//}
+        BEGIN(INITIAL);
         numargs=0;
 	YY_BUFFER_STATE bp;
 	
-	numincludes=0;
 	numparsewarnings=0;
 	
 	clearSymbolTable();
 	clearIfTable();
 
-	linenumber = 1;
+        numincludes=0;
+        linenumber = 1;
 	column = 0;
 	errorcode = COMPERR_NONE;
 	functionDefSymbol = -1;
 	subroutineDefSymbol = -1;
 	
-	lexingfilename = strdup("");
-
-	yy_delete_buffer(YY_CURRENT_BUFFER);
+        filenumber=0;
+        numincludes=0;
+        include_filenames[0] = strdup("");
+        lexingfilename = include_filenames[0];
+        include_filenames_counter = 0;
+        filename = NULL;
 
 	bp = yy_scan_string(code);
 	yy_switch_to_buffer(bp);
 	yyparse();
 	yy_delete_buffer(bp);
-	
+
+        if((numincludes>0)){
+            //close current include file
+            fclose(YY_CURRENT_BUFFER->yy_input_file);
+            YY_CURRENT_BUFFER->yy_input_file = NULL;
+            yy_delete_buffer( YY_CURRENT_BUFFER );
+            while(numincludes>1) {
+                numincludes--;
+                fclose(include_stack[numincludes]->yy_input_file);
+                include_stack[numincludes]->yy_input_file = NULL;
+                yy_delete_buffer(include_stack[numincludes]);
+            }
+        }
 
 	if (testIfOnTable(0)!=-1 && errorcode==COMPERR_NONE) {
 		linenumber = testIfOnTable(0);

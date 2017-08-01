@@ -320,9 +320,6 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
 			break;
-		case ERROR_NEXTWRONGFOR:
-            errormessage = tr("Variable in NEXT does not match FOR");
-			break;
         case ERROR_UNSERIALIZEFORMAT:
             errormessage = tr("Unable to UnSerialize string");
 			break;

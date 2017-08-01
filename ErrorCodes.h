@@ -6,19 +6,17 @@
 // ERRROR numbers less than 0 are NOT trappable
 // and are fatal at runtime
 #define ERROR_NOSUCHLABEL		-1
-#define ERROR_NEXTNOFOR 		-2
 #define ERROR_NOTARRAY 			-3
 #define ERROR_ARGUMENTCOUNT 	-5
 #define ERROR_MAXRECURSE 		-6
 #define ERROR_STACKUNDERFLOW	-7
-#define ERROR_NEXTWRONGFOR		-10
 #define ERROR_UNSERIALIZEFORMAT	-11
 #define ERROR_NOSUCHSUBROUTINE	-12
 #define ERROR_NOSUCHFUNCTION	-13
 
 
 // ERRRORS and WARNINGS greater than 0 are trappable
-// with the "ONERR" and TRY/CATCH/ENDTRY statements
+// with the "ONERROR" and TRY/CATCH/ENDTRY statements
 // 
 // ERRORS from 1-65535 are trapable but by default cause execution to stop
 // WARNINGS 65536+ are trapable but execution will continue by default
@@ -118,6 +116,7 @@
 #define ERROR_REFNOTASSIGNED           113
 #define ERROR_REFNOTASSIGNED           113
 #define ERROR_UNEXPECTEDRETURN         114
+#define ERROR_NEXTNOFOR                115
 
 
 // Insert new error codes here
@@ -126,7 +125,7 @@
 #define ERROR_NOTIMPLEMENTED 			65535
 
 
-// trapable WaRNINGS (same as error with warning bit set)
+// trapable WARNINGS (same as error with warning bit set)
 #define WARNING_START					65536
 #define WARNING_TYPECONV				WARNING_START + ERROR_TYPECONV
 #define WARNING_VARNOTASSIGNED 			WARNING_START + ERROR_VARNOTASSIGNED

@@ -45,6 +45,9 @@
 	extern int linenumber;
 	extern char *lexingfilename;
 	extern int numincludes;
+        extern int filenumber;
+        extern char* include_filenames[];
+        extern int include_filenames_counter;
 
 	int *wordCode = NULL;
 	unsigned int maxwordoffset = 0;		// size of the current wordCode array
@@ -112,7 +115,7 @@
 	int parsewarningtable[PARSEWARNINGTABLESIZE];
 	int parsewarningtablelinenumber[PARSEWARNINGTABLESIZE];
 	int parsewarningtablecolumn[PARSEWARNINGTABLESIZE];
-	char *parsewarningtablelexingfilename[PARSEWARNINGTABLESIZE];
+        int parsewarningtablelexingfilenumber[PARSEWARNINGTABLESIZE];
 	int numparsewarnings = 0;
 
 	int
@@ -249,14 +252,13 @@
 			parsewarningtable[numparsewarnings] = type;
 			parsewarningtablelinenumber[numparsewarnings] = linenumber;
 			parsewarningtablecolumn[numparsewarnings] = column;
-			parsewarningtablelexingfilename[numparsewarnings] = strdup(lexingfilename);
+                        parsewarningtablelexingfilenumber[numparsewarnings] = filenumber;
 			numparsewarnings++;
 		} else {
 			parsewarningtable[numparsewarnings-1] = COMPWARNING_MAXIMUMWARNINGS;
 			parsewarningtablelinenumber[numparsewarnings-1] = 0;
 			parsewarningtablecolumn[numparsewarnings-1] = 0;
-			free(parsewarningtablelexingfilename[numparsewarnings-1]);
-			parsewarningtablelexingfilename[numparsewarnings-1] = strdup("");
+                        parsewarningtablelexingfilenumber[numparsewarnings-1] = 0;
 		}
 	}
 
@@ -303,7 +305,7 @@
 			}
 			wordOffset = 0;
 			linenumber = 1;
-			addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                        addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			return 0; 	// success in creating and filling
 		}
 		return -1;
@@ -311,14 +313,11 @@
 
 	void freeBasicParse() {
 		// free all dynamically allocated stuff
-		int i;
-		for(i=0; i<numparsewarnings; i++) {
-			if (parsewarningtablelexingfilename[i]) {
-				free(parsewarningtablelexingfilename[i]);
-				parsewarningtablelexingfilename[i]=NULL;
-			}
-		}
-		clearSymbolTable();
+                while(include_filenames_counter>0){
+                    include_filenames_counter--;
+                    free(include_filenames[include_filenames_counter]);
+                }
+                clearSymbolTable();
 		if (wordCode) {
 			free(wordCode);
 			wordCode = NULL;
@@ -456,7 +455,6 @@
 %token B256ERROR_NOTIMPLEMENTED
 %token B256ERROR_ARRAYEVEN
 %token B256ERROR_ARRAYLENGTH2D
-%token B256ERROR_NEXTWRONGFOR
 %token B256ERROR_NOSUCHFUNCTION
 %token B256ERROR_NOSUCHSUBROUTINE
 %token B256ERROR_SLICESIZE
@@ -550,7 +548,7 @@ programnewline:
                                 '\n' {
                                         linenumber++;
                                         column=0;
-                                        addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                        addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
                                 }
                                 ;
 
@@ -1582,19 +1580,19 @@ gosubstmt:	B256GOSUB args_v {
 					return -1;
 				}
                                 addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			;
 
 callstmt:	B256CALL args_v args_none {
                                 addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
                                 addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| B256CALL args_v '(' callexprlist ')' {
                                 addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
                                 addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			;
 
@@ -3041,13 +3039,13 @@ expr:
 				// function call with arguments
                                 addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
                                 addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| args_v '(' ')' {
 				// function call without arguments
                                 addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
                                 addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, numincludes * 0x1000000 + linenumber);
+                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| args_v {
                                 addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
@@ -3601,7 +3599,6 @@ expr:
 			| B256ERROR_NOTIMPLEMENTED args_none { addIntOp(OP_PUSHINT, ERROR_NOTIMPLEMENTED); }
                         | B256ERROR_ARRAYEVEN args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYEVEN); }
                         | B256ERROR_ARRAYLENGTH2D args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYLENGTH2D); }
-                        | B256ERROR_NEXTWRONGFOR args_none { addIntOp(OP_PUSHINT, ERROR_NEXTWRONGFOR); }
                         | B256ERROR_NOSUCHFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHFUNCTION); }
                         | B256ERROR_NOSUCHSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHSUBROUTINE); }
                         | B256ERROR_SLICESIZE args_none { addIntOp(OP_PUSHINT, ERROR_SLICESIZE); }

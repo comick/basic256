@@ -64,7 +64,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "asc"								//asc
 			<< "asin"								//asin
 			<< "atan"								//atan
-			<< "begin *case"						//begincase or begin case
+            << "begin[ \t]*case"					//begincase or begin case
 			<< "call"								//call
 			<< "case"								//case
 			<< "catch"								//catch
@@ -83,9 +83,9 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "color"								//color
 			<< "colour"								//colour
 			<< "confirm"							//confirm
-			<< "continue *do"						//continuedo or continue do
-			<< "continue *for"						//continuefor or continue for
-			<< "continue *while"					//continuewhile or continue while
+            << "continue[ \t]*do"					//continuedo or continue do
+            << "continue[ \t]*for"					//continuefor or continue for
+            << "continue[ \t]*while"				//continuewhile or continue while
 			<< "cos"								//cos
 			<< "count"								//count
 			<< "countx"								//countx
@@ -109,17 +109,17 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "editvisible"						//editvisible
 			<< "else"								//else
 			<< "end"								//end
-			<< "end *case"							//endcase or end case
-			<< "end *function"						//endfunction or end function
-			<< "end *if"							//endif or end if
-			<< "end *subroutine"					//endsubroutine or end subroutine
-			<< "end *try"							//endtry or end try
-			<< "end *while"							//endwhile or end while
+            << "end[ \t]*case"						//endcase or end case
+            << "end[ \t]*function"					//endfunction or end function
+            << "end[ \t]*if"						//endif or end if
+            << "end[ \t]*subroutine"				//endsubroutine or end subroutine
+            << "end[ \t]*try"						//endtry or end try
+            << "end[ \t]*while"						//endwhile or end while
 			<< "eof"								//eof
 			<< "exists"								//exists
-			<< "exit *do"							//exitdo or exit do
-			<< "exit *for"							//exitfor or exit for
-			<< "exit *while"						//exitwhile or exit while
+            << "exit[ \t]*do"						//exitdo or exit do
+            << "exit[ \t]*for"						//exitfor or exit for
+            << "exit[ \t]*while"					//exitwhile or exit while
 			<< "exp"								//exp
 			<< "explode"							//explode
 			<< "explodex"							//explodex
@@ -157,9 +157,9 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "implode"							//implode
 			<< "include"							//include
 			<< "input"								//input
-			<< "input *float"						//inputfloat
-			<< "input *int(eger)*"					//inputint
-			<< "input *string"						//inputstring
+            << "input[ \t]*float"					//inputfloat
+            << "input[ \t]*int(eger)?"				//inputint
+            << "input[ \t]*string"					//inputstring
 			<< "instr"								//instr
 			<< "instrx"								//instrx
 			<< "int"								//int
@@ -214,10 +214,10 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "portin"								//portin
 			<< "portout"							//portout
 			<< "print"								//print
-			<< "printer *cancel"					//printercancel or printer cancel
-			<< "printer *off"						//printeroff or printer off
-			<< "printer *on"						//printeron or printer on
-			<< "printer *page"						//printerpage or printer page
+            << "printer[ \t]*cancel"				//printercancel or printer cancel
+            << "printer[ \t]*off"					//printeroff or printer off
+            << "printer[ \t]*on"					//printeron or printer on
+            << "printer[ \t]*page"					//printerpage or printer page
 			<< "prompt"								//prompt
 			<< "putslice"							//putslice
 			<< "radians"							//radians
@@ -382,7 +382,6 @@ void EditSyntaxHighlighter::initConstants() {
             <<"ERROR_ARGUMENTCOUNT"
             <<"ERROR_MAXRECURSE"
             <<"ERROR_STACKUNDERFLOW"
-            <<"ERROR_NEXTWRONGFOR"
             <<"ERROR_UNSERIALIZEFORMAT"
             <<"ERROR_NOSUCHSUBROUTINE"
             <<"ERROR_NOSUCHFUNCTION"

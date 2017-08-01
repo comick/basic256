@@ -52,8 +52,8 @@
 #include <QtSql/QSqlError>
 
 #ifndef ANDROID
-	// includes for all ports EXCEPT android
-	#include <QSerialPort>
+    // includes for all ports EXCEPT android
+    #include <QSerialPort>
 #endif
 
 enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED, R_STOPING};
@@ -72,10 +72,9 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED,
 
 struct byteCodeData
 {
-	unsigned int size;
-	void *data;
+    unsigned int size;
+    void *data;
 };
-
 
 // used by function calls, subroutine calls, and gosubs for return location
 class callStack {
@@ -95,7 +94,7 @@ public:
         if(pointer==0) return NULL;
         pointer--;
         return stack[pointer];
-};
+    };
 private:
     int size;
     int pointer;
@@ -109,25 +108,26 @@ private:
 
 // used to track nested on-error and try/catch definitions
 struct onerrorframe {
-	onerrorframe *next;
-	int onerroraddress;
-	bool onerrorgosub;
+    onerrorframe *next;
+    int onerroraddress;
+    bool onerrorgosub;
 };
 
 // structure for the nested for statements
 // if useInt then make loop integer safe
 struct forframe {
-	forframe *next;
-	int variable;
-	int *returnAddr;
-	bool useInt;
-	double floatStart;
-	double floatEnd;
-	double floatStep;
-	long intStart;
-	long intEnd;
-	long intStep;
-	int recurselevel;
+    forframe *next;
+    int *forAddr;   //FOR address
+    int *nextAddr;  //NEXT address
+    bool useInt;
+    bool positive;
+    bool negative;
+    double floatStart;
+    double floatEnd;
+    double floatStep;
+    long intStart;
+    long intEnd;
+    long intStep;
 };
 
 typedef struct {
@@ -148,55 +148,55 @@ typedef struct {
 class Interpreter : public QThread
 {
   Q_OBJECT;
-	public:
+    public:
         Interpreter(QLocale*);
-		~Interpreter();
-		int compileProgram(char *);
-		void initialize();
-		bool isRunning();
+        ~Interpreter();
+        int compileProgram(char *);
+        void initialize();
+        bool isRunning();
         bool isStopped();
         bool isStopping();
         void setStopped();
-		bool isAwaitingInput();
-		void setInputReady();
-		void cleanup();
+        bool isAwaitingInput();
+        void setInputReady();
+        void cleanup();
         void run();
         int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
         QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
-		QString returnString;		// return value from runcontroller emit
-		int returnInt;			// return value from runcontroller emit
+        QString returnString;		// return value from runcontroller emit
+        int returnInt;			// return value from runcontroller emit
         int settingsAllowPort;
         int settingsAllowSystem;
 
     public slots:
-		int execByteCode();
-		void runHalted();
+        int execByteCode();
+        void runHalted();
         void inputEntered(QString);
 
-	signals:
-		void debugNextStep();
-		void fastGraphics();
+    signals:
+        void debugNextStep();
+        void fastGraphics();
         //void stopRun();
         void stopRunFinalized(bool);
-		void goutputReady();
-		void outputReady(QString);
-		void outputError(QString);
-		void getInput();
-		void outputClear();
-		void getKey();
-		void playSounds(int, int*);
-		void setVolume(int);
-		void speakWords(QString);
-		void goToLine(int);
-		void seekLine(int);
+        void goutputReady();
+        void outputReady(QString);
+        void outputError(QString);
+        void getInput();
+        void outputClear();
+        void getKey();
+        void playSounds(int, int*);
+        void setVolume(int);
+        void speakWords(QString);
+        void goToLine(int);
+        void seekLine(int);
         void varWinAssign(Variables**, int);
         void varWinAssign(Variables**, int, int, int);
-		void varWinDropLevel(int);
+        void varWinDropLevel(int);
         void varWinDimArray(Variables**, int, int, int);
-		void mainWindowsResize(int, int, int);
-		void mainWindowsVisible(int, bool);
-		void dialogAlert(QString);
-		void dialogConfirm(QString, int);
+        void mainWindowsResize(int, int, int);
+        void mainWindowsVisible(int, bool);
+        void dialogAlert(QString);
+        void dialogConfirm(QString, int);
         void dialogPrompt(QString, QString);
         void dialogAllowPortInOut(QString);
         void dialogAllowSystem(QString);
@@ -211,58 +211,60 @@ class Interpreter : public QThread
         void soundPlayerOff(int);
         void soundSystem(int);
 
-	private:
-		QLocale *locale;
-		Sleeper *sleeper;
+    private:
+        QLocale *locale;
+        Sleeper *sleeper;
         BasicDownloader *downloader;
-		int optype(int op);
-		QString opname(int);
-		void waitForGraphics();
-		void printError();
-		int netSockClose(int);
-		void netSockCloseAll();
-		Variables *variables;
-		Stack *stack;
-		Error *error;
+        //int optype(int op);
+        QString opname(int);
+        void waitForGraphics();
+        void printError();
+        int netSockClose(int);
+        void netSockCloseAll();
+        Variables *variables;
+        Stack *stack;
+        Error *error;
         bool isError; //flag set if program stops because of an error
-		Convert *convert;
-		QIODevice **filehandle;
-		int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
-		int *op;
+        Convert *convert;
+        QIODevice **filehandle;
+        int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
+        int *op;
         callStack *callstack;
         forframe *forstack;                     // stack FOR/NEXT for current recurse level
-		onerrorframe *onerrorstack;
-		run_status status;
-		run_status oldstatus;
-		bool fastgraphics;
-		QString inputString;
-		int inputType;				// data type to convert the input into
+        std::vector <forframe*> forstacklevel;  // stack FOR/NEXT for each recurse level
+        int forstacklevelsize;                  // size for forstacklevel stack
+        onerrorframe *onerrorstack;
+        run_status status;
+        run_status oldstatus;
+        bool fastgraphics;
+        QString inputString;
+        int inputType;				// data type to convert the input into
         double double_random_max;
         int currentLine;
-		void clearsprites();
+        void clearsprites();
         void update_sprite_screen();
         void sprite_prepare_for_new_content(int);
         void force_redraw_all_sprites_next_time();
         bool sprite_collide(int, int, bool);
-		sprite *sprites;
-		int nsprites;
-		void closeDatabase(int);
-		// watch... functions trigger the variablewatch window to display
+        sprite *sprites;
+        int nsprites;
+        void closeDatabase(int);
+        // watch... functions trigger the variablewatch window to display
         void watchvariable(bool, int);
         void watchvariable(bool, int, int, int);
         void watchdecurse(bool);
 
-		int listensockfd;				// temp socket used in netlisten
-		int netsockfd[NUMSOCKETS];
-		
-		DIR *directorypointer;		// used by DIR function
-		QTime runtimer;				// used by MSEC function
-        //SoundSystem *sound;
-        QString currentIncludeFile;	// set to current included file name for runtime error messages
-		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
+        int listensockfd;				// temp socket used in netlisten
+        int netsockfd[NUMSOCKETS];
 
-		bool printing;
-		QPrinter *printdocument;
+        DIR *directorypointer;		// used by DIR function
+        QTime runtimer;				// used by MSEC function
+        //SoundSystem *sound;
+        int includeFileNumber;
+        bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
+
+        bool printing;
+        QPrinter *printdocument;
 
         QPainter *painter;
         bool painter_pen_need_update;
@@ -290,7 +292,7 @@ class Interpreter : public QThread
 
 
 
-		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
+        QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
         int mediaplayer_id_legacy;
 
