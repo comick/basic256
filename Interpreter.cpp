@@ -100,16 +100,17 @@ extern "C" {
     extern char* lexingfilename;        // current included file name being LEXd
 
     extern int numparsewarnings;
-    extern int newWordCode();
+    extern int initializeBasicParse();
     extern void freeBasicParse();
     extern int bytesToFullWords(int size);
     extern int *wordCode;
     extern unsigned int wordOffset;
     extern unsigned int maxwordoffset;
 
-    extern char *symtable[];		// table of variables and labels (strings)
-    extern int symtableaddress[];	// associated label address
-    extern int symtableaddresstype[];	// associated address type
+    extern char **symtable;		// table of variables and labels (strings)
+    extern int *symtableaddress;	// associated label address
+    extern int *symtableaddresstype;	// associated address type
+    extern int *symtableaddressargs;	// number of arguments expected by function/subroutine
     extern int numsyms;				// number of symbols
 
     // arrays to return warnings from compiler
@@ -331,6 +332,7 @@ QString Interpreter::opname(int op) {
     case OP_LASTERRORMESSAGE : return QString("OP_LASTERRORMESSAGE");
     case OP_LASTERROREXTRA : return QString("OP_LASTERROREXTRA");
     case OP_OFFERROR : return QString("OP_OFFERROR");
+    case OP_OFFERRORCATCH : return QString("OP_OFFERRORCATCH");
     case OP_NETLISTEN : return QString("OP_NETLISTEN");
     case OP_NETCONNECT : return QString("OP_NETCONNECT");
     case OP_NETREAD : return QString("OP_NETREAD");
@@ -456,6 +458,7 @@ QString Interpreter::opname(int op) {
     case OP_GOSUB : return QString("OP_GOSUB");
     case OP_BRANCH : return QString("OP_BRANCH");
     case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
+    case OP_ONERRORCALL : return QString("OP_ONERRORCALL");
     case OP_ONERRORCATCH : return QString("OP_ONERRORCATCH");
     case OP_EXITFOR : return QString("OP_EXITFOR");
     case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
@@ -486,7 +489,6 @@ QString Interpreter::opname(int op) {
     case OP_PUSHINT : return QString("OP_PUSHINT");
     case OP_CURRLINE : return QString("OP_CURRLINE");
     case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
-    case OP_ARGUMENTCOUNTTEST : return QString("OP_ARGUMENTCOUNTTEST");
     case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
     case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
     case OP_LAZYIFTRUE : return QString("OP_LAZYIFTRUE");
@@ -515,9 +517,9 @@ void Interpreter::printError() {
     if (includeFileNumber!=0) {
         msg += tr(" in included file '") + include_filenames[includeFileNumber] + QStringLiteral("'");
     }
-    msg += tr(" on line ") + QString::number(error->line) + tr(": ") + error->getErrorMessage(symtable);
+    msg += tr(" on line ") + QString::number(error->line) + QStringLiteral(": ") + error->getErrorMessage(symtable);
     if (error->extra!="") msg+= " (" + error->extra + ")";
-    msg += ".\n";
+    msg += QStringLiteral(".\n");
     emit(outputError(msg));
 }
 
@@ -593,9 +595,33 @@ void Interpreter::watchdecurse(bool doit) {
     }
 }
 
-int
-Interpreter::compileProgram(char *code) {
-    if (newWordCode() < 0) {
+void Interpreter::decreaserecurse() {
+    //clear current forstack
+    while (forstack) {
+        forframe *temp = forstack;
+        forstack = temp->next;
+        delete temp;
+    }
+
+    watchdecurse(debugMode);
+    variables->decreaserecurse();
+
+    //pop forstack from forstacklevel
+    int recurse = variables->getrecurse();
+    forstack = forstacklevel[recurse];
+
+    //delete try/catch traps from non-existent recurse level
+    while(trycatchstack && trycatchstack->recurseLevel > recurse){
+        trycatchframe *temp_trycatchstack = trycatchstack;
+        trycatchstack=trycatchstack->next;
+        delete temp_trycatchstack;
+    }
+}
+
+
+int Interpreter::compileProgram(char *code) {
+    if (initializeBasicParse() != 0) {
+        emit(outputError(tr("COMPILE ERROR") + QStringLiteral(": ") + tr("Out of memory") + QStringLiteral(".\n")));
         return -1;
     }
 
@@ -613,7 +639,7 @@ Interpreter::compileProgram(char *code) {
             emit(goToLine(parsewarningtablelinenumber[i]));
             gotowarning = false;
         }
-        msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]) + tr(": ");
+        msg += tr(" on line ") + QString::number(parsewarningtablelinenumber[i]) + QStringLiteral(": ");
         switch(parsewarningtable[i]) {
             case COMPWARNING_MAXIMUMWARNINGS:
                 msg += tr("The maximum number of compiler warnings have been displayed");
@@ -628,7 +654,7 @@ Interpreter::compileProgram(char *code) {
             default:
                 msg += tr("Unknown compiler warning #") + QString::number(parsewarningtable[i]);
         }
-        msg += tr(".\n");
+        msg += QStringLiteral(".\n");
         emit(outputError(msg));
         //
     }
@@ -643,7 +669,7 @@ Interpreter::compileProgram(char *code) {
             emit(goToLine(linenumber));
             gotoerror = false;
         }
-        msg += tr(" on line ") + QString::number(linenumber) + tr(": ");
+        msg += tr(" on line ") + QString::number(linenumber) + QStringLiteral(": ");
         switch(result) {
             case COMPERR_FUNCTIONGOTO:
                 msg += tr("You may not define a label or use a GOTO or GOSUB statement in a FUNCTION/SUBROUTINE declaration");
@@ -727,31 +753,28 @@ Interpreter::compileProgram(char *code) {
                 msg += tr("TRY without matching CATCH statement");
                 break;
             case COMPERR_CATCH:
-                msg += tr("CATCH whthout matching TRY statement");
+                msg += tr("CATCH without matching TRY statement");
                 break;
             case COMPERR_CATCHNOEND:
-                msg += tr("CATCH whthout matching ENDTRY statement");
+                msg += tr("CATCH without matching ENDTRY statement");
                 break;
             case COMPERR_ENDTRY:
-                msg += tr("ENDTRY whthout matching CATCH statement");
-                break;
-            case COMPERR_NOTINTRYCATCH:
-                msg += tr("You may not define an ONERROR or an OFFERROR in a TRY/CACTCH declaration");
+                msg += tr("ENDTRY without matching CATCH statement");
                 break;
             case COMPERR_ENDBEGINCASE:
-                msg += tr("CASE whthout matching BEGIN CASE statement");
+                msg += tr("CASE without matching BEGIN CASE statement");
                 break;
             case COMPERR_ENDENDCASEBEGIN:
                 msg += tr("END CASE without matching BEGIN CASE statement");
                 break;
             case COMPERR_ENDENDCASE:
-                msg += tr("END CASE whthout matching CASE statement");
+                msg += tr("END CASE without matching CASE statement");
                 break;
             case COMPERR_BEGINCASENOEND:
-                msg += tr("BEGIN CASE whthout matching END CASE statement");
+                msg += tr("BEGIN CASE without matching END CASE statement");
                 break;
             case COMPERR_CASENOEND:
-                msg += tr("CASE whthout next CASE or matching END CASE statement");
+                msg += tr("CASE without next CASE or matching END CASE statement");
                 break;
             case COMPERR_LABELREDEFINED:
                 msg += tr("Labels, functions and subroutines must have a unique name");
@@ -768,6 +791,9 @@ Interpreter::compileProgram(char *code) {
             case COMPERR_INCLUDENOFILE:
                 msg += tr("No file specified for INCLUDE");
                 break;
+            case COMPERR_ONERRORCALL:
+                msg += tr("Cannot pass arguments to a SUBROUTINE used by ONERROR statement");
+                break;
 
             default:
                 if(column==0) {
@@ -776,7 +802,7 @@ Interpreter::compileProgram(char *code) {
                     msg += tr("Syntax error around character ") + QString::number(column);
                 }
         }
-        msg += tr(".\n");
+        msg += QStringLiteral(".\n");
         emit(outputError(msg));
 
         freeBasicParse();
@@ -794,8 +820,9 @@ Interpreter::initialize() {
     error->loadSettings();
     imageSmooth = false;
     op = wordCode;
-    callstack = new callStack();
-    onerrorstack = NULL;
+    callstack = new addrStack();
+    onerrorstack = new addrStack();
+    trycatchstack = NULL;
     forstack = NULL;
     forstacklevelsize = 0;
     status = R_RUNNING;
@@ -938,13 +965,16 @@ Interpreter::cleanup() {
     //delete stack used by function calls, subroutine calls, and gosubs for return location
     delete callstack;
 
-    //delete stack used to track nested on-error and try/catch definitions
-    onerrorframe *temp_onerrorstack;
-    while (onerrorstack!=NULL) {
-        temp_onerrorstack = onerrorstack;
-        onerrorstack = temp_onerrorstack->next;
-        delete(temp_onerrorstack);
-        }
+    //delete stack used to track nested on-error definitions
+    delete onerrorstack;
+
+    //delete stack used to track nested try/catch definitions
+    trycatchframe *temp_trycatchstack;
+    while (trycatchstack!=NULL) {
+        temp_trycatchstack = trycatchstack;
+        trycatchstack = temp_trycatchstack->next;
+        delete(temp_trycatchstack);
+    }
 
     //clear images
     QMap<QString, QImage*>::const_iterator it = images.constBegin();
@@ -1021,7 +1051,6 @@ Interpreter::run() {
     //link sound system to error mechanism
     sound->error = &error;
     srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
-    onerrorstack = NULL;
     runtimer.start(); // used by MSEC function
     while (status != R_STOPING && execByteCode() >= 0) {} //continue
     debugMode = 0;
@@ -1312,13 +1341,28 @@ Interpreter::execByteCode() {
         }
 
         error->process(currentLine);
-        if(onerrorstack && error->e > 0) {
-            // progess call to subroutine for error handling
-            // or jump to the catch label
-            if (onerrorstack->onerrorgosub) {
-                callstack->push(op);
+
+        if(trycatchstack) {
+            // remove try/catch trap and jump to the catch label
+            op = trycatchstack->catchAddr;
+            //go back to the original recurse level of the try/catch trap
+            while(trycatchstack->recurseLevel<variables->getrecurse()){
+                decreaserecurse();
             }
-            op = wordCode + onerrorstack->onerroraddress;
+            //clear the stack to original size
+            if(stack->height()>trycatchstack->stackSize){
+                stack->drop(stack->height()-trycatchstack->stackSize);
+            }
+            //delete trap
+            trycatchframe *temp_trycatchstack = trycatchstack;
+            trycatchstack=trycatchstack->next;
+            delete temp_trycatchstack;
+            return 0;
+        }else if(onerrorstack->count() > 0) {
+            //there is on-error defined
+            // progess call to subroutine for error handling
+            callstack->push(op);
+            op = onerrorstack->peek();
             return 0;
         } else {
             isError=true;
@@ -1956,15 +2000,6 @@ Interpreter::execByteCode() {
                 }
                 break;
 
-                case OP_ARGUMENTCOUNTTEST: {
-                     // Throw error if stack does not have enough values
-                     // used to check if functions and subroutines have the proper number
-                     // of datas on the stack to fill the parameters
-                     int a = stack->popint();
-                     if (a!=i) error->q(ERROR_ARGUMENTCOUNT);
-                 }
-                 break;
-
 
 
 
@@ -2092,8 +2127,12 @@ Interpreter::execByteCode() {
 
                 case OP_CALLFUNCTION: {
                     //OP_CALLFUNCTION is used when program expect the result to be pushed on stack
+                    int a = stack->popint(); // number of arguments pushed on stack
                     if(symtableaddresstype[l]!=ADDRESSTYPE_FUNCTION){
                         error->q(ERROR_NOSUCHFUNCTION, l);
+                    }else if(symtableaddressargs[l]!=a){
+                        //the number of arguments passed does not match FUNCTION definition
+                        error->q(ERROR_ARGUMENTCOUNT);
                     }else{
                         // setup return
                         callstack->push(op);
@@ -2105,9 +2144,13 @@ Interpreter::execByteCode() {
 
 
                 case OP_CALLSUBROUTINE: {
-                    //OP_CALLSUBROUTINE is used to call subroutines
+                //OP_CALLSUBROUTINE is used to call subroutines
+                    int a = stack->popint(); // number of arguments pushed on stack
                     if(symtableaddresstype[l]!=ADDRESSTYPE_SUBROUTINE){
                         error->q(ERROR_NOSUCHSUBROUTINE, l);
+                    }else if(symtableaddressargs[l]!=a){
+                        //the number of arguments passed does not match SUBROUTINE definition
+                        error->q(ERROR_ARGUMENTCOUNT);
                     }else{
                         // setup return
                         callstack->push(op);
@@ -2118,26 +2161,62 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_ONERRORGOSUB: {
-                    if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL){
-                        error->q(ERROR_NOSUCHLABEL, l);
+                    if(symtableaddresstype[l]==ADDRESSTYPE_LABEL){
+                        // push onerror address
+                        onerrorstack->push(wordCode + i);
                     }else{
-                        // setup onerror frame and put on top of onerrorstack
-                        onerrorframe *temp = new onerrorframe;
-                        temp->onerroraddress = i;
-                        temp->onerrorgosub = true;
-                        temp->next = onerrorstack;
-                        onerrorstack = temp;
+                        error->q(ERROR_NOSUCHLABEL, l);
+                    }
+                }
+                break;
+
+                case OP_ONERRORCALL: {
+                    if(symtableaddresstype[l]!=ADDRESSTYPE_SUBROUTINE){
+                        error->q(ERROR_NOSUCHSUBROUTINE, l);
+                    }else if(symtableaddressargs[l]!=0){
+                        error->q(ERROR_ONERRORSUB, l);
+                    }else{
+                        // push onerror address
+                        onerrorstack->push(wordCode + i);
                     }
                 }
                 break;
 
                 case OP_ONERRORCATCH: {
-                    // setup onerror frame and put on top of onerrorstack
-                    onerrorframe *temp = new onerrorframe;
-                    temp->onerroraddress = i;
-                    temp->onerrorgosub = false;
-                    temp->next = onerrorstack;
-                    onerrorstack = temp;
+                    // setup try/catch trap
+                    // label used is an internal generated label (is safe without checking it)
+                    trycatchframe *temp = new trycatchframe;
+                    temp->catchAddr = wordCode + i;
+                    temp->recurseLevel = variables->getrecurse();
+                    temp->stackSize = stack->height();
+                    temp->next = trycatchstack;
+                    trycatchstack = temp;
+                }
+                break;
+
+                case OP_OFFERRORCATCH: {
+                    // no error in try/catch trap
+                    // delete the trap from the try/catch stack and jump over the CATCH part
+
+                    //  search if there is a corresponding trap in stack
+                    //  (search by catchAddr which must be the same with current *op)
+                    int recurse = variables->getrecurse();
+                    trycatchframe *temp_trycatchstack = trycatchstack;
+                    while (temp_trycatchstack!=NULL){
+                        if(temp_trycatchstack->catchAddr==op && recurse==temp_trycatchstack->recurseLevel){
+                            //  we found it - delete all nested traps inside it
+                            trycatchframe *temp;
+                            do{
+                                temp = trycatchstack;
+                                trycatchstack=trycatchstack->next;
+                                delete(temp);
+                            }while(temp_trycatchstack!=temp);
+                            break;
+                        }
+                        temp_trycatchstack = temp_trycatchstack->next;
+                    }
+                    // do jump to the specified address
+                    op = wordCode + i;
                 }
                 break;
 
@@ -4798,18 +4877,7 @@ Interpreter::execByteCode() {
                     // decrease recursion level in variable hash
                     // and pop any unfinished for statements off of forstack
                 {
-                    //clear current forstack
-                    while (forstack) {
-                        forframe *temp = forstack;
-                        forstack = temp->next;
-                        delete temp;
-                    }
-
-                    watchdecurse(debugMode);
-                    variables->decreaserecurse();
-
-                    //pop forstack from forstacklevel
-                    forstack = forstacklevel[variables->getrecurse()];
+                    decreaserecurse();
                 }
                 break;
 
@@ -5370,11 +5438,8 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_OFFERROR: {
-                    // pop a trap off of the trap stack
-                    onerrorframe *temp = onerrorstack;
-                    if (temp) {
-                        onerrorstack = temp->next;
-                    }
+                    // pop a trap off of the on-error stack
+                    onerrorstack->drop();
                 }
                 break;
 
@@ -7152,8 +7217,8 @@ Interpreter::execByteCode() {
         break;
 
         default: {
-            //emit(outputReady("optype=" + QString::number(optype(currentop)) + " op=" + QString::number(currentop,16) + "\n"));
-            emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + ".\n"));
+            //emit(outputReady("optype=" + QString::number(optype(currentop)) + " op=" + QString::number(currentop,16) + QStringLiteral(".\n"));
+            emit(outputReady(tr("Error in bytecode during label referencing at line ") + QString::number(currentLine) + QStringLiteral(".\n")));
             return -1;
         }
         break;

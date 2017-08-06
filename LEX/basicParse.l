@@ -35,7 +35,6 @@
 
 
 extern int numifs;
-extern void clearSymbolTable();
 extern void clearLabelTable();
 extern void clearIfTable();
 extern int testIfOnTable(int);
@@ -1349,7 +1348,6 @@ int basicParse(char *code) {
 	
 	numparsewarnings=0;
 	
-	clearSymbolTable();
 	clearIfTable();
 
         numincludes=0;

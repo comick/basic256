@@ -404,6 +404,9 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
         case ERROR_UNEXPECTEDRETURN:
             errormessage = tr("Unexpected RETURN");
             break;
+        case ERROR_ONERRORSUB:
+            errormessage = tr("SUBROUTINE %VARNAME% expects arguments and therefore can not be used by ONERROR statement");
+            break;
 
 
 

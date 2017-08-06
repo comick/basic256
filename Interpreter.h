@@ -77,14 +77,16 @@ struct byteCodeData
 };
 
 // used by function calls, subroutine calls, and gosubs for return location
-class callStack {
+// used also by onerror
+// used to track nested on-error and try/catch definitions
+class addrStack {
 public:
-    callStack(){
+    addrStack(){
         size=0;
         pointer=0;
         stack.reserve(512);
     };
-    ~callStack(){};
+    ~addrStack(){};
     void push(int* address){
         if(pointer>=size) grow();
         stack[pointer]=address;
@@ -94,6 +96,16 @@ public:
         if(pointer==0) return NULL;
         pointer--;
         return stack[pointer];
+    };
+    int* peek(){
+        if(pointer==0) return NULL;
+        return stack[pointer-1];
+    };
+    void drop(){
+        if(pointer>0) pointer--;
+    };
+    int count(){
+        return pointer;
     };
 private:
     int size;
@@ -105,12 +117,11 @@ private:
     };
 };
 
-
-// used to track nested on-error and try/catch definitions
-struct onerrorframe {
-    onerrorframe *next;
-    int onerroraddress;
-    bool onerrorgosub;
+struct trycatchframe {
+    trycatchframe *next;
+    int *catchAddr;
+    int recurseLevel;
+    int stackSize;
 };
 
 // structure for the nested for statements
@@ -229,11 +240,13 @@ class Interpreter : public QThread
         QIODevice **filehandle;
         int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
         int *op;
-        callStack *callstack;
+        addrStack *callstack;
+        addrStack *onerrorstack;
+        trycatchframe *trycatchstack; // used to track nested try/catch definitions
+        void decreaserecurse();
         forframe *forstack;                     // stack FOR/NEXT for current recurse level
         std::vector <forframe*> forstacklevel;  // stack FOR/NEXT for each recurse level
         int forstacklevelsize;                  // size for forstacklevel stack
-        onerrorframe *onerrorstack;
         run_status status;
         run_status oldstatus;
         bool fastgraphics;

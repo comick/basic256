@@ -22,7 +22,7 @@
 extern MainWindow * mainwin;
 
 extern "C" {
-extern char *symtable[];
+extern char **symtable;
 extern int numsyms;
 }
 

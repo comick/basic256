@@ -70,10 +70,12 @@
 	};
 
 	char *EMPTYSTR = "";
-	char *symtable[SYMTABLESIZE];
-	int symtableaddress[SYMTABLESIZE];
-	int numsyms = 0;
-        int symtableaddresstype[SYMTABLESIZE];
+        char **symtable=NULL;
+        int *symtableaddress=NULL;
+        int *symtableaddresstype=NULL;
+        int *symtableaddressargs=NULL;
+        int numsyms = 0;
+        int maxsymtable = 0; // size of the current symtable/symtableaddress/symtableaddresstype arrays
 
 
 
@@ -118,17 +120,16 @@
         int parsewarningtablelexingfilenumber[PARSEWARNINGTABLESIZE];
 	int numparsewarnings = 0;
 
-	int
-	basicParse(char *);
+        int basicParse(char *);
 
 	void checkWordMem(unsigned int addedwords) {
 		unsigned int t;
 		if (wordOffset + addedwords + 1 >= maxwordoffset) {
-			maxwordoffset += maxwordoffset + addedwords + 1024;
+                        maxwordoffset = maxwordoffset + addedwords + 2048;
 			wordCode = realloc(wordCode, maxwordoffset * sizeof(int));
 			for (t=wordOffset; t<maxwordoffset; t++) {
 				*(wordCode+t) = 0;
-			}
+                        }
 		}
 	}
 
@@ -168,8 +169,7 @@
 		wordOffset += wlen;
 	}
 
-	void
-	clearIfTable() {
+        void clearIfTable() {
 		int j;
 		for (j = 0; j < IFTABLESIZE; j++) {
 			iftablesourceline[j] = -1;
@@ -213,28 +213,6 @@
 		return 0;
 	}
 
-	void
-	clearSymbolTable() {
-		int j;
-		if (numsyms == 0) {
-			for (j = 0; j < SYMTABLESIZE; j++) {
-				symtable[j] = 0;
-				symtableaddress[j] = -1;
-                                symtableaddresstype[j] = -1;
-			}
-		}
-		for (j = 0; j < numsyms; j++) {
-			if (symtable[j]) {
-				free(symtable[j]);
-			}
-			symtable[j] = NULL;
-			symtableaddress[j] = -1;
-                        symtableaddresstype[j] = -1;
-		}
-		numsyms = 0;
-	}
-
-
 	int newIf(int sourceline, int type, unsigned int variable) {
 		iftablesourceline[numifs] = sourceline;
 		iftabletype[numifs] = type;
@@ -269,10 +247,21 @@
                         if (symtable[i] && !strcasecmp(name, symtable[i]))
 				return i;
 		}
+
+                //allocate memory if there is no more room for new symbol
+                if(numsyms>=maxsymtable-1){
+                    maxsymtable += 1024;
+                    symtable = realloc(symtable, maxsymtable * sizeof(char*));
+                    symtableaddress = realloc(symtableaddress, maxsymtable * sizeof(int));
+                    symtableaddresstype = realloc(symtableaddresstype, maxsymtable * sizeof(int));
+                    symtableaddressargs = realloc(symtableaddressargs, maxsymtable * sizeof(int));
+                }
+
 		symtable[numsyms] = strdup(name);
 		symtableaddress[numsyms] = -1;
                 symtableaddresstype[numsyms] = -1;
-		numsyms++;
+                symtableaddressargs[numsyms] = -1;
+                numsyms++;
 		return numsyms - 1;
 	}
 
@@ -291,38 +280,53 @@
                 return i;
 	}
 
-	int newWordCode() {
-		unsigned int t;
-		if (wordCode) {
-			free(wordCode);
-		}
-		maxwordoffset = 1024;
-		wordCode = malloc(maxwordoffset * sizeof(int));
-
-		if (wordCode) {
-			for (t=0; t<maxwordoffset; t++) {
-				*(wordCode+t) = 0;
-			}
-			wordOffset = 0;
-			linenumber = 1;
-                        addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
-			return 0; 	// success in creating and filling
-		}
-		return -1;
-	}
-
 	void freeBasicParse() {
 		// free all dynamically allocated stuff
+                while(numsyms>0) free(symtable[--numsyms]);
+                free(wordCode);
+                wordCode=NULL;
+                free(symtable);
+                symtable=NULL;
+                free(symtableaddress);
+                symtableaddress=NULL;
+                free(symtableaddresstype);
+                symtableaddresstype=NULL;
+                free(symtableaddressargs);
+                symtableaddressargs=NULL;
+                maxsymtable = 0;
+                maxwordoffset = 0;
+
                 while(include_filenames_counter>0){
                     include_filenames_counter--;
                     free(include_filenames[include_filenames_counter]);
                 }
-                clearSymbolTable();
-		if (wordCode) {
-			free(wordCode);
-			wordCode = NULL;
-		}
 	}
+
+        int initializeBasicParse() {
+                maxsymtable = 2048;
+                symtable = malloc(maxsymtable * sizeof(char*));
+                if(symtable)
+                    for(int f=0;f<maxsymtable;f++) symtable[f]=NULL;
+                symtableaddress = malloc(maxsymtable * sizeof(int));
+                symtableaddresstype = malloc(maxsymtable * sizeof(int));
+                symtableaddressargs = malloc(maxsymtable * sizeof(int));
+
+                maxwordoffset = 2048;
+                wordCode = malloc(maxwordoffset * sizeof(int));
+
+                //no memory
+                if(!wordCode || !symtable || !symtableaddress || !symtableaddresstype || !symtableaddressargs){
+                    freeBasicParse();
+                    return -1;
+                }
+
+                unsigned int t=maxwordoffset;
+                while(t>0) wordCode[--t] = 0;
+                wordOffset = 0;
+                linenumber = 1;
+                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+                return 0; 	// success in creating and filling
+        }
 
 
 	#ifdef __cplusplus
@@ -937,8 +941,8 @@ casestmt:	B256CASE {
 catchstmt: 	B256CATCH {
 				//
 				// create jump around from end of the TRY to end of the CATCH
-				addOp(OP_OFFERROR);
-				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
+                                // OP_OFFERRORCATCH label - close try/catch trap and jump over the CATCH part
+                                addIntOp(OP_OFFERRORCATCH, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPETRY) {
@@ -948,8 +952,7 @@ catchstmt: 	B256CATCH {
 						numifs--;
 						//
 						// put new if on the frame for the catch
-						newIf(linenumber, IFTABLETYPECATCH,-1);
-						addOp(OP_OFFERROR);
+                                                newIf(linenumber, IFTABLETYPECATCH,-1);
 					} else {
 						errorcode = testIfOnTableError(numincludes);
 						linenumber = testIfOnTable(numincludes);
@@ -1584,13 +1587,13 @@ gosubstmt:	B256GOSUB args_v {
 			}
 			;
 
-callstmt:	B256CALL args_v args_none {
-                                addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
+callstmt:	B256CALL args_v '(' ')' {
+                                addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with SUBROUTINE definition
                                 addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
                                 addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
-			| B256CALL args_v '(' callexprlist ')' {
-                                addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
+                        | B256CALL args_v '(' callexprlist ')' {
+                                addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with SUBROUTINE definition
                                 addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
                                 addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
@@ -1598,28 +1601,21 @@ callstmt:	B256CALL args_v args_none {
 
 offerrorstmt:
 			B256OFFERROR args_none {
-				int i;
-				for(i=0; i < numifs; i++) {
-					if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
-						errorcode = COMPERR_NOTINTRYCATCH;
-						return -1;
-					}
-				}
 				addOp(OP_OFFERROR);
 			}
 			;
 
 onerrorstmt:
 			B256ONERROR args_v {
-				int i;
-				for(i=0; i < numifs; i++) {
-					if (iftabletype[i]==IFTABLETYPETRY || iftabletype[i]==IFTABLETYPECATCH) {
-						errorcode = COMPERR_NOTINTRYCATCH;
-						return -1;
-					}
-				}
 				addIntOp(OP_ONERRORGOSUB, varnumber[--nvarnumber]);
-			}
+                        }
+                        | B256ONERROR args_v '(' ')' {
+                            addIntOp(OP_ONERRORCALL, varnumber[--nvarnumber]);
+                        }
+                        | B256ONERROR args_v '(' callexprlist ')' {
+                            errorcode = COMPERR_ONERRORCALL;
+                            return -1;
+                        }
 			;
 
 returnstmt:	B256RETURN args_none {
@@ -2685,8 +2681,9 @@ functionstmt:
                                 symtableaddresstype[functionDefSymbol] = ADDRESSTYPE_FUNCTION;
                                 newIf(linenumber, IFTABLETYPEFUNCTION, -1);
 				//
-				// check to see if there are enough values on the stack
-                                addIntOp(OP_ARGUMENTCOUNTTEST, numargs);
+                                // store the number of the arguments required by FUNCTION
+                                // to check if number of arguments passed match definition when is called
+                                symtableaddressargs[functionDefSymbol] = numargs;
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
@@ -2729,8 +2726,9 @@ subroutinestmt:
                                 symtableaddresstype[subroutineDefSymbol] = ADDRESSTYPE_SUBROUTINE;
                                 newIf(linenumber, IFTABLETYPESUBROUTINE, -1);
 				//
-				// check to see if there are enough values on the stack
-                                addIntOp(OP_ARGUMENTCOUNTTEST, numargs);
+                                // store the number of the arguments required by SUBROUTINE
+                                // to check if number of arguments passed match definition when is called
+                                symtableaddressargs[subroutineDefSymbol] = numargs;
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
@@ -3037,13 +3035,13 @@ expr:
 			| args_v '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
 			| args_v '(' callexprlist ')' {
 				// function call with arguments
-                                addIntOp(OP_PUSHINT, listlen); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with FUNCTION definition
                                 addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
                                 addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| args_v '(' ')' {
 				// function call without arguments
-                                addIntOp(OP_PUSHINT, 0); //number of arguments for OP_ARGUMENTCOUNTTEST
+                                addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with FUNCTION definition
                                 addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
                                 addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
@@ -3856,7 +3854,7 @@ expr:
 
 int
 yyerror(const char *msg) {
-	(void) msg;
-	errorcode = COMPERR_SYNTAX;
+        (void) msg;
+        errorcode = COMPERR_SYNTAX;
 	return -1;
 }

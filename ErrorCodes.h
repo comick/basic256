@@ -13,6 +13,7 @@
 #define ERROR_UNSERIALIZEFORMAT	-11
 #define ERROR_NOSUCHSUBROUTINE	-12
 #define ERROR_NOSUCHFUNCTION	-13
+#define ERROR_ONERRORSUB        -14
 
 
 // ERRRORS and WARNINGS greater than 0 are trappable
