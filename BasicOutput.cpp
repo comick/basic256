@@ -39,6 +39,7 @@ extern int lastKey;
 extern std::list<int> pressedKeys;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
+    inputText.clear();
     setReadOnly(true);
 	setInputMethodHints(Qt::ImhNoPredictiveText);
 	setFocusPolicy(Qt::StrongFocus);
@@ -53,10 +54,10 @@ BasicOutput::~BasicOutput( ) {
     // destructor for basic output
 }
 
-void
-BasicOutput::getInput() {
+void BasicOutput::getInput() {
     // move cursor to the end of the existing text and start input
-	gettingInput = true;
+    inputText.clear();
+    gettingInput = true;
 	emit(mainWindowsVisible(2,true));
 	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::End);
@@ -109,10 +110,15 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
     } else {
         if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
             QTextCursor t(textCursor());
-            t.setPosition(startPos, QTextCursor::KeepAnchor);
-            emit(inputEntered(t.selectedText())); // send the string back to the interperter and run controller
+            t.setPosition(startPos);
+            t.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+            inputText=t.selectedText();
+            t.movePosition(QTextCursor::End);
+            setTextCursor(t);
             insertPlainText("\n");
             stopInput();
+            emit(inputEntered(inputText)); // send the string back to the interperter and run controller
+
        } else if (e->key() == Qt::Key_Backspace) {
             QTextCursor t(textCursor());
             t.movePosition(QTextCursor::PreviousCharacter);

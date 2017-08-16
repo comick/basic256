@@ -549,12 +549,12 @@ void Interpreter::netSockCloseAll() {
     }
 }
 
-void Interpreter::setInputReady() {
-    status = R_INPUTREADY;
-}
-
 bool Interpreter::isAwaitingInput() {
     return (status == R_INPUT);
+}
+
+void Interpreter::setInputString(QString s) {
+    inputString = s;
 }
 
 bool Interpreter::isRunning() {
@@ -571,8 +571,8 @@ bool Interpreter::isStopping() {
     return (status == R_STOPPED || status == R_STOPING);
 }
 
-void Interpreter::setStopped() {
-    status = R_STOPPED;
+void Interpreter::setStatus(run_status s) {
+    status = s;
 }
 
 void Interpreter::watchvariable(bool doit, int i) {
@@ -1006,8 +1006,6 @@ void Interpreter::closeDatabase(int t) {
 void
 Interpreter::runHalted() {
     // event fires from runcoltroller to tell program to signal user stop
-    status = R_STOPING;
-    //
     // force the interperter ops that block to go ahead and quit
 
     if(sys) sys->kill();
@@ -1057,14 +1055,6 @@ Interpreter::run() {
     cleanup(); // cleanup the variables, databases, files, stack and everything
     emit(stopRunFinalized(!isError));
 }
-
-void Interpreter::inputEntered(QString text) {
-    if (status!=R_STOPPED) {
-        inputString = text;
-        status = R_INPUTREADY;
-    }
-}
-
 
 void Interpreter::clearsprites() {
     // cleanup sprites - release images and deallocate the space
@@ -1319,13 +1309,6 @@ void Interpreter::setGraph(QString id){
 int
 Interpreter::execByteCode() {
     int opcode;
-    if (status == R_INPUTREADY) {
-        stack->pushvariant(inputString, inputType);
-        status = R_RUNNING;
-        return 0;
-    } else if (status == R_INPUT) {
-        return 0;
-    }
 
     // if errnum is set then handle the last thrown error
     if (error->pending()) {
@@ -4700,6 +4683,7 @@ Interpreter::execByteCode() {
 
                 case OP_INPUT: {
                     inputType = stack->popint();
+                    inputString.clear();
                     QString prompt = stack->popstring();
                     if (prompt.length()>0) {
                         mymutex->lock();
@@ -4734,6 +4718,12 @@ Interpreter::execByteCode() {
                     emit(getInput());
                     waitCond->wait(mymutex);
                     mymutex->unlock();
+                    //we got input from user or program is going to stop
+                    if (status==R_INPUT) {//program is not stopped by user in the mean time
+                        status = R_RUNNING;
+                        stack->pushvariant(inputString, inputType);
+                    }
+
 #endif
                 }
                 break;

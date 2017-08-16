@@ -56,7 +56,7 @@
     #include <QSerialPort>
 #endif
 
-enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_INPUTREADY, R_ERROR, R_PAUSED, R_STOPING};
+enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_STOPING};
 
 #define NUMFILES 8
 #define NUMSOCKETS 8
@@ -167,9 +167,9 @@ class Interpreter : public QThread
         bool isRunning();
         bool isStopped();
         bool isStopping();
-        void setStopped();
+        void setStatus(run_status);
         bool isAwaitingInput();
-        void setInputReady();
+        void setInputString(QString);
         void cleanup();
         void run();
         int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
@@ -182,7 +182,6 @@ class Interpreter : public QThread
     public slots:
         int execByteCode();
         void runHalted();
-        void inputEntered(QString);
 
     signals:
         void debugNextStep();
@@ -248,9 +247,8 @@ class Interpreter : public QThread
         std::vector <forframe*> forstacklevel;  // stack FOR/NEXT for each recurse level
         int forstacklevelsize;                  // size for forstacklevel stack
         run_status status;
-        run_status oldstatus;
         bool fastgraphics;
-        QString inputString;
+        QString inputString;        // input string from user
         int inputType;				// data type to convert the input into
         double double_random_max;
         int currentLine;

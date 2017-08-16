@@ -191,7 +191,11 @@ DataElement *Stack::popelement() {
     // WILL CHANGE ON NEXT PUSH!!!!
     if (stackpointer==0) {
         error->q(ERROR_STACKUNDERFLOW);
-        return NULL;
+        // return a fake element instead of NULL
+        // to handle a potential error in Interpreter
+        stackdata[0]->type = T_INT;
+        stackdata[0]->intval = 0l;
+        return stackdata[0];
     }
 	stackpointer--;
 	return stackdata[stackpointer];

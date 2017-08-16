@@ -68,6 +68,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   int startPos;
   bool gettingInput;
   void changeFontSize(unsigned int);
+  QString inputText;
 };
 
 

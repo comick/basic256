@@ -136,7 +136,6 @@ RunController::RunController() {
 
     QObject::connect(this, SIGNAL(runHalted()), i, SLOT(runHalted()));
 
-    QObject::connect(outwin, SIGNAL(inputEntered(QString)), i, SLOT(inputEntered(QString)));
     QObject::connect(outwin, SIGNAL(inputEntered(QString)), this, SLOT(inputEntered(QString)));
 
 
@@ -333,10 +332,10 @@ RunController::startRun() {
 
 void
 RunController::inputEntered(QString text) {
-    (void) text;
+    i->setInputString(text); //set the input from user
     graphwin->setFocus();
     mymutex->lock();
-    waitCond->wakeAll();
+    waitCond->wakeAll(); // continue OP_INPUT from interpreter
     mymutex->unlock();
 }
 
@@ -400,15 +399,17 @@ void RunController::stopRun() {
     if(!i->isStopping()){
     // event when the user clicks on the stop button
     mainwin->statusBar()->showMessage(tr("Stopping."));
-
     mainwin->setRunState(RUNSTATESTOPING);
+    bool stopinput = i->isAwaitingInput();
+
+    i->setStatus(R_STOPING);//no more ops
 
     mymutex->lock();
     // stop input only when input is waitted
     // otherwise waitCond->wakeAll(); will generate errors in different situations
-    if(i->isAwaitingInput()){
-        outwin->stopInput();
-        waitCond->wakeAll();
+    if(stopinput){
+        outwin->stopInput(); //make output window readonly
+        waitCond->wakeAll(); //continue OP_INPUT from interpreter
     }
     mymutex->unlock();
 
@@ -433,7 +434,7 @@ void RunController::stopRunFinalized(bool ok) {
     mainwin->statusBar()->showMessage(tr("Ready."));
     mainwin->setRunState(RUNSTATESTOP);
     mainwin->ifGuiStateClose(ok);
-    i->setStopped();
+    i->setStatus(R_STOPPED);
 }
 
 void
