@@ -118,6 +118,8 @@
 #define ERROR_REFNOTASSIGNED           113
 #define ERROR_UNEXPECTEDRETURN         114
 #define ERROR_NEXTNOFOR                115
+#define ERROR_SQRRANGE                 116
+#define ERROR_ASINACOSRANGE            117
 
 
 // Insert new error codes here

@@ -25,7 +25,8 @@
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <string.h>
-	#include "../BasicTypes.h"
+        #include <math.h>
+        #include "../BasicTypes.h"
 	#include "../Constants.h"
 	#include "../WordCodes.h"
 	#include "../CompileErrors.h"
@@ -3103,7 +3104,14 @@ expr:
 			| expr '>' expr { addOp(OP_GT); }
 			| expr B256GTE expr { addOp(OP_GTE); }
 			| expr B256LTE expr { addOp(OP_LTE); }
-			| B256FLOAT   { addFloatOp(OP_PUSHFLOAT, $1); }
+                        | B256FLOAT   {
+                            if(isfinite($1)){
+                                addFloatOp(OP_PUSHFLOAT, $1);
+                            }else{
+                                errorcode = COMPERR_NUMBERTOOLARGE;
+                                return -1;
+                            }
+                        }
 			| B256INTEGER { addIntOp(OP_PUSHINT, $1); }
 			| args_a B256ADD1 {
 				// a[b,c]++
@@ -3182,7 +3190,7 @@ expr:
 			| B256EXP '(' expr ')' { addOp(OP_EXP); }
 			| B256ABS '(' expr ')' { addOp(OP_ABS); }
 			| B256RAND args_none { addOp(OP_RAND); }
-			| B256PI args_none { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
+                        | B256PI args_none { addFloatOp(OP_PUSHFLOAT, 3.14159265358979323846); }
 			| B256BOOLTRUE args_none { addIntOp(OP_PUSHINT, 1); }
 			| B256BOOLFALSE args_none { addIntOp(OP_PUSHINT, 0); }
 			| B256BOOLEOF args_none {
@@ -3216,158 +3224,25 @@ expr:
 			| B256CLICKX args_none { addOp(OP_CLICKX); }
 			| B256CLICKY args_none { addOp(OP_CLICKY); }
 			| B256CLICKB args_none { addOp(OP_CLICKB); }
-			| B256CLEAR args_none {
-				addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addOp(OP_RGB);
-				}
-			| B256BLACK args_none {
-                                addIntOp(OP_PUSHINT, 0xff000000);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256WHITE args_none {
-                                addIntOp(OP_PUSHINT, 0xffffffff);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256RED args_none {
-                                addIntOp(OP_PUSHINT, 0xffff0000);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKRED args_none {
-                                addIntOp(OP_PUSHINT, 0xff800000);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256GREEN args_none {
-                                addIntOp(OP_PUSHINT, 0xff00ff00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKGREEN args_none {
-                                addIntOp(OP_PUSHINT, 0xff008000);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256BLUE args_none {
-                                addIntOp(OP_PUSHINT, 0xff0000ff);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKBLUE args_none {
-                                addIntOp(OP_PUSHINT, 0xff000080);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256CYAN args_none {
-                                addIntOp(OP_PUSHINT, 0xff00ffff);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKCYAN args_none {
-                                addIntOp(OP_PUSHINT, 0xff008080);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256PURPLE args_none {
-                                addIntOp(OP_PUSHINT, 0xffff00ff);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKPURPLE args_none {
-                                addIntOp(OP_PUSHINT, 0xff800080);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256YELLOW args_none {
-                                addIntOp(OP_PUSHINT, 0xffffff00);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKYELLOW args_none {
-                                addIntOp(OP_PUSHINT, 0xff808000);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256ORANGE args_none {
-                                addIntOp(OP_PUSHINT, 0xffff6600);
-                                //addIntOp(OP_PUSHINT, 0xFF);
-                                //addIntOp(OP_PUSHINT, 0x66);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKORANGE args_none {
-                                addIntOp(OP_PUSHINT, 0xffb03d00);
-                                //addIntOp(OP_PUSHINT, 0xb0);
-                                //addIntOp(OP_PUSHINT, 0x3d);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256GREY args_none {
-                                addIntOp(OP_PUSHINT, 0xffa4a4a4);
-                                //addIntOp(OP_PUSHINT, 0xA4);
-                                //addIntOp(OP_PUSHINT, 0xA4);
-                                //addIntOp(OP_PUSHINT, 0xA4);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
-			| B256DARKGREY args_none {
-                                addIntOp(OP_PUSHINT, 0xff808080);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0x80);
-                                //addIntOp(OP_PUSHINT, 0xff);
-                                //addOp(OP_RGB);
-				}
+                        | B256CLEAR args_none { addIntOp(OP_PUSHINT, 0x00); }
+                        | B256BLACK args_none { addIntOp(OP_PUSHINT, 0xff000000); }
+                        | B256WHITE args_none { addIntOp(OP_PUSHINT, 0xffffffff); }
+                        | B256RED args_none { addIntOp(OP_PUSHINT, 0xffff0000); }
+                        | B256DARKRED args_none { addIntOp(OP_PUSHINT, 0xff800000); }
+                        | B256GREEN args_none { addIntOp(OP_PUSHINT, 0xff00ff00); }
+                        | B256DARKGREEN args_none { addIntOp(OP_PUSHINT, 0xff008000); }
+                        | B256BLUE args_none { addIntOp(OP_PUSHINT, 0xff0000ff); }
+                        | B256DARKBLUE args_none { addIntOp(OP_PUSHINT, 0xff000080); }
+                        | B256CYAN args_none { addIntOp(OP_PUSHINT, 0xff00ffff); }
+                        | B256DARKCYAN args_none { addIntOp(OP_PUSHINT, 0xff008080); }
+                        | B256PURPLE args_none { addIntOp(OP_PUSHINT, 0xffff00ff); }
+                        | B256DARKPURPLE args_none { addIntOp(OP_PUSHINT, 0xff800080); }
+                        | B256YELLOW args_none { addIntOp(OP_PUSHINT, 0xffffff00); }
+                        | B256DARKYELLOW args_none { addIntOp(OP_PUSHINT, 0xff808000); }
+                        | B256ORANGE args_none { addIntOp(OP_PUSHINT, 0xffff6600); }
+                        | B256DARKORANGE args_none { addIntOp(OP_PUSHINT, 0xffb03d00); }
+                        | B256GREY args_none { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
+                        | B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
 			| B256PIXEL '(' expr ',' expr ')' { addOp(OP_PIXEL); }
                         | B256RGB '(' expr ',' expr ',' expr ')' {
                             //compress valid: rgb(n,n,n)

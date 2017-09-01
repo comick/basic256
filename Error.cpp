@@ -285,7 +285,7 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			errormessage = tr("Radix conversion base muse be between 2 and 36");
 			break;
 		case ERROR_LOGRANGE:
-			errormessage = tr("Unable to calculate the logarithm or root of a negative number");
+            errormessage = tr("Unable to calculate the logarithm of a number less than or equal to 0");
 			break;
 		case ERROR_STRINGMAXLEN:
 			errormessage = tr("String exceeds maximum length of 16,777,216 characters");
@@ -406,6 +406,12 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
             break;
         case ERROR_ONERRORSUB:
             errormessage = tr("SUBROUTINE %VARNAME% expects arguments and therefore can not be used by ONERROR statement");
+            break;
+        case ERROR_SQRRANGE:
+            errormessage = tr("Unable to calculate the root of a negative number");
+            break;
+        case ERROR_ASINACOSRANGE:
+            errormessage = tr("Unable to calculate the arc-sine or arc-cosine of a value outside the interval [-1.0, +1.0]");
             break;
 
 

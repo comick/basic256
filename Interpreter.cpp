@@ -794,6 +794,9 @@ int Interpreter::compileProgram(char *code) {
             case COMPERR_ONERRORCALL:
                 msg += tr("Cannot pass arguments to a SUBROUTINE used by ONERROR statement");
                 break;
+            case COMPERR_NUMBERTOOLARGE:
+                msg += tr("Number too large");
+                break;
 
             default:
                 if(column==0) {
@@ -1816,13 +1819,14 @@ Interpreter::execByteCode() {
                         e->floatval += 1.0;
                         if (std::isinf(e->floatval)) {
                             error->q(ERROR_INFINITY);
+                            e->floatval=0.0;
                         }
                         watchvariable(debugMode, i);
                         break;
                     }
                     double f = convert->getFloat(e);
                     f += 1.0;
-                    if (std::isinf(e->floatval)) {
+                    if (std::isinf(f)) {
                         error->q(ERROR_INFINITY);
                     }else{
                         e->type=T_FLOAT;
@@ -1850,13 +1854,14 @@ Interpreter::execByteCode() {
                         e->floatval += 1.0;
                         if (std::isinf(e->floatval)) {
                             error->q(ERROR_INFINITY);
+                            e->floatval=0.0;
                         }
                         watchvariable(debugMode, i, xindex, yindex);
                         break;
                     }
                     double f = convert->getFloat(e);
                     f += 1.0;
-                    if (std::isinf(e->floatval)) {
+                    if (std::isinf(f)) {
                         error->q(ERROR_INFINITY);
                     }else{
                         e->type=T_FLOAT;
@@ -1882,13 +1887,14 @@ Interpreter::execByteCode() {
                         e->floatval -= 1.0;
                         if (std::isinf(e->floatval)) {
                             error->q(ERROR_INFINITY);
+                            e->floatval=0.0;
                         }
                         watchvariable(debugMode, i);
                         break;
                     }
                     double f = convert->getFloat(e);
                     f -= 1.0;
-                    if (std::isinf(e->floatval)) {
+                    if (std::isinf(f)) {
                         error->q(ERROR_INFINITY);
                     }else{
                         e->type=T_FLOAT;
@@ -1916,13 +1922,14 @@ Interpreter::execByteCode() {
                         e->floatval -= 1.0;
                         if (std::isinf(e->floatval)) {
                             error->q(ERROR_INFINITY);
+                            e->floatval=0.0;
                         }
                         watchvariable(debugMode, i, xindex, yindex);
                         break;
                     }
                     double f = convert->getFloat(e);
                     f -= 1.0;
-                    if (std::isinf(e->floatval)) {
+                    if (std::isinf(f)) {
                         error->q(ERROR_INFINITY);
                     }else{
                         e->type=T_FLOAT;
@@ -1931,10 +1938,6 @@ Interpreter::execByteCode() {
                     watchvariable(debugMode, i, xindex, yindex);
                 }
                 break;
-
-
-
-
             }
         }
         break;
@@ -2982,10 +2985,20 @@ Interpreter::execByteCode() {
                             }
                             break;
                         case OP_ASIN:
-                            stack->pushfloat(asin(val));
+                            if (val<-1.0 || val>1.0) {
+                                error->q(ERROR_ASINACOSRANGE);
+                                stack->pushint(0);
+                            } else {
+                                stack->pushfloat(asin(val));
+                            }
                             break;
                         case OP_ACOS:
-                            stack->pushfloat(acos(val));
+                            if (val<-1.0 || val>1.0) {
+                                error->q(ERROR_ASINACOSRANGE);
+                                stack->pushint(0);
+                            } else {
+                                stack->pushfloat(acos(val));
+                            }
                             break;
                         case OP_ATAN:
                             stack->pushfloat(atan(val));
@@ -2997,13 +3010,13 @@ Interpreter::execByteCode() {
                             stack->pushint(floor(val));
                             break;
                         case OP_DEGREES:
-                            stack->pushfloat(val * 180 / M_PI);
+                            stack->pushfloat(val * 180.0 / M_PI);
                             break;
                         case OP_RADIANS:
-                            stack->pushfloat(val * M_PI / 180);
+                            stack->pushfloat(val * M_PI / 180.0);
                             break;
                         case OP_LOG:
-                            if (val<0) {
+                            if (val<=0.0) {
                                 error->q(ERROR_LOGRANGE);
                                 stack->pushint(0);
                             } else {
@@ -3011,7 +3024,7 @@ Interpreter::execByteCode() {
                             }
                             break;
                         case OP_LOGTEN:
-                            if (val<0) {
+                            if (val<=0.0) {
                                 error->q(ERROR_LOGRANGE);
                                 stack->pushint(0);
                             } else {
@@ -3019,8 +3032,8 @@ Interpreter::execByteCode() {
                             }
                             break;
                         case OP_SQR:
-                            if (val<0) {
-                                error->q(ERROR_LOGRANGE);
+                            if (val<0.0) {
+                                error->q(ERROR_SQRRANGE);
                                 stack->pushint(0);
                             } else {
                                 stack->pushfloat(sqrt(val));

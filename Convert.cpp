@@ -8,6 +8,8 @@ Convert::Convert(Error *e, QLocale *applocale) {
     error = e;
     SETTINGS;
     decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
+    if(decimaldigits < SETTINGSDECDIGSMIN || decimaldigits > SETTINGSDECDIGSMAX)
+        decimaldigits = SETTINGSDECDIGSDEFAULT;
     floattail = settings.value(SETTINGSFLOATTAIL, SETTINGSFLOATTAILDEFAULT).toBool();
     replaceDecimalPoint = settings.value(SETTINGSFLOATLOCALE, SETTINGSFLOATLOCALEDEFAULT).toBool();
 
@@ -94,6 +96,7 @@ long Convert::getLong(DataElement *e) {
                 bool ok;
                 i = e->stringval.toLong(&ok);
                 if(!ok) {
+                    i = 0;
                     if (error) error->q(ERROR_TYPECONV);
                 }
             } else if (error){
@@ -109,7 +112,7 @@ long Convert::getLong(DataElement *e) {
 }
 
 double Convert::getFloat(DataElement *e) {
-    double f=0;
+    double f = 0.0;
     if (e) {
         if (e->type == T_FLOAT) {
             return(e->floatval);
@@ -124,6 +127,7 @@ double Convert::getFloat(DataElement *e) {
                     f = e->stringval.toDouble(&ok);
                 }
                 if(!ok) {
+                    f = 0.0;
                     if (error) error->q(ERROR_TYPECONV);
                 }
             }else if (error){
@@ -139,7 +143,7 @@ double Convert::getFloat(DataElement *e) {
 }
 
 double Convert::getMusicalNote(DataElement *e) {
-    double f=0;
+    double f = 0.0;
     if (e) {
         if (e->type == T_FLOAT) {
             f = e->floatval;
@@ -172,6 +176,7 @@ double Convert::getMusicalNote(DataElement *e) {
                         f = e->stringval.toDouble(&ok);
                     }
                     if(!ok) {
+                        f = 0.0;
                         if (error) error->q(ERROR_STRING2NOTE);
                     }
                 }else if (error){
@@ -199,33 +204,40 @@ QString Convert::getString(DataElement *e, int ddigits) {
         } else if (e->type == T_INT) {
             s = QString::number(e->intval);
         } else if (e->type == T_FLOAT) {
-            double xp = log10(e->floatval*(e->floatval<0?-1:1)+(e->floatval>9.0?1.0:0)); // size in powers of 10
-            //check if adding of ".0" will exceed the number of digits to print numbers
-            if(((int)xp)==ddigits-1 && floattail){
-                s.setNum(e->floatval,'e',ddigits - (xp>0?xp:1));
-                s.replace(QRegExp("0+e"), "e");
-                s.replace(".e", ".0e");
-                if(replaceDecimalPoint){
-                    s.replace('.', decimalPoint);
-                }
-            }else if (xp*2<-ddigits || xp>ddigits) {
-                s.setNum(e->floatval,'g',ddigits);
-                if(replaceDecimalPoint){
-                    s.replace('.', decimalPoint);
-                }
-            } else {
-                s.setNum(e->floatval,'f',ddigits - (xp>0?xp:1));
-                if (s.contains('.',Qt::CaseInsensitive)) {
-                    while(s.endsWith("0")) s.chop(1);
-                    if(s.endsWith('.')){
-                        s.chop(1);
-                        if(floattail)
-                            s.append(decimalPoint + '0');
-                    }else if(replaceDecimalPoint){
+            if(e->floatval==0){
+                if(floattail)
+                    s = QStringLiteral("0") + decimalPoint + QStringLiteral("0");
+                else
+                    s = QStringLiteral("0");
+            }else{
+                double xp = log10(e->floatval*(e->floatval<0.0?-1.0:1.0)); // size in powers of 10
+                //check if adding of ".0" will exceed the number of digits to print numbers
+                if(((int)xp)==ddigits-1 && floattail){
+                    s.setNum(e->floatval,'e',ddigits - 1);
+                    s.replace(QRegExp(QStringLiteral("0+e")), QStringLiteral("e"));
+                    s.replace(QStringLiteral(".e"), QStringLiteral(".0e"));
+                    if(replaceDecimalPoint){
                         s.replace('.', decimalPoint);
                     }
-                }else if(floattail){
+                }else if (xp*2<-ddigits || (int)xp>=(ddigits-(floattail?1:0))) { //number too small or too big to show in original form
+                    s.setNum(e->floatval,'g',ddigits);
+                    if(replaceDecimalPoint){
+                        s.replace('.', decimalPoint);
+                    }
+                } else {
+                    s.setNum(e->floatval,'f',ddigits - (xp>0.0?(int)xp+1:1));
+                    if (s.contains('.',Qt::CaseInsensitive)) {
+                        while(s.endsWith("0")) s.chop(1);
+                        if(s.endsWith('.')){
+                            s.chop(1);
+                            if(floattail)
+                                s.append(decimalPoint + '0');
+                        }else if(replaceDecimalPoint){
+                            s.replace('.', decimalPoint);
+                        }
+                    }else if(floattail){
                         s.append(decimalPoint + '0');
+                    }
                 }
             }
         } else if (e->type==T_ARRAY) {
