@@ -502,6 +502,8 @@ QString Interpreter::opname(int op) {
     case OP_TEXTBOXWIDTH : return QString("OP_TEXTBOXWIDTH");
     case OP_ELLIPSE : return QString("OP_ELLIPSE");
     case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
+    case OP_BITSHIFTL : return QString("OP_BITSHIFTL");
+    case OP_BITSHIFTR : return QString("OP_BITSHIFTR");
 
     default: return QString("OP_UNKNOWN");
     }
@@ -3289,7 +3291,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_NEGATE: {
-                    // integer save negate
+                    // integer safe negate
                     DataElement *e = stack->popelement();
                     if (e->type==T_INT) {
                         if(e->intval<=LONG_MIN){
@@ -5869,6 +5871,56 @@ Interpreter::execByteCode() {
                 }
                 break;
 
+                case OP_BITSHIFTL: {
+                // safe bit left shift
+                // The standard says: "If the value of the right operand is negative or is greater than
+                // or equal to the width of the promoted left operand, the behavior is undefined."
+                    int n = stack->popint();
+                    unsigned long a = stack->poplong();
+                    if(n>=0){
+                        if(n>=((int)sizeof(a))*8){
+                            stack->pushint(0);
+                        }else{
+                            a = a << n;
+                            stack->pushlong(a);
+                        }
+                    }else{
+                        // if right operand is negative, shift in the opposite direction
+                        if(n<=-((int)sizeof(a))*8){
+                            stack->pushint(0);
+                        }else{
+                            a = a >> (n*-1);
+                            stack->pushlong(a);
+                        }
+                    }
+                }
+                break;
+
+                case OP_BITSHIFTR: {
+                // safe bit right shift
+                // The standard says: "If the value of the right operand is negative or is greater than
+                // or equal to the width of the promoted left operand, the behavior is undefined."
+                    int n = stack->popint();
+                    unsigned long a = stack->poplong();
+                    if(n>=0){
+                        if(n>=((int)sizeof(a))*8){
+                            stack->pushint(0);
+                        }else{
+                            a = a >> n;
+                            stack->pushlong(a);
+                        }
+                    }else{
+                        // if right operand is negative, shift in the opposite direction
+                        if(n<=-((int)sizeof(a))*8){
+                            stack->pushint(0);
+                        }else{
+                            a = a << (n*-1);
+                            stack->pushlong(a);
+                        }
+                    }
+                }
+                break;
+
                 case OP_BINARYOR: {
                     unsigned long a = stack->poplong();
                     unsigned long b = stack->poplong();
@@ -6430,7 +6482,7 @@ Interpreter::execByteCode() {
                                         o++;
                                     } else if (optype(currentop) == OPTYPE_FLOAT) {
                                         // op has a single double arg
-                                        emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((double) *o)));
+                                        emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg( *(double*)o, 0, 'g', 10)));
                                         o += bytesToFullWords(sizeof(double));
                                     } else if (optype(currentop) == OPTYPE_STRING) {
                                         // op has a single null terminated String arg

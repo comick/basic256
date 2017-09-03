@@ -54,6 +54,10 @@
 	unsigned int maxwordoffset = 0;		// size of the current wordCode array
 	unsigned int wordOffset = 0;		// current location on the WordCode array
 
+        unsigned int wordCode_lastOpsTable[10];     // array with last ops offset populated with populateLastOpsTable() (used to safe compress ops like rgb)
+        unsigned int wordCode_lastOpOffset = 0;     // location as offest of the last op
+        unsigned int wordCode_lastLineOffset = 0;   // location as offest of the last line (used to start indexing ops frome there)
+
 	unsigned int listlen = 0;
         unsigned int numberoflists = 0;
 
@@ -136,21 +140,28 @@
 
 	int bytesToFullWords(unsigned int size) {
 		// return how many words will be needed to store "size" bytes
-		return((size + sizeof(int) - 1) / sizeof(int));
+                return((size + sizeof(int) - 1) / sizeof(int));
 	}
 
 	void addOp(int op) {
 		checkWordMem(1);
 		wordCode[wordOffset] = op;
-		wordOffset++;
+                if(op==OP_CURRLINE) wordCode_lastLineOffset = wordOffset; //store the last line offset to start searching ops from here
+                wordCode_lastOpOffset = wordOffset;
+                wordOffset++;
 		//printf("line=%i addOp op=%i\n",linenumber, op);
 	}
 
+        void addData(int data) {
+                checkWordMem(1);
+                wordCode[wordOffset] = data;
+                wordOffset++;
+        }
+
 	void addIntOp(int op, int data) {
 		addOp(op);
-		addOp(data);
+                addData(data);
 	}
-
 
 	void addFloatOp(int op, double data) {
 		addOp(op);
@@ -169,6 +180,49 @@
 		strncpy((char *) (wordCode + wordOffset), data, len);
 		wordOffset += wlen;
 	}
+
+        int populateLastOpsTable(int nr){
+            // This function populate the array wordCode_lastOpsTable[] with offsets of ops
+            // index 0 will contain the last op offset, index 1 will be the next, and so on.
+            // Parameter nr will hold the number of ops of which we are interested (to grab)
+            // Function will return the number of ops grabbed.
+            // This is needed to safe look backward for ops (for compressing code)
+            if(nr<=0 || nr>10) return 0;
+            if(nr==1){
+                if(wordCode_lastOpOffset == wordOffset){
+                    //no op pushed on wordCode
+                    return 0;
+                }else{
+                    wordCode_lastOpsTable[0] = wordCode_lastOpOffset;
+                    return 1;
+                }
+            }else{
+                int count=0;
+                unsigned int index = wordCode_lastLineOffset;
+                while(index<wordOffset){
+                    if(count<nr) count++;
+                    for(int f = nr-1; f>0; f--) wordCode_lastOpsTable[f]=wordCode_lastOpsTable[f-1];
+                    wordCode_lastOpsTable[0]=index;
+                    int op = wordCode[index];
+                    index++; //skip op
+                    int t = op&OPTYPE_MASK; //type of op
+                    switch (t) {
+                    case OPTYPE_INT:
+                    case OPTYPE_LABEL:
+                    case OPTYPE_VARIABLE:
+                        index++;
+                        break;
+                    case OPTYPE_FLOAT:
+                        index+=(unsigned int)bytesToFullWords(sizeof(double));
+                        break;
+                    case OPTYPE_STRING:
+                        index+=(unsigned int)bytesToFullWords(strlen((char *) (wordCode + index)) + 1);
+                        break;
+                    }
+                }
+                return count;
+            }
+        }
 
         void clearIfTable() {
 		int j;
@@ -296,6 +350,8 @@
                 symtableaddressargs=NULL;
                 maxsymtable = 0;
                 maxwordoffset = 0;
+                wordCode_lastOpOffset = 0;           // location as offest of the last op
+                wordCode_lastLineOffset = 0;   // location as offest of the last line (used to start indexing ops from there)
 
                 while(include_filenames_counter>0){
                     include_filenames_counter--;
@@ -370,7 +426,7 @@
 %token B256ONERROR B256OFFERROR B256LASTERROR B256LASTERRORMESSAGE B256LASTERRORLINE B256LASTERROREXTRA
 %token B256NETLISTEN B256NETCONNECT B256NETREAD B256NETWRITE B256NETCLOSE B256NETDATA B256NETADDRESS
 %token B256KILL B256MD5 B256SETSETTING B256GETSETTING B256PORTIN B256PORTOUT
-%token B256BINARYOR B256AMP B256AMPEQUAL B256BINARYNOT
+%token B256BINARYOR B256AMP B256AMPEQUAL B256BINARYNOT B256BITSHIFTL B256BITSHIFTR
 %token B256IMGSAVE
 %token B256IMAGETRANSFORMED B256IMAGECENTERED B256IMAGEDRAW B256IMAGESETPIXEL B256IMAGERESIZE B256IMAGEAUTOCROP B256IMAGECROP B256IMAGESMOOTH
 %token B256IMAGENEW B256IMAGELOAD B256IMAGECOPY B256IMAGEWIDTH B256IMAGEHEIGHT B256IMAGEPIXEL B256IMAGEFLIP B256IMAGEROTATE B256UNLOAD B256SETGRAPH
@@ -537,9 +593,10 @@
 %left '<' B256LTE '>' B256GTE '=' B256NE
 %left B256SEMICOLON
 %left B256BINARYOR B256AMP
+%left B256BITSHIFTL B256BITSHIFTR
 %left '-' '+'
 %left '*' '/' B256MOD B256INTDIV
-%nonassoc B256UMINUS B256BINARYNOT
+%nonassoc B256UNARY B256BINARYNOT
 %left '^'
 
 
@@ -3066,9 +3123,30 @@ expr:
 			| expr B256MOD expr {
 				addOp(OP_MOD);
 			}
-                        | expr B256MOD %prec B256UMINUS{
+                        | expr B256MOD %prec B256UNARY{
+                            //safe compress INT% and FLOAT%
+                            if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
+                                unsigned int index=wordCode_lastOpsTable[0];
+                                if(wordCode[index]==OP_PUSHINT){
+                                    double val=((double)wordCode[index+1])/100.0;
+                                    wordOffset=index; // overwrite op
+                                    addFloatOp(OP_PUSHFLOAT, val);
+                                }else if(wordCode[index]==OP_PUSHFLOAT){
+                                    double val = (*((double *)(wordCode+index+1)))/100.0;
+                                    if(!isfinite(val)){
+                                        errorcode = COMPERR_NUMBERTOOLARGE;
+                                        return -1;
+                                    }
+                                    wordOffset=index; // overwrite op
+                                    addFloatOp(OP_PUSHFLOAT, val);
+                                }else{
+                                    addIntOp(OP_PUSHINT, 100);
+                                    addOp(OP_DIV);
+                                }
+                            }else{
                                 addIntOp(OP_PUSHINT, 100);
                                 addOp(OP_DIV);
+                            }
                         }
                         | expr B256INTDIV expr {
 				addOp(OP_INTDIV);
@@ -3077,10 +3155,30 @@ expr:
 				addOp(OP_DIV);
 			}
 			| expr '^' expr { addOp(OP_EX); }
-			| expr B256BINARYOR expr { addOp(OP_BINARYOR); }
-			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
-			| '-' expr %prec B256UMINUS { addOp(OP_NEGATE); }
-			| expr B256AND {
+                        | expr B256BINARYOR expr { addOp(OP_BINARYOR); }
+                        | expr B256BITSHIFTL expr { addOp(OP_BITSHIFTL); }
+                        | expr B256BITSHIFTR expr { addOp(OP_BITSHIFTR); }
+                        | B256BINARYNOT expr { addOp(OP_BINARYNOT); }
+                        | '-' expr %prec B256UNARY {
+                            //safe compress -INT and -FLOAT
+                            if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
+                                unsigned int index=wordCode_lastOpsTable[0];
+                                if(wordCode[index]==OP_PUSHINT){
+                                    int val=-wordCode[index+1];
+                                    wordOffset=index; // overwrite op
+                                    addIntOp(OP_PUSHINT, val);
+                                }else if(wordCode[index]==OP_PUSHFLOAT){
+                                    double val = - *((double *)(wordCode+index+1));
+                                    wordOffset=index; // overwrite op
+                                    addFloatOp(OP_PUSHFLOAT, val);
+                                }else{
+                                    addOp(OP_NEGATE);
+                                }
+                            }else{
+                                addOp(OP_NEGATE);
+                            }
+                        }
+                        | expr B256AND {
 					addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
 					newIf(linenumber, IFTABLETYPEINTERNAL, -1);
 				} expr {
@@ -3104,6 +3202,14 @@ expr:
 			| expr '>' expr { addOp(OP_GT); }
 			| expr B256GTE expr { addOp(OP_GTE); }
 			| expr B256LTE expr { addOp(OP_LTE); }
+                        | '+' B256FLOAT %prec B256UNARY { // accept/eat unary plus only for numbers
+                            if(isfinite($2)){
+                                addFloatOp(OP_PUSHFLOAT, $2);
+                            }else{
+                                errorcode = COMPERR_NUMBERTOOLARGE;
+                                return -1;
+                            }
+                        }
                         | B256FLOAT   {
                             if(isfinite($1)){
                                 addFloatOp(OP_PUSHFLOAT, $1);
@@ -3112,7 +3218,8 @@ expr:
                                 return -1;
                             }
                         }
-			| B256INTEGER { addIntOp(OP_PUSHINT, $1); }
+                        | '+' B256INTEGER %prec B256UNARY {addIntOp(OP_PUSHINT, $2); } // accept/eat unary plus only for numbers
+                        | B256INTEGER { addIntOp(OP_PUSHINT, $1); }
 			| args_a B256ADD1 {
 				// a[b,c]++
 				addOp(OP_STACKDUP2);
@@ -3245,28 +3352,49 @@ expr:
                         | B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
 			| B256PIXEL '(' expr ',' expr ')' { addOp(OP_PIXEL); }
                         | B256RGB '(' expr ',' expr ',' expr ')' {
-                            //compress valid: rgb(n,n,n)
-                            if(wordCode[wordOffset-2]==OP_PUSHINT && wordCode[wordOffset-4]==OP_PUSHINT && wordCode[wordOffset-6]==OP_PUSHINT
-                                    && wordCode[wordOffset-1]>=0 && wordCode[wordOffset-1]<=255
-                                    && wordCode[wordOffset-3]>=0 && wordCode[wordOffset-3]<=255
-                                    && wordCode[wordOffset-5]>=0 && wordCode[wordOffset-5]<=255){
-                                wordCode[wordOffset-5]=(wordCode[wordOffset-5]<<16)|(wordCode[wordOffset-3]<<8)|wordCode[wordOffset-1]|0xff000000;
-                                wordOffset-=4;
-                            }else{
+                            //safe compress valid rgb(n,n,n)
+                            int ok=0;
+                            if(populateLastOpsTable(3)==3){ //check if there are 3 previous ops
+                                if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
+                                        && wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
+                                        && wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT){
+                                    int r=wordCode[wordCode_lastOpsTable[2]+1];
+                                    int g=wordCode[wordCode_lastOpsTable[1]+1];
+                                    int b=wordCode[wordCode_lastOpsTable[0]+1];
+                                    if(r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
+                                        int val = 0xff000000|(r<<16)|(g<<8)|b;
+                                        wordOffset=wordCode_lastOpsTable[2]; // overwrite op
+                                        addIntOp(OP_PUSHINT, val);
+                                        ok=1;
+                                    }
+                                }
+                            }
+                            if(!ok){
                                 addIntOp(OP_PUSHINT, 0xff);
                                 addOp(OP_RGB);
                             }
                         }
 			| B256RGB '(' expr ',' expr ',' expr ',' expr ')' {
-                            //compress valid: rgb(n,n,n,n)
-                            if(wordCode[wordOffset-2]==OP_PUSHINT && wordCode[wordOffset-4]==OP_PUSHINT && wordCode[wordOffset-6]==OP_PUSHINT && wordCode[wordOffset-8]==OP_PUSHINT
-                                    && wordCode[wordOffset-1]>=0 && wordCode[wordOffset-1]<=255
-                                    && wordCode[wordOffset-3]>=0 && wordCode[wordOffset-3]<=255
-                                    && wordCode[wordOffset-5]>=0 && wordCode[wordOffset-5]<=255
-                                    && wordCode[wordOffset-7]>=0 && wordCode[wordOffset-7]<=255){
-                                wordCode[wordOffset-7]=(wordCode[wordOffset-1]<<24)|(wordCode[wordOffset-7]<<16)|(wordCode[wordOffset-5]<<8)|wordCode[wordOffset-3];
-                                wordOffset-=6;
-                            }else{
+                            //safe compress valid rgb(n,n,n,n)
+                            int ok=0;
+                            if(populateLastOpsTable(4)==4){ //check if there are 4 previous ops
+                                if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
+                                        && wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
+                                        && wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT
+                                        && wordCode[wordCode_lastOpsTable[3]]==OP_PUSHINT){
+                                    int r=wordCode[wordCode_lastOpsTable[3]+1];
+                                    int g=wordCode[wordCode_lastOpsTable[2]+1];
+                                    int b=wordCode[wordCode_lastOpsTable[1]+1];
+                                    int a=wordCode[wordCode_lastOpsTable[0]+1];
+                                    if(a>=0&&a<=255&&r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
+                                        int val = (a<<24)|(r<<16)|(g<<8)|b;
+                                        wordOffset=wordCode_lastOpsTable[3]; // overwrite op
+                                        addIntOp(OP_PUSHINT, val);
+                                        ok=1;
+                                    }
+                                }
+                            }
+                            if(!ok){
                                 addOp(OP_RGB);
                             }
 			}
@@ -3382,19 +3510,34 @@ expr:
 				addOp(OP_FROMRADIX);
 			}
 			| B256BINCONST {
-				addStringOp(OP_PUSHSTRING, $1);
-				addIntOp(OP_PUSHINT,2);	// radix
-				addOp(OP_FROMRADIX);
+                                addIntOp(OP_PUSHINT,strtoul($1, NULL, 2));
+                                if(errno==ERANGE){
+                                    errorcode = COMPERR_NUMBERTOOLARGE;
+                                    return -1;
+                                }
+                                //addStringOp(OP_PUSHSTRING, $1);
+                                //addIntOp(OP_PUSHINT,2);	// radix
+                                //addOp(OP_FROMRADIX);
 			}
 			| B256HEXCONST {
-				addStringOp(OP_PUSHSTRING, $1);
-				addIntOp(OP_PUSHINT,16);	// radix
-				addOp(OP_FROMRADIX);
+                                addIntOp(OP_PUSHINT,strtoul($1, NULL, 16));
+                                if(errno==ERANGE){
+                                    errorcode = COMPERR_NUMBERTOOLARGE;
+                                    return -1;
+                                }
+                                //addStringOp(OP_PUSHSTRING, $1);
+                                //addIntOp(OP_PUSHINT,16);	// radix
+                                //addOp(OP_FROMRADIX);
 			}
 			| B256OCTCONST {
-				addStringOp(OP_PUSHSTRING, $1);
-				addIntOp(OP_PUSHINT,8);	// radix
-				addOp(OP_FROMRADIX);
+                                addIntOp(OP_PUSHINT,strtoul($1, NULL, 8));
+                                if(errno==ERANGE){
+                                    errorcode = COMPERR_NUMBERTOOLARGE;
+                                    return -1;
+                                }
+                                //addStringOp(OP_PUSHSTRING, $1);
+                                //addIntOp(OP_PUSHINT,8);	// radix
+                                //addOp(OP_FROMRADIX);
 			}
 			| B256WAVLENGTH args_none { addOp(OP_WAVLENGTH); }
 			| B256WAVPOS args_none { addOp(OP_WAVPOS); }
