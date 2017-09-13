@@ -889,12 +889,6 @@ Interpreter::initialize() {
         filehandle[t] = NULL;
         filehandletype[t] = 0;
     }
-
-    // initialize databse connections
-    // by closing any that were previously open
-    for (int t=0; t<NUMDBCONN; t++) {
-        closeDatabase(t);
-    }
 }
 
 
@@ -993,7 +987,7 @@ Interpreter::cleanup() {
 
 void Interpreter::closeDatabase(int t) {
     // cleanup database and all of its sets
-    QString dbconnection = "DBCONNECTION" + QString::number(t);
+    QString dbconnection = QStringLiteral("DBCONNECTION") + QString::number(t);
     QSqlDatabase db = QSqlDatabase::database(dbconnection);
     if (db.isValid()) {
         for (int u=0; u<NUMDBSET; u++) {
@@ -1004,6 +998,7 @@ void Interpreter::closeDatabase(int t) {
             }
         }
         db.close();
+        db = QSqlDatabase();
         QSqlDatabase::removeDatabase(dbconnection);
     }
 }
@@ -5237,7 +5232,7 @@ Interpreter::execByteCode() {
                         error->q(ERROR_DBCONNNUMBER);
                     } else {
                         closeDatabase(n);
-                        QString dbconnection = "DBCONNECTION" + QString::number(n);
+                        QString dbconnection = QStringLiteral("DBCONNECTION") + QString::number(n);
                         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",dbconnection);
                         db.setDatabaseName(file);
                         bool ok = db.open();
@@ -5266,7 +5261,7 @@ Interpreter::execByteCode() {
                     if (n<0||n>=NUMDBCONN) {
                         error->q(ERROR_DBCONNNUMBER);
                     } else {
-                        QString dbconnection = "DBCONNECTION" + QString::number(n);
+                        QString dbconnection = QStringLiteral("DBCONNECTION") + QString::number(n);
                         QSqlDatabase db = QSqlDatabase::database(dbconnection);
                         if(db.isValid()) {
                             QSqlQuery *q = new QSqlQuery(db);
@@ -5293,7 +5288,7 @@ Interpreter::execByteCode() {
                         if (set<0||set>=NUMDBSET) {
                             error->q(ERROR_DBSETNUMBER);
                         } else {
-                            QString dbconnection = "DBCONNECTION" + QString::number(n);
+                            QString dbconnection = QStringLiteral("DBCONNECTION") + QString::number(n);
                             QSqlDatabase db = QSqlDatabase::database(dbconnection);
                             if(db.isValid()) {
                                 if (dbSet[n][set]) {
@@ -6154,7 +6149,7 @@ Interpreter::execByteCode() {
                     // return the next free databsae number - throw error if none free
                     int f=-1;
                     for (int t=0; (t<NUMDBCONN)&&(f==-1); t++) {
-                        QString dbconnection = "DBCONNECTION" + QString::number(t);
+                        QString dbconnection = QStringLiteral("DBCONNECTION") + QString::number(t);
                         QSqlDatabase db = QSqlDatabase::database(dbconnection);
                         if (!db.isValid()) f = t;
                     }
@@ -6696,7 +6691,7 @@ Interpreter::execByteCode() {
 
                     if (opcode!=OP_EXPLODEX) {
                         // 0 sensitive (default) - opposite of QT
-                        casesens = (stack->popfloat()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+                        casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
                     }
                     QString qneedle = stack->popstring();
                     QString qhaystack = stack->popstring();
