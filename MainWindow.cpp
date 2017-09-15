@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <unordered_set>
 
 #include <QString>
 #include <QMutex>
@@ -55,7 +56,7 @@ VariableWin * varwin;
 
 // key press information from outwin and graphwin
 int lastKey;
-std::list<int> pressedKeys;
+std::unordered_set<int> pressedKeys;
 
 //global GUI state
 int guiState;

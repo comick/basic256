@@ -18,6 +18,7 @@
 
 
 #include <iostream>
+#include <unordered_set>
 
 #include <QClipboard>
 #include <QMutex>
@@ -36,7 +37,7 @@
 
 extern QMutex *mymutex;
 extern int lastKey;
-extern std::list<int> pressedKeys;
+extern std::unordered_set<int> pressedKeys;
 
 
 BasicGraph::BasicGraph() {
@@ -158,30 +159,34 @@ void BasicGraph::keyPressEvent(QKeyEvent *e) {
     e->accept();
     mymutex->lock();
     lastKey = e->key();
-    pressedKeys.push_front(lastKey);
-    if( e->modifiers() & Qt::ShiftModifier )
-    {
-            pressedKeys.push_front(Qt::Key_Shift);
-    }else{
-            pressedKeys.remove(Qt::Key_Shift);
-    }
-    if( e->modifiers() & Qt::ControlModifier )
-    {
-            pressedKeys.push_front(Qt::Key_Control);
-    }else{
-            pressedKeys.remove(Qt::Key_Control);
-    }
-    if( e->modifiers() & Qt::AltModifier )
-    {
-            pressedKeys.push_front(Qt::Key_Alt);
-    }else{
-            pressedKeys.remove(Qt::Key_Alt);
-    }
-    if( e->modifiers() & Qt::MetaModifier )
-    {
-            pressedKeys.push_front(Qt::Key_Meta);
-    }else{
-            pressedKeys.remove(Qt::Key_Meta);
+    if(!e->isAutoRepeat()){
+        // Note that if the event is a multiple-key compressed event that is partly due to auto-repeat,
+        // isAutoRepeat() function could return either true or false indeterminately.
+        if( e->modifiers() & Qt::ShiftModifier )
+        {
+                pressedKeys.insert(Qt::Key_Shift);
+        }else{
+                pressedKeys.erase(Qt::Key_Shift);
+        }
+        if( e->modifiers() & Qt::ControlModifier )
+        {
+                pressedKeys.insert(Qt::Key_Control);
+        }else{
+                pressedKeys.erase(Qt::Key_Control);
+        }
+        if( e->modifiers() & Qt::AltModifier )
+        {
+                pressedKeys.insert(Qt::Key_Alt);
+        }else{
+                pressedKeys.erase(Qt::Key_Alt);
+        }
+        if( e->modifiers() & Qt::MetaModifier )
+        {
+                pressedKeys.insert(Qt::Key_Meta);
+        }else{
+                pressedKeys.erase(Qt::Key_Meta);
+        }
+        pressedKeys.insert(e->key());
     }
     mymutex->unlock();
 }
@@ -189,33 +194,39 @@ void BasicGraph::keyPressEvent(QKeyEvent *e) {
 void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
     e->accept();
     mymutex->lock();
-    if(!e->isAutoRepeat())pressedKeys.remove(e->key());
+    if(!e->isAutoRepeat())pressedKeys.erase(e->key());
     if( e->modifiers() & Qt::ShiftModifier )
     {
-            pressedKeys.push_front(Qt::Key_Shift);
+            pressedKeys.insert(Qt::Key_Shift);
     }else{
-            pressedKeys.remove(Qt::Key_Shift);
+            pressedKeys.erase(Qt::Key_Shift);
     }
     if( e->modifiers() & Qt::ControlModifier )
     {
-            pressedKeys.push_front(Qt::Key_Control);
+            pressedKeys.insert(Qt::Key_Control);
     }else{
-            pressedKeys.remove(Qt::Key_Control);
+            pressedKeys.erase(Qt::Key_Control);
     }
     if( e->modifiers() & Qt::AltModifier )
     {
-            pressedKeys.push_front(Qt::Key_Alt);
+            pressedKeys.insert(Qt::Key_Alt);
     }else{
-            pressedKeys.remove(Qt::Key_Alt);
+            pressedKeys.erase(Qt::Key_Alt);
     }
     if( e->modifiers() & Qt::MetaModifier )
     {
-            pressedKeys.push_front(Qt::Key_Meta);
+            pressedKeys.insert(Qt::Key_Meta);
     }else{
-            pressedKeys.remove(Qt::Key_Meta);
+            pressedKeys.erase(Qt::Key_Meta);
     }
     mymutex->unlock();
 }
+
+void BasicGraph::focusOutEvent(QFocusEvent* ){
+    //clear pressed keys list when lose focus to avoid detecting still pressed keys
+    pressedKeys.clear();
+}
+
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
 	static int c = Qt::ArrowCursor;

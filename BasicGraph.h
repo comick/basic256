@@ -75,6 +75,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void mouseReleaseEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
   void mouseDoubleClickEvent(QMouseEvent * );
+  void focusOutEvent(QFocusEvent* );
 
  private:
   int gwidth;

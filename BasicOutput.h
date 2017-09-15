@@ -63,6 +63,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
   void dragEnterEvent(QDragEnterEvent *e);
   void dragMoveEvent(QDragMoveEvent *e);
   void insertFromMimeData(const QMimeData *source);
+  void focusOutEvent(QFocusEvent* );
 
  private:
   int startPos;

@@ -22,6 +22,7 @@
 #include <math.h>
 #include <string>
 #include <errno.h>
+#include <unordered_set>
 
 #ifdef WIN32
 #include <winsock.h>
@@ -89,7 +90,7 @@ extern BasicEdit * editwin;
 
 
 extern int lastKey;
-extern std::list<int> pressedKeys;
+extern std::unordered_set<int> pressedKeys;
 
 extern "C" {
 //extern int yydebug;
@@ -4761,7 +4762,7 @@ Interpreter::execByteCode() {
                     if (keyCode==0) {
                         stack->pushint(pressedKeys.size());
                     } else {
-                        if (std::find(pressedKeys.begin(), pressedKeys.end(), keyCode) != pressedKeys.end()) {
+                        if (pressedKeys.count(keyCode)) {
                             stack->pushint(1);
                         } else {
                             stack->pushint(0);

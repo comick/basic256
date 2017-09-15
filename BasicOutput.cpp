@@ -16,6 +16,7 @@
  **/
 
 #include <iostream>
+#include <unordered_set>
 
 #include <QPainter>
 #include <QTextCursor>
@@ -36,7 +37,7 @@
 extern QMutex *mymutex;
 
 extern int lastKey;
-extern std::list<int> pressedKeys;
+extern std::unordered_set<int> pressedKeys;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
     inputText.clear();
@@ -78,33 +79,37 @@ void BasicOutput::stopInput() {
 void BasicOutput::keyPressEvent(QKeyEvent *e) {
     e->accept();
     if (!gettingInput) {
-		mymutex->lock();
-		lastKey = e->key();
-		pressedKeys.push_front(lastKey);
-		if( e->modifiers() & Qt::ShiftModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Shift);
-		}else{
-				pressedKeys.remove(Qt::Key_Shift);
-		}
-		if( e->modifiers() & Qt::ControlModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Control);
-		}else{
-				pressedKeys.remove(Qt::Key_Control);
-		}
-		if( e->modifiers() & Qt::AltModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Alt);
-		}else{
-				pressedKeys.remove(Qt::Key_Alt);
-		}
-		if( e->modifiers() & Qt::MetaModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Meta);
-		}else{
-				pressedKeys.remove(Qt::Key_Meta);
-		}
+        mymutex->lock();
+        lastKey = e->key();
+        if(!e->isAutoRepeat()){
+            // Note that if the event is a multiple-key compressed event that is partly due to auto-repeat,
+            // isAutoRepeat() function could return either true or false indeterminately.
+            if( e->modifiers() & Qt::ShiftModifier )
+            {
+                    pressedKeys.insert(Qt::Key_Shift);
+            }else{
+                    pressedKeys.erase(Qt::Key_Shift);
+            }
+            if( e->modifiers() & Qt::ControlModifier )
+            {
+                    pressedKeys.insert(Qt::Key_Control);
+            }else{
+                    pressedKeys.erase(Qt::Key_Control);
+            }
+            if( e->modifiers() & Qt::AltModifier )
+            {
+                    pressedKeys.insert(Qt::Key_Alt);
+            }else{
+                    pressedKeys.erase(Qt::Key_Alt);
+            }
+            if( e->modifiers() & Qt::MetaModifier )
+            {
+                    pressedKeys.insert(Qt::Key_Meta);
+            }else{
+                    pressedKeys.erase(Qt::Key_Meta);
+            }
+            pressedKeys.insert(e->key());
+        }
         QTextEdit::keyPressEvent(e);
 		mymutex->unlock();
     } else {
@@ -134,37 +139,41 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
 void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 	e->accept();
 	if (!gettingInput) {
-		mymutex->lock();
-		if(!e->isAutoRepeat())pressedKeys.remove(e->key());
-		if( e->modifiers() & Qt::ShiftModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Shift);
-		}else{
-				pressedKeys.remove(Qt::Key_Shift);
-		}
-		if( e->modifiers() & Qt::ControlModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Control);
-		}else{
-				pressedKeys.remove(Qt::Key_Control);
-		}
-		if( e->modifiers() & Qt::AltModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Alt);
-		}else{
-				pressedKeys.remove(Qt::Key_Alt);
-		}
-		if( e->modifiers() & Qt::MetaModifier )
-		{
-				pressedKeys.push_front(Qt::Key_Meta);
-		}else{
-				pressedKeys.remove(Qt::Key_Meta);
-		}
+        mymutex->lock();
+        if(!e->isAutoRepeat())pressedKeys.erase(e->key());
+        if( e->modifiers() & Qt::ShiftModifier )
+        {
+                pressedKeys.insert(Qt::Key_Shift);
+        }else{
+                pressedKeys.erase(Qt::Key_Shift);
+        }
+        if( e->modifiers() & Qt::ControlModifier )
+        {
+                pressedKeys.insert(Qt::Key_Control);
+        }else{
+                pressedKeys.erase(Qt::Key_Control);
+        }
+        if( e->modifiers() & Qt::AltModifier )
+        {
+                pressedKeys.insert(Qt::Key_Alt);
+        }else{
+                pressedKeys.erase(Qt::Key_Alt);
+        }
+        if( e->modifiers() & Qt::MetaModifier )
+        {
+                pressedKeys.insert(Qt::Key_Meta);
+        }else{
+                pressedKeys.erase(Qt::Key_Meta);
+        }
         QTextEdit::keyReleaseEvent(e);
 		mymutex->unlock();
 	}
 }
 
+void BasicOutput::focusOutEvent(QFocusEvent* ){
+    //clear pressed keys list when lose focus to avoid detecting still pressed keys
+    pressedKeys.clear();
+}
 
 bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {
 	if ((NULL == vMenu) || (NULL == vToolBar)) {
