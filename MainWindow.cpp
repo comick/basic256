@@ -39,6 +39,7 @@
 #include "Version.h"
 #include "BasicDock.h"
 #include "BasicIcons.h"
+#include "BasicKeyboard.h"
 
 // global mymutexes and timers
 QMutex* mymutex;
@@ -53,10 +54,7 @@ BasicEdit * editwin;
 BasicOutput * outwin;
 BasicGraph * graphwin;
 VariableWin * varwin;
-
-// key press information from outwin and graphwin
-int lastKey;
-std::unordered_set<int> pressedKeys;
+BasicKeyboard * basicKeyboard;
 
 //global GUI state
 int guiState;
@@ -74,6 +72,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     runState = RUNSTATESTOP;
     editwin=NULL;
     basicIcons = new BasicIcons();
+    basicKeyboard = new BasicKeyboard();
+
 
     // create the global mymutexes and waits
     mymutex = new QMutex(QMutex::NonRecursive);

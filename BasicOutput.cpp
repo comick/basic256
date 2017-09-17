@@ -16,7 +16,6 @@
  **/
 
 #include <iostream>
-#include <unordered_set>
 
 #include <QPainter>
 #include <QTextCursor>
@@ -33,11 +32,10 @@
 
 #include "Settings.h"
 #include "BasicOutput.h"
+#include "BasicKeyboard.h"
 
 extern QMutex *mymutex;
-
-extern int lastKey;
-extern std::unordered_set<int> pressedKeys;
+extern BasicKeyboard *basicKeyboard;
 
 BasicOutput::BasicOutput( ) : QTextEdit () {
     inputText.clear();
@@ -80,36 +78,7 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
     e->accept();
     if (!gettingInput) {
         mymutex->lock();
-        lastKey = e->key();
-        if(!e->isAutoRepeat()){
-            // Note that if the event is a multiple-key compressed event that is partly due to auto-repeat,
-            // isAutoRepeat() function could return either true or false indeterminately.
-            if( e->modifiers() & Qt::ShiftModifier )
-            {
-                    pressedKeys.insert(Qt::Key_Shift);
-            }else{
-                    pressedKeys.erase(Qt::Key_Shift);
-            }
-            if( e->modifiers() & Qt::ControlModifier )
-            {
-                    pressedKeys.insert(Qt::Key_Control);
-            }else{
-                    pressedKeys.erase(Qt::Key_Control);
-            }
-            if( e->modifiers() & Qt::AltModifier )
-            {
-                    pressedKeys.insert(Qt::Key_Alt);
-            }else{
-                    pressedKeys.erase(Qt::Key_Alt);
-            }
-            if( e->modifiers() & Qt::MetaModifier )
-            {
-                    pressedKeys.insert(Qt::Key_Meta);
-            }else{
-                    pressedKeys.erase(Qt::Key_Meta);
-            }
-            pressedKeys.insert(e->key());
-        }
+        basicKeyboard->keyPressed(e);
         QTextEdit::keyPressEvent(e);
 		mymutex->unlock();
     } else {
@@ -140,31 +109,7 @@ void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 	e->accept();
 	if (!gettingInput) {
         mymutex->lock();
-        if(!e->isAutoRepeat())pressedKeys.erase(e->key());
-        if( e->modifiers() & Qt::ShiftModifier )
-        {
-                pressedKeys.insert(Qt::Key_Shift);
-        }else{
-                pressedKeys.erase(Qt::Key_Shift);
-        }
-        if( e->modifiers() & Qt::ControlModifier )
-        {
-                pressedKeys.insert(Qt::Key_Control);
-        }else{
-                pressedKeys.erase(Qt::Key_Control);
-        }
-        if( e->modifiers() & Qt::AltModifier )
-        {
-                pressedKeys.insert(Qt::Key_Alt);
-        }else{
-                pressedKeys.erase(Qt::Key_Alt);
-        }
-        if( e->modifiers() & Qt::MetaModifier )
-        {
-                pressedKeys.insert(Qt::Key_Meta);
-        }else{
-                pressedKeys.erase(Qt::Key_Meta);
-        }
+        basicKeyboard->keyReleased(e);
         QTextEdit::keyReleaseEvent(e);
 		mymutex->unlock();
 	}
@@ -172,7 +117,7 @@ void BasicOutput::keyReleaseEvent(QKeyEvent *e) {
 
 void BasicOutput::focusOutEvent(QFocusEvent* ){
     //clear pressed keys list when lose focus to avoid detecting still pressed keys
-    pressedKeys.clear();
+    basicKeyboard->reset();
 }
 
 bool BasicOutput::initActions(QMenu * vMenu, QToolBar * vToolBar) {

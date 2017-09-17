@@ -18,7 +18,6 @@
 
 
 #include <iostream>
-#include <unordered_set>
 
 #include <QClipboard>
 #include <QMutex>
@@ -34,10 +33,10 @@
 #include "BasicWidget.h"
 #include "BasicGraph.h"
 #include "Constants.h"
+#include "BasicKeyboard.h"
 
 extern QMutex *mymutex;
-extern int lastKey;
-extern std::unordered_set<int> pressedKeys;
+extern BasicKeyboard *basicKeyboard;
 
 
 BasicGraph::BasicGraph() {
@@ -158,73 +157,20 @@ void BasicGraph::paintEvent(QPaintEvent *e) {
 void BasicGraph::keyPressEvent(QKeyEvent *e) {
     e->accept();
     mymutex->lock();
-    lastKey = e->key();
-    if(!e->isAutoRepeat()){
-        // Note that if the event is a multiple-key compressed event that is partly due to auto-repeat,
-        // isAutoRepeat() function could return either true or false indeterminately.
-        if( e->modifiers() & Qt::ShiftModifier )
-        {
-                pressedKeys.insert(Qt::Key_Shift);
-        }else{
-                pressedKeys.erase(Qt::Key_Shift);
-        }
-        if( e->modifiers() & Qt::ControlModifier )
-        {
-                pressedKeys.insert(Qt::Key_Control);
-        }else{
-                pressedKeys.erase(Qt::Key_Control);
-        }
-        if( e->modifiers() & Qt::AltModifier )
-        {
-                pressedKeys.insert(Qt::Key_Alt);
-        }else{
-                pressedKeys.erase(Qt::Key_Alt);
-        }
-        if( e->modifiers() & Qt::MetaModifier )
-        {
-                pressedKeys.insert(Qt::Key_Meta);
-        }else{
-                pressedKeys.erase(Qt::Key_Meta);
-        }
-        pressedKeys.insert(e->key());
-    }
+    basicKeyboard->keyPressed(e);
     mymutex->unlock();
 }
 
 void BasicGraph::keyReleaseEvent(QKeyEvent *e) {
     e->accept();
     mymutex->lock();
-    if(!e->isAutoRepeat())pressedKeys.erase(e->key());
-    if( e->modifiers() & Qt::ShiftModifier )
-    {
-            pressedKeys.insert(Qt::Key_Shift);
-    }else{
-            pressedKeys.erase(Qt::Key_Shift);
-    }
-    if( e->modifiers() & Qt::ControlModifier )
-    {
-            pressedKeys.insert(Qt::Key_Control);
-    }else{
-            pressedKeys.erase(Qt::Key_Control);
-    }
-    if( e->modifiers() & Qt::AltModifier )
-    {
-            pressedKeys.insert(Qt::Key_Alt);
-    }else{
-            pressedKeys.erase(Qt::Key_Alt);
-    }
-    if( e->modifiers() & Qt::MetaModifier )
-    {
-            pressedKeys.insert(Qt::Key_Meta);
-    }else{
-            pressedKeys.erase(Qt::Key_Meta);
-    }
+    basicKeyboard->keyReleased(e);
     mymutex->unlock();
 }
 
 void BasicGraph::focusOutEvent(QFocusEvent* ){
     //clear pressed keys list when lose focus to avoid detecting still pressed keys
-    pressedKeys.clear();
+    basicKeyboard->reset();
 }
 
 

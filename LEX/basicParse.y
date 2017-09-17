@@ -26,6 +26,7 @@
 	#include <stdio.h>
 	#include <string.h>
         #include <math.h>
+        #include <errno.h>
         #include "../BasicTypes.h"
 	#include "../Constants.h"
 	#include "../WordCodes.h"

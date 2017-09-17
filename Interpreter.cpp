@@ -22,7 +22,6 @@
 #include <math.h>
 #include <string>
 #include <errno.h>
-#include <unordered_set>
 
 #ifdef WIN32
 #include <winsock.h>
@@ -77,6 +76,7 @@ InpOut32OutType Out32 = NULL;
 #include "Sound.h"
 #include "Constants.h"
 #include "BasicEdit.h"
+#include "BasicKeyboard.h"
 
 
 extern SoundSystem *sound;
@@ -87,10 +87,8 @@ extern QWaitCondition *waitDebugCond;
 
 extern BasicGraph * graphwin;
 extern BasicEdit * editwin;
+extern BasicKeyboard * basicKeyboard;
 
-
-extern int lastKey;
-extern std::unordered_set<int> pressedKeys;
 
 extern "C" {
 //extern int yydebug;
@@ -856,8 +854,7 @@ Interpreter::initialize() {
     nsprites = 0;
     printing = false;
     regexMinimal = false;
-    lastKey = 0;
-    pressedKeys.clear();
+    basicKeyboard->reset();
     // clickclear mouse status
     graphwin->clickX = 0;
     graphwin->clickY = 0;
@@ -4745,8 +4742,7 @@ Interpreter::execByteCode() {
                     stack->pushint(0);
 #else
                     mymutex->lock();
-                    stack->pushint(lastKey);
-                    lastKey = 0;
+                    stack->pushint(basicKeyboard->getLastKey());
                     mymutex->unlock();
 #endif
                 }
@@ -4760,9 +4756,9 @@ Interpreter::execByteCode() {
                     mymutex->lock();
                     int keyCode = stack->popint();
                     if (keyCode==0) {
-                        stack->pushint(pressedKeys.size());
+                        stack->pushint(basicKeyboard->count());
                     } else {
-                        if (pressedKeys.count(keyCode)) {
+                        if (basicKeyboard->isPressed(keyCode)) {
                             stack->pushint(1);
                         } else {
                             stack->pushint(0);
