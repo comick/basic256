@@ -85,7 +85,7 @@ long Convert::getLong(DataElement *e) {
         if (e->type == T_INT) {
             i = e->intval;
         } else if (e->type == T_FLOAT) {
-            double f = e->floatval + (e->floatval>0?EPSILON:-EPSILON);
+            double f = e->floatval + (e->floatval>0.0?EPSILON:-EPSILON);
             if (f<LONG_MIN||f>LONG_MAX) {
                 if (error) error->q(ERROR_LONGRANGE);
             } else {
@@ -204,7 +204,9 @@ QString Convert::getString(DataElement *e, int ddigits) {
         } else if (e->type == T_INT) {
             s = QString::number(e->intval);
         } else if (e->type == T_FLOAT) {
-            if(e->floatval==0){
+            if(e->floatval >= -EPSILON && e->floatval <= EPSILON){
+                //this is almost 0.0
+                //If you add 0.1/-0.1 you will never get a perfect 0.0 again
                 if(floattail)
                     s = QStringLiteral("0") + decimalPoint + QStringLiteral("0");
                 else
@@ -219,16 +221,25 @@ QString Convert::getString(DataElement *e, int ddigits) {
                     if(replaceDecimalPoint){
                         s.replace('.', decimalPoint);
                     }
-                }else if (xp*2<-ddigits || (int)xp>=(ddigits-(floattail?1:0))) { //number too small or too big to show in original form
+                }else if (xp*2<-ddigits || (int)xp>=(ddigits-(floattail?1:0))) { //number is too small or too big to show in original form
                     s.setNum(e->floatval,'g',ddigits);
                     if(replaceDecimalPoint){
                         s.replace('.', decimalPoint);
                     }
                 } else {
-                    s.setNum(e->floatval,'f',ddigits - (xp>0.0?(int)xp+1:1));
+                    int d = ddigits - (xp>0.0?(int)xp+1:1);
+                    //double precision sucks
+                    //if we need to print more than 7 decimals there are chances to print numbers as 2.300000001 instead of 2.3
+                    if(d>7){
+                        s.setNum(e->floatval,'f',7);
+                        if(!s.endsWith(QStringLiteral("0"))) // we cannot reduce it
+                            s.setNum(e->floatval,'f',d);
+                    }else{
+                        s.setNum(e->floatval,'f',d);
+                    }
                     if (s.contains('.',Qt::CaseInsensitive)) {
-                        while(s.endsWith("0")) s.chop(1);
-                        if(s.endsWith('.')){
+                        while(s.endsWith(QStringLiteral("0"))) s.chop(1);
+                        if(s.endsWith(QStringLiteral("."))){
                             s.chop(1);
                             if(floattail)
                                 s.append(decimalPoint + '0');
