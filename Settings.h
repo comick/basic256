@@ -154,6 +154,10 @@
 	#define SETTINGSGROUPHIST "SaveHistory"
     #define SETTINGSGROUPHISTN 10
 
+    // Graphics window zoom
+    #define SETTINGSZOOM "View/Zoom"
+    #define SETTINGSZOOMDEFAULT 1.0
+
 
 
     // You need an SETTINGS; statement when you are using settings in a function

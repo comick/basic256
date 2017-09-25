@@ -203,7 +203,7 @@ class Interpreter : public QThread
         void varWinAssign(Variables**, int, int, int);
         void varWinDropLevel(int);
         void varWinDimArray(Variables**, int, int, int);
-        void mainWindowsResize(int, int, int);
+        void resizeGraphWindow(int, int, qreal);
         void mainWindowsVisible(int, bool);
         void dialogAlert(QString);
         void dialogConfirm(QString, int);

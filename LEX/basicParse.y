@@ -1401,9 +1401,13 @@ fastgraphicsstmt:
 
 graphsizestmt:
 			B256GRAPHSIZE args_ee {
+                                addFloatOp(OP_PUSHFLOAT, 1.0);
 				addOp(OP_GRAPHSIZE);
 			}
-			;
+                        | B256GRAPHSIZE args_eee {
+                                addOp(OP_GRAPHSIZE);
+                        }
+                        ;
 
 refreshstmt:
 			B256REFRESH args_none {
@@ -3660,10 +3664,10 @@ expr:
                         | B256WARNING_ARRAYELEMENT args_none { addIntOp(OP_PUSHINT, WARNING_ARRAYELEMENT); }
                         | B256WARNING_REFNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_REFNOTASSIGNED); }
                         | B256WARNING_STRING2NOTE args_none { addIntOp(OP_PUSHINT, WARNING_STRING2NOTE); }
-			| B256TYPEOF '(' expr ')' {
+                        | B256TYPEOF '(' expr ')' {
 				addOp(OP_TYPEOF);
 			}
-			| B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
+                        | B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
 			| B256TYPE_INT args_none { addIntOp(OP_PUSHINT, T_INT); }
 			| B256TYPE_FLOAT args_none { addIntOp(OP_PUSHINT, T_FLOAT); }
 			| B256TYPE_STRING args_none { addIntOp(OP_PUSHINT, T_STRING); }

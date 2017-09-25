@@ -104,7 +104,7 @@ RunController::RunController() {
 
     //QObject::connect(i, SIGNAL(executeSystem(QString)), this, SLOT(executeSystem(QString)));
     QObject::connect(i, SIGNAL(goutputReady()), this, SLOT(goutputReady()));
-    QObject::connect(i, SIGNAL(mainWindowsResize(int, int, int)), this, SLOT(mainWindowsResize(int, int, int)));
+    QObject::connect(i, SIGNAL(resizeGraphWindow(int, int, qreal)), this, SLOT(resizeGraphWindow(int, int, qreal)));
     QObject::connect(i, SIGNAL(mainWindowsVisible(int, bool)), this, SLOT(mainWindowsVisible(int, bool)));
     QObject::connect(i, SIGNAL(outputReady(QString)), this, SLOT(outputReady(QString)));
     QObject::connect(i, SIGNAL(outputError(QString)), this, SLOT(outputError(QString)));
@@ -550,8 +550,8 @@ RunController::mainWindowsVisible(int w, bool v) {
     }
 }
 
-void
-RunController::mainWindowsResize(int w, int width, int height) {
+/*
+void RunController::mainWindowsResize(int w, int width, int height) {
     // only resize graphics window now - may add other windows later
     mymutex->lock();
     if (w==1) graphwin->resize(width, height);
@@ -559,7 +559,14 @@ RunController::mainWindowsResize(int w, int width, int height) {
     waitCond->wakeAll();
     mymutex->unlock();
 }
+*/
 
+void RunController::resizeGraphWindow(int width, int height, qreal scale) {
+    mymutex->lock();
+    graphwin->resize(width, height, scale);
+    waitCond->wakeAll();
+    mymutex->unlock();
+}
 
 void
 RunController::dialogAlert(QString prompt) {

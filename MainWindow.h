@@ -120,6 +120,14 @@ public:
 	QAction *main_toolbar_visible_act;
 	QAction *outwin_toolbar_visible_act;
 	QAction *graphwin_toolbar_visible_act;
+    QMenu * viewmenu_zoom;
+    QActionGroup *viewmenu_zoom_group;
+    QAction *viewmenu_zoom_1_4;
+    QAction *viewmenu_zoom_1_2;
+    QAction *viewmenu_zoom_1_1;
+    QAction *viewmenu_zoom_2_1;
+    QAction *viewmenu_zoom_3_1;
+    QAction *viewmenu_zoom_4_1;
 
 	// run menu
 	QMenu *runmenu;
@@ -217,6 +225,7 @@ private slots:
     void setCurrentEditorTab(BasicEdit*);
     void saveAll();
     void updateBreakPointsAction();
+    void zoomGroupActionEvent(QAction*);
 
 #ifndef ANDROID
     void sourceforgeReplyFinished(QNetworkReply* reply);

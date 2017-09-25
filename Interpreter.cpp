@@ -834,11 +834,11 @@ Interpreter::initialize() {
     double_random_max = (double) RAND_MAX * (double) RAND_MAX + (double) RAND_MAX + 1.0;
     currentLine = 1;
     includeFileNumber = 0;
-    emit(mainWindowsResize(1, 300, 300));
+    emit(resizeGraphWindow(GSIZE_INITIAL_WIDTH, GSIZE_INITIAL_HEIGHT, 1.0));
 
     painter = new QPainter();
     painter_custom_font_flag = false;
-    setGraph(""); //after mainWindowsResize
+    setGraph(""); //after resizeGraphWindow()
     defaultfontfamily = painter->font().family();
     defaultfontpointsize = painter->font().pointSize();
     defaultfontweight = painter->font().weight();
@@ -4627,6 +4627,7 @@ Interpreter::execByteCode() {
                 break;
 
                 case OP_GRAPHSIZE: {
+                    qreal scale = stack->popfloat();
                     int height = stack->popint();
                     int width = stack->popint();
 
@@ -4638,15 +4639,13 @@ Interpreter::execByteCode() {
                         //change graph size if current graph is on screen (it may be printing also)
                         if(drawingOnScreen) painter->end();
                         mymutex->lock();
-                        emit(mainWindowsResize(1, width, height));
+                        emit(resizeGraphWindow(width, height, scale));
                         waitCond->wait(mymutex);
                         mymutex->unlock();
                         if(drawingOnScreen) setPainterTo(graphwin->image);
                         force_redraw_all_sprites_next_time();
-                        waitForGraphics();
                     }else{
-                        QImage tmp = QImage(width, height, QImage::Format_ARGB32);
-                        tmp.fill(Qt::transparent);
+                        QImage tmp = images[drawto]->copy(0,0,width,height);
                         if(!printing){
                             painter->end();
                             images[drawto]->swap(tmp);

@@ -54,7 +54,7 @@ class RunController : public QObject
   void outputError(QString text);
   void outputClear();
   void goutputReady();
-  void mainWindowsResize(int, int, int);
+  void resizeGraphWindow(int, int, qreal);
   void startDebug();
   void debugNextStep();
   void startRun();

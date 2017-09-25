@@ -247,6 +247,45 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     varwin_dock->setActionCheck(varwin_visible_act);
     varwin_visible_act->setChecked(SETTINGSVARVISIBLEDEFAULT);
 
+    // Graphics Grid Lines
+    viewmenu->addSeparator();
+    graph_grid_visible_act = viewmenu->addAction(basicIcons->gridIcon, QObject::tr("Graphics Window Grid &Lines"));
+    graph_grid_visible_act->setCheckable(true);
+    graph_grid_visible_act->setChecked(SETTINGSGRAPHGRIDLINESDEFAUT);
+    graphwin->slotGridLines(SETTINGSGRAPHGRIDLINESDEFAUT);
+
+    // Graphics Zoom
+    double z = graphwin->getZoom();
+    viewmenu_zoom = viewmenu->addMenu(basicIcons->zoomInIcon, QObject::tr("Graphics Window &Zoom"));
+    viewmenu_zoom_group = new QActionGroup(this);
+    viewmenu_zoom_group->setExclusive(true);
+    viewmenu_zoom_1_4 = viewmenu_zoom_group->addAction(QObject::tr("1:4 (quarter)"));
+    viewmenu_zoom_1_4->setCheckable(true);
+    viewmenu_zoom_1_4->setChecked(z==0.25);
+    viewmenu_zoom_1_4->setData(0.25);
+    viewmenu_zoom_1_2 = viewmenu_zoom_group->addAction(QObject::tr("1:2 (half)"));
+    viewmenu_zoom_1_2->setCheckable(true);
+    viewmenu_zoom_1_2->setChecked(z==0.5);
+    viewmenu_zoom_1_2->setData(0.5);
+    viewmenu_zoom_1_1 = viewmenu_zoom_group->addAction(QObject::tr("1:1 (original)"));
+    viewmenu_zoom_1_1->setCheckable(true);
+    viewmenu_zoom_1_1->setChecked(z==1.0);
+    viewmenu_zoom_1_1->setData(1.0);
+    viewmenu_zoom_2_1 = viewmenu_zoom_group->addAction(QObject::tr("2:1 (double)"));
+    viewmenu_zoom_2_1->setCheckable(true);
+    viewmenu_zoom_2_1->setChecked(z==2.0);
+    viewmenu_zoom_2_1->setData(2.0);
+    viewmenu_zoom_3_1 = viewmenu_zoom_group->addAction(QObject::tr("3:1 (triple)"));
+    viewmenu_zoom_3_1->setCheckable(true);
+    viewmenu_zoom_3_1->setChecked(z==3.0);
+    viewmenu_zoom_3_1->setData(3.0);
+    viewmenu_zoom_4_1 = viewmenu_zoom_group->addAction(QObject::tr("4:1 (quadruple)"));
+    viewmenu_zoom_4_1->setCheckable(true);
+    viewmenu_zoom_4_1->setChecked(z==4.0);
+    viewmenu_zoom_4_1->setData(4.0);
+    viewmenu_zoom->addActions(viewmenu_zoom_group->actions());
+
+
 
     // Editor and Output font and Editor settings
     viewmenu->addSeparator();
@@ -254,13 +293,6 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     edit_whitespace_act = viewmenu->addAction(QObject::tr("Show &Whitespace Characters"));
     edit_whitespace_act->setCheckable(true);
     edit_whitespace_act->setChecked(SETTINGSEDITWHITESPACEDEFAULT);
-
-    // Graphics Grid Lines
-    viewmenu->addSeparator();
-    graph_grid_visible_act = viewmenu->addAction(basicIcons->gridIcon, QObject::tr("Graphics Window Grid &Lines"));
-    graph_grid_visible_act->setCheckable(true);
-    graph_grid_visible_act->setChecked(SETTINGSGRAPHGRIDLINESDEFAUT);
-    graphwin->slotGridLines(SETTINGSGRAPHGRIDLINESDEFAUT);
 
     // Toolbars
     viewmenu->addSeparator();
@@ -398,6 +430,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	QObject::connect(outwin_toolbar_visible_act, SIGNAL(toggled(bool)), outwin_widget, SLOT(slotShowToolBar(const bool)));
 
 	QObject::connect(varwin_visible_act, SIGNAL(triggered(bool)), varwin_dock, SLOT(setVisible(bool)));
+    QObject::connect(viewmenu_zoom_group, SIGNAL(triggered(QAction*)), this, SLOT(zoomGroupActionEvent(QAction*)));
 
 
 
@@ -524,6 +557,9 @@ void MainWindow::saveCustomizations() {
 
     // font
     settings.setValue(SETTINGSFONT + QString::number(guiState), editorFont.toString());
+
+    // zoom
+    settings.setValue(SETTINGSZOOM, QString::number(graphwin->getZoom()));
 }
 
 MainWindow::~MainWindow() {
@@ -1317,4 +1353,8 @@ void MainWindow::updateBreakPointsAction(){
     BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
     if(e) val = e->isBreakPoint();
     clearbreakpointsact->setEnabled(val);
+}
+
+void MainWindow::zoomGroupActionEvent(QAction* a){
+    graphwin->slotSetZoom(a->data().toDouble());
 }

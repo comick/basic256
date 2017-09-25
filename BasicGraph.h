@@ -61,11 +61,13 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
 
 
  public slots:
-  void resize(int, int);
+  void resize(int, int, qreal);
   void slotGridLines(bool);
   void slotCopy();
   void slotPrint();
   void slotClear();
+  void slotSetZoom(double);
+  double getZoom();
 
  protected:
   void paintEvent(QPaintEvent *);
@@ -80,8 +82,15 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
  private:
   int gwidth;
   int gheight;
+  qreal gscale;
+  qreal gzoom;
+  qreal oldzoom;
   bool gridlines;		// show the grid lines or not
   void drawGridLines();
+  QTransform gtransform;
+  QTransform gtransforminverted;
+  void setTrasformationMaps();
+  void resizeWindowToFitContent();
 };
 
 
