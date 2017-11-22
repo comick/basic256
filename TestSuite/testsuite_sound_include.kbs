@@ -24,20 +24,20 @@ call q("did the computer say 'ten'")
 l = msec
 sound 440,500
 l = msec - l
-call npercent("note play for 500 MS", 500, l, .20)
+call npercent("note play for 500 MS", 500, l, .25)
 call q("did a half second sound play")
 
 l = msec
 sound {440,200,220,100,300,200}
 l = msec - l
-call npercent("note play for 500 MS", 500, l, .20)
+call npercent("note play for 500 MS", 500, l, .25)
 call q("did three sounds play from a list")
 
 c = {440,200,220,100,300,200}
 l = msec
 sound c[]
 l = msec - l
-call npercent("note play for 500 MS", 500, l, .20)
+call npercent("note play for 500 MS", 500, l, .25)
 call q("did same three sounds play from an array assigned a list")
 
 a = {261,2000}

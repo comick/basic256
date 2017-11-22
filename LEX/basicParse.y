@@ -188,6 +188,7 @@
             // Parameter nr will hold the number of ops of which we are interested (to grab)
             // Function will return the number of ops grabbed.
             // This is needed to safe look backward for ops (for compressing code)
+            int f;
             if(nr<=0 || nr>10) return 0;
             if(nr==1){
                 if(wordCode_lastOpOffset == wordOffset){
@@ -202,7 +203,7 @@
                 unsigned int index = wordCode_lastLineOffset;
                 while(index<wordOffset){
                     if(count<nr) count++;
-                    for(int f = nr-1; f>0; f--) wordCode_lastOpsTable[f]=wordCode_lastOpsTable[f-1];
+                    for(f = nr-1; f>0; f--) wordCode_lastOpsTable[f]=wordCode_lastOpsTable[f-1];
                     wordCode_lastOpsTable[0]=index;
                     int op = wordCode[index];
                     index++; //skip op
@@ -361,10 +362,11 @@
 	}
 
         int initializeBasicParse() {
+                int f;
                 maxsymtable = 2048;
                 symtable = malloc(maxsymtable * sizeof(char*));
                 if(symtable)
-                    for(int f=0;f<maxsymtable;f++) symtable[f]=NULL;
+                    for(f=0;f<maxsymtable;f++) symtable[f]=NULL;
                 symtableaddress = malloc(maxsymtable * sizeof(int));
                 symtableaddresstype = malloc(maxsymtable * sizeof(int));
                 symtableaddressargs = malloc(maxsymtable * sizeof(int));

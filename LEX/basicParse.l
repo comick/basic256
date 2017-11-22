@@ -1251,7 +1251,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 
                 int addnewfilename = 1;
 
-                for(int f=1;f<include_filenames_counter;f++){
+                int f;
+                for(f=1;f<include_filenames_counter;f++){
                     if(strcmp(filename, include_filenames[f])==0){
                         filenumber = f;
                         free(filename);
