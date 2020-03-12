@@ -7,26 +7,16 @@
 #include "Error.h"
 #include "DataElement.h"
 
-#define VARIABLE_MAXARRAYELEMENTS 1048576
 #define MAX_RECURSE_LEVELS	1048576
 
-
-class VariableArrayPart
-{
-    public:
-        int xdim;
-        int ydim;
-        std::vector<DataElement> datavector;
-};
 
 class Variable
 {
     public:
-        Variable(const int, const int);
+        Variable();
         ~Variable();
 
-        DataElement data;
-        VariableArrayPart *arr;
+        DataElement *data;
 };
 
 
@@ -34,7 +24,7 @@ class Variables: public QObject
 {
     Q_OBJECT;
     public:
-        Variables(int, Error *);
+        Variables(int);
         ~Variables();
         //
         QString debug();
@@ -46,31 +36,22 @@ class Variables: public QObject
         //
         Variable* get(const int, int);
         Variable* get(const int);
-        Variable* getRawVariable(const int);
+        Variable* getAt(const int, const int);
+        Variable* getAt(const int);
         DataElement *getdata(int);
-        DataElement *getdata(DataElement* e);
+        DataElement *getdata(int, const bool);
         void setdata(const int, DataElement *);
         void setdata(int, long);
         void setdata(int, double);
         void setdata(int, QString);
         void unassign(const int);
         //
-        void copyarray(const int varnum1, DataElement *e);
-        //
-        void arraydim(const int, const int, const int, const bool);
-        DataElement* arraygetdata(const int, const int, const int);
-        void arraysetdata(const int, const int, const int, DataElement *);
-        void arrayunassign(const int, const int, const int);
-        //
-        int arraysize(const int);
-        int arraysizerows(const int);
-        int arraysizecols(const int);
-        //
         void makeglobal(const int);
 
 
     private:
-        Error *error;
+        int real_varnum;		// set by get and getAt for the actual variable number and level returned (deref/global)
+        int real_level;
         const int numsyms;		// size of the symbol table
         int recurselevel;
         int maxrecurselevel;

@@ -48,3 +48,5 @@ class Error
  		int typeconverror;
  		int varnotassignederror;
 };
+
+extern Error *error;

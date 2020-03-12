@@ -26,7 +26,7 @@ class Convert
 {
     public:
 
-        Convert(Error *, QLocale *);
+        Convert(QLocale *);
         ~Convert();
 
         void setdecimaldigits(int);
@@ -45,7 +45,6 @@ class Convert
         int compareFloats(double, double);
 
     private:
-        Error *error;
         QLocale *locale;
         QString isnumericexpression;
         QRegularExpression isnumeric;

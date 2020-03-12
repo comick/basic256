@@ -11,6 +11,7 @@ INCLUDEPATH					+=	.
 QMAKE_CXXFLAGS				+=	-g
 QMAKE_CXXFLAGS				+=	-std=c++11
 CONFIG						+=	 qt debug_and_release
+CONFIG						+=	 console
 OBJECTS_DIR					=	tmp/obj
 MOC_DIR						=	tmp/moc
 

@@ -38,8 +38,8 @@ public:
     void clear();
 
 public slots:
-    void varWinAssign(Variables **, int);
-    void varWinAssign(Variables **, int, int, int);
+    void varWinAssign(Variables **, int, int);
+    void varWinAssign(Variables **, int, int, int, int);
     void varWinDropLevel(int);
 
 private:

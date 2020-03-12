@@ -1,11 +1,11 @@
 #include "Convert.h"
+#include "Error.h"
 
 #include <string>
 
 
 
-Convert::Convert(Error *e, QLocale *applocale) {
-    error = e;
+Convert::Convert(QLocale *applocale) {
     SETTINGS;
     decimaldigits = settings.value(SETTINGSDECDIGS, SETTINGSDECDIGSDEFAULT).toInt();
     if(decimaldigits < SETTINGSDECDIGSMIN || decimaldigits > SETTINGSDECDIGSMAX)
@@ -62,9 +62,9 @@ int Convert::getBool(DataElement *e) {
         } else if (e->type == T_STRING) {
             return ((e->stringval.length()!=0)?1:0);
         } else if (e->type==T_UNASSIGNED) {
-            if (error) error->q(ERROR_VARNOTASSIGNED,e->intval);
+            error->q(ERROR_VARNOTASSIGNED,e->intval);
         } else if (e->type==T_ARRAY) {
-            if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+            error->q(ERROR_ARRAYINDEXMISSING,e->intval);
         }
     }
     return 0;
@@ -73,7 +73,7 @@ int Convert::getBool(DataElement *e) {
 int Convert::getInt(DataElement *e) {
     long l=getLong(e);
     if (l<INT_MIN||l>INT_MAX) {
-        if (error) error->q(ERROR_INTEGERRANGE);
+        error->q(ERROR_INTEGERRANGE);
         l = 0;
     }
     return (int) l;
@@ -87,7 +87,7 @@ long Convert::getLong(DataElement *e) {
         } else if (e->type == T_FLOAT) {
             double f = e->floatval + (e->floatval>0.0?EPSILON:-EPSILON);
             if (f<LONG_MIN||f>LONG_MAX) {
-                if (error) error->q(ERROR_LONGRANGE);
+                error->q(ERROR_LONGRANGE);
             } else {
                 i = (long) f;
             }
@@ -97,15 +97,15 @@ long Convert::getLong(DataElement *e) {
                 i = e->stringval.toLong(&ok);
                 if(!ok) {
                     i = 0;
-                    if (error) error->q(ERROR_TYPECONV);
+                    error->q(ERROR_TYPECONV);
                 }
-            } else if (error){
+            } else {
                 error->q(ERROR_TYPECONV);
             }
         } else if (e->type==T_ARRAY) {
-            if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+            error->q(ERROR_ARRAYINDEXMISSING,e->intval);
         } else if (e->type==T_UNASSIGNED) {
-            if (error) error->q(ERROR_VARNOTASSIGNED, e->intval);
+            error->q(ERROR_VARNOTASSIGNED, e->intval);
         }
     }
     return i;
@@ -128,15 +128,15 @@ double Convert::getFloat(DataElement *e) {
                 }
                 if(!ok) {
                     f = 0.0;
-                    if (error) error->q(ERROR_TYPECONV);
+                    error->q(ERROR_TYPECONV);
                 }
-            }else if (error){
+            }else {
                 error->q(ERROR_TYPECONV);
             }
         } else if (e->type==T_ARRAY) {
-            if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+            error->q(ERROR_ARRAYINDEXMISSING,e->intval);
         } else if (e->type==T_UNASSIGNED) {
-            if (error) error->q(ERROR_VARNOTASSIGNED,e->intval);
+            error->q(ERROR_VARNOTASSIGNED,e->intval);
         }
     }
     return f;
@@ -177,16 +177,16 @@ double Convert::getMusicalNote(DataElement *e) {
                     }
                     if(!ok) {
                         f = 0.0;
-                        if (error) error->q(ERROR_STRING2NOTE);
+                        error->q(ERROR_STRING2NOTE);
                     }
-                }else if (error){
+                }else {
                     error->q(ERROR_STRING2NOTE);
                 }
             }
             } else if (e->type==T_UNASSIGNED) {
-                if (error) error->q(ERROR_VARNOTASSIGNED,e->intval);
+                error->q(ERROR_VARNOTASSIGNED,e->intval);
             } else if (e->type==T_ARRAY) {
-                if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+                error->q(ERROR_ARRAYINDEXMISSING,e->intval);
             }
         }
     return f;
@@ -252,9 +252,9 @@ QString Convert::getString(DataElement *e, int ddigits) {
                 }
             }
         } else if (e->type==T_ARRAY) {
-            if (error) error->q(ERROR_ARRAYINDEXMISSING,e->intval);
+            error->q(ERROR_ARRAYINDEXMISSING,e->intval);
         } else if (e->type==T_UNASSIGNED) {
-            if (error) error->q(ERROR_VARNOTASSIGNED, e->intval);
+           error->q(ERROR_VARNOTASSIGNED, e->intval);
         }
     }
     return s;

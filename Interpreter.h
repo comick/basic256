@@ -199,8 +199,8 @@ class Interpreter : public QThread
         void speakWords(QString);
         void goToLine(int);
         void seekLine(int);
-        void varWinAssign(Variables**, int);
-        void varWinAssign(Variables**, int, int, int);
+        void varWinAssign(Variables**, int, int);
+        void varWinAssign(Variables**, int, int, int, int);
         void varWinDropLevel(int);
         void varWinDimArray(Variables**, int, int, int);
         void resizeGraphWindow(int, int, qreal);
@@ -233,7 +233,6 @@ class Interpreter : public QThread
         void netSockCloseAll();
         Variables *variables;
         Stack *stack;
-        Error *error;
         bool isError; //flag set if program stops because of an error
         Convert *convert;
         QIODevice **filehandle;

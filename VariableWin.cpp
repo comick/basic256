@@ -32,7 +32,7 @@ VariableWin::VariableWin () {
     resizeColumnToContents(COLUMNTYPE);
     sortByColumn(COLUMNNAME, Qt::AscendingOrder);
     setSortingEnabled(true);
-    convert = new Convert(NULL, mainwin->locale);
+    convert = new Convert(mainwin->locale);
     //hold translations to speed up things
     tr_stringType = tr("Type: String");
     tr_integerType = tr("Type: Integer");
@@ -96,20 +96,20 @@ void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
     }
 }
 
-void VariableWin::varWinAssign(Variables **variables, int varnum, int x, int y) {
+void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int x, int y) {
     QTreeWidgetItem *rowItem = NULL;
     QString name;
     DataElement *d;
 
     if(*variables){
-        Variable *v = (*variables)->getRawVariable(varnum);
-        name = QString::number(v->data.level) + QStringLiteral(" - ") + symtable[varnum];
-        d = (*variables)->arraygetdata(varnum, x, y);
+        Variable *v = (*variables)->getAt(varnum, level);
+        name = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
+
 
         // find either name[y] or name[x,y]
         QString tname;
-        if(v->arr){
-            if(v->arr->xdim>1){
+        if(v->data->type==T_ARRAY){
+            if(v->data->arraysizecols()>1){
                 tname = name + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]");
             }else{
                 tname = name + QStringLiteral("[") + QString::number(y) + QStringLiteral("]");
@@ -119,18 +119,19 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int x, int y) 
         }
 
         // set the data and data type
+        d = v->data->arraygetdata(x, y);
         setTypeAndValue(rowItem, d);
     }
 }
 
-void VariableWin::varWinAssign(Variables **variables, int varnum) {
+void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
     // refresh variable/array content
     TreeWidgetItem *rowItem = NULL;
     QString name;
 
     if(*variables){
-        Variable *v = (*variables)->getRawVariable(varnum);
-        name = QString::number(v->data.level) + QStringLiteral(" - ") + symtable[varnum];
+        Variable *v = (*variables)->getAt(varnum, level);
+        name = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
 
         // see if v is on the list and change value or add
         QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
@@ -150,18 +151,18 @@ void VariableWin::varWinAssign(Variables **variables, int varnum) {
             rowItem = new TreeWidgetItem();
             rowItem->setText(COLUMNNAME, name);
             //set correct name in format 0000000name to correctly arrange and avoid: "1 - a", "120 - a", "2 - a"
-            QString id = QString("%1").arg(v->data.level, 7, 10, QChar('0')) + symtable[varnum];
+            QString id = QString("%1").arg(v->data->level, 7, 10, QChar('0')) + symtable[varnum];
             rowItem->setData(COLUMNNAME, Qt::UserRole + 1, id);
             addTopLevelItem(rowItem);
         }
 
-        if(v->data.type!=T_ARRAY){
+        if(v->data->type!=T_ARRAY){
             // regular variable
-            setTypeAndValue(rowItem, &v->data);
+            setTypeAndValue(rowItem, v->data);
         }else{
             // array
-            const int arraylenx = v->arr->xdim;
-            const int arrayleny = v->arr->ydim;
+            const int arraylenx = v->data->arraysizerows();
+            const int arrayleny = v->data->arraysizecols();;
             rowItem->setText(COLUMNTYPE, QStringLiteral("A"));
             rowItem->setData(COLUMNTYPE, Qt::ToolTipRole, tr_arrayType);
             if(arraylenx > 1){
@@ -178,7 +179,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum) {
                     //allow sorting in correct order (by index)
                     childItem->setData(COLUMNNAME, Qt::UserRole + 1, y);
                     //direct access to array's data
-                    setTypeAndValue(childItem, &v->arr->datavector[y]);
+                    setTypeAndValue(childItem, v->data->arraygetdata(arraylenx,y,false));
                     rowItem->addChild(childItem);
                 }
             } else {
@@ -191,7 +192,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum) {
                         int index=x*arrayleny+y;
                         childItem->setData(COLUMNNAME, Qt::UserRole + 1, index);
                         //direct access to array's data
-                        setTypeAndValue(childItem, &v->arr->datavector[index]);
+                        setTypeAndValue(childItem, v->data->arraygetdata(x,y,false));
                         rowItem->addChild(childItem);
                     }
                 }
@@ -213,6 +214,6 @@ void VariableWin::clear() {
     // when window is cleared (Interpreter restarts) we reload convert settings
     // to make sure that convert will reflect the current settings (user may change those any time)
     delete (convert);
-    convert = new Convert(NULL, mainwin->locale);
+    convert = new Convert(mainwin->locale);
     QTreeWidget::clear();
 }

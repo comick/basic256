@@ -25,10 +25,9 @@
 class Stack
 {
 	public:
-		Stack(Error *, Convert *, QLocale *);
+		Stack(Convert *, QLocale *);
 		~Stack();
 
-		Error *error;
 		Convert *convert;
 		void pushdataelement(DataElement*);
 		void pushbool(bool);

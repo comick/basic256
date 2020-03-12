@@ -652,13 +652,6 @@ functionvariable:
                                 args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARARRAY; numargs++;
 				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
 			}
-                        // Warning, but keep compatibility with older programs
-                        //You should use REF() when passing arguments, not into SUBROUTINE/FUNCTION definition.
-                        | B256REF '(' args_v ')' {
-                                args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARARRAY; numargs++;
-                                newParseWarning(COMPWARNING_DEPRECATED_REF);
-                                //printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
-                        }
 			;
 
 functionvariablelist:
@@ -1279,11 +1272,9 @@ whilestmt: 		B256WHILE {
 letstmt:	B256LET assign
 			| B256LET arrayassign
 			| B256LET arrayelementassign
-                        | B256LET referenceassign
 			| assign
 			| arrayassign
 			| arrayelementassign
-                        | referenceassign
 			;
 
 dimstmt: 	B256DIM args_a {
@@ -1422,16 +1413,6 @@ endstmt: 	B256END args_none {
 			}
 			;
 
-/* assign a reference to a variable */
-referenceassign:
-                        args_v '=' refexpr {
-                                addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
-                        }
-                        | array_empty '=' refexpr {
-                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
-                        }
-                        ;
-
 /* assign an expression to a single array element */
 arrayelementassign:
 			args_a '=' expr {
@@ -1525,19 +1506,19 @@ arrayassign:
 			| array_empty '=' listoflists {
 				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
 			}
-                        | array_empty '=' array_empty {
-                            addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]);
-                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
-                        }
-                        | array_empty '=' args_v {
-                            addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-                            addIntOp(OP_ASSIGNARRAY, varnumber[--nvarnumber]);
-                        }
-                        | args_v '=' array_empty {
-                            addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]);
-                            addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
-                        }
-                        ;
+			| array_empty '=' array_empty {
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| array_empty '=' args_v {
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			| args_v '=' array_empty {
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+			}
+			;
 
 /* assign an expression to a normal variable */
 assign:
@@ -1647,20 +1628,20 @@ gosubstmt:	B256GOSUB args_v {
 					errorcode = COMPERR_FUNCTIONGOTO;
 					return -1;
 				}
-                                addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+				addIntOp(OP_GOSUB, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			;
 
 callstmt:	B256CALL args_v '(' ')' {
-                                addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with SUBROUTINE definition
-                                addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+				addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with SUBROUTINE definition
+				addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
-                        | B256CALL args_v '(' callexprlist ')' {
-                                addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with SUBROUTINE definition
-                                addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+			| B256CALL args_v '(' callexprlist ')' {
+					addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with SUBROUTINE definition
+					addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
+					addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			;
 
@@ -1673,14 +1654,14 @@ offerrorstmt:
 onerrorstmt:
 			B256ONERROR args_v {
 				addIntOp(OP_ONERRORGOSUB, varnumber[--nvarnumber]);
-                        }
-                        | B256ONERROR args_v '(' ')' {
-                            addIntOp(OP_ONERRORCALL, varnumber[--nvarnumber]);
-                        }
-                        | B256ONERROR args_v '(' callexprlist ')' {
-                            errorcode = COMPERR_ONERRORCALL;
-                            return -1;
-                        }
+			}
+			| B256ONERROR args_v '(' ')' {
+				addIntOp(OP_ONERRORCALL, varnumber[--nvarnumber]);
+			}
+			| B256ONERROR args_v '(' callexprlist ')' {
+				errorcode = COMPERR_ONERRORCALL;
+				return -1;
+			}
 			;
 
 returnstmt:	B256RETURN args_none {
@@ -2731,31 +2712,30 @@ functionstmt:
 				//
 				// $2 is the symbol for the function - add the start to the label table
 				functionDefSymbol = varnumber[--nvarnumber];
-                                //
-                                //check if name of function is already used by a label, subroutine or another function
-                                if (symtableaddress[functionDefSymbol] != -1) {
-                                        errorcode = COMPERR_LABELREDEFINED;
-                                        return -1;
-                                }
-                                //
+				//
+				//check if name of function is already used by a label, subroutine or another function
+				if (symtableaddress[functionDefSymbol] != -1) {
+						errorcode = COMPERR_LABELREDEFINED;
+						return -1;
+				}
+				//
 				// create jump around function definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this function
 				symtableaddress[functionDefSymbol] = wordOffset;
-                                symtableaddresstype[functionDefSymbol] = ADDRESSTYPE_FUNCTION;
-                                newIf(linenumber, IFTABLETYPEFUNCTION, -1);
+				symtableaddresstype[functionDefSymbol] = ADDRESSTYPE_FUNCTION;
+				newIf(linenumber, IFTABLETYPEFUNCTION, -1);
 				//
-                                // store the number of the arguments required by FUNCTION
-                                // to check if number of arguments passed match definition when is called
-                                symtableaddressargs[functionDefSymbol] = numargs;
+				// store the number of the arguments required by FUNCTION
+				// to check if number of arguments passed match definition when is called
+				symtableaddressargs[functionDefSymbol] = numargs;
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
-                                                if (argstype[t]==ARGSTYPEVARARRAY) addIntOp(OP_ASSIGNARRAY, args[t]);
+						addIntOp(OP_ASSIGN, args[t]);
 					}
 				}
 				//
@@ -2776,31 +2756,30 @@ subroutinestmt:
 				//
 				// $2 is the symbol for the subroutine - add the start to the label table
 				subroutineDefSymbol = varnumber[--nvarnumber];
-                                //
-                                //check if name of subroutine is already used by a label, function or another subroutine
-                                if (symtableaddress[subroutineDefSymbol] != -1) {
-                                        errorcode = COMPERR_LABELREDEFINED;
-                                        return -1;
-                                }
-                                //
+				//
+				//check if name of subroutine is already used by a label, function or another subroutine
+				if (symtableaddress[subroutineDefSymbol] != -1) {
+						errorcode = COMPERR_LABELREDEFINED;
+						return -1;
+				}
+				//
 				// create jump around subroutine definition (use nextifid and 0 for jump after)
 				addIntOp(OP_GOTO, getInternalSymbol(nextifid,INTERNALSYMBOLEXIT));
 				//
 				// create the new if frame for this subroutine
 				symtableaddress[subroutineDefSymbol] = wordOffset;
-                                symtableaddresstype[subroutineDefSymbol] = ADDRESSTYPE_SUBROUTINE;
-                                newIf(linenumber, IFTABLETYPESUBROUTINE, -1);
+				symtableaddresstype[subroutineDefSymbol] = ADDRESSTYPE_SUBROUTINE;
+				newIf(linenumber, IFTABLETYPESUBROUTINE, -1);
 				//
-                                // store the number of the arguments required by SUBROUTINE
-                                // to check if number of arguments passed match definition when is called
-                                symtableaddressargs[subroutineDefSymbol] = numargs;
+				// store the number of the arguments required by SUBROUTINE
+				// to check if number of arguments passed match definition when is called
+				symtableaddressargs[subroutineDefSymbol] = numargs;
 				//
 				// add the assigns of the function arguments
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						if (argstype[t]==ARGSTYPEVALUE) addIntOp(OP_ASSIGN, args[t]);
-                                                if (argstype[t]==ARGSTYPEVARARRAY) addIntOp(OP_ASSIGNARRAY, args[t]);
+						addIntOp(OP_ASSIGN, args[t]);
 					}
 				}
 				numargs=0;	// clear the list for next function
@@ -2838,7 +2817,7 @@ endfunctionstmt:
 endsubroutinestmt:
 		B256ENDSUBROUTINE {
 			if (numifs>0) {
-                                if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) {
+					if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) {
 					addOp(OP_DECREASERECURSE);
 					addOp(OP_RETURN);
 					//
@@ -3065,19 +3044,14 @@ callexprlist:
 /* USED ONLY IN CALLING Functions and subroutines */
 callexpr:
 			expr
-                        | array_empty  { addIntOp(OP_PUSHVARARRAY, varnumber[--nvarnumber]); }
-                        | refexpr
-                        ;
-			
-refexpr:
-                        B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
-                        | B256REF '(' array_empty ')' { addIntOp(OP_PUSHVARARRAYREF, varnumber[--nvarnumber]); }
-                        ;
+			| array_empty  { addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]); }
+			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			| B256REF '(' array_empty ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			;
 
 
 
 expr:
-
 			/* *** expressions that can ge EITHER numeric or string *** */
 			'(' expr ')'
 			| expr '+' expr {
@@ -3100,26 +3074,26 @@ expr:
 			| args_v '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
 			| args_v '(' callexprlist ')' {
 				// function call with arguments
-                                addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with FUNCTION definition
-                                addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+				addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with FUNCTION definition
+				addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| args_v '(' ')' {
 				// function call without arguments
-                                addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with FUNCTION definition
-                                addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
-                                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+				addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with FUNCTION definition
+				addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
+				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
 			| args_v {
-                                addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 			}
-                        | args_a {
+			| args_a {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-                        }
+			}
 
 
 
-                        /* *** numeric Experssions *** */
+			/* *** numeric Expressions *** */
 
 			| expr '-' expr {
 				addOp(OP_SUB);
@@ -3130,62 +3104,62 @@ expr:
 			| expr B256MOD expr {
 				addOp(OP_MOD);
 			}
-                        | expr B256MOD %prec B256UNARY{
-                            //safe compress INT% and FLOAT%
-                            if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
-                                unsigned int index=wordCode_lastOpsTable[0];
-                                if(wordCode[index]==OP_PUSHINT){
-                                    double val=((double)wordCode[index+1])/100.0;
-                                    wordOffset=index; // overwrite op
-                                    addFloatOp(OP_PUSHFLOAT, val);
-                                }else if(wordCode[index]==OP_PUSHFLOAT){
-                                    double val = (*((double *)(wordCode+index+1)))/100.0;
-                                    if(!isfinite(val)){
-                                        errorcode = COMPERR_NUMBERTOOLARGE;
-                                        return -1;
-                                    }
-                                    wordOffset=index; // overwrite op
-                                    addFloatOp(OP_PUSHFLOAT, val);
-                                }else{
-                                    addIntOp(OP_PUSHINT, 100);
-                                    addOp(OP_DIV);
-                                }
-                            }else{
-                                addIntOp(OP_PUSHINT, 100);
-                                addOp(OP_DIV);
-                            }
-                        }
-                        | expr B256INTDIV expr {
+			| expr B256MOD %prec B256UNARY{
+				//safe compress INT% and FLOAT%
+				if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
+					unsigned int index=wordCode_lastOpsTable[0];
+					if(wordCode[index]==OP_PUSHINT){
+						double val=((double)wordCode[index+1])/100.0;
+						wordOffset=index; // overwrite op
+						addFloatOp(OP_PUSHFLOAT, val);
+					}else if(wordCode[index]==OP_PUSHFLOAT){
+						double val = (*((double *)(wordCode+index+1)))/100.0;
+						if(!isfinite(val)){
+							errorcode = COMPERR_NUMBERTOOLARGE;
+							return -1;
+						}
+						wordOffset=index; // overwrite op
+						addFloatOp(OP_PUSHFLOAT, val);
+					}else{
+						addIntOp(OP_PUSHINT, 100);
+						addOp(OP_DIV);
+					}
+				}else{
+					addIntOp(OP_PUSHINT, 100);
+					addOp(OP_DIV);
+				}
+			}
+			| expr B256INTDIV expr {
 				addOp(OP_INTDIV);
 			}
 			| expr '/' expr {
 				addOp(OP_DIV);
 			}
 			| expr '^' expr { addOp(OP_EX); }
-                        | expr B256BINARYOR expr { addOp(OP_BINARYOR); }
-                        | expr B256BITSHIFTL expr { addOp(OP_BITSHIFTL); }
-                        | expr B256BITSHIFTR expr { addOp(OP_BITSHIFTR); }
-                        | B256BINARYNOT expr { addOp(OP_BINARYNOT); }
-                        | '-' expr %prec B256UNARY {
-                            //safe compress -INT and -FLOAT
-                            if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
-                                unsigned int index=wordCode_lastOpsTable[0];
-                                if(wordCode[index]==OP_PUSHINT){
-                                    int val=-wordCode[index+1];
-                                    wordOffset=index; // overwrite op
-                                    addIntOp(OP_PUSHINT, val);
-                                }else if(wordCode[index]==OP_PUSHFLOAT){
-                                    double val = - *((double *)(wordCode+index+1));
-                                    wordOffset=index; // overwrite op
-                                    addFloatOp(OP_PUSHFLOAT, val);
-                                }else{
-                                    addOp(OP_NEGATE);
-                                }
-                            }else{
-                                addOp(OP_NEGATE);
-                            }
-                        }
-                        | expr B256AND {
+			| expr B256BINARYOR expr { addOp(OP_BINARYOR); }
+			| expr B256BITSHIFTL expr { addOp(OP_BITSHIFTL); }
+			| expr B256BITSHIFTR expr { addOp(OP_BITSHIFTR); }
+			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
+			| '-' expr %prec B256UNARY {
+				//safe compress -INT and -FLOAT
+				if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
+					unsigned int index=wordCode_lastOpsTable[0];
+					if(wordCode[index]==OP_PUSHINT){
+						int val=-wordCode[index+1];
+						wordOffset=index; // overwrite op
+						addIntOp(OP_PUSHINT, val);
+					}else if(wordCode[index]==OP_PUSHFLOAT){
+						double val = - *((double *)(wordCode+index+1));
+						wordOffset=index; // overwrite op
+						addFloatOp(OP_PUSHFLOAT, val);
+					}else{
+						addOp(OP_NEGATE);
+					}
+				}else{
+					addOp(OP_NEGATE);
+				}
+			}
+			| expr B256AND {
 					addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
 					newIf(linenumber, IFTABLETYPEINTERNAL, -1);
 				} expr {
@@ -3209,24 +3183,24 @@ expr:
 			| expr '>' expr { addOp(OP_GT); }
 			| expr B256GTE expr { addOp(OP_GTE); }
 			| expr B256LTE expr { addOp(OP_LTE); }
-                        | '+' B256FLOAT %prec B256UNARY { // accept/eat unary plus only for numbers
-                            if(isfinite($2)){
-                                addFloatOp(OP_PUSHFLOAT, $2);
-                            }else{
-                                errorcode = COMPERR_NUMBERTOOLARGE;
-                                return -1;
-                            }
-                        }
-                        | B256FLOAT   {
-                            if(isfinite($1)){
-                                addFloatOp(OP_PUSHFLOAT, $1);
-                            }else{
-                                errorcode = COMPERR_NUMBERTOOLARGE;
-                                return -1;
-                            }
-                        }
-                        | '+' B256INTEGER %prec B256UNARY {addIntOp(OP_PUSHINT, $2); } // accept/eat unary plus only for numbers
-                        | B256INTEGER { addIntOp(OP_PUSHINT, $1); }
+			| '+' B256FLOAT %prec B256UNARY { // accept/eat unary plus only for numbers
+				if(isfinite($2)){
+					addFloatOp(OP_PUSHFLOAT, $2);
+				}else{
+					errorcode = COMPERR_NUMBERTOOLARGE;
+					return -1;
+				}
+			}
+			| B256FLOAT   {
+				if(isfinite($1)){
+					addFloatOp(OP_PUSHFLOAT, $1);
+				}else{
+					errorcode = COMPERR_NUMBERTOOLARGE;
+					return -1;
+				}
+			}
+			| '+' B256INTEGER %prec B256UNARY {addIntOp(OP_PUSHINT, $2); } // accept/eat unary plus only for numbers
+			| B256INTEGER { addIntOp(OP_PUSHINT, $1); }
 			| args_a B256ADD1 {
 				// a[b,c]++
 				addOp(OP_STACKDUP2);
@@ -3250,23 +3224,23 @@ expr:
 			| B256SUB1 args_a {
 				// --a[b,c]
 				addOp(OP_STACKDUP2);
-                                addIntOp(OP_SUB1ARRAY, varnumber[--nvarnumber]);
+				addIntOp(OP_SUB1ARRAY, varnumber[--nvarnumber]);
 				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
 			| args_v B256ADD1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-                                addIntOp(OP_ADD1VAR,varnumber[nvarnumber]);
-                        }
+				addIntOp(OP_ADD1VAR,varnumber[nvarnumber]);
+			}
 			| args_v B256SUB1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-                                addIntOp(OP_SUB1VAR,varnumber[nvarnumber]);
-                        }
+				addIntOp(OP_SUB1VAR,varnumber[nvarnumber]);
+			}
 			| B256ADD1 args_v {
-                                addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
+				addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
 			| B256SUB1 args_v {
-                                addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
+				addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
 			| B256TOINT '(' expr ')' { addOp(OP_INT); }
@@ -3338,72 +3312,72 @@ expr:
 			| B256CLICKX args_none { addOp(OP_CLICKX); }
 			| B256CLICKY args_none { addOp(OP_CLICKY); }
 			| B256CLICKB args_none { addOp(OP_CLICKB); }
-                        | B256CLEAR args_none { addIntOp(OP_PUSHINT, 0x00); }
-                        | B256BLACK args_none { addIntOp(OP_PUSHINT, 0xff000000); }
-                        | B256WHITE args_none { addIntOp(OP_PUSHINT, 0xffffffff); }
-                        | B256RED args_none { addIntOp(OP_PUSHINT, 0xffff0000); }
-                        | B256DARKRED args_none { addIntOp(OP_PUSHINT, 0xff800000); }
-                        | B256GREEN args_none { addIntOp(OP_PUSHINT, 0xff00ff00); }
-                        | B256DARKGREEN args_none { addIntOp(OP_PUSHINT, 0xff008000); }
-                        | B256BLUE args_none { addIntOp(OP_PUSHINT, 0xff0000ff); }
-                        | B256DARKBLUE args_none { addIntOp(OP_PUSHINT, 0xff000080); }
-                        | B256CYAN args_none { addIntOp(OP_PUSHINT, 0xff00ffff); }
-                        | B256DARKCYAN args_none { addIntOp(OP_PUSHINT, 0xff008080); }
-                        | B256PURPLE args_none { addIntOp(OP_PUSHINT, 0xffff00ff); }
-                        | B256DARKPURPLE args_none { addIntOp(OP_PUSHINT, 0xff800080); }
-                        | B256YELLOW args_none { addIntOp(OP_PUSHINT, 0xffffff00); }
-                        | B256DARKYELLOW args_none { addIntOp(OP_PUSHINT, 0xff808000); }
-                        | B256ORANGE args_none { addIntOp(OP_PUSHINT, 0xffff6600); }
-                        | B256DARKORANGE args_none { addIntOp(OP_PUSHINT, 0xffb03d00); }
-                        | B256GREY args_none { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
-                        | B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
+			| B256CLEAR args_none { addIntOp(OP_PUSHINT, 0x00); }
+			| B256BLACK args_none { addIntOp(OP_PUSHINT, 0xff000000); }
+			| B256WHITE args_none { addIntOp(OP_PUSHINT, 0xffffffff); }
+			| B256RED args_none { addIntOp(OP_PUSHINT, 0xffff0000); }
+			| B256DARKRED args_none { addIntOp(OP_PUSHINT, 0xff800000); }
+			| B256GREEN args_none { addIntOp(OP_PUSHINT, 0xff00ff00); }
+			| B256DARKGREEN args_none { addIntOp(OP_PUSHINT, 0xff008000); }
+			| B256BLUE args_none { addIntOp(OP_PUSHINT, 0xff0000ff); }
+			| B256DARKBLUE args_none { addIntOp(OP_PUSHINT, 0xff000080); }
+			| B256CYAN args_none { addIntOp(OP_PUSHINT, 0xff00ffff); }
+			| B256DARKCYAN args_none { addIntOp(OP_PUSHINT, 0xff008080); }
+			| B256PURPLE args_none { addIntOp(OP_PUSHINT, 0xffff00ff); }
+			| B256DARKPURPLE args_none { addIntOp(OP_PUSHINT, 0xff800080); }
+			| B256YELLOW args_none { addIntOp(OP_PUSHINT, 0xffffff00); }
+			| B256DARKYELLOW args_none { addIntOp(OP_PUSHINT, 0xff808000); }
+			| B256ORANGE args_none { addIntOp(OP_PUSHINT, 0xffff6600); }
+			| B256DARKORANGE args_none { addIntOp(OP_PUSHINT, 0xffb03d00); }
+			| B256GREY args_none { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
+			| B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
 			| B256PIXEL '(' expr ',' expr ')' { addOp(OP_PIXEL); }
-                        | B256RGB '(' expr ',' expr ',' expr ')' {
-                            //safe compress valid rgb(n,n,n)
-                            int ok=0;
-                            if(populateLastOpsTable(3)==3){ //check if there are 3 previous ops
-                                if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
-                                        && wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
-                                        && wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT){
-                                    int r=wordCode[wordCode_lastOpsTable[2]+1];
-                                    int g=wordCode[wordCode_lastOpsTable[1]+1];
-                                    int b=wordCode[wordCode_lastOpsTable[0]+1];
-                                    if(r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
-                                        int val = 0xff000000|(r<<16)|(g<<8)|b;
-                                        wordOffset=wordCode_lastOpsTable[2]; // overwrite op
-                                        addIntOp(OP_PUSHINT, val);
-                                        ok=1;
-                                    }
-                                }
-                            }
-                            if(!ok){
-                                addIntOp(OP_PUSHINT, 0xff);
-                                addOp(OP_RGB);
-                            }
-                        }
+			| B256RGB '(' expr ',' expr ',' expr ')' {
+				//safe compress valid rgb(n,n,n)
+				int ok=0;
+				if(populateLastOpsTable(3)==3){ //check if there are 3 previous ops
+					if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
+							&& wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
+							&& wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT){
+						int r=wordCode[wordCode_lastOpsTable[2]+1];
+						int g=wordCode[wordCode_lastOpsTable[1]+1];
+						int b=wordCode[wordCode_lastOpsTable[0]+1];
+						if(r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
+							int val = 0xff000000|(r<<16)|(g<<8)|b;
+							wordOffset=wordCode_lastOpsTable[2]; // overwrite op
+							addIntOp(OP_PUSHINT, val);
+							ok=1;
+						}
+					}
+				}
+				if(!ok){
+					addIntOp(OP_PUSHINT, 0xff);
+					addOp(OP_RGB);
+				}
+			}
 			| B256RGB '(' expr ',' expr ',' expr ',' expr ')' {
-                            //safe compress valid rgb(n,n,n,n)
-                            int ok=0;
-                            if(populateLastOpsTable(4)==4){ //check if there are 4 previous ops
-                                if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
-                                        && wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
-                                        && wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT
-                                        && wordCode[wordCode_lastOpsTable[3]]==OP_PUSHINT){
-                                    int r=wordCode[wordCode_lastOpsTable[3]+1];
-                                    int g=wordCode[wordCode_lastOpsTable[2]+1];
-                                    int b=wordCode[wordCode_lastOpsTable[1]+1];
-                                    int a=wordCode[wordCode_lastOpsTable[0]+1];
-                                    if(a>=0&&a<=255&&r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
-                                        int val = (a<<24)|(r<<16)|(g<<8)|b;
-                                        wordOffset=wordCode_lastOpsTable[3]; // overwrite op
-                                        addIntOp(OP_PUSHINT, val);
-                                        ok=1;
-                                    }
-                                }
-                            }
-                            if(!ok){
-                                addOp(OP_RGB);
-                            }
+				//safe compress valid rgb(n,n,n,n)
+				int ok=0;
+				if(populateLastOpsTable(4)==4){ //check if there are 4 previous ops
+					if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
+							&& wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
+							&& wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT
+							&& wordCode[wordCode_lastOpsTable[3]]==OP_PUSHINT){
+						int r=wordCode[wordCode_lastOpsTable[3]+1];
+						int g=wordCode[wordCode_lastOpsTable[2]+1];
+						int b=wordCode[wordCode_lastOpsTable[1]+1];
+						int a=wordCode[wordCode_lastOpsTable[0]+1];
+						if(a>=0&&a<=255&&r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
+							int val = (a<<24)|(r<<16)|(g<<8)|b;
+							wordOffset=wordCode_lastOpsTable[3]; // overwrite op
+							addIntOp(OP_PUSHINT, val);
+							ok=1;
+						}
+					}
+				}
+				if(!ok){
+					addOp(OP_RGB);
+				}
 			}
 			| B256GETCOLOR args_none { addOp(OP_GETCOLOR); }
 			| B256GETBRUSHCOLOR args_none { addOp(OP_GETBRUSHCOLOR); }

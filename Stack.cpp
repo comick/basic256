@@ -3,8 +3,7 @@
 #include <string>
 
 
-Stack::Stack(Error *e, Convert *c, QLocale *applocale) {
-	error = e;	// save error object as private pointer
+Stack::Stack(Convert *c, QLocale *applocale) {
 	convert = c;
 	stackpointer = 0;	// height of stack
     stacksize = 0;       //max size of stack to avoid calling stackdata.size()

@@ -19,6 +19,17 @@
 // we will pass a pointer to a DataElement to the functions of the
 // Convert class for all output
 
+#define MAXARRAYSIZE 1048576
+class DataElement;
+
+class DataElementArray
+{
+    public:
+        int xdim;
+        int ydim;
+        std::vector<DataElement> datavector;
+};
+
 class DataElement
 {
 	public:
@@ -26,9 +37,11 @@ class DataElement
 		QString stringval;
 		double floatval;
 		long intval;
-        int level;
-
+		int level;
+        DataElementArray *arr;
+        
 		DataElement();
+		~DataElement();
 		
 		DataElement(QString);
 		DataElement(double);
@@ -36,6 +49,23 @@ class DataElement
 		DataElement(int);
 
 		QString debug();
-        void copy(DataElement *);
-        void copy(DataElement *, int);
+		void copy(DataElement *);
+		void copy(DataElement *, int);
+		
+		void clear();
+		
+		void arraydim(const int, const int, const bool);
+		DataElement* arraygetdata(const int, const int);
+		DataElement* arraygetdata(const int, const int, const bool);
+		void arraysetdata(const int, const int, DataElement *);
+		void arrayunassign(const int, const int);
+		int arraysize();
+		int arraysizerows();
+		int arraysizecols();
+		
+	private:
+		Error *error;
 };
+
+
+
