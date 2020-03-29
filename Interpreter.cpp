@@ -89,6 +89,7 @@ extern BasicGraph * graphwin;
 extern BasicEdit * editwin;
 extern BasicKeyboard * basicKeyboard;
 
+Error *error;	// define the extern here
 
 extern "C" {
 //extern int yydebug;
