@@ -35,7 +35,7 @@ call n("c[2]=-3.14 after rinput",c[2],-3.14)
 input "Input the string 'crap' > ", c[2]
 call s("c[2]=crap after input crap",c[2],"crap")
 
-a = implode(c[],"|")
+a = implode(c,"|")
 call s("implode c with delim",a,"9|28.0|crap|6|5|4|3|2|1|0||||||||||")
 a = implode(c[])
 call s("implode c with no delim",a,"928.0crap6543210")

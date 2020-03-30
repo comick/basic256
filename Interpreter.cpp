@@ -517,7 +517,6 @@ void Interpreter::printError() {
 		msg += tr(" in included file '") + include_filenames[includeFileNumber] + QStringLiteral("'");
 	}
 	msg += tr(" on line ") + QString::number(error->line) + QStringLiteral(": ") + error->getErrorMessage(symtable);
-	if (error->extra!="") msg+= " (" + error->extra + ")";
 	msg += QStringLiteral(".\n");
 	emit(outputError(msg));
 }
@@ -1310,13 +1309,13 @@ Interpreter::execByteCode() {
 	if (error->pending()) {
 		//change ERROR_VARNOTASSIGNED into ERROR_ARRAYELEMENT if variable implied is in fact an array element
 		//still need this for functions like implode
-		if(error->newe==ERROR_VARNOTASSIGNED && error->newvar>=0){
-			DataElement *e = variables->getdata(error->newvar);
-			if(e->type==T_ARRAY) error->newe=ERROR_ARRAYELEMENT;
+		if(error->pending_e==ERROR_VARNOTASSIGNED && error->pending_var>=0){
+			DataElement *e = variables->getdata(error->pending_var);
+			if(e->type==T_ARRAY) error->pending_e=ERROR_ARRAYELEMENT;
 		}
-		if(error->newe==WARNING_VARNOTASSIGNED && error->newvar>=0){
-			DataElement *e = variables->getdata(error->newvar);
-			if(e->type==T_ARRAY) error->newe=WARNING_ARRAYELEMENT;
+		if(error->pending_e==WARNING_VARNOTASSIGNED && error->pending_var>=0){
+			DataElement *e = variables->getdata(error->pending_var);
+			if(e->type==T_ARRAY) error->pending_e=WARNING_ARRAYELEMENT;
 		}
 
 		error->process(currentLine);
@@ -1544,10 +1543,11 @@ Interpreter::execByteCode() {
 
 				case OP_DIM:
 				case OP_REDIM: {
-					int ydim = stack->popint();
-					int xdim = stack->popint();
-					if (xdim<=0) xdim=1; // need to dimension as 1d
-					variables->getdata(i, false)->arraydim(xdim, ydim, opcode == OP_REDIM);
+					int y = stack->popint();
+					int x = stack->popint();
+					if (x<=0) x=1; // need to dimension as 1d
+					variables->getdata(i)->arraydim(x, y, opcode == OP_REDIM);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
 					watchvariable(debugMode, i);
 				}
 				break;
@@ -1557,6 +1557,7 @@ Interpreter::execByteCode() {
 				case OP_ALENCOLS: {
 					// return array lengths
 					DataElement *e = variables->getdata(i);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					switch(opcode) {
 						case OP_ALEN:
 							if (e->arraysizerows()==1) {
@@ -1586,16 +1587,11 @@ Interpreter::execByteCode() {
 					// assign a value to an array element
 					// assumes that arrays are always two dimensional (if 1d then y=1)
 					DataElement *e = stack->popelement();
-					int yindex = stack->popint();
-					int xindex = stack->popint();
-					if (e->type==T_UNASSIGNED) {
-						error->q(ERROR_VARNOTASSIGNED, e->intval);
-					} else if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
-					} else {
-						variables->getdata(i)->arraysetdata(xindex, yindex, e);
-						watchvariable(debugMode, i, xindex, yindex);
-					}
+					int y = stack->popint();
+					int x = stack->popint();
+					variables->getdata(i)->arraysetdata(x, y, e);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
+					watchvariable(debugMode, i, x, y);
 				}
 				break;
 
@@ -1603,15 +1599,20 @@ Interpreter::execByteCode() {
 				case OP_DEREF: {
 					// get a value from an array and push it to the stack
 					// assumes that arrays are always two dimensional (if 1d then y=0)
-					int yindex = stack->popint();
-					int xindex = stack->popint();
-					DataElement *e = variables->getdata(i)->arraygetdata(xindex, yindex);
+					int y = stack->popint();
+					int x = stack->popint();
+					DataElement *e = variables->getdata(i)->arraygetdata(x, y);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
 					stack->pushdataelement(e);
 				}
 				break;
 
 				case OP_PUSHVAR: {
 					DataElement *e = variables->getdata(i);
+					if (e->type==T_UNASSIGNED) {
+						error->q(ERROR_VARNOTASSIGNED,i);
+						e = new DataElement(0);
+					}
 					stack->pushdataelement(e);
 				}
 				break;
@@ -1625,6 +1626,7 @@ Interpreter::execByteCode() {
 					// assign a value to a variable
 					DataElement *e = stack->popelement();
 					variables->setdata(i,e);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					watchvariable(debugMode, i);
 				}
 				break;
@@ -1636,10 +1638,15 @@ Interpreter::execByteCode() {
 					DataElement *e = variables->getdata(i);
 					int columns = e->arraysizecols();
 					int rows = e->arraysizerows();
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					if(!error->pending()){
 						for(int row = 0; row<rows; row++) {
 							for (int col = 0; col<columns; col++) {
-								stack->pushdataelement(e->arraygetdata(row, col));
+								DataElement *d = e->arraygetdata(row, col);
+								if (d->type==T_UNASSIGNED) {
+									error->q(ERROR_VARNOTASSIGNED, i, row, col);
+								}
+								stack->pushdataelement(d);
 							}
 							stack->pushint(columns);
 						}
@@ -1657,9 +1664,9 @@ Interpreter::execByteCode() {
 					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
 					DataElement *e = stack->popelement();	// fill value
 					if (e->type==T_UNASSIGNED) {
-						error->q(ERROR_VARNOTASSIGNED, e->intval);
+						error->q(ERROR_VARNOTASSIGNED);
 					} else if (e->type==T_ARRAY) {
-						error->q(ERROR_ARRAYINDEXMISSING, e->intval);
+						error->q(ERROR_ARRAYINDEXMISSING);
 					} else {
 						DataElement *edest = variables->getdata(i);
 						if (edest->type==T_ARRAY) {
@@ -5156,7 +5163,7 @@ Interpreter::execByteCode() {
 							QSqlQuery *q = new QSqlQuery(db);
 							bool ok = q->exec(stmt);
 							if (!ok) {
-								error->q(ERROR_DBQUERY, 0, q->lastError().databaseText());
+								error->q(ERROR_DBQUERY, q->lastError().databaseText());
 							}
 							delete q;
 						} else {
@@ -5188,7 +5195,7 @@ Interpreter::execByteCode() {
 								dbSet[n][set] = new QSqlQuery(db);
 								bool ok = dbSet[n][set]->exec(stmt);
 								if (!ok) {
-									error->q(ERROR_DBQUERY, 0, dbSet[n][set]->lastError().databaseText());
+									error->q(ERROR_DBQUERY, dbSet[n][set]->lastError().databaseText());
 								}
 							} else {
 								error->q(ERROR_DBNOTOPEN);
@@ -5348,11 +5355,11 @@ Interpreter::execByteCode() {
 						// SOCK_DGRAM = UDP  SOCK_STREAM = TCP
 						listensockfd = socket(AF_INET, SOCK_STREAM, 0);
 						if (listensockfd < 0) {
-							error->q(ERROR_NETSOCK, 0, strerror(errno));
+							error->q(ERROR_NETSOCK, strerror(errno));
 						} else {
 							int optval = 1;
 							if (setsockopt(listensockfd,SOL_SOCKET,SO_REUSEADDR,(char *)&optval,sizeof(int))) {
-								error->q(ERROR_NETSOCKOPT, 0, strerror(errno));
+								error->q(ERROR_NETSOCKOPT, strerror(errno));
 								listensockfd = netSockClose(listensockfd);
 							} else {
 								memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -5360,14 +5367,14 @@ Interpreter::execByteCode() {
 								serv_addr.sin_addr.s_addr = INADDR_ANY;
 								serv_addr.sin_port = htons(port);
 								if (bind(listensockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-									error->q(ERROR_NETBIND, 0, strerror(errno));
+									error->q(ERROR_NETBIND, strerror(errno));
 									listensockfd = netSockClose(listensockfd);
 								} else {
 									listen(listensockfd,5);
 									clilen = sizeof(cli_addr);
 									netsockfd[fn] = accept(listensockfd, (struct sockaddr *) &cli_addr, &clilen);
 									if (netsockfd[fn] < 0) {
-										error->q(ERROR_NETACCEPT, 0, strerror(errno));
+										error->q(ERROR_NETACCEPT, strerror(errno));
 									}
 									listensockfd = netSockClose(listensockfd);
 								}
@@ -5396,12 +5403,12 @@ Interpreter::execByteCode() {
 
 						netsockfd[fn] = socket(AF_INET, SOCK_STREAM, 0);
 						if (netsockfd[fn] < 0) {
-							error->q(ERROR_NETSOCK, 0, strerror(errno));
+							error->q(ERROR_NETSOCK, strerror(errno));
 						} else {
 
 							server = gethostbyname(address.toUtf8().data());
 							if (server == NULL) {
-								error->q(ERROR_NETHOST, 0, strerror(errno));
+								error->q(ERROR_NETHOST, strerror(errno));
 								netsockfd[fn] = netSockClose(netsockfd[fn]);
 							} else {
 								memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -5409,7 +5416,7 @@ Interpreter::execByteCode() {
 								memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
 								serv_addr.sin_port = htons(port);
 								if (::connect(netsockfd[fn],(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-									error->q(ERROR_NETCONN, 0, strerror(errno));
+									error->q(ERROR_NETCONN, strerror(errno));
 									netsockfd[fn] = netSockClose(netsockfd[fn]);
 								}
 							}
@@ -5435,7 +5442,7 @@ Interpreter::execByteCode() {
 							memset(strarray, 0, MAXSIZE);
 							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
 							if (n < 0) {
-								error->q(ERROR_NETREAD, 0, strerror(errno));
+								error->q(ERROR_NETREAD, strerror(errno));
 								stack->pushstring("");
 							} else {
 								stack->pushstring(QString::fromUtf8(strarray));
@@ -5457,7 +5464,7 @@ Interpreter::execByteCode() {
 						} else {
 							int n = send(netsockfd[fn],data.toUtf8().data(),data.length(),0);
 							if (n < 0) {
-								error->q(ERROR_NETWRITE, 0, strerror(errno));
+								error->q(ERROR_NETWRITE, strerror(errno));
 							}
 						}
 					}
@@ -7162,6 +7169,12 @@ Interpreter::execByteCode() {
 		}
 		break;
 	}
+	
+	// do checks for object unhandled errors
+	if (Stack::getError()) error->q(Stack::getError(true));
+	if (Variables::getError()) error->q(Variables::getError(true));
+	if (Convert::getError()) error->q(Convert::getError(true));
+	if (DataElement::getError()) error->q(DataElement::getError(true));
 
 	return 0;
 }

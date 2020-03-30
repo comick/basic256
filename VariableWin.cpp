@@ -47,158 +47,136 @@ VariableWin::~VariableWin() {
 }
 
 void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
-    // set thr type and value columns (2 and 3)
-    if (r) {
-        if (d!=NULL) {
-            switch (d->type) {
-            case T_STRING:{
-                r->setText(COLUMNTYPE, QStringLiteral("S"));
-                r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_stringType);
-                r->setData(COLUMNVALUE, Qt::UserRole + 1, d->stringval);
-                r->setText(COLUMNVALUE, d->stringval);
-                break;
-            }
-            case T_INT:{
-                r->setText(COLUMNTYPE, QStringLiteral("I"));
-                r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_integerType);
-                r->setData(COLUMNVALUE, Qt::UserRole + 1, (long long)d->intval);
-                r->setText(COLUMNVALUE, convert->getString(d)); //to keep user choice about printing numbers
-                break;
-            }
-            case T_FLOAT:{
-                r->setText(COLUMNTYPE, QStringLiteral("F"));
-                r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_floatType);
-                r->setData(COLUMNVALUE, Qt::UserRole + 1, d->floatval);
-                r->setText(COLUMNVALUE, convert->getString(d)); //using user locale format
-                break;
-            }
-            case T_REF:{
-                r->setText(COLUMNTYPE, QStringLiteral("REF"));
-                r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_referenceType);
-                QString var = QString::number(d->level) + QStringLiteral(" - ") + symtable[d->intval];
-                r->setText(COLUMNVALUE, var);
-                r->setData(COLUMNVALUE, Qt::UserRole + 1, var); //to do:00level+var
-                break;
-            }
-            default:{
-                r->setText(COLUMNTYPE, tr_unknownType);
-                r->setData(COLUMNTYPE, Qt::ToolTipRole, QStringLiteral(""));
-                r->setText(COLUMNVALUE, QStringLiteral(""));
-                r->setData(COLUMNVALUE, Qt::UserRole + 1, QVariant());
-            }
-            }
-        } else {
-            r->setText(COLUMNTYPE, tr_unknownType);
-            r->setData(COLUMNTYPE, Qt::ToolTipRole, QStringLiteral(""));
-            r->setText(COLUMNVALUE, QStringLiteral(""));
-            r->setData(COLUMNVALUE, Qt::UserRole + 1, QVariant());
-        }
-    }
+	// set thr type and value columns (2 and 3)
+	QString var;
+	if (r) {
+		r->takeChildren();
+		if (d!=NULL) {
+			switch (d->type) {
+			case T_STRING:{
+				r->setText(COLUMNTYPE, QStringLiteral("S"));
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_stringType);
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, d->stringval);
+				r->setText(COLUMNVALUE, d->stringval);
+				break;
+			}
+			case T_INT:{
+				r->setText(COLUMNTYPE, QStringLiteral("I"));
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_integerType);
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, (long long)d->intval);
+				r->setText(COLUMNVALUE, convert->getString(d)); //to keep user choice about printing numbers
+				break;
+			}
+			case T_FLOAT:{
+				r->setText(COLUMNTYPE, QStringLiteral("F"));
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_floatType);
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, d->floatval);
+				r->setText(COLUMNVALUE, convert->getString(d)); //using user locale format
+				break;
+			}
+			case T_REF:{
+				r->setText(COLUMNTYPE, QStringLiteral("REF"));
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_referenceType);
+				var = QString::number(d->level) + QStringLiteral(" - ") + symtable[d->intval];
+				r->setText(COLUMNVALUE, var);
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, var); //to do:00level+var
+				break;
+			}
+			 case T_ARRAY:{
+				r->setText(COLUMNTYPE, QStringLiteral("A"));
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_arrayType);
+				if (d->arraysizerows()==1) {
+					// 1d array
+					var = QStringLiteral("[") + QString::number(d->arraysizecols()) + QStringLiteral("]");
+				} else {
+					// 2d array
+					var = QStringLiteral("[") + QString::number(d->arraysizerows()) + QStringLiteral(",") + QString::number(d->arraysizecols()) + QStringLiteral("]");
+				}
+				r->setText(COLUMNVALUE, var);
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, var); //to do:00level+var
+				break;
+			}
+		   default:{
+				r->setText(COLUMNTYPE, tr_unknownType);
+				r->setData(COLUMNTYPE, Qt::ToolTipRole, QStringLiteral(""));
+				r->setText(COLUMNVALUE, QStringLiteral(""));
+				r->setData(COLUMNVALUE, Qt::UserRole + 1, QVariant());
+			}
+			}
+		} else {
+			r->setText(COLUMNTYPE, tr_unknownType);
+			r->setData(COLUMNTYPE, Qt::ToolTipRole, QStringLiteral(""));
+			r->setText(COLUMNVALUE, QStringLiteral(""));
+			r->setData(COLUMNVALUE, Qt::UserRole + 1, QVariant());
+		}
+	}
 }
 
 void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int x, int y) {
-    QTreeWidgetItem *rowItem = NULL;
-    QString name;
-    DataElement *d;
+	// refresh an array's element
+	QTreeWidgetItem *parentItem = NULL;
+	QTreeWidgetItem *childItem = NULL;
+	QString parentname, childname;
+	DataElement *d;
+	QList<QTreeWidgetItem *> list;
 
-    if(*variables){
-        Variable *v = (*variables)->getAt(varnum, level);
-        name = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
 
+	if(*variables){
+		Variable *v = (*variables)->getAt(varnum, level);
+		parentname = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
+		// see if v is on the list and change value or add
+		list = findItems(parentname, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
 
-        // find either name[y] or name[x,y]
-        QString tname;
-        if(v->data->type==T_ARRAY){
-            if(v->data->arraysizecols()>1){
-                tname = name + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]");
-            }else{
-                tname = name + QStringLiteral("[") + QString::number(y) + QStringLiteral("]");
-            }
-            QList<QTreeWidgetItem *> list = findItems(tname, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
-            if (list.size()>0) rowItem = list[0]; //else add item with array in case user choose to watch just a specific array element
-        }
-
-        // set the data and data type
-        d = v->data->arraygetdata(x, y);
-        setTypeAndValue(rowItem, d);
-    }
+		if (list.size() > 0) {
+			parentItem = (TreeWidgetItem *)list[0];
+			// now find child or add
+			if (v->data->arraysizerows()==1) {
+				childname = parentname + QStringLiteral("[") + QString::number(y) + QStringLiteral("]");
+			} else {
+				childname = parentname + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]");
+			}
+			list = findItems(childname, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
+			if (list.size() > 0) {
+				// get existing element
+				childItem = (TreeWidgetItem *)list[0];
+			} else {
+				// create a new one
+				childItem = new TreeWidgetItem();
+				childItem->setText(COLUMNNAME, childname);
+				childItem->setData(COLUMNNAME, Qt::UserRole + 1, childname);
+				parentItem->addChild(childItem);
+			}
+			setTypeAndValue(childItem, v->data->arraygetdata(x,y));
+		}
+	}
 }
 
 void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
-    // refresh variable/array content
-    TreeWidgetItem *rowItem = NULL;
-    QString name;
+	// refresh variable/array content
+	TreeWidgetItem *rowItem = NULL;
+	QString name;
 
-    if(*variables){
-        Variable *v = (*variables)->getAt(varnum, level);
-        name = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
+	if(*variables){
+		Variable *v = (*variables)->getAt(varnum, level);
+		name = QString::number(level) + QStringLiteral(" - ") + symtable[varnum];
 
-        // see if v is on the list and change value or add
-        QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
+		// see if v is on the list and change value or add
+		QList<QTreeWidgetItem *> list = findItems(name, Qt::MatchExactly | Qt::MatchRecursive, COLUMNNAME);
 
-        if (list.size() > 0) {
-            // get existing element
-            rowItem = (TreeWidgetItem *)list[0];
-            if(rowItem->childCount()>0){
-                // fast remove all components if array
-                // it is much faster to delete array by once instead of deleting each element
-                delete rowItem;
-                rowItem=NULL;
-            }
-        }
-        if(!rowItem){
-            // add new element
-            rowItem = new TreeWidgetItem();
-            rowItem->setText(COLUMNNAME, name);
-            //set correct name in format 0000000name to correctly arrange and avoid: "1 - a", "120 - a", "2 - a"
-            QString id = QString("%1").arg(v->data->level, 7, 10, QChar('0')) + symtable[varnum];
-            rowItem->setData(COLUMNNAME, Qt::UserRole + 1, id);
-            addTopLevelItem(rowItem);
-        }
+		if (list.size() > 0) {
+			// get existing element
+			rowItem = (TreeWidgetItem *)list[0];
+		} else {
+			// create a new one
+			rowItem = new TreeWidgetItem();
+			rowItem->setText(COLUMNNAME, name);
+			QString id = QString("%1").arg(v->data->level, 7, 10, QChar('0')) + symtable[varnum];
+			rowItem->setData(COLUMNNAME, Qt::UserRole + 1, id);
+			addTopLevelItem(rowItem);
+		}
 
-        if(v->data->type!=T_ARRAY){
-            // regular variable
-            setTypeAndValue(rowItem, v->data);
-        }else{
-            // array
-            const int arraylenx = v->data->arraysizerows();
-            const int arrayleny = v->data->arraysizecols();;
-            rowItem->setText(COLUMNTYPE, QStringLiteral("A"));
-            rowItem->setData(COLUMNTYPE, Qt::ToolTipRole, tr_arrayType);
-            if(arraylenx > 1){
-                rowItem->setText(COLUMNVALUE, QStringLiteral("[") + QString::number(arraylenx) + QStringLiteral(",") + QString::number(arrayleny) + QStringLiteral("]"));
-            }else{
-                rowItem->setText(COLUMNVALUE, QStringLiteral("[") + QString::number(arrayleny) + QStringLiteral("]"));
-            }
-            // add place holders for the array elements as children for a new array
-            if (arraylenx <= 1) {
-                // 1d array
-                for(int y=0; y<arrayleny; y++) {
-                    TreeWidgetItem *childItem = new TreeWidgetItem();
-                    childItem->setText(COLUMNNAME, name + QStringLiteral("[") + QString::number(y) + QStringLiteral("]"));
-                    //allow sorting in correct order (by index)
-                    childItem->setData(COLUMNNAME, Qt::UserRole + 1, y);
-                    //direct access to array's data
-                    setTypeAndValue(childItem, v->data->arraygetdata(arraylenx,y,false));
-                    rowItem->addChild(childItem);
-                }
-            } else {
-                // 2d array
-                for(int x=0; x<arraylenx; x++) {
-                    for(int y=0; y<arrayleny; y++) {
-                        TreeWidgetItem *childItem = new TreeWidgetItem();
-                        childItem->setText(COLUMNNAME, name + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]"));
-                        //allow sorting in correct order (by index)
-                        int index=x*arrayleny+y;
-                        childItem->setData(COLUMNNAME, Qt::UserRole + 1, index);
-                        //direct access to array's data
-                        setTypeAndValue(childItem, v->data->arraygetdata(x,y,false));
-                        rowItem->addChild(childItem);
-                    }
-                }
-            }
-        }
-    }
+		setTypeAndValue(rowItem, v->data);
+	}
 }
 
 void VariableWin::varWinDropLevel(int level) {

@@ -16,13 +16,20 @@ class Error
 	
 	public:
 
-		int e;
-		int var;
-		QString extra;
-		int line;
-		int newe;
-		int newvar;
-		QString newextra;
+		// current 
+		int e;					// error
+		int var;				// variable number
+		int x;					// array row
+		int y;					// array column
+		QString extra;			// extra text
+		int line;				// line number
+		
+		//pending
+		int pending_e;
+		int pending_var;
+		int pending_x;
+		int pending_y;
+		QString pending_extra;
 		
 		void loadSettings();
 		  
@@ -33,8 +40,9 @@ class Error
 		void process(int);
 		
 		void q(int);
-		void q(int, int);
-		void q(int, int, QString);
+		void q(int, int);			// with variable
+		void q(int, int, int, int);	// with array variable and dimensions
+		void q(int, QString);		// with extra text
 		
 		void deq();
 
@@ -47,6 +55,9 @@ class Error
  	private:
  		int typeconverror;
  		int varnotassignederror;
+ 		
+ 		void q(int, int, int, int, QString);
+
 };
 
 extern Error *error;

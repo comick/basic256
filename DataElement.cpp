@@ -3,33 +3,40 @@
 
 #include <string>
 
+int DataElement::e = ERROR_NONE;
+
 DataElement::DataElement() {
 	// create an empty dataelement
 	type = T_UNASSIGNED;
+	e=0;
 	arr = NULL;
 }
 
 DataElement::DataElement(QString s) {
 	type = T_STRING;
 	stringval = s;
+	e=0;
 	arr = NULL;
 }
 
 DataElement::DataElement(int i) {
     type = T_INT;
     intval = i;
+	e=0;
 	arr = NULL;
 }
 
 DataElement::DataElement(long l) {
 	type = T_INT;
 	intval = l;
+	e=0;
 	arr = NULL;
 }
 
 DataElement::DataElement(double d) {
 	type = T_FLOAT;
 	floatval = d;
+	e=0;
 	arr = NULL;
 }
 
@@ -45,18 +52,13 @@ DataElement::~DataElement() {
 
 
 void DataElement::copy(DataElement *source) {
-    copy(source,-1);
-}
-
-void DataElement::copy(DataElement *source, int varnum) {
-	// fill an existing from as a copy of another and set the variable number (used to copy array elements)
+	// fill an existing from as a copy of another
 	// it is as fast as it can be
 	// unused values of strings can be found as garbage but this is the cost of speed
 	// source->stringval.clear() is too expensive to be used for each assignment/copy
 	type = source->type;
 	switch (source->type){
 		case T_UNASSIGNED:
-			intval = (long) varnum; //variable number for error output
 			break;
 		case T_FLOAT:
 			floatval = source->floatval;
@@ -139,10 +141,10 @@ void DataElement::arraydim(const int xdim, const int ydim, const bool redim) {
 			arr->xdim = xdim;
 			arr->ydim = ydim;
 		} else {
-			error->q(ERROR_ARRAYSIZESMALL, -1);
+			e = ERROR_ARRAYSIZESMALL;
 		}
 	} else {
-		error->q(ERROR_ARRAYSIZELARGE, -1);
+		e = ERROR_ARRAYSIZELARGE;
 	}
 }
 
@@ -150,9 +152,9 @@ int DataElement::arraysize() {
 	if (type == T_ARRAY) {
 		return(arr->xdim * arr->ydim);
 	} else if (type==T_UNASSIGNED){
-		error->q(ERROR_VARNOTASSIGNED, -1);
+		e = ERROR_VARNOTASSIGNED;
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 	return(0);
 }
@@ -162,9 +164,9 @@ int DataElement::arraysizerows() {
 	if (type == T_ARRAY) {
 		return(arr->xdim);
 	} else if (type==T_UNASSIGNED){
-		error->q(ERROR_VARNOTASSIGNED, -1);
+		e = ERROR_VARNOTASSIGNED;
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 	return(0);
 }
@@ -174,51 +176,47 @@ int DataElement::arraysizecols() {
 	if (type == T_ARRAY) {
 		return(arr->ydim);
 	} else if (type==T_UNASSIGNED){
-		error->q(ERROR_VARNOTASSIGNED, -1);
+		e = ERROR_VARNOTASSIGNED;
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 	return(0);
 }
 
 DataElement* DataElement::arraygetdata(const int x, const int y) {
-	return arraygetdata(x, y, true);
-}
-
-DataElement* DataElement::arraygetdata(const int x, const int y, const bool unassignederror) {
 	// get data from array elements from map (using x, y)
 	// if there is an error return an unassigned value
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
-			DataElement *e = &arr->datavector[i];
+			DataElement *d = &arr->datavector[i];
 			//the correct behaviour is to check for unassigned content
 			//when program try to use it not when it try to convert to int, string and so...
-			if (unassignederror && type==T_UNASSIGNED){
-				error->q(ERROR_ARRAYELEMENT, -1);
+			if (d->type==T_UNASSIGNED){
+				e = ERROR_ARRAYELEMENT;
 			}
-			return e;
+			return d;
 		} else {
-			error->q(ERROR_ARRAYINDEX, -1);
+			e = ERROR_ARRAYINDEX;
 		}
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 	return this;
 }
 
-void DataElement::arraysetdata(const int x, const int y, DataElement *e) {
+void DataElement::arraysetdata(const int x, const int y, DataElement *d) {
 	// DataElement's data is copied and it should be deleted
 	// by whomever created it
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
-			arr->datavector[i].copy(e);
+			arr->datavector[i].copy(d);
 		} else {
-			error->q(ERROR_ARRAYINDEX, -1);
+			e = ERROR_ARRAYINDEX;
 		}
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 }
 
@@ -228,9 +226,11 @@ void DataElement::arrayunassign(const int x, const int y) {
 			const int i = x * arr->ydim + y;
 			arr->datavector[i].type = T_UNASSIGNED;
 		} else {
-			error->q(ERROR_ARRAYINDEX, -1);
+			e = ERROR_ARRAYINDEX;
 		}
 	} else {
-		error->q(ERROR_NOTARRAY, -1);
+		e = ERROR_NOTARRAY;
 	}
 }
+
+

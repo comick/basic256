@@ -5,6 +5,9 @@
 
 // variables are limited to types (defined in Types.h):
 
+int Variables::e = ERROR_NONE;
+
+
 // T_REF is a variable number in the specified recursion level
 
 // ************************************************************
@@ -99,7 +102,7 @@ void Variables::increaserecurse() {
     recurselevel++;
     if (recurselevel>=MAX_RECURSE_LEVELS) {
         recurselevel--;
-        error->q(ERROR_MAXRECURSE);
+        e = ERROR_MAXRECURSE;
     } else {
 		allocateRecurseLevel();
 	}
@@ -158,32 +161,24 @@ Variable* Variables::getAt(const int varnum) {
 }
 
 DataElement* Variables::getdata(const int varnum) {
-	// throw unassigned error by default
-	return getdata(varnum,false);
-}
-
-DataElement* Variables::getdata(const int varnum, const bool unassignederror) {
 	// get data from variable - return varnum's data
 	Variable *v = get(varnum);
-	if (unassignederror && v->data->type==T_UNASSIGNED){
-		error->q(ERROR_VARNOTASSIGNED, varnum);
-	}
 	return v->data;
 }
 
 
-void Variables::setdata(const int varnum, DataElement* e) {
+void Variables::setdata(const int varnum, DataElement* d) {
     // recieves a DataElement pointed pulled from the stack
     // e is a pointer in the stack vector AND MUST NOT BE DELETED
 	Variable *v;
-	if (e->type==T_REF) {
+	if (d->type==T_REF) {
 		// if we are assigning a "REF" dont recurse down the previous ref is there is one
 		// just assign it at the current run level.
 		v = getAt(varnum);
 	} else {
 		v = get(varnum, recurselevel);
 	}
-	v->data->copy(e);
+	v->data->copy(d);
 }
 
 void Variables::setdata(int varnum, long l) {

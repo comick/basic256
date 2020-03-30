@@ -6,11 +6,15 @@
 Error::Error() {
 	e = ERROR_NONE;
 	var = -1;
+	x = -1;
+	y = -1;
 	extra = "";
 	line = 0;
-	newe = ERROR_NONE;
-	newvar = -1;
-	newextra = "";
+	pending_e = ERROR_NONE;
+	pending_var = -1;
+	pending_x = -1;
+	pending_y = -1;
+	pending_extra = "";
 	loadSettings();
 }
 
@@ -24,41 +28,63 @@ void Error::loadSettings() {
 
 bool Error::pending() {
 	// there is a pending error that needs to be handled
-	return newe != ERROR_NONE;
+	return pending_e != ERROR_NONE;
 }
 
 void Error::process(int currentlinenumber) {
 	// move the new error into the current error for
 	// reporting
-	e = newe;
-	var = newvar;
-	extra = newextra;
+	e = pending_e;
+	var = pending_var;
+	x = pending_x;
+	y = pending_y;
+	extra = pending_extra;
 	line = currentlinenumber;
 	deq();
 }
 
 void Error::deq() {
 	// clear the pending (q'd) error
-	newe = ERROR_NONE;
-	newvar = -1;
-	newextra = "";
+	pending_e = ERROR_NONE;
+	pending_var = -1;
+	pending_x = -1;
+	pending_y = -1;
+	pending_extra = "";
 }
 
 void Error::q(int errornumber) {
 	// queue up an error without a variable or extra message
-	q(errornumber, -1, "");
+	q(errornumber, -1, -1, -1, "");
 }
 
 void Error::q(int errornumber, int variablenumber) {
 	// queue up an error with a variable number
-	q(errornumber, variablenumber, "");
+	q(errornumber, variablenumber, -1, -1, "");
 }
 
-void Error::q(int errornumber, int variablenumber, QString extratext) {
+void Error::q(int errornumber, int variablenumber, int x, int y) {
+	// queue up an error with an array element
+	q(errornumber, variablenumber, x, y, "");
+}
+
+void Error::q(int errornumber, QString extratext) {
+	// queue up an error with an extra message
+	q(errornumber, -1, -1, -1, extratext);
+}
+
+void Error::q(int errornumber, int variablenumber, int arrayx, int arrayy, QString extratext) {
     // queue up an error with all three
-    if (errornumber==ERROR_TYPECONV) {
+    if (errornumber==ERROR_NUMBERCONV) {
         if (typeconverror==SETTINGSERRORNONE) return;
-        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_TYPECONV;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_NUMBERCONV;
+    }
+    if (errornumber==ERROR_STRINGCONV) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_STRINGCONV;
+    }
+    if (errornumber==ERROR_BOOLEANCONV) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_BOOLEANCONV;
     }
     if (errornumber==ERROR_LONGRANGE) {
         if (typeconverror==SETTINGSERRORNONE) return;
@@ -85,15 +111,17 @@ void Error::q(int errornumber, int variablenumber, QString extratext) {
         if (varnotassignederror==SETTINGSERRORNONE) return;
         if (varnotassignederror==SETTINGSERRORWARN) errornumber = WARNING_REFNOTASSIGNED;
     }
-    if(newe == ERROR_NONE){
+    if(pending_e == ERROR_NONE){
         //store only first error from last operation
         //example: print a/b
         //will print error: "ERROR on line 1: Division by zero."
         //but the first error is the most important to debug the problem:
         //"ERROR on line 1: Variable b has not been assigned a value."
-        newe = errornumber;
-        newvar = variablenumber;
-        newextra = extratext;
+        pending_e = errornumber;
+        pending_var = variablenumber;
+        pending_x = arrayx;
+        pending_y = arrayy;
+        pending_extra = extratext;
     }
 }
 
@@ -107,12 +135,9 @@ bool Error::isFatal(int errornumber) {
 }
 
 QString Error::getErrorMessage(char **symtable) {
-	return getErrorMessage(e, var, symtable);
-}
-
-QString Error::getErrorMessage(int errornumber, int variablenumber, char **symtable) {
+	// get the error message for the current error
 	QString errormessage("");
-	switch(errornumber) {
+	switch(e) {
 		case ERROR_NOSUCHLABEL:
 			errormessage = tr("No such label %VARNAME%");
 			break;
@@ -302,8 +327,14 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 		case ERROR_PRINTEROPEN:
 			errormessage = tr("Unable to open printer");
 			break;
-		case ERROR_TYPECONV:
-			errormessage = tr("Unable to convert string to number");
+		case ERROR_NUMBERCONV:
+			errormessage = tr("Unable to convert to number");
+			break;
+		case ERROR_STRINGCONV:
+			errormessage = tr("Unable to convert to a string");
+			break;
+		case ERROR_BOOLEANCONV:
+			errormessage = tr("Unable to convert to a Boolean");
 			break;
 		case ERROR_FILEOPERATION:
 			errormessage = tr("Can not perform that operation on a Serial Port");
@@ -428,8 +459,14 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			errormessage = tr("Feature not implemented in this environment");
 			break;
 		// warnings
-		case WARNING_TYPECONV:
+		case WARNING_NUMBERCONV:
 			errormessage = tr("Unable to convert string to number, zero used");
+			break;
+		case WARNING_STRINGCONV:
+			errormessage = tr("Unable to convert to a string, '' used");
+			break;
+		case WARNING_BOOLEANCONV:
+			errormessage = tr("Unable to convert to a Boolean, false used");
 			break;
 		case WARNING_VARNOTASSIGNED:
 			errormessage = tr("Variable %VARNAME% has not been assigned a value");
@@ -469,15 +506,23 @@ QString Error::getErrorMessage(int errornumber, int variablenumber, char **symta
 			errormessage = tr("User thrown error number");
 
 	}
-	if (variablenumber>=0) {
-		if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
-			if (symtable[variablenumber]) {
-                errormessage.replace(QString("%VARNAME%"),QString("'") + QString(symtable[variablenumber]) + QString("'"),Qt::CaseInsensitive);
-			} else {
-				errormessage.replace(QString("%VARNAME%"),QString("unknown"),Qt::CaseInsensitive);
+	// put in variable names and array indexes
+	if (errormessage.contains(QString("%VARNAME%"),Qt::CaseInsensitive)) {
+		QString replace;
+		if (var>=0&&symtable[var]) {
+			replace = QString(symtable[var]);
+			if (x>=0) {
+				replace += QString("[") + QString::number(x) + QString(",") + QString::number(y) + QString("]");
 			}
+		} else {
+			replace = QString("unknown");
 		}
+		errormessage.replace(QString("%VARNAME%"),replace,Qt::CaseInsensitive);
 	}
+	//
+	// append extra if needed
+	if (extra!="") errormessage += " (" + extra + ")";
+	//
 	return errormessage;
 }
 

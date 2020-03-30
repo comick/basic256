@@ -56,9 +56,9 @@ void BasicDownloader::download(QUrl url){
 void BasicDownloader::fileDownloaded(QNetworkReply* ) {
     //qDebug() << "BasicDownloader fileDownloaded() attr:" << netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString() << "err:" << netreply->error();
     if(netreply->error() != QNetworkReply::NoError) {
-        error->q(ERROR_DOWNLOAD, -1, netreply->errorString());
+        error->q(ERROR_DOWNLOAD, netreply->errorString());
     }else if(netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute) >= 300) {
-        error->q(ERROR_DOWNLOAD, -1, netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString());
+        error->q(ERROR_DOWNLOAD, netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString());
     }else{
         m_data = netreply->readAll();
     }

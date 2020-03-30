@@ -35,31 +35,43 @@ class Stack
 		void pushvariant(QString, int);
 		void pushint(int);
 		void pushlong(long);
-        void pushvarref(int, int);
+		void pushvarref(int, int);
 		void pushfloat(double);
-        void swap();
+		void swap();
 		void swap2();
 		void topto2();
 		void dup();
 		void dup2();
-        int peekType();
-        int peekType(int);
+		int peekType();
+		int peekType(int);
 		DataElement *popelement();
 		int popint();
 		int popbool();
 		long poplong();
 		double popfloat();
-        double popnote();
-        QString popstring();
+		double popnote();
+		QString popstring();
 		QString debug();
 		int height();
-        void drop(int);
+		void drop(int);
 
+
+		static int getError() {
+			return getError(false);
+		}
+
+		static int getError(int clear) {
+			int olde = e;
+			if (clear) e = ERROR_NONE;
+			return olde;
+		}
 
 	private:
 		std::vector<DataElement*> stackdata;
-        int stackpointer; //faster than unsigned int and is quite enough as size
-        int stacksize;
-        void stackGrow();
+		int stackpointer; //faster than unsigned int and is quite enough as size
+		int stacksize;
+		void stackGrow();
 		QLocale *locale;
+		
+		static int e;		// error number thrown - will be 0 if no error
 };

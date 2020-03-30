@@ -203,7 +203,9 @@ error_dbquery [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]
 error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
 error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
 error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]
-error_typeconv [Ee][Rr][Rr][Oo][Rr][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]
+error_numberconv [Ee][Rr][Rr][Oo][Rr][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
+error_stringconv [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
+error_booleanconv [Ee][Rr][Rr][Oo][Rr][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
 error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]
 error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]
 error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]
@@ -266,7 +268,9 @@ warning_soundlength [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][
 warning_soundnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
 warning_wavobsolete [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
 warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
-warning_typeconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Tt][Yy][Pp][Ee][Cc][Oo][Nn][Vv]
+warning_numberconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
+warning_stringconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
+warning_booleanconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
 warning_varnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 warning_longrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
 warning_integerrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
@@ -672,7 +676,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {error_dbnotopen}                               { count(); return B256ERROR_DBNOTOPEN; }
 {error_dbcolno}                                 { count(); return B256ERROR_DBCOLNO; }
 {error_dbnotset}                                { count(); return B256ERROR_DBNOTSET; }
-{error_typeconv}                                { count(); return B256ERROR_TYPECONV; }
+{error_numberconv}                              { count(); return B256ERROR_NUMBERCONV; }
+{error_stringconv}                              { count(); return B256ERROR_STRINGCONV; }
+{error_booleanconv}                             { count(); return B256ERROR_BOOLEANCONV; }
 {error_netsock}                                 { count(); return B256ERROR_NETSOCK; }
 {error_nethost}                                 { count(); return B256ERROR_NETHOST; }
 {error_netconn}                                 { count(); return B256ERROR_NETCONN; }
@@ -735,7 +741,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {warning_soundnotseekable}                      { count(); return B256WARNING_SOUNDNOTSEEKABLE; }
 {warning_wavobsolete}                           { count(); return B256WARNING_WAVOBSOLETE; }
 {warning_start}                                 { count(); return B256WARNING_START; }
-{warning_typeconv}                              { count(); return B256WARNING_TYPECONV; }
+{warning_numberconv}                              { count(); return B256WARNING_NUMBERCONV; }
+{warning_stringconv}                              { count(); return B256WARNING_STRINGCONV; }
+{warning_booleanconv}                              { count(); return B256WARNING_BOOLEANCONV; }
 {warning_varnotassigned}                        { count(); return B256WARNING_VARNOTASSIGNED; }
 {warning_longrange}                             { count(); return B256WARNING_LONGRANGE; }
 {warning_integerrange}                          { count(); return B256WARNING_INTEGERRANGE; }

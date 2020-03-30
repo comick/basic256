@@ -12,52 +12,62 @@
 
 class Variable
 {
-    public:
-        Variable();
-        ~Variable();
+	public:
+		Variable();
+		~Variable();
 
-        DataElement *data;
+		DataElement *data;
 };
 
 
 class Variables: public QObject
 {
-    Q_OBJECT;
-    public:
-        Variables(int);
-        ~Variables();
-        //
-        QString debug();
-        void increaserecurse();
-        void decreaserecurse();
-        int getrecurse();
-        //
-        int type(int);
-        //
-        Variable* get(const int, int);
-        Variable* get(const int);
-        Variable* getAt(const int, const int);
-        Variable* getAt(const int);
-        DataElement *getdata(int);
-        DataElement *getdata(int, const bool);
-        void setdata(const int, DataElement *);
-        void setdata(int, long);
-        void setdata(int, double);
-        void setdata(int, QString);
-        void unassign(const int);
-        //
-        void makeglobal(const int);
+	Q_OBJECT;
+	public:
+		Variables(int);
+		~Variables();
+		//
+		QString debug();
+		void increaserecurse();
+		void decreaserecurse();
+		int getrecurse();
+		//
+		int type(int);
+		//
+		Variable* get(const int, int);
+		Variable* get(const int);
+		Variable* getAt(const int, const int);
+		Variable* getAt(const int);
+		DataElement *getdata(int);
 
+		void setdata(const int, DataElement *);
+		void setdata(int, long);
+		void setdata(int, double);
+		void setdata(int, QString);
+		void unassign(const int);
+		//
+		void makeglobal(const int);
 
-    private:
-        int real_varnum;		// set by get and getAt for the actual variable number and level returned (deref/global)
-        int real_level;
-        const int numsyms;		// size of the symbol table
-        int recurselevel;
-        int maxrecurselevel;
-        std::vector<Variable**> varmap;
-        bool *isglobal;
-        void allocateRecurseLevel();
-        void clearRecurseLevel();
-        void clearvariable(Variable *);
+		static int getError() {
+			return getError(false);
+		}
+
+		static int getError(int clear) {
+			int olde = e;
+			if (clear) e = ERROR_NONE;
+			return olde;
+		}
+
+	private:
+		int real_varnum;		// set by get and getAt for the actual variable number and level returned (deref/global)
+		int real_level;
+		const int numsyms;		// size of the symbol table
+		int recurselevel;
+		int maxrecurselevel;
+		std::vector<Variable**> varmap;
+		bool *isglobal;
+		void allocateRecurseLevel();
+		void clearRecurseLevel();
+		void clearvariable(Variable *);
+		static int e;		// error number thrown - will be 0 if no error
 };

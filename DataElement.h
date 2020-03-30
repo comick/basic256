@@ -40,6 +40,7 @@ class DataElement
 		int level;
         DataElementArray *arr;
         
+
 		DataElement();
 		~DataElement();
 		
@@ -50,20 +51,29 @@ class DataElement
 
 		QString debug();
 		void copy(DataElement *);
-		void copy(DataElement *, int);
 		
 		void clear();
 		
 		void arraydim(const int, const int, const bool);
 		DataElement* arraygetdata(const int, const int);
-		DataElement* arraygetdata(const int, const int, const bool);
 		void arraysetdata(const int, const int, DataElement *);
 		void arrayunassign(const int, const int);
 		int arraysize();
 		int arraysizerows();
 		int arraysizecols();
 		
+		static int getError() {
+			return getError(false);
+		}
+
+		static int getError(int clear) {
+			int olde = e;
+			if (clear) e = ERROR_NONE;
+			return olde;
+		}
+
 	private:
+		static int e;		// error number thrown - will be 0 if no error
 		Error *error;
 };
 
