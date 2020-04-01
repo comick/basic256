@@ -174,8 +174,20 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
 			rowItem->setData(COLUMNNAME, Qt::UserRole + 1, id);
 			addTopLevelItem(rowItem);
 		}
-
 		setTypeAndValue(rowItem, v->data);
+		//
+		// if an array set initial values if any
+		if (v->data->type==T_ARRAY) {
+			for(int x = 0; x<v->data->arr->xdim;x++) {
+				for(int y = 0; y<v->data->arr->ydim;y++) {
+					DataElement *q = v->data->arraygetdata(x,y);
+					DataElement::getError(true);
+					if (q->type!=T_UNASSIGNED) {
+						varWinAssign(variables, varnum, level, x, y);
+					}
+				}  
+			}  
+		}
 	}
 }
 

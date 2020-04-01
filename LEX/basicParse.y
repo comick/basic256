@@ -913,20 +913,20 @@ statement:
 			| seekstmt
 			| setsettingstmt
 			| soundstmt
-                        | soundpausestmt
-                        | soundplayeroffstmt
-                        | soundplaystmt
-                        | soundstopstmt
-                        | soundwaitstmt
-                        | soundwaveformstmt
-                        | soundsystemstmt
-                        | soundenvelopestmt
-                        | soundharmonicsstmt
-                        | soundfadestmt
-                        | soundseekstmt
-                        | soundvolumestmt
-                        | soundloopstmt
-                        | spritedimstmt
+			| soundpausestmt
+			| soundplayeroffstmt
+			| soundplaystmt
+			| soundstopstmt
+			| soundwaitstmt
+			| soundwaveformstmt
+			| soundsystemstmt
+			| soundenvelopestmt
+			| soundharmonicsstmt
+			| soundfadestmt
+			| soundseekstmt
+			| soundvolumestmt
+			| soundloopstmt
+			| spritedimstmt
 			| spritehidestmt
 			| spriteloadstmt
 			| spritemovestmt
@@ -941,7 +941,7 @@ statement:
 			| throwerrorstmt
 			| trystmt
 			| unassignstmt
-                        | unloadstmt
+			| unloadstmt
 			| untilstmt
 			| variablewatchstmt
 			| volumestmt
@@ -1709,42 +1709,42 @@ colorstmt:	B256SETCOLOR args_eee {
 			;
 
 soundstmt:	B256SOUND expr {
-                                addOp(OP_SOUND);
-                        }
-                        | B256SOUND args_ee {
-                                addIntOp(OP_PUSHINT, 2);	// 2 columns
-                                addIntOp(OP_PUSHINT, 1);	// 1 row
-                                addOp(OP_SOUND_LIST);
-                        }
-                        | B256SOUND listoflists {
-                                addOp(OP_SOUND_LIST);
-                        }
-                        | B256SOUND array_empty {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                                addOp(OP_SOUND_LIST);
-                        }
-                        ;
+					addOp(OP_SOUND);
+			}
+			| B256SOUND args_ee {
+					addIntOp(OP_PUSHINT, 2);	// 2 columns
+					addIntOp(OP_PUSHINT, 1);	// 1 row
+					addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND listoflists {
+					addOp(OP_SOUND_LIST);
+			}
+			| B256SOUND array_empty {
+					addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+					addOp(OP_SOUND_LIST);
+			}
+			;
 
 soundplaystmt:	B256SOUNDPLAY args_none {
-                            addIntOp(OP_PUSHINT, -1);
-                            addOp(OP_SOUNDPLAY);
-                        }
-                        | B256SOUNDPLAY expr {
-                                addOp(OP_SOUNDPLAY);
-                        }
-                        | B256SOUNDPLAY args_ee {
-                                addIntOp(OP_PUSHINT, 2);	// 2 columns
-                                addIntOp(OP_PUSHINT, 1);	// 1 row
-                                addOp(OP_SOUNDPLAY_LIST);
-                        }
-                        | B256SOUNDPLAY listoflists {
-                                addOp(OP_SOUNDPLAY_LIST);
-                        }
-                        | B256SOUNDPLAY array_empty {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                                addOp(OP_SOUNDPLAY_LIST);
-                        }
-                        ;
+				addIntOp(OP_PUSHINT, -1);
+				addOp(OP_SOUNDPLAY);
+			}
+			| B256SOUNDPLAY expr {
+					addOp(OP_SOUNDPLAY);
+			}
+			| B256SOUNDPLAY args_ee {
+					addIntOp(OP_PUSHINT, 2);	// 2 columns
+					addIntOp(OP_PUSHINT, 1);	// 1 row
+					addOp(OP_SOUNDPLAY_LIST);
+			}
+			| B256SOUNDPLAY listoflists {
+					addOp(OP_SOUNDPLAY_LIST);
+			}
+			| B256SOUNDPLAY array_empty {
+					addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+					addOp(OP_SOUNDPLAY_LIST);
+			}
+			;
 
 soundpausestmt:  B256SOUNDPAUSE expr {
                                 addOp(OP_SOUNDPAUSE);
@@ -3600,29 +3600,29 @@ expr:
 			| B256ERROR_LONGRANGE args_none { addIntOp(OP_PUSHINT, ERROR_LONGRANGE); }
 			| B256ERROR_INTEGERRANGE args_none { addIntOp(OP_PUSHINT, ERROR_INTEGERRANGE); }
 			| B256ERROR_NOTIMPLEMENTED args_none { addIntOp(OP_PUSHINT, ERROR_NOTIMPLEMENTED); }
-                        | B256ERROR_ARRAYEVEN args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYEVEN); }
-                        | B256ERROR_ARRAYLENGTH2D args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYLENGTH2D); }
-                        | B256ERROR_NOSUCHFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHFUNCTION); }
-                        | B256ERROR_NOSUCHSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHSUBROUTINE); }
-                        | B256ERROR_SLICESIZE args_none { addIntOp(OP_PUSHINT, ERROR_SLICESIZE); }
-                        | B256ERROR_UNSERIALIZEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_UNSERIALIZEFORMAT); }
-                        | B256ERROR_DOWNLOAD args_none { addIntOp(OP_PUSHINT, ERROR_DOWNLOAD); }
-                        | B256ERROR_ENVELOPEMAX args_none { addIntOp(OP_PUSHINT, ERROR_ENVELOPEMAX); }
-                        | B256ERROR_ENVELOPEODD args_none { addIntOp(OP_PUSHINT, ERROR_ENVELOPEODD); }
-                        | B256ERROR_EXPECTEDSOUND args_none { addIntOp(OP_PUSHINT, ERROR_EXPECTEDSOUND); }
-                        | B256ERROR_HARMONICLIST args_none { addIntOp(OP_PUSHINT, ERROR_HARMONICLIST); }
-                        | B256ERROR_HARMONICNUMBER args_none { addIntOp(OP_PUSHINT, ERROR_HARMONICNUMBER); }
-                        | B256ERROR_INVALIDRESOURCE args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDRESOURCE); }
-                        | B256ERROR_SOUNDFILE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDFILE); }
-                        | B256ERROR_SOUNDRESOURCE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDRESOURCE); }
-                        | B256ERROR_TOOMANYSOUNDS args_none { addIntOp(OP_PUSHINT, ERROR_TOOMANYSOUNDS); }
-                        | B256ERROR_ONEDIMENSIONAL args_none { addIntOp(OP_PUSHINT, ERROR_ONEDIMENSIONAL); }
-                        | B256ERROR_WAVEFORMLOGICAL args_none { addIntOp(OP_PUSHINT, ERROR_WAVEFORMLOGICAL); }
-                        | B256WARNING_SOUNDERROR args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDERROR); }
-                        | B256WARNING_SOUNDFILEFORMAT args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDFILEFORMAT); }
-                        | B256WARNING_SOUNDLENGTH args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDLENGTH); }
-                        | B256WARNING_SOUNDNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDNOTSEEKABLE); }
-                        | B256WARNING_WAVOBSOLETE args_none { addIntOp(OP_PUSHINT, WARNING_WAVOBSOLETE); }
+			| B256ERROR_ARRAYEVEN args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYEVEN); }
+			| B256ERROR_ARRAYLENGTH2D args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYLENGTH2D); }
+			| B256ERROR_NOSUCHFUNCTION args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHFUNCTION); }
+			| B256ERROR_NOSUCHSUBROUTINE args_none { addIntOp(OP_PUSHINT, ERROR_NOSUCHSUBROUTINE); }
+			| B256ERROR_SLICESIZE args_none { addIntOp(OP_PUSHINT, ERROR_SLICESIZE); }
+			| B256ERROR_UNSERIALIZEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_UNSERIALIZEFORMAT); }
+			| B256ERROR_DOWNLOAD args_none { addIntOp(OP_PUSHINT, ERROR_DOWNLOAD); }
+			| B256ERROR_ENVELOPEMAX args_none { addIntOp(OP_PUSHINT, ERROR_ENVELOPEMAX); }
+			| B256ERROR_ENVELOPEODD args_none { addIntOp(OP_PUSHINT, ERROR_ENVELOPEODD); }
+			| B256ERROR_EXPECTEDSOUND args_none { addIntOp(OP_PUSHINT, ERROR_EXPECTEDSOUND); }
+			| B256ERROR_HARMONICLIST args_none { addIntOp(OP_PUSHINT, ERROR_HARMONICLIST); }
+			| B256ERROR_HARMONICNUMBER args_none { addIntOp(OP_PUSHINT, ERROR_HARMONICNUMBER); }
+			| B256ERROR_INVALIDRESOURCE args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDRESOURCE); }
+			| B256ERROR_SOUNDFILE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDFILE); }
+			| B256ERROR_SOUNDRESOURCE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDRESOURCE); }
+			| B256ERROR_TOOMANYSOUNDS args_none { addIntOp(OP_PUSHINT, ERROR_TOOMANYSOUNDS); }
+			| B256ERROR_ONEDIMENSIONAL args_none { addIntOp(OP_PUSHINT, ERROR_ONEDIMENSIONAL); }
+			| B256ERROR_WAVEFORMLOGICAL args_none { addIntOp(OP_PUSHINT, ERROR_WAVEFORMLOGICAL); }
+			| B256WARNING_SOUNDERROR args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDERROR); }
+			| B256WARNING_SOUNDFILEFORMAT args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDFILEFORMAT); }
+			| B256WARNING_SOUNDLENGTH args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDLENGTH); }
+			| B256WARNING_SOUNDNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, WARNING_SOUNDNOTSEEKABLE); }
+			| B256WARNING_WAVOBSOLETE args_none { addIntOp(OP_PUSHINT, WARNING_WAVOBSOLETE); }
 			| B256WARNING_START args_none { addIntOp(OP_PUSHINT, WARNING_START); }
 			| B256WARNING_NUMBERCONV args_none { addIntOp(OP_PUSHINT, WARNING_NUMBERCONV); }
 			| B256WARNING_STRINGCONV args_none { addIntOp(OP_PUSHINT, WARNING_STRINGCONV); }
@@ -3630,28 +3630,28 @@ expr:
 			| B256WARNING_VARNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_VARNOTASSIGNED); }
 			| B256WARNING_LONGRANGE args_none { addIntOp(OP_PUSHINT, WARNING_LONGRANGE); }
 			| B256WARNING_INTEGERRANGE args_none { addIntOp(OP_PUSHINT, WARNING_INTEGERRANGE); }
-                        | B256ERROR_ARRAYELEMENT args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYELEMENT); }
-                        | B256ERROR_INVALIDKEYNAME args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDKEYNAME); }
-                        | B256ERROR_INVALIDPROGNAME args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDPROGNAME); }
-                        | B256ERROR_REFNOTASSIGNED args_none { addIntOp(OP_PUSHINT, ERROR_REFNOTASSIGNED); }
-                        | B256ERROR_SETTINGMAXKEYS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGMAXKEYS); }
-                        | B256ERROR_SETTINGMAXLEN args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGMAXLEN); }
-                        | B256ERROR_SETTINGSGETACCESS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGSGETACCESS); }
-                        | B256ERROR_SETTINGSSETACCESS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGSSETACCESS); }
-                        | B256ERROR_SOUNDERROR args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDERROR); }
-                        | B256ERROR_SOUNDFILEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDFILEFORMAT); }
-                        | B256ERROR_SOUNDLENGTH args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDLENGTH); }
-                        | B256ERROR_SOUNDNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDNOTSEEKABLE); }
-                        | B256ERROR_STRING2NOTE args_none { addIntOp(OP_PUSHINT, ERROR_STRING2NOTE); }
-                        | B256ERROR_WAVOBSOLETE args_none { addIntOp(OP_PUSHINT, ERROR_WAVOBSOLETE); }
-                        | B256ERROR_UNEXPECTEDRETURN args_none { addIntOp(OP_PUSHINT, ERROR_UNEXPECTEDRETURN); }
-                        | B256WARNING_ARRAYELEMENT args_none { addIntOp(OP_PUSHINT, WARNING_ARRAYELEMENT); }
-                        | B256WARNING_REFNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_REFNOTASSIGNED); }
-                        | B256WARNING_STRING2NOTE args_none { addIntOp(OP_PUSHINT, WARNING_STRING2NOTE); }
-                        | B256TYPEOF '(' expr ')' {
+			| B256ERROR_ARRAYELEMENT args_none { addIntOp(OP_PUSHINT, ERROR_ARRAYELEMENT); }
+			| B256ERROR_INVALIDKEYNAME args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDKEYNAME); }
+			| B256ERROR_INVALIDPROGNAME args_none { addIntOp(OP_PUSHINT, ERROR_INVALIDPROGNAME); }
+			| B256ERROR_REFNOTASSIGNED args_none { addIntOp(OP_PUSHINT, ERROR_REFNOTASSIGNED); }
+			| B256ERROR_SETTINGMAXKEYS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGMAXKEYS); }
+			| B256ERROR_SETTINGMAXLEN args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGMAXLEN); }
+			| B256ERROR_SETTINGSGETACCESS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGSGETACCESS); }
+			| B256ERROR_SETTINGSSETACCESS args_none { addIntOp(OP_PUSHINT, ERROR_SETTINGSSETACCESS); }
+			| B256ERROR_SOUNDERROR args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDERROR); }
+			| B256ERROR_SOUNDFILEFORMAT args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDFILEFORMAT); }
+			| B256ERROR_SOUNDLENGTH args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDLENGTH); }
+			| B256ERROR_SOUNDNOTSEEKABLE args_none { addIntOp(OP_PUSHINT, ERROR_SOUNDNOTSEEKABLE); }
+			| B256ERROR_STRING2NOTE args_none { addIntOp(OP_PUSHINT, ERROR_STRING2NOTE); }
+			| B256ERROR_WAVOBSOLETE args_none { addIntOp(OP_PUSHINT, ERROR_WAVOBSOLETE); }
+			| B256ERROR_UNEXPECTEDRETURN args_none { addIntOp(OP_PUSHINT, ERROR_UNEXPECTEDRETURN); }
+			| B256WARNING_ARRAYELEMENT args_none { addIntOp(OP_PUSHINT, WARNING_ARRAYELEMENT); }
+			| B256WARNING_REFNOTASSIGNED args_none { addIntOp(OP_PUSHINT, WARNING_REFNOTASSIGNED); }
+			| B256WARNING_STRING2NOTE args_none { addIntOp(OP_PUSHINT, WARNING_STRING2NOTE); }
+			| B256TYPEOF '(' expr ')' {
 				addOp(OP_TYPEOF);
 			}
-                        | B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
+			| B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
 			| B256TYPE_INT args_none { addIntOp(OP_PUSHINT, T_INT); }
 			| B256TYPE_FLOAT args_none { addIntOp(OP_PUSHINT, T_FLOAT); }
 			| B256TYPE_STRING args_none { addIntOp(OP_PUSHINT, T_STRING); }
@@ -3668,54 +3668,54 @@ expr:
 			| B256OSTYPE_WINDOWS args_none { addIntOp(OP_PUSHINT, OSTYPE_WINDOWS); }
 			| B256SLICE_ALL args_none { addIntOp(OP_PUSHINT, SLICE_ALL); }
 			| B256SLICE_PAINT args_none { addIntOp(OP_PUSHINT, SLICE_PAINT); }
-                        | B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
-                        | B256SOUNDPLAYER '(' expr ')' { addOp(OP_SOUNDPLAYER); }
-                        | B256SOUNDPLAYER '(' args_ee ')' {
-                                addIntOp(OP_PUSHINT, 2);	// 2 columns
-                                addIntOp(OP_PUSHINT, 1);	// 1 row
-                                addOp(OP_SOUNDPLAYER_LIST);
-                        }
-                        | B256SOUNDPLAYER '(' listoflists ')' { addOp(OP_SOUNDPLAYER_LIST); }
-                        | B256SOUNDPLAYER '(' array_empty ')' {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                                addOp(OP_SOUNDPLAYER_LIST);
-                        }
-                        | B256SOUNDID args_none {
-                                addOp(OP_SOUNDID);
-                        }
-                        | B256SOUNDPOSITION '(' expr ')' {
-                                addOp(OP_SOUNDPOSITION);
-                        }
-                        | B256SOUNDPOSITION args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDPOSITION);
-                        }
-                        | B256SOUNDSTATE '(' expr ')' {
-                                addOp(OP_SOUNDSTATE);
-                        }
-                        | B256SOUNDSTATE args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDSTATE);
-                        }
-                        | B256SOUNDLENGTH '(' expr ')' {
-                                addOp(OP_SOUNDLENGTH);
-                        }
-                        | B256SOUNDLENGTH args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDLENGTH);
-                        }
-                        | B256SOUNDSAMPLERATE args_none {
-                                addOp(OP_SOUNDSAMPLERATE);
-                        }
-                        | B256IMAGEWIDTH '(' expr ')' {
-                                addOp(OP_IMAGEWIDTH);
-                        }
-                        | B256IMAGEHEIGHT '(' expr ')' {
-                                addOp(OP_IMAGEHEIGHT);
-                        }
-                        | B256IMAGEPIXEL '(' args_eee ')' {
-                                addOp(OP_IMAGEPIXEL);
-                        }
+			| B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
+			| B256SOUNDPLAYER '(' expr ')' { addOp(OP_SOUNDPLAYER); }
+			| B256SOUNDPLAYER '(' args_ee ')' {
+				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addOp(OP_SOUNDPLAYER_LIST);
+			}
+			| B256SOUNDPLAYER '(' listoflists ')' { addOp(OP_SOUNDPLAYER_LIST); }
+			| B256SOUNDPLAYER '(' array_empty ')' {
+				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+				addOp(OP_SOUNDPLAYER_LIST);
+			}
+			| B256SOUNDID args_none {
+				addOp(OP_SOUNDID);
+			}
+			| B256SOUNDPOSITION '(' expr ')' {
+				addOp(OP_SOUNDPOSITION);
+			}
+			| B256SOUNDPOSITION args_none {
+				addIntOp(OP_PUSHINT, -1);
+				addOp(OP_SOUNDPOSITION);
+			}
+			| B256SOUNDSTATE '(' expr ')' {
+				addOp(OP_SOUNDSTATE);
+			}
+			| B256SOUNDSTATE args_none {
+				addIntOp(OP_PUSHINT, -1);
+				addOp(OP_SOUNDSTATE);
+			}
+			| B256SOUNDLENGTH '(' expr ')' {
+				addOp(OP_SOUNDLENGTH);
+			}
+			| B256SOUNDLENGTH args_none {
+				addIntOp(OP_PUSHINT, -1);
+				addOp(OP_SOUNDLENGTH);
+			}
+			| B256SOUNDSAMPLERATE args_none {
+				addOp(OP_SOUNDSAMPLERATE);
+			}
+			| B256IMAGEWIDTH '(' expr ')' {
+				addOp(OP_IMAGEWIDTH);
+			}
+			| B256IMAGEHEIGHT '(' expr ')' {
+				addOp(OP_IMAGEHEIGHT);
+			}
+			| B256IMAGEPIXEL '(' args_eee ')' {
+				addOp(OP_IMAGEPIXEL);
+			}
 
 
 

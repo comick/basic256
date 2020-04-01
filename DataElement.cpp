@@ -69,10 +69,11 @@ void DataElement::copy(DataElement *source) {
 		case T_ARRAY:
 			{
 				// copy array elements from one old array to a new one
-				type = T_ARRAY;
 				if (!arr)
 					arr = new DataElementArray;
 				int i = source->arr->xdim * source->arr->ydim;
+				arr->xdim = source->arr->xdim;
+				arr->ydim = source->arr->ydim;
 				arr->datavector.resize(i);
 				while(i-- > 0) {
 					arr->datavector[i].copy(&source->arr->datavector[i]);

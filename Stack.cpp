@@ -190,7 +190,7 @@ DataElement *Stack::popelement() {
 	// pop an element - a POINTER to the data on the stack
 	// WILL CHANGE ON NEXT PUSH!!!!
 	if (stackpointer==0) {
-		e =ERROR_STACKUNDERFLOW;
+		e = ERROR_STACKUNDERFLOW;
 		// return a fake element instead of NULL
 		// to handle a potential error in Interpreter
 		stackdata[0]->type = T_INT;

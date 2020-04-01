@@ -131,7 +131,9 @@ private:
 	QGridLayout * soundtablayout;
 	QLabel *voicelabel;
 	QComboBox *voicecombo;
-    QLabel *soundvolumelabel;
+	QLabel *speakstmtlabel;
+	QLineEdit *speakstmtinput;
+   QLabel *soundvolumelabel;
     QLabel *soundvolumevalue;
     QSlider *soundvolumeslider;
     QLabel *soundnormalizelabel;

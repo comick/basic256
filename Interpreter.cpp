@@ -1611,7 +1611,6 @@ Interpreter::execByteCode() {
 					DataElement *e = variables->getdata(i);
 					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED,i);
-						e = new DataElement(0);
 					}
 					stack->pushdataelement(e);
 				}
@@ -3252,8 +3251,29 @@ Interpreter::execByteCode() {
 				case OP_SOUNDPLAYER:
 				case OP_SOUNDLOAD:
 				{
+
+					// sound - load and play - wait to finish
+					// sound localfile
+					// sound url
+					// sound player#
+					// sound loadresource
+
+					// soundplay - load and play - dont wait to finish 
+					// soundplay localfile
+					// soundplay url
+					// soundplay player#
+					// soundplay loadresource
+					
+					// soundplayer - create a player but do not start playing
+					// player# = soundplayer( localfile )
+					// player# = soundplayer( url )
+					// player# = soundplayer( loadresource )
+					
+					
 					DataElement *e = stack->popelement();
+					
 					if (e->type == T_STRING) {
+						// a single string
 						if(opcode==OP_SOUND || opcode==OP_SOUNDPLAY){
 							mymutex->lock();
 							emit(playSound(e->stringval, false));
@@ -3269,6 +3289,7 @@ Interpreter::execByteCode() {
 							mymutex->unlock();
 							stack->pushint(id);
 						}else{
+							// OP_SOUNDLOAD
 							QString s = e->stringval;
 							QUrl url(s);
 							if(QFileInfo(s).exists()){
@@ -3297,66 +3318,70 @@ Interpreter::execByteCode() {
 							}
 						}
 						break;
-					 } else if(e->type != T_ARRAY){
-						if(opcode==OP_SOUNDPLAY){
+					 } else if(e->type == T_INT){
+						// a single int
+						if(opcode==OP_SOUND||opcode==OP_SOUNDPLAY){
 							mymutex->lock();
-							emit(soundPlay(convert->getInt(e)));
+							emit(soundPlay(e->intval));
 							waitCond->wait(mymutex);
 							mymutex->unlock();
+							if(opcode==OP_SOUND) sound->wait(e->intval);
 							break;
-						}else{
-							//error invalid SOUND syntax
+						} else {
 							error->q(ERROR_EXPECTEDSOUND);
-							if(opcode==OP_SOUNDPLAYER) stack->pushint(0);
-							if(opcode==OP_SOUNDLOAD) stack->pushstring("");
+						}
+					} else if (e->type==T_ARRAY) {
+						// an array
+						int columns = e->arraysizecols();
+						if(columns%2!=0){
+							error->q(ERROR_ARRAYEVEN);
 							break;
 						}
-					}
 
-					// e must be an array (we expect at this point)
-					int columns = e->arraysizecols();
-					if(columns%2!=0){
-						error->q(ERROR_ARRAYEVEN);
+						double i;
+						int rows = e->arraysizerows();
+
+						std::vector < std::vector<double> > sounddata;
+
+						for(int row = 0; row < rows; row++) {
+							std::vector < double > v;	// vector containing duration
+						   for (int col = 0; col < columns; col++) {
+								DataElement *av = e->arraygetdata(row, col);
+								if(col%2==0)
+									i = convert->getMusicalNote(av);
+								else
+									i = convert->getFloat(av);
+								//printf(">>%i\n",i);
+								v.push_back(i);
+							}
+							sounddata.push_back( v );
+						}
+
+						if (!error->pending()){
+							if(opcode==OP_SOUND || opcode==OP_SOUNDPLAY){
+								mymutex->lock();
+								emit(playSound(sounddata, false));
+								waitCond->wait(mymutex);
+								int id = sound->soundID;
+								mymutex->unlock();
+								if(opcode==OP_SOUND) sound->wait(id);
+							}else if(opcode==OP_SOUNDPLAYER){
+								mymutex->lock();
+								emit(playSound(sounddata, true));
+								waitCond->wait(mymutex);
+								int id = sound->soundID;
+								mymutex->unlock();
+								stack->pushint(id);
+							}else{
+								stack->pushstring(sound->loadSoundFromVector(sounddata));
+							}
+						}
+					} else {
+						//error invalid SOUND syntax
+						error->q(ERROR_EXPECTEDSOUND);
+						if(opcode==OP_SOUNDPLAYER) stack->pushint(0);
+						if(opcode==OP_SOUNDLOAD) stack->pushstring("");
 						break;
-					}
-
-					double i;
-					int rows = e->arraysizerows();
-
-					std::vector < std::vector<double> > sounddata;
-
-					for(int row = 0; row < rows; row++) {
-						std::vector < double > v;	// vector containing duration
-					   for (int col = 0; col < columns; col++) {
-							DataElement *av = e->arraygetdata(row, col);
-							if(col%2==0)
-								i = convert->getMusicalNote(av);
-							else
-								i = convert->getFloat(av);
-							//printf(">>%i\n",i);
-							v.push_back(i);
-						}
-						sounddata.push_back( v );
-					}
-
-					if (!error->pending()){
-						if(opcode==OP_SOUND || opcode==OP_SOUNDPLAY){
-							mymutex->lock();
-							emit(playSound(sounddata, false));
-							waitCond->wait(mymutex);
-							int id = sound->soundID;
-							mymutex->unlock();
-							if(opcode==OP_SOUND) sound->wait(id);
-						}else if(opcode==OP_SOUNDPLAYER){
-							mymutex->lock();
-							emit(playSound(sounddata, true));
-							waitCond->wait(mymutex);
-							int id = sound->soundID;
-							mymutex->unlock();
-							stack->pushint(id);
-						}else{
-							stack->pushstring(sound->loadSoundFromVector(sounddata));
-						}
 					}
 				}
 				break;
@@ -3375,9 +3400,6 @@ Interpreter::execByteCode() {
 						std::vector < double > v;	// vector containing duration
 						int columns = stack->popint();
 						if(columns%2!=0){
-							//empty stack from the rest of data
-							stack->drop(columns);
-							for(row++; row < rows ; row++) stack->drop(stack->popint());
 							error->q(ERROR_ARRAYEVEN);
 							break;
 						}

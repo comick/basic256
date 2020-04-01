@@ -427,6 +427,19 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
     }
 #endif
 
+#ifdef ESPEAK_EXECUTE
+    r++;
+    {
+        // set statement to speak words
+        speakstmtlabel = new QLabel(tr("PDF File Name:"),this);
+        speakstmtinput = new QLineEdit(QString::null,this);
+        speakstmtinput->setText(settings.value(SETTINGSESPEAKSTATEMENT, SETTINGSESPEAKSTATEMENTDEFAULT).toString());
+        speakstmtinput->setMaxLength(96);
+        soundtablayout->addWidget(speakstmtlabel,r,1,1,1);
+        soundtablayout->addWidget(speakstmtinput,r,2,1,2);
+    }
+#endif
+
     // *******************************************************************************************
     // build the printer tab
     printertablayout = new QGridLayout();
@@ -645,6 +658,10 @@ void PreferencesWin::clickSaveButton() {
         if (voicecombo->currentIndex()!=-1) {
             settings.setValue(SETTINGSESPEAKVOICE, voicecombo->itemData(voicecombo->currentIndex()));
         }
+#endif
+#ifdef ESPEAK_EXECUTE
+        //
+        settings.setValue(SETTINGSESPEAKSTATEMENT, speakstmtinput->text());
 #endif
 
         // *******************************************************************************************

@@ -195,10 +195,11 @@ RunController::speakWords(QString text) {
 #ifdef ESPEAK_EXECUTE
     // easy espeak implementation when all else fails
     // mutex handled by executeSystem
+    SETTINGS;
+    QString statement = settings.value(SETTINGSESPEAKSTATEMENT,SETTINGSESPEAKSTATEMENTDEFAULT).toString();
     text.replace("\""," quote ");
-    text.prepend("espeak \"");
-    text.append("\"");
-    executeSystem(text);
+    statement.replace("WORDS", text);
+    executeSystem(statement);
 #endif
 #ifdef MACX_SAY
     // easy macosX implementation - call the command line say statement

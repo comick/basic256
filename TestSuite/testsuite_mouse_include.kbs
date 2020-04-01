@@ -5,6 +5,7 @@
 # 20140406	j.m.reneau	made spots larger for android testing
 # 20140530	j.m.reneau	added mouseb statement test
 # 20160908	j.m.reneau	added doubleclick
+# 20200331  J.M.RENEAU  added escape for non 3 bottom mouses
 
 # macos and android do not have 3 button mouses
 
@@ -26,51 +27,63 @@ color black
 circle 150,250,40
 refresh
 
-print "left click on the blue rectangle"
+print "left click on the blue rectangle or tap escape"
 clickclear
-while clickb <> mousebutton_left
-   pause .01
+escaped = false
+while clickb <> mousebutton_left and not escaped
+	if key = 16777216 then escaped = true
+	pause .01
 end while
-call n("left click blue",pixel(clickx, clicky),blue)
+if not escaped then call n("left click blue",pixel(clickx, clicky),blue)
 
 if rightbutton then
-   print "RIGHT click on the red rectangle"
-   clickclear
-   while clickb <> mousebutton_right
-      pause .01
-   end while
-   call n("right click red",pixel(clickx, clicky),red)
+	print "RIGHT click on the red rectangle or tap escape"
+	clickclear
+	escaped = false
+	while clickb <> mousebutton_right and not escaped
+		if key = 16777216 then escaped = true
+		pause .01
+	end while
+	if not escaped then call n("right click red",pixel(clickx, clicky),red)
 endif
 
 if centerbutton then
-   print "CENTER click on the GREEN rectangle"
-   clickclear
-   while clickb <> mousebutton_center
-      pause .01
-   end while
-   call n("center click greend",pixel(clickx, clicky),green)
+	print "CENTER click on the GREEN rectangle or tap escape"
+	clickclear
+	escaped = false
+	while clickb <> mousebutton_center and not escaped
+		if key = 16777216 then escaped = true
+		pause .01
+	end while
+	if not escaped then call n("center click greend",pixel(clickx, clicky),green)
 end if
 
-print "DOUBLE left click on the yellow rectangle"
+print "DOUBLE left click on the yellow rectangle or tap escape"
 clickclear
-while clickb <> mousebutton_left + mousebutton_doubleclick
-   pause .01
+escaped = false
+while clickb <> mousebutton_left + mousebutton_doubleclick and not escaped
+	if key = 16777216 then escaped = true
+	pause .01
 end while
-call n("left click yellow",pixel(clickx, clicky),yellow)
+if not escaped then call n("left click yellow",pixel(clickx, clicky),yellow)
 
-print "move mouse over black dot"
-while pixel(mousex, mousey)<> black
-   pause .01
+print "move mouse over black dot or tap escape"
+while pixel(mousex, mousey)<> black and key <> 16777216
+	pause .01
 end while
 
-print "click right mouse button"
+print "click right mouse button or tap escape"
+escaped = false
 a = msec
-while mouseb <> mousebutton_right
-   pause .01
+while mouseb <> mousebutton_right and not escaped
+	if key = 16777216 then escaped = true
+	pause .01
 end while
-print (msec - a) + " you took ms to press the button"
-a = msec
-while mouseb = mousebutton_right
-   pause .01
-end while
-print (msec - a) + " you presss the button for ms"
+if not escaped then
+	print (msec - a) + " you took ms to press the button"
+	a = msec
+	while mouseb = mousebutton_right
+		pause .01
+	end while
+	print (msec - a) + " you presss the button for ms"
+end if
