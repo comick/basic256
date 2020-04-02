@@ -300,7 +300,6 @@ QString Interpreter::opname(int op) {
 	case OP_STAMP_SR_LIST : return QString("OP_STAMP_SR_LIST");
 	case OP_POLY_LIST : return QString("OP_POLY_LIST");
 	case OP_WRITELINE : return QString("OP_WRITELINE");
-	case OP_SOUND_LIST : return QString("OP_SOUND_LIST");
 	case OP_SPRITEPOLY_LIST : return QString("OP_SPRITEPOLY_LIST");
 	case OP_SPRITEDIM : return QString("OP_SPRITEDIM");
 	case OP_SPRITELOAD : return QString("OP_SPRITELOAD");
@@ -410,9 +409,7 @@ QString Interpreter::opname(int op) {
 	case OP_SEED : return QString("OP_SEED");
 	case OP_SOUND : return QString("OP_SOUND");
 	case OP_SOUNDPLAY : return QString("OP_SOUNDPLAY");
-	case OP_SOUNDPLAY_LIST : return QString("OP_SOUNDPLAY_LIST");
 	case OP_SOUNDLOAD : return QString("OP_SOUNDLOAD");
-	case OP_SOUNDLOAD_LIST : return QString("OP_SOUNDLOAD_LIST");
 	case OP_SOUNDLOADRAW : return QString("OP_SOUNDLOADRAW");
 	case OP_SOUNDPAUSE : return QString("OP_SOUNDPAUSE");
 	case OP_SOUNDSEEK : return QString("OP_SOUNDSEEK");
@@ -441,9 +438,7 @@ QString Interpreter::opname(int op) {
 	case OP_UNLOAD : return QString("OP_UNLOAD");
 	case OP_IMAGEAUTOCROP : return QString("OP_IMAGEAUTOCROP");
 	case OP_SOUNDPLAYER : return QString("OP_SOUNDPLAYER");
-	case OP_SOUNDPLAYER_LIST : return QString("OP_SOUNDPLAYER_LIST");
 	case OP_SOUNDWAVEFORM : return QString("OP_SOUNDWAVEFORM");
-	case OP_SOUNDWAVEFORM_LIST : return QString("OP_SOUNDWAVEFORM_LIST");
 	case OP_SOUNDFADE : return QString("OP_SOUNDFADE");
 	case OP_SOUNDLOOP : return QString("OP_SOUNDLOOP");
 	case OP_SOUNDENVELOPE : return QString("OP_SOUNDENVELOPE");
@@ -501,6 +496,9 @@ QString Interpreter::opname(int op) {
 	case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
 	case OP_BITSHIFTL : return QString("OP_BITSHIFTL");
 	case OP_BITSHIFTR : return QString("OP_BITSHIFTR");
+	case OP_LIST2EXPRESSION : return QString("OP_LIST2EXPRESSION");
+	case OP_STACKSAVE : return QString("OP_STACKSAVE");
+	case OP_STACKUNSAVE : return QString("OP_STACKUNSAVE");
 
 	default: return QString("OP_UNKNOWN");
 	}
@@ -862,6 +860,8 @@ Interpreter::initialize() {
 
 	// now build the new stack object
 	stack = new Stack(convert, locale);
+	savestack = new Stack(convert, locale);		// secondary stack to hold stuff (OP_STACKSAVE, OP_STACKUNSAVE)
+	
 
 	// now create the variable storage
 	variables = new Variables(numsyms);
@@ -3255,20 +3255,25 @@ Interpreter::execByteCode() {
 					// sound - load and play - wait to finish
 					// sound localfile
 					// sound url
-					// sound player#
+					// sound player# (int expression)
 					// sound loadresource
 
 					// soundplay - load and play - dont wait to finish 
 					// soundplay localfile
 					// soundplay url
-					// soundplay player#
+					// soundplay player#  (int expression)
 					// soundplay loadresource
 					
 					// soundplayer - create a player but do not start playing
+					// returns int "player#" used in soundplay, soundstop...
 					// player# = soundplayer( localfile )
 					// player# = soundplayer( url )
 					// player# = soundplayer( loadresource )
 					
+					// soundload - create a sound resource (used in sound, soundplay, soundplayer)
+					// returns string "loadresource"
+					// loadresource = soundload( localfile )
+					// loadresource = soundload( url )
 					
 					DataElement *e = stack->popelement();
 					
@@ -3382,58 +3387,6 @@ Interpreter::execByteCode() {
 						if(opcode==OP_SOUNDPLAYER) stack->pushint(0);
 						if(opcode==OP_SOUNDLOAD) stack->pushstring("");
 						break;
-					}
-				}
-				break;
-
-
-				case OP_SOUND_LIST:
-				case OP_SOUNDPLAY_LIST:
-				case OP_SOUNDPLAYER_LIST:
-				case OP_SOUNDLOAD_LIST:
-				{
-					std::vector < std::vector<double> > sounddata;
-
-					int rows = stack->popint();
-					double i;
-					for(int row = 0; row < rows ; row++) {
-						std::vector < double > v;	// vector containing duration
-						int columns = stack->popint();
-						if(columns%2!=0){
-							error->q(ERROR_ARRAYEVEN);
-							break;
-						}
-						for (int col = 0; col < columns ; col++) {
-							if(col%2!=0)
-								i = stack->popnote();
-							else
-								i = stack->popfloat();
-							//printf(">>%i\n",i);
-							v.insert(v.begin(),i);
-						}
-						sounddata.push_back( v );
-					}
-					if (!error->pending()){
-						if(opcode==OP_SOUND_LIST || opcode==OP_SOUNDPLAY_LIST){
-							mymutex->lock();
-							emit(playSound(sounddata, false));
-							waitCond->wait(mymutex);
-							int id = sound->soundID;
-							mymutex->unlock();
-							if(opcode==OP_SOUND_LIST) sound->wait(id);
-						}else if(opcode==OP_SOUNDPLAYER_LIST){
-							mymutex->lock();
-							emit(playSound(sounddata, true));
-							waitCond->wait(mymutex);
-							int id = sound->soundID;
-							mymutex->unlock();
-							stack->pushint(id);
-						}else{
-							stack->pushstring(sound->loadSoundFromVector(sounddata));
-						}
-					}else{
-						if(opcode==OP_SOUNDPLAYER_LIST) stack->pushint(0);
-						if(opcode==OP_SOUNDLOAD_LIST) stack->pushstring("");
 					}
 				}
 				break;
@@ -3608,8 +3561,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SOUNDWAVEFORM: {
+					bool logic = stack->popbool(); //if data is logical, not raw
 					DataElement *e = stack->popelement();
-					//this is an array without [] - act like OP_SOUNDWAVEFORM_LIST
 					if (e->type==T_ARRAY){
 						int columns = e->arraysizecols();
 						int rows = e->arraysizerows();
@@ -3629,38 +3582,12 @@ Interpreter::execByteCode() {
 								wave[columns]=convert->getInt(av);
 							}
 							if(!error->pending())
-								sound->customWaveform(wave, false);
+								sound->customWaveform(wave, logic);
 						}
 
 					}else{
 						sound->waveform(convert->getInt(e));
 					}
-				}
-				break;
-
-				case OP_SOUNDWAVEFORM_LIST: {
-					std::vector<double> wave;
-					bool logic = stack->popbool(); //if data is logical, not raw
-					int rows = stack->popint();
-					int columns = stack->popint();
-
-					if(rows!=1 || (logic && columns<3)){
-						//clear stack from the rest of data
-						stack->drop(columns);
-						for(int i=1;i<rows;i++) stack->drop(stack->popint());
-						if(rows!=1)
-							error->q(ERROR_ONEDIMENSIONAL); //Creating custom waveform request one dimensional array data
-						else
-							error->q(ERROR_WAVEFORMLOGICAL); //Creating custom waveform using logical coordinates it request at least 3 elements
-						break;
-					}
-					wave.resize(columns,0);
-					while(columns>0){
-						columns--;
-						wave[columns]=stack->popfloat();
-					}
-					if(!error->pending())
-						sound->customWaveform(wave, logic);
 				}
 				break;
 
@@ -7168,9 +7095,53 @@ Interpreter::execByteCode() {
 				}
 				break;
 
+				case OP_LIST2EXPRESSION: {
+					// pop a list of values off of stack and push
+					// it back on as a single DataElement with the data as array
+					// remember this is not associated with variable
+					const int rows = stack->popint();
+					const int columns = stack->popint(); //pop the first row length - the following rows must have the same length
+					int columns2 = columns;
 
+					DataElement *edest = new DataElement();
+					edest->arraydim(rows, columns, false);
 
+					for(int row = rows-1; row>=0; row--) {
+						//pop row length only if is not first row - already popped
+						if(row != rows-1) {
+							columns2=stack->popint();
+							if(columns2!=columns){
+								error->q(ERROR_ARRAYNITEMS, -9999);
+								// empty stack to successfully pass over an OnError situation
+								stack->drop(columns2);
+								for(row--; row>=0 ; row--) stack->drop(stack->popint());
+								break;
+							}
+						}
+						for(int col= columns-1; col >= 0; col--) {
+							DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
+							edest->arraysetdata(row, col, e);
+						}
+					}
+					stack->pushdataelement(edest);
+				}
+				break;
 
+				OP_SATCKSAVE: {
+					// pop an element from the current stack and push to the "savestack"
+					DataElement *de = stack->popelement();
+					savestack->pushdataelement(de);
+				}
+				break;
+				
+				OP_SATCKUNSAVE: {
+					// pop an element from the "savestack" and push to the program's main stack
+					DataElement *de = savestack->popelement();
+					stack->pushdataelement(de);
+				}
+				break;
+				
+				
 
 
 

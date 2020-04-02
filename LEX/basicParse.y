@@ -1709,19 +1709,24 @@ colorstmt:	B256SETCOLOR args_eee {
 			;
 
 soundstmt:	B256SOUND expr {
-					addOp(OP_SOUND);
+				// either string - lodresource
+				// int - player number
+				// array - from a variable
+				addOp(OP_SOUND);
 			}
 			| B256SOUND args_ee {
-					addIntOp(OP_PUSHINT, 2);	// 2 columns
-					addIntOp(OP_PUSHINT, 1);	// 1 row
-					addOp(OP_SOUND_LIST);
+				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUND);
 			}
 			| B256SOUND listoflists {
-					addOp(OP_SOUND_LIST);
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUND);
 			}
 			| B256SOUND array_empty {
-					addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-					addOp(OP_SOUND_LIST);
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addOp(OP_SOUND);
 			}
 			;
 
@@ -1730,19 +1735,24 @@ soundplaystmt:	B256SOUNDPLAY args_none {
 				addOp(OP_SOUNDPLAY);
 			}
 			| B256SOUNDPLAY expr {
-					addOp(OP_SOUNDPLAY);
+				// either string - lodresource
+				// int - player number
+				// array - from a variable
+				addOp(OP_SOUNDPLAY);
 			}
 			| B256SOUNDPLAY args_ee {
-					addIntOp(OP_PUSHINT, 2);	// 2 columns
-					addIntOp(OP_PUSHINT, 1);	// 1 row
-					addOp(OP_SOUNDPLAY_LIST);
+				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDPLAY);
 			}
 			| B256SOUNDPLAY listoflists {
-					addOp(OP_SOUNDPLAY_LIST);
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDPLAY);
 			}
 			| B256SOUNDPLAY array_empty {
-					addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-					addOp(OP_SOUNDPLAY_LIST);
+				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -1783,31 +1793,35 @@ soundwaitstmt:  B256SOUNDWAIT expr {
                         ;
 
 soundwaveformstmt:  B256SOUNDWAVEFORM expr {
-                                addOp(OP_SOUNDWAVEFORM);
-                        }
-                        | B256SOUNDWAVEFORM listoflists {
-                                addIntOp(OP_PUSHINT, 0); //false
-                                addOp(OP_SOUNDWAVEFORM_LIST);
-                        }
-                        | B256SOUNDWAVEFORM listoflists ',' expr {
-                                addOp(OP_SOUNDWAVEFORM_LIST);
-                        }
-                        | B256SOUNDWAVEFORM array_empty {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                                addIntOp(OP_PUSHINT, 0); //false
-                                addOp(OP_SOUNDWAVEFORM_LIST);
-                        }
-                        | B256SOUNDWAVEFORM array_empty {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                        } ',' expr {
-                            addOp(OP_SOUNDWAVEFORM_LIST);
-                        }
-                        | B256SOUNDWAVEFORM args_v {
-                            addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                        } ',' expr {
-                            addOp(OP_SOUNDWAVEFORM_LIST);
-                        }
-                        ;
+							addIntOp(OP_PUSHINT,0);
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						| B256SOUNDWAVEFORM args_ee {
+							// first expression must be an array var
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						| B256SOUNDWAVEFORM listoflists {
+							addOp(OP_LIST2EXPRESSION);
+							addIntOp(OP_PUSHINT, 0); //false
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						| B256SOUNDWAVEFORM listoflists ',' expr {
+							addOp(OP_STACKSAVE);
+							addOp(OP_LIST2EXPRESSION);
+							addOp(OP_STACKUNSAVE);
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						| B256SOUNDWAVEFORM array_empty {
+							addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+							addIntOp(OP_PUSHINT, 0); //false
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						| B256SOUNDWAVEFORM array_empty, expr {
+							addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+							addOp(OP_STACKSWAP);
+							addOp(OP_SOUNDWAVEFORM);
+						}
+						;
 
 soundsystemstmt:  B256SOUNDSYSTEM expr {
                                 addOp(OP_SOUNDSYSTEM);
@@ -3669,16 +3683,22 @@ expr:
 			| B256SLICE_ALL args_none { addIntOp(OP_PUSHINT, SLICE_ALL); }
 			| B256SLICE_PAINT args_none { addIntOp(OP_PUSHINT, SLICE_PAINT); }
 			| B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
-			| B256SOUNDPLAYER '(' expr ')' { addOp(OP_SOUNDPLAYER); }
+			| B256SOUNDPLAYER '(' expr ')' {
+				addOp(OP_SOUNDPLAYER);
+			}
 			| B256SOUNDPLAYER '(' args_ee ')' {
 				addIntOp(OP_PUSHINT, 2);	// 2 columns
 				addIntOp(OP_PUSHINT, 1);	// 1 row
-				addOp(OP_SOUNDPLAYER_LIST);
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDPLAYER);
 			}
-			| B256SOUNDPLAYER '(' listoflists ')' { addOp(OP_SOUNDPLAYER_LIST); }
+			| B256SOUNDPLAYER '(' listoflists ')' {
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDPLAYER);
+			}
 			| B256SOUNDPLAYER '(' array_empty ')' {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-				addOp(OP_SOUNDPLAYER_LIST);
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addOp(OP_SOUNDPLAYER);
 			}
 			| B256SOUNDID args_none {
 				addOp(OP_SOUNDID);
@@ -3812,44 +3832,52 @@ expr:
 			| B256IMAGETYPE_BMP args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_BMP); }
 			| B256IMAGETYPE_JPG args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_JPG); }
 			| B256IMAGETYPE_PNG args_none { addStringOp(OP_PUSHSTRING, IMAGETYPE_PNG); }
-                        | B256SOUNDLOAD '(' expr ')' { addOp(OP_SOUNDLOAD); }
-                        | B256SOUNDLOAD '(' args_ee ')' {
-                                addIntOp(OP_PUSHINT, 2);	// 2 columns
-                                addIntOp(OP_PUSHINT, 1);	// 1 row
-                                addOp(OP_SOUNDLOAD_LIST);
-                        }
-                        | B256SOUNDLOAD '(' listoflists ')' { addOp(OP_SOUNDLOAD_LIST); }
-                        | B256SOUNDLOAD '(' array_empty ')' {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                                addOp(OP_SOUNDLOAD_LIST);
-                        }
-                        | B256SOUNDLOADRAW '(' args_A ')' { addOp(OP_SOUNDLOADRAW); }
-                        | B256IMAGENEW '(' expr ',' expr ',' expr ')' {
-                                addOp(OP_IMAGENEW);
-                        }
-                        | B256IMAGENEW '(' expr ',' expr ')' {
-                                addIntOp(OP_PUSHINT, 0x00);
-                                addOp(OP_IMAGENEW);
-                        }
-                        | B256IMAGELOAD '(' expr ')' {
-                                addOp(OP_IMAGELOAD);
-                        }
-                        | B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ',' expr ')' {
-                                addIntOp(OP_PUSHINT, 5); //number of arguments
-                                addOp(OP_IMAGECOPY);
-                        }
-                        | B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ')' {
-                                addIntOp(OP_PUSHINT, 4); //number of arguments
-                                addOp(OP_IMAGECOPY);
-                        }
-                        | B256IMAGECOPY '(' expr ')' {
-                                addIntOp(OP_PUSHINT, 1); //number of arguments
-                                addOp(OP_IMAGECOPY);
-                        }
-                        | B256IMAGECOPY args_none {
-                                addIntOp(OP_PUSHINT, 0); //number of arguments
-                                addOp(OP_IMAGECOPY);
-                        }
+			| B256SOUNDLOAD '(' expr ')' {
+				addOp(OP_SOUNDLOAD);
+			}
+			| B256SOUNDLOAD '(' args_ee ')' {
+				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDLOAD);
+			}
+			| B256SOUNDLOAD '(' listoflists ')' {
+				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_SOUNDLOAD);
+			}
+			| B256SOUNDLOAD '(' array_empty ')' {
+				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+				addOp(OP_SOUNDLOAD);
+			}
+			| B256SOUNDLOADRAW '(' args_A ')' {
+				addOp(OP_SOUNDLOADRAW);
+			}
+			| B256IMAGENEW '(' expr ',' expr ',' expr ')' {
+				addOp(OP_IMAGENEW);
+			}
+			| B256IMAGENEW '(' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 0x00);
+				addOp(OP_IMAGENEW);
+			}
+			| B256IMAGELOAD '(' expr ')' {
+				addOp(OP_IMAGELOAD);
+			}
+			| B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 5); //number of arguments
+				addOp(OP_IMAGECOPY);
+			}
+			| B256IMAGECOPY '(' expr ',' expr ',' expr ',' expr ')' {
+				addIntOp(OP_PUSHINT, 4); //number of arguments
+				addOp(OP_IMAGECOPY);
+			}
+			| B256IMAGECOPY '(' expr ')' {
+				addIntOp(OP_PUSHINT, 1); //number of arguments
+				addOp(OP_IMAGECOPY);
+			}
+			| B256IMAGECOPY args_none {
+				addIntOp(OP_PUSHINT, 0); //number of arguments
+				addOp(OP_IMAGECOPY);
+			}
 
 
 			/* ##########################################

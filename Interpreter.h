@@ -233,6 +233,7 @@ class Interpreter : public QThread
         void netSockCloseAll();
         Variables *variables;
         Stack *stack;
+        Stack *savestack;
         bool isError; //flag set if program stops because of an error
         Convert *convert;
         QIODevice **filehandle;
