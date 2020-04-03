@@ -444,6 +444,15 @@ QString Error::getErrorMessage(char **symtable) {
         case ERROR_ASINACOSRANGE:
             errormessage = tr("Unable to calculate the arc-sine or arc-cosine of a value outside the interval [-1.0, +1.0]");
             break;
+        case ERROR_ARRAYEXPR:
+            errormessage = tr("Array Expression Expected.");
+            break;
+        case ERROR_NUMBEREXPR:
+            errormessage = tr("Numeric Expression Expected.");
+            break;
+        case ERROR_STRINGEXPR:
+            errormessage = tr("String Expression Expected.");
+            break;
 
 
 

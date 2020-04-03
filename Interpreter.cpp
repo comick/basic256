@@ -295,12 +295,10 @@ QString Interpreter::opname(int op) {
 	case OP_STACKDUP : return QString("OP_STACKDUP");
 	case OP_STACKDUP2 : return QString("OP_STACKDUP2");
 	case OP_STACKSWAP2 : return QString("OP_STACKSWAP2");
-	case OP_STAMP_LIST : return QString("OP_STAMP_LIST");
-	case OP_STAMP_S_LIST : return QString("OP_STAMP_S_LIST");
-	case OP_STAMP_SR_LIST : return QString("OP_STAMP_SR_LIST");
-	case OP_POLY_LIST : return QString("OP_POLY_LIST");
+	case OP_STAMP : return QString("OP_STAMP");
+	case OP_POLY : return QString("OP_POLY");
 	case OP_WRITELINE : return QString("OP_WRITELINE");
-	case OP_SPRITEPOLY_LIST : return QString("OP_SPRITEPOLY_LIST");
+	case OP_SPRITEPOLY : return QString("OP_SPRITEPOLY");
 	case OP_SPRITEDIM : return QString("OP_SPRITEDIM");
 	case OP_SPRITELOAD : return QString("OP_SPRITELOAD");
 	case OP_SPRITESLICE : return QString("OP_SPRITESLICE");
@@ -4035,154 +4033,87 @@ Interpreter::execByteCode() {
 				break;
 
 
-				case OP_POLY_LIST: {
-					// doing a polygon from an immediate list or an array's data
-					int rows = stack->popint();
-					int columns = stack->popint();
-					if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
-						//clear stack from the data
-						stack->drop(columns);
-						for(int row=1;row<rows;row++) stack->drop(stack->popint());
-						error->q(ERROR_ARRAYEVEN);
-						break;
-					}
-					QPointF *points = new QPointF[rows*columns];
-					int pairs = 0;
-
-					for(int row = 0; row < rows; row++){
-						if(row!=0) columns = stack->popint();
-						if(rows>1&&columns!=2){
-							//clear stack from the data
-							stack->drop(columns);
-							for(row++;row<rows;row++) stack->drop(stack->popint());
-							error->q(ERROR_ARRAYEVEN);
-							break;
+				case OP_POLY: {
+					// doing a polygon from an array's data
+					// either as an even numbered 1d array or as rows of points
+					DataElement *e = stack->popelement();
+					QPolygonF *poly = convert->getPolygonF(e);
+					if (poly) {
+						//update painter's attributes only if needed (pen and brush)
+						if(painter_pen_need_update){
+							painter->setPen(drawingpen);
+							painter_pen_need_update=false;
 						}
-						for (int col = 0; col < columns; col+=2) {
-							points[pairs].setY(stack->popfloat());
-							points[pairs].setX(stack->popfloat());
-							pairs++;
+						if(painter_brush_need_update){
+							painter->setBrush(drawingbrush);
+							painter_brush_need_update=false;
 						}
-					}
-
-
-					if (!error->pending()) {
-						if (pairs < 3){
-							error->q(ERROR_POLYPOINTS);
-						}else{
-
-							//update painter's attributes only if needed (pen and brush)
-							if(painter_pen_need_update){
-								painter->setPen(drawingpen);
-								painter_pen_need_update=false;
-							}
-							if(painter_brush_need_update){
-								painter->setBrush(drawingbrush);
-								painter_brush_need_update=false;
-							}
-							if(painter_last_compositionModeClear!=CompositionModeClear){
-								if(CompositionModeClear)
-									painter->setCompositionMode(QPainter::CompositionMode_Clear);
-								else
-									painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-								painter_last_compositionModeClear=CompositionModeClear;
-							}
-							//end painter update
-
-							painter->drawPolygon(points, pairs);
-
-							if (!fastgraphics && drawingOnScreen) waitForGraphics();
+						if(painter_last_compositionModeClear!=CompositionModeClear){
+							if(CompositionModeClear)
+								painter->setCompositionMode(QPainter::CompositionMode_Clear);
+							else
+								painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+							painter_last_compositionModeClear=CompositionModeClear;
 						}
+						//end painter update
+
+						painter->drawPolygon(*poly);
+
+						if (!fastgraphics && drawingOnScreen) waitForGraphics();
 					}
-					delete[] points;
 				}
 				break;
 
-				case OP_STAMP_LIST:
-				case OP_STAMP_S_LIST:
-				case OP_STAMP_SR_LIST: {
+				case OP_STAMP: {
 					// special type of poly where x,y,scale, are given first and
 					// the ploy is sized and loacted - so we can move them easy
-					double rotate=0;			// defaule rotation to 0 radians
-					double scale=1;			// default scale to full size (1x)
 					double tx, ty, savetx;		// used in scaling and rotating
-					// create an array of points from an immediate list on the stack
-					int rows = stack->popint();
-					int columns = stack->popint();
-
-					if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
-						//clear stack from the data
-						stack->drop(columns);
-						for(int row=1;row<rows;row++) stack->drop(stack->popint());
-						error->q(ERROR_ARRAYEVEN);
-						break;
-					}
-
-					QPointF *points = new QPointF[rows*columns];
-					int pairs = 0;
-
-					for(int row = 0; row < rows; row++){
-						if(row!=0) columns = stack->popint();
-						if(rows>1&&columns!=2){
-							//clear stack from the data
-							stack->drop(columns);
-							for(row++;row<rows;row++) stack->drop(stack->popint());
-							error->q(ERROR_ARRAYEVEN);
-							break;
+					QPointF point;
+					
+					DataElement *e = stack->popelement();
+					QPolygonF *poly = convert->getPolygonF(e);
+					double rotate = stack->popfloat();
+					double scale = stack->popfloat();
+					int y = stack->popint();
+					int x = stack->popint();
+					
+					if (poly) {
+						// scale, rotate, and position the points
+						for (int j = 0; j < poly->size(); j++) {
+							point = poly->at(j);
+							tx = scale * point.x();
+							ty = scale * point.y();
+							if (rotate!=0) {
+								savetx = tx;
+								tx = cos(rotate) * tx - sin(rotate) * ty;
+								ty = cos(rotate) * ty + sin(rotate) * savetx;
+							}
+							point.setX(tx + x);
+							point.setY(ty + y);
+							poly->replace(j, point);
 						}
-						for (int col = 0; col < columns; col+=2) {
-							points[pairs].setY(stack->popfloat());
-							points[pairs].setX(stack->popfloat());
-							pairs++;
+
+						//update painter's attributes only if needed (pen and brush)
+						if(painter_pen_need_update){
+							painter->setPen(drawingpen);
+							painter_pen_need_update=false;
 						}
-					}
-
-					if (!error->pending()) {
-						if (pairs < 3){
-							error->q(ERROR_POLYPOINTS);
-						}else{
-							//
-							// now get scaling, rotation, and position to stamp the poly
-							if (opcode==OP_STAMP_SR_LIST) rotate = stack->popfloat();
-							if (opcode==OP_STAMP_SR_LIST || opcode==OP_STAMP_S_LIST) scale = stack->popfloat();
-							int y = stack->popint();
-							int x = stack->popint();
-							// scale, rotate, and position the points
-							for (int j = 0; j < pairs; j++) {
-								tx = scale * points[j].x();
-								ty = scale * points[j].y();
-								if (rotate!=0) {
-									savetx = tx;
-									tx = cos(rotate) * tx - sin(rotate) * ty;
-									ty = cos(rotate) * ty + sin(rotate) * savetx;
-								}
-								points[j].setX(tx + x);
-								points[j].setY(ty + y);
-							}
-
-							//update painter's attributes only if needed (pen and brush)
-							if(painter_pen_need_update){
-								painter->setPen(drawingpen);
-								painter_pen_need_update=false;
-							}
-							if(painter_brush_need_update){
-								painter->setBrush(drawingbrush);
-								painter_brush_need_update=false;
-							}
-							if(painter_last_compositionModeClear!=CompositionModeClear){
-								if(CompositionModeClear)
-									painter->setCompositionMode(QPainter::CompositionMode_Clear);
-								else
-									painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-								painter_last_compositionModeClear=CompositionModeClear;
-							}
-							//end painter update
-
-							painter->drawPolygon(points, pairs);
-							if (!fastgraphics && drawingOnScreen) waitForGraphics();
+						if(painter_brush_need_update){
+							painter->setBrush(drawingbrush);
+							painter_brush_need_update=false;
 						}
+						if(painter_last_compositionModeClear!=CompositionModeClear){
+							if(CompositionModeClear)
+								painter->setCompositionMode(QPainter::CompositionMode_Clear);
+							else
+								painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+							painter_last_compositionModeClear=CompositionModeClear;
+						}
+						//end painter update
+
+						painter->drawPolygon(*poly);
+						if (!fastgraphics && drawingOnScreen) waitForGraphics();
 					}
-					delete[] points;
 				}
 				break;
 
@@ -4726,87 +4657,46 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_SPRITEPOLY_LIST: {
-					// create a sprite from a polygon from an immediate list on the stack
-					// first stack element is the number of points*2 to pull from the stack
-					int maxx=0, maxy=0;
-					int minx=0, miny=0;
-
-					// doing a polygon from an immediate list or an array's data
-					int rows = stack->popint();
-					int columns = stack->popint();
-					if((rows==1&&columns%2!=0)||(rows>1&&columns!=2)){
-						//clear stack from the data
-						stack->drop(columns);
-						for(int row=1;row<rows;row++) stack->drop(stack->popint());
-						stack->drop(1); // sprite number
-						error->q(ERROR_ARRAYEVEN);
-						break;
-					}
-					QPointF *points = new QPointF[rows*columns];
-					int pairs = 0;
-
-					for(int row = 0; row < rows; row++){
-						if(row!=0) columns = stack->popint();
-						if(rows>1&&columns!=2){
-							//clear stack from the data
-							stack->drop(columns);
-							for(row++;row<rows;row++) stack->drop(stack->popint());
-							stack->drop(1); // sprite number
-							error->q(ERROR_ARRAYEVEN);
-							break;
-						}
-						for (int col = 0; col < columns; col+=2) {
-							double y = stack->popfloat();
-							double x = stack->popfloat();
-							if(x<minx) minx=x;
-							if(y<miny) miny=y;
-							if(x>maxx) maxx=x;
-							if(y>maxy) maxy=y;
-							points[pairs].setY(y);
-							points[pairs].setX(x);
-							pairs++;
-						}
-					}
-
-
-					if (!error->pending()) {
-						if (pairs < 3){
-							error->q(ERROR_POLYPOINTS);
-						}else{
-							//
-							// now move points to the top left (if they are not there)
-							for(int j=0;j<pairs;j++) {
-								points[j].rx()-=minx;
-								points[j].ry()-=miny;
+				case OP_SPRITEPOLY: {
+					// create a sprite from a polygon
+					
+					DataElement *e = stack->popelement();
+					QPolygonF *poly = convert->getPolygonF(e);
+					if (poly) {
+						// now move points to the top left (if they are not there)
+						QRectF bound = poly->boundingRect();
+						if (bound.top() !=0 || bound.left() !=0) {
+							for(int j=0;j<poly->size();j++) {
+								QPointF pt = poly->at(j);
+								pt.setX(pt.x()-bound.top());
+								pt.setY(pt.y()-bound.left());
+								poly->replace(j, pt);
 							}
-							//
-							// now build sprite
-							int n = stack->popint(); // sprite number
-							if(n >= 0 && n < nsprites) {
-								// free old, draw, and capture sprite
-								sprite_prepare_for_new_content(n);
-								sprites[n].image = new QImage(maxx+1,maxy+1,QImage::Format_ARGB32_Premultiplied);
-								if(!sprites[n].image->isNull()){
-									sprites[n].image->fill(Qt::transparent);
-									if (!CompositionModeClear) {
-										QPainter *poly = new QPainter(sprites[n].image);
-										poly->setPen(drawingpen);
-										poly->setBrush(drawingbrush);
-										poly->drawPolygon(points, pairs);
-										poly->end();
-										delete poly;
-										double img_w=maxx+1;
-										double img_h=maxy+1;
-										sprites[n].position.setRect(-(img_w/2),-(img_h/2),img_w,img_h);
-									}
+							bound = poly->boundingRect();
+						}
+						//
+						// now build sprite
+						int n = stack->popint(); // sprite number
+						if(n >= 0 && n < nsprites) {
+							// free old, draw, and capture sprite
+							sprite_prepare_for_new_content(n);
+							sprites[n].image = new QImage(bound.right(),bound.bottom(),QImage::Format_ARGB32_Premultiplied);
+							if(!sprites[n].image->isNull()){
+								sprites[n].image->fill(Qt::transparent);
+								if (!CompositionModeClear) {
+									QPainter *p = new QPainter(sprites[n].image);
+									p->setPen(drawingpen);
+									p->setBrush(drawingbrush);
+									p->drawPolygon(*poly);
+									p->end();
+									delete p;
+									sprites[n].position.setRect(-(bound.right()/2),-(bound.bottom()/2),bound.right(),bound.bottom());
 								}
-							} else {
-								error->q(ERROR_SPRITENUMBER);
 							}
+						} else {
+							error->q(ERROR_SPRITENUMBER);
 						}
 					}
-					delete points;
 				}
 				break;
 
@@ -7127,14 +7017,14 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				OP_SATCKSAVE: {
+				case OP_STACKSAVE: {
 					// pop an element from the current stack and push to the "savestack"
 					DataElement *de = stack->popelement();
 					savestack->pushdataelement(de);
 				}
 				break;
 				
-				OP_SATCKUNSAVE: {
+				case OP_STACKUNSAVE: {
 					// pop an element from the "savestack" and push to the program's main stack
 					DataElement *de = savestack->popelement();
 					stack->pushdataelement(de);

@@ -291,3 +291,31 @@ int Convert::compare(DataElement *one, DataElement* two) {
 		return 0;
 	}
 }
+
+QPolygonF *Convert::getPolygonF(DataElement *d) {
+	// returns a QPolygonF - used in several graphics OPcodes
+	QPolygonF *poly = new QPolygonF();
+	if (d->type==T_ARRAY) {
+		if (d->arraysizerows()==1 || d->arraysizecols()==2) {
+			if (d->arraysizerows()*d->arraysizecols()>=6) {
+				if (d->arraysizerows()==1) {
+					for(int col = 0; col < d->arraysizecols(); col+=2){
+						poly->append(QPointF(getFloat(d->arraygetdata(0,col)), getFloat(d->arraygetdata(0,col+1))));
+					}
+				} else {
+					for(int row = 0; row < d->arraysizerows(); row++){
+						poly->append(QPointF(getFloat(d->arraygetdata(row,0)), getFloat(d->arraygetdata(row,1))));
+					}
+				}
+			} else {
+				e = ERROR_POLYPOINTS;
+			}
+		} else {
+			e = ERROR_ARRAYEVEN;
+		}
+	} else {
+		e = ERROR_ARRAYEXPR;
+	}
+	//fprintf(stderr,"getPolygon %d %d %d\n", d->arraysizerows(), d->arraysizecols(), poly->size());
+	return poly;
+}

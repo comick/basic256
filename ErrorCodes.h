@@ -122,6 +122,11 @@
 #define ERROR_ASINACOSRANGE            117
 #define ERROR_STRINGCONV				118
 #define ERROR_BOOLEANCONV				119
+#define ERROR_ARRAYEXPR					120
+#define ERROR_NUMBEREXPR				121
+#define ERROR_STRINGEXPR				122
+
+
 
 
 

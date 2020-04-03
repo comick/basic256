@@ -10,6 +10,7 @@
 #include <QLocale>
 #include <QVariant>
 #include <QDebug>
+#include <QPolygonF>
 
 #include "Settings.h"
 #include "Error.h"
@@ -40,6 +41,7 @@ class Convert
 		QString getString(DataElement*, int);
 		double getMusicalNote(DataElement*);
 		int getBool(DataElement*);
+		QPolygonF *getPolygonF(DataElement*);
 
 		int compare(DataElement*, DataElement*);
 		int compareFloats(double, double);

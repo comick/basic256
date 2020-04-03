@@ -9,6 +9,7 @@
 
 #include <QString>
 
+
 #include "Error.h"
 #include "BasicTypes.h"
 
@@ -61,6 +62,7 @@ class DataElement
 		int arraysize();
 		int arraysizerows();
 		int arraysizecols();
+
 		
 		static int getError() {
 			return getError(false);

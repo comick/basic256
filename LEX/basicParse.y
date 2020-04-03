@@ -710,81 +710,103 @@ args_a:
 
 // Array Variable Data as a list of lists
 args_A:
-                        array_empty {
-                                addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                        }
-                        | listoflists
-                        | args_v {
-                            addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                        }
-                        ;
+		array_empty {
+				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+		}
+		| listoflists
+		| args_v {
+			addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
+		}
+		;
+
+// Array Variable as single DataElement, en expression, and a ListOfLists made into a single stack item
+// NEW WAY TO DO THINGS 2020-04-02
+args_B:
+	array_empty {
+		addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+	}
+	| args_v {
+		addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+	}
+	| listoflists {
+		addOp(OP_LIST2EXPRESSION);
+	}
+	| '(' args_B ')'
+	| expr
+	;
+
 
 args_v:
-                        B256VARIABLE {
-                                varnumber[nvarnumber++] = $1;
-                        }
-                        | '(' args_v ')'
-                        ;
+	B256VARIABLE {
+		varnumber[nvarnumber++] = $1;
+	}
+	| '(' args_v ')'
+	;
 
 
 
 /* two arguments */
 
 args_ee:
-                        expr ',' expr
-			| '(' args_ee ')';
+	expr ',' expr
+	| '(' args_ee ')';
 
-args_eA:
-                        expr ',' args_A
-			| '(' args_eA ')';
+args_eB:
+	expr ',' args_B
+	| '(' args_eB ')';
 
 args_ea:
-                        expr ',' args_a
-			|'(' args_ea ')';
+	expr ',' args_a
+	|'(' args_ea ')';
 
 args_ev:
-                        expr ',' args_v
-			|'(' args_ev ')';
+	expr ',' args_v
+	|'(' args_ev ')';
 
 args_Ae:
-                        args_A ',' expr
-			|'(' args_Ae ')';
+	args_A ',' expr
+	|'(' args_Ae ')';
 
 /* three arguments */
 
 args_eee:
-                        expr ',' expr ',' expr
-			| '(' args_eee ')';
+	expr ',' expr ',' expr
+	| '(' args_eee ')';
 
 
 args_eeA:
-                        expr ',' expr ',' args_A
-			| '(' args_eeA ')';
+	expr ',' expr ',' args_A
+	| '(' args_eeA ')';
+
+args_eeB:
+	expr ',' expr ',' args_B
+	| '(' args_eeB ')';
 
 args_Aee:
-                        args_A ',' expr ',' expr
-			|'(' args_Aee ')';
+	args_A ',' expr ',' expr
+	|'(' args_Aee ')';
 
 /* four arguments */
 
 args_eeee:
-                        expr ',' expr ',' expr ',' expr
-			| '(' args_eeee ')';
+	expr ',' expr ',' expr ',' expr
+	| '(' args_eeee ')';
 
-args_eeeA:
-                        expr ',' expr ',' expr ',' args_A
-			| '(' args_eeeA ')';
+args_eeeB:
+	expr ',' expr ',' expr ',' args_B
+	| '(' args_eeeB ')';
+
+
 
 /* five arguments */
 
 args_eeeee:
-                        expr ',' expr ',' expr ',' expr ',' expr
-			| '(' args_eeeee ')';
+	expr ',' expr ',' expr ',' expr ',' expr
+	| '(' args_eeeee ')';
 
-
-args_eeeeA:
-                        expr ',' expr ',' expr ',' expr ',' args_A
-			| '(' args_eeeeA ')';
+args_eeeeB:
+	expr ',' expr ',' expr ',' expr ',' args_B
+	| '(' args_eeeeB ')';
 
 /* six arguments */
 
@@ -801,14 +823,14 @@ args_eeeeeee:
 /* nine arguments */
 
 args_eeeeeeeee:
-                        expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
-                        | '(' args_eeeeeeeee ')';
+	expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
+	| '(' args_eeeeeeeee ')';
 
 /* ten arguments */
 
 args_eeeeeeeeee:
-                        expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
-                        | '(' args_eeeeeeeeee ')';
+	expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
+	| '(' args_eeeeeeeeee ')';
 
 
 
@@ -839,10 +861,10 @@ statement:
 			| dbopenstmt
 			| dimstmt
 			| dostmt
-                        | setgraphstmt
+			| setgraphstmt
 			| editvisiblestmt
-                        | ellipsestmt
-                        | elsestmt
+			| ellipsestmt
+			| elsestmt
 			| endcasestmt
 			| endfunctionstmt
 			| endifstmt
@@ -1816,7 +1838,7 @@ soundwaveformstmt:  B256SOUNDWAVEFORM expr {
 							addIntOp(OP_PUSHINT, 0); //false
 							addOp(OP_SOUNDWAVEFORM);
 						}
-						| B256SOUNDWAVEFORM array_empty, expr {
+						| B256SOUNDWAVEFORM array_empty ',' expr {
 							addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 							addOp(OP_STACKSWAP);
 							addOp(OP_SOUNDWAVEFORM);
@@ -2027,19 +2049,25 @@ volumestmt:
 			;
 
 polystmt:
-			B256POLY args_A {
-				addOp(OP_POLY_LIST);
+			B256POLY args_B {
+				addOp(OP_POLY);
 			}
 			;
 
-stampstmt: 	B256STAMP args_eeeeA {
-				addOp(OP_STAMP_SR_LIST);
+stampstmt: 	B256STAMP args_eeeeB {
+				addOp(OP_STAMP);
 			}
-			| B256STAMP args_eeeA {
-				addOp(OP_STAMP_S_LIST);
-                        }
-                        | B256STAMP args_eeA {
-				addOp(OP_STAMP_LIST);
+			| B256STAMP args_eeeB {
+				addFloatOp(OP_PUSHFLOAT, 1.0); // default scale
+				addOp(OP_STACKSWAP);
+				addOp(OP_STAMP);
+			}
+			| B256STAMP args_eeB {
+				addFloatOp(OP_PUSHFLOAT, 0.0); // default scale
+				addOp(OP_STACKSWAP);
+				addFloatOp(OP_PUSHFLOAT, 1.0); // default scale
+				addOp(OP_STACKSWAP);
+				addOp(OP_STAMP);
 			}
 			;
 
@@ -2349,8 +2377,8 @@ spriteslicestmt:
 			;
 
 spritepolystmt:
-			B256SPRITEPOLY args_eA {
-				addOp(OP_SPRITEPOLY_LIST);
+			B256SPRITEPOLY args_eB {
+				addOp(OP_SPRITEPOLY);
 			}
 			;
 
