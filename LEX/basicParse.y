@@ -55,14 +55,10 @@
 	unsigned int maxwordoffset = 0;		// size of the current wordCode array
 	unsigned int wordOffset = 0;		// current location on the WordCode array
 
-        unsigned int wordCode_lastOpsTable[10];     // array with last ops offset populated with populateLastOpsTable() (used to safe compress ops like rgb)
-        unsigned int wordCode_lastOpOffset = 0;     // location as offest of the last op
-        unsigned int wordCode_lastLineOffset = 0;   // location as offest of the last line (used to start indexing ops frome there)
-
 	unsigned int listlen = 0;
-        unsigned int numberoflists = 0;
+	unsigned int numberoflists = 0;
 
-        unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
+	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
 	int nvarnumber=0;
 
 
@@ -147,8 +143,6 @@
 	void addOp(int op) {
 		checkWordMem(1);
 		wordCode[wordOffset] = op;
-                if(op==OP_CURRLINE) wordCode_lastLineOffset = wordOffset; //store the last line offset to start searching ops from here
-                wordCode_lastOpOffset = wordOffset;
                 wordOffset++;
 		//printf("line=%i addOp op=%i\n",linenumber, op);
 	}
@@ -182,51 +176,7 @@
 		wordOffset += wlen;
 	}
 
-        int populateLastOpsTable(int nr){
-            // This function populate the array wordCode_lastOpsTable[] with offsets of ops
-            // index 0 will contain the last op offset, index 1 will be the next, and so on.
-            // Parameter nr will hold the number of ops of which we are interested (to grab)
-            // Function will return the number of ops grabbed.
-            // This is needed to safe look backward for ops (for compressing code)
-            int f;
-            if(nr<=0 || nr>10) return 0;
-            if(nr==1){
-                if(wordCode_lastOpOffset == wordOffset){
-                    //no op pushed on wordCode
-                    return 0;
-                }else{
-                    wordCode_lastOpsTable[0] = wordCode_lastOpOffset;
-                    return 1;
-                }
-            }else{
-                int count=0;
-                unsigned int index = wordCode_lastLineOffset;
-                while(index<wordOffset){
-                    if(count<nr) count++;
-                    for(f = nr-1; f>0; f--) wordCode_lastOpsTable[f]=wordCode_lastOpsTable[f-1];
-                    wordCode_lastOpsTable[0]=index;
-                    int op = wordCode[index];
-                    index++; //skip op
-                    int t = op&OPTYPE_MASK; //type of op
-                    switch (t) {
-                    case OPTYPE_INT:
-                    case OPTYPE_LABEL:
-                    case OPTYPE_VARIABLE:
-                        index++;
-                        break;
-                    case OPTYPE_FLOAT:
-                        index+=(unsigned int)bytesToFullWords(sizeof(double));
-                        break;
-                    case OPTYPE_STRING:
-                        index+=(unsigned int)bytesToFullWords(strlen((char *) (wordCode + index)) + 1);
-                        break;
-                    }
-                }
-                return count;
-            }
-        }
-
-        void clearIfTable() {
+	void clearIfTable() {
 		int j;
 		for (j = 0; j < IFTABLESIZE; j++) {
 			iftablesourceline[j] = -1;
@@ -352,8 +302,6 @@
                 symtableaddressargs=NULL;
                 maxsymtable = 0;
                 maxwordoffset = 0;
-                wordCode_lastOpOffset = 0;           // location as offest of the last op
-                wordCode_lastLineOffset = 0;   // location as offest of the last line (used to start indexing ops from there)
 
                 while(include_filenames_counter>0){
                     include_filenames_counter--;
@@ -609,141 +557,115 @@
 
 %%
 
-program: 		programline programnewline program
-                                | programline
-                                ;
+program:
+	programline programnewline program
+	| programline
+	;
 
 programnewline:
-                                '\n' {
-                                        linenumber++;
-                                        column=0;
-                                        addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
-                                }
-                                ;
+	'\n' {
+		linenumber++;
+		column=0;
+		addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+	}
+	;
 
-programline: 	label compoundstmt
-                                | label compoundstmt B256REM
-                                | compoundstmt
-                                | compoundstmt B256REM
-                                | label
-                                | label B256REM
-                                | B256REM
-                                | /* empty */
-                                ;
+programline:
+	label compoundstmt
+	| label compoundstmt B256REM
+	| compoundstmt
+	| compoundstmt B256REM
+	| label
+	| label B256REM
+	| B256REM
+	| /* empty */
+	;
 
-label:			B256LABEL {
-					if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
-						errorcode = COMPERR_FUNCTIONGOTO;
-						return -1;
-					}
-					//
-					//check if name of label is already used by a function, subroutine or another label
-					if (symtableaddress[$1] != -1) {
-						errorcode = COMPERR_LABELREDEFINED;
-						return -1;
-					}
-					symtableaddress[$1] = wordOffset;
-					symtableaddresstype[$1] = ADDRESSTYPE_LABEL;
-				}
-				;
+label:
+	B256LABEL {
+		if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
+			errorcode = COMPERR_FUNCTIONGOTO;
+			return -1;
+		}
+		//
+		//check if name of label is already used by a function, subroutine or another label
+		if (symtableaddress[$1] != -1) {
+			errorcode = COMPERR_LABELREDEFINED;
+			return -1;
+		}
+		symtableaddress[$1] = wordOffset;
+		symtableaddresstype[$1] = ADDRESSTYPE_LABEL;
+	}
+	;
 
 functionvariable:
-			args_v {
-				args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVALUE; numargs++;
-				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
-			}
-			| array_empty {
-                                args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVARARRAY; numargs++;
-				//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
-			}
-			;
+		variable_name {
+			args[numargs] = varnumber[--nvarnumber]; argstype[numargs] = ARGSTYPEVALUE; numargs++;
+			//printf("functionvariable %i %i %i\n", args[numargs-1], argstype[numargs-1],numargs);
+		}
+		;
 
 functionvariablelist:
-				'(' ')'
-				| '(' functionvariables ')'
-				;
+		'(' ')'
+		| '(' functionvariables ')'
+		;
 
 
 functionvariables:
-				functionvariable
-				| functionvariable ',' functionvariables
-				;
+	functionvariable
+	| functionvariable ',' functionvariables
+	;
 
 compoundstmt:
-                        compoundstmt ':' statement
-                        | statement
+	compoundstmt ':' statement
+	| statement
+	;
+
+/* ***************************************************** */
+/* * define a variable, empty array, and variable with * */
+/* * indexing operators following.                     * */
+/* * used in expressions to extract values to the      * */
+/* * stack and in statements to assign values          * */
+/* ***************************************************** */
+
+
+variable:
+	B256VARIABLE {
+		varnumber[nvarnumber++] = $1;
+	}
+	;
+
+
+
+variable_name:
+	variable '[' ']' 
+	| variable
+	| '(' variable_name ')'
+	;
+	
+	
+array_indexing:
+	/* array reference - make everything 2d */
+	'[' expr ',' expr ']'
+	| '[' expr ']' '[' expr ']'
+	| '[' expr ']' {
+		addIntOp(OP_PUSHINT, 0);
+		addOp(OP_STACKSWAP);
+	}
+	;
+			
+			
+array_element:
+			variable array_indexing
+			| '(' array_element ')'
 			;
-/* array reference - make everything 2d */
+			
 
-arrayref:
-			'[' expr ',' expr ']'
-			| '[' expr ']' '[' expr ']'
-                        | '[' expr ']' {
-                                addIntOp(OP_PUSHINT, 0);
-                                addOp(OP_STACKSWAP);
-                        }
-			;
-
-/* array assigment a[]={0, 1, 2}*/
-
-array_empty:
-                        args_v '[' ']';
 
 /* statement argument paterns */
 
 args_none:
 			| '(' ')';
-
-/* one argument (only ones that do not have a native or need to setvarnumber) */
-
-/* X - Meaning */
-/* a - array element with [e] or [e,e] following */
-/* A - array data pushed to the stack exactly like listoflists */
-/* e - data element */
-/* v - variable	*/
-
-
-args_a:
-			args_v arrayref
-			| '(' args_a ')'
-			;
-
-// Array Variable Data as a list of lists
-args_A:
-		array_empty {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-		}
-		| listoflists
-		| args_v {
-			addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-		}
-		;
-
-// Array Variable as single DataElement, en expression, and a ListOfLists made into a single stack item
-// NEW WAY TO DO THINGS 2020-04-02
-args_B:
-	array_empty {
-		addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-	}
-	| args_v {
-		addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-	}
-	| listoflists {
-		addOp(OP_LIST2EXPRESSION);
-	}
-	| '(' args_B ')'
-	| expr
-	;
-
-
-args_v:
-	B256VARIABLE {
-		varnumber[nvarnumber++] = $1;
-	}
-	| '(' args_v ')'
-	;
-
-
 
 /* two arguments */
 
@@ -751,21 +673,15 @@ args_ee:
 	expr ',' expr
 	| '(' args_ee ')';
 
-args_eB:
-	expr ',' args_B
-	| '(' args_eB ')';
-
+/* only used by input statement */
 args_ea:
-	expr ',' args_a
+	expr ',' array_element
 	|'(' args_ea ')';
 
+/* only used by input statement */
 args_ev:
-	expr ',' args_v
+	expr ',' variable_name
 	|'(' args_ev ')';
-
-args_Ae:
-	args_A ',' expr
-	|'(' args_Ae ')';
 
 /* three arguments */
 
@@ -773,30 +689,11 @@ args_eee:
 	expr ',' expr ',' expr
 	| '(' args_eee ')';
 
-
-args_eeA:
-	expr ',' expr ',' args_A
-	| '(' args_eeA ')';
-
-args_eeB:
-	expr ',' expr ',' args_B
-	| '(' args_eeB ')';
-
-args_Aee:
-	args_A ',' expr ',' expr
-	|'(' args_Aee ')';
-
 /* four arguments */
 
 args_eeee:
 	expr ',' expr ',' expr ',' expr
 	| '(' args_eeee ')';
-
-args_eeeB:
-	expr ',' expr ',' expr ',' args_B
-	| '(' args_eeeB ')';
-
-
 
 /* five arguments */
 
@@ -804,21 +701,17 @@ args_eeeee:
 	expr ',' expr ',' expr ',' expr ',' expr
 	| '(' args_eeeee ')';
 
-args_eeeeB:
-	expr ',' expr ',' expr ',' expr ',' args_B
-	| '(' args_eeeeB ')';
-
 /* six arguments */
 
 args_eeeeee:
-                        expr ',' expr ',' expr ',' expr ',' expr ',' expr
-			| '(' args_eeeeee ')';
+	expr ',' expr ',' expr ',' expr ',' expr ',' expr
+	| '(' args_eeeeee ')';
 
 /* seven arguments */
 
 args_eeeeeee:
-                        expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
-			| '(' args_eeeeeee ')';
+	expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr
+	| '(' args_eeeeeee ')';
 
 /* nine arguments */
 
@@ -887,16 +780,16 @@ statement:
 			| ifstmt
 			| ifthenstmt
 			| ifthenelsestmt
-                        | imageautocropstmt
-                        | imagecenteredstmt
-                        | imagecropstmt
-                        | imagedrawstmt
-                        | imageflipstmt
-                        | imagesetpixelstmt
-                        | imageresizestmt
-                        | imagerotatestmt
-                        | imagesmoothstmt
-                        | imagetransformedstmt
+			| imageautocropstmt
+			| imagecenteredstmt
+			| imagecropstmt
+			| imagedrawstmt
+			| imageflipstmt
+			| imagesetpixelstmt
+			| imageresizestmt
+			| imagerotatestmt
+			| imagesmoothstmt
+			| imagetransformedstmt
 			| imgloadstmt
 			| imgsavestmt
 			| inputstmt
@@ -1303,21 +1196,21 @@ letstmt:	B256LET assign
 			| arrayelementassign
 			;
 
-dimstmt: 	B256DIM args_a {
+dimstmt: 	B256DIM array_element {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
-			| B256DIM args_a B256FILL expr {
+			| B256DIM array_element B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256DIM args_v expr {
+			| B256DIM variable_name expr {
 				addIntOp(OP_PUSHINT, 1);
 				addOp(OP_STACKSWAP);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
-			| B256DIM args_v expr B256FILL expr {
+			| B256DIM variable_name expr B256FILL expr {
 				addOp(OP_STACKSWAP);
 				addIntOp(OP_PUSHINT, 1);
 				addOp(OP_STACKSWAP);
@@ -1325,46 +1218,39 @@ dimstmt: 	B256DIM args_a {
 				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256DIM args_v args_ee {
+			| B256DIM variable_name args_ee {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 			}
-			| B256DIM args_v args_ee B256FILL expr {
+			| B256DIM variable_name args_ee B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256DIM args_v '=' args_A {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
+			| B256DIM variable_name '=' expr {
+				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256DIM array_empty '=' args_A {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| B256DIM args_v B256FILL expr {
+			| B256DIM variable_name B256FILL expr {
 				addIntOp(OP_PUSHINT, 1);
-				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
-			}
-			| B256DIM array_empty B256FILL expr {
-				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
 			}
 			;
 
-redimstmt:	B256REDIM args_a {
+redimstmt:	B256REDIM array_element {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
-			| B256REDIM args_a B256FILL expr {
+			| B256REDIM array_element B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256REDIM args_v expr {
+			| B256REDIM variable_name expr {
 				addIntOp(OP_PUSHINT, 1);
 				addOp(OP_STACKSWAP);
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
-			| B256REDIM args_v expr B256FILL expr {
+			| B256REDIM variable_name expr B256FILL expr {
 				addOp(OP_STACKSWAP);
 				addIntOp(OP_PUSHINT, 1);
 				addOp(OP_STACKSWAP);
@@ -1372,10 +1258,10 @@ redimstmt:	B256REDIM args_a {
 				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
-			| B256REDIM args_v args_ee {
+			| B256REDIM variable_name args_ee {
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 			}
-			| B256REDIM args_v args_ee B256FILL expr {
+			| B256REDIM variable_name args_ee B256FILL expr {
 				addOp(OP_STACKTOPTO2);
 				addIntOp(OP_REDIM, varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHINT, 0);		// just fill unassigned
@@ -1400,11 +1286,11 @@ clearstmt:	B256CLS args_none {
 			| B256CLG args_none {
 				// push the color clear if there are no arguments
 				addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addIntOp(OP_PUSHINT, 0x00);
-                                //addOp(OP_RGB);
+				//addIntOp(OP_PUSHINT, 0x00);
+				//addIntOp(OP_PUSHINT, 0x00);
+				//addIntOp(OP_PUSHINT, 0x00);
+				//addIntOp(OP_PUSHINT, 0x00);
+				//addOp(OP_RGB);
 				addOp(OP_CLG);
 			}
 			| B256CLG expr {
@@ -1423,10 +1309,10 @@ graphsizestmt:
                                 addFloatOp(OP_PUSHFLOAT, 1.0);
 				addOp(OP_GRAPHSIZE);
 			}
-                        | B256GRAPHSIZE args_eee {
-                                addOp(OP_GRAPHSIZE);
-                        }
-                        ;
+			| B256GRAPHSIZE args_eee {
+					addOp(OP_GRAPHSIZE);
+			}
+			;
 
 refreshstmt:
 			B256REFRESH args_none {
@@ -1441,16 +1327,16 @@ endstmt: 	B256END args_none {
 
 /* assign an expression to a single array element */
 arrayelementassign:
-			args_a '=' expr {
+			array_element '=' expr {
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| args_a B256ADD1 {
-                                addIntOp(OP_ADD1ARRAY,varnumber[--nvarnumber]);
+			| array_element B256ADD1 {
+				addIntOp(OP_ADD1ARRAY,varnumber[--nvarnumber]);
 			}
-			| args_a B256SUB1 {
-                                addIntOp(OP_SUB1ARRAY,varnumber[--nvarnumber]);
+			| array_element B256SUB1 {
+				addIntOp(OP_SUB1ARRAY,varnumber[--nvarnumber]);
 			}
-			| args_a B256ADDEQUAL expr {
+			| array_element B256ADDEQUAL expr {
 				// a[b,c] += n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1460,7 +1346,7 @@ arrayelementassign:
 				addOp(OP_ADD);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a B256SUBEQUAL expr {
+			| array_element B256SUBEQUAL expr {
 				// a[b,c] -= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1471,7 +1357,7 @@ arrayelementassign:
 				addOp(OP_SUB);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a B256MULEQUAL expr {
+			| array_element B256MULEQUAL expr {
 				// a[b,c] *= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1481,7 +1367,7 @@ arrayelementassign:
 				addOp(OP_MUL);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a B256DIVEQUAL expr {
+			| array_element B256DIVEQUAL expr {
 				// a[b,c] /= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1492,7 +1378,7 @@ arrayelementassign:
 				addOp(OP_DIV);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a B256AMPEQUAL expr {
+			| array_element B256AMPEQUAL expr {
 				// a[b,c] &= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1503,7 +1389,7 @@ arrayelementassign:
 				addOp(OP_BINARYAND);
 				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
 			}
-			| args_a B256SEMICOLONEQUAL expr {
+			| array_element B256SEMICOLONEQUAL expr {
 				// a[b,c] /= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
@@ -1518,75 +1404,53 @@ arrayelementassign:
 			
 /* assign an entire array in one statement */
 arrayassign:
-			args_v B256FILL expr {
+			variable_name B256FILL expr {
 				addIntOp(OP_PUSHINT, 1);		// fill all elements
 				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
-			}
-			| array_empty B256FILL expr {
-				addIntOp(OP_PUSHINT, 1);		// fill all elements
-				addIntOp(OP_ARRAYFILL, varnumber[--nvarnumber]);
-			}
-			| args_v '=' listoflists {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| array_empty '=' listoflists {
-				addIntOp(OP_ARRAYLISTASSIGN, varnumber[--nvarnumber]);
-			}
-			| array_empty '=' array_empty {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
-			}
-			| array_empty '=' args_v {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
-			}
-			| args_v '=' array_empty {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
 			;
 
 /* assign an expression to a normal variable */
 assign:
-			args_v '=' expr {
+			variable_name '=' expr {
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| args_v B256ADD1 {
-                                addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
+			| variable_name B256ADD1 {
+				addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
 			}
-			| args_v B256SUB1 {
-                                addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
-                        }
-			| args_v B256ADDEQUAL expr {
+			| variable_name B256SUB1 {
+				addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
+			}
+			| variable_name B256ADDEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_ADD);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v B256SUBEQUAL expr {
+			| variable_name B256SUBEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_SUB);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v B256MULEQUAL expr {
+			| variable_name B256MULEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_MUL);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v B256DIVEQUAL expr {
+			| variable_name B256DIVEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_DIV);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v B256AMPEQUAL expr {
+			| variable_name B256AMPEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_BINARYAND);
 				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
 			}
-			| args_v B256SEMICOLONEQUAL expr {
+			| variable_name B256SEMICOLONEQUAL expr {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_CONCATENATE);
@@ -1595,7 +1459,7 @@ assign:
 			;
 
 
-forstmt: 	B256FOR args_v '=' expr B256TO expr {
+forstmt: 	B256FOR variable_name '=' expr B256TO expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
@@ -1605,7 +1469,7 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
 				addIntOp(OP_FOR, varnumber[--nvarnumber]);
 			}
-			| B256FOR args_v '=' expr B256TO expr B256STEP expr {
+			| B256FOR variable_name '=' expr B256TO expr B256STEP expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
@@ -1616,7 +1480,7 @@ forstmt: 	B256FOR args_v '=' expr B256TO expr {
 			}
 			;
 
-nextstmt:	B256NEXT args_v {
+nextstmt:	B256NEXT variable_name {
 				if (numifs>0) {
 					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
 						if (iftablevariable[numifs-1]==varnumber[nvarnumber-1]) {
@@ -1640,7 +1504,7 @@ nextstmt:	B256NEXT args_v {
 			}
 			;
 
-gotostmt:	B256GOTO args_v {
+gotostmt:	B256GOTO variable_name {
 				if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
 					errorcode = COMPERR_FUNCTIONGOTO;
 					return -1;
@@ -1649,7 +1513,7 @@ gotostmt:	B256GOTO args_v {
 			}
 			;
 
-gosubstmt:	B256GOSUB args_v {
+gosubstmt:	B256GOSUB variable_name {
 				if (functionDefSymbol != -1 || subroutineDefSymbol !=-1) {
 					errorcode = COMPERR_FUNCTIONGOTO;
 					return -1;
@@ -1659,12 +1523,12 @@ gosubstmt:	B256GOSUB args_v {
 			}
 			;
 
-callstmt:	B256CALL args_v '(' ')' {
+callstmt:	B256CALL variable_name '(' ')' {
 				addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with SUBROUTINE definition
 				addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
 				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
-			| B256CALL args_v '(' callexprlist ')' {
+			| B256CALL variable_name '(' callexprlist ')' {
 					addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with SUBROUTINE definition
 					addIntOp(OP_CALLSUBROUTINE, varnumber[--nvarnumber]);
 					addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
@@ -1678,13 +1542,13 @@ offerrorstmt:
 			;
 
 onerrorstmt:
-			B256ONERROR args_v {
+			B256ONERROR variable_name {
 				addIntOp(OP_ONERRORGOSUB, varnumber[--nvarnumber]);
 			}
-			| B256ONERROR args_v '(' ')' {
+			| B256ONERROR variable_name '(' ')' {
 				addIntOp(OP_ONERRORCALL, varnumber[--nvarnumber]);
 			}
-			| B256ONERROR args_v '(' callexprlist ')' {
+			| B256ONERROR variable_name '(' callexprlist ')' {
 				errorcode = COMPERR_ONERRORCALL;
 				return -1;
 			}
@@ -1715,9 +1579,9 @@ returnstmt:	B256RETURN args_none {
 			;
 
 colorstmt:	B256SETCOLOR args_eee {
-                                addIntOp(OP_PUSHINT, 255);
-                                addOp(OP_RGB);
-                                addOp(OP_STACKDUP);
+				addIntOp(OP_PUSHINT, 255);
+				addOp(OP_RGB);
+				addOp(OP_STACKDUP);
 				addOp(OP_SETCOLOR);
 				newParseWarning(COMPWARNING_DEPRECATED_FORM);
 			}
@@ -1730,161 +1594,108 @@ colorstmt:	B256SETCOLOR args_eee {
 			}
 			;
 
-soundstmt:	B256SOUND expr {
-				// either string - lodresource
-				// int - player number
-				// array - from a variable
-				addOp(OP_SOUND);
-			}
-			| B256SOUND args_ee {
+soundstmt:	B256SOUND args_ee {
 				addIntOp(OP_PUSHINT, 2);	// 2 columns
 				addIntOp(OP_PUSHINT, 1);	// 1 row
 				addOp(OP_LIST2EXPRESSION);
 				addOp(OP_SOUND);
 			}
-			| B256SOUND listoflists {
-				addOp(OP_LIST2EXPRESSION);
-				addOp(OP_SOUND);
-			}
-			| B256SOUND array_empty {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+			| B256SOUND expr {
 				addOp(OP_SOUND);
 			}
 			;
 
 soundplaystmt:	B256SOUNDPLAY args_none {
-				addIntOp(OP_PUSHINT, -1);
-				addOp(OP_SOUNDPLAY);
-			}
-			| B256SOUNDPLAY expr {
-				// either string - lodresource
-				// int - player number
-				// array - from a variable
-				addOp(OP_SOUNDPLAY);
-			}
-			| B256SOUNDPLAY args_ee {
-				addIntOp(OP_PUSHINT, 2);	// 2 columns
-				addIntOp(OP_PUSHINT, 1);	// 1 row
-				addOp(OP_LIST2EXPRESSION);
-				addOp(OP_SOUNDPLAY);
-			}
-			| B256SOUNDPLAY listoflists {
-				addOp(OP_LIST2EXPRESSION);
-				addOp(OP_SOUNDPLAY);
-			}
-			| B256SOUNDPLAY array_empty {
-				addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-			}
-			;
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_SOUNDPLAY);
+	}
+	| B256SOUNDPLAY args_ee {
+		addIntOp(OP_PUSHINT, 2);	// 2 columns
+		addIntOp(OP_PUSHINT, 1);	// 1 row
+		addOp(OP_LIST2EXPRESSION);
+		addOp(OP_SOUNDPLAY);
+	}
+	| B256SOUNDPLAY expr {
+		// either string - lodresource
+		// int - player number
+		// array - from a variable
+		addOp(OP_SOUNDPLAY);
+	}
+	;
 
 soundpausestmt:  B256SOUNDPAUSE expr {
-                                addOp(OP_SOUNDPAUSE);
-                        }
-                        | B256SOUNDPAUSE args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDPAUSE);
-                        }
-                        ;
+		addOp(OP_SOUNDPAUSE);
+	}
+	| B256SOUNDPAUSE args_none {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_SOUNDPAUSE);
+	}
+	;
 
 soundplayeroffstmt:  B256SOUNDPLAYEROFF expr {
-                                addOp(OP_SOUNDPLAYEROFF);
-                        }
-                        | B256SOUNDPLAYEROFF args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDPLAYEROFF);
-                        }
-                        ;
+		addOp(OP_SOUNDPLAYEROFF);
+	}
+	| B256SOUNDPLAYEROFF args_none {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_SOUNDPLAYEROFF);
+	}
+	;
 
 soundstopstmt:  B256SOUNDSTOP expr {
-                                addOp(OP_SOUNDSTOP);
-                        }
-                        | B256SOUNDSTOP args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDSTOP);
-                        }
-                        ;
+		addOp(OP_SOUNDSTOP);
+	}
+	| B256SOUNDSTOP args_none {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_SOUNDSTOP);
+	}
+	;
 
-soundwaitstmt:  B256SOUNDWAIT expr {
-                                addOp(OP_SOUNDWAIT);
-                        }
-                        | B256SOUNDWAIT args_none {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_SOUNDWAIT);
-                        }
-                        ;
+soundwaitstmt:
+	B256SOUNDWAIT expr {
+		addOp(OP_SOUNDWAIT);
+	}
+	| B256SOUNDWAIT args_none {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_SOUNDWAIT);
+	}
+	;
 
-soundwaveformstmt:  B256SOUNDWAVEFORM expr {
-							addIntOp(OP_PUSHINT,0);
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						| B256SOUNDWAVEFORM args_ee {
-							// first expression must be an array var
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						| B256SOUNDWAVEFORM listoflists {
-							addOp(OP_LIST2EXPRESSION);
-							addIntOp(OP_PUSHINT, 0); //false
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						| B256SOUNDWAVEFORM listoflists ',' expr {
-							addOp(OP_STACKSAVE);
-							addOp(OP_LIST2EXPRESSION);
-							addOp(OP_STACKUNSAVE);
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						| B256SOUNDWAVEFORM array_empty {
-							addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-							addIntOp(OP_PUSHINT, 0); //false
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						| B256SOUNDWAVEFORM array_empty ',' expr {
-							addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-							addOp(OP_STACKSWAP);
-							addOp(OP_SOUNDWAVEFORM);
-						}
-						;
+soundwaveformstmt:  
+	B256SOUNDWAVEFORM expr {
+		addIntOp(OP_PUSHINT,0);
+		addOp(OP_SOUNDWAVEFORM);
+	}
+	| B256SOUNDWAVEFORM args_ee {
+		addOp(OP_SOUNDWAVEFORM);
+	}
+	;
 
 soundsystemstmt:  B256SOUNDSYSTEM expr {
-                                addOp(OP_SOUNDSYSTEM);
-                        }
-                        ;
+		addOp(OP_SOUNDSYSTEM);
+	}
+	;
 
 soundenvelopestmt:  B256SOUNDENVELOPE args_none {
-                                addOp(OP_SOUNDNOENVELOPE);
-                        }
-                        | B256SOUNDENVELOPE args_eeee {
-                            addOp(OP_SOUNDENVELOPE);
-                        }
-                        | B256SOUNDENVELOPE args_A {
-                            addOp(OP_SOUNDENVELOPE_LIST);
-                        }
-                        ;
+		addOp(OP_SOUNDNOENVELOPE);
+	}
+	| B256SOUNDENVELOPE args_eeee {
+		addOp(OP_SOUNDENVELOPE);
+	}
+	| B256SOUNDENVELOPE expr {
+		addOp(OP_SOUNDENVELOPE);
+	}
+	;
 
 soundharmonicsstmt:  B256SOUNDHARMONICS args_none {
-                                addOp(OP_SOUNDNOHARMONICS);
-                        }
-                        | B256SOUNDHARMONICS args_ee {
-                            addOp(OP_SOUNDHARMONICS);
-                        }
-                        | B256SOUNDHARMONICS args_A {
-                            addOp(OP_SOUNDHARMONICS_LIST);
-                        }
-                        /*
-                        //args_A splitted in all 3 components to avoid conflicts when an array is passed without []
-                        | B256SOUNDHARMONICS array_empty {
-                            addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                            addOp(OP_SOUNDHARMONICS_LIST);
-                        }
-                        | B256SOUNDHARMONICS listoflists {
-                            addOp(OP_SOUNDHARMONICS_LIST);
-                        }
-                        | B256SOUNDHARMONICS args_v {
-                            addIntOp(OP_ARRAY2STACK, varnumber[--nvarnumber]);
-                            addOp(OP_SOUNDHARMONICS_LIST);
-                        }
-                        */
-                        ;
+		addOp(OP_SOUNDNOHARMONICS);
+	}
+	| B256SOUNDHARMONICS args_ee {
+		addOp(OP_SOUNDHARMONICS);
+	}
+	| B256SOUNDHARMONICS expr {
+		addOp(OP_SOUNDHARMONICS);
+	}
+	;
 
 
 soundfadestmt:  B256SOUNDFADE args_eeee {
@@ -1952,84 +1763,85 @@ ellipsestmt:
                                 addOp(OP_ELLIPSE);
                         }
                         ;
-arcstmt: 	B256ARC args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
-				addOp(OP_ARC);
-			}
-			| B256ARC args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
-				addOp(OP_ARC);
-			}
-			;
+arcstmt:
+	B256ARC args_eeeee {
+		addIntOp(OP_PUSHINT, 5); // with bounding circle
+		addOp(OP_ARC);
+	}
+	| B256ARC args_eeeeee {
+		addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+		addOp(OP_ARC);
+	}
+	;
 
 chordstmt:
-			B256CHORD args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
-				addOp(OP_CHORD);
-			}
-			| B256CHORD args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
-				addOp(OP_CHORD);
-			}
-			;
+	B256CHORD args_eeeee {
+		addIntOp(OP_PUSHINT, 5); // with bounding circle
+		addOp(OP_CHORD);
+	}
+	| B256CHORD args_eeeeee {
+		addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+		addOp(OP_CHORD);
+	}
+	;
 
 piestmt:
-			B256PIE args_eeeee {
-				addIntOp(OP_PUSHINT, 5); // with bounding circle
-				addOp(OP_PIE);
-			}
-			| B256PIE args_eeeeee {
-				addIntOp(OP_PUSHINT, 6); // with bounding rectangle
-				addOp(OP_PIE);
-			}
-			;
+	B256PIE args_eeeee {
+		addIntOp(OP_PUSHINT, 5); // with bounding circle
+		addOp(OP_PIE);
+	}
+	| B256PIE args_eeeeee {
+		addIntOp(OP_PUSHINT, 6); // with bounding rectangle
+		addOp(OP_PIE);
+	}
+	;
 
 rectstmt:
-			B256RECT args_eeee {
-				addOp(OP_RECT);
-			}
-                        | B256RECT args_eeeee {
-                            addOp(OP_STACKDUP);
-                            addOp(OP_ROUNDEDRECT);
-                        }
-                        | B256RECT args_eeeeee {
-                            addOp(OP_ROUNDEDRECT);
-                        }
-			;
+	B256RECT args_eeee {
+		addOp(OP_RECT);
+	}
+	| B256RECT args_eeeee {
+		addOp(OP_STACKDUP);
+		addOp(OP_ROUNDEDRECT);
+	}
+	| B256RECT args_eeeeee {
+		addOp(OP_ROUNDEDRECT);
+	}
+	;
 
 textstmt:
-			B256TEXT args_eee {
-				addOp(OP_TEXT);
-			}
-                        | B256TEXT args_eeeee {
-                            addIntOp(OP_PUSHINT, 0); // flags
-                            addOp(OP_TEXTBOX);
-                        }
-                        | B256TEXT args_eeeeee {
-                            addOp(OP_TEXTBOX);
-                        }
+	B256TEXT args_eee {
+		addOp(OP_TEXT);
+	}
+	| B256TEXT args_eeeee {
+		addIntOp(OP_PUSHINT, 0); // flags
+		addOp(OP_TEXTBOX);
+	}
+	| B256TEXT args_eeeeee {
+		addOp(OP_TEXTBOX);
+	}
 			;
 
 fontstmt:
-                        B256FONT args_eeee {
-				addOp(OP_FONT);
-			}
-                        | B256FONT args_eee {
-                            addIntOp(OP_PUSHINT, 0); // font is not italic
-                            addOp(OP_FONT);
-                        }
-                        | B256FONT args_ee {
-                            addIntOp(OP_PUSHINT, -1); // default weight
-                            addIntOp(OP_PUSHINT, 0); // font is not italic
-                            addOp(OP_FONT);
-                        }
-                        | B256FONT expr {
-                            addIntOp(OP_PUSHINT, -1); // default size
-                            addIntOp(OP_PUSHINT, -1); // default weight
-                            addIntOp(OP_PUSHINT, 0); // font is not italic
-                            addOp(OP_FONT);
-                        }
-			;
+	B256FONT args_eeee {
+		addOp(OP_FONT);
+	}
+	| B256FONT args_eee {
+		addIntOp(OP_PUSHINT, 0); // font is not italic
+		addOp(OP_FONT);
+	}
+	| B256FONT args_ee {
+		addIntOp(OP_PUSHINT, -1); // default weight
+		addIntOp(OP_PUSHINT, 0); // font is not italic
+		addOp(OP_FONT);
+	}
+	| B256FONT expr {
+		addIntOp(OP_PUSHINT, -1); // default size
+		addIntOp(OP_PUSHINT, -1); // default weight
+		addIntOp(OP_PUSHINT, 0); // font is not italic
+		addOp(OP_FONT);
+	}
+	;
 
 saystmt: 	B256SAY expr {
 				addOp(OP_SAY);
@@ -2049,23 +1861,23 @@ volumestmt:
 			;
 
 polystmt:
-			B256POLY args_B {
+			B256POLY expr {
 				addOp(OP_POLY);
 			}
 			;
 
-stampstmt: 	B256STAMP args_eeeeB {
+stampstmt: 	B256STAMP args_eeeee {
 				addOp(OP_STAMP);
 			}
-			| B256STAMP args_eeeB {
-				addFloatOp(OP_PUSHFLOAT, 1.0); // default scale
+			| B256STAMP args_eeee {
+				addFloatOp(OP_PUSHFLOAT, 0.0); // default rotate
 				addOp(OP_STACKSWAP);
 				addOp(OP_STAMP);
 			}
-			| B256STAMP args_eeB {
-				addFloatOp(OP_PUSHFLOAT, 0.0); // default scale
-				addOp(OP_STACKSWAP);
+			| B256STAMP args_eee {
 				addFloatOp(OP_PUSHFLOAT, 1.0); // default scale
+				addOp(OP_STACKSWAP);
+				addFloatOp(OP_PUSHFLOAT, 0.0); // default rotate
 				addOp(OP_STACKSWAP);
 				addOp(OP_STAMP);
 			}
@@ -2196,7 +2008,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUT args_v  {
+			| B256INPUT variable_name  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
@@ -2208,7 +2020,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-                        | B256INPUT args_a {
+			| B256INPUT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
@@ -2219,7 +2031,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTSTRING args_v  {
+			| B256INPUTSTRING variable_name  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
@@ -2231,7 +2043,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTSTRING args_a {
+			| B256INPUTSTRING array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
@@ -2242,7 +2054,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTINT args_v  {
+			| B256INPUTINT variable_name  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
@@ -2254,7 +2066,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTINT args_a {
+			| B256INPUTINT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
@@ -2265,7 +2077,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTFLOAT args_v  {
+			| B256INPUTFLOAT variable_name  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
@@ -2277,7 +2089,7 @@ inputstmt:	B256INPUT args_ev {
 				addOp(OP_INPUT);
 				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
 			}
-			| B256INPUTFLOAT args_a {
+			| B256INPUTFLOAT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
@@ -2332,7 +2144,7 @@ wavwaitstmt:
 			;
 
 putslicestmt:
-			B256PUTSLICE args_eeA  {
+			B256PUTSLICE args_eee  {
 				addOp(OP_PUTSLICE);
 			}
 			;
@@ -2377,7 +2189,7 @@ spriteslicestmt:
 			;
 
 spritepolystmt:
-			B256SPRITEPOLY args_eB {
+			B256SPRITEPOLY args_ee {
 				addOp(OP_SPRITEPOLY);
 			}
 			;
@@ -2750,7 +2562,7 @@ printerpagestmt:
 			;
 
 functionstmt:
-			B256FUNCTION args_v functionvariablelist {
+			B256FUNCTION variable functionvariablelist {
 				if (numifs>0) {
 					errorcode = COMPERR_FUNCTIONNOTHERE;
 					return -1;
@@ -2794,7 +2606,7 @@ functionstmt:
 			;
 
 subroutinestmt:
-			B256SUBROUTINE args_v functionvariablelist {
+			B256SUBROUTINE variable functionvariablelist {
 				if (numifs>0) {
 					errorcode = COMPERR_FUNCTIONNOTHERE;
 					return -1;
@@ -2891,23 +2703,20 @@ regexminimalstmt:
 			;
 
 unassignstmt:
-			B256UNASSIGN args_v {
-				addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
-			}
-                        | B256UNASSIGN args_a {
-                                addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
-                        }
-                        | B256UNASSIGN array_empty {
-                                addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
-                        }
-                        ;
+	B256UNASSIGN variable_name {
+		addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
+	}
+	| B256UNASSIGN array_element {
+		addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
+	}
+	;
 
 
 variablewatchstmt:
-			B256VARIABLEWATCH args_v {
-				addIntOp(OP_VARIABLEWATCH, varnumber[--nvarnumber]);
-			}
-			;
+	B256VARIABLEWATCH variable_name {
+		addIntOp(OP_VARIABLEWATCH, varnumber[--nvarnumber]);
+	}
+	;
 
 imagecropstmt:
                         B256IMAGECROP args_eeeee {
@@ -3044,27 +2853,7 @@ setgraphstmt:
 
 listoflists:
 			'{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
-			| B256UNSERIALIZE expr {
-				addOp(OP_UNSERIALIZE);
-			}
-			| B256EXPLODE args_ee {
-				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
-				addOp(OP_EXPLODE);
-			}
-			| B256EXPLODE args_eee {
-				addOp(OP_EXPLODE);
-			}
-			|  B256EXPLODEX args_ee{
-				addOp(OP_EXPLODEX);
-			}
-			| B256GETSLICE args_eeee {
-				addIntOp(OP_PUSHINT, SLICE_ALL);	// get everything
-				addOp(OP_GETSLICE);
-			}
-			| B256GETSLICE args_eeeee {
-				addOp(OP_GETSLICE);
-			}
-			;
+
 
 listinlist:
 			listitems {addIntOp(OP_PUSHINT, listlen); listlen = 0; numberoflists = 1; }
@@ -3077,8 +2866,8 @@ listofitems:
 			;
 
 listitems:
-			expr { listlen = 1; }
-			| expr ',' listitems {listlen++;}
+			expr_not_listoflists { listlen = 1; }
+			| expr_not_listoflists ',' listitems {listlen++;}
 			;
 
 /* USED ONLY IN CALLING Functions and subroutines */
@@ -3090,14 +2879,19 @@ callexprlist:
 /* USED ONLY IN CALLING Functions and subroutines */
 callexpr:
 			expr
-			| array_empty  { addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]); }
-			| B256REF '(' args_v ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
-			| B256REF '(' array_empty ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+			| B256REF '(' variable_name ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
 			;
 
 
-
 expr:
+			listoflists {
+				addOp(OP_LIST2EXPRESSION);
+			}
+			| expr_not_listoflists
+			;
+
+
+expr_not_listoflists:
 			/* *** expressions that can ge EITHER numeric or string *** */
 			'(' expr ')'
 			| expr '+' expr {
@@ -3113,30 +2907,29 @@ expr:
 
 			/* *** variable and function expressions *** */
 
-			| args_v '[' '?' ']' { addIntOp(OP_ALEN, varnumber[--nvarnumber]); }
-			| args_v '[' '?' ',' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
-			| args_v '[' '?' ']' '[' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
-			| args_v '[' ',' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
-			| args_v '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
-			| args_v '(' callexprlist ')' {
+			| variable '[' '?' ']' { addIntOp(OP_ALEN, varnumber[--nvarnumber]); }
+			| variable '[' '?' ',' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
+			| variable '[' '?' ']' '[' ']' { addIntOp(OP_ALENROWS, varnumber[--nvarnumber]); }
+			| variable '[' ',' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
+			| variable '[' ']' '[' '?' ']' { addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]); }
+			| variable '(' callexprlist ')' {
 				// function call with arguments
 				addIntOp(OP_PUSHINT, listlen); //push number of arguments passed to compare with FUNCTION definition
 				addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
 				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
-			| args_v '(' ')' {
+			| variable '(' ')' {
 				// function call without arguments
 				addIntOp(OP_PUSHINT, 0); //push number of arguments passed to compare with FUNCTION definition
 				addIntOp(OP_CALLFUNCTION, varnumber[--nvarnumber]);
 				addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 			}
-			| args_v {
+			| variable_name {
 				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
 			}
-			| args_a {
+			| array_element {
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 			}
-
 
 
 			/* *** numeric Expressions *** */
@@ -3151,29 +2944,9 @@ expr:
 				addOp(OP_MOD);
 			}
 			| expr B256MOD %prec B256UNARY{
-				//safe compress INT% and FLOAT%
-				if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
-					unsigned int index=wordCode_lastOpsTable[0];
-					if(wordCode[index]==OP_PUSHINT){
-						double val=((double)wordCode[index+1])/100.0;
-						wordOffset=index; // overwrite op
-						addFloatOp(OP_PUSHFLOAT, val);
-					}else if(wordCode[index]==OP_PUSHFLOAT){
-						double val = (*((double *)(wordCode+index+1)))/100.0;
-						if(!isfinite(val)){
-							errorcode = COMPERR_NUMBERTOOLARGE;
-							return -1;
-						}
-						wordOffset=index; // overwrite op
-						addFloatOp(OP_PUSHFLOAT, val);
-					}else{
-						addIntOp(OP_PUSHINT, 100);
-						addOp(OP_DIV);
-					}
-				}else{
-					addIntOp(OP_PUSHINT, 100);
-					addOp(OP_DIV);
-				}
+				/* expression% is actually a percentage */
+				addIntOp(OP_PUSHINT, 100);
+				addOp(OP_DIV);
 			}
 			| expr B256INTDIV expr {
 				addOp(OP_INTDIV);
@@ -3187,23 +2960,7 @@ expr:
 			| expr B256BITSHIFTR expr { addOp(OP_BITSHIFTR); }
 			| B256BINARYNOT expr { addOp(OP_BINARYNOT); }
 			| '-' expr %prec B256UNARY {
-				//safe compress -INT and -FLOAT
-				if(populateLastOpsTable(1)==1){ //check if there is a previous op and grab index of it
-					unsigned int index=wordCode_lastOpsTable[0];
-					if(wordCode[index]==OP_PUSHINT){
-						int val=-wordCode[index+1];
-						wordOffset=index; // overwrite op
-						addIntOp(OP_PUSHINT, val);
-					}else if(wordCode[index]==OP_PUSHFLOAT){
-						double val = - *((double *)(wordCode+index+1));
-						wordOffset=index; // overwrite op
-						addFloatOp(OP_PUSHFLOAT, val);
-					}else{
-						addOp(OP_NEGATE);
-					}
-				}else{
-					addOp(OP_NEGATE);
-				}
+				addOp(OP_NEGATE);
 			}
 			| expr B256AND {
 					addIntOp(OP_LAZYIFFALSE, getInternalSymbol(nextifid,INTERNALSYMBOLBOOL));
@@ -3247,45 +3004,45 @@ expr:
 			}
 			| '+' B256INTEGER %prec B256UNARY {addIntOp(OP_PUSHINT, $2); } // accept/eat unary plus only for numbers
 			| B256INTEGER { addIntOp(OP_PUSHINT, $1); }
-			| args_a B256ADD1 {
+			| array_element B256ADD1 {
 				// a[b,c]++
 				addOp(OP_STACKDUP2);
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
                                 addIntOp(OP_ADD1ARRAY, varnumber[nvarnumber]);
 			}
-			| args_a B256SUB1 {
+			| array_element B256SUB1 {
 				// a[b,c]--
 				addOp(OP_STACKDUP2);
 				addIntOp(OP_DEREF, varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
                                 addIntOp(OP_SUB1ARRAY, varnumber[nvarnumber]);
 			}
-			| B256ADD1 args_a {
+			| B256ADD1 array_element {
 				// ++a[b,c]
 				addOp(OP_STACKDUP2);
                                 addIntOp(OP_ADD1ARRAY, varnumber[--nvarnumber]);
 				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
-			| B256SUB1 args_a {
+			| B256SUB1 array_element {
 				// --a[b,c]
 				addOp(OP_STACKDUP2);
 				addIntOp(OP_SUB1ARRAY, varnumber[--nvarnumber]);
 				addIntOp(OP_DEREF, varnumber[nvarnumber]);
 			}
-			| args_v B256ADD1 {
+			| variable_name B256ADD1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addIntOp(OP_ADD1VAR,varnumber[nvarnumber]);
 			}
-			| args_v B256SUB1 {
+			| variable_name B256SUB1 {
 				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
 				addIntOp(OP_SUB1VAR,varnumber[nvarnumber]);
 			}
-			| B256ADD1 args_v {
+			| B256ADD1 variable_name {
 				addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
-			| B256SUB1 args_v {
+			| B256SUB1 variable_name {
 				addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
 				addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
 			}
@@ -3379,51 +3136,11 @@ expr:
 			| B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
 			| B256PIXEL '(' expr ',' expr ')' { addOp(OP_PIXEL); }
 			| B256RGB '(' expr ',' expr ',' expr ')' {
-				//safe compress valid rgb(n,n,n)
-				int ok=0;
-				if(populateLastOpsTable(3)==3){ //check if there are 3 previous ops
-					if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
-							&& wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
-							&& wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT){
-						int r=wordCode[wordCode_lastOpsTable[2]+1];
-						int g=wordCode[wordCode_lastOpsTable[1]+1];
-						int b=wordCode[wordCode_lastOpsTable[0]+1];
-						if(r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
-							int val = 0xff000000|(r<<16)|(g<<8)|b;
-							wordOffset=wordCode_lastOpsTable[2]; // overwrite op
-							addIntOp(OP_PUSHINT, val);
-							ok=1;
-						}
-					}
-				}
-				if(!ok){
-					addIntOp(OP_PUSHINT, 0xff);
-					addOp(OP_RGB);
-				}
+				addIntOp(OP_PUSHINT,255);	// a
+				addOp(OP_RGB);
 			}
 			| B256RGB '(' expr ',' expr ',' expr ',' expr ')' {
-				//safe compress valid rgb(n,n,n,n)
-				int ok=0;
-				if(populateLastOpsTable(4)==4){ //check if there are 4 previous ops
-					if(wordCode[wordCode_lastOpsTable[0]]==OP_PUSHINT
-							&& wordCode[wordCode_lastOpsTable[1]]==OP_PUSHINT
-							&& wordCode[wordCode_lastOpsTable[2]]==OP_PUSHINT
-							&& wordCode[wordCode_lastOpsTable[3]]==OP_PUSHINT){
-						int r=wordCode[wordCode_lastOpsTable[3]+1];
-						int g=wordCode[wordCode_lastOpsTable[2]+1];
-						int b=wordCode[wordCode_lastOpsTable[1]+1];
-						int a=wordCode[wordCode_lastOpsTable[0]+1];
-						if(a>=0&&a<=255&&r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255){
-							int val = (a<<24)|(r<<16)|(g<<8)|b;
-							wordOffset=wordCode_lastOpsTable[3]; // overwrite op
-							addIntOp(OP_PUSHINT, val);
-							ok=1;
-						}
-					}
-				}
-				if(!ok){
-					addOp(OP_RGB);
-				}
+				addOp(OP_RGB);
 			}
 			| B256GETCOLOR args_none { addOp(OP_GETCOLOR); }
 			| B256GETBRUSHCOLOR args_none { addOp(OP_GETBRUSHCOLOR); }
@@ -3720,14 +3437,6 @@ expr:
 				addOp(OP_LIST2EXPRESSION);
 				addOp(OP_SOUNDPLAYER);
 			}
-			| B256SOUNDPLAYER '(' listoflists ')' {
-				addOp(OP_LIST2EXPRESSION);
-				addOp(OP_SOUNDPLAYER);
-			}
-			| B256SOUNDPLAYER '(' array_empty ')' {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-				addOp(OP_SOUNDPLAYER);
-			}
 			| B256SOUNDID args_none {
 				addOp(OP_SOUNDID);
 			}
@@ -3815,20 +3524,20 @@ expr:
 			}
 			| B256REPLACE '(' expr ',' expr ',' expr ',' expr ')' { addOp(OP_REPLACE); }
 			| B256REPLACEX '(' expr ',' expr ',' expr ')' { addOp(OP_REPLACEX); }
-			| B256SERIALIZE '(' args_A ')' {
+			| B256SERIALIZE '(' expr ')' {
 				addOp(OP_SERIALIZE);
 			}
-			| B256IMPLODE '(' args_A ')' {
+			| B256IMPLODE '(' expr ')' {
 				addStringOp(OP_PUSHSTRING, ""); // no delimiter
 				addOp(OP_STACKDUP);
-				addOp(OP_IMPLODE_LIST);
+				addOp(OP_IMPLODE);
 			}
-			| B256IMPLODE '(' args_Ae ')' {
+			| B256IMPLODE '(' args_ee ')' {
 				addOp(OP_STACKDUP);				// same delimiter for rows and columns
-				addOp(OP_IMPLODE_LIST);
+				addOp(OP_IMPLODE);
 			}
-			| B256IMPLODE '(' args_Aee ')' {
-				addOp(OP_IMPLODE_LIST);
+			| B256IMPLODE '(' args_eee ')' {
+				addOp(OP_IMPLODE);
 			}
 			| B256PROMPT '(' expr ')' {
 				addStringOp(OP_PUSHSTRING, "");
@@ -3869,15 +3578,7 @@ expr:
 				addOp(OP_LIST2EXPRESSION);
 				addOp(OP_SOUNDLOAD);
 			}
-			| B256SOUNDLOAD '(' listoflists ')' {
-				addOp(OP_LIST2EXPRESSION);
-				addOp(OP_SOUNDLOAD);
-			}
-			| B256SOUNDLOAD '(' array_empty ')' {
-				addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
-				addOp(OP_SOUNDLOAD);
-			}
-			| B256SOUNDLOADRAW '(' args_A ')' {
+			| B256SOUNDLOADRAW '(' expr ')' {
 				addOp(OP_SOUNDLOADRAW);
 			}
 			| B256IMAGENEW '(' expr ',' expr ',' expr ')' {
@@ -3910,6 +3611,36 @@ expr:
 
 			/* ##########################################
 			   ### INSERT NEW String Functions BEFORE ###
+			   ###                                    ###
+			   ### Array Functions                    ###
+			   ########################################## */
+			;
+
+			| B256UNSERIALIZE expr {
+				addOp(OP_UNSERIALIZE);
+			}
+			
+			| B256EXPLODE args_ee {
+				addIntOp(OP_PUSHINT, 0);	// case sensitive flag
+				addOp(OP_EXPLODE);
+			}
+			| B256EXPLODE args_eee {
+				addOp(OP_EXPLODE);
+			}
+			|  B256EXPLODEX args_ee{
+				addOp(OP_EXPLODEX);
+			}
+
+			| B256GETSLICE args_eeee {
+				addIntOp(OP_PUSHINT, SLICE_ALL);	// get everything
+				addOp(OP_GETSLICE);
+			}
+			| B256GETSLICE args_eeeee {
+				addOp(OP_GETSLICE);
+			}
+			;
+			/* ##########################################
+			   ### INSERT NEW Array Functions BEFORE  ###
 			   ########################################## */
 			;
 

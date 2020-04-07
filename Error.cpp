@@ -358,7 +358,7 @@ QString Error::getErrorMessage(char **symtable) {
 			errormessage = tr("Invalid Slice dimensions");
 			break;
 		case ERROR_ARRAYLENGTH2D:
-			errormessage = tr("Can not get a single length if a two dimensional array");
+			errormessage = tr("Can not get a single length of a two dimensional array");
 			break;
         case ERROR_VARNULL:
             errormessage = tr("Variable %VARNAME% refers to a non-existent variable");

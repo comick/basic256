@@ -5,6 +5,7 @@
 # 20160807	j.m.reneau	split from test suite and added many new tests
 # 20160908	j.m.reneau	added serialize and unserialize
 # 20161101  j.m.reneau  added [] to all array passing to functions
+# 20200403  j.m.reneau  added all of the various ways to copy an array to an array
 
 
 ###################################################
@@ -106,4 +107,51 @@ for t = 0 to c[?,]-1
 	next u
 next t
 
+### all of the ways to assign an array
 
+a[] = {1,2,3}
+call s("assign var[] list","1.2.3",implode(a,'.'))
+
+b = {1,2,3}
+call s("assign var list","1.2.3",implode(b,'.'))
+
+b=""
+dim b[] = {1,2,3}
+call s("assign dim var[] list","1.2.3",implode(b,'.'))
+
+b = ""
+dim b = {1,2,3}
+call s("assign dim var","1.2.3",implode(b,'.'))
+
+b = ""
+b = a
+call s("assign var = var (array)","1.2.3",implode(b,'.'))
+
+b = ""
+b = a[]
+call s("assign var = var[]","1.2.3",implode(b,'.'))
+
+b = ""
+b[] = a
+call s("assign var[] = var","1.2.3",implode(b,'.'))
+
+b = ""
+b[] = a[]
+call s("assign var[] = var[]","1.2.3",implode(b,'.'))
+
+
+b = ""
+dim b[] = a
+call s("assign dim var[] = var","1.2.3",implode(b,'.'))
+
+b = ""
+dim b = a
+call s("assign dim var = var","1.2.3",implode(b,'.'))
+
+b = ""
+dim b[] = a[]
+call s("assign dim var[] = var[]","1.2.3",implode(b,'.'))
+
+b = ""
+dim b = a[]
+call s("assign dim var = var[]","1.2.3",implode(b,'.'))

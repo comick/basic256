@@ -47,6 +47,7 @@
 # 20161117  j.m.reneau      adjusted function calling for ref defined at call
 # 20170506  j.m.reneau      added image... test
 # 20170513  j.m.reneau      changed allow/system test to not 0
+# 20200403  j.m.reneau      added slice suite
 
 include "testsuite_common_include.kbs"
 
@@ -126,6 +127,12 @@ section_graphics:
 call section("Basic Graphics")
 ###################################################
 include "testsuite_graphics_include.kbs"
+
+section_slice:
+###################################################
+call section("screen slicing")
+###################################################
+include "testsuite_slice_include.kbs"
 
 section_image:
 ###################################################

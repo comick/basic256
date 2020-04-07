@@ -398,7 +398,7 @@ QString Interpreter::opname(int op) {
 	case OP_RTRIM : return QString("OP_RTRIM");
 	case OP_TRIM : return QString("OP_TRIM");
 	case OP_KEYPRESSED : return QString("OP_KEYPRESSED");
-	case OP_IMPLODE_LIST : return QString("OP_IMPLODE_LIST");
+	case OP_IMPLODE : return QString("OP_IMPLODE");
 	case OP_EXPLODE : return QString("OP_EXPLODE");
 	case OP_EXPLODEX : return QString("OP_EXPLODEX");
 	case OP_SPRITEO : return QString("OP_SPRITEO");
@@ -440,10 +440,9 @@ QString Interpreter::opname(int op) {
 	case OP_SOUNDFADE : return QString("OP_SOUNDFADE");
 	case OP_SOUNDLOOP : return QString("OP_SOUNDLOOP");
 	case OP_SOUNDENVELOPE : return QString("OP_SOUNDENVELOPE");
-	case OP_SOUNDENVELOPE_LIST : return QString("OP_SOUNDENVELOPE_LIST");
 	case OP_SOUNDHARMONICS : return QString("OP_SOUNDHARMONICS");
 	case OP_SOUNDNOHARMONICS : return QString("OP_SOUNDNOHARMONICS");
-	case OP_SOUNDHARMONICS_LIST : return QString("OP_SOUNDHARMONICS_LIST");
+	case OP_SOUNDHARMONICS_A : return QString("OP_SOUNDHARMONICS_A");
 	case OP_SOUNDPLAYEROFF : return QString("OP_SOUNDPLAYEROFF");
 	case OP_SOUNDSYSTEM : return QString("OP_SOUNDSYSTEM");
 	case OP_SOUNDSAMPLERATE : return QString("OP_SOUNDSAMPLERATE");
@@ -1559,7 +1558,7 @@ Interpreter::execByteCode() {
 					switch(opcode) {
 						case OP_ALEN:
 							if (e->arraysizerows()==1) {
-								stack->pushint(e->arraysize());
+								stack->pushint(e->arraysizecols());
 							} else {
 								stack->pushint(0);
 								error->q(ERROR_ARRAYLENGTH2D);
@@ -1583,7 +1582,7 @@ Interpreter::execByteCode() {
 
 				case OP_ARRAYASSIGN: {
 					// assign a value to an array element
-					// assumes that arrays are always two dimensional (if 1d then y=1)
+					// assumes that arrays are always two dimensional (if 1d then x=1 (rows) )
 					DataElement *e = stack->popelement();
 					int y = stack->popint();
 					int x = stack->popint();
@@ -3391,24 +3390,20 @@ Interpreter::execByteCode() {
 
 				case OP_SOUNDLOADRAW: {
 					std::vector<double> sounddata;
-					int rows = stack->popint();
-					if(rows>1){
-						for(int f=0;f<rows;f++) stack->drop(stack->popint()); //clear the rest of array from stack in case of ONERROR or TRY/CATCH
-						error->q(ERROR_ONEDIMENSIONAL);//error 1 dimensional!
-						stack->pushstring("");
-						break;
+					DataElement *d = stack->popelement();
+					if (d->type==T_ARRAY) {
+						if(d->arraysizerows()==1){
+							sounddata.resize(d->arraysizecols());
+							for(int col = 0; col < d->arraysizecols(); col++) {
+								sounddata[col]=convert->getFloat(d->arraygetdata(0,col));
+							}
+							stack->pushstring(sound->loadRaw(sounddata));
+						} else {
+							error->q(ERROR_ONEDIMENSIONAL);//error 1 dimensional!
+						}
+					} else {
+						error->q(ERROR_ARRAYEXPR);
 					}
-					int columns = stack->popint();
-					sounddata.resize(columns);
-					while(columns>1){
-						columns--;
-						double d = stack->popfloat();
-						sounddata[columns]=d;
-					}
-					if(!error->pending())
-						stack->pushstring(sound->loadRaw(sounddata));
-					else
-						stack->pushstring("");
 				}
 				break;
 
@@ -3460,51 +3455,32 @@ Interpreter::execByteCode() {
 					sound->noharmonics();
 				}
 				break;
-
+				
 				case OP_SOUNDHARMONICS: {
-					double a = stack->popfloat();
-					int h = stack->popint();
-					if(h<1){
-						error->q(ERROR_HARMONICNUMBER);
-					}else{
-						sound->harmonics(h, a);
-					}
-				}
-				break;
-
-				case OP_SOUNDHARMONICS_LIST: {
-					std::map<int,bool> repeated;
-					int rows = stack->popint();
-					for(int i=0;i<rows;i++){
-						int columns = stack->popint();
-						if((rows>1 && columns!=2) || (rows==1 && columns%2!=0)){
-							//clear stack from the rest of data
-							stack->drop(columns);
-							for(i++;i<rows;i++) stack->drop(stack->popint());
-							error->q(ERROR_HARMONICLIST);
-							break;
-						}
-						while(columns>1){
-							columns-=2;
-							double a = stack->popfloat();
-							int h = stack->popint();
-							if(h<1){
-								//clear stack from the rest of data
-								stack->drop(columns);
-								for(i++;i<rows;i++) stack->drop(stack->popint());
-								error->q(ERROR_HARMONICNUMBER);
-								break;
-							}else{
-								//because we extract in reverse order from stack
-								//eg: soundharmonics {3, 0, 3, 1}
-								//in this case the 3th harmonic will be set to 1, not to 0
-								if(repeated.count(h)==0){
-									sound->harmonics(h, a);
-									repeated[h]=true;
+					DataElement *de = stack->popelement();
+					if (de->type == T_ARRAY) {
+						if ((de->arraysizerows()==1&&de->arraysizecols()%2==0) || (de->arraysizecols()==2)) {
+							if (de->arraysizerows()==1) {
+								// data in a single row
+								for(int col = 0; col < de->arraysizecols(); col+=2) {
+									sound->harmonics(convert->getInt(de->arraygetdata(0,col)), convert->getFloat(de->arraygetdata(0,col+1)));
+								}
+							} else {
+								// data in mutiple columns
+								for(int row = 0; row < de->arraysizerows(); row+=2) {
+									sound->harmonics(convert->getInt(de->arraygetdata(row,0)), convert->getFloat(de->arraygetdata(row,1)));
 								}
 							}
+						} else {
+							error->q(ERROR_HARMONICLIST);
 						}
-						rows--;
+					} else {
+						int h = stack->popint();
+						if(h<1){
+							error->q(ERROR_HARMONICNUMBER);
+						}else{
+							sound->harmonics(h, convert->getFloat(de));
+						}
 					}
 				}
 				break;
@@ -3516,45 +3492,37 @@ Interpreter::execByteCode() {
 
 				case OP_SOUNDENVELOPE: {
 					std::vector<double> envelope;
-					double r = stack->popfloat(); //release
-					double s = stack->popfloat(); //sustain
-					double d = stack->popfloat(); //decrease
-					double a = stack->popfloat(); //attack
-					envelope.resize(6);
-					envelope[0] = 0.0;
-					envelope[1] = a;
-					envelope[2] = 1.0;
-					envelope[3] = d;
-					envelope[4] = s;
-					envelope[5] = r;
-					if(!error->pending()) sound->envelope(envelope);
-				}
-				break;
-
-				case OP_SOUNDENVELOPE_LIST: {
-					std::vector<double> envelope;
-					int rows = stack->popint();
-					int columns = stack->popint();
-
-					if(rows!=1 || columns%2!=1 || columns<4){
-						//clear stack from the rest of data
-						stack->drop(columns);
-						for(int i=1;i<rows;i++) stack->drop(stack->popint());
-						if(rows!=1)
+					DataElement *de = stack->popelement();
+					if (de->type == T_ARRAY) {
+						// get array of envelope data
+						if(de->arraysizerows()==1) {
+							if(de->arraysizecols()%2==1 && de->arraysizecols()>4){
+								envelope.resize(de->arraysizecols());
+								for(int col =0; col < de->arraysizecols(); col++) {
+									envelope[col]=convert->getFloat(de->arraygetdata(0,col));
+								}
+							} else {
+								error->q(ERROR_ENVELOPEODD);
+							}
+						} else {
 							error->q(ERROR_ONEDIMENSIONAL);
-						else
-							error->q(ERROR_ENVELOPEODD);
-						break;
-					}else{
-						envelope.resize(columns);
-						while(columns>0){
-							columns--;
-							double v=stack->popfloat();
-							envelope[columns]=v;
 						}
-						if(!error->pending())
-							sound->envelope(envelope);
-						}
+					} else {
+						// get the 4 values and build own
+						std::vector<double> envelope;
+						double r = convert->getFloat(de); //release
+						double s = stack->popfloat(); //sustain
+						double d = stack->popfloat(); //decrease
+						double a = stack->popfloat(); //attack
+						envelope.resize(6);
+						envelope[0] = 0.0;
+						envelope[1] = a;
+						envelope[2] = 1.0;
+						envelope[3] = d;
+						envelope[4] = s;
+						envelope[5] = r;
+					}
+					if(!error->pending()) sound->envelope(envelope);
 				}
 				break;
 
@@ -3810,6 +3778,7 @@ Interpreter::execByteCode() {
 					int y = stack->popint();
 					int x = stack->popint();
 					QImage *layerimage;
+					DataElement *d = new DataElement();
 					switch(layer) {
 						case SLICE_PAINT:
 							if(drawingOnScreen || drawto.isEmpty()){
@@ -3827,9 +3796,8 @@ Interpreter::execByteCode() {
 					}
 					if (w<=0 || h<=0) {
 						error->q(ERROR_SLICESIZE);
-						stack->pushint(0);
-						stack->pushint(0);
 					} else {
+						d->arraydim(w, h, false);
 						QImage tmp = QImage(layerimage->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32));
 						const uchar* p = tmp.constBits();
 						QRgb *r = (QRgb *) p;
@@ -3837,69 +3805,47 @@ Interpreter::execByteCode() {
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								stack->pushlong(r[counter]);
+								d->arraysetdata(tw,th,new DataElement((long) r[counter]));
 								counter++;
 							}
-							stack->pushint(w);
 						}
-						stack->pushint(h);
 					}
+					stack->pushdataelement(d);
 				}
 				break;
 
 				case OP_PUTSLICE: {
-					// get image array
-					int th, tw;
-					int h = stack->popint();
-					int w = stack->popint();
-					stack->pushint(w);		// put back on stack to make pull off easier
-
-					if(h<=0 || w<=0){
-						error->q(ERROR_SLICESIZE);
-						//free stack in case of error catching
-						while(h>0){
-							stack->drop(stack->popint());
-							h--;
-						}
-						stack->drop(2); //y and x
-						break;
-					}
-
-					QImage tmp = QImage(w, h, QImage::Format_ARGB32);
-					const uchar* p = tmp.constBits();
-
-					QRgb *r = (QRgb *) p;
-					int counter = w*h;
-					counter--;
-
-					for(th=h-1; th>=0; th--) {
-						int test = stack->popint();	// get extra cols
-						if(test!=w){
-							//error: number of columns is not the same (case of list of lists {})
-							error->q(ERROR_SLICESIZE);
-							//free stack in case of error catching
-							stack->drop(test);
-							th--;
-							for(; th>=0; th--) stack->drop(stack->popint());
-							stack->drop(2); //y and x
-							break;
-						}
-						for(tw=w-1; tw>=0; tw--) {
-							r[counter] = (QRgb) stack->poplong();
-							counter--;
-						}
-					}
-					//update painter only if needed (faster)
-					if(CompositionModeClear){
-						painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-						painter_last_compositionModeClear=false;
-					}
-					//end update painter
-					// get where
+					// get image from array
+					int row,col;
+					DataElement *d = stack->popelement();
 					int y = stack->popint();
 					int x = stack->popint();
-					painter->drawImage(x, y, tmp);
-					if (!fastgraphics && drawingOnScreen) waitForGraphics();
+					
+					if (d->type==T_ARRAY) {
+						int rows = d->arraysizerows();
+						int cols = d->arraysizecols();
+
+						// get image data from array
+						QImage tmp = QImage(cols, rows, QImage::Format_ARGB32);
+						const uchar* p = tmp.constBits();
+						QRgb *r = (QRgb *) p;
+						int counter = 0;
+						for (row=0; row<rows; row++) {
+							for (col=0;col<cols;col++) {
+								r[counter++] = (QRgb) convert->getInt(d->arraygetdata(row,col));
+							}
+						}
+						//update painter only if needed (faster)
+						if(CompositionModeClear){
+							painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+							painter_last_compositionModeClear=false;
+						}
+						// actually display the image
+						painter->drawImage(x, y, tmp);
+						if (!fastgraphics && drawingOnScreen) waitForGraphics();
+					} else {
+						error->q(ERROR_ARRAYEXPR);
+					}
 				}
 				break;
 
@@ -6368,17 +6314,18 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_IMPLODE_LIST: {
+				case OP_IMPLODE: {
 					QString coldelim = stack->popstring();
 					QString rowdelim = stack->popstring();
 					QString stuff = "";
-					int rows = stack->popint();
+					DataElement *d = stack->popelement();
+					int rows = d->arraysizerows();
+					int cols = d->arraysizecols();
 					for (int row=0; row<rows; row++) {
-						if (row!=0) stuff.prepend(rowdelim);
-						int cols = stack->popint();
+						if (row!=0) stuff.append(rowdelim);
 						for (int col=0; col<cols; col++) {
-								if (col!=0) stuff.prepend(coldelim);
-								stuff.prepend(stack->popstring());
+								if (col!=0) stuff.append(coldelim);
+								stuff.append(convert->getString(d->arraygetdata(row,col)));
 						}
 					}
 					stack->pushstring(stuff);
@@ -6387,41 +6334,46 @@ Interpreter::execByteCode() {
 
 				case OP_SERIALIZE: {
 					// rows,columns,typedata
-					DataElement *e;
-					QString stuff = "";
-					int rows = stack->popint();
-					int cols = 0;
-					for (int row=0; row<rows; row++) {
-						if (row!=0) stuff.prepend(SERALIZE_DELIMITER);
-						cols = stack->popint();
-						for (int col=0; col<cols; col++) {
-								if (col!=0) stuff.prepend(SERALIZE_DELIMITER);
-								e = stack->popelement();
-								switch (e->type) {
-									case T_STRING:
-										stuff.prepend(SERALIZE_STRING + QString::fromUtf8(e->stringval.toUtf8().toHex()) );
-										break;
-									case T_FLOAT:
-										stuff.prepend(SERALIZE_FLOAT + QString::number(e->floatval));
-										break;
-									case T_INT:
-										stuff.prepend(SERALIZE_INT + QString::number(e->intval));
-										break;
-									default:
-										stuff.prepend(SERALIZE_UNASSIGNED);
-										break;
-								}
+					DataElement *e = stack->popelement();
+					if (e->type==T_ARRAY) {
+						QString stuff = "";
+						int rows = e->arraysizerows();
+						int cols = e->arraysizecols();
+						for (int row=0; row<rows; row++) {
+							if (row!=0) stuff.append(SERALIZE_DELIMITER);
+							for (int col=0; col<cols; col++) {
+									if (col!=0) stuff.append(SERALIZE_DELIMITER);
+									e = stack->popelement();
+									switch (e->type) {
+										case T_STRING:
+											stuff.append(SERALIZE_STRING + QString::fromUtf8(e->stringval.toUtf8().toHex()) );
+											break;
+										case T_FLOAT:
+											stuff.append(SERALIZE_FLOAT + QString::number(e->floatval));
+											break;
+										case T_INT:
+											stuff.append(SERALIZE_INT + QString::number(e->intval));
+											break;
+										default:
+											stuff.append(SERALIZE_UNASSIGNED);
+											break;
+									}
+							}
 						}
+						stack->pushstring(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
+					} else {
+						error->q(ERROR_ARRAYEXPR);
 					}
-					stack->pushstring(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
 				}
 				break;
 
 
 				case OP_EXPLODE:
 				case OP_EXPLODEX: {
-					// unicode safe explode a string to a listoflists
+					// unicode safe explode a string to an array
 					// pushed on the stack for use in assign and other places
+					DataElement *d = new DataElement();
+					
 					Qt::CaseSensitivity casesens = Qt::CaseSensitive;
 
 					if (opcode!=OP_EXPLODEX) {
@@ -6446,63 +6398,63 @@ Interpreter::execByteCode() {
 							list = qhaystack.split(expr, QString::KeepEmptyParts);
 						}
 					}
-					// push 1d array to stack as a listoflists
+					
+					// put list elements into array
+					d->arraydim(1, list.size(), false);
 					for(int y=0; y<list.size(); y++) {
 						// fill the string array
-						stack->pushstring(list.at(y));
+						d->arraysetdata(0,y,new DataElement(list.at(y)));
 					}
-					stack->pushint(list.size());		// columns
-					stack->pushint(1);				// rows
+					stack->pushdataelement(d);
 				}
 				break;
 
 				case OP_UNSERIALIZE: {
 					bool goodrows, goodcols;
+					DataElement *d = new DataElement();
+					DataElement *dat;
+
 					QString data = stack->popstring();
 					QStringList list = data.split(SERALIZE_DELIMITER);
 					if (list.count()>=3) {
 						int rows = list[0].toInt(&goodrows);
 						int cols = list[1].toInt(&goodcols);
 						if (goodrows&&goodcols) {
+							d->arraydim(rows, cols, false);
 							if (list.count()==rows*cols+2) {
 								for (int row=0; row<rows; row++) {
 									for (int col=0; col<cols; col++) {
 										int i = row * cols + col + 2;
 										switch (list[i].at(0).toLatin1()) {
+											
 											case SERALIZE_STRING:
-												stack->pushstring(QString::fromUtf8(QByteArray::fromHex(list[i].mid(1).toUtf8()).data()));
+												dat = new DataElement(QString::fromUtf8(QByteArray::fromHex(list[i].mid(1).toUtf8()).data()));
 												break;
 											case SERALIZE_FLOAT:
-												stack->pushfloat(list[i].mid(1).toDouble());
+												dat = new DataElement(list[i].mid(1).toDouble());
 												break;
 											case SERALIZE_INT:
-												stack->pushint(list[i].mid(1).toLong());
+												dat = new DataElement(list[i].mid(1).toLong());
 												break;
 											case SERALIZE_UNASSIGNED:
-												stack->pushdataelement(NULL);
+												dat = new DataElement();
 												break;
 											default:
-												stack->pushdataelement(NULL);
+												dat = new DataElement();
 												error->q(ERROR_UNSERIALIZEFORMAT);
 										}
+										d->arraysetdata(row,col,dat);
 									}
-									stack->pushint(cols);
+									stack->pushdataelement(d);
 								}
-								stack->pushint(rows);
 							} else {
 								error->q(ERROR_UNSERIALIZEFORMAT);
-								stack->pushint(0);//zero columns
-								stack->pushint(1);//one row
 							}
 						} else {
 							error->q(ERROR_UNSERIALIZEFORMAT);
-							stack->pushint(0);//zero columns
-							stack->pushint(1);//one row
 						}
 					} else {
 						error->q(ERROR_UNSERIALIZEFORMAT);
-						stack->pushint(0);//zero columns
-						stack->pushint(1);//one row
 					}
 				}
 				break;

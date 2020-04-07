@@ -149,17 +149,6 @@ void DataElement::arraydim(const int xdim, const int ydim, const bool redim) {
 	}
 }
 
-int DataElement::arraysize() {
-	if (type == T_ARRAY) {
-		return(arr->xdim * arr->ydim);
-	} else if (type==T_UNASSIGNED){
-		e = ERROR_VARNOTASSIGNED;
-	} else {
-		e = ERROR_NOTARRAY;
-	}
-	return(0);
-}
-
 int DataElement::arraysizerows() {
 	// return number of columns of array as if it was a two dimensional array - 0 = not an array
 	if (type == T_ARRAY) {

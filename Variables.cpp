@@ -126,6 +126,7 @@ void Variables::decreaserecurse() {
 Variable* Variables::get(const int varnum, int level) {
 	// get v from map or follow REF to recurse level if needed
 	Variable *v;
+	//printf("variables::get - varnum %d level %d\n", varnum, level);
 	if(isglobal[varnum]) level=0;
 	v = varmap[level][varnum];
 	real_varnum = varnum;
