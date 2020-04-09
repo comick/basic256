@@ -1557,18 +1557,18 @@ Interpreter::execByteCode() {
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					switch(opcode) {
 						case OP_ALEN:
-							if (e->arraysizerows()==1) {
-								stack->pushint(e->arraysizecols());
+							if (e->arrayxdim()==1) {
+								stack->pushint(e->arrayydim());
 							} else {
 								stack->pushint(0);
 								error->q(ERROR_ARRAYLENGTH2D);
 							}
 							break;
 						case OP_ALENROWS:
-							stack->pushint(e->arraysizerows());
+							stack->pushint(e->arrayxdim());
 							break;
 						case OP_ALENCOLS:
-							stack->pushint(e->arraysizecols());
+							stack->pushint(e->arrayydim());
 							break;
 					}
 				}
@@ -1632,8 +1632,8 @@ Interpreter::execByteCode() {
 					// expects one integer - variable number
 					// all arrays are 2 dimensional - push each column, column size, then number of rows
 					DataElement *e = variables->getdata(i);
-					int columns = e->arraysizecols();
-					int rows = e->arraysizerows();
+					int columns = e->arrayydim();
+					int rows = e->arrayxdim();
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					if(!error->pending()){
 						for(int row = 0; row<rows; row++) {
@@ -1666,8 +1666,8 @@ Interpreter::execByteCode() {
 					} else {
 						DataElement *edest = variables->getdata(i);
 						if (edest->type==T_ARRAY) {
-							int columns = edest->arraysizecols();
-							int rows = edest->arraysizerows();
+							int columns = edest->arrayydim();
+							int rows = edest->arrayxdim();
 							if (!error->pending() && edest->type==T_ARRAY) {
 								for(int row = 0; row<rows; row++) {
 									for (int col = 0; col<columns; col++) {
@@ -1695,7 +1695,7 @@ Interpreter::execByteCode() {
 					DataElement *edest = variables->getdata(i);
 					
 					// create array if we need to (wrong dimensions or not array)
-					if (edest->type != T_ARRAY || edest->arraysizecols()!=columns || edest->arraysizerows()!=rows) {
+					if (edest->type != T_ARRAY || edest->arrayydim()!=columns || edest->arrayxdim()!=rows) {
 						edest->arraydim(rows, columns, false);
 					}
 
@@ -3334,14 +3334,14 @@ Interpreter::execByteCode() {
 						}
 					} else if (e->type==T_ARRAY) {
 						// an array
-						int columns = e->arraysizecols();
+						int columns = e->arrayydim();
 						if(columns%2!=0){
 							error->q(ERROR_ARRAYEVEN);
 							break;
 						}
 
 						double i;
-						int rows = e->arraysizerows();
+						int rows = e->arrayxdim();
 
 						std::vector < std::vector<double> > sounddata;
 
@@ -3392,9 +3392,9 @@ Interpreter::execByteCode() {
 					std::vector<double> sounddata;
 					DataElement *d = stack->popelement();
 					if (d->type==T_ARRAY) {
-						if(d->arraysizerows()==1){
-							sounddata.resize(d->arraysizecols());
-							for(int col = 0; col < d->arraysizecols(); col++) {
+						if(d->arrayxdim()==1){
+							sounddata.resize(d->arrayydim());
+							for(int col = 0; col < d->arrayydim(); col++) {
 								sounddata[col]=convert->getFloat(d->arraygetdata(0,col));
 							}
 							stack->pushstring(sound->loadRaw(sounddata));
@@ -3459,15 +3459,15 @@ Interpreter::execByteCode() {
 				case OP_SOUNDHARMONICS: {
 					DataElement *de = stack->popelement();
 					if (de->type == T_ARRAY) {
-						if ((de->arraysizerows()==1&&de->arraysizecols()%2==0) || (de->arraysizecols()==2)) {
-							if (de->arraysizerows()==1) {
+						if ((de->arrayxdim()==1&&de->arrayydim()%2==0) || (de->arrayydim()==2)) {
+							if (de->arrayxdim()==1) {
 								// data in a single row
-								for(int col = 0; col < de->arraysizecols(); col+=2) {
+								for(int col = 0; col < de->arrayydim(); col+=2) {
 									sound->harmonics(convert->getInt(de->arraygetdata(0,col)), convert->getFloat(de->arraygetdata(0,col+1)));
 								}
 							} else {
 								// data in mutiple columns
-								for(int row = 0; row < de->arraysizerows(); row+=2) {
+								for(int row = 0; row < de->arrayxdim(); row+=2) {
 									sound->harmonics(convert->getInt(de->arraygetdata(row,0)), convert->getFloat(de->arraygetdata(row,1)));
 								}
 							}
@@ -3495,10 +3495,10 @@ Interpreter::execByteCode() {
 					DataElement *de = stack->popelement();
 					if (de->type == T_ARRAY) {
 						// get array of envelope data
-						if(de->arraysizerows()==1) {
-							if(de->arraysizecols()%2==1 && de->arraysizecols()>4){
-								envelope.resize(de->arraysizecols());
-								for(int col =0; col < de->arraysizecols(); col++) {
+						if(de->arrayxdim()==1) {
+							if(de->arrayydim()%2==1 && de->arrayydim()>4){
+								envelope.resize(de->arrayydim());
+								for(int col =0; col < de->arrayydim(); col++) {
 									envelope[col]=convert->getFloat(de->arraygetdata(0,col));
 								}
 							} else {
@@ -3530,8 +3530,8 @@ Interpreter::execByteCode() {
 					bool logic = stack->popbool(); //if data is logical, not raw
 					DataElement *e = stack->popelement();
 					if (e->type==T_ARRAY){
-						int columns = e->arraysizecols();
-						int rows = e->arraysizerows();
+						int columns = e->arrayydim();
+						int rows = e->arrayxdim();
 						std::vector<double> wave;
 
 						if(rows!=1){
@@ -3816,23 +3816,23 @@ Interpreter::execByteCode() {
 
 				case OP_PUTSLICE: {
 					// get image from array
-					int row,col;
+					int tw,th;
 					DataElement *d = stack->popelement();
 					int y = stack->popint();
 					int x = stack->popint();
 					
 					if (d->type==T_ARRAY) {
-						int rows = d->arraysizerows();
-						int cols = d->arraysizecols();
+						int w = d->arrayxdim();
+						int h = d->arrayydim();
 
 						// get image data from array
-						QImage tmp = QImage(cols, rows, QImage::Format_ARGB32);
+						QImage tmp = QImage(w, h, QImage::Format_ARGB32);
 						const uchar* p = tmp.constBits();
 						QRgb *r = (QRgb *) p;
 						int counter = 0;
-						for (row=0; row<rows; row++) {
-							for (col=0;col<cols;col++) {
-								r[counter++] = (QRgb) convert->getInt(d->arraygetdata(row,col));
+						for (th=0;th<h;th++) {
+							for (tw=0; tw<w; tw++) {
+							r[counter++] = (QRgb) convert->getInt(d->arraygetdata(tw,th));
 							}
 						}
 						//update painter only if needed (faster)
@@ -6319,8 +6319,8 @@ Interpreter::execByteCode() {
 					QString rowdelim = stack->popstring();
 					QString stuff = "";
 					DataElement *d = stack->popelement();
-					int rows = d->arraysizerows();
-					int cols = d->arraysizecols();
+					int rows = d->arrayxdim();
+					int cols = d->arrayydim();
 					for (int row=0; row<rows; row++) {
 						if (row!=0) stuff.append(rowdelim);
 						for (int col=0; col<cols; col++) {
@@ -6335,24 +6335,25 @@ Interpreter::execByteCode() {
 				case OP_SERIALIZE: {
 					// rows,columns,typedata
 					DataElement *e = stack->popelement();
+					DataElement *temp;
 					if (e->type==T_ARRAY) {
 						QString stuff = "";
-						int rows = e->arraysizerows();
-						int cols = e->arraysizecols();
+						int rows = e->arrayxdim();
+						int cols = e->arrayydim();
 						for (int row=0; row<rows; row++) {
 							if (row!=0) stuff.append(SERALIZE_DELIMITER);
 							for (int col=0; col<cols; col++) {
 									if (col!=0) stuff.append(SERALIZE_DELIMITER);
-									e = stack->popelement();
-									switch (e->type) {
+									temp = e->arraygetdata(row,col);
+									switch (temp->type) {
 										case T_STRING:
-											stuff.append(SERALIZE_STRING + QString::fromUtf8(e->stringval.toUtf8().toHex()) );
+											stuff.append(SERALIZE_STRING + QString::fromUtf8(temp->stringval.toUtf8().toHex()) );
 											break;
 										case T_FLOAT:
-											stuff.append(SERALIZE_FLOAT + QString::number(e->floatval));
+											stuff.append(SERALIZE_FLOAT + QString::number(temp->floatval));
 											break;
 										case T_INT:
-											stuff.append(SERALIZE_INT + QString::number(e->intval));
+											stuff.append(SERALIZE_INT + QString::number(temp->intval));
 											break;
 										default:
 											stuff.append(SERALIZE_UNASSIGNED);
@@ -6941,28 +6942,19 @@ Interpreter::execByteCode() {
 					// pop a list of values off of stack and push
 					// it back on as a single DataElement with the data as array
 					// remember this is not associated with variable
-					const int rows = stack->popint();
-					const int columns = stack->popint(); //pop the first row length - the following rows must have the same length
-					int columns2 = columns;
-
+					// will make a full square array but will leave unassigned elements where they were
+					// not included in the list
+					const int ydim = stack->popint();
+					const int xdim = stack->popint();
+					
 					DataElement *edest = new DataElement();
-					edest->arraydim(rows, columns, false);
+					edest->arraydim(xdim, ydim, false);
 
-					for(int row = rows-1; row>=0; row--) {
-						//pop row length only if is not first row - already popped
-						if(row != rows-1) {
-							columns2=stack->popint();
-							if(columns2!=columns){
-								error->q(ERROR_ARRAYNITEMS, -9999);
-								// empty stack to successfully pass over an OnError situation
-								stack->drop(columns2);
-								for(row--; row>=0 ; row--) stack->drop(stack->popint());
-								break;
-							}
-						}
-						for(int col= columns-1; col >= 0; col--) {
-							DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
-							edest->arraysetdata(row, col, e);
+					for(int row = xdim-1; row>=0; row--) {
+						int thisy=stack->popint();
+						for(int col= thisy-1; col >= 0; col--) {
+							DataElement *e = stack->popelement();
+							edest->arraysetdata(row,col, e);
 						}
 					}
 					stack->pushdataelement(edest);

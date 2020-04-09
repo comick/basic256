@@ -56,6 +56,7 @@
 	unsigned int wordOffset = 0;		// current location on the WordCode array
 
 	unsigned int listlen = 0;
+	unsigned int listlenmax = 0;
 	unsigned int numberoflists = 0;
 
 	unsigned int varnumber[IFTABLESIZE];	// stack of variable numbers in a statement to return the varmumber
@@ -543,7 +544,8 @@
 %token <number> B256LABEL
 
 
-%left B256XOR B256OR B256AND
+%left B256XOR B256OR
+%left B256AND
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
 %left B256SEMICOLON
@@ -553,6 +555,9 @@
 %left '*' '/' B256MOD B256INTDIV
 %nonassoc B256UNARY B256BINARYNOT
 %left '^'
+%left '[' ']'
+%left '{' '}'
+%left '(' ')'
 
 
 %%
@@ -1578,25 +1583,26 @@ returnstmt:	B256RETURN args_none {
 			}
 			;
 
-colorstmt:	B256SETCOLOR args_eee {
-				addIntOp(OP_PUSHINT, 255);
-				addOp(OP_RGB);
-				addOp(OP_STACKDUP);
-				addOp(OP_SETCOLOR);
-				newParseWarning(COMPWARNING_DEPRECATED_FORM);
-			}
-			| B256SETCOLOR expr {
+colorstmt:	B256SETCOLOR expr {
 				addOp(OP_STACKDUP);
 				addOp(OP_SETCOLOR);
 			}
 			| B256SETCOLOR args_ee  {
 				addOp(OP_SETCOLOR);
 			}
+			| B256SETCOLOR args_eee {
+				addIntOp(OP_PUSHINT, 255);
+				addOp(OP_RGB);
+				addOp(OP_STACKDUP);
+				addOp(OP_SETCOLOR);
+				newParseWarning(COMPWARNING_DEPRECATED_FORM);
+			}
 			;
 
 soundstmt:	B256SOUND args_ee {
-				addIntOp(OP_PUSHINT, 2);	// 2 columns
+				addIntOp(OP_PUSHINT, 2);	// 2 columns (this)
 				addIntOp(OP_PUSHINT, 1);	// 1 row
+				addIntOp(OP_PUSHINT, 2);	// 2 columns (max)
 				addOp(OP_LIST2EXPRESSION);
 				addOp(OP_SOUND);
 			}
@@ -1699,47 +1705,47 @@ soundharmonicsstmt:  B256SOUNDHARMONICS args_none {
 
 
 soundfadestmt:  B256SOUNDFADE args_eeee {
-                                addOp(OP_SOUNDFADE);
-                        }
-                        | B256SOUNDFADE args_eee {
-                                addOp(OP_STACKTOPTO2);
-                                addOp(OP_STACKTOPTO2);
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_STACKSWAP);
-                                addOp(OP_STACKSWAP2);
-                                addOp(OP_SOUNDFADE);
-                        }
-                        ;
+		addOp(OP_SOUNDFADE);
+	}
+	| B256SOUNDFADE args_eee {
+		addOp(OP_STACKTOPTO2);
+		addOp(OP_STACKTOPTO2);
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_STACKSWAP2);
+		addOp(OP_SOUNDFADE);
+	}
+	;
 
 soundseekstmt:  B256SOUNDSEEK args_ee {
-                                addOp(OP_SOUNDSEEK);
-                        }
-                        | B256SOUNDSEEK expr {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_STACKSWAP);
-                                addOp(OP_SOUNDSEEK);
-                        }
-                        ;
+		addOp(OP_SOUNDSEEK);
+	}
+	| B256SOUNDSEEK expr {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SOUNDSEEK);
+	}
+	;
 
 soundvolumestmt:  B256SOUNDVOLUME args_ee {
-                                addOp(OP_SOUNDVOLUME);
-                        }
-                        | B256SOUNDVOLUME expr {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_STACKSWAP);
-                                addOp(OP_SOUNDVOLUME);
-                        }
-                        ;
+		addOp(OP_SOUNDVOLUME);
+	}
+	| B256SOUNDVOLUME expr {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SOUNDVOLUME);
+	}
+	;
 
 soundloopstmt:  B256SOUNDLOOP args_ee {
-                                addOp(OP_SOUNDLOOP);
-                        }
-                        | B256SOUNDLOOP expr {
-                                addIntOp(OP_PUSHINT, -1);
-                                addOp(OP_STACKSWAP);
-                                addOp(OP_SOUNDLOOP);
-                        }
-                        ;
+		addOp(OP_SOUNDLOOP);
+	}
+	| B256SOUNDLOOP expr {
+		addIntOp(OP_PUSHINT, -1);
+		addOp(OP_STACKSWAP);
+		addOp(OP_SOUNDLOOP);
+	}
+	;
 
 plotstmt: 	B256PLOT args_ee {
 				addOp(OP_PLOT);
@@ -1753,16 +1759,17 @@ linestmt:	B256LINE args_eeee {
 
 
 circlestmt:
-			B256CIRCLE args_eee {
-				addOp(OP_CIRCLE);
-                        }
-                        ;
+	B256CIRCLE args_eee {
+		addOp(OP_CIRCLE);
+	}
+	;
 
 ellipsestmt:
-                        B256ELLIPSE args_eeee {
-                                addOp(OP_ELLIPSE);
-                        }
-                        ;
+	B256ELLIPSE args_eeee {
+		addOp(OP_ELLIPSE);
+	}
+	;
+
 arcstmt:
 	B256ARC args_eeeee {
 		addIntOp(OP_PUSHINT, 5); // with bounding circle
@@ -2852,17 +2859,32 @@ setgraphstmt:
    #################################### */
 
 listoflists:
-			'{' listinlist '}'{addIntOp(OP_PUSHINT, numberoflists); numberoflists = 0;}
+			'{' listinlist '}'{
+				addIntOp(OP_PUSHINT, numberoflists);		// number of lists (y dim)
+				addIntOp(OP_PUSHINT, listlenmax);			// maximum number of expressions (x dim)
+				fprintf(stderr, "listlenmax %d\n", listlenmax);
+				numberoflists = 0;
+				listlenmax=0;
+			}
 
 
 listinlist:
-			listitems {addIntOp(OP_PUSHINT, listlen); listlen = 0; numberoflists = 1; }
+			listitems {
+				addIntOp(OP_PUSHINT, listlen);
+				if (listlen>listlenmax) listlenmax=listlen;
+				listlen = 0;
+				numberoflists = 1;
+			}
 			| listofitems {numberoflists = 1; }
 			| listofitems ',' listinlist {numberoflists++;}
 			;
 
 listofitems:
-			'{' listitems '}' {addIntOp(OP_PUSHINT, listlen); listlen = 0;}
+			'{' listitems '}' {
+				addIntOp(OP_PUSHINT, listlen);
+				if (listlen>listlenmax) listlenmax=listlen;
+				listlen = 0;
+			}
 			;
 
 listitems:

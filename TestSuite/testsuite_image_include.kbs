@@ -44,6 +44,13 @@
 ## imagesave
 
 
+
+## reset graphics
+refresh
+graphsize 300,300
+clg
+refresh
+
 ## draw a circle on the screen
 clg
 color blue

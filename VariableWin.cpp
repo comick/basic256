@@ -85,12 +85,12 @@ void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
 			 case T_ARRAY:{
 				r->setText(COLUMNTYPE, QStringLiteral("A"));
 				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_arrayType);
-				if (d->arraysizerows()==1) {
+				if (d->arrayxdim()==1) {
 					// 1d array
-					var = QStringLiteral("[") + QString::number(d->arraysizecols()) + QStringLiteral("]");
+					var = QStringLiteral("[") + QString::number(d->arrayydim()) + QStringLiteral("]");
 				} else {
 					// 2d array
-					var = QStringLiteral("[") + QString::number(d->arraysizerows()) + QStringLiteral(",") + QString::number(d->arraysizecols()) + QStringLiteral("]");
+					var = QStringLiteral("[") + QString::number(d->arrayxdim()) + QStringLiteral(",") + QString::number(d->arrayydim()) + QStringLiteral("]");
 				}
 				r->setText(COLUMNVALUE, var);
 				r->setData(COLUMNVALUE, Qt::UserRole + 1, var); //to do:00level+var
@@ -130,7 +130,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int
 		if (list.size() > 0) {
 			parentItem = (TreeWidgetItem *)list[0];
 			// now find child or add
-			if (v->data->arraysizerows()==1) {
+			if (v->data->arrayxdim()==1) {
 				childname = parentname + QStringLiteral("[") + QString::number(y) + QStringLiteral("]");
 			} else {
 				childname = parentname + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]");

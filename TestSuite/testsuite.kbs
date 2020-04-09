@@ -159,44 +159,12 @@ endif
 ###################################################
 call section("IMGSave, IMGLoad, Kill and Exists")
 ###################################################
-clg
-penwidth 1
-for t = 1 to 20
-   color rgb(rand*256,rand*256,rand*256,rand*256)
-   line rand*graphwidth, rand*graphheight, 10*rand, 10*rand
-next t
-refresh
-imgsave "testimgsave.png"
-pause .5
-clg
-refresh
-pause .5
-imgload graphwidth/2,graphheight /2,"testimgsave.png"
-call q("imgload - did the image wink out?")
-clg
-for t = 0 to 2* pi step .1
-   imgload graphwidth/2,graphheight /2,t/2,t,"testimgsave.png"
-   refresh
-next t
-call q("imgload - did the image spin out?")
-kill "testimgsave.png"
-call same("delete temp imgsave image",exists("testimgsave.png"),false)
+include "testsuite_imagesave_include.kbs"
 
 ###################################################
 call section("Poly and Stamp")
 ###################################################
-clg
-penwidth 5
-color red, black
-poly {100,100,30,200,170,200}
-refresh
-call q("poly black triangle red border?")
-clg
-for t = 0 to 2 * pi step .1
-   stamp 150,150,t / (2*pi),t,{0,0,-70,100,70,100}
-   refresh
-next t
-call q("stamp growing and rotating black triangle red border?")
+include "testsuite_polystamp_include.kbs"
 
 section_mouse:
 ###################################################

@@ -59,8 +59,8 @@ class DataElement
 		DataElement* arraygetdata(const int, const int);
 		void arraysetdata(const int, const int, DataElement *);
 		void arrayunassign(const int, const int);
-		int arraysizerows();
-		int arraysizecols();
+		int arrayxdim();
+		int arrayydim();
 
 		
 		static int getError() {
