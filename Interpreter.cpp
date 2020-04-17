@@ -479,8 +479,6 @@ QString Interpreter::opname(int op) {
 	case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
 	case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
 	case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
-	case OP_LAZYIFTRUE : return QString("OP_LAZYIFTRUE");
-	case OP_LAZYIFFALSE : return QString("OP_LAZYIFFALSE");
 	case OP_ADD1VAR : return QString("OP_ADD1VAR");
 	case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
 	case OP_SUB1VAR : return QString("OP_SUB1VAR");
@@ -1966,24 +1964,6 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_LAZYIFFALSE: {
-					bool val = stack->popbool();
-					if (!val) { // jump on false but push false on stack // Eg. "false AND expr"
-						stack->pushbool(val);
-						op = wordCode + i;
-					}
-				}
-				break;
-
-				case OP_LAZYIFTRUE: {
-					bool val = stack->popbool();
-					if (val) { // jump on true but push true on stack // Eg. "true OR expr"
-						stack->pushbool(val);
-						op = wordCode + i;
-					}
-				}
-				break;
-
 				case OP_GOSUB: {
 					if(symtableaddresstype[l]!=ADDRESSTYPE_LABEL){
 						error->q(ERROR_NOSUCHLABEL, l);
@@ -2789,181 +2769,196 @@ Interpreter::execByteCode() {
 				break;
 
 
-				case OP_INSTR: {
-				// unicode safe instr function
-				//		 instr ( qhay , qstr , start , casesens)
-				// start - start position. String indices begin at 1. If negative start is given,
-				//		 then position is starting from the end of the string,
-				//		 where -1 is the last character position, -2 the second character from the end... and so on
-				// 0 sensitive (default) - opposite of QT
-					Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
-					int start = stack->popint();
-					QString qstr = stack->popstring();
-					QString qhay = stack->popstring();
+				case OP_INSTR:
+					{
+						// unicode safe instr function
+						//		 instr ( qhay , qstr , start , casesens)
+						// start - start position. String indices begin at 1. If negative start is given,
+						//		 then position is starting from the end of the string,
+						//		 where -1 is the last character position, -2 the second character from the end... and so on
+						// 0 sensitive (default) - opposite of QT
+						Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+						int start = stack->popint();
+						QString qstr = stack->popstring();
+						QString qhay = stack->popstring();
 
-					int pos = 0;
-					if(start == 0) {
-						error->q(ERROR_STRSTART);
-					} else if (start>0){
-						pos = qhay.indexOf(qstr, start-1, casesens)+1;
-					}else{
-						int p = qhay.length()+start;
-						if(p<0)
-							p=0;
-						pos = qhay.indexOf(qstr, p, casesens)+1;
+						int pos = 0;
+						if(start == 0) {
+							error->q(ERROR_STRSTART);
+						} else if (start>0){
+							pos = qhay.indexOf(qstr, start-1, casesens)+1;
+						}else{
+							int p = qhay.length()+start;
+							if(p<0)
+								p=0;
+							pos = qhay.indexOf(qstr, p, casesens)+1;
+						}
+						stack->pushint(pos);
 					}
-					stack->pushint(pos);
-				}
-				break;
+					break;
 
 
-				case OP_INSTRX: {
-				// regex instr
-				//		 instrx (expr, qtemp, start)
-				// start - start position. String indices begin at 1. If negative start is given,
-				//		 then position is starting from the end of the string,
-				//		 where -1 is the last character position, -2 the second character from the end... and so on
-					int start = stack->popint();
-					QRegExp expr = QRegExp(stack->popstring());
-					expr.setMinimal(regexMinimal);
-					QString qtemp = stack->popstring();
+				case OP_INSTRX:
+					{
+						// regex instr
+						//		 instrx (expr, qtemp, start)
+						// start - start position. String indices begin at 1. If negative start is given,
+						//		 then position is starting from the end of the string,
+						//		 where -1 is the last character position, -2 the second character from the end... and so on
+						int start = stack->popint();
+						QRegExp expr = QRegExp(stack->popstring());
+						expr.setMinimal(regexMinimal);
+						QString qtemp = stack->popstring();
 
-					int pos=0;
-					if(start == 0) {
-						error->q(ERROR_STRSTART);
-					} else if (start>0){
-						pos = expr.indexIn(qtemp,start-1)+1;
-					}else{
-						int p = qtemp.length()+start;
-						if(p<0)
-							p=0;
-						pos = expr.indexIn(qtemp, p)+1;
+						int pos=0;
+						if(start == 0) {
+							error->q(ERROR_STRSTART);
+						} else if (start>0){
+							pos = expr.indexIn(qtemp,start-1)+1;
+						}else{
+							int p = qtemp.length()+start;
+							if(p<0)
+								p=0;
+							pos = expr.indexIn(qtemp, p)+1;
+						}
+						stack->pushint(pos);
 					}
-					stack->pushint(pos);
-				}
-				break;
+					break;
 
 				case OP_SIN:
-				{
-					double val = stack->popfloat();
-					stack->pushfloat(sin(val));
+					{
+						double val = stack->popfloat();
+						stack->pushfloat(sin(val));
+					}
 					break;
-				}
+
 				case OP_COS:
-				{
-					double val = stack->popfloat();
-					stack->pushfloat(cos(val));
+					{
+						double val = stack->popfloat();
+						stack->pushfloat(cos(val));
+					}
 					break;
-				}
+
 				case OP_TAN:
-				{
-					double val = stack->popfloat();
-					val = tan(val);
-					if (std::isinf(val)) {
-						error->q(ERROR_INFINITY);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(val);
+					{
+						double val = stack->popfloat();
+						val = tan(val);
+						if (std::isinf(val)) {
+							error->q(ERROR_INFINITY);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(val);
+						}
 					}
 					break;
-				}
+
 				case OP_ASIN:
-				{
-					double val = stack->popfloat();
-					if (val<-1.0 || val>1.0) {
-						error->q(ERROR_ASINACOSRANGE);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(asin(val));
+					{
+						double val = stack->popfloat();
+						if (val<-1.0 || val>1.0) {
+							error->q(ERROR_ASINACOSRANGE);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(asin(val));
+						}
 					}
 					break;
-				}
+
 				case OP_ACOS:
-				{
-					double val = stack->popfloat();
-					if (val<-1.0 || val>1.0) {
-						error->q(ERROR_ASINACOSRANGE);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(acos(val));
+					{
+						double val = stack->popfloat();
+						if (val<-1.0 || val>1.0) {
+							error->q(ERROR_ASINACOSRANGE);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(acos(val));
+						}
 					}
 					break;
-				}
+
 				case OP_ATAN:
-				{
-					double val = stack->popfloat();
-					stack->pushfloat(atan(val));
+					{
+						double val = stack->popfloat();
+						stack->pushfloat(atan(val));
+					}
 					break;
-				}
+
 				case OP_CEIL:
-				{
-					double val = stack->popfloat();
-					stack->pushint(ceil(val));
+					{
+						double val = stack->popfloat();
+						stack->pushint(ceil(val));
+					}
 					break;
-				}
+
 				case OP_FLOOR:
-				{
-					double val = stack->popfloat();
-					stack->pushint(floor(val));
+					{
+						double val = stack->popfloat();
+						stack->pushint(floor(val));
+					}
 					break;
-				}
+
 				case OP_DEGREES:
-				{
-					double val = stack->popfloat();
-					stack->pushfloat(val * 180.0 / M_PI);
+					{
+						double val = stack->popfloat();
+						stack->pushfloat(val * 180.0 / M_PI);
+					}
 					break;
-				}
+
 				case OP_RADIANS:
-				{
-					double val = stack->popfloat();
-					stack->pushfloat(val * M_PI / 180.0);
+					{
+						double val = stack->popfloat();
+						stack->pushfloat(val * M_PI / 180.0);
+					}
 					break;
-				}
+
 				case OP_LOG:
-				{
-					double val = stack->popfloat();
-					if (val<=0.0) {
-						error->q(ERROR_LOGRANGE);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(log(val));
+					{
+						double val = stack->popfloat();
+						if (val<=0.0) {
+							error->q(ERROR_LOGRANGE);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(log(val));
+						}
 					}
 					break;
-				}
+
 				case OP_LOGTEN:
-				{
-					double val = stack->popfloat();
-					if (val<=0.0) {
-						error->q(ERROR_LOGRANGE);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(log10(val));
+					{
+						double val = stack->popfloat();
+						if (val<=0.0) {
+							error->q(ERROR_LOGRANGE);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(log10(val));
+						}
 					}
 					break;
-				}
+
 				case OP_SQR:
-				{
-					double val = stack->popfloat();
-					if (val<0.0) {
-						error->q(ERROR_SQRRANGE);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(sqrt(val));
+					{
+						double val = stack->popfloat();
+						if (val<0.0) {
+							error->q(ERROR_SQRRANGE);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(sqrt(val));
+						}
 					}
 					break;
-				}
+
 				case OP_EXP:
-				{
-					double val = stack->popfloat();
-					break;
-					val = exp(val);
-					if (std::isinf(val)) {
-						error->q(ERROR_INFINITY);
-						stack->pushint(0);
-					} else {
-						stack->pushfloat(val);
+					{
+						double val = stack->popfloat();
+						val = exp(val);
+						if (std::isinf(val)) {
+							error->q(ERROR_INFINITY);
+							stack->pushint(0);
+						} else {
+							stack->pushfloat(val);
+						}
 					}
-				}
+					break;
 
 				case OP_CONCATENATE:
 					// concatenate ";" operator - all types
@@ -3162,29 +3157,16 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_AND: {
-				//lazy evaluation...
-				//if first op is false then the OP_AND is skipped and false will be on stack
-				//this is executed only if first expr is true (it is not on stack anymore)
-				//this can be excluded but it is still necessary because we can find a non-boolean value on stack
-					//int one = stack->popbool();
-					//int two = stack->popbool();
-					//stack->pushbool(one && two);
-				int val = stack->popbool();
-				stack->pushbool(val);
-
+					int one = stack->popbool();
+					int two = stack->popbool();
+					stack->pushbool(one && two);
 				}
 				break;
 
 				case OP_OR: {
-				//lazy evaluation...
-				//if first op is tre then the OP_OR is skipped and true will be on stack
-				//this is executed only if first expr is false (it is not on stack anymore)
-				//this can be excluded but it is still necessary because we can find a non-boolean value on stack
-					//int one = stack->popbool();
-					//int two = stack->popbool();
-					//stack->pushbool(one || two);
-				int val = stack->popbool();
-				stack->pushbool(val);
+					int one = stack->popbool();
+					int two = stack->popbool();
+					stack->pushbool(one || two);
 				}
 				break;
 

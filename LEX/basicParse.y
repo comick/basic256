@@ -276,7 +276,6 @@
 	#define INTERNALSYMBOLEXIT 0 //at the end of the loop - all done
 	#define INTERNALSYMBOLCONTINUE 1 //at the test of the loop
         #define INTERNALSYMBOLTOP 2 // at the top of the loop - all done
-        #define INTERNALSYMBOLBOOL 3 // lazy bool - Lazy evaluation of conditions Eg. true AND exp skip exp if false
 
 	int getInternalSymbol(int id, int type) {
 		// an internal symbol used to jump an if
@@ -1405,7 +1404,7 @@ expr_numeric:
 		addOp(OP_AND);
 	}
 	| expr B256OR expr {
-			addOp(OP_OR);
+		addOp(OP_OR);
 	}
 	| expr B256XOR expr { addOp(OP_XOR); }
 	| B256NOT expr %prec B256AND { addOp(OP_NOT); }
