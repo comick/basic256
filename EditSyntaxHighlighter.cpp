@@ -56,6 +56,7 @@ void EditSyntaxHighlighter::initKeywords() {
 	QStringList keywordPatterns;
 
 	keywordPatterns
+			<< "\\?"
 			<< "abs"								//abs
 			<< "acos"								//acos
 			<< "alert"								//alert
@@ -64,7 +65,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "asc"								//asc
 			<< "asin"								//asin
 			<< "atan"								//atan
-            << "begin[ \t]*case"					//begincase or begin case
+			<< "begin[ \t]*case"					//begincase or begin case
 			<< "call"								//call
 			<< "case"								//case
 			<< "catch"								//catch
@@ -73,19 +74,19 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "chord"								//chord
 			<< "chr"								//chr
 			<< "circle"								//circle
+			<< "clg"								//clg
 			<< "clickb"								//clickb
 			<< "clickclear"							//clickclear
 			<< "clickx"								//clickx
 			<< "clicky"								//clicky
-			<< "clg"								//clg
 			<< "close"								//close
 			<< "cls"								//cls
 			<< "color"								//color
 			<< "colour"								//colour
 			<< "confirm"							//confirm
-            << "continue[ \t]*do"					//continuedo or continue do
-            << "continue[ \t]*for"					//continuefor or continue for
-            << "continue[ \t]*while"				//continuewhile or continue while
+			<< "continue[ \t]*do"					//continuedo or continue do
+			<< "continue[ \t]*for"					//continuefor or continue for
+			<< "continue[ \t]*while"				//continuewhile or continue while
 			<< "cos"								//cos
 			<< "count"								//count
 			<< "countx"								//countx
@@ -101,25 +102,26 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "dbopenset"							//dbopenset
 			<< "dbrow"								//dbrow
 			<< "dbstring"							//dbstring
-			<< "degrees"							//degrees
 			<< "debuginfo"							//debuginfo
+			<< "degrees"							//degrees
 			<< "dim"								//dim
 			<< "dir"								//dir
 			<< "do"									//do
 			<< "editvisible"						//editvisible
+			<< "ellipse"                            //ellipse
 			<< "else"								//else
 			<< "end"								//end
-            << "end[ \t]*case"						//endcase or end case
-            << "end[ \t]*function"					//endfunction or end function
-            << "end[ \t]*if"						//endif or end if
-            << "end[ \t]*subroutine"				//endsubroutine or end subroutine
-            << "end[ \t]*try"						//endtry or end try
-            << "end[ \t]*while"						//endwhile or end while
+			<< "end[ \t]*case"						//endcase or end case
+			<< "end[ \t]*function"					//endfunction or end function
+			<< "end[ \t]*if"						//endif or end if
+			<< "end[ \t]*subroutine"				//endsubroutine or end subroutine
+			<< "end[ \t]*try"						//endtry or end try
+			<< "end[ \t]*while"						//endwhile or end while
 			<< "eof"								//eof
 			<< "exists"								//exists
-            << "exit[ \t]*do"						//exitdo or exit do
-            << "exit[ \t]*for"						//exitfor or exit for
-            << "exit[ \t]*while"					//exitwhile or exit while
+			<< "exit[ \t]*do"						//exitdo or exit do
+			<< "exit[ \t]*for"						//exitfor or exit for
+			<< "exit[ \t]*while"					//exitwhile or exit while
 			<< "exp"								//exp
 			<< "explode"							//explode
 			<< "explodex"							//explodex
@@ -152,14 +154,30 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "graphwidth"							//graphwidth
 			<< "hour"								//hour
 			<< "if"									//if
+			<< "imageautocrop"						//imageautocrop
+			<< "imagecentered"						//imagecentered
+			<< "imagecopy"                      	//imagecopy
+			<< "imagecrop"              			//imagecrop
+			<< "imagedraw"                  		//imagedraw
+			<< "imageflip"                  		//imageflip
+			<< "imageheight"						//imageheight
+			<< "imageload"                  		//imageload
+			<< "imagenew"                   		//imagenew
+			<< "imagepixel"                 		//imagepixel
+			<< "imageresize"						//imageresize
+			<< "imagerotate"						//imagerotate
+			<< "imagesetpixel"						//imagesetpixel
+			<< "imagesmooth"						//imagesmooth
+			<< "imagetransformed"					//imagetransformed
+			<< "imagewidth"                 		//imagewidth
 			<< "imgload"							//imgload
 			<< "imgsave"							//imgsave
 			<< "implode"							//implode
 			<< "include"							//include
 			<< "input"								//input
-            << "input[ \t]*float"					//inputfloat
-            << "input[ \t]*int(eger)?"				//inputint
-            << "input[ \t]*string"					//inputstring
+			<< "input[ \t]*float"					//inputfloat
+			<< "input[ \t]*int(eger)?"				//inputint
+			<< "input[ \t]*string"					//inputstring
 			<< "instr"								//instr
 			<< "instrx"								//instrx
 			<< "int"								//int
@@ -172,17 +190,20 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "lasterrorline"						//lasterrorline
 			<< "lasterrormessage"					//lasterrormessage
 			<< "left"								//left
-			<< "let"								//let
 			<< "length"								//length
+			<< "let"								//let
 			<< "line"								//line
+			<< "ljust"
 			<< "log"								//log
 			<< "log10"								//log10
 			<< "lower"								//lower
+			<< "ltrim"								//ltrim
 			<< "ltrim"								//ltrim
 			<< "md5"								//md5
 			<< "mid"								//mid
 			<< "midx"								//midx
 			<< "minute"								//minute
+			<< "mod"
 			<< "month"								//month
 			<< "mouseb"								//mouseb
 			<< "mousex"								//mousex
@@ -214,10 +235,10 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "portin"								//portin
 			<< "portout"							//portout
 			<< "print"								//print
-            << "printer[ \t]*cancel"				//printercancel or printer cancel
-            << "printer[ \t]*off"					//printeroff or printer off
-            << "printer[ \t]*on"					//printeron or printer on
-            << "printer[ \t]*page"					//printerpage or printer page
+			<< "printer[ \t]*cancel"				//printercancel or printer cancel
+			<< "printer[ \t]*off"					//printeroff or printer off
+			<< "printer[ \t]*on"					//printeron or printer on
+			<< "printer[ \t]*page"					//printerpage or printer page
 			<< "prompt"								//prompt
 			<< "putslice"							//putslice
 			<< "radians"							//radians
@@ -226,8 +247,8 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "readbyte"							//readbyte
 			<< "readline"							//readline
 			<< "rect"								//rect
-			<< "ref"								//ref
 			<< "redim"								//redim
+			<< "ref"								//ref
 			<< "refresh"							//refresh
 			<< "regexminimal"						//regexminimal
 			<< "replace"							//replace
@@ -236,16 +257,39 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "return"								//return
 			<< "rgb"								//rgb
 			<< "right"								//right
-			<< "ltrim"								//ltrim
+			<< "rjust"
+			<< "round"
 			<< "say"								//say
 			<< "second"								//second
 			<< "seed"								//seed
 			<< "seek"								//seek
 			<< "serialize"							//serialize
+			<< "setgraph"                           //setgraph
 			<< "setsetting"							//setsetting
 			<< "sin"								//sin
 			<< "size"								//size
 			<< "sound"								//sound
+			<< "soundenvelope"                      //soundenvelope
+			<< "soundfade"                      	//soundfade
+			<< "soundharmonics"                     //soundharmonics
+			<< "soundid"                            //soundid
+			<< "soundlength"						//soundlength
+			<< "soundload"                      	//soundload
+			<< "soundloadraw"                      	//soundloadraw
+			<< "soundloop"                      	//soundloop
+			<< "soundpause"                 		//soundpause
+			<< "soundplay"                  		//soundplay
+			<< "soundplayer"                  		//soundplayer
+			<< "soundplayeroff"                  	//soundplayeroff
+			<< "soundposition"						//soundposition
+			<< "soundsamplerate"					//soundsamplerate
+			<< "soundseek"                  		//soundseek
+			<< "soundstate"                 		//soundstate
+			<< "soundstop"                  		//soundstop
+			<< "soundsystem"                        //soundsystem
+			<< "soundvolume"						//soundvolume
+			<< "soundwait"                  		//soundwait
+			<< "soundwaveform"                  	//soundwaveform
 			<< "spritedcollide"						//spritedcollide
 			<< "spritedim"							//spritedim
 			<< "spriteh"							//spriteh
@@ -272,8 +316,8 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "system"								//system
 			<< "tan"								//tan
 			<< "text"								//text
-			<< "textwidth"							//textwidth
 			<< "textheight"							//textheight
+			<< "textwidth"							//textwidth
 			<< "then"								//then
 			<< "throwerror"							//throwerror
 			<< "to"									//to
@@ -285,6 +329,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "try"								//try
 			<< "typeof"								//typeof
 			<< "unassign"							//unassign
+			<< "unload"                             //unload
 			<< "unserialize"						//unserialize
 			<< "until"								//until
 			<< "upper"								//upper
@@ -293,8 +338,8 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "volume"								//volume
 			<< "wavlength"							//wavlength
 			<< "wavpause"							//wavpause
-			<< "wavpos"								//wavpos
 			<< "wavplay"							//wavplay
+			<< "wavpos"								//wavpos
 			<< "wavseek"							//wavseek
 			<< "wavstate"							//wavstate
 			<< "wavstop"							//wavstop
@@ -305,46 +350,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "writeline"							//writeline
 			<< "xor"								//xor
 			<< "year"								//year
-            << "soundenvelope"                      //soundenvelope
-            << "soundharmonics"                     //soundharmonics
-            << "soundfade"                      	//soundfade
-            << "soundload"                      	//soundload
-            << "soundloadraw"                      	//soundloadraw
-            << "soundloop"                      	//soundloop
-            << "soundplay"                  		//soundplay
-            << "soundplayer"                  		//soundplayer
-            << "soundplayeroff"                  	//soundplayeroff
-            << "soundpause"                 		//soundpause
-            << "soundseek"                  		//soundseek
-            << "soundstop"                  		//soundstop
-            << "soundwait"                  		//soundwait
-            << "soundwaveform"                  	//soundwaveform
-            << "soundsystem"                        //soundsystem
-            << "soundvolume"						//soundvolume
-            << "soundposition"						//soundposition
-            << "soundsamplerate"					//soundsamplerate
-            << "soundid"                            //soundid
-            << "soundstate"                 		//soundstate
-            << "soundlength"						//soundlength
-            << "imageautocrop"						//imageautocrop
-            << "imagecentered"						//imagecentered
-            << "imagecopy"                      	//imagecopy
-            << "imagecrop"              			//imagecrop
-            << "imagedraw"                  		//imagedraw
-            << "imageflip"                  		//imageflip
-            << "imageheight"						//imageheight
-            << "imageload"                  		//imageload
-            << "imagenew"                   		//imagenew
-            << "imagepixel"                 		//imagepixel
-            << "imagesetpixel"						//imagesetpixel
-            << "imageresize"						//imageresize
-            << "imagerotate"						//imagerotate
-            << "imagesmooth"						//imagesmooth
-            << "imagetransformed"					//imagetransformed
-            << "imagewidth"                 		//imagewidth
-            << "setgraph"                           //setgraph
-            << "unload"                             //unload
-            << "ellipse"                            //ellipse
+			<< "zfill"
             ;
 	for (QStringList::iterator it = keywordPatterns.begin(); it != keywordPatterns.end(); ++it) {
 		HighlightRule *rule = new HighlightRule;

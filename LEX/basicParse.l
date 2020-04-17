@@ -106,6 +106,7 @@ nws [^ \t\n]+
 variable [a-zA-Z][a-zA-Z0-9_\$]*
 whitespace [ \t]+
 
+
 abs [Aa][Bb][Ss]
 acos [Aa][Cc][Oo][Ss]
 alert [Aa][Ll][Ee][Rr][Tt]
@@ -114,6 +115,7 @@ arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
+badinclude [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 begincase [Bb][Ee][Gg][Ii][Nn][ \t]*[Cc][Aa][Ss][Ee]
 black [Bb][Ll][Aa][Cc][Kk]
 blue [Bb][Ll][Uu][Ee]
@@ -161,7 +163,6 @@ degrees [Dd][Ee][Gg][Rr][Ee][Ee][Ss]
 dim [Dd][Ii][Mm]
 dir [Dd][Ii][Rr]
 do [Dd][Oo]
-setgraph [Ss][Ee][Tt][Gg][Rr][Aa][Pp][Hh]
 editvisible [Ee][Dd][Ii][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 ellipse [Ee][Ll][Ll][Ii][Pp][Ss][Ee]
 else [Ee][Ll][Ss][Ee]
@@ -169,129 +170,114 @@ end [Ee][Nn][Dd]
 endcase [Ee][Nn][Dd][ \t]*[Cc][Aa][Ss][Ee]
 endfunction [Ee][Nn][Dd][ \t]*[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 endif [Ee][Nn][Dd][ \t]*[Ii][Ff]
-endtry [Ee][Nn][Dd][ \t]*[Tt][Rr][Yy]
 endsubroutine [Ee][Nn][Dd][ \t]*[Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+endtry [Ee][Nn][Dd][ \t]*[Tt][Rr][Yy]
 endwhile [Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]
-error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]
-error_nosuchlabel [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ll][Aa][Bb][Ee][Ll]
-error_nextnofor [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Xx][Tt][Nn][Oo][Ff][Oo][Rr]
-error_notarray [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Rr][Rr][Aa][Yy]
 error_argumentcount [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Gg][Uu][Mm][Ee][Nn][Tt][Cc][Oo][Uu][Nn][Tt]
-error_maxrecurse [Ee][Rr][Rr][Oo][Rr][_][Mm][Aa][Xx][Rr][Ee][Cc][Uu][Rr][Ss][Ee]
-error_stackunderflow [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Aa][Cc][Kk][Uu][Nn][Dd][Ee][Rr][Ff][Ll][Oo][Ww]
-error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
-error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
-error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
-error_filewrite [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]
-error_filereset [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]
+error_arrayelement [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
+error_arrayeven [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Vv][Ee][Nn]
+error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
+error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
+error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][22][Dd]
+error_arraynitems [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Nn][Ii][Tt][Ee][Mm][Ss]
 error_arraysizelarge [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]
 error_arraysizesmall [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]
-error_varnotassigned [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
-error_arraynitems [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Nn][Ii][Tt][Ee][Mm][Ss]
-error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
-error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
-error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
-error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
-error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
-error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
-error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]
-error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
-error_folder [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]
-error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]
+error_booleanconv [Ee][Rr][Rr][Oo][Rr][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
+error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
+error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]
+error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
+error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]
+error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]
 error_dbopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Oo][Pp][Ee][Nn]
 error_dbquery [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Qq][Uu][Ee][Rr][Yy]
-error_dbnotopen [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
-error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
-error_dbnotset [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt]
-error_numberconv [Ee][Rr][Rr][Oo][Rr][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
-error_stringconv [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
-error_booleanconv [Ee][Rr][Rr][Oo][Rr][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
-error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]
-error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]
-error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]
-error_netread [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]
-error_netnone [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]
-error_netwrite [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
-error_netsockopt [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]
-error_netbind [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]
-error_netaccept [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]
-error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]
-error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
-error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
-error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]
-error_expectedarray [Ee][Rr][Rr][Oo][Rr][_][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Aa][Rr][Rr][Aa][Yy]
-error_varnull [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Uu][Ll][Ll]
-error_varcircular [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Cc][Ii][Rr][Cc][Uu][Ll][Aa][Rr]
-error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
-error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
-error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]
-error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]
-error_freedbset [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
 error_dbsetnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Ss][Ee][Tt][Nn][Uu][Mm][Bb][Ee][Rr]
-error_dbnotsetrow [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Nn][Oo][Tt][Ss][Ee][Tt][Rr][Oo][Ww]
-error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
-error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
-error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
-error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]
-error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]
-error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]
-error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
-error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
-error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
-error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
-error_fileoperation [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn]
-error_serialparameter [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Rr][Ii][Aa][Ll][Pp][Aa][Rr][Aa][Mm][Ee][Tt][Ee][Rr]
-error_longrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
-error_integerrange [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
-error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
-error_arrayeven [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Vv][Ee][Nn]
-error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][22][Dd]
-error_nosuchfunction [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
-error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
-error_slicesize [Ee][Rr][Rr][Oo][Rr][_][Ss][Ll][Ii][Cc][Ee][Ss][Ii][Zz][Ee]
-error_unserializeformat [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
+error_divzero [Ee][Rr][Rr][Oo][Rr][_][Dd][Ii][Vv][Zz][Ee][Rr][Oo]
 error_download [Ee][Rr][Rr][Oo][Rr][_][Dd][Oo][Ww][Nn][Ll][Oo][Aa][Dd]
 error_envelopemax [Ee][Rr][Rr][Oo][Rr][_][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee][Mm][Aa][Xx]
 error_envelopeodd [Ee][Rr][Rr][Oo][Rr][_][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee][Oo][Dd][Dd]
+error_expectedarray [Ee][Rr][Rr][Oo][Rr][_][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Aa][Rr][Rr][Aa][Yy]
 error_expectedsound [Ee][Rr][Rr][Oo][Rr][_][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Ss][Oo][Uu][Nn][Dd]
+error_filenotopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Oo][Tt][Oo][Pp][Ee][Nn]
+error_filenumber [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
+error_fileopen [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Nn]
+error_fileoperation [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn]
+error_filereset [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Rr][Ee][Ss][Ee][Tt]
+error_filewrite [Ee][Rr][Rr][Oo][Rr][_][Ff][Ii][Ll][Ee][Ww][Rr][Ii][Tt][Ee]
+error_folder [Ee][Rr][Rr][Oo][Rr][_][Ff][Oo][Ll][Dd][Ee][Rr]
+error_freedb [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb]
+error_freedbset [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
+error_freefile [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
+error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
 error_harmoniclist [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ll][Ii][Ss][Tt]
 error_harmonicnumber [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Nn][Uu][Mm][Bb][Ee][Rr]
-error_invalidresource [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Vv][Aa][Ll][Ii][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
-error_soundfile [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee]
-error_soundresource [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
-error_toomanysounds [Ee][Rr][Rr][Oo][Rr][_][Tt][Oo][Oo][Mm][Aa][Nn][Yy][Ss][Oo][Uu][Nn][Dd][Ss]
-error_onedimensional [Ee][Rr][Rr][Oo][Rr][_][Oo][Nn][Ee][Dd][Ii][Mm][Ee][Nn][Ss][Ii][Oo][Nn][Aa][Ll]
-error_waveformlogical [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ee][Ff][Oo][Rr][Mm][Ll][Oo][Gg][Ii][Cc][Aa][Ll]
-warning_sounderror [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ee][Rr][Rr][Oo][Rr]
-warning_soundfileformat [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
-warning_soundlength [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
-warning_soundnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
-warning_wavobsolete [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
-warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
-warning_numberconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
-warning_stringconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
-warning_booleanconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
-warning_varnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
-warning_longrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
-warning_integerrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
-error_arrayelement [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
+error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
+error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
+error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
+error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]
+error_integerrange [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
 error_invalidkeyname [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Vv][Aa][Ll][Ii][Dd][Kk][Ee][Yy][Nn][Aa][Mm][Ee]
 error_invalidprogname [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Vv][Aa][Ll][Ii][Dd][Pp][Rr][Oo][Gg][Nn][Aa][Mm][Ee]
+error_invalidresource [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Vv][Aa][Ll][Ii][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+error_logrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Gg][Rr][Aa][Nn][Gg][Ee]
+error_longrange [Ee][Rr][Rr][Oo][Rr][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
+error_maxrecurse [Ee][Rr][Rr][Oo][Rr][_][Mm][Aa][Xx][Rr][Ee][Cc][Uu][Rr][Ss][Ee]
+error_netaccept [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Aa][Cc][Cc][Ee][Pp][Tt]
+error_netbind [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Bb][Ii][Nn][Dd]
+error_netconn [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Cc][Oo][Nn][Nn]
+error_nethost [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Hh][Oo][Ss][Tt]
+error_netnone [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Nn][Oo][Nn][Ee]
+error_netread [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Rr][Ee][Aa][Dd]
+error_netsock [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk]
+error_netsocknumber [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Nn][Uu][Mm][Bb][Ee][Rr]
+error_netsockopt [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ss][Oo][Cc][Kk][Oo][Pp][Tt]
+error_netwrite [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Tt][Ww][Rr][Ii][Tt][Ee]
+error_nextnofor [Ee][Rr][Rr][Oo][Rr][_][Nn][Ee][Xx][Tt][Nn][Oo][Ff][Oo][Rr]
+error_none [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Nn][Ee]
+error_nosuchfunction [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+error_nosuchlabel [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ll][Aa][Bb][Ee][Ll]
+error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
+error_notarray [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Rr][Rr][Aa][Yy]
+error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
+error_numberconv [Ee][Rr][Rr][Oo][Rr][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
+error_onedimensional [Ee][Rr][Rr][Oo][Rr][_][Oo][Nn][Ee][Dd][Ii][Mm][Ee][Nn][Ss][Ii][Oo][Nn][Aa][Ll]
+error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
+error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
+error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
+error_printernotoff [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Ff][Ff]
+error_printernoton [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Nn][Oo][Tt][Oo][Nn]
+error_printeropen [Ee][Rr][Rr][Oo][Rr][_][Pp][Rr][Ii][Nn][Tt][Ee][Rr][Oo][Pp][Ee][Nn]
+error_radix [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx]
+error_radixstring [Ee][Rr][Rr][Oo][Rr][_][Rr][Aa][Dd][Ii][Xx][Ss][Tt][Rr][Ii][Nn][Gg]
 error_refnotassigned [Ee][Rr][Rr][Oo][Rr][_][Rr][Ee][Ff][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+error_rgb [Ee][Rr][Rr][Oo][Rr][_][Rr][Gg][Bb]
+error_serialparameter [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Rr][Ii][Aa][Ll][Pp][Aa][Rr][Aa][Mm][Ee][Tt][Ee][Rr]
 error_settingmaxkeys [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Tt][Tt][Ii][Nn][Gg][Mm][Aa][Xx][Kk][Ee][Yy][Ss]
 error_settingmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Tt][Tt][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
 error_settingsgetaccess [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Tt][Tt][Ii][Nn][Gg][Ss][Gg][Ee][Tt][Aa][Cc][Cc][Ee][Ss][Ss]
 error_settingssetaccess [Ee][Rr][Rr][Oo][Rr][_][Ss][Ee][Tt][Tt][Ii][Nn][Gg][Ss][Ss][Ee][Tt][Aa][Cc][Cc][Ee][Ss][Ss]
+error_slicesize [Ee][Rr][Rr][Oo][Rr][_][Ss][Ll][Ii][Cc][Ee][Ss][Ii][Zz][Ee]
 error_sounderror [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ee][Rr][Rr][Oo][Rr]
+error_soundfile [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee]
 error_soundfileformat [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
 error_soundlength [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
 error_soundnotseekable [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
+error_soundresource [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]
+error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
+error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
+error_stackunderflow [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Aa][Cc][Kk][Uu][Nn][Dd][Ee][Rr][Ff][Ll][Oo][Ww]
 error_string2note [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
-error_wavobsolete [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
+error_stringconv [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
+error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
+error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
+error_toomanysounds [Ee][Rr][Rr][Oo][Rr][_][Tt][Oo][Oo][Mm][Aa][Nn][Yy][Ss][Oo][Uu][Nn][Dd][Ss]
 error_unexpectedreturn [Uu][Nn][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Rr][Ee][Tt][Uu][Rr][Nn]
-warning_arrayelement [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
-warning_refnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Rr][Ee][Ff][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
-warning_string2note [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
+error_unserializeformat [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
+error_varcircular [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Cc][Ii][Rr][Cc][Uu][Ll][Aa][Rr]
+error_varnotassigned [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+error_varnull [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Uu][Ll][Ll]
+error_waveformlogical [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Ee][Ff][Oo][Rr][Mm][Ll][Oo][Gg][Ii][Cc][Aa][Ll]
+error_wavobsolete [Ee][Rr][Rr][Oo][Rr][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
 exists [Ee][Xx][Ii][Ss][Tt][Ss]
 exitdo [Ee][Xx][Ii][Tt][ \t]*[Dd][Oo]
 exitfor [Ee][Xx][Ii][Tt][ \t]*[Ff][Oo][Rr]
@@ -339,24 +325,23 @@ imageheight [Ii][Mm][Aa][Gg][Ee][Hh][Ee][Ii][Gg][Hh][Tt]
 imageload [Ii][Mm][Aa][Gg][Ee][Ll][Oo][Aa][Dd]
 imagenew [Ii][Mm][Aa][Gg][Ee][Nn][Ee][Ww]
 imagepixel [Ii][Mm][Aa][Gg][Ee][Pp][Ii][Xx][Ee][Ll]
-imagesetpixel [Ii][Mm][Aa][Gg][Ee][Ss][Ee][Tt][Pp][Ii][Xx][Ee][Ll]
 imageresize [Ii][Mm][Aa][Gg][Ee][Rr][Ee][Ss][Ii][Zz][Ee]
 imagerotate [Ii][Mm][Aa][Gg][Ee][Rr][Oo][Tt][Aa][Tt][Ee]
+imagesetpixel [Ii][Mm][Aa][Gg][Ee][Ss][Ee][Tt][Pp][Ii][Xx][Ee][Ll]
 imagesmooth [Ii][Mm][Aa][Gg][Ee][Ss][Mm][Oo][Oo][Tt][Hh]
 imagetransformed [Ii][Mm][Aa][Gg][Ee][Tt][Rr][Aa][Nn][Ss][Ff][Oo][Rr][Mm][Ee][Dd]
+imagetype_bmp [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Bb][Mm][Pp]
+imagetype_jpg [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Jj][Pp][Gg]
+imagetype_png [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Pp][Nn][Gn]
 imagewidth [Ii][Mm][Aa][Gg][Ee][Ww][Ii][Dd][Tt][Hh]
 imgload [Ii][Mm][Gg][Ll][Oo][Aa][Dd]
 imgsave [Ii][Mm][Gg][Ss][Aa][Vv][Ee]
 implode [Ii][Mm][Pp][Ll][Oo][Dd][Ee]
-imagetype_bmp [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Bb][Mm][Pp]
-imagetype_jpg [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Jj][Pp][Gg]
-imagetype_png [Ii][Mm][Aa][Gg][Ee][Tt][Yy][Pp][Ee][_][Pp][Nn][Gn]
+include ^[ \t]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*
 input [Ii][Nn][Pp][Uu][Tt]
 inputfloat [Ii][Nn][Pp][Uu][Tt][ \t]*[Ff][Ll][Oo][Aa][Tt]
 inputint [Ii][Nn][Pp][Uu][Tt][ \t]*[iI][nN][tT]([Ee][Gg][Ee][Rr])?
 inputstring [Ii][Nn][Pp][Uu][Tt][ \t]*[Ss][Tt][Rr][Ii][Nn][Gg]
-include ^[ \t]*[Ii][Nn][Cc][Ll][Uu][Dd][Ee][ \t]*
-badinclude [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 instr [Ii][Nn][Ss][Tt][Rr]
 instrx [Ii][Nn][Ss][Tt][Rr][Xx]
 isnumeric [iI][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
@@ -372,6 +357,7 @@ left [Ll][Ee][Ff][Tt]
 length [Ll][Ee][Nn][Gg][Tt][Hh]
 let [Ll][Ee][Tt]
 line [Ll][Ii][Nn][Ee]
+ljust [Ll][Jj][Uu][Ss][Tt]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
@@ -380,13 +366,14 @@ md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
 midx [Mm][Ii][Dd][Xx]
 minute [Mm][Ii][Nn][Uu][Tt][Ee]
+mod ([Mm][Oo][Dd])
 month [Mm][Oo][Nn][Tt][Hh]
 mouseb [Mm][Oo][Uu][Ss][Ee][Bb]
 mousebutton_center [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Cc][Ee][Nn][Tt][Ee][Rr]
+mousebutton_doubleclick [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Dd][Oo][Uu][Bb][Ll][Ee][Cc][Ll][Ii][Cc][Kk]
 mousebutton_left [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Ll][Ee][Ff][Tt]
 mousebutton_none [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Nn][Oo][Nn][Ee]
 mousebutton_right [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Rr][Ii][Gg][Hh][Tt]
-mousebutton_doubleclick [Mm][Oo][Uu][Ss][Ee][Bb][Uu][Tt][Tt][Oo][Nn][_][Dd][Oo][Uu][Bb][Ll][Ee][Cc][Ll][Ii][Cc][Kk]
 mousex [Mm][Oo][Uu][Ss][Ee][Xx]
 mousey [Mm][Oo][Uu][Ss][Ee][Yy]
 msec [Mm][Ss][Ee][Cc]
@@ -421,7 +408,7 @@ plot [Pp][Ll][Oo][Tt]
 poly [Pp][Oo][Ll][Yy]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
-print [Pp][Rr][Ii][Nn][Tt]
+print ([Pp][Rr][Ii][Nn][Tt])
 printercancel [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Cc][Aa][Nn][Cc][Ee][Ll]
 printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Ff][Ff]
 printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Nn]
@@ -448,12 +435,15 @@ reset [Rr][Ee][Ss][Ee][Tt]
 return [Rr][Ee][Tt][Uu][Rr][Nn]
 rgb [Rr][Gg][Bb]
 right [Rr][Ii][Gg][Hh][Tt]
+rjust [Rr][Jj][Uu][Ss][Tt]
+round [Rr][Oo][Uu][Nn][Dd]
 rtrim [Rr][Tt][Rr][Ii][Mm]
 say [Ss][Aa][Yy]
 second [Ss][Ee][Cc][Oo][Nn][Dd]
 seed [Ss][Ee][Ee][Dd]
 seek [Ss][Ee][Ee][Kk]
 serialize [Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]
+setgraph [Ss][Ee][Tt][Gg][Rr][Aa][Pp][Hh]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 sin [Ss][Ii][Nn]
 size [Ss][Ii][Zz][Ee]
@@ -461,38 +451,38 @@ slice_all [Ss][Ll][Ii][Cc][Ee]_[Aa][Ll][Ll]
 slice_paint [Ss][Ll][Ii][Cc][Ee]_[Pp][Aa][Ii][Nn][Tt]
 slice_sprite [Ss][Ll][Ii][Cc][Ee]_[Ss][Pp][Rr][Ii][Tt][Ee]
 sound [Ss][Oo][Uu][Nn][Dd]
+soundenvelope [Ss][Oo][Uu][Nn][Dd][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee]
+soundfade [Ss][Oo][Uu][Nn][Dd][Ff][Aa][Dd][Ee]
+soundharmonics [Ss][Oo][Uu][Nn][Dd][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ss]
 soundid [Ss][Oo][Uu][Nn][Dd][Ii][Dd]
+soundlength [Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
 soundload [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Aa][Dd]
 soundloadraw [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Aa][Dd][Rr][Aa][Ww]
+soundloop [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Oo][Pp]
+soundpause [Ss][Oo][Uu][Nn][Dd][Pp][Aa][Uu][Ss][Ee]
 soundplay [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy]
 soundplayer [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy][Ee][Rr]
 soundplayeroff [Ss][Oo][Uu][Nn][Dd][Pp][Ll][Aa][Yy][Ee][Rr][Oo][Ff][Ff]
-soundpause [Ss][Oo][Uu][Nn][Dd][Pp][Aa][Uu][Ss][Ee]
+soundposition [Ss][Oo][Uu][Nn][Dd][Pp][Oo][Ss][Ii][Tt][Ii][Oo][Nn]
+soundsamplerate [Ss][Oo][Uu][Nn][Dd][Ss][Aa][Mm][Pp][Ll][Ee][Rr][Aa][Tt][Ee]
 soundseek [Ss][Oo][Uu][Nn][Dd][Ss][Ee][Ee][Kk]
+soundstate [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Aa][Tt][Ee]
 soundstop [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Oo][Pp]
+soundsystem [Ss][Oo][Uu][Nn][Dd][Ss][Yy][Ss][Tt][Ee][Mm]
+soundvolume [Ss][Oo][Uu][Nn][Dd][Vv][Oo][Ll][Uu][Mm][Ee]
 soundwait [Ss][Oo][Uu][Nn][Dd][Ww][Aa][Ii][Tt]
 soundwaveform [Ss][Oo][Uu][Nn][Dd][Ww][Aa][Vv][Ee][Ff][Oo][Rr][Mm]
-soundsystem [Ss][Oo][Uu][Nn][Dd][Ss][Yy][Ss][Tt][Ee][Mm]
-soundsamplerate [Ss][Oo][Uu][Nn][Dd][Ss][Aa][Mm][Pp][Ll][Ee][Rr][Aa][Tt][Ee]
-soundenvelope [Ss][Oo][Uu][Nn][Dd][Ee][Nn][Vv][Ee][Ll][Oo][Pp][Ee]
-soundharmonics [Ss][Oo][Uu][Nn][Dd][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ss]
-soundfade [Ss][Oo][Uu][Nn][Dd][Ff][Aa][Dd][Ee]
-soundvolume [Ss][Oo][Uu][Nn][Dd][Vv][Oo][Ll][Uu][Mm][Ee]
-soundloop [Ss][Oo][Uu][Nn][Dd][Ll][Oo][Oo][Pp]
-soundposition [Ss][Oo][Uu][Nn][Dd][Pp][Oo][Ss][Ii][Tt][Ii][Oo][Nn]
-soundstate [Ss][Oo][Uu][Nn][Dd][Ss][Tt][Aa][Tt][Ee]
-soundlength [Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
 spritecollide [Ss][Pp][Rr][Ii][Tt][Ee][Cc][Oo][Ll][Ll][Ii][Dd][Ee]
 spritedim [Ss][Pp][Rr][Ii][Tt][Ee][Dd][Ii][Mm]
 spriteh [Ss][Pp][Rr][Ii][Tt][Ee][Hh]
 spritehide [Ss][Pp][Rr][Ii][Tt][Ee][Hh][Ii][Dd][Ee]
 spriteload [Ss][Pp][Rr][Ii][Tt][Ee][Ll][Oo][Aa][Dd]
 spritemove [Ss][Pp][Rr][Ii][Tt][Ee][Mm][Oo][Vv][Ee]
+spriteo [Ss][Pp][Rr][Ii][Tt][Ee][Oo]
 spriteplace [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Ll][Aa][Cc][Ee]
 spritepoly [Ss][Pp][Rr][Ii][Tt][Ee][Pp][Oo][Ll][Yy]
 spriter [Ss][Pp][Rr][Ii][Tt][Ee][Rr]
 sprites [Ss][Pp][Rr][Ii][Tt][Ee][Ss]
-spriteo [Ss][Pp][Rr][Ii][Tt][Ee][Oo]
 spriteshow [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]
 spriteslice [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
@@ -507,8 +497,8 @@ subroutine [Ss][Uu][Bb][Rr][Oo][Uu][Tt][Ii][Nn][Ee]
 system [Ss][Yy][Ss][Tt][Ee][Mm]
 tan [Tt][Aa][Nn]
 text [Tt][Ee][Xx][Tt]
-textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
 textheight [Tt][Ee][Xx][Tt][Hh][Ee][Ii][Gg][Hh][Tt]
+textwidth [Tt][Ee][Xx][Tt][Ww][Ii][Dd][Tt][Hh]
 then [Tt][Hh][Ee][Nn]
 throwerror [Tt][Hh][Rr][Oo][Ww][Ee][Rr][Rr][Oo][Rr]
 to [Tt][Oo]
@@ -521,12 +511,12 @@ toradix [Tt][Oo][Rr][Aa][Dd][Ii][Xx]
 tostring [Ss][Tt][Rr][Ii][Nn][Gg]
 trim [Tt][Rr][Ii][Mm]
 try [Tt][Rr][Yy]
-type_unassigned [Tt][Yy][Pp][Ee][_][Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
-type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]([Ee][Gg][Ee][Rr])*
-type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
-type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
 type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
+type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
+type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]([Ee][Gg][Ee][Rr])*
 type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
+type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
+type_unassigned [Tt][Yy][Pp][Ee][_][Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 typeof [Tt][Yy][Pp][Ee][Oo][Ff]
 unassign [Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn]
 unload [Uu][Nn][Ll][Oo][Aa][Dd]
@@ -536,6 +526,21 @@ upper [Uu][Pp][Pp][Ee][Rr]
 variablewatch [Vv][Aa][Rr][Ii][Aa][Bb][Ll][Ee][Ww][Aa][Tt][Cc][Hh]
 version [Vv][Ee][Rr][Ss][Ii][Oo][Nn]
 volume [Vv][Oo][Ll][Uu][Mm][Ee]
+warning_arrayelement [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
+warning_booleanconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
+warning_integerrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ii][Nn][Tt][Ee][Gg][Ee][Rr][Rr][Aa][Nn][Gg][Ee]
+warning_longrange [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ll][Oo][Nn][Gg][Rr][Aa][Nn][Gg][Ee]
+warning_numberconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
+warning_refnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Rr][Ee][Ff][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+warning_sounderror [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ee][Rr][Rr][Oo][Rr]
+warning_soundfileformat [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ff][Ii][Ll][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
+warning_soundlength [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
+warning_soundnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
+warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
+warning_string2note [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
+warning_stringconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
+warning_varnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
+warning_wavobsolete [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
 wavlength [Ww][Aa][Vv][Ll][Ee][Nn][Gg][Tt][Hh]
 wavpause [Ww][Aa][Vv][Pp][Aa][Uu][Ss][Ee]
 wavplay [Ww][Aa][Vv][Pp][Ll][Aa][Yy]
@@ -552,7 +557,7 @@ writeline [Ww][Rr][Ii][Tt][Ee][Ll][Ii][Nn][Ee]
 xor [Xx][Oo][Rr]
 year [Yy][Ee][Aa][Rr]
 yellow [Yy][Ee][Ll][Ll][Oo][Ww]
-
+zfill [Zz][Ff][Ii][Ll][Ll]
 %%
 
  /**********************************************************************/
@@ -624,8 +629,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {clicky}					{ count(); return B256CLICKY; }
 {confirm}					{ count(); return B256CONFIRM; }
 {cos}						{ count(); return B256COS; }
-{count}						{ count(); return B256COUNT; }
 {countx}					{ count(); return B256COUNTX; }
+{count}						{ count(); return B256COUNT; }
 {currentdir}				{ count(); return B256CURRENTDIR; }
 {cyan}						{ count(); return B256CYAN; }
 {dark}{blue}				{ count(); return B256DARKBLUE; }
@@ -645,134 +650,119 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {debuginfo}					{ count(); return B256DEBUGINFO; }
 {degrees}					{ count(); return B256DEGREES; }
 {dir}						{ count(); return B256DIR; }
-{error_none}                                    { count(); return B256ERROR_NONE; }
-{error_nosuchlabel}                             { count(); return B256ERROR_NOSUCHLABEL; }
-{error_nextnofor}                               { count(); return B256ERROR_NEXTNOFOR; }
-{error_notarray}                                { count(); return B256ERROR_NOTARRAY; }
 {error_argumentcount}                           { count(); return B256ERROR_ARGUMENTCOUNT; }
-{error_maxrecurse}                              { count(); return B256ERROR_MAXRECURSE; }
-{error_stackunderflow}                          { count(); return B256ERROR_STACKUNDERFLOW; }
-{error_filenumber}                              { count(); return B256ERROR_FILENUMBER; }
-{error_fileopen}                                { count(); return B256ERROR_FILEOPEN; }
-{error_filenotopen}                             { count(); return B256ERROR_FILENOTOPEN; }
-{error_filewrite}                               { count(); return B256ERROR_FILEWRITE; }
-{error_filereset}                               { count(); return B256ERROR_FILERESET; }
+{error_arrayelement}                            { count(); return B256ERROR_ARRAYELEMENT; }
+{error_arrayeven}                               { count(); return B256ERROR_ARRAYEVEN; }
+{error_arrayindexmissing}                       { count(); return B256ERROR_ARRAYINDEXMISSING; }
+{error_arrayindex}                              { count(); return B256ERROR_ARRAYINDEX; }
+{error_arraylength2d}                           { count(); return B256ERROR_ARRAYLENGTH2D; }
+{error_arraynitems}                             { count(); return B256ERROR_ARRAYNITEMS; }
 {error_arraysizelarge}                          { count(); return B256ERROR_ARRAYSIZELARGE; }
 {error_arraysizesmall}                          { count(); return B256ERROR_ARRAYSIZESMALL; }
-{error_varnotassigned}                          { count(); return B256ERROR_VARNOTASSIGNED; }
-{error_arraynitems}                             { count(); return B256ERROR_ARRAYNITEMS; }
-{error_arrayindex}                              { count(); return B256ERROR_ARRAYINDEX; }
-{error_strstart}                                { count(); return B256ERROR_STRSTART; }
-{error_rgb}                                     { count(); return B256ERROR_RGB; }
-{error_polypoints}                              { count(); return B256ERROR_POLYPOINTS; }
-{error_imagefile}                               { count(); return B256ERROR_IMAGEFILE; }
-{error_spritenumber}                            { count(); return B256ERROR_SPRITENUMBER; }
-{error_spritena}                                { count(); return B256ERROR_SPRITENA; }
-{error_spriteslice}                             { count(); return B256ERROR_SPRITESLICE; }
-{error_folder}                                  { count(); return B256ERROR_FOLDER; }
-{error_infinity}                                { count(); return B256ERROR_INFINITY; }
+{error_booleanconv}                             { count(); return B256ERROR_BOOLEANCONV; }
+{error_dbcolno}                                 { count(); return B256ERROR_DBCOLNO; }
+{error_dbconnnumber}                            { count(); return B256ERROR_DBCONNNUMBER; }
+{error_dbnotopen}                               { count(); return B256ERROR_DBNOTOPEN; }
+{error_dbnotsetrow}                             { count(); return B256ERROR_DBNOTSETROW; }
+{error_dbnotset}                                { count(); return B256ERROR_DBNOTSET; }
 {error_dbopen}                                  { count(); return B256ERROR_DBOPEN; }
 {error_dbquery}                                 { count(); return B256ERROR_DBQUERY; }
-{error_dbnotopen}                               { count(); return B256ERROR_DBNOTOPEN; }
-{error_dbcolno}                                 { count(); return B256ERROR_DBCOLNO; }
-{error_dbnotset}                                { count(); return B256ERROR_DBNOTSET; }
-{error_numberconv}                              { count(); return B256ERROR_NUMBERCONV; }
-{error_stringconv}                              { count(); return B256ERROR_STRINGCONV; }
-{error_booleanconv}                             { count(); return B256ERROR_BOOLEANCONV; }
-{error_netsock}                                 { count(); return B256ERROR_NETSOCK; }
-{error_nethost}                                 { count(); return B256ERROR_NETHOST; }
-{error_netconn}                                 { count(); return B256ERROR_NETCONN; }
-{error_netread}                                 { count(); return B256ERROR_NETREAD; }
-{error_netnone}                                 { count(); return B256ERROR_NETNONE; }
-{error_netwrite}                                { count(); return B256ERROR_NETWRITE; }
-{error_netsockopt}                              { count(); return B256ERROR_NETSOCKOPT; }
-{error_netbind}                                 { count(); return B256ERROR_NETBIND; }
-{error_netaccept}                               { count(); return B256ERROR_NETACCEPT; }
-{error_netsocknumber}                           { count(); return B256ERROR_NETSOCKNUMBER; }
-{error_permission}                              { count(); return B256ERROR_PERMISSION; }
-{error_imagesavetype}                           { count(); return B256ERROR_IMAGESAVETYPE; }
-{error_divzero}                                 { count(); return B256ERROR_DIVZERO; }
-{error_expectedarray}                           { count(); return B256ERROR_EXPECTEDARRAY; }
-{error_varnull}                                 { count(); return B256ERROR_VARNULL; }
-{error_varcircular}                             { count(); return B256ERROR_VARCIRCULAR; }
-{error_freefile}                                { count(); return B256ERROR_FREEFILE; }
-{error_freenet}                                 { count(); return B256ERROR_FREENET; }
-{error_freedb}                                  { count(); return B256ERROR_FREEDB; }
-{error_dbconnnumber}                            { count(); return B256ERROR_DBCONNNUMBER; }
-{error_freedbset}                               { count(); return B256ERROR_FREEDBSET; }
 {error_dbsetnumber}                             { count(); return B256ERROR_DBSETNUMBER; }
-{error_dbnotsetrow}                             { count(); return B256ERROR_DBNOTSETROW; }
-{error_penwidth}                                { count(); return B256ERROR_PENWIDTH; }
-{error_arrayindexmissing}                       { count(); return B256ERROR_ARRAYINDEXMISSING; }
-{error_imagescale}                              { count(); return B256ERROR_IMAGESCALE; }
-{error_radixstring}                             { count(); return B256ERROR_RADIXSTRING; }
-{error_radix}                                   { count(); return B256ERROR_RADIX; }
-{error_logrange}                                { count(); return B256ERROR_LOGRANGE; }
-{error_stringmaxlen}                            { count(); return B256ERROR_STRINGMAXLEN; }
-{error_printernoton}                            { count(); return B256ERROR_PRINTERNOTON; }
-{error_printernotoff}                           { count(); return B256ERROR_PRINTERNOTOFF; }
-{error_printeropen}                             { count(); return B256ERROR_PRINTEROPEN; }
-{error_fileoperation}                           { count(); return B256ERROR_FILEOPERATION; }
-{error_serialparameter}                         { count(); return B256ERROR_SERIALPARAMETER; }
-{error_longrange}                               { count(); return B256ERROR_LONGRANGE; }
-{error_integerrange}                            { count(); return B256ERROR_INTEGERRANGE; }
-{error_notimplemented}                          { count(); return B256ERROR_NOTIMPLEMENTED; }
-{error_arrayeven}                               { count(); return B256ERROR_ARRAYEVEN; }
-{error_arraylength2d}                           { count(); return B256ERROR_ARRAYLENGTH2D; }
-{error_nosuchfunction}                          { count(); return B256ERROR_NOSUCHFUNCTION; }
-{error_nosuchsubroutine}                        { count(); return B256ERROR_NOSUCHSUBROUTINE; }
-{error_slicesize}                               { count(); return B256ERROR_SLICESIZE; }
-{error_unserializeformat}                       { count(); return B256ERROR_UNSERIALIZEFORMAT; }
+{error_divzero}                                 { count(); return B256ERROR_DIVZERO; }
 {error_download}                                { count(); return B256ERROR_DOWNLOAD; }
 {error_envelopemax}                             { count(); return B256ERROR_ENVELOPEMAX; }
 {error_envelopeodd}                             { count(); return B256ERROR_ENVELOPEODD; }
+{error_expectedarray}                           { count(); return B256ERROR_EXPECTEDARRAY; }
 {error_expectedsound}                           { count(); return B256ERROR_EXPECTEDSOUND; }
+{error_filenotopen}                             { count(); return B256ERROR_FILENOTOPEN; }
+{error_filenumber}                              { count(); return B256ERROR_FILENUMBER; }
+{error_fileopen}                                { count(); return B256ERROR_FILEOPEN; }
+{error_fileoperation}                           { count(); return B256ERROR_FILEOPERATION; }
+{error_filereset}                               { count(); return B256ERROR_FILERESET; }
+{error_filewrite}                               { count(); return B256ERROR_FILEWRITE; }
+{error_folder}                                  { count(); return B256ERROR_FOLDER; }
+{error_freedbset}                               { count(); return B256ERROR_FREEDBSET; }
+{error_freedb}                                  { count(); return B256ERROR_FREEDB; }
+{error_freefile}                                { count(); return B256ERROR_FREEFILE; }
+{error_freenet}                                 { count(); return B256ERROR_FREENET; }
 {error_harmoniclist}                            { count(); return B256ERROR_HARMONICLIST; }
 {error_harmonicnumber}                          { count(); return B256ERROR_HARMONICNUMBER; }
-{error_invalidresource}                         { count(); return B256ERROR_INVALIDRESOURCE; }
-{error_soundfile}                               { count(); return B256ERROR_SOUNDFILE; }
-{error_soundresource}                           { count(); return B256ERROR_SOUNDRESOURCE; }
-{error_toomanysounds}                           { count(); return B256ERROR_TOOMANYSOUNDS; }
-{error_onedimensional}                          { count(); return B256ERROR_ONEDIMENSIONAL; }
-{error_waveformlogical}                         { count(); return B256ERROR_WAVEFORMLOGICAL; }
-{warning_sounderror}                            { count(); return B256WARNING_SOUNDERROR; }
-{warning_soundfileformat}                       { count(); return B256WARNING_SOUNDFILEFORMAT; }
-{warning_soundlength}                           { count(); return B256WARNING_SOUNDLENGTH; }
-{warning_soundnotseekable}                      { count(); return B256WARNING_SOUNDNOTSEEKABLE; }
-{warning_wavobsolete}                           { count(); return B256WARNING_WAVOBSOLETE; }
-{warning_start}                                 { count(); return B256WARNING_START; }
-{warning_numberconv}                              { count(); return B256WARNING_NUMBERCONV; }
-{warning_stringconv}                              { count(); return B256WARNING_STRINGCONV; }
-{warning_booleanconv}                              { count(); return B256WARNING_BOOLEANCONV; }
-{warning_varnotassigned}                        { count(); return B256WARNING_VARNOTASSIGNED; }
-{warning_longrange}                             { count(); return B256WARNING_LONGRANGE; }
-{warning_integerrange}                          { count(); return B256WARNING_INTEGERRANGE; }
-{error_arrayelement}                            { count(); return B256ERROR_ARRAYELEMENT; }
+{error_imagefile}                               { count(); return B256ERROR_IMAGEFILE; }
+{error_imagesavetype}                           { count(); return B256ERROR_IMAGESAVETYPE; }
+{error_imagescale}                              { count(); return B256ERROR_IMAGESCALE; }
+{error_infinity}                                { count(); return B256ERROR_INFINITY; }
+{error_integerrange}                            { count(); return B256ERROR_INTEGERRANGE; }
 {error_invalidkeyname}                          { count(); return B256ERROR_INVALIDKEYNAME; }
 {error_invalidprogname}                         { count(); return B256ERROR_INVALIDPROGNAME; }
+{error_invalidresource}                         { count(); return B256ERROR_INVALIDRESOURCE; }
+{error_logrange}                                { count(); return B256ERROR_LOGRANGE; }
+{error_longrange}                               { count(); return B256ERROR_LONGRANGE; }
+{error_maxrecurse}                              { count(); return B256ERROR_MAXRECURSE; }
+{error_netaccept}                               { count(); return B256ERROR_NETACCEPT; }
+{error_netbind}                                 { count(); return B256ERROR_NETBIND; }
+{error_netconn}                                 { count(); return B256ERROR_NETCONN; }
+{error_nethost}                                 { count(); return B256ERROR_NETHOST; }
+{error_netnone}                                 { count(); return B256ERROR_NETNONE; }
+{error_netread}                                 { count(); return B256ERROR_NETREAD; }
+{error_netsocknumber}                           { count(); return B256ERROR_NETSOCKNUMBER; }
+{error_netsockopt}                              { count(); return B256ERROR_NETSOCKOPT; }
+{error_netsock}                                 { count(); return B256ERROR_NETSOCK; }
+{error_netwrite}                                { count(); return B256ERROR_NETWRITE; }
+{error_nextnofor}                               { count(); return B256ERROR_NEXTNOFOR; }
+{error_none}                                    { count(); return B256ERROR_NONE; }
+{error_nosuchfunction}                          { count(); return B256ERROR_NOSUCHFUNCTION; }
+{error_nosuchlabel}                             { count(); return B256ERROR_NOSUCHLABEL; }
+{error_nosuchsubroutine}                        { count(); return B256ERROR_NOSUCHSUBROUTINE; }
+{error_notarray}                                { count(); return B256ERROR_NOTARRAY; }
+{error_notimplemented}                          { count(); return B256ERROR_NOTIMPLEMENTED; }
+{error_numberconv}                              { count(); return B256ERROR_NUMBERCONV; }
+{error_onedimensional}                          { count(); return B256ERROR_ONEDIMENSIONAL; }
+{error_penwidth}                                { count(); return B256ERROR_PENWIDTH; }
+{error_permission}                              { count(); return B256ERROR_PERMISSION; }
+{error_polypoints}                              { count(); return B256ERROR_POLYPOINTS; }
+{error_printernotoff}                           { count(); return B256ERROR_PRINTERNOTOFF; }
+{error_printernoton}                            { count(); return B256ERROR_PRINTERNOTON; }
+{error_printeropen}                             { count(); return B256ERROR_PRINTEROPEN; }
+{error_radixstring}                             { count(); return B256ERROR_RADIXSTRING; }
+{error_radix}                                   { count(); return B256ERROR_RADIX; }
 {error_refnotassigned}                          { count(); return B256ERROR_REFNOTASSIGNED; }
+{error_rgb}                                     { count(); return B256ERROR_RGB; }
+{error_serialparameter}                         { count(); return B256ERROR_SERIALPARAMETER; }
 {error_settingmaxkeys}                          { count(); return B256ERROR_SETTINGMAXKEYS; }
 {error_settingmaxlen}                           { count(); return B256ERROR_SETTINGMAXLEN; }
 {error_settingsgetaccess}                       { count(); return B256ERROR_SETTINGSGETACCESS; }
 {error_settingssetaccess}                       { count(); return B256ERROR_SETTINGSSETACCESS; }
+{error_slicesize}                               { count(); return B256ERROR_SLICESIZE; }
 {error_sounderror}                              { count(); return B256ERROR_SOUNDERROR; }
 {error_soundfileformat}                         { count(); return B256ERROR_SOUNDFILEFORMAT; }
+{error_soundfile}                               { count(); return B256ERROR_SOUNDFILE; }
 {error_soundlength}                             { count(); return B256ERROR_SOUNDLENGTH; }
 {error_soundnotseekable}                        { count(); return B256ERROR_SOUNDNOTSEEKABLE; }
+{error_soundresource}                           { count(); return B256ERROR_SOUNDRESOURCE; }
+{error_spritena}                                { count(); return B256ERROR_SPRITENA; }
+{error_spritenumber}                            { count(); return B256ERROR_SPRITENUMBER; }
+{error_spriteslice}                             { count(); return B256ERROR_SPRITESLICE; }
+{error_stackunderflow}                          { count(); return B256ERROR_STACKUNDERFLOW; }
 {error_string2note}                             { count(); return B256ERROR_STRING2NOTE; }
-{error_wavobsolete}                             { count(); return B256ERROR_WAVOBSOLETE; }
+{error_stringconv}                              { count(); return B256ERROR_STRINGCONV; }
+{error_stringmaxlen}                            { count(); return B256ERROR_STRINGMAXLEN; }
+{error_strstart}                                { count(); return B256ERROR_STRSTART; }
+{error_toomanysounds}                           { count(); return B256ERROR_TOOMANYSOUNDS; }
 {error_unexpectedreturn}                        { count(); return B256ERROR_UNEXPECTEDRETURN; }
-{warning_arrayelement}                          { count(); return B256WARNING_ARRAYELEMENT; }
-{warning_refnotassigned}                        { count(); return B256WARNING_REFNOTASSIGNED; }
-{warning_string2note}                           { count(); return B256WARNING_STRING2NOTE; }
+{error_unserializeformat}                       { count(); return B256ERROR_UNSERIALIZEFORMAT; }
+{error_varcircular}                             { count(); return B256ERROR_VARCIRCULAR; }
+{error_varnotassigned}                          { count(); return B256ERROR_VARNOTASSIGNED; }
+{error_varnull}                                 { count(); return B256ERROR_VARNULL; }
+{error_waveformlogical}                         { count(); return B256ERROR_WAVEFORMLOGICAL; }
+{error_wavobsolete}                             { count(); return B256ERROR_WAVOBSOLETE; }
 {exists}					{ count(); return B256EXISTS; }
-{exp}						{ count(); return B256EXP; }
-{explode}					{ count(); return B256EXPLODE; }
 {explodex}					{ count(); return B256EXPLODEX; }
+{explode}					{ count(); return B256EXPLODE; }
+{exp}						{ count(); return B256EXP; }
 {fill}						{ count(); return B256FILL; }
 {floor}						{ count(); return B256FLOOR; }
-{freedb}					{ count(); return B256FREEDB; }
 {freedbset}					{ count(); return B256FREEDBSET; }
+{freedb}					{ count(); return B256FREEDB; }
 {freefile}					{ count(); return B256FREEFILE; }
 {freenet}					{ count(); return B256FREENET; }
 {frombinary}				{ count(); return B256FROMBINARY; }
@@ -799,32 +789,33 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {imagetype_png}				{ count(); return B256IMAGETYPE_PNG; }
 {imagewidth}					{ count(); return B256IMAGEWIDTH; }
 {implode}					{ count(); return B256IMPLODE; }
-{instr}						{ count(); return B256INSTR; }
 {instrx}					{ count(); return B256INSTRX; }
+{instr}						{ count(); return B256INSTR; }
 {isnumeric}					{ count(); return B256ISNUMERIC; }
-{key}						{ count(); return B256KEY; }
 {keypressed}				{ count(); return B256KEYPRESSED; }
-{lasterror}					{ count(); return B256LASTERROR; }
+{key}						{ count(); return B256KEY; }
 {lasterrorextra} 			{ count(); return B256LASTERROREXTRA; }
 {lasterrorline}				{ count(); return B256LASTERRORLINE; }
 {lasterrormessage}			{ count(); return B256LASTERRORMESSAGE; }
+{lasterror}					{ count(); return B256LASTERROR; }
 {left}						{ count(); return B256LEFT; }
 {length}					{ count(); return B256LENGTH; }
-{log}						{ count(); return B256LOG; }
+{ljust}						{ count(); return B256LJUST; }
 {logten}					{ count(); return B256LOGTEN; }
+{log}						{ count(); return B256LOG; }
 {lower}						{ count(); return B256LOWER; }
 {ltrim}						{ count(); return B256LTRIM; }
 {md5}						{ count(); return B256MD5; }
-{mid}						{ count(); return B256MID; }
 {midx}						{ count(); return B256MIDX; }
+{mid}						{ count(); return B256MID; }
 {minute}					{ count(); return B256MINUTE; }
 {month}						{ count(); return B256MONTH; }
-{mouseb}					{ count(); return B256MOUSEB; }
 {mousebutton_center}		{ count(); return B256MOUSEBUTTON_CENTER; }
+{mousebutton_doubleclick}	{ count(); return B256MOUSEBUTTON_DOUBLECLICK; }
 {mousebutton_left}			{ count(); return B256MOUSEBUTTON_LEFT; }
 {mousebutton_none}			{ count(); return B256MOUSEBUTTON_NONE; }
 {mousebutton_right}			{ count(); return B256MOUSEBUTTON_RIGHT; }
-{mousebutton_doubleclick}	{ count(); return B256MOUSEBUTTON_DOUBLECLICK; }
+{mouseb}					{ count(); return B256MOUSEB; }
 {mousex}					{ count(); return B256MOUSEX; }
 {mousey}					{ count(); return B256MOUSEY; }
 {msec}						{ count(); return B256MSEC; }
@@ -832,26 +823,28 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {netdata}					{ count(); return B256NETDATA; }
 {netread}					{ count(); return B256NETREAD; }
 {orange}					{ count(); return B256ORANGE; }
-{ostype}					{ count(); return B256OSTYPE; }
 {ostype_android}			{ count(); return B256OSTYPE_ANDROID; }
 {ostype_linux}				{ count(); return B256OSTYPE_LINUX; }
 {ostype_macintosh}			{ count(); return B256OSTYPE_MACINTOSH; }
 {ostype_windows}			{ count(); return B256OSTYPE_WINDOWS; }
-{pi}						{ count(); return B256PI; }
+{ostype}					{ count(); return B256OSTYPE; }
 {pixel}						{ count(); return B256PIXEL; }
+{pi}						{ count(); return B256PI; }
 {portin}					{ count(); return B256PORTIN; }
 {purple}					{ count(); return B256PURPLE; }
 {radians}					{ count(); return B256RADIANS; }
 {rand}						{ count(); return B256RAND; }
-{read}						{ count(); return B256READ; }
 {readbyte}					{ count(); return B256READBYTE; }
 {readline}					{ count(); return B256READLINE; }
+{read}						{ count(); return B256READ; }
 {red}						{ count(); return B256RED; }
 {ref}						{ count(); return B256REF; }
-{replace}					{ count(); return B256REPLACE; }
 {replacex}					{ count(); return B256REPLACEX; }
+{replace}					{ count(); return B256REPLACE; }
 {rgb}						{ count(); return B256RGB; }
 {right}						{ count(); return B256RIGHT; }
+{rjust}						{ count(); return B256RJUST; }
+{round}						{ count(); return B256ROUND; }
 {rtrim}						{ count(); return B256RTRIM; }
 {second}					{ count(); return B256SECOND; }
 {serialize}					{ count(); return B256SERIALIZE; }
@@ -860,20 +853,29 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {slice_all}					{ count(); return B256SLICE_ALL; }
 {slice_paint}				{ count(); return B256SLICE_PAINT; }
 {slice_sprite}				{ count(); return B256SLICE_SPRITE; }
+{soundid}					{ count(); return B256SOUNDID; }
+{soundlength}				{ count(); return B256SOUNDLENGTH; }
+{soundloadraw}				{ count(); return B256SOUNDLOADRAW; }
+{soundload}					{ count(); return B256SOUNDLOAD; }
+{soundplayer}				{ count(); return B256SOUNDPLAYER; }
+{soundplay}					{ count(); return B256SOUNDPLAY; }
+{soundposition}				{ count(); return B256SOUNDPOSITION; }
+{soundsamplerate}			{ count(); return B256SOUNDSAMPLERATE; }
+{soundstate}				{ count(); return B256SOUNDSTATE; }
 {spritecollide}				{ count(); return B256SPRITECOLLIDE; }
 {spriteh}					{ count(); return B256SPRITEH; }
+{spriteo}					{ count(); return B256SPRITEO; }
 {spriter}					{ count(); return B256SPRITER; }
 {sprites}					{ count(); return B256SPRITES; }
-{spriteo}					{ count(); return B256SPRITEO; }
 {spritev}					{ count(); return B256SPRITEV; }
 {spritew}					{ count(); return B256SPRITEW; }
 {spritex}					{ count(); return B256SPRITEX; }
 {spritey}					{ count(); return B256SPRITEY; }
-{sqr}						{ count(); return B256SQR; }
 {sqrt}						{ count(); return B256SQR; }
+{sqr}						{ count(); return B256SQR; }
 {tan}						{ count(); return B256TAN; }
-{textwidth}					{ count(); return B256TEXTWIDTH; }
 {textheight}				{ count(); return B256TEXTHEIGHT; }
+{textwidth}					{ count(); return B256TEXTWIDTH; }
 {tobinary}					{ count(); return B256TOBINARY; }
 {tofloat}					{ count(); return B256TOFLOAT; }
 {tohex}						{ count(); return B256TOHEX; }
@@ -882,32 +884,39 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {toradix}					{ count(); return B256TORADIX; }
 {tostring}					{ count(); return B256TOSTRING; }
 {trim}						{ count(); return B256TRIM; }
-{typeof}					{ count(); return B256TYPEOF; }
-{type_unassigned}			{ count(); return B256TYPE_UNASSIGNED; }
-{type_int}					{ count(); return B256TYPE_INT; }
-{type_float}				{ count(); return B256TYPE_FLOAT; }
-{type_string}				{ count(); return B256TYPE_STRING; }
 {type_array}				{ count(); return B256TYPE_ARRAY; }
+{type_float}				{ count(); return B256TYPE_FLOAT; }
+{type_int}					{ count(); return B256TYPE_INT; }
 {type_ref}					{ count(); return B256TYPE_REF; }
-{upper}						{ count(); return B256UPPER; }
+{type_string}				{ count(); return B256TYPE_STRING; }
+{type_unassigned}			{ count(); return B256TYPE_UNASSIGNED; }
+{typeof}					{ count(); return B256TYPEOF; }
 {unserialize}				{ count(); return B256UNSERIALIZE; }
+{upper}						{ count(); return B256UPPER; }
 {variablewatch}				{ count(); return B256VARIABLEWATCH; }
 {version}					{ count(); return B256VERSION; }
+{warning_arrayelement}                          { count(); return B256WARNING_ARRAYELEMENT; }
+{warning_booleanconv}                              { count(); return B256WARNING_BOOLEANCONV; }
+{warning_integerrange}                          { count(); return B256WARNING_INTEGERRANGE; }
+{warning_longrange}                             { count(); return B256WARNING_LONGRANGE; }
+{warning_numberconv}                              { count(); return B256WARNING_NUMBERCONV; }
+{warning_refnotassigned}                        { count(); return B256WARNING_REFNOTASSIGNED; }
+{warning_sounderror}                            { count(); return B256WARNING_SOUNDERROR; }
+{warning_soundfileformat}                       { count(); return B256WARNING_SOUNDFILEFORMAT; }
+{warning_soundlength}                           { count(); return B256WARNING_SOUNDLENGTH; }
+{warning_soundnotseekable}                      { count(); return B256WARNING_SOUNDNOTSEEKABLE; }
+{warning_start}                                 { count(); return B256WARNING_START; }
+{warning_string2note}                           { count(); return B256WARNING_STRING2NOTE; }
+{warning_stringconv}                              { count(); return B256WARNING_STRINGCONV; }
+{warning_varnotassigned}                        { count(); return B256WARNING_VARNOTASSIGNED; }
+{warning_wavobsolete}                           { count(); return B256WARNING_WAVOBSOLETE; }
 {wavlength}					{ count(); return B256WAVLENGTH; }
 {wavpos}					{ count(); return B256WAVPOS; }
 {wavstate}					{ count(); return B256WAVSTATE; }
 {white}						{ count(); return B256WHITE; }
 {year}						{ count(); return B256YEAR; }
 {yellow}					{ count(); return B256YELLOW; }
-{soundplay}					{ count(); return B256SOUNDPLAY; }
-{soundplayer}					{ count(); return B256SOUNDPLAYER; }
-{soundload}					{ count(); return B256SOUNDLOAD; }
-{soundloadraw}					{ count(); return B256SOUNDLOADRAW; }
-{soundposition}					{ count(); return B256SOUNDPOSITION; }
-{soundid}					{ count(); return B256SOUNDID; }
-{soundstate}					{ count(); return B256SOUNDSTATE; }
-{soundlength}					{ count(); return B256SOUNDLENGTH; }
-{soundsamplerate}				{ count(); return B256SOUNDSAMPLERATE; }
+{zfill}						{ count(); return B256ZFILL; }
 
  /**********************************************************************/
  /* statement rules                                                    */
@@ -942,24 +951,20 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {continuefor}":"			{ count(); unputcolon(); return B256CONTINUEFOR; }
 {continuewhile}				{ count(); return B256CONTINUEWHILE; }
 {continuewhile}":"			{ count(); unputcolon(); return B256CONTINUEWHILE; }
-{dbclose}					{ count(); return B256DBCLOSE; }
-{dbclose}":"				{ count(); unputcolon(); return B256DBCLOSE; }
 {dbcloseset}				{ count(); return B256DBCLOSESET; }
 {dbcloseset}":"				{ count(); unputcolon(); return B256DBCLOSESET; }
+{dbclose}					{ count(); return B256DBCLOSE; }
+{dbclose}":"				{ count(); unputcolon(); return B256DBCLOSE; }
 {dbexecute}					{ count(); return B256DBEXECUTE; }
-{dbopen}					{ count(); return B256DBOPEN; }
 {dbopenset}					{ count(); return B256DBOPENSET; }
+{dbopen}					{ count(); return B256DBOPEN; }
 {dim}						{ count(); return B256DIM; }
 {do}						{ count(); return B256DO; }
 {do}":"						{ count(); unputcolon(); return B256DO; }
-{setgraph}						{ count(); return B256SETGRAPH; }
-{setgraph}":"					{ count(); unputcolon(); return B256SETGRAPH; }
 {editvisible}				{ count(); return B256EDITVISIBLE; }
 {ellipse}					{ count(); return B256ELLIPSE; }
 {else}						{ count(); return B256ELSE; }
 {else}":"					{ count(); unputcolon(); return B256ELSE; }
-{end}						{ count(); return B256END; }
-{end}":"					{ count(); unputcolon(); return B256END; }
 {endcase}					{ count(); return B256ENDCASE; }
 {endcase}":"				{ count(); unputcolon(); return B256ENDCASE; }
 {endfunction}				{ count(); return B256ENDFUNCTION; }
@@ -972,6 +977,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {endtry}":"					{ count(); unputcolon(); return B256ENDTRY; }
 {endwhile}					{ count(); return B256ENDWHILE; }
 {endwhile}":"				{ count(); unputcolon(); return B256ENDWHILE; }
+{end}						{ count(); return B256END; }
+{end}":"					{ count(); unputcolon(); return B256END; }
 {exitdo}					{ count(); return B256EXITDO; }
 {exitdo}":"					{ count(); unputcolon(); return B256EXITDO; }
 {exitfor}					{ count(); return B256EXITFOR; }
@@ -989,22 +996,22 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {graphsize}					{ count(); return B256GRAPHSIZE; }
 {graphvisible}				{ count(); return B256GRAPHVISIBLE; }
 {if}						{ count(); return B256IF; }
-{imgload}					{ count(); return B256IMGLOAD; }
 {imageautocrop}					{ count(); return B256IMAGEAUTOCROP; }
 {imagecentered}					{ count(); return B256IMAGECENTERED; }
 {imagecrop}					{ count(); return B256IMAGECROP; }
 {imagedraw}					{ count(); return B256IMAGEDRAW; }
 {imageflip}					{ count(); return B256IMAGEFLIP; }
-{imagesetpixel}					{ count(); return B256IMAGESETPIXEL; }
 {imageresize}					{ count(); return B256IMAGERESIZE; }
 {imagerotate}					{ count(); return B256IMAGEROTATE; }
+{imagesetpixel}					{ count(); return B256IMAGESETPIXEL; }
 {imagesmooth}					{ count(); return B256IMAGESMOOTH; }
 {imagetransformed}				{ count(); return B256IMAGETRANSFORMED; }
+{imgload}					{ count(); return B256IMGLOAD; }
 {imgsave}					{ count(); return B256IMGSAVE; }
-{input}						{ count(); return B256INPUT; }
-{inputstring}				{ count(); return B256INPUTSTRING; }
-{inputint}					{ count(); return B256INPUTINT; }
 {inputfloat}				{ count(); return B256INPUTFLOAT; }
+{inputint}					{ count(); return B256INPUTINT; }
+{inputstring}				{ count(); return B256INPUTSTRING; }
+{input}						{ count(); return B256INPUT; }
 {kill}						{ count(); return B256KILL; }
 {let}						{ count(); return B256LET; }
 {line}						{ count(); return B256LINE; }
@@ -1017,9 +1024,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {offerror}					{ count(); return B256OFFERROR; }
 {offerror}":"				{ count(); unputcolon(); return B256OFFERROR; }
 {onerror}					{ count(); return B256ONERROR; }
-{open}						{ count(); return B256OPEN; }
 {openb}						{ count(); return B256OPENB; }
 {openserial}				{ count(); return B256OPENSERIAL; }
+{open}						{ count(); return B256OPEN; }
 {outputvisible}				{ count(); return B256OUTPUTVISIBLE; }
 {pause}						{ count(); return B256PAUSE; }
 {penwidth}					{ count(); return B256PENWIDTH; }
@@ -1027,8 +1034,6 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {plot}						{ count(); return B256PLOT; }
 {poly}						{ count(); return B256POLY; }
 {portout}					{ count(); return B256PORTOUT; }
-{print}						{ count(); return B256PRINT; }
-{print}":"					{ count(); unputcolon(); return B256PRINT; }
 {printercancel}				{ count(); return B256PRINTERCANCEL; }
 {printercancel}":"			{ count(); unputcolon(); return B256PRINTERCANCEL; }
 {printeroff}				{ count(); return B256PRINTEROFF; }
@@ -1037,6 +1042,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {printeron}":"				{ count(); unputcolon(); return B256PRINTERON; }
 {printerpage}				{ count(); return B256PRINTERPAGE; }
 {printerpage}":"			{ count(); unputcolon(); return B256PRINTERPAGE; }
+{print}						{ count(); return B256PRINT; }
+{print}":"					{ count(); unputcolon(); return B256PRINT; }
 {prompt}					{ count(); return B256PROMPT; }
 {putslice}					{ count(); return B256PUTSLICE; }
 {rect}						{ count(); return B256RECT; }
@@ -1044,8 +1051,8 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {refresh}					{ count(); return B256REFRESH; }
 {refresh}":"				{ count(); unputcolon(); return B256REFRESH; }
 {regexminimal}				{ count(); return B256REGEXMINIMAL; }
-{rem}						{ count(); return B256REM; }
 {remalt}					{ count(); return B256REM; }
+{rem}						{ count(); return B256REM; }
 {reset}						{ count(); return B256RESET; }
 {reset}":"					{ count(); unputcolon(); return B256RESET; }
 {return}					{ count(); return B256RETURN; }
@@ -1053,26 +1060,28 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {say}						{ count(); return B256SAY; }
 {seed}						{ count(); return B256SEED; }
 {seek}						{ count(); return B256SEEK; }
+{setgraph}						{ count(); return B256SETGRAPH; }
+{setgraph}":"					{ count(); unputcolon(); return B256SETGRAPH; }
 {setsetting}				{ count(); return B256SETSETTING; }
-{sound}						{ count(); return B256SOUND; }
-{soundplayeroff}				{ count(); return B256SOUNDPLAYEROFF; }
-{soundplayeroff}":"				{ count(); unputcolon(); return B256SOUNDPLAYEROFF; }
+{soundenvelope}					{ count(); return B256SOUNDENVELOPE; }
+{soundenvelope}":"				{ count(); unputcolon(); return B256SOUNDENVELOPE; }
+{soundfade}					{ count(); return B256SOUNDFADE; }
+{soundharmonics}				{ count(); return B256SOUNDHARMONICS; }
+{soundharmonics}":"				{ count(); unputcolon(); return B256SOUNDHARMONICS; }
+{soundloop}					{ count(); return B256SOUNDLOOP; }
 {soundpause}					{ count(); return B256SOUNDPAUSE; }
 {soundpause}":"					{ count(); unputcolon(); return B256SOUNDPAUSE; }
+{soundplayeroff}				{ count(); return B256SOUNDPLAYEROFF; }
+{soundplayeroff}":"				{ count(); unputcolon(); return B256SOUNDPLAYEROFF; }
 {soundseek}					{ count(); return B256SOUNDSEEK; }
 {soundstop}					{ count(); return B256SOUNDSTOP; }
 {soundstop}":"					{ count(); unputcolon(); return B256SOUNDSTOP; }
+{soundsystem}					{ count(); return B256SOUNDSYSTEM; }
+{soundvolume}					{ count(); return B256SOUNDVOLUME; }
 {soundwait}					{ count(); return B256SOUNDWAIT; }
 {soundwait}":"					{ count(); unputcolon(); return B256SOUNDWAIT; }
 {soundwaveform}					{ count(); return B256SOUNDWAVEFORM; }
-{soundsystem}					{ count(); return B256SOUNDSYSTEM; }
-{soundenvelope}					{ count(); return B256SOUNDENVELOPE; }
-{soundenvelope}":"				{ count(); unputcolon(); return B256SOUNDENVELOPE; }
-{soundharmonics}				{ count(); return B256SOUNDHARMONICS; }
-{soundharmonics}":"				{ count(); unputcolon(); return B256SOUNDHARMONICS; }
-{soundfade}					{ count(); return B256SOUNDFADE; }
-{soundvolume}					{ count(); return B256SOUNDVOLUME; }
-{soundloop}					{ count(); return B256SOUNDLOOP; }
+{sound}						{ count(); return B256SOUND; }
 {spritedim}					{ count(); return B256SPRITEDIM; }
 {spritehide}				{ count(); return B256SPRITEHIDE; }
 {spriteload}				{ count(); return B256SPRITELOAD; }
@@ -1106,9 +1115,9 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 {wavwait}					{ count(); return B256WAVWAIT; }
 {wavwait}":"				{ count(); unputcolon(); return B256WAVWAIT; }
 {while}						{ count(); return B256WHILE; }
-{write}						{ count(); return B256WRITE; }
 {writebyte}					{ count(); return B256WRITEBYTE; }
 {writeline}					{ count(); return B256WRITELINE; }
+{write}						{ count(); return B256WRITE; }
 
  /**********************************************************************/
  /* operator rules                                                     */
@@ -1130,7 +1139,7 @@ yellow [Yy][Ee][Ll][Ll][Oo][Ww]
 "*"							{ count(); return '*'; }
 "*="						{ count(); return B256MULEQUAL; }
 "\\"						{ count(); return B256INTDIV; }
-"\%"						{ count(); return B256MOD; }
+mod							{ count(); return B256MOD; }
 "|"							{ count(); return B256BINARYOR; }
 "&"							{ count(); return B256AMP; }
 "&="						{ count(); return B256AMPEQUAL; }

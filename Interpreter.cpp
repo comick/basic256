@@ -204,7 +204,6 @@ QString Interpreter::opname(int op) {
 	case OP_EX : return QString("OP_EX");
 	case OP_NEGATE : return QString("OP_NEGATE");
 	case OP_PRINT : return QString("OP_PRINT");
-	case OP_PRINTN : return QString("OP_PRINTN");
 	case OP_INPUT : return QString("OP_INPUT");
 	case OP_KEY : return QString("OP_KEY");
 	case OP_PLOT : return QString("OP_PLOT");
@@ -2845,103 +2844,125 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SIN:
-				case OP_COS:
-				case OP_TAN:
-				case OP_ASIN:
-				case OP_ACOS:
-				case OP_ATAN:
-				case OP_CEIL:
-				case OP_FLOOR:
-				case OP_DEGREES:
-				case OP_RADIANS:
-				case OP_LOG:
-				case OP_LOGTEN:
-				case OP_SQR:
-				case OP_EXP: {
-
+				{
 					double val = stack->popfloat();
-					switch (opcode) {
-						case OP_SIN:
-							stack->pushfloat(sin(val));
-							break;
-						case OP_COS:
-							stack->pushfloat(cos(val));
-							break;
-						case OP_TAN:
-							val = tan(val);
-							if (std::isinf(val)) {
-								error->q(ERROR_INFINITY);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(val);
-							}
-							break;
-						case OP_ASIN:
-							if (val<-1.0 || val>1.0) {
-								error->q(ERROR_ASINACOSRANGE);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(asin(val));
-							}
-							break;
-						case OP_ACOS:
-							if (val<-1.0 || val>1.0) {
-								error->q(ERROR_ASINACOSRANGE);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(acos(val));
-							}
-							break;
-						case OP_ATAN:
-							stack->pushfloat(atan(val));
-							break;
-						case OP_CEIL:
-							stack->pushint(ceil(val));
-							break;
-						case OP_FLOOR:
-							stack->pushint(floor(val));
-							break;
-						case OP_DEGREES:
-							stack->pushfloat(val * 180.0 / M_PI);
-							break;
-						case OP_RADIANS:
-							stack->pushfloat(val * M_PI / 180.0);
-							break;
-						case OP_LOG:
-							if (val<=0.0) {
-								error->q(ERROR_LOGRANGE);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(log(val));
-							}
-							break;
-						case OP_LOGTEN:
-							if (val<=0.0) {
-								error->q(ERROR_LOGRANGE);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(log10(val));
-							}
-							break;
-						case OP_SQR:
-							if (val<0.0) {
-								error->q(ERROR_SQRRANGE);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(sqrt(val));
-							}
-							break;
-						case OP_EXP:
-							val = exp(val);
-							if (std::isinf(val)) {
-								error->q(ERROR_INFINITY);
-								stack->pushint(0);
-							} else {
-								stack->pushfloat(val);
-							}
-							break;
+					stack->pushfloat(sin(val));
+					break;
+				}
+				case OP_COS:
+				{
+					double val = stack->popfloat();
+					stack->pushfloat(cos(val));
+					break;
+				}
+				case OP_TAN:
+				{
+					double val = stack->popfloat();
+					val = tan(val);
+					if (std::isinf(val)) {
+						error->q(ERROR_INFINITY);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(val);
 					}
 					break;
+				}
+				case OP_ASIN:
+				{
+					double val = stack->popfloat();
+					if (val<-1.0 || val>1.0) {
+						error->q(ERROR_ASINACOSRANGE);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(asin(val));
+					}
+					break;
+				}
+				case OP_ACOS:
+				{
+					double val = stack->popfloat();
+					if (val<-1.0 || val>1.0) {
+						error->q(ERROR_ASINACOSRANGE);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(acos(val));
+					}
+					break;
+				}
+				case OP_ATAN:
+				{
+					double val = stack->popfloat();
+					stack->pushfloat(atan(val));
+					break;
+				}
+				case OP_CEIL:
+				{
+					double val = stack->popfloat();
+					stack->pushint(ceil(val));
+					break;
+				}
+				case OP_FLOOR:
+				{
+					double val = stack->popfloat();
+					stack->pushint(floor(val));
+					break;
+				}
+				case OP_DEGREES:
+				{
+					double val = stack->popfloat();
+					stack->pushfloat(val * 180.0 / M_PI);
+					break;
+				}
+				case OP_RADIANS:
+				{
+					double val = stack->popfloat();
+					stack->pushfloat(val * M_PI / 180.0);
+					break;
+				}
+				case OP_LOG:
+				{
+					double val = stack->popfloat();
+					if (val<=0.0) {
+						error->q(ERROR_LOGRANGE);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(log(val));
+					}
+					break;
+				}
+				case OP_LOGTEN:
+				{
+					double val = stack->popfloat();
+					if (val<=0.0) {
+						error->q(ERROR_LOGRANGE);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(log10(val));
+					}
+					break;
+				}
+				case OP_SQR:
+				{
+					double val = stack->popfloat();
+					if (val<0.0) {
+						error->q(ERROR_SQRRANGE);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(sqrt(val));
+					}
+					break;
+				}
+				case OP_EXP:
+				{
+					double val = stack->popfloat();
+					break;
+					val = exp(val);
+					if (std::isinf(val)) {
+						error->q(ERROR_INFINITY);
+						stack->pushint(0);
+					} else {
+						stack->pushfloat(val);
+					}
 				}
 
 				case OP_CONCATENATE:
@@ -4495,9 +4516,22 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PRINT:
-				case OP_PRINTN: {
-					QString p = stack->popstring();
-					if (opcode == OP_PRINTN) {
+				{
+					// arguments are in reverse order off the stack
+					bool nl = stack->popbool();
+					int n = stack->popint();
+					QString p = "";
+					for (int i =0; i<n; i++) {
+						QString s = stack->popstring();
+						if (i>0) {
+							// add blanks to 14 character tab stop
+							while(s.length()%14!=0) {
+								s.append(" ");
+							}
+						}
+						p.prepend(s);
+					}
+					if (nl) {
 						p += "\n";
 					}
 					mymutex->lock();
@@ -6975,8 +7009,29 @@ Interpreter::execByteCode() {
 				}
 				break;
 				
+				case OP_LJUST: {
+					QString fill = stack->popstring();
+					int k = stack->popint();
+					stack->pushstring(stack->popstring().leftJustified(k, fill.at(0)));
+				}
+				break;
 				
-
+				case OP_RJUST: {
+					QString fill = stack->popstring();
+					int k = stack->popint();
+					stack->pushstring(stack->popstring().rightJustified(k, fill.at(0)));
+				}
+				break;
+				
+				case OP_ROUND: {
+					int places = stack->popint();
+					double v = stack->popfloat();
+					double offset=pow(10,places);
+					stack->pushfloat(round(v*offset)/offset);
+				}
+				break;
+				
+				
 
 
 
