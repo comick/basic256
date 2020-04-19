@@ -115,7 +115,6 @@
 #define ERROR_SETTINGMAXLEN            111
 #define ERROR_SETTINGMAXKEYS           112
 #define ERROR_REFNOTASSIGNED           113
-#define ERROR_REFNOTASSIGNED           113
 #define ERROR_UNEXPECTEDRETURN         114
 #define ERROR_NEXTNOFOR                115
 #define ERROR_SQRRANGE                 116

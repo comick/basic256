@@ -69,6 +69,10 @@ enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_STOPING};
 #define FILEREADTIMEOUT			1			// on a file/serial read wait up to MS for data to be there
 #define SERIALREADBUFFERSIZE	1024		// size of openserial read buffer
 
+#define FORFRAMETYPE_INT 0
+#define FORFRAMETYPE_FLOAT 1
+#define FORFRAMETYPE_FOREACH 2
+
 
 struct byteCodeData
 {
@@ -130,15 +134,15 @@ struct forframe {
     forframe *next;
     int *forAddr;   //FOR address
     int *nextAddr;  //NEXT address
-    bool useInt;
-    bool positive;
-    bool negative;
+    int type;		//0=integer, 1=float, 2=foreach
+    bool positive;	// true if + , false if -
     double floatStart;
     double floatEnd;
     double floatStep;
-    long intStart;
+    long intStart;	// foreach intstart is current index in array
     long intEnd;
     long intStep;
+    DataElement *arrayData;		// used for foreach - must be one dimensional array data
 };
 
 typedef struct {

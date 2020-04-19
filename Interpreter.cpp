@@ -182,317 +182,318 @@ QString Interpreter::opname(int op) {
 	// used to convert opcode number in debuginfo to opcode name
 
 	switch (op) {
-	case OP_END : return QString("OP_END");
-	case OP_NOP : return QString("OP_NOP");
-	case OP_RETURN : return QString("OP_RETURN");
-	case OP_EQUAL : return QString("OP_EQUAL");
-	case OP_NEQUAL : return QString("OP_NEQUAL");
-	case OP_GT : return QString("OP_GT");
-	case OP_LT : return QString("OP_LT");
-	case OP_GTE : return QString("OP_GTE");
-	case OP_LTE : return QString("OP_LTE");
-	case OP_AND : return QString("OP_AND");
-	case OP_NOT : return QString("OP_NOT");
-	case OP_OR : return QString("OP_OR");
-	case OP_XOR : return QString("OP_XOR");
-	case OP_INT : return QString("OP_INT");
-	case OP_STRING : return QString("OP_STRING");
-	case OP_ADD : return QString("OP_ADD");
-	case OP_SUB : return QString("OP_SUB");
-	case OP_MUL : return QString("OP_MUL");
-	case OP_DIV : return QString("OP_DIV");
-	case OP_EX : return QString("OP_EX");
-	case OP_NEGATE : return QString("OP_NEGATE");
-	case OP_PRINT : return QString("OP_PRINT");
-	case OP_INPUT : return QString("OP_INPUT");
-	case OP_KEY : return QString("OP_KEY");
-	case OP_PLOT : return QString("OP_PLOT");
-	case OP_RECT : return QString("OP_RECT");
-	case OP_CIRCLE : return QString("OP_CIRCLE");
-	case OP_LINE : return QString("OP_LINE");
-	case OP_REFRESH : return QString("OP_REFRESH");
-	case OP_FASTGRAPHICS : return QString("OP_FASTGRAPHICS");
-	case OP_CLS : return QString("OP_CLS");
-	case OP_CLG : return QString("OP_CLG");
-	case OP_GRAPHSIZE : return QString("OP_GRAPHSIZE");
-	case OP_GRAPHWIDTH : return QString("OP_GRAPHWIDTH");
-	case OP_GRAPHHEIGHT : return QString("OP_GRAPHHEIGHT");
-	case OP_SIN : return QString("OP_SIN");
-	case OP_COS : return QString("OP_COS");
-	case OP_TAN : return QString("OP_TAN");
-	case OP_RAND : return QString("OP_RAND");
-	case OP_CEIL : return QString("OP_CEIL");
-	case OP_FLOOR : return QString("OP_FLOOR");
 	case OP_ABS : return QString("OP_ABS");
-	case OP_PAUSE : return QString("OP_PAUSE");
-	case OP_LENGTH : return QString("OP_LENGTH");
-	case OP_MID : return QString("OP_MID");
-	case OP_INSTR : return QString("OP_INSTR");
-	case OP_INSTRX : return QString("OP_INSTRX");
-	case OP_OPEN : return QString("OP_OPEN");
-	case OP_READ : return QString("OP_READ");
-	case OP_WRITE : return QString("OP_WRITE");
-	case OP_CLOSE : return QString("OP_CLOSE");
-	case OP_RESET : return QString("OP_RESET");
-	case OP_INCREASERECURSE : return QString("OP_INCREASERECURSE");
-	case OP_DECREASERECURSE : return QString("OP_DECREASERECURSE");
+	case OP_ACOS : return QString("OP_ACOS");
+	case OP_ADD : return QString("OP_ADD");
+	case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
+	case OP_ADD1VAR : return QString("OP_ADD1VAR");
+	case OP_ALEN : return QString("OP_ALEN");
+	case OP_ALENCOLS : return QString("OP_ALENCOLS");
+	case OP_ALENROWS : return QString("OP_ALENROWS");
+	case OP_ALERT : return QString("OP_ALERT");
+	case OP_AND : return QString("OP_AND");
+	case OP_ARC : return QString("OP_ARC");
+	case OP_ARRAY2STACK : return QString("OP_ARRAY2STACK");
+	case OP_ARRAYASSIGN : return QString("OP_ARRAYASSIGN");
+	case OP_ARRAYFILL : return QString("OP_ARRAYFILL");
+	case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
 	case OP_ASC : return QString("OP_ASC");
+	case OP_ASIN : return QString("OP_ASIN");
+	case OP_ASSIGN : return QString("OP_ASSIGN");
+	case OP_ATAN : return QString("OP_ATAN");
+	case OP_BINARYAND : return QString("OP_BINARYAND");
+	case OP_BINARYNOT : return QString("OP_BINARYNOT");
+	case OP_BINARYOR : return QString("OP_BINARYOR");
+	case OP_BITSHIFTL : return QString("OP_BITSHIFTL");
+	case OP_BITSHIFTR : return QString("OP_BITSHIFTR");
+	case OP_BRANCH : return QString("OP_BRANCH");
+	case OP_CALLFUNCTION : return QString("OP_CALLFUNCTION");
+	case OP_CALLSUBROUTINE : return QString("OP_CALLSUBROUTINE");
+	case OP_CEIL : return QString("OP_CEIL");
+	case OP_CHANGEDIR : return QString("OP_CHANGEDIR");
+	case OP_CHORD : return QString("OP_CHORD");
 	case OP_CHR : return QString("OP_CHR");
-	case OP_FLOAT : return QString("OP_FLOAT");
-	case OP_READLINE : return QString("OP_READLINE");
-	case OP_EOF : return QString("OP_EOF");
-	case OP_MOD : return QString("OP_MOD");
-	case OP_YEAR : return QString("OP_YEAR");
-	case OP_MONTH : return QString("OP_MONTH");
-	case OP_DAY : return QString("OP_DAY");
-	case OP_HOUR : return QString("OP_HOUR");
-	case OP_MINUTE : return QString("OP_MINUTE");
-	case OP_SECOND : return QString("OP_SECOND");
-	case OP_MOUSEX : return QString("OP_MOUSEX");
-	case OP_MOUSEY : return QString("OP_MOUSEY");
-	case OP_MOUSEB : return QString("OP_MOUSEB");
+	case OP_CIRCLE : return QString("OP_CIRCLE");
+	case OP_CLG : return QString("OP_CLG");
+	case OP_CLICKB : return QString("OP_CLICKB");
 	case OP_CLICKCLEAR : return QString("OP_CLICKCLEAR");
 	case OP_CLICKX : return QString("OP_CLICKX");
 	case OP_CLICKY : return QString("OP_CLICKY");
-	case OP_CLICKB : return QString("OP_CLICKB");
-	case OP_TEXT : return QString("OP_TEXT");
-	case OP_FONT : return QString("OP_FONT");
-	case OP_SAY : return QString("OP_SAY");
-	case OP_WAVPLAY : return QString("OP_WAVPLAY");
-	case OP_WAVSTOP : return QString("OP_WAVSTOP");
-	case OP_SEEK : return QString("OP_SEEK");
-	case OP_SIZE : return QString("OP_SIZE");
-	case OP_EXISTS : return QString("OP_EXISTS");
-	case OP_LEFT : return QString("OP_LEFT");
-	case OP_RIGHT : return QString("OP_RIGHT");
-	case OP_UPPER : return QString("OP_UPPER");
-	case OP_LOWER : return QString("OP_LOWER");
-	case OP_SYSTEM : return QString("OP_SYSTEM");
-	case OP_VOLUME : return QString("OP_VOLUME");
-	case OP_SETCOLOR : return QString("OP_SETCOLOR");
-	case OP_RGB : return QString("OP_RGB");
-	case OP_PIXEL : return QString("OP_PIXEL");
-	case OP_GETCOLOR : return QString("OP_GETCOLOR");
-	case OP_ASIN : return QString("OP_ASIN");
-	case OP_ACOS : return QString("OP_ACOS");
-	case OP_ATAN : return QString("OP_ATAN");
-	case OP_DEGREES : return QString("OP_DEGREES");
-	case OP_RADIANS : return QString("OP_RADIANS");
-	case OP_INTDIV : return QString("OP_INTDIV");
-	case OP_LOG : return QString("OP_LOG");
-	case OP_LOGTEN : return QString("OP_LOGTEN");
-	case OP_GETSLICE : return QString("OP_GETSLICE");
-	case OP_PUTSLICE : return QString("OP_PUTSLICE");
-	case OP_IMGLOAD : return QString("OP_IMGLOAD");
-	case OP_SQR : return QString("OP_SQR");
-	case OP_EXP : return QString("OP_EXP");
-	case OP_THROWERROR : return QString("OP_THROWERROR");
-	case OP_READBYTE : return QString("OP_READBYTE");
-	case OP_WRITEBYTE : return QString("OP_WRITEBYTE");
-	case OP_STACKSWAP : return QString("OP_STACKSWAP");
-	case OP_STACKTOPTO2 : return QString("OP_STACKTOPTO2");
-	case OP_STACKDUP : return QString("OP_STACKDUP");
-	case OP_STACKDUP2 : return QString("OP_STACKDUP2");
-	case OP_STACKSWAP2 : return QString("OP_STACKSWAP2");
-	case OP_STAMP : return QString("OP_STAMP");
-	case OP_POLY : return QString("OP_POLY");
-	case OP_WRITELINE : return QString("OP_WRITELINE");
-	case OP_SPRITEPOLY : return QString("OP_SPRITEPOLY");
-	case OP_SPRITEDIM : return QString("OP_SPRITEDIM");
-	case OP_SPRITELOAD : return QString("OP_SPRITELOAD");
-	case OP_SPRITESLICE : return QString("OP_SPRITESLICE");
-	case OP_SPRITEMOVE : return QString("OP_SPRITEMOVE");
-	case OP_SPRITEHIDE : return QString("OP_SPRITEHIDE");
-	case OP_SPRITESHOW : return QString("OP_SPRITESHOW");
-	case OP_SPRITECOLLIDE : return QString("OP_SPRITECOLLIDE");
-	case OP_SPRITEPLACE : return QString("OP_SPRITEPLACE");
-	case OP_SPRITEX : return QString("OP_SPRITEX");
-	case OP_SPRITEY : return QString("OP_SPRITEY");
-	case OP_SPRITEH : return QString("OP_SPRITEH");
-	case OP_SPRITEW : return QString("OP_SPRITEW");
-	case OP_SPRITEV : return QString("OP_SPRITEV");
-	case OP_CHANGEDIR : return QString("OP_CHANGEDIR");
-	case OP_CURRENTDIR : return QString("OP_CURRENTDIR");
-	case OP_WAVWAIT : return QString("OP_WAVWAIT");
-	case OP_DBOPEN : return QString("OP_DBOPEN");
-	case OP_DBCLOSE : return QString("OP_DBCLOSE");
-	case OP_DBEXECUTE : return QString("OP_DBEXECUTE");
-	case OP_DBOPENSET : return QString("OP_DBOPENSET");
-	case OP_DBCLOSESET : return QString("OP_DBCLOSESET");
-	case OP_DBROW : return QString("OP_DBROW");
-	case OP_DBINT : return QString("OP_DBINT");
-	case OP_DBFLOAT : return QString("OP_DBFLOAT");
-	case OP_DBSTRING : return QString("OP_DBSTRING");
-	case OP_LASTERROR : return QString("OP_LASTERROR");
-	case OP_LASTERRORLINE : return QString("OP_LASTERRORLINE");
-	case OP_LASTERRORMESSAGE : return QString("OP_LASTERRORMESSAGE");
-	case OP_LASTERROREXTRA : return QString("OP_LASTERROREXTRA");
-	case OP_OFFERROR : return QString("OP_OFFERROR");
-	case OP_OFFERRORCATCH : return QString("OP_OFFERRORCATCH");
-	case OP_NETLISTEN : return QString("OP_NETLISTEN");
-	case OP_NETCONNECT : return QString("OP_NETCONNECT");
-	case OP_NETREAD : return QString("OP_NETREAD");
-	case OP_NETWRITE : return QString("OP_NETWRITE");
-	case OP_NETCLOSE : return QString("OP_NETCLOSE");
-	case OP_NETDATA : return QString("OP_NETDATA");
-	case OP_NETADDRESS : return QString("OP_NETADDRESS");
-	case OP_KILL : return QString("OP_KILL");
-	case OP_MD5 : return QString("OP_MD5");
-	case OP_SETSETTING : return QString("OP_SETSETTING");
-	case OP_GETSETTING : return QString("OP_GETSETTING");
-	case OP_PORTIN : return QString("OP_PORTIN");
-	case OP_PORTOUT : return QString("OP_PORTOUT");
-	case OP_BINARYOR : return QString("OP_BINARYOR");
-	case OP_BINARYAND : return QString("OP_BINARYAND");
-	case OP_BINARYNOT : return QString("OP_BINARYNOT");
-	case OP_IMGSAVE : return QString("OP_IMGSAVE");
-	case OP_DIR : return QString("OP_DIR");
-	case OP_REPLACE : return QString("OP_REPLACE");
-	case OP_REPLACEX : return QString("OP_REPLACEX");
+	case OP_CLOSE : return QString("OP_CLOSE");
+	case OP_CLS : return QString("OP_CLS");
+	case OP_CONCATENATE : return QString("OP_CONCATENATE");
+	case OP_CONFIRM : return QString("OP_CONFIRM");
+	case OP_COS : return QString("OP_COS");
 	case OP_COUNT : return QString("OP_COUNT");
 	case OP_COUNTX : return QString("OP_COUNTX");
-	case OP_OSTYPE : return QString("OP_OSTYPE");
-	case OP_MSEC : return QString("OP_MSEC");
-	case OP_EDITVISIBLE : return QString("OP_EDITVISIBLE");
-	case OP_GRAPHVISIBLE : return QString("OP_GRAPHVISIBLE");
-	case OP_OUTPUTVISIBLE : return QString("OP_OUTPUTVISIBLE");
-	case OP_TEXTWIDTH : return QString("OP_TEXTWIDTH");
-	case OP_TEXTHEIGHT : return QString("OP_TEXTHEIGHT");
-	case OP_SPRITER : return QString("OP_SPRITER");
-	case OP_SPRITES : return QString("OP_SPRITES");
-	case OP_FREEFILE : return QString("OP_FREEFILE");
-	case OP_FREENET : return QString("OP_FREENET");
-	case OP_FREEDB : return QString("OP_FREEDB");
-	case OP_FREEDBSET : return QString("OP_FREEDBSET");
+	case OP_CURRENTDIR : return QString("OP_CURRENTDIR");
+	case OP_CURRLINE : return QString("OP_CURRLINE");
+	case OP_DAY : return QString("OP_DAY");
+	case OP_DBCLOSE : return QString("OP_DBCLOSE");
+	case OP_DBCLOSESET : return QString("OP_DBCLOSESET");
+	case OP_DBEXECUTE : return QString("OP_DBEXECUTE");
+	case OP_DBFLOAT : return QString("OP_DBFLOAT");
+	case OP_DBINT : return QString("OP_DBINT");
 	case OP_DBNULL : return QString("OP_DBNULL");
 	case OP_DBNULLS : return QString("OP_DBNULLS");
-	case OP_ARC : return QString("OP_ARC");
-	case OP_CHORD : return QString("OP_CHORD");
-	case OP_PIE : return QString("OP_PIE");
-	case OP_PENWIDTH : return QString("OP_PENWIDTH");
-	case OP_GETPENWIDTH : return QString("OP_GETPENWIDTH");
-	case OP_GETBRUSHCOLOR : return QString("OP_GETBRUSHCOLOR");
-	case OP_ALERT : return QString("OP_ALERT");
-	case OP_CONFIRM : return QString("OP_CONFIRM");
-	case OP_PROMPT : return QString("OP_PROMPT");
-	case OP_FROMRADIX : return QString("OP_FROMRADIX");
-	case OP_TORADIX : return QString("OP_TORADIX");
-	case OP_PRINTERON : return QString("OP_PRINTERON");
-	case OP_PRINTEROFF : return QString("OP_PRINTEROFF");
-	case OP_PRINTERPAGE : return QString("OP_PRINTERPAGE");
-	case OP_PRINTERCANCEL : return QString("OP_PRINTERCANCEL");
+	case OP_DBOPEN : return QString("OP_DBOPEN");
+	case OP_DBOPENSET : return QString("OP_DBOPENSET");
+	case OP_DBROW : return QString("OP_DBROW");
+	case OP_DBSTRING : return QString("OP_DBSTRING");
 	case OP_DEBUGINFO : return QString("OP_DEBUGINFO");
-	case OP_WAVLENGTH : return QString("OP_WAVLENGTH");
-	case OP_WAVPOS : return QString("OP_WAVPOS");
-	case OP_WAVPAUSE : return QString("OP_WAVPAUSE");
-	case OP_WAVSEEK : return QString("OP_WAVSEEK");
-	case OP_WAVSTATE : return QString("OP_WAVSTATE");
-	case OP_MIDX : return QString("OP_MIDX");
-	case OP_REGEXMINIMAL : return QString("OP_REGEXMINIMAL");
-	case OP_OPENSERIAL : return QString("OP_OPENSERIAL");
-	case OP_TYPEOF : return QString("OP_TYPEOF");
-	case OP_CONCATENATE : return QString("OP_CONCATENATE");
-	case OP_ISNUMERIC : return QString("OP_ISNUMERIC");
-	case OP_LTRIM : return QString("OP_LTRIM");
-	case OP_RTRIM : return QString("OP_RTRIM");
-	case OP_TRIM : return QString("OP_TRIM");
-	case OP_KEYPRESSED : return QString("OP_KEYPRESSED");
-	case OP_IMPLODE : return QString("OP_IMPLODE");
+	case OP_DECREASERECURSE : return QString("OP_DECREASERECURSE");
+	case OP_DEGREES : return QString("OP_DEGREES");
+	case OP_DEREF : return QString("OP_DEREF");
+	case OP_DIM : return QString("OP_DIM");
+	case OP_DIR : return QString("OP_DIR");
+	case OP_DIV : return QString("OP_DIV");
+	case OP_EDITVISIBLE : return QString("OP_EDITVISIBLE");
+	case OP_ELLIPSE : return QString("OP_ELLIPSE");
+	case OP_END : return QString("OP_END");
+	case OP_EOF : return QString("OP_EOF");
+	case OP_EQUAL : return QString("OP_EQUAL");
+	case OP_EX : return QString("OP_EX");
+	case OP_EXISTS : return QString("OP_EXISTS");
+	case OP_EXITFOR : return QString("OP_EXITFOR");
+	case OP_EXP : return QString("OP_EXP");
 	case OP_EXPLODE : return QString("OP_EXPLODE");
 	case OP_EXPLODEX : return QString("OP_EXPLODEX");
-	case OP_SPRITEO : return QString("OP_SPRITEO");
-	case OP_SERIALIZE : return QString("OP_SERIALIZE");
-	case OP_UNSERIALIZE : return QString("OP_UNSERIALIZE");
-	case OP_SEED : return QString("OP_SEED");
-	case OP_SOUND : return QString("OP_SOUND");
-	case OP_SOUNDPLAY : return QString("OP_SOUNDPLAY");
-	case OP_SOUNDLOAD : return QString("OP_SOUNDLOAD");
-	case OP_SOUNDLOADRAW : return QString("OP_SOUNDLOADRAW");
-	case OP_SOUNDPAUSE : return QString("OP_SOUNDPAUSE");
-	case OP_SOUNDSEEK : return QString("OP_SOUNDSEEK");
-	case OP_SOUNDSTOP : return QString("OP_SOUNDSTOP");
-	case OP_SOUNDWAIT : return QString("OP_SOUNDWAIT");
-	case OP_SOUNDVOLUME : return QString("OP_SOUNDVOLUME");
-	case OP_SOUNDPOSITION : return QString("OP_SOUNDPOSITION");
-	case OP_SOUNDID : return QString("OP_SOUNDID");
-	case OP_SOUNDSTATE : return QString("OP_SOUNDSTATE");
-	case OP_SOUNDLENGTH : return QString("OP_SOUNDLENGTH");
-	case OP_IMAGENEW : return QString("OP_IMAGENEW");
-	case OP_IMAGELOAD : return QString("OP_IMAGELOAD");
+	case OP_FASTGRAPHICS : return QString("OP_FASTGRAPHICS");
+	case OP_FLOAT : return QString("OP_FLOAT");
+	case OP_FLOOR : return QString("OP_FLOOR");
+	case OP_FONT : return QString("OP_FONT");
+	case OP_FOR : return QString("OP_FOR");
+	case OP_FOREACH : return QString("OP_FOREACH");
+	case OP_FREEDB : return QString("OP_FREEDB");
+	case OP_FREEDBSET : return QString("OP_FREEDBSET");
+	case OP_FREEFILE : return QString("OP_FREEFILE");
+	case OP_FREENET : return QString("OP_FREENET");
+	case OP_FROMRADIX : return QString("OP_FROMRADIX");
+	case OP_GETBRUSHCOLOR : return QString("OP_GETBRUSHCOLOR");
+	case OP_GETCOLOR : return QString("OP_GETCOLOR");
+	case OP_GETPENWIDTH : return QString("OP_GETPENWIDTH");
+	case OP_GETSETTING : return QString("OP_GETSETTING");
+	case OP_GETSLICE : return QString("OP_GETSLICE");
+	case OP_GLOBAL : return QString("OP_GLOBAL");
+	case OP_GOSUB : return QString("OP_GOSUB");
+	case OP_GOTO : return QString("OP_GOTO");
+	case OP_GRAPHHEIGHT : return QString("OP_GRAPHHEIGHT");
+	case OP_GRAPHSIZE : return QString("OP_GRAPHSIZE");
+	case OP_GRAPHVISIBLE : return QString("OP_GRAPHVISIBLE");
+	case OP_GRAPHWIDTH : return QString("OP_GRAPHWIDTH");
+	case OP_GT : return QString("OP_GT");
+	case OP_GTE : return QString("OP_GTE");
+	case OP_HOUR : return QString("OP_HOUR");
+	case OP_IMAGEAUTOCROP : return QString("OP_IMAGEAUTOCROP");
+	case OP_IMAGECENTERED : return QString("OP_IMAGECENTERED");
 	case OP_IMAGECOPY : return QString("OP_IMAGECOPY");
 	case OP_IMAGECROP : return QString("OP_IMAGECROP");
-	case OP_IMAGERESIZE : return QString("OP_IMAGERESIZE");
-	case OP_IMAGESETPIXEL : return QString("OP_IMAGESETPIXEL");
 	case OP_IMAGEDRAW : return QString("OP_IMAGEDRAW");
-	case OP_IMAGECENTERED : return QString("OP_IMAGECENTERED");
+	case OP_IMAGEFLIP : return QString("OP_IMAGEFLIP");
+	case OP_IMAGEHEIGHT : return QString("OP_IMAGEHEIGHT");
+	case OP_IMAGELOAD : return QString("OP_IMAGELOAD");
+	case OP_IMAGENEW : return QString("OP_IMAGENEW");
+	case OP_IMAGEPIXEL : return QString("OP_IMAGEPIXEL");
+	case OP_IMAGERESIZE : return QString("OP_IMAGERESIZE");
+	case OP_IMAGEROTATE : return QString("OP_IMAGEROTATE");
+	case OP_IMAGESETPIXEL : return QString("OP_IMAGESETPIXEL");
+	case OP_IMAGESMOOTH : return QString("OP_IMAGESMOOTH");
 	case OP_IMAGETRANSFORMED : return QString("OP_IMAGETRANSFORMED");
 	case OP_IMAGEWIDTH : return QString("OP_IMAGEWIDTH");
-	case OP_IMAGEHEIGHT : return QString("OP_IMAGEHEIGHT");
-	case OP_IMAGEPIXEL : return QString("OP_IMAGEPIXEL");
-	case OP_IMAGEFLIP : return QString("OP_IMAGEFLIP");
-	case OP_IMAGEROTATE : return QString("OP_IMAGEROTATE");
-	case OP_IMAGESMOOTH : return QString("OP_IMAGESMOOTH");
-	case OP_UNLOAD : return QString("OP_UNLOAD");
-	case OP_IMAGEAUTOCROP : return QString("OP_IMAGEAUTOCROP");
-	case OP_SOUNDPLAYER : return QString("OP_SOUNDPLAYER");
-	case OP_SOUNDWAVEFORM : return QString("OP_SOUNDWAVEFORM");
-	case OP_SOUNDFADE : return QString("OP_SOUNDFADE");
-	case OP_SOUNDLOOP : return QString("OP_SOUNDLOOP");
-	case OP_SOUNDENVELOPE : return QString("OP_SOUNDENVELOPE");
-	case OP_SOUNDHARMONICS : return QString("OP_SOUNDHARMONICS");
-	case OP_SOUNDNOHARMONICS : return QString("OP_SOUNDNOHARMONICS");
-	case OP_SOUNDHARMONICS_A : return QString("OP_SOUNDHARMONICS_A");
-	case OP_SOUNDPLAYEROFF : return QString("OP_SOUNDPLAYEROFF");
-	case OP_SOUNDSYSTEM : return QString("OP_SOUNDSYSTEM");
-	case OP_SOUNDSAMPLERATE : return QString("OP_SOUNDSAMPLERATE");
-	case OP_GOTO : return QString("OP_GOTO");
-	case OP_GOSUB : return QString("OP_GOSUB");
-	case OP_BRANCH : return QString("OP_BRANCH");
-	case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
+	case OP_IMGLOAD : return QString("OP_IMGLOAD");
+	case OP_IMGSAVE : return QString("OP_IMGSAVE");
+	case OP_IMPLODE : return QString("OP_IMPLODE");
+	case OP_INCREASERECURSE : return QString("OP_INCREASERECURSE");
+	case OP_INPUT : return QString("OP_INPUT");
+	case OP_INSTR : return QString("OP_INSTR");
+	case OP_INSTRX : return QString("OP_INSTRX");
+	case OP_INT : return QString("OP_INT");
+	case OP_INTDIV : return QString("OP_INTDIV");
+	case OP_ISNUMERIC : return QString("OP_ISNUMERIC");
+	case OP_KEY : return QString("OP_KEY");
+	case OP_KEYPRESSED : return QString("OP_KEYPRESSED");
+	case OP_KILL : return QString("OP_KILL");
+	case OP_LASTERROR : return QString("OP_LASTERROR");
+	case OP_LASTERROREXTRA : return QString("OP_LASTERROREXTRA");
+	case OP_LASTERRORLINE : return QString("OP_LASTERRORLINE");
+	case OP_LASTERRORMESSAGE : return QString("OP_LASTERRORMESSAGE");
+	case OP_LEFT : return QString("OP_LEFT");
+	case OP_LENGTH : return QString("OP_LENGTH");
+	case OP_LINE : return QString("OP_LINE");
+	case OP_LIST2EXPRESSION : return QString("OP_LIST2EXPRESSION");
+	case OP_LOG : return QString("OP_LOG");
+	case OP_LOGTEN : return QString("OP_LOGTEN");
+	case OP_LOWER : return QString("OP_LOWER");
+	case OP_LT : return QString("OP_LT");
+	case OP_LTE : return QString("OP_LTE");
+	case OP_LTRIM : return QString("OP_LTRIM");
+	case OP_MD5 : return QString("OP_MD5");
+	case OP_MID : return QString("OP_MID");
+	case OP_MIDX : return QString("OP_MIDX");
+	case OP_MINUTE : return QString("OP_MINUTE");
+	case OP_MOD : return QString("OP_MOD");
+	case OP_MONTH : return QString("OP_MONTH");
+	case OP_MOUSEB : return QString("OP_MOUSEB");
+	case OP_MOUSEX : return QString("OP_MOUSEX");
+	case OP_MOUSEY : return QString("OP_MOUSEY");
+	case OP_MSEC : return QString("OP_MSEC");
+	case OP_MUL : return QString("OP_MUL");
+	case OP_NEGATE : return QString("OP_NEGATE");
+	case OP_NEQUAL : return QString("OP_NEQUAL");
+	case OP_NETADDRESS : return QString("OP_NETADDRESS");
+	case OP_NETCLOSE : return QString("OP_NETCLOSE");
+	case OP_NETCONNECT : return QString("OP_NETCONNECT");
+	case OP_NETDATA : return QString("OP_NETDATA");
+	case OP_NETLISTEN : return QString("OP_NETLISTEN");
+	case OP_NETREAD : return QString("OP_NETREAD");
+	case OP_NETWRITE : return QString("OP_NETWRITE");
+	case OP_NEXT : return QString("OP_NEXT");
+	case OP_NOP : return QString("OP_NOP");
+	case OP_NOT : return QString("OP_NOT");
+	case OP_OFFERROR : return QString("OP_OFFERROR");
+	case OP_OFFERRORCATCH : return QString("OP_OFFERRORCATCH");
 	case OP_ONERRORCALL : return QString("OP_ONERRORCALL");
 	case OP_ONERRORCATCH : return QString("OP_ONERRORCATCH");
-	case OP_EXITFOR : return QString("OP_EXITFOR");
-	case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
-	case OP_CALLFUNCTION : return QString("OP_CALLFUNCTION");
-	case OP_CALLSUBROUTINE : return QString("OP_CALLSUBROUTINE");
-	case OP_ASSIGN : return QString("OP_ASSIGN");
-	case OP_ARRAYASSIGN : return QString("OP_ARRAYASSIGN");
-	case OP_PUSHVAR : return QString("OP_PUSHVAR");
-	case OP_FOR : return QString("OP_FOR");
-	case OP_NEXT : return QString("OP_NEXT");
-	case OP_DIM : return QString("OP_DIM");
-	case OP_DEREF : return QString("OP_DEREF");
-	case OP_REDIM : return QString("OP_REDIM");
-	case OP_ALEN : return QString("OP_ALEN");
-	case OP_ALENROWS : return QString("OP_ALENROWS");
-	case OP_ALENCOLS : return QString("OP_ALENCOLS");
-	case OP_PUSHVARREF : return QString("OP_PUSHVARREF");
-	case OP_ARRAY2STACK : return QString("OP_ARRAY2STACK");
-	case OP_ARRAYFILL : return QString("OP_ARRAYFILL");
-	case OP_GLOBAL : return QString("OP_GLOBAL");
-	case OP_UNASSIGN : return QString("OP_UNASSIGN");
-	case OP_UNASSIGNA : return QString("OP_UNASSIGNA");
-	case OP_VARIABLEWATCH : return QString("OP_VARIABLEWATCH");
-	case OP_VARIABLECOPY : return QString("OP_VARIABLECOPY");
-	case OP_PUSHINT : return QString("OP_PUSHINT");
-	case OP_CURRLINE : return QString("OP_CURRLINE");
-	case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
+	case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
+	case OP_OPEN : return QString("OP_OPEN");
+	case OP_OPENSERIAL : return QString("OP_OPENSERIAL");
+	case OP_OR : return QString("OP_OR");
+	case OP_OSTYPE : return QString("OP_OSTYPE");
+	case OP_OUTPUTVISIBLE : return QString("OP_OUTPUTVISIBLE");
+	case OP_PAUSE : return QString("OP_PAUSE");
+	case OP_PENWIDTH : return QString("OP_PENWIDTH");
+	case OP_PIE : return QString("OP_PIE");
+	case OP_PIXEL : return QString("OP_PIXEL");
+	case OP_PLOT : return QString("OP_PLOT");
+	case OP_POLY : return QString("OP_POLY");
+	case OP_PORTIN : return QString("OP_PORTIN");
+	case OP_PORTOUT : return QString("OP_PORTOUT");
+	case OP_PRINT : return QString("OP_PRINT");
+	case OP_PRINTERCANCEL : return QString("OP_PRINTERCANCEL");
+	case OP_PRINTEROFF : return QString("OP_PRINTEROFF");
+	case OP_PRINTERON : return QString("OP_PRINTERON");
+	case OP_PRINTERPAGE : return QString("OP_PRINTERPAGE");
+	case OP_PROMPT : return QString("OP_PROMPT");
 	case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
+	case OP_PUSHINT : return QString("OP_PUSHINT");
+	case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
 	case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
-	case OP_ADD1VAR : return QString("OP_ADD1VAR");
-	case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
-	case OP_SUB1VAR : return QString("OP_SUB1VAR");
-	case OP_SUB1ARRAY : return QString("OP_SUB1ARRAY");
+	case OP_PUSHVAR : return QString("OP_PUSHVAR");
+	case OP_PUSHVARREF : return QString("OP_PUSHVARREF");
+	case OP_PUTSLICE : return QString("OP_PUTSLICE");
+	case OP_RADIANS : return QString("OP_RADIANS");
+	case OP_RAND : return QString("OP_RAND");
+	case OP_READ : return QString("OP_READ");
+	case OP_READBYTE : return QString("OP_READBYTE");
+	case OP_READLINE : return QString("OP_READLINE");
+	case OP_RECT : return QString("OP_RECT");
+	case OP_REDIM : return QString("OP_REDIM");
+	case OP_REFRESH : return QString("OP_REFRESH");
+	case OP_REGEXMINIMAL : return QString("OP_REGEXMINIMAL");
+	case OP_REPLACE : return QString("OP_REPLACE");
+	case OP_REPLACEX : return QString("OP_REPLACEX");
+	case OP_RESET : return QString("OP_RESET");
+	case OP_RETURN : return QString("OP_RETURN");
+	case OP_RGB : return QString("OP_RGB");
+	case OP_RIGHT : return QString("OP_RIGHT");
+	case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
+	case OP_RTRIM : return QString("OP_RTRIM");
+	case OP_SAY : return QString("OP_SAY");
+	case OP_SECOND : return QString("OP_SECOND");
+	case OP_SEED : return QString("OP_SEED");
+	case OP_SEEK : return QString("OP_SEEK");
+	case OP_SERIALIZE : return QString("OP_SERIALIZE");
+	case OP_SETCOLOR : return QString("OP_SETCOLOR");
 	case OP_SETGRAPH : return QString("OP_SETGRAPH");
+	case OP_SETSETTING : return QString("OP_SETSETTING");
+	case OP_SIN : return QString("OP_SIN");
+	case OP_SIZE : return QString("OP_SIZE");
+	case OP_SOUND : return QString("OP_SOUND");
+	case OP_SOUNDENVELOPE : return QString("OP_SOUNDENVELOPE");
+	case OP_SOUNDFADE : return QString("OP_SOUNDFADE");
+	case OP_SOUNDHARMONICS : return QString("OP_SOUNDHARMONICS");
+	case OP_SOUNDHARMONICS_A : return QString("OP_SOUNDHARMONICS_A");
+	case OP_SOUNDID : return QString("OP_SOUNDID");
+	case OP_SOUNDLENGTH : return QString("OP_SOUNDLENGTH");
+	case OP_SOUNDLOAD : return QString("OP_SOUNDLOAD");
+	case OP_SOUNDLOADRAW : return QString("OP_SOUNDLOADRAW");
+	case OP_SOUNDLOOP : return QString("OP_SOUNDLOOP");
+	case OP_SOUNDNOHARMONICS : return QString("OP_SOUNDNOHARMONICS");
+	case OP_SOUNDPAUSE : return QString("OP_SOUNDPAUSE");
+	case OP_SOUNDPLAY : return QString("OP_SOUNDPLAY");
+	case OP_SOUNDPLAYER : return QString("OP_SOUNDPLAYER");
+	case OP_SOUNDPLAYEROFF : return QString("OP_SOUNDPLAYEROFF");
+	case OP_SOUNDPOSITION : return QString("OP_SOUNDPOSITION");
+	case OP_SOUNDSAMPLERATE : return QString("OP_SOUNDSAMPLERATE");
+	case OP_SOUNDSEEK : return QString("OP_SOUNDSEEK");
+	case OP_SOUNDSTATE : return QString("OP_SOUNDSTATE");
+	case OP_SOUNDSTOP : return QString("OP_SOUNDSTOP");
+	case OP_SOUNDSYSTEM : return QString("OP_SOUNDSYSTEM");
+	case OP_SOUNDVOLUME : return QString("OP_SOUNDVOLUME");
+	case OP_SOUNDWAIT : return QString("OP_SOUNDWAIT");
+	case OP_SOUNDWAVEFORM : return QString("OP_SOUNDWAVEFORM");
+	case OP_SPRITECOLLIDE : return QString("OP_SPRITECOLLIDE");
+	case OP_SPRITEDIM : return QString("OP_SPRITEDIM");
+	case OP_SPRITEH : return QString("OP_SPRITEH");
+	case OP_SPRITEHIDE : return QString("OP_SPRITEHIDE");
+	case OP_SPRITELOAD : return QString("OP_SPRITELOAD");
+	case OP_SPRITEMOVE : return QString("OP_SPRITEMOVE");
+	case OP_SPRITEO : return QString("OP_SPRITEO");
+	case OP_SPRITEPLACE : return QString("OP_SPRITEPLACE");
+	case OP_SPRITEPOLY : return QString("OP_SPRITEPOLY");
+	case OP_SPRITER : return QString("OP_SPRITER");
+	case OP_SPRITES : return QString("OP_SPRITES");
+	case OP_SPRITESHOW : return QString("OP_SPRITESHOW");
+	case OP_SPRITESLICE : return QString("OP_SPRITESLICE");
+	case OP_SPRITEV : return QString("OP_SPRITEV");
+	case OP_SPRITEW : return QString("OP_SPRITEW");
+	case OP_SPRITEX : return QString("OP_SPRITEX");
+	case OP_SPRITEY : return QString("OP_SPRITEY");
+	case OP_SQR : return QString("OP_SQR");
+	case OP_STACKDUP : return QString("OP_STACKDUP");
+	case OP_STACKDUP2 : return QString("OP_STACKDUP2");
+	case OP_STACKSAVE : return QString("OP_STACKSAVE");
+	case OP_STACKSWAP : return QString("OP_STACKSWAP");
+	case OP_STACKSWAP2 : return QString("OP_STACKSWAP2");
+	case OP_STACKTOPTO2 : return QString("OP_STACKTOPTO2");
+	case OP_STACKUNSAVE : return QString("OP_STACKUNSAVE");
+	case OP_STAMP : return QString("OP_STAMP");
+	case OP_STRING : return QString("OP_STRING");
+	case OP_SUB : return QString("OP_SUB");
+	case OP_SUB1ARRAY : return QString("OP_SUB1ARRAY");
+	case OP_SUB1VAR : return QString("OP_SUB1VAR");
+	case OP_SYSTEM : return QString("OP_SYSTEM");
+	case OP_TAN : return QString("OP_TAN");
+	case OP_TEXT : return QString("OP_TEXT");
 	case OP_TEXTBOXHEIGHT : return QString("OP_TEXTBOXHEIGHT");
 	case OP_TEXTBOXWIDTH : return QString("OP_TEXTBOXWIDTH");
-	case OP_ELLIPSE : return QString("OP_ELLIPSE");
-	case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
-	case OP_BITSHIFTL : return QString("OP_BITSHIFTL");
-	case OP_BITSHIFTR : return QString("OP_BITSHIFTR");
-	case OP_LIST2EXPRESSION : return QString("OP_LIST2EXPRESSION");
-	case OP_STACKSAVE : return QString("OP_STACKSAVE");
-	case OP_STACKUNSAVE : return QString("OP_STACKUNSAVE");
+	case OP_TEXTHEIGHT : return QString("OP_TEXTHEIGHT");
+	case OP_TEXTWIDTH : return QString("OP_TEXTWIDTH");
+	case OP_THROWERROR : return QString("OP_THROWERROR");
+	case OP_TORADIX : return QString("OP_TORADIX");
+	case OP_TRIM : return QString("OP_TRIM");
+	case OP_TYPEOF : return QString("OP_TYPEOF");
+	case OP_UNASSIGN : return QString("OP_UNASSIGN");
+	case OP_UNASSIGNA : return QString("OP_UNASSIGNA");
+	case OP_UNLOAD : return QString("OP_UNLOAD");
+	case OP_UNSERIALIZE : return QString("OP_UNSERIALIZE");
+	case OP_UPPER : return QString("OP_UPPER");
+	case OP_VARIABLECOPY : return QString("OP_VARIABLECOPY");
+	case OP_VARIABLEWATCH : return QString("OP_VARIABLEWATCH");
+	case OP_VOLUME : return QString("OP_VOLUME");
+	case OP_WAVLENGTH : return QString("OP_WAVLENGTH");
+	case OP_WAVPAUSE : return QString("OP_WAVPAUSE");
+	case OP_WAVPLAY : return QString("OP_WAVPLAY");
+	case OP_WAVPOS : return QString("OP_WAVPOS");
+	case OP_WAVSEEK : return QString("OP_WAVSEEK");
+	case OP_WAVSTATE : return QString("OP_WAVSTATE");
+	case OP_WAVSTOP : return QString("OP_WAVSTOP");
+	case OP_WAVWAIT : return QString("OP_WAVWAIT");
+	case OP_WRITE : return QString("OP_WRITE");
+	case OP_WRITEBYTE : return QString("OP_WRITEBYTE");
+	case OP_WRITELINE : return QString("OP_WRITELINE");
+	case OP_XOR : return QString("OP_XOR");
+	case OP_YEAR : return QString("OP_YEAR");
 
 	default: return QString("OP_UNKNOWN");
 	}
@@ -1403,24 +1404,22 @@ Interpreter::execByteCode() {
 
 					if (startE->type==T_INT && stepE->type==T_INT) {
 						// an integer start and step (do an integer loop)
-						temp->useInt = true;
+						temp->type = FORFRAMETYPE_INT;
 						temp->intStart = startE->intval;
 						temp->intEnd = convert->getLong(endE);	// could b float but cant ever be
 						temp->intStep = stepE->intval;
 						temp->positive = temp->intStep >=0 && temp->intStart < temp->intEnd;
-						temp->negative = temp->intStep <=0 && temp->intStart > temp->intEnd;
-
-						goodloop = (temp->positive || temp->negative || temp->intStart == temp->intEnd);
+						goodloop = (temp->positive && temp->intStart < temp->intEnd) ||
+							(!temp->positive && temp->intStart > temp->intEnd) ;
 					} else {
 						// start or step not integer - it is a float loop
-						temp->useInt = false;
+						temp->type = FORFRAMETYPE_FLOAT;
 						temp->floatStart = convert->getFloat(startE);
 						temp->floatEnd = convert->getFloat(endE);
 						temp->floatStep = convert->getFloat(stepE);
 						temp->positive = temp->floatStep >=0.0 && temp->floatStart < temp->floatEnd;
-						temp->negative = temp->floatStep <=0.0 && temp->floatStart > temp->floatEnd;
-
-						goodloop = (temp->positive || temp->negative || temp->floatStart == temp->floatEnd);
+						goodloop = (temp->positive && temp->floatStart < temp->floatEnd) ||
+							(!temp->positive && temp->floatStart > temp->floatEnd) ;
 					}
 
 					if (goodloop) {
@@ -1437,6 +1436,69 @@ Interpreter::execByteCode() {
 				}
 				break;
 
+				case OP_FOREACH: {
+					int *nextAddr = wordCode + stack->popint();
+					DataElement *adata = stack->popelement();
+
+					// search for previous FOR in stack
+					// this is done because of anti-spaghetti code
+
+					forframe *temp = forstack;
+					forframe *prev = NULL;
+					while(temp && nextAddr!=temp->nextAddr){
+						prev=temp;
+						temp=temp->next;
+					}
+					if(temp){
+						//if there is a previous FOR in stack pull it to use the allocated memory
+						if(prev){
+							//node is in the middle of stack
+							prev->next=temp->next;
+						}else{
+							//node is last
+							forstack=temp->next;
+						}
+					}else{
+						//or create a new node
+						temp = new forframe;
+					}
+
+					if (adata->type == T_ARRAY) {
+						if (adata->arrayxdim()==1) {
+							if(adata->arrayydim()>=1) {
+								// create forframe
+								temp->type = FORFRAMETYPE_FOREACH;
+								temp->intStart = 0;				// current index into array
+								// copy array data from the stack dataelement onto a new dataelement
+								// need fo fix this when I get my head around the stack
+								// being a stack of DataElements and stuff being copied onto the stack
+								// 20200419 j.m.r.
+								temp->arrayData = new DataElement();
+								temp->arrayData->copy(adata);
+								// set variable to first element
+								variables->setdata(i, temp->arrayData->arraygetdata(0, temp->intStart));
+								watchvariable(debugMode, i);
+								// add new forframe to the forframe stack
+								temp->next = forstack;
+								temp->forAddr = op;		// first op after FOR statement to loop back to
+								temp->nextAddr = nextAddr;
+								forstack = temp;
+								fprintf(stderr,"foreach_create de type=%d\n", temp->arrayData->type);
+							} else {
+								// no data in array - jump to next
+								delete temp;
+								op = nextAddr;
+							}
+						} else {
+							error->q(ERROR_ONEDIMENSIONAL);
+						}
+					} else {
+						error->q(ERROR_ARRAYEXPR);
+					}
+				}
+				break;
+
+
 				case OP_NEXT: {
 					forframe *temp = forstack;
 					forframe *prev = NULL;
@@ -1451,87 +1513,75 @@ Interpreter::execByteCode() {
 					if (!temp) {
 						error->q(ERROR_NEXTNOFOR);
 					} else {
-							if (temp->useInt) {
+						switch (temp->type) {
+							case FORFRAMETYPE_INT:
+							{
 								const long val = convert->getLong(variables->getdata(i))+temp->intStep;
 								variables->setdata(i, val);
 								watchvariable(debugMode, i);
 
-								if (temp->positive) {
-									if(val <= temp->intEnd){
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
+								if ((temp->positive&&val <= temp->intEnd)||(!temp->positive&&val >= temp->intEnd)){
+									op = temp->forAddr;
+								} else {
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
 									}
-								} else if (temp->negative) {
-									if(val >= temp->intEnd){
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
-									}
-								}else{
-									if (val == temp->intEnd) {
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
-									}
-								}
-							} else {
-								const double val = convert->getFloat(variables->getdata(i))+temp->floatStep;
-								variables->setdata(i, val);
-
-
-								if (temp->positive) {
-									if(convert->compareFloats(val, temp->floatEnd)!=1){
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
-									}
-								} else if (temp->negative) {
-									if(convert->compareFloats(val, temp->floatEnd)!=-1){
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
-									}
-								}else{
-									if (convert->compareFloats(val, temp->floatEnd)==0) {
-										op = temp->forAddr;
-									} else {
-										if(prev){
-											prev->next=temp->next;
-										}else{
-											forstack = temp->next;
-										}
-										delete temp;
-									}
+									delete temp;
 								}
 							}
-					}
+							break;
+							case FORFRAMETYPE_FLOAT:
+							{
+						
+								const double val = convert->getFloat(variables->getdata(i))+temp->floatStep;
+								variables->setdata(i, val);
+								watchvariable(debugMode, i);
 
+								if ((temp->positive&&convert->compareFloats(val, temp->floatEnd)!=1)||(!temp->positive&&convert->compareFloats(val, temp->floatEnd)!=-1)){
+									op = temp->forAddr;
+								} else {
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp;
+								}
+							}
+							break;
+							case FORFRAMETYPE_FOREACH:
+							{
+								fprintf(stderr,"foreach_next de type=%d intStart=%ld\n", temp->arrayData->type, temp->intStart);
+								if(temp->arrayData->type==T_ARRAY) {
+									if (temp->arrayData->arrayxdim()==1) {
+										temp->intStart++;
+										if (temp->intStart < temp->arrayData->arrayydim()) {
+											// set variable to this element
+											variables->setdata(i, temp->arrayData->arraygetdata(0, temp->intStart));
+											watchvariable(debugMode, i);
+											// loop again
+											op = temp->forAddr;
+										} else {
+											// done with loop
+											if(prev){
+												prev->next=temp->next;
+											}else{
+												forstack = temp->next;
+											}
+											delete temp;
+										}
+									} else {
+										error->q(ERROR_ONEDIMENSIONAL);
+									}
+								} else {
+									error->q(ERROR_ARRAYEXPR);
+								}
+							}
+							break;
+						}
+					}
 				}
 				break;
 

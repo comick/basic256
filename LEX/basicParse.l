@@ -176,12 +176,14 @@ endwhile [Ee][Nn][Dd][ \t]*[Ww][Hh][Ii][Ll][Ee]
 error_argumentcount [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Gg][Uu][Mm][Ee][Nn][Tt][Cc][Oo][Uu][Nn][Tt]
 error_arrayelement [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Ll][Ee][Mm][Ee][Nn][Tt]
 error_arrayeven [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Vv][Ee][Nn]
+error_arrayexpr [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ee][Xx][Pp][Rr]
 error_arrayindex [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx]
 error_arrayindexmissing [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ii][Nn][Dd][Ee][Xx][Mm][Ii][Ss][Ss][Ii][Nn][Gg]
-error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][22][Dd]
+error_arraylength2d [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ll][Ee][Nn][Gg][Tt][Hh][2][Dd]
 error_arraynitems [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Nn][Ii][Tt][Ee][Mm][Ss]
 error_arraysizelarge [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ll][Aa][Rr][Gg][Ee]
 error_arraysizesmall [Ee][Rr][Rr][Oo][Rr][_][Aa][Rr][Rr][Aa][Yy][Ss][Ii][Zz][Ee][Ss][Mm][Aa][Ll][Ll]
+error_asinacosrange [Ee][Rr][Rr][Oo][Rr][_][Aa][Ss][Ii][Nn][Aa][Cc][Oo][Ss][Rr][Aa][Nn][Gg][Ee]
 error_booleanconv [Ee][Rr][Rr][Oo][Rr][_][Bb][Oo][Oo][Ll][Ee][Aa][Nn][Cc][Oo][Nn][Vv]
 error_dbcolno [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Ll][Nn][Oo]
 error_dbconnnumber [Ee][Rr][Rr][Oo][Rr][_][Dd][Bb][Cc][Oo][Nn][Nn][Nn][Uu][Mm][Bb][Ee][Rr]
@@ -211,6 +213,7 @@ error_freenet [Ee][Rr][Rr][Oo][Rr][_][Ff][Rr][Ee][Ee][Nn][Ee][Tt]
 error_harmoniclist [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Ll][Ii][Ss][Tt]
 error_harmonicnumber [Ee][Rr][Rr][Oo][Rr][_][Hh][Aa][Rr][Mm][Oo][Nn][Ii][Cc][Nn][Uu][Mm][Bb][Ee][Rr]
 error_imagefile [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ff][Ii][Ll][Ee]
+error_imageresource [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
 error_imagesavetype [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Aa][Vv][Ee][Tt][Yy][Pp][Ee]
 error_imagescale [Ee][Rr][Rr][Oo][Rr][_][Ii][Mm][Aa][Gg][Ee][Ss][Cc][Aa][Ll][Ee]
 error_infinity [Ee][Rr][Rr][Oo][Rr][_][Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]
@@ -239,7 +242,9 @@ error_nosuchsubroutine [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Ss][Uu][Cc][Hh][Ss][Uu][B
 error_notarray [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Aa][Rr][Rr][Aa][Yy]
 error_notimplemented [Ee][Rr][Rr][Oo][Rr][_][Nn][Oo][Tt][Ii][Mm][Pp][Ll][Ee][Mm][Ee][Nn][Tt][Ee][Dd]
 error_numberconv [Ee][Rr][Rr][Oo][Rr][_][Nn][Uu][Mm][Bb][Ee][Rr][Cc][Oo][Nn][Vv]
+error_numberexpr [Ee][Rr][Rr][Oo][Rr][_][Nn][Uu][Mm][Bb][Ee][Rr][Ee][Xx][Pp][Rr]
 error_onedimensional [Ee][Rr][Rr][Oo][Rr][_][Oo][Nn][Ee][Dd][Ii][Mm][Ee][Nn][Ss][Ii][Oo][Nn][Aa][Ll]
+error_onerrorsub [Ee][Rr][Rr][Oo][Rr][_][Oo][Nn][Ee][Rr][Rr][Oo][Rr][Ss][Uu][Bb]
 error_penwidth [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 error_permission [Ee][Rr][Rr][Oo][Rr][_][Pp][Ee][Rr][Mm][Ii][Ss][Ss][Ii][Oo][Nn]
 error_polypoints [Ee][Rr][Rr][Oo][Rr][_][Pp][Oo][Ll][Yy][Pp][Oo][Ii][Nn][Tt][Ss]
@@ -265,13 +270,15 @@ error_soundresource [Ee][Rr][Rr][Oo][Rr][_][Ss][Oo][Uu][Nn][Dd][Rr][Ee][Ss][Oo][
 error_spritena [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Aa]
 error_spritenumber [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Nn][Uu][Mm][Bb][Ee][Rr]
 error_spriteslice [Ee][Rr][Rr][Oo][Rr][_][Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
+error_sqrrange [Ee][Rr][Rr][Oo][Rr][_][Ss][Qq][Rr][Rr][Aa][Nn][Gg][Ee]
 error_stackunderflow [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Aa][Cc][Kk][Uu][Nn][Dd][Ee][Rr][Ff][Ll][Oo][Ww]
-error_string2note [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
+error_string2note [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][2][Nn][Oo][Tt][Ee]
 error_stringconv [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
+error_stringexpr [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Ee][Xx][Pp][Rr]
 error_stringmaxlen [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ii][Nn][Gg][Mm][Aa][Xx][Ll][Ee][Nn]
 error_strstart [Ee][Rr][Rr][Oo][Rr][_][Ss][Tt][Rr][Ss][Tt][Aa][Rr][Tt]
 error_toomanysounds [Ee][Rr][Rr][Oo][Rr][_][Tt][Oo][Oo][Mm][Aa][Nn][Yy][Ss][Oo][Uu][Nn][Dd][Ss]
-error_unexpectedreturn [Uu][Nn][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Rr][Ee][Tt][Uu][Rr][Nn]
+error_unexpectedreturn [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ee][Xx][Pp][Ee][Cc][Tt][Ee][Dd][Rr][Ee][Tt][Uu][Rr][Nn]
 error_unserializeformat [Ee][Rr][Rr][Oo][Rr][_][Uu][Nn][Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee][Ff][Oo][Rr][Mm][Aa][Tt]
 error_varcircular [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Cc][Ii][Rr][Cc][Uu][Ll][Aa][Rr]
 error_varnotassigned [Ee][Rr][Rr][Oo][Rr][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
@@ -290,6 +297,7 @@ fill [Ff][Ii][Ll][Ll]
 floor [Ff][Ll][Oo][Oo][Rr]
 font [Ff][Oo][Nn][Tt]
 for [Ff][Oo][Rr]
+foreach [Ff][Oo][Rr][ \t]*[Ee][Aa][Cc][Hh]
 freedb [Ff][Rr][Ee][Ee][Dd][Bb]
 freedbset [Ff][Rr][Ee][Ee][Dd][Bb][Ss][Ee][Tt]
 freefile [Ff][Rr][Ee][Ee][Ff][Ii][Ll][Ee]
@@ -315,6 +323,7 @@ gray [Gg][Rr][AaEe][Yy]
 green [Gg][Rr][Ee][Ee][Nn]
 hour [Hh][Oo][Uu][Rr]
 if [Ii][Ff]
+in [Ii][Nn]
 imageautocrop [Ii][Mm][Aa][Gg][Ee][Aa][Uu][Tt][Oo][Cc][Rr][Oo][Pp]
 imagecentered [Ii][Mm][Aa][Gg][Ee][Cc][Ee][Nn][Tt][Ee][Rr][Ee][Dd]
 imagecopy [Ii][Mm][Aa][Gg][Ee][Cc][Oo][Pp][Yy]
@@ -537,7 +546,7 @@ warning_soundfileformat [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ff][
 warning_soundlength [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Ll][Ee][Nn][Gg][Tt][Hh]
 warning_soundnotseekable [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Oo][Uu][Nn][Dd][Nn][Oo][Tt][Ss][Ee][Ee][Kk][Aa][Bb][Ll][Ee]
 warning_start [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Aa][Rr][Tt]
-warning_string2note [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][22][Nn][Oo][Tt][Ee]
+warning_string2note [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][2][Nn][Oo][Tt][Ee]
 warning_stringconv [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ss][Tt][Rr][Ii][Nn][Gg][Cc][Oo][Nn][Vv]
 warning_varnotassigned [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Vv][Aa][Rr][Nn][Oo][Tt][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 warning_wavobsolete [Ww][Aa][Rr][Nn][Ii][Nn][Gg][_][Ww][Aa][Vv][Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
@@ -650,111 +659,118 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {debuginfo}					{ count(); return B256DEBUGINFO; }
 {degrees}					{ count(); return B256DEGREES; }
 {dir}						{ count(); return B256DIR; }
-{error_argumentcount}                           { count(); return B256ERROR_ARGUMENTCOUNT; }
-{error_arrayelement}                            { count(); return B256ERROR_ARRAYELEMENT; }
-{error_arrayeven}                               { count(); return B256ERROR_ARRAYEVEN; }
-{error_arrayindexmissing}                       { count(); return B256ERROR_ARRAYINDEXMISSING; }
-{error_arrayindex}                              { count(); return B256ERROR_ARRAYINDEX; }
-{error_arraylength2d}                           { count(); return B256ERROR_ARRAYLENGTH2D; }
-{error_arraynitems}                             { count(); return B256ERROR_ARRAYNITEMS; }
-{error_arraysizelarge}                          { count(); return B256ERROR_ARRAYSIZELARGE; }
-{error_arraysizesmall}                          { count(); return B256ERROR_ARRAYSIZESMALL; }
-{error_booleanconv}                             { count(); return B256ERROR_BOOLEANCONV; }
-{error_dbcolno}                                 { count(); return B256ERROR_DBCOLNO; }
-{error_dbconnnumber}                            { count(); return B256ERROR_DBCONNNUMBER; }
-{error_dbnotopen}                               { count(); return B256ERROR_DBNOTOPEN; }
-{error_dbnotsetrow}                             { count(); return B256ERROR_DBNOTSETROW; }
-{error_dbnotset}                                { count(); return B256ERROR_DBNOTSET; }
-{error_dbopen}                                  { count(); return B256ERROR_DBOPEN; }
-{error_dbquery}                                 { count(); return B256ERROR_DBQUERY; }
-{error_dbsetnumber}                             { count(); return B256ERROR_DBSETNUMBER; }
-{error_divzero}                                 { count(); return B256ERROR_DIVZERO; }
-{error_download}                                { count(); return B256ERROR_DOWNLOAD; }
-{error_envelopemax}                             { count(); return B256ERROR_ENVELOPEMAX; }
-{error_envelopeodd}                             { count(); return B256ERROR_ENVELOPEODD; }
-{error_expectedarray}                           { count(); return B256ERROR_EXPECTEDARRAY; }
-{error_expectedsound}                           { count(); return B256ERROR_EXPECTEDSOUND; }
-{error_filenotopen}                             { count(); return B256ERROR_FILENOTOPEN; }
-{error_filenumber}                              { count(); return B256ERROR_FILENUMBER; }
-{error_fileopen}                                { count(); return B256ERROR_FILEOPEN; }
-{error_fileoperation}                           { count(); return B256ERROR_FILEOPERATION; }
-{error_filereset}                               { count(); return B256ERROR_FILERESET; }
-{error_filewrite}                               { count(); return B256ERROR_FILEWRITE; }
-{error_folder}                                  { count(); return B256ERROR_FOLDER; }
-{error_freedbset}                               { count(); return B256ERROR_FREEDBSET; }
-{error_freedb}                                  { count(); return B256ERROR_FREEDB; }
-{error_freefile}                                { count(); return B256ERROR_FREEFILE; }
-{error_freenet}                                 { count(); return B256ERROR_FREENET; }
-{error_harmoniclist}                            { count(); return B256ERROR_HARMONICLIST; }
-{error_harmonicnumber}                          { count(); return B256ERROR_HARMONICNUMBER; }
-{error_imagefile}                               { count(); return B256ERROR_IMAGEFILE; }
-{error_imagesavetype}                           { count(); return B256ERROR_IMAGESAVETYPE; }
-{error_imagescale}                              { count(); return B256ERROR_IMAGESCALE; }
-{error_infinity}                                { count(); return B256ERROR_INFINITY; }
-{error_integerrange}                            { count(); return B256ERROR_INTEGERRANGE; }
-{error_invalidkeyname}                          { count(); return B256ERROR_INVALIDKEYNAME; }
-{error_invalidprogname}                         { count(); return B256ERROR_INVALIDPROGNAME; }
-{error_invalidresource}                         { count(); return B256ERROR_INVALIDRESOURCE; }
-{error_logrange}                                { count(); return B256ERROR_LOGRANGE; }
-{error_longrange}                               { count(); return B256ERROR_LONGRANGE; }
-{error_maxrecurse}                              { count(); return B256ERROR_MAXRECURSE; }
-{error_netaccept}                               { count(); return B256ERROR_NETACCEPT; }
-{error_netbind}                                 { count(); return B256ERROR_NETBIND; }
-{error_netconn}                                 { count(); return B256ERROR_NETCONN; }
-{error_nethost}                                 { count(); return B256ERROR_NETHOST; }
-{error_netnone}                                 { count(); return B256ERROR_NETNONE; }
-{error_netread}                                 { count(); return B256ERROR_NETREAD; }
-{error_netsocknumber}                           { count(); return B256ERROR_NETSOCKNUMBER; }
-{error_netsockopt}                              { count(); return B256ERROR_NETSOCKOPT; }
-{error_netsock}                                 { count(); return B256ERROR_NETSOCK; }
-{error_netwrite}                                { count(); return B256ERROR_NETWRITE; }
-{error_nextnofor}                               { count(); return B256ERROR_NEXTNOFOR; }
-{error_none}                                    { count(); return B256ERROR_NONE; }
-{error_nosuchfunction}                          { count(); return B256ERROR_NOSUCHFUNCTION; }
-{error_nosuchlabel}                             { count(); return B256ERROR_NOSUCHLABEL; }
-{error_nosuchsubroutine}                        { count(); return B256ERROR_NOSUCHSUBROUTINE; }
-{error_notarray}                                { count(); return B256ERROR_NOTARRAY; }
-{error_notimplemented}                          { count(); return B256ERROR_NOTIMPLEMENTED; }
-{error_numberconv}                              { count(); return B256ERROR_NUMBERCONV; }
-{error_onedimensional}                          { count(); return B256ERROR_ONEDIMENSIONAL; }
-{error_penwidth}                                { count(); return B256ERROR_PENWIDTH; }
-{error_permission}                              { count(); return B256ERROR_PERMISSION; }
-{error_polypoints}                              { count(); return B256ERROR_POLYPOINTS; }
-{error_printernotoff}                           { count(); return B256ERROR_PRINTERNOTOFF; }
-{error_printernoton}                            { count(); return B256ERROR_PRINTERNOTON; }
-{error_printeropen}                             { count(); return B256ERROR_PRINTEROPEN; }
-{error_radixstring}                             { count(); return B256ERROR_RADIXSTRING; }
-{error_radix}                                   { count(); return B256ERROR_RADIX; }
-{error_refnotassigned}                          { count(); return B256ERROR_REFNOTASSIGNED; }
-{error_rgb}                                     { count(); return B256ERROR_RGB; }
-{error_serialparameter}                         { count(); return B256ERROR_SERIALPARAMETER; }
-{error_settingmaxkeys}                          { count(); return B256ERROR_SETTINGMAXKEYS; }
-{error_settingmaxlen}                           { count(); return B256ERROR_SETTINGMAXLEN; }
-{error_settingsgetaccess}                       { count(); return B256ERROR_SETTINGSGETACCESS; }
-{error_settingssetaccess}                       { count(); return B256ERROR_SETTINGSSETACCESS; }
-{error_slicesize}                               { count(); return B256ERROR_SLICESIZE; }
-{error_sounderror}                              { count(); return B256ERROR_SOUNDERROR; }
-{error_soundfileformat}                         { count(); return B256ERROR_SOUNDFILEFORMAT; }
-{error_soundfile}                               { count(); return B256ERROR_SOUNDFILE; }
-{error_soundlength}                             { count(); return B256ERROR_SOUNDLENGTH; }
-{error_soundnotseekable}                        { count(); return B256ERROR_SOUNDNOTSEEKABLE; }
-{error_soundresource}                           { count(); return B256ERROR_SOUNDRESOURCE; }
-{error_spritena}                                { count(); return B256ERROR_SPRITENA; }
-{error_spritenumber}                            { count(); return B256ERROR_SPRITENUMBER; }
-{error_spriteslice}                             { count(); return B256ERROR_SPRITESLICE; }
-{error_stackunderflow}                          { count(); return B256ERROR_STACKUNDERFLOW; }
-{error_string2note}                             { count(); return B256ERROR_STRING2NOTE; }
-{error_stringconv}                              { count(); return B256ERROR_STRINGCONV; }
-{error_stringmaxlen}                            { count(); return B256ERROR_STRINGMAXLEN; }
-{error_strstart}                                { count(); return B256ERROR_STRSTART; }
-{error_toomanysounds}                           { count(); return B256ERROR_TOOMANYSOUNDS; }
-{error_unexpectedreturn}                        { count(); return B256ERROR_UNEXPECTEDRETURN; }
-{error_unserializeformat}                       { count(); return B256ERROR_UNSERIALIZEFORMAT; }
-{error_varcircular}                             { count(); return B256ERROR_VARCIRCULAR; }
-{error_varnotassigned}                          { count(); return B256ERROR_VARNOTASSIGNED; }
-{error_varnull}                                 { count(); return B256ERROR_VARNULL; }
-{error_waveformlogical}                         { count(); return B256ERROR_WAVEFORMLOGICAL; }
-{error_wavobsolete}                             { count(); return B256ERROR_WAVOBSOLETE; }
+{error_argumentcount}			{ count(); return B256ERROR_ARGUMENTCOUNT; }
+{error_arrayelement}			{ count(); return B256ERROR_ARRAYELEMENT; }
+{error_arrayeven}			{ count(); return B256ERROR_ARRAYEVEN; }
+{error_arrayexpr}			{ count(); return B256ERROR_ARRAYEXPR; }
+{error_arrayindex}			{ count(); return B256ERROR_ARRAYINDEX; }
+{error_arrayindexmissing}			{ count(); return B256ERROR_ARRAYINDEXMISSING; }
+{error_arraylength2d}			{ count(); return B256ERROR_ARRAYLENGTH2D; }
+{error_arraynitems}			{ count(); return B256ERROR_ARRAYNITEMS; }
+{error_arraysizelarge}			{ count(); return B256ERROR_ARRAYSIZELARGE; }
+{error_arraysizesmall}			{ count(); return B256ERROR_ARRAYSIZESMALL; }
+{error_asinacosrange}			{ count(); return B256ERROR_ASINACOSRANGE; }
+{error_booleanconv}			{ count(); return B256ERROR_BOOLEANCONV; }
+{error_dbcolno}			{ count(); return B256ERROR_DBCOLNO; }
+{error_dbconnnumber}			{ count(); return B256ERROR_DBCONNNUMBER; }
+{error_dbnotopen}			{ count(); return B256ERROR_DBNOTOPEN; }
+{error_dbnotset}			{ count(); return B256ERROR_DBNOTSET; }
+{error_dbnotsetrow}			{ count(); return B256ERROR_DBNOTSETROW; }
+{error_dbopen}			{ count(); return B256ERROR_DBOPEN; }
+{error_dbquery}			{ count(); return B256ERROR_DBQUERY; }
+{error_dbsetnumber}			{ count(); return B256ERROR_DBSETNUMBER; }
+{error_divzero}			{ count(); return B256ERROR_DIVZERO; }
+{error_download}			{ count(); return B256ERROR_DOWNLOAD; }
+{error_envelopemax}			{ count(); return B256ERROR_ENVELOPEMAX; }
+{error_envelopeodd}			{ count(); return B256ERROR_ENVELOPEODD; }
+{error_expectedarray}			{ count(); return B256ERROR_EXPECTEDARRAY; }
+{error_expectedsound}			{ count(); return B256ERROR_EXPECTEDSOUND; }
+{error_filenotopen}			{ count(); return B256ERROR_FILENOTOPEN; }
+{error_filenumber}			{ count(); return B256ERROR_FILENUMBER; }
+{error_fileopen}			{ count(); return B256ERROR_FILEOPEN; }
+{error_fileoperation}			{ count(); return B256ERROR_FILEOPERATION; }
+{error_filereset}			{ count(); return B256ERROR_FILERESET; }
+{error_filewrite}			{ count(); return B256ERROR_FILEWRITE; }
+{error_folder}			{ count(); return B256ERROR_FOLDER; }
+{error_freedb}			{ count(); return B256ERROR_FREEDB; }
+{error_freedbset}			{ count(); return B256ERROR_FREEDBSET; }
+{error_freefile}			{ count(); return B256ERROR_FREEFILE; }
+{error_freenet}			{ count(); return B256ERROR_FREENET; }
+{error_harmoniclist}			{ count(); return B256ERROR_HARMONICLIST; }
+{error_harmonicnumber}			{ count(); return B256ERROR_HARMONICNUMBER; }
+{error_imagefile}			{ count(); return B256ERROR_IMAGEFILE; }
+{error_imageresource}			{ count(); return B256ERROR_IMAGERESOURCE; }
+{error_imagesavetype}			{ count(); return B256ERROR_IMAGESAVETYPE; }
+{error_imagescale}			{ count(); return B256ERROR_IMAGESCALE; }
+{error_infinity}			{ count(); return B256ERROR_INFINITY; }
+{error_integerrange}			{ count(); return B256ERROR_INTEGERRANGE; }
+{error_invalidkeyname}			{ count(); return B256ERROR_INVALIDKEYNAME; }
+{error_invalidprogname}			{ count(); return B256ERROR_INVALIDPROGNAME; }
+{error_invalidresource}			{ count(); return B256ERROR_INVALIDRESOURCE; }
+{error_logrange}			{ count(); return B256ERROR_LOGRANGE; }
+{error_longrange}			{ count(); return B256ERROR_LONGRANGE; }
+{error_maxrecurse}			{ count(); return B256ERROR_MAXRECURSE; }
+{error_netaccept}			{ count(); return B256ERROR_NETACCEPT; }
+{error_netbind}			{ count(); return B256ERROR_NETBIND; }
+{error_netconn}			{ count(); return B256ERROR_NETCONN; }
+{error_nethost}			{ count(); return B256ERROR_NETHOST; }
+{error_netnone}			{ count(); return B256ERROR_NETNONE; }
+{error_netread}			{ count(); return B256ERROR_NETREAD; }
+{error_netsock}			{ count(); return B256ERROR_NETSOCK; }
+{error_netsocknumber}			{ count(); return B256ERROR_NETSOCKNUMBER; }
+{error_netsockopt}			{ count(); return B256ERROR_NETSOCKOPT; }
+{error_netwrite}			{ count(); return B256ERROR_NETWRITE; }
+{error_nextnofor}			{ count(); return B256ERROR_NEXTNOFOR; }
+{error_none}			{ count(); return B256ERROR_NONE; }
+{error_nosuchfunction}			{ count(); return B256ERROR_NOSUCHFUNCTION; }
+{error_nosuchlabel}			{ count(); return B256ERROR_NOSUCHLABEL; }
+{error_nosuchsubroutine}			{ count(); return B256ERROR_NOSUCHSUBROUTINE; }
+{error_notarray}			{ count(); return B256ERROR_NOTARRAY; }
+{error_notimplemented}			{ count(); return B256ERROR_NOTIMPLEMENTED; }
+{error_numberconv}			{ count(); return B256ERROR_NUMBERCONV; }
+{error_numberexpr}			{ count(); return B256ERROR_NUMBEREXPR; }
+{error_onedimensional}			{ count(); return B256ERROR_ONEDIMENSIONAL; }
+{error_onerrorsub}			{ count(); return B256ERROR_ONERRORSUB; }
+{error_penwidth}			{ count(); return B256ERROR_PENWIDTH; }
+{error_permission}			{ count(); return B256ERROR_PERMISSION; }
+{error_polypoints}			{ count(); return B256ERROR_POLYPOINTS; }
+{error_printernotoff}			{ count(); return B256ERROR_PRINTERNOTOFF; }
+{error_printernoton}			{ count(); return B256ERROR_PRINTERNOTON; }
+{error_printeropen}			{ count(); return B256ERROR_PRINTEROPEN; }
+{error_radix}			{ count(); return B256ERROR_RADIX; }
+{error_radixstring}			{ count(); return B256ERROR_RADIXSTRING; }
+{error_refnotassigned}			{ count(); return B256ERROR_REFNOTASSIGNED; }
+{error_rgb}			{ count(); return B256ERROR_RGB; }
+{error_serialparameter}			{ count(); return B256ERROR_SERIALPARAMETER; }
+{error_settingmaxkeys}			{ count(); return B256ERROR_SETTINGMAXKEYS; }
+{error_settingmaxlen}			{ count(); return B256ERROR_SETTINGMAXLEN; }
+{error_settingsgetaccess}			{ count(); return B256ERROR_SETTINGSGETACCESS; }
+{error_settingssetaccess}			{ count(); return B256ERROR_SETTINGSSETACCESS; }
+{error_slicesize}			{ count(); return B256ERROR_SLICESIZE; }
+{error_sounderror}			{ count(); return B256ERROR_SOUNDERROR; }
+{error_soundfile}			{ count(); return B256ERROR_SOUNDFILE; }
+{error_soundfileformat}			{ count(); return B256ERROR_SOUNDFILEFORMAT; }
+{error_soundlength}			{ count(); return B256ERROR_SOUNDLENGTH; }
+{error_soundnotseekable}			{ count(); return B256ERROR_SOUNDNOTSEEKABLE; }
+{error_soundresource}			{ count(); return B256ERROR_SOUNDRESOURCE; }
+{error_spritena}			{ count(); return B256ERROR_SPRITENA; }
+{error_spritenumber}			{ count(); return B256ERROR_SPRITENUMBER; }
+{error_spriteslice}			{ count(); return B256ERROR_SPRITESLICE; }
+{error_sqrrange}			{ count(); return B256ERROR_SQRRANGE; }
+{error_stackunderflow}			{ count(); return B256ERROR_STACKUNDERFLOW; }
+{error_string2note}			{ count(); return B256ERROR_STRING2NOTE; }
+{error_stringconv}			{ count(); return B256ERROR_STRINGCONV; }
+{error_stringexpr}			{ count(); return B256ERROR_STRINGEXPR; }
+{error_stringmaxlen}			{ count(); return B256ERROR_STRINGMAXLEN; }
+{error_strstart}			{ count(); return B256ERROR_STRSTART; }
+{error_toomanysounds}			{ count(); return B256ERROR_TOOMANYSOUNDS; }
+{error_unexpectedreturn}			{ count(); return B256ERROR_UNEXPECTEDRETURN; }
+{error_unserializeformat}			{ count(); return B256ERROR_UNSERIALIZEFORMAT; }
+{error_varcircular}			{ count(); return B256ERROR_VARCIRCULAR; }
+{error_varnotassigned}			{ count(); return B256ERROR_VARNOTASSIGNED; }
+{error_varnull}			{ count(); return B256ERROR_VARNULL; }
+{error_waveformlogical}			{ count(); return B256ERROR_WAVEFORMLOGICAL; }
+{error_wavobsolete}			{ count(); return B256ERROR_WAVOBSOLETE; }
 {exists}					{ count(); return B256EXISTS; }
 {explodex}					{ count(); return B256EXPLODEX; }
 {explode}					{ count(); return B256EXPLODE; }
@@ -895,21 +911,21 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {upper}						{ count(); return B256UPPER; }
 {variablewatch}				{ count(); return B256VARIABLEWATCH; }
 {version}					{ count(); return B256VERSION; }
-{warning_arrayelement}                          { count(); return B256WARNING_ARRAYELEMENT; }
-{warning_booleanconv}                              { count(); return B256WARNING_BOOLEANCONV; }
-{warning_integerrange}                          { count(); return B256WARNING_INTEGERRANGE; }
-{warning_longrange}                             { count(); return B256WARNING_LONGRANGE; }
-{warning_numberconv}                              { count(); return B256WARNING_NUMBERCONV; }
-{warning_refnotassigned}                        { count(); return B256WARNING_REFNOTASSIGNED; }
-{warning_sounderror}                            { count(); return B256WARNING_SOUNDERROR; }
-{warning_soundfileformat}                       { count(); return B256WARNING_SOUNDFILEFORMAT; }
-{warning_soundlength}                           { count(); return B256WARNING_SOUNDLENGTH; }
-{warning_soundnotseekable}                      { count(); return B256WARNING_SOUNDNOTSEEKABLE; }
-{warning_start}                                 { count(); return B256WARNING_START; }
-{warning_string2note}                           { count(); return B256WARNING_STRING2NOTE; }
-{warning_stringconv}                              { count(); return B256WARNING_STRINGCONV; }
-{warning_varnotassigned}                        { count(); return B256WARNING_VARNOTASSIGNED; }
-{warning_wavobsolete}                           { count(); return B256WARNING_WAVOBSOLETE; }
+{warning_arrayelement}			{ count(); return B256WARNING_ARRAYELEMENT; }
+{warning_booleanconv}			{ count(); return B256WARNING_BOOLEANCONV; }
+{warning_integerrange}			{ count(); return B256WARNING_INTEGERRANGE; }
+{warning_longrange}			{ count(); return B256WARNING_LONGRANGE; }
+{warning_numberconv}			{ count(); return B256WARNING_NUMBERCONV; }
+{warning_refnotassigned}			{ count(); return B256WARNING_REFNOTASSIGNED; }
+{warning_sounderror}			{ count(); return B256WARNING_SOUNDERROR; }
+{warning_soundfileformat}			{ count(); return B256WARNING_SOUNDFILEFORMAT; }
+{warning_soundlength}			{ count(); return B256WARNING_SOUNDLENGTH; }
+{warning_soundnotseekable}			{ count(); return B256WARNING_SOUNDNOTSEEKABLE; }
+{warning_start}			{ count(); return B256WARNING_START; }
+{warning_string2note}			{ count(); return B256WARNING_STRING2NOTE; }
+{warning_stringconv}			{ count(); return B256WARNING_STRINGCONV; }
+{warning_varnotassigned}			{ count(); return B256WARNING_VARNOTASSIGNED; }
+{warning_wavobsolete}			{ count(); return B256WARNING_WAVOBSOLETE; }
 {wavlength}					{ count(); return B256WAVLENGTH; }
 {wavpos}					{ count(); return B256WAVPOS; }
 {wavstate}					{ count(); return B256WAVSTATE; }
@@ -989,6 +1005,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {fastgraphics}":"			{ count(); unputcolon(); return B256FASTGRAPHICS; }
 {font}						{ count(); return B256FONT; }
 {for}						{ count(); return B256FOR; }
+{foreach}						{ count(); return B256FOREACH; }
 {function}					{ count(); return B256FUNCTION; }
 {global}					{ count(); return B256GLOBAL; }
 {gosub}						{ count(); return B256GOSUB; }
@@ -996,6 +1013,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {graphsize}					{ count(); return B256GRAPHSIZE; }
 {graphvisible}				{ count(); return B256GRAPHVISIBLE; }
 {if}						{ count(); return B256IF; }
+{in}						{ count(); return B256IN; }
 {imageautocrop}					{ count(); return B256IMAGEAUTOCROP; }
 {imagecentered}					{ count(); return B256IMAGECENTERED; }
 {imagecrop}					{ count(); return B256IMAGECROP; }

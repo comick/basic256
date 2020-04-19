@@ -131,6 +131,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "floor"								//floor
 			<< "font"								//font
 			<< "for"								//for
+			<< "foreach"
 			<< "freedb"								//freedb
 			<< "freedbset"							//freedbset
 			<< "freefile"							//freefile
@@ -154,6 +155,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "graphwidth"							//graphwidth
 			<< "hour"								//hour
 			<< "if"									//if
+			<< "in"
 			<< "imageautocrop"						//imageautocrop
 			<< "imagecentered"						//imagecentered
 			<< "imagecopy"                      	//imagecopy
