@@ -48,13 +48,14 @@
 # 20170506  j.m.reneau      added image... test
 # 20170513  j.m.reneau      changed allow/system test to not 0
 # 20200403  j.m.reneau      added slice suite
+# 20200421  j.m.reneau      added print suite
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(1999978)
+call versiontest(2000000)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -105,11 +106,6 @@ outputvisible 1
 call section("TestSuite Completeness Check")
 ###################################################
 include "testsuite_complete_include.kbs"
-
-###################################################
-call section("TestSuite FOR/NEXT")
-###################################################
-include "testsuite_fornext_include.kbs"
 
 ###################################################
 call section("TestSuite Arrays")
@@ -200,11 +196,12 @@ if yn("Do Serial Port Test?") then
    include "testsuite_serialio_include.kbs"
 endif
 
-section_types:
+section_print:
 ###################################################
-call section("Variable and Stack Types Tests")
+call section("Console Printing")
 ###################################################
-include "testsuite_types_include.kbs"
+include "testsuite_print_include.kbs"
+
 
 
 
@@ -291,6 +288,11 @@ call section("Loops with Exit and Continue")
 ###################################################
 include "testsuite_loop_include.kbs"
 
+###################################################
+call section("TestSuite FOR/NEXT")
+###################################################
+include "testsuite_fornext_include.kbs"
+
 section_sprites:
 ###################################################
 call section("Sprites")
@@ -309,6 +311,11 @@ call section("Binary Operations and Type Conversions")
 ###################################################
 include "testsuite_binaryop_include.kbs"
 
+section_types:
+###################################################
+call section("Variable and Stack Types Tests")
+###################################################
+include "testsuite_types_include.kbs"
 
 
 

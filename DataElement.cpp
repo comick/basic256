@@ -112,7 +112,7 @@ QString DataElement::debug() {
 	return("badtype ");
 }
 
-void DataElement::arraydim(const int xdim, const int ydim, const bool redim) {
+void DataElement::arrayDim(const int xdim, const int ydim, const bool redim) {
 	const int size = xdim * ydim;
 	
 	if (size <= MAXARRAYSIZE) {
@@ -149,7 +149,7 @@ void DataElement::arraydim(const int xdim, const int ydim, const bool redim) {
 	}
 }
 
-int DataElement::arrayxdim() {
+int DataElement::arrayRows() {
 	// return number of columns of array as if it was a two dimensional array - 0 = not an array
 	if (type == T_ARRAY) {
 		return(arr->xdim);
@@ -161,7 +161,7 @@ int DataElement::arrayxdim() {
 	return(0);
 }
 
-int DataElement::arrayydim() {
+int DataElement::arrayCols() {
 	// return number of rows of array as if it was a two dimensional array - 0 = not an array
 	if (type == T_ARRAY) {
 		return(arr->ydim);
@@ -173,7 +173,7 @@ int DataElement::arrayydim() {
 	return(0);
 }
 
-DataElement* DataElement::arraygetdata(const int x, const int y) {
+DataElement* DataElement::arraygetData(const int x, const int y) {
 	// get data from array elements from map (using x, y)
 	// if there is an error return an unassigned value
 	if (type == T_ARRAY) {
@@ -195,7 +195,7 @@ DataElement* DataElement::arraygetdata(const int x, const int y) {
 	return this;
 }
 
-void DataElement::arraysetdata(const int x, const int y, DataElement *d) {
+void DataElement::arraysetData(const int x, const int y, DataElement *d) {
 	// DataElement's data is copied and it should be deleted
 	// by whomever created it
 	if (type == T_ARRAY) {
@@ -210,7 +210,7 @@ void DataElement::arraysetdata(const int x, const int y, DataElement *d) {
 	}
 }
 
-void DataElement::arrayunassign(const int x, const int y) {
+void DataElement::arrayUnassign(const int x, const int y) {
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;

@@ -3,10 +3,11 @@
 # Modification History
 # date		programmer	description
 # 20140204	j.m.reneau	added crazy if structures when if/then/else
-#				moved to a statement and not a stand alone line (1010002)
+#                       moved to a statement and not a stand alone line (1010002)
 # 20160329	j.m.reneau	added second test if exit for to test condition fixed 1.99.99.21
 # 20160611  j.m.reneau	added cases for the for statement to match
-#						 the FOR behaviour of most other BASICs 1.99.99.40
+#						the FOR behaviour of most other BASICs 1.99.99.40
+# 20200420  j.m.reneu   added foreach tests (2.0.0.0)
 
 #test for
 total = 0
@@ -215,3 +216,29 @@ call n("WHILE - Exit and Continue", total, 103)
 
 # test while comound
 total = 0:t = 0:while true:t++:if t = 3 or t = 4 or t = 10 then:print "continue while = skip " + t:continue while:end if:total = total + t:print t + " " + total:if total > 100 then:print "exit while":exit while:end if:end while:call n("WHILE compound - Exit and Continue", total, 103)
+
+
+#test foreach with numbers
+total = 0
+foreach a in {3,5,7,9}
+	total = total / 2 + a
+next a
+call n("For Each - List of Numbers", total, ((3 / 2 + 5)/ 2 + 7)/2 + 9)
+
+total = 0
+b = {3,5,7,9}
+for each a in b
+	total = total / 2 + a
+next a
+call n("For Each - Array of Numbers", total, ((3 / 2 + 5)/ 2 + 7)/2 + 9)
+
+#test foreach with strings
+total = ''
+b = {'cow','dog','cat'}
+foreach a in b
+	total = a + total
+next a
+call s("For Each - Array of strings", total, 'catdogcow')
+
+# foreach compound
+total = 0: foreach a in {3,5,7,9}: total = total / 2 + a: next a: call n("For Each compound - List of Numbers", total, ((3 / 2 + 5)/ 2 + 7)/2 + 9)

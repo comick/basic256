@@ -34,19 +34,19 @@ class Variables: public QObject
 		//
 		int type(int);
 		//
-		Variable* get(const int, int);
-		Variable* get(const int);
-		Variable* getAt(const int, const int);
-		Variable* getAt(const int);
-		DataElement *getdata(int);
+		Variable* get(int, int);
+		Variable* get(int);
+		Variable* getAt(int, int);
+		Variable* getAt(int);
+		DataElement *getData(int);
 
-		void setdata(const int, DataElement *);
-		void setdata(int, long);
-		void setdata(int, double);
-		void setdata(int, QString);
-		void unassign(const int);
+		void setData(int, DataElement *);
+		void setData(int, long);
+		void setData(int, double);
+		void setData(int, QString);
+		void unassign(int);
 		//
-		void makeglobal(const int);
+		void makeglobal(int);
 
 		static int getError() {
 			return getError(false);
@@ -61,7 +61,7 @@ class Variables: public QObject
 	private:
 		int real_varnum;		// set by get and getAt for the actual variable number and level returned (deref/global)
 		int real_level;
-		const int numsyms;		// size of the symbol table
+		int numsyms;		// size of the symbol table
 		int recurselevel;
 		int maxrecurselevel;
 		std::vector<Variable**> varmap;

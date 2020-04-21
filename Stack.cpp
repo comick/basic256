@@ -14,9 +14,11 @@ Stack::Stack(Convert *c, QLocale *applocale) {
 }
 
 Stack::~Stack() {
-	for(unsigned int i = 0; i< stackdata.size(); i++) {
-		delete(stackdata[i]);
-		stackdata[i] = NULL;
+	for(unsigned int i = 0; i< stackpointer; i++) {
+		if (stackdata[i]) {
+			delete(stackdata[i]);
+			stackdata[i] = NULL;
+		}
 	}
 	stackdata.clear();
 }
@@ -51,9 +53,10 @@ int Stack::height() {
 // RAW Push Operations
 //
 
-void Stack::pushdataelement(DataElement *source) {
+void Stack::pushDE(DataElement *source) {
 	if (stackpointer >= stacksize)  stackGrow();
 	// push to stack a copy of he dataelement
+	stackdata[stackpointer] = new DataElement();
 	if (source) {
 		stackdata[stackpointer]->copy(source);
 	} else {
@@ -62,50 +65,37 @@ void Stack::pushdataelement(DataElement *source) {
 	stackpointer++;
 }
 
-void Stack::pushlong(long i) {
+void Stack::pushLong(long i) {
 	if (stackpointer >= stacksize)  stackGrow();
-	stackdata[stackpointer]->type = T_INT;
-	stackdata[stackpointer]->intval = i;
-	stackpointer++;
+	stackdata[stackpointer++] = new DataElement(i);
 }
 
-void Stack::pushvarref(int i, int level) {
+void Stack::pushRef(int i, int level) {
 	if (stackpointer >= stacksize)  stackGrow();
+	stackdata[stackpointer] = new DataElement();
 	stackdata[stackpointer]->type = T_REF;
 	stackdata[stackpointer]->intval = i;
-	stackdata[stackpointer]->level = level;
-	stackpointer++;
+	stackdata[stackpointer++]->level = level;
 }
 
-void Stack::pushfloat(double d) {
+void Stack::pushDouble(double d) {
 	if (stackpointer >= stacksize)  stackGrow();
-	stackdata[stackpointer]->type = T_FLOAT;
-	stackdata[stackpointer]->floatval = d;
-	stackpointer++;
+	stackdata[stackpointer++] = new DataElement(d);
 }
 
-void Stack::pushstring(QString string) {
+void Stack::pushQString(QString string) {
 	if (stackpointer >= stacksize)  stackGrow();
-	stackdata[stackpointer]->type = T_STRING;
-	stackdata[stackpointer]->stringval = string;
-	stackpointer++;
+	stackdata[stackpointer++] = new DataElement(string);
 }
 
-void Stack::pushint(int i) {
+void Stack::pushInt(int i) {
 	if (stackpointer >= stacksize)  stackGrow();
-	stackdata[stackpointer]->type = T_INT;
-	stackdata[stackpointer]->intval = (long)i;
-	stackpointer++;
+	stackdata[stackpointer++] = new DataElement((long)i);
 }
 
-void Stack::pushbool(bool i) {
+void Stack::pushBool(bool i) {
 	if (stackpointer >= stacksize)  stackGrow();
-	stackdata[stackpointer]->type = T_INT;
-	if (i)
-		stackdata[stackpointer]->intval = 1;
-	else
-		stackdata[stackpointer]->intval = 0;
-	stackpointer++;
+	stackdata[stackpointer++] = new DataElement(i?1L:0L);
 }
 
 
@@ -113,7 +103,7 @@ void Stack::pushbool(bool i) {
 // Pushes derived from RAW pushes
 //
 
-void Stack::pushvariant(QString string, int type) {
+void Stack::pushVariant(QString string, int type) {
 	// try to convert a string to an int or float and push that type
 	// if unable then push a string
 	switch (type) {
@@ -123,15 +113,15 @@ void Stack::pushvariant(QString string, int type) {
 				long i;
 				i = string.toLong(&ok);
 				if (ok) {
-					pushlong(i);
+					pushLong(i);
 				} else {
 					double d;
 					d = locale->toDouble(string,&ok);
 					if (ok) {
-						pushfloat(d);
+						pushDouble(d);
 					} else {
 						// not an integer or double - push string
-						pushstring(string);
+						pushQString(string);
 					}
 				}
 			}
@@ -144,7 +134,7 @@ void Stack::pushvariant(QString string, int type) {
 				if (!ok) {
 					e = ERROR_NUMBERCONV;
 				}
-				pushlong(i);
+				pushLong(i);
 			}
 			break;
 		case T_FLOAT:
@@ -155,12 +145,12 @@ void Stack::pushvariant(QString string, int type) {
 				if (!ok) {
 					e = ERROR_NUMBERCONV;
 				}
-				pushfloat(d);
+				pushDouble(d);
 			}
 			break;
 		case T_STRING:
 			{
-				pushstring(string);
+				pushQString(string);
 			}
 			break;
 	}
@@ -186,67 +176,83 @@ int Stack::peekType(int i) {
 //
 // Raw Pop Operations
 
-DataElement *Stack::popelement() {
+DataElement *Stack::popDE() {
 	// pop an element - a POINTER to the data on the stack
 	// WILL CHANGE ON NEXT PUSH!!!!
+	
+	// MUST delete THIS AFTER YOU ARE DOME WITH IT!!!!!!!!
+	
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		// return a fake element instead of NULL
 		// to handle a potential error in Interpreter
-		stackdata[0]->type = T_INT;
-		stackdata[0]->intval = 0l;
-		return stackdata[0];
+		DataElement *de = new DataElement();
+		de->type = T_INT;
+		de->intval = 0l;
+		return de;
 	}
 	stackpointer--;
 	return stackdata[stackpointer];
 }
 
-int Stack::popbool() {
+int Stack::popBool() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return 0;
 	}
-	return convert->getBool(stackdata[--stackpointer]);
+	bool b = convert->getBool(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return b;
 }
 
-int Stack::popint() {
+int Stack::popInt() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return 0;
 	}
-	return convert->getInt(stackdata[--stackpointer]);
+	int i = convert->getInt(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return i;
 }
 
-long Stack::poplong() {
+long Stack::popLong() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return 0;
 	}
-	return convert->getLong(stackdata[--stackpointer]);
+	long l = convert->getLong(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return l;
 }
 
-double Stack::popfloat() {
+double Stack::popDouble() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return 0.0;
 	}
-	return convert->getFloat(stackdata[--stackpointer]);
+	double f = convert->getFloat(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return f;
 }
 
-double Stack::popnote() {
+double Stack::popMusicalNote() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return 0.0;
 	}
-	return convert->getMusicalNote(stackdata[--stackpointer]);
+	double f = convert->getMusicalNote(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return f;
 }
 
-QString Stack::popstring() {
+QString Stack::popQString() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
 		return QString("");
 	}
-	return convert->getString(stackdata[--stackpointer]);
+	QString s = convert->getString(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return s;
 }
 
 //
@@ -310,7 +316,7 @@ void Stack::dup() {
 		e = ERROR_STACKUNDERFLOW;
 		return;
 	}
-	pushdataelement(stackdata[stackpointer-1]);
+	pushDE(stackdata[stackpointer-1]);
 }
 
 void Stack::dup2() {
@@ -320,8 +326,8 @@ void Stack::dup2() {
 		e = ERROR_STACKUNDERFLOW;
 		return;
 	}
-	pushdataelement(stackdata[stackpointer-2]);
-	pushdataelement(stackdata[stackpointer-2]);
+	pushDE(stackdata[stackpointer-2]);
+	pushDE(stackdata[stackpointer-2]);
 }
 
 void Stack::drop(int n){

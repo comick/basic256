@@ -134,8 +134,7 @@ struct forframe {
     forframe *next;
     int *forAddr;   //FOR address
     int *nextAddr;  //NEXT address
-    int type;		//0=integer, 1=float, 2=foreach
-    bool positive;	// true if + , false if -
+    int type;		//0=integer, 1=float, 2=foreache if -
     double floatStart;
     double floatEnd;
     double floatStep;

@@ -1305,11 +1305,11 @@ Interpreter::execByteCode() {
 		//change ERROR_VARNOTASSIGNED into ERROR_ARRAYELEMENT if variable implied is in fact an array element
 		//still need this for functions like implode
 		if(error->pending_e==ERROR_VARNOTASSIGNED && error->pending_var>=0){
-			DataElement *e = variables->getdata(error->pending_var);
+			DataElement *e = variables->getData(error->pending_var);
 			if(e->type==T_ARRAY) error->pending_e=ERROR_ARRAYELEMENT;
 		}
 		if(error->pending_e==WARNING_VARNOTASSIGNED && error->pending_var>=0){
-			DataElement *e = variables->getdata(error->pending_var);
+			DataElement *e = variables->getData(error->pending_var);
 			if(e->type==T_ARRAY) error->pending_e=WARNING_ARRAYELEMENT;
 		}
 
@@ -1350,8 +1350,19 @@ Interpreter::execByteCode() {
 		}
 	}
 
-	//emit(outputReady("off=" + QString::number(op-wordCode,16) + " op=" + QString::number(*op,16) + " stack=" + stack->debug() + "\n"));
-
+#ifdef DEBUG
+{
+	// displays the opcode - its argument and the stack (Before) execution
+	fprintf(stderr,"stackbefore - %s\n",stack->debug().toUtf8().data());
+	fprintf(stderr,"%08x %s ",(unsigned int) (op-wordCode), opname(*op).toUtf8().data());
+	if(optype(*op)==OPTYPE_INT) fprintf(stderr, "%ld", (long) *(op+1));
+	if(optype(*op)==OPTYPE_FLOAT) fprintf(stderr, "%f", (float) *(op+1));
+	if(optype(*op)==OPTYPE_STRING) fprintf(stderr, "'%s'", (char *) (op+1));
+	if(optype(*op)==OPTYPE_LABEL) fprintf(stderr, "lbl %s", symtable[*(op+1)]);
+	if(optype(*op)==OPTYPE_VARIABLE) fprintf(stderr, "%s", symtable[*(op+1)]);
+	fprintf(stderr, "\n");
+}
+#endif
 
 	opcode = *op;
 	op++;
@@ -1369,10 +1380,10 @@ Interpreter::execByteCode() {
 			switch(opcode) {
 
 				case OP_FOR: {
-					int *nextAddr = wordCode + stack->popint();
-					DataElement *stepE = stack->popelement();
-					DataElement *endE = stack->popelement();
-					DataElement *startE = stack->popelement();
+					int *nextAddr = wordCode + stack->popInt();
+					DataElement *stepE = stack->popDE();
+					DataElement *endE = stack->popDE();
+					DataElement *startE = stack->popDE();
 
 					// search for previous FOR in stack
 					// this is done because of anti-spaghetti code
@@ -1399,7 +1410,7 @@ Interpreter::execByteCode() {
 
 					bool goodloop;	// set to true if we should do the loop atleast once
 
-					variables->setdata(i, startE);	// set variable to initial value
+					variables->setData(i, startE);	// set variable to initial value
 					watchvariable(debugMode, i);
 
 					if (startE->type==T_INT && stepE->type==T_INT) {
@@ -1408,18 +1419,18 @@ Interpreter::execByteCode() {
 						temp->intStart = startE->intval;
 						temp->intEnd = convert->getLong(endE);	// could b float but cant ever be
 						temp->intStep = stepE->intval;
-						temp->positive = temp->intStep >=0 && temp->intStart < temp->intEnd;
-						goodloop = (temp->positive && temp->intStart < temp->intEnd) ||
-							(!temp->positive && temp->intStart > temp->intEnd) ;
+						goodloop = (temp->intStep>0 && temp->intStart <= temp->intEnd) ||
+							(temp->intStep<0 && temp->intStart >= temp->intEnd) ||
+							(temp->intStep==0);
 					} else {
 						// start or step not integer - it is a float loop
 						temp->type = FORFRAMETYPE_FLOAT;
 						temp->floatStart = convert->getFloat(startE);
 						temp->floatEnd = convert->getFloat(endE);
 						temp->floatStep = convert->getFloat(stepE);
-						temp->positive = temp->floatStep >=0.0 && temp->floatStart < temp->floatEnd;
-						goodloop = (temp->positive && temp->floatStart < temp->floatEnd) ||
-							(!temp->positive && temp->floatStart > temp->floatEnd) ;
+						goodloop = (temp->floatStep > 0.0 && temp->floatStart <= temp->floatEnd) ||
+							(temp->floatStep < 0.0 && temp->floatStart >= temp->floatEnd) ||
+							(temp->floatStep == 0.0);
 					}
 
 					if (goodloop) {
@@ -1433,12 +1444,15 @@ Interpreter::execByteCode() {
 						delete temp;
 						op = nextAddr;
 					}
+					delete stepE;
+					delete startE;
+					delete endE;
 				}
 				break;
 
 				case OP_FOREACH: {
-					int *nextAddr = wordCode + stack->popint();
-					DataElement *adata = stack->popelement();
+					int *nextAddr = wordCode + stack->popInt();
+					DataElement *adata = stack->popDE();
 
 					// search for previous FOR in stack
 					// this is done because of anti-spaghetti code
@@ -1464,36 +1478,36 @@ Interpreter::execByteCode() {
 					}
 
 					if (adata->type == T_ARRAY) {
-						if (adata->arrayxdim()==1) {
-							if(adata->arrayydim()>=1) {
+						if (adata->arrayRows()==1) {
+							if(adata->arrayCols()>=1) {
 								// create forframe
 								temp->type = FORFRAMETYPE_FOREACH;
 								temp->intStart = 0;				// current index into array
-								// copy array data from the stack dataelement onto a new dataelement
-								// need fo fix this when I get my head around the stack
-								// being a stack of DataElements and stuff being copied onto the stack
-								// 20200419 j.m.r.
-								temp->arrayData = new DataElement();
-								temp->arrayData->copy(adata);
+								temp->arrayData = adata;
 								// set variable to first element
-								variables->setdata(i, temp->arrayData->arraygetdata(0, temp->intStart));
+								variables->setData(i, temp->arrayData->arraygetData(0, temp->intStart));
 								watchvariable(debugMode, i);
 								// add new forframe to the forframe stack
 								temp->next = forstack;
 								temp->forAddr = op;		// first op after FOR statement to loop back to
 								temp->nextAddr = nextAddr;
 								forstack = temp;
-								fprintf(stderr,"foreach_create de type=%d\n", temp->arrayData->type);
+#ifdef DEBUG
+	fprintf(stderr,"foreach_create de type=%d\n", temp->arrayData->type);
+#endif
 							} else {
 								// no data in array - jump to next
 								delete temp;
+								delete adata;
 								op = nextAddr;
 							}
 						} else {
 							error->q(ERROR_ONEDIMENSIONAL);
+							delete adata;
 						}
 					} else {
 						error->q(ERROR_ARRAYEXPR);
+						delete adata;
 					}
 				}
 				break;
@@ -1516,11 +1530,15 @@ Interpreter::execByteCode() {
 						switch (temp->type) {
 							case FORFRAMETYPE_INT:
 							{
-								const long val = convert->getLong(variables->getdata(i))+temp->intStep;
-								variables->setdata(i, val);
+								const long val = convert->getLong(variables->getData(i))+temp->intStep;
+								variables->setData(i, val);
 								watchvariable(debugMode, i);
-
-								if ((temp->positive&&val <= temp->intEnd)||(!temp->positive&&val >= temp->intEnd)){
+								if ((temp->intStep > 0 && val <= temp->intEnd) ||
+									(temp->intStep < 0 && val >= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart < temp->intEnd && val <= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart > temp->intEnd && val >= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart == temp->intEnd && val == temp->intEnd)
+									){
 									op = temp->forAddr;
 								} else {
 									if(prev){
@@ -1535,11 +1553,15 @@ Interpreter::execByteCode() {
 							case FORFRAMETYPE_FLOAT:
 							{
 						
-								const double val = convert->getFloat(variables->getdata(i))+temp->floatStep;
-								variables->setdata(i, val);
+								const double val = convert->getFloat(variables->getData(i))+temp->floatStep;
+								variables->setData(i, val);
 								watchvariable(debugMode, i);
-
-								if ((temp->positive&&convert->compareFloats(val, temp->floatEnd)!=1)||(!temp->positive&&convert->compareFloats(val, temp->floatEnd)!=-1)){
+								if ((temp->floatStep > 0.0 && convert->compareFloats(val, temp->floatEnd)!=1) || 
+									(temp->floatStep < 0.0 && convert->compareFloats(val, temp->floatEnd)!=-1) ||
+									(temp->floatStep==0 && temp->floatStart < temp->floatEnd && val <= temp->floatEnd) ||
+									(temp->floatStep==0 && temp->floatStart > temp->floatEnd && val >= temp->floatEnd) ||
+									(temp->floatStep==0 && temp->floatStart == temp->floatEnd && val == temp->floatEnd)
+									){
 									op = temp->forAddr;
 								} else {
 									if(prev){
@@ -1553,13 +1575,15 @@ Interpreter::execByteCode() {
 							break;
 							case FORFRAMETYPE_FOREACH:
 							{
-								fprintf(stderr,"foreach_next de type=%d intStart=%ld\n", temp->arrayData->type, temp->intStart);
+#ifdef DEBUG
+	fprintf(stderr,"foreach_next de type=%d intStart=%ld\n", temp->arrayData->type, temp->intStart);
+#endif
 								if(temp->arrayData->type==T_ARRAY) {
-									if (temp->arrayData->arrayxdim()==1) {
+									if (temp->arrayData->arrayRows()==1) {
 										temp->intStart++;
-										if (temp->intStart < temp->arrayData->arrayydim()) {
+										if (temp->intStart < temp->arrayData->arrayCols()) {
 											// set variable to this element
-											variables->setdata(i, temp->arrayData->arraygetdata(0, temp->intStart));
+											variables->setData(i, temp->arrayData->arraygetData(0, temp->intStart));
 											watchvariable(debugMode, i);
 											// loop again
 											op = temp->forAddr;
@@ -1587,10 +1611,10 @@ Interpreter::execByteCode() {
 
 				case OP_DIM:
 				case OP_REDIM: {
-					int y = stack->popint();
-					int x = stack->popint();
+					int y = stack->popInt();
+					int x = stack->popInt();
 					if (x<=0) x=1; // need to dimension as 1d
-					variables->getdata(i)->arraydim(x, y, opcode == OP_REDIM);
+					variables->getData(i)->arrayDim(x, y, opcode == OP_REDIM);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
 					watchvariable(debugMode, i);
 				}
@@ -1600,22 +1624,22 @@ Interpreter::execByteCode() {
 				case OP_ALENROWS:
 				case OP_ALENCOLS: {
 					// return array lengths
-					DataElement *e = variables->getdata(i);
+					DataElement *e = variables->getData(i);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					switch(opcode) {
 						case OP_ALEN:
-							if (e->arrayxdim()==1) {
-								stack->pushint(e->arrayydim());
+							if (e->arrayRows()==1) {
+								stack->pushInt(e->arrayCols());
 							} else {
-								stack->pushint(0);
+								stack->pushInt(0);
 								error->q(ERROR_ARRAYLENGTH2D);
 							}
 							break;
 						case OP_ALENROWS:
-							stack->pushint(e->arrayxdim());
+							stack->pushInt(e->arrayRows());
 							break;
 						case OP_ALENCOLS:
-							stack->pushint(e->arrayydim());
+							stack->pushInt(e->arrayCols());
 							break;
 					}
 				}
@@ -1630,12 +1654,13 @@ Interpreter::execByteCode() {
 				case OP_ARRAYASSIGN: {
 					// assign a value to an array element
 					// assumes that arrays are always two dimensional (if 1d then x=1 (rows) )
-					DataElement *e = stack->popelement();
-					int y = stack->popint();
-					int x = stack->popint();
-					variables->getdata(i)->arraysetdata(x, y, e);
+					DataElement *e = stack->popDE();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					variables->getData(i)->arraysetData(x, y, e);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
 					watchvariable(debugMode, i, x, y);
+					delete e;
 				}
 				break;
 
@@ -1643,34 +1668,35 @@ Interpreter::execByteCode() {
 				case OP_DEREF: {
 					// get a value from an array and push it to the stack
 					// assumes that arrays are always two dimensional (if 1d then y=0)
-					int y = stack->popint();
-					int x = stack->popint();
-					DataElement *e = variables->getdata(i)->arraygetdata(x, y);
+					int y = stack->popInt();
+					int x = stack->popInt();
+					DataElement *e = variables->getData(i)->arraygetData(x, y);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
-					stack->pushdataelement(e);
+					stack->pushDE(e);
 				}
 				break;
 
 				case OP_PUSHVAR: {
-					DataElement *e = variables->getdata(i);
+					DataElement *e = variables->getData(i);
 					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED,i);
 					}
-					stack->pushdataelement(e);
+					stack->pushDE(e);
 				}
 				break;
 
 				case OP_PUSHVARREF: {
-					stack->pushvarref(i, variables->getrecurse());
+					stack->pushRef(i, variables->getrecurse());
 				}
 				break;
 
 				case OP_ASSIGN: {
 					// assign a value to a variable
-					DataElement *e = stack->popelement();
-					variables->setdata(i,e);
+					DataElement *e = stack->popDE();
+					variables->setData(i,e);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					watchvariable(debugMode, i);
+					delete e;
 				}
 				break;
 
@@ -1678,89 +1704,91 @@ Interpreter::execByteCode() {
 					// Push all of the elements of an array to the stack and then push the length to the stack
 					// expects one integer - variable number
 					// all arrays are 2 dimensional - push each column, column size, then number of rows
-					DataElement *e = variables->getdata(i);
-					int columns = e->arrayydim();
-					int rows = e->arrayxdim();
+					DataElement *e = variables->getData(i);
+					int columns = e->arrayCols();
+					int rows = e->arrayRows();
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					if(!error->pending()){
 						for(int row = 0; row<rows; row++) {
 							for (int col = 0; col<columns; col++) {
-								DataElement *d = e->arraygetdata(row, col);
+								DataElement *d = e->arraygetData(row, col);
 								if (d->type==T_UNASSIGNED) {
 									error->q(ERROR_VARNOTASSIGNED, i, row, col);
 								}
-								stack->pushdataelement(d);
+								stack->pushDE(d);
 							}
-							stack->pushint(columns);
+							stack->pushInt(columns);
 						}
-						stack->pushint(rows);
+						stack->pushInt(rows);
 					}else{
 						//0 rows, 0 columns if error
-						stack->pushint(0);
-						stack->pushint(0);
+						stack->pushInt(0);
+						stack->pushInt(0);
 					}
 				}
 				break;
 
 				case OP_ARRAYFILL: {
 					// fill an array with a single value
-					int mode = stack->popint();		// 1-fill everything, 0-fill unassigned
-					DataElement *e = stack->popelement();	// fill value
+					int mode = stack->popInt();		// 1-fill everything, 0-fill unassigned
+					DataElement *e = stack->popDE();	// fill value
 					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED);
 					} else if (e->type==T_ARRAY) {
 						error->q(ERROR_ARRAYINDEXMISSING);
 					} else {
-						DataElement *edest = variables->getdata(i);
+						DataElement *edest = variables->getData(i);
 						if (edest->type==T_ARRAY) {
-							int columns = edest->arrayydim();
-							int rows = edest->arrayxdim();
+							int columns = edest->arrayCols();
+							int rows = edest->arrayRows();
 							if (!error->pending() && edest->type==T_ARRAY) {
 								for(int row = 0; row<rows; row++) {
 									for (int col = 0; col<columns; col++) {
-										if (mode||edest->arraygetdata(row, col)->type==T_UNASSIGNED) {
-											edest->arraysetdata(row, col, e);
+										if (mode||edest->arraygetData(row, col)->type==T_UNASSIGNED) {
+											edest->arraysetData(row, col, e);
 										}
 									}
-									stack->pushint(columns);
+									stack->pushInt(columns);
 								}
-								stack->pushint(rows);
+								stack->pushInt(rows);
 							}
 						 } else {
 							// trying to fill a regular variable - just do an assign
-							variables->setdata(i, e);
+							variables->setData(i, e);
 						}
 						watchvariable(debugMode, i);
 					}
+					delete e;
 				}
 				break;
 
 				case OP_ARRAYLISTASSIGN: {
-					const int rows = stack->popint();
-					const int columns = stack->popint(); //pop the first row length - the following rows must have the same length
+					const int rows = stack->popInt();
+					const int columns = stack->popInt(); //pop the first row length - the following rows must have the same length
 					int columns2 = columns;
-					DataElement *edest = variables->getdata(i);
+					DataElement *edest = variables->getData(i);
 					
 					// create array if we need to (wrong dimensions or not array)
-					if (edest->type != T_ARRAY || edest->arrayydim()!=columns || edest->arrayxdim()!=rows) {
-						edest->arraydim(rows, columns, false);
+					if (edest->type != T_ARRAY || edest->arrayCols()!=columns || edest->arrayRows()!=rows) {
+						edest->arrayDim(rows, columns, false);
 					}
 
 					for(int row = rows-1; row>=0; row--) {
 						//pop row length only if is not first row - already popped
 						if(row != rows-1) {
-							columns2=stack->popint();
+							columns2=stack->popInt();
 							if(columns2!=columns){
 								error->q(ERROR_ARRAYNITEMS, i);
 								// empty stack to successfully pass over an OnError situation
 								stack->drop(columns2);
-								for(row--; row>=0 ; row--) stack->drop(stack->popint());
+								for(row--; row>=0 ; row--) stack->drop(stack->popInt());
 								break;
 							}
 						}
 						for(int col= columns-1; col >= 0; col--) {
-							DataElement *e = stack->popelement(); //continue to pull from stack even if error occured
-							edest->arraysetdata(row, col, e);
+							DataElement *e = stack->popDE(); //continue to pull from stack even if error occured
+							edest->arraysetData(row, col, e);
+							delete e;
 						}
 					}
 					watchvariable(debugMode, i);
@@ -1775,9 +1803,9 @@ Interpreter::execByteCode() {
 
 				case OP_UNASSIGNA: {
 					// clear a variable and release resources
-					int yindex = stack->popint();
-					int xindex = stack->popint();
-					variables->getdata(i)->arrayunassign(xindex, yindex);
+					int yindex = stack->popInt();
+					int xindex = stack->popInt();
+					variables->getData(i)->arrayUnassign(xindex, yindex);
 					watchvariable(debugMode, i, xindex, yindex);
 				}
 				break;
@@ -1792,11 +1820,11 @@ Interpreter::execByteCode() {
 					//safe increment of variable
 					DataElement *e;
 					if (opcode==OP_ADD1VAR) {
-						e = variables->getdata(i);
+						e = variables->getData(i);
 					} else {
-						int yindex = stack->popint();
-						int xindex = stack->popint();
-						e = variables->getdata(i)->arraygetdata(xindex, yindex);
+						int yindex = stack->popInt();
+						int xindex = stack->popInt();
+						e = variables->getData(i)->arraygetData(xindex, yindex);
 					}
 					if (e->type==T_INT){
 						if(e->intval==LONG_MAX){
@@ -1833,11 +1861,11 @@ Interpreter::execByteCode() {
 					//safe decrement of variable
 					DataElement *e;
 					if (opcode==OP_ADD1VAR) {
-						e = variables->getdata(i);
+						e = variables->getData(i);
 					} else {
-						int yindex = stack->popint();
-						int xindex = stack->popint();
-						e = variables->getdata(i)->arraygetdata(xindex, yindex);
+						int yindex = stack->popInt();
+						int xindex = stack->popInt();
+						e = variables->getData(i)->arraygetData(xindex, yindex);
 					}
 					if (e->type==T_INT){
 						if(e->intval==LONG_MIN){
@@ -1915,7 +1943,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PUSHINT: {
-					stack->pushint(i);
+					stack->pushInt(i);
 				}
 				break;
 
@@ -1938,7 +1966,7 @@ Interpreter::execByteCode() {
 			switch(opcode) {
 
 				case OP_PUSHFLOAT: {
-					stack->pushfloat(*d);
+					stack->pushDouble(*d);
 				}
 				break;
 
@@ -1959,7 +1987,7 @@ Interpreter::execByteCode() {
 			switch(opcode) {
 				case OP_PUSHSTRING: {
 					// push string from compiled bytecode
-					stack->pushstring(s);
+					stack->pushQString(s);
 				}
 				break;
 			}
@@ -2006,7 +2034,7 @@ Interpreter::execByteCode() {
 
 				case OP_BRANCH: {
 					// goto if true
-					int val = stack->popbool();
+					int val = stack->popBool();
 
 					if (val == 0) { // jump on false
 						op = wordCode + i;
@@ -2028,7 +2056,7 @@ Interpreter::execByteCode() {
 
 				case OP_CALLFUNCTION: {
 					//OP_CALLFUNCTION is used when program expect the result to be pushed on stack
-					int a = stack->popint(); // number of arguments pushed on stack
+					int a = stack->popInt(); // number of arguments pushed on stack
 					if(symtableaddresstype[l]!=ADDRESSTYPE_FUNCTION){
 						error->q(ERROR_NOSUCHFUNCTION, l);
 					}else if(symtableaddressargs[l]!=a){
@@ -2046,7 +2074,7 @@ Interpreter::execByteCode() {
 
 				case OP_CALLSUBROUTINE: {
 				//OP_CALLSUBROUTINE is used to call subroutines
-					int a = stack->popint(); // number of arguments pushed on stack
+					int a = stack->popInt(); // number of arguments pushed on stack
 					if(symtableaddresstype[l]!=ADDRESSTYPE_SUBROUTINE){
 						error->q(ERROR_NOSUCHSUBROUTINE, l);
 					}else if(symtableaddressargs[l]!=a){
@@ -2136,7 +2164,7 @@ Interpreter::execByteCode() {
 
 				case OP_PUSHLABEL: {
 					// get a label fom the wordcode and push the offset address
-					stack->pushint(i);
+					stack->pushInt(i);
 				}
 				break;
 
@@ -2169,9 +2197,9 @@ Interpreter::execByteCode() {
 
 
 				case OP_OPEN: {
-					int type = stack->popint();	// 0 text 1 binary
-					QString name = stack->popstring();
-					int fn = stack->popint();
+					int type = stack->popInt();	// 0 text 1 binary
+					QString name = stack->popQString();
+					int fn = stack->popInt();
 
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
@@ -2210,13 +2238,13 @@ Interpreter::execByteCode() {
 				break;
 
 			   case OP_OPENSERIAL: {
-					int flow = stack->popint();
-					int parity = stack->popint();
-					int stop = stack->popint();
-					int data = stack->popint();
-					int baud = stack->popint();
-					QString name = stack->popstring();
-					int fn = stack->popint();
+					int flow = stack->popInt();
+					int parity = stack->popInt();
+					int stop = stack->popInt();
+					int data = stack->popInt();
+					int baud = stack->popInt();
+					QString name = stack->popQString();
+					int fn = stack->popInt();
 #ifdef ANDROID
 					(void)flow;
 					(void)parity;
@@ -2317,15 +2345,15 @@ Interpreter::execByteCode() {
 
 
 				case OP_READ: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
 						char c = ' ';
 						if (filehandle[fn] == NULL) {
 							error->q(ERROR_FILENOTOPEN);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
 							int maxsize = 256;
 							char * strarray = (char *) malloc(maxsize);
@@ -2334,7 +2362,7 @@ Interpreter::execByteCode() {
 							do {
 								filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
 								if (!filehandle[fn]->getChar(&c)) {
-									stack->pushstring(QString::fromUtf8(strarray));
+									stack->pushQString(QString::fromUtf8(strarray));
 									free(strarray);
 									return 0;
 								}
@@ -2356,14 +2384,14 @@ Interpreter::execByteCode() {
 								if (!filehandle[fn]->getChar(&c)) {
 									// no more to get - finish the string and push to stack
 									strarray[offset] = 0;
-									stack->pushstring(QString::fromUtf8(strarray));
+									stack->pushQString(QString::fromUtf8(strarray));
 									free(strarray);
 									return 0;  //nextop
 								}
 							} while (c != ' ' && c != '\t' && c != '\n');
 							// found a delimiter - finish the string and push to stack
 							strarray[offset] = 0;
-							stack->pushstring(QString::fromUtf8(strarray));
+							stack->pushQString(QString::fromUtf8(strarray));
 							free(strarray);
 							return 0;	// nextop
 						}
@@ -2373,36 +2401,36 @@ Interpreter::execByteCode() {
 
 
 				case OP_READLINE: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushstring("");
+						stack->pushQString("");
 					} else {
 
 						if (filehandle[fn] == NULL) {
 							error->q(ERROR_FILENOTOPEN);
-							stack->pushstring("");
+							stack->pushQString("");
 						} else {
 							//read entire line
 							filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
-							stack->pushstring(filehandle[fn]->readLine());
+							stack->pushQString(filehandle[fn]->readLine());
 						}
 					}
 				}
 				break;
 
 				case OP_READBYTE: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
 						char c = ' ';
 						filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
 						if (filehandle[fn]->getChar(&c)) {
-							stack->pushint((int) (unsigned char) c);
+							stack->pushInt((int) (unsigned char) c);
 						} else {
-							stack->pushint((int) -1);
+							stack->pushInt((int) -1);
 						}
 					}
 				}
@@ -2410,32 +2438,32 @@ Interpreter::execByteCode() {
 
 				case OP_EOF: {
 					//return true to eof if error is returned
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
-						stack->pushint(1);
+						stack->pushInt(1);
 					} else {
 						if (filehandle[fn] == NULL) {
 							error->q(ERROR_FILENOTOPEN);
-							stack->pushint(1);
+							stack->pushInt(1);
 						} else {
 							switch (filehandletype[fn]) {
 								case 0:
 								case 1:
 									// normal file eof
 									if (filehandle[fn]->atEnd()) {
-										stack->pushint(1);
+										stack->pushInt(1);
 									} else {
-										stack->pushint(0);
+										stack->pushInt(0);
 									}
 									break;
 								case 2:
 									// serial
 									QCoreApplication::processEvents();
 									if (filehandle[fn]->bytesAvailable()==0) {
-										stack->pushint(1);
+										stack->pushInt(1);
 									} else {
-										stack->pushint(0);
+										stack->pushInt(0);
 									}
 									break;
 							}
@@ -2447,8 +2475,8 @@ Interpreter::execByteCode() {
 
 				case OP_WRITE:
 				case OP_WRITELINE: {
-					QString temp = stack->popstring();
-					int fn = stack->popint();
+					QString temp = stack->popQString();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
 					} else {
@@ -2472,8 +2500,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_WRITEBYTE: {
-					int n = stack->popint();
-					int fn = stack->popint();
+					int n = stack->popInt();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
 					} else {
@@ -2493,7 +2521,7 @@ Interpreter::execByteCode() {
 
 
 				case OP_CLOSE: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
 					} else {
@@ -2509,7 +2537,7 @@ Interpreter::execByteCode() {
 
 
 				case OP_RESET: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
 					} else {
@@ -2547,7 +2575,7 @@ Interpreter::execByteCode() {
 
 				case OP_SIZE: {
 					// push the current open file size on the stack
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					int size = 0;
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
@@ -2569,26 +2597,26 @@ Interpreter::execByteCode() {
 							}
 						}
 					}
-					stack->pushint(size);
+					stack->pushInt(size);
 				}
 				break;
 
 				case OP_EXISTS: {
 					// push a 1 if file exists else zero
 
-					QString filename = stack->popstring();
+					QString filename = stack->popQString();
 					if (QFile::exists(filename)) {
-						stack->pushint(1);
+						stack->pushInt(1);
 					} else {
-						stack->pushint(0);
+						stack->pushInt(0);
 					}
 				}
 				break;
 
 				case OP_SEEK: {
 					// move file pointer to a specific loaction in file
-					long pos = stack->popint();
-					int fn = stack->popint();
+					long pos = stack->popInt();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMFILES) {
 						error->q(ERROR_FILENUMBER);
 					} else {
@@ -2613,43 +2641,43 @@ Interpreter::execByteCode() {
 
 				case OP_INT: {
 					// bigger integer safe (trim floating point off of a float)
-					double val = stack->popfloat();
+					double val = stack->popDouble();
 					double intpart;
 					val = modf(val + (val>0?EPSILON:-EPSILON), &intpart);
 					if (intpart >= LONG_MIN && intpart <= LONG_MAX) {
-						stack->pushlong(intpart);
+						stack->pushLong(intpart);
 					} else {
-						stack->pushfloat(intpart);
+						stack->pushDouble(intpart);
 					}
 				}
 				break;
 
 
 				case OP_FLOAT: {
-					double val = stack->popfloat();
-					stack->pushfloat(val);
+					double val = stack->popDouble();
+					stack->pushDouble(val);
 				}
 				break;
 
 				case OP_STRING: {
-					stack->pushstring(stack->popstring());
+					stack->pushQString(stack->popQString());
 				}
 				break;
 
 				case OP_RAND: {
 					double r = ((double) rand() * (double) RAND_MAX + (double) rand()) / double_random_max;
-					stack->pushfloat(r);
+					stack->pushDouble(r);
 				}
 				break;
 
 				case OP_SEED: {
-					unsigned int seed = stack->poplong();
+					unsigned int seed = stack->popLong();
 					srand(seed);
 				}
 				break;
 
 				case OP_PAUSE: {
-					double val = stack->popfloat();
+					double val = stack->popDouble();
 					if (val > 0) {
 						sleeper->sleepSeconds(val);
 					}
@@ -2658,7 +2686,7 @@ Interpreter::execByteCode() {
 
 				case OP_LENGTH: {
 					// unicode length
-					stack->pushint(stack->popstring().length());
+					stack->pushInt(stack->popQString().length());
 				}
 				break;
 
@@ -2672,13 +2700,13 @@ Interpreter::execByteCode() {
 				// len - number of characters to return. If negative number is given,
 				//	   then the number of characters are removed and the result is returned
 
-					int len = stack->popint();
-					int pos = stack->popint();
-					QString qtemp = stack->popstring();
+					int len = stack->popInt();
+					int pos = stack->popInt();
+					QString qtemp = stack->popQString();
 
 					if (pos == 0){
 						error->q(ERROR_STRSTART);
-						stack->pushstring(QString(""));
+						stack->pushQString(QString(""));
 					}else{
 						if(pos<0)
 							pos=qtemp.length()+pos;
@@ -2686,18 +2714,18 @@ Interpreter::execByteCode() {
 							pos--;
 
 						if(len==0){
-							stack->pushstring(QString(""));
+							stack->pushQString(QString(""));
 						}else if(len>0){
-							stack->pushstring(qtemp.mid(pos,len));
+							stack->pushQString(qtemp.mid(pos,len));
 						}else{
 							len=-len;
 							//QString::remove is not acting like QString::mid when position is negative
 							if(pos>=0)
-								stack->pushstring(qtemp.remove(pos,len));
+								stack->pushQString(qtemp.remove(pos,len));
 							else if(len+pos>=0) //pos is negative - there is something left to return
-								stack->pushstring(qtemp.remove(0,len+pos));
+								stack->pushQString(qtemp.remove(0,len+pos));
 							else
-								stack->pushstring(qtemp);
+								stack->pushQString(qtemp);
 						}
 					}
 				}
@@ -2711,14 +2739,14 @@ Interpreter::execByteCode() {
 				//		 then position is starting from the end of the string,
 				//		 where -1 is the last character position, -2 the second character from the end... and so on
 
-					int start = stack->popint();
-					QRegExp expr = QRegExp(stack->popstring());
+					int start = stack->popInt();
+					QRegExp expr = QRegExp(stack->popQString());
 					expr.setMinimal(regexMinimal);
-					QString qtemp = stack->popstring();
+					QString qtemp = stack->popQString();
 
 					if(start == 0) {
 						error->q(ERROR_STRSTART);
-						stack->pushstring(QString(""));
+						stack->pushQString(QString(""));
 					} else {
 						int pos;
 						if (start==1) {
@@ -2731,10 +2759,10 @@ Interpreter::execByteCode() {
 
 						if (pos==-1) {
 							// did not find it - return ""
-							stack->pushstring(QString(""));
+							stack->pushQString(QString(""));
 						} else {
 							QStringList stuff = expr.capturedTexts();
-							stack->pushstring(stuff[0]);
+							stack->pushQString(stuff[0]);
 						}
 					}
 				}
@@ -2750,15 +2778,15 @@ Interpreter::execByteCode() {
 				// LEFT("abcdefg", 3)  - returns "abc"  - translate: Return 3 characters starting from left
 				// LEFT("abcdefg", -3) - returns "defg" - translate: Remove 3 characters starting from left
 
-					int len = stack->popint();
-					QString qtemp = stack->popstring();
+					int len = stack->popInt();
+					QString qtemp = stack->popQString();
 
 					if (len == 0) {
-						stack->pushstring(QString(""));
+						stack->pushQString(QString(""));
 					} else if (len > 0) {
-						stack->pushstring(qtemp.left(len));
+						stack->pushQString(qtemp.left(len));
 					} else {
-						stack->pushstring(qtemp.remove(0,-len));
+						stack->pushQString(qtemp.remove(0,-len));
 					}
 				}
 				break;
@@ -2773,47 +2801,47 @@ Interpreter::execByteCode() {
 				// RIGHT("abcdefg", 3)  - returns "efg"  - translate: Return 3 characters starting from right
 				// RIGHT("abcdefg", -3) - returns "abcd" - translate: Remove 3 characters starting from right
 
-					int len = stack->popint();
-					QString qtemp = stack->popstring();
+					int len = stack->popInt();
+					QString qtemp = stack->popQString();
 
 					if (len == 0) {
-						stack->pushstring(QString(""));
+						stack->pushQString(QString(""));
 					} else if (len > 0) {
-						stack->pushstring(qtemp.right(len));
+						stack->pushQString(qtemp.right(len));
 					} else {
 						qtemp.chop(-len);
-						stack->pushstring(qtemp);
+						stack->pushQString(qtemp);
 					}
 				}
 				break;
 
 
 				case OP_UPPER: {
-					stack->pushstring(stack->popstring().toUpper());
+					stack->pushQString(stack->popQString().toUpper());
 				}
 				break;
 
 				case OP_LOWER: {
-					stack->pushstring(stack->popstring().toLower());
+					stack->pushQString(stack->popQString().toLower());
 				}
 				break;
 
 				case OP_ASC: {
 					// unicode character sequence - return 16 bit number representing character
-					QString qs = stack->popstring();
-					stack->pushint((int) qs[0].unicode());
+					QString qs = stack->popQString();
+					stack->pushInt((int) qs[0].unicode());
 				}
 				break;
 
 
 				case OP_CHR: {
 					// convert a single unicode character sequence to string in utf8
-					int code = stack->popint();
+					int code = stack->popInt();
 					QChar temp[2];
 					temp[0] = (QChar) code;
 					temp[1] = (QChar) 0;
 					QString qs = QString(temp,1);
-					stack->pushstring(qs);
+					stack->pushQString(qs);
 					qs = QString::null;
 				}
 				break;
@@ -2827,10 +2855,10 @@ Interpreter::execByteCode() {
 						//		 then position is starting from the end of the string,
 						//		 where -1 is the last character position, -2 the second character from the end... and so on
 						// 0 sensitive (default) - opposite of QT
-						Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
-						int start = stack->popint();
-						QString qstr = stack->popstring();
-						QString qhay = stack->popstring();
+						Qt::CaseSensitivity casesens = (stack->popInt()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+						int start = stack->popInt();
+						QString qstr = stack->popQString();
+						QString qhay = stack->popQString();
 
 						int pos = 0;
 						if(start == 0) {
@@ -2843,7 +2871,7 @@ Interpreter::execByteCode() {
 								p=0;
 							pos = qhay.indexOf(qstr, p, casesens)+1;
 						}
-						stack->pushint(pos);
+						stack->pushInt(pos);
 					}
 					break;
 
@@ -2855,10 +2883,10 @@ Interpreter::execByteCode() {
 						// start - start position. String indices begin at 1. If negative start is given,
 						//		 then position is starting from the end of the string,
 						//		 where -1 is the last character position, -2 the second character from the end... and so on
-						int start = stack->popint();
-						QRegExp expr = QRegExp(stack->popstring());
+						int start = stack->popInt();
+						QRegExp expr = QRegExp(stack->popQString());
 						expr.setMinimal(regexMinimal);
-						QString qtemp = stack->popstring();
+						QString qtemp = stack->popQString();
 
 						int pos=0;
 						if(start == 0) {
@@ -2871,141 +2899,141 @@ Interpreter::execByteCode() {
 								p=0;
 							pos = expr.indexIn(qtemp, p)+1;
 						}
-						stack->pushint(pos);
+						stack->pushInt(pos);
 					}
 					break;
 
 				case OP_SIN:
 					{
-						double val = stack->popfloat();
-						stack->pushfloat(sin(val));
+						double val = stack->popDouble();
+						stack->pushDouble(sin(val));
 					}
 					break;
 
 				case OP_COS:
 					{
-						double val = stack->popfloat();
-						stack->pushfloat(cos(val));
+						double val = stack->popDouble();
+						stack->pushDouble(cos(val));
 					}
 					break;
 
 				case OP_TAN:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						val = tan(val);
 						if (std::isinf(val)) {
 							error->q(ERROR_INFINITY);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(val);
+							stack->pushDouble(val);
 						}
 					}
 					break;
 
 				case OP_ASIN:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						if (val<-1.0 || val>1.0) {
 							error->q(ERROR_ASINACOSRANGE);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(asin(val));
+							stack->pushDouble(asin(val));
 						}
 					}
 					break;
 
 				case OP_ACOS:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						if (val<-1.0 || val>1.0) {
 							error->q(ERROR_ASINACOSRANGE);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(acos(val));
+							stack->pushDouble(acos(val));
 						}
 					}
 					break;
 
 				case OP_ATAN:
 					{
-						double val = stack->popfloat();
-						stack->pushfloat(atan(val));
+						double val = stack->popDouble();
+						stack->pushDouble(atan(val));
 					}
 					break;
 
 				case OP_CEIL:
 					{
-						double val = stack->popfloat();
-						stack->pushint(ceil(val));
+						double val = stack->popDouble();
+						stack->pushInt(ceil(val));
 					}
 					break;
 
 				case OP_FLOOR:
 					{
-						double val = stack->popfloat();
-						stack->pushint(floor(val));
+						double val = stack->popDouble();
+						stack->pushInt(floor(val));
 					}
 					break;
 
 				case OP_DEGREES:
 					{
-						double val = stack->popfloat();
-						stack->pushfloat(val * 180.0 / M_PI);
+						double val = stack->popDouble();
+						stack->pushDouble(val * 180.0 / M_PI);
 					}
 					break;
 
 				case OP_RADIANS:
 					{
-						double val = stack->popfloat();
-						stack->pushfloat(val * M_PI / 180.0);
+						double val = stack->popDouble();
+						stack->pushDouble(val * M_PI / 180.0);
 					}
 					break;
 
 				case OP_LOG:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						if (val<=0.0) {
 							error->q(ERROR_LOGRANGE);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(log(val));
+							stack->pushDouble(log(val));
 						}
 					}
 					break;
 
 				case OP_LOGTEN:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						if (val<=0.0) {
 							error->q(ERROR_LOGRANGE);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(log10(val));
+							stack->pushDouble(log10(val));
 						}
 					}
 					break;
 
 				case OP_SQR:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						if (val<0.0) {
 							error->q(ERROR_SQRRANGE);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(sqrt(val));
+							stack->pushDouble(sqrt(val));
 						}
 					}
 					break;
 
 				case OP_EXP:
 					{
-						double val = stack->popfloat();
+						double val = stack->popDouble();
 						val = exp(val);
 						if (std::isinf(val)) {
 							error->q(ERROR_INFINITY);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushfloat(val);
+							stack->pushDouble(val);
 						}
 					}
 					break;
@@ -3013,286 +3041,300 @@ Interpreter::execByteCode() {
 				case OP_CONCATENATE:
 					// concatenate ";" operator - all types
 					{
-						QString sone = stack->popstring();
-						QString stwo = stack->popstring();
+						QString sone = stack->popQString();
+						QString stwo = stack->popQString();
 						QString final = stwo + sone;
 						if (final.length()>STRINGMAXLEN) {
 							error->q(ERROR_STRINGMAXLEN);
 							final.truncate(STRINGMAXLEN);
 						}
-						stack->pushstring(final);
+						stack->pushQString(final);
 					}
 					break;
 
 				case OP_ADD: {
 						// integer and float safe ADD operation
-						DataElement *one = stack->popelement();
-						DataElement *two = stack->popelement();
+						DataElement *one = stack->popDE();
+						DataElement *two = stack->popDE();
 						// add - if both integer then add as integers (if no ovverflow)
 						// else if both are numbers then convert and add as floats
 						// otherwise concatenate (string & number or strings)
-						if (one->type==T_INT){
-							if(two->type==T_INT) {
-								long a = two->intval + one->intval;
-								if((two->intval<=0||one->intval<=0||a>=0)&&(two->intval>=0||one->intval>=0||a<=0)) {
-									// integer add - without overflow
-									stack->pushlong(a);
-								}else{
-									//overflow
-									stack->pushfloat((double)(two->intval) + (double)(one->intval));
-								}
-								break;
-							}else if(two->type==T_FLOAT){
-								double ans = two->floatval + (double) one->intval;
-								if (std::isinf(ans)) {
-									error->q(ERROR_INFINITY);
-									ans = 0.0;
-								}
-								stack->pushfloat(ans);
-								break;
+						if (one->type==T_INT && two->type==T_INT) {
+							long a = two->intval + one->intval;
+							if((two->intval<=0||one->intval<=0||a>=0)&&(two->intval>=0||one->intval>=0||a<=0)) {
+								// integer add - without overflow
+								stack->pushLong(a);
+							}else{
+								//overflow
+								stack->pushDouble((double)(two->intval) + (double)(one->intval));
 							}
-						}else if(one->type==T_FLOAT){
-							if(two->type==T_FLOAT){
-								double ans = two->floatval + one->floatval;
-								if (std::isinf(ans)) {
-									error->q(ERROR_INFINITY);
-									ans = 0.0;
-								}
-								stack->pushfloat(ans);
-								break;
-							}else if(two->type==T_INT){
-								double ans = (double) two->intval + one->floatval;
-								if (std::isinf(ans)) {
-									error->q(ERROR_INFINITY);
-									ans = 0.0;
-								}
-								stack->pushfloat(ans);
-								break;
+						} else if(one->type==T_INT && two->type==T_FLOAT){
+							double ans = two->floatval + (double) one->intval;
+							if (std::isinf(ans)) {
+								error->q(ERROR_INFINITY);
+								ans = 0.0;
 							}
+							stack->pushDouble(ans);
+						} else if(one->type==T_FLOAT && two->type==T_INT){
+							double ans = (double) two->intval + one->floatval;
+							if (std::isinf(ans)) {
+								error->q(ERROR_INFINITY);
+								ans = 0.0;
+							}
+							stack->pushDouble(ans);
+						} else if(one->type==T_FLOAT && two->type==T_FLOAT){
+							double ans = two->floatval + one->floatval;
+							if (std::isinf(ans)) {
+								error->q(ERROR_INFINITY);
+								ans = 0.0;
+							}
+							stack->pushDouble(ans);
+						} else {
+							// concatenate (if one or both ar not numbers)
+							QString sone = convert->getString(one);
+							QString stwo = convert->getString(two);
+							QString final = stwo + sone;
+							if (final.length()>STRINGMAXLEN) {
+								error->q(ERROR_STRINGMAXLEN);
+								final.truncate(STRINGMAXLEN);
+							}
+							stack->pushQString(final);
 						}
-
-						// concatenate (if one or both ar not numbers)
-						QString sone = convert->getString(one);
-						QString stwo = convert->getString(two);
-						QString final = stwo + sone;
-						if (final.length()>STRINGMAXLEN) {
-							error->q(ERROR_STRINGMAXLEN);
-							final.truncate(STRINGMAXLEN);
-						}
-						stack->pushstring(final);
+						delete one;
+						delete two;
 					}
 					break;
 
 				case OP_SUB: {
 						// integer and float safe SUB operation
-						DataElement *one = stack->popelement();
-						DataElement *two = stack->popelement();
+						DataElement *one = stack->popDE();
+						DataElement *two = stack->popDE();
 						if (one->type==T_INT && two->type==T_INT) {
 							long a = two->intval - one->intval;
 							if((two->intval<=0||one->intval>0||a>=0)&&(two->intval>=0||one->intval<0||a<=0)) {
 								// integer subtract - without overflow
-								stack->pushlong(a);
+								stack->pushLong(a);
 								break;
 							}
-						}
-						// float subtract
-						double fone = convert->getFloat(one);
-						double ftwo = convert->getFloat(two);
-						double ans = ftwo - fone;
-						if (std::isinf(ans)) {
-							error->q(ERROR_INFINITY);
-							stack->pushfloat(0.0);
 						} else {
-							stack->pushfloat(ans);
+							// float subtract
+							double fone = convert->getFloat(one);
+							double ftwo = convert->getFloat(two);
+							double ans = ftwo - fone;
+							if (std::isinf(ans)) {
+								error->q(ERROR_INFINITY);
+								stack->pushDouble(0.0);
+							} else {
+								stack->pushDouble(ans);
+							}
 						}
+						delete one;
+						delete two;
 					}
 					break;
 
 				case OP_MUL: {
 						// integer and float safe MUL operation
-						DataElement *one = stack->popelement();
-						DataElement *two = stack->popelement();
+						DataElement *one = stack->popDE();
+						DataElement *two = stack->popDE();
 						if (one->type==T_INT && two->type==T_INT) {
 							if(two->intval==0||one->intval==0) {
-								stack->pushlong(0);
+								stack->pushLong(0);
 								break;
 							}
 							if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
 								long a = two->intval * one->intval;
 								// integer multiply - without overflow
-								stack->pushlong(a);
+								stack->pushLong(a);
 								break;
 							}
-						}
-						// float multiply
-						double fone = convert->getFloat(one);
-						double ftwo = convert->getFloat(two);
-						double ans = ftwo * fone;
-						if (std::isinf(ans)) {
-							error->q(ERROR_INFINITY);
-							stack->pushfloat(0.0);
 						} else {
-							stack->pushfloat(ans);
+							// float multiply
+							double fone = convert->getFloat(one);
+							double ftwo = convert->getFloat(two);
+							double ans = ftwo * fone;
+							if (std::isinf(ans)) {
+								error->q(ERROR_INFINITY);
+								stack->pushDouble(0.0);
+							} else {
+								stack->pushDouble(ans);
+							}
 						}
+						delete one;
+						delete two;
 					}
 					break;
 
 				case OP_ABS:
 				{
-					DataElement *one = stack->popelement();
+					DataElement *one = stack->popDE();
 					if (one->type==T_INT) {
-						stack->pushlong(labs(one->intval));
+						stack->pushLong(labs(one->intval));
 
 					} else {
-						stack->pushfloat(fabs(convert->getFloat(one)));
+						stack->pushDouble(fabs(convert->getFloat(one)));
 					}
+					delete one;
 				}
 				break;
 
 				case OP_EX: {
 					// always return a float value with power "^"
-					double oneval = stack->popfloat();
-					double twoval = stack->popfloat();
+					double oneval = stack->popDouble();
+					double twoval = stack->popDouble();
 					double ans = pow(twoval, oneval);
 					if (std::isinf(ans)) {
 						error->q(ERROR_INFINITY);
-						stack->pushfloat(0.0);
+						stack->pushDouble(0.0);
 					} else {
-						stack->pushfloat(ans);
+						stack->pushDouble(ans);
 					}
 				}
 				break;
 
 				case OP_DIV: {
 					// always return a float value with division "/"
-					double oneval = stack->popfloat();
-					double twoval = stack->popfloat();
+					double oneval = stack->popDouble();
+					double twoval = stack->popDouble();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushfloat(0.0);
+						stack->pushDouble(0.0);
 					} else {
 						double ans = twoval / oneval;
 						if (std::isinf(ans)) {
 							error->q(ERROR_INFINITY);
-							stack->pushfloat(0.0);
+							stack->pushDouble(0.0);
 						} else {
-							stack->pushfloat(ans);
+							stack->pushDouble(ans);
 						}
 					}
 				}
 				break;
 
 				case OP_INTDIV: {
-					long oneval = stack->poplong();
-					long twoval = stack->poplong();
+					long oneval = stack->popLong();
+					long twoval = stack->popLong();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushlong(0);
+						stack->pushLong(0);
 					} else {
-						stack->pushlong(twoval / oneval);
+						stack->pushLong(twoval / oneval);
 					}
 				}
 				break;
 
 				case OP_MOD: {
-					long oneval = stack->poplong();
-					long twoval = stack->poplong();
+					long oneval = stack->popLong();
+					long twoval = stack->popLong();
 					if (oneval==0) {
 						error->q(ERROR_DIVZERO);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
-						stack->pushlong(twoval % oneval);
+						stack->pushLong(twoval % oneval);
 					}
 				}
 				break;
 
 				case OP_AND: {
-					int one = stack->popbool();
-					int two = stack->popbool();
-					stack->pushbool(one && two);
+					int one = stack->popBool();
+					int two = stack->popBool();
+					stack->pushBool(one && two);
 				}
 				break;
 
 				case OP_OR: {
-					int one = stack->popbool();
-					int two = stack->popbool();
-					stack->pushbool(one || two);
+					int one = stack->popBool();
+					int two = stack->popBool();
+					stack->pushBool(one || two);
 				}
 				break;
 
 				case OP_XOR: {
-					int one = stack->popbool();
-					int two = stack->popbool();
-					stack->pushbool(!(one && two) && (one || two));
+					int one = stack->popBool();
+					int two = stack->popBool();
+					stack->pushBool(!(one && two) && (one || two));
 				}
 				break;
 
 				case OP_NOT: {
-					int temp = stack->popbool();
-					stack->pushbool(!temp);
+					int temp = stack->popBool();
+					stack->pushBool(!temp);
 				}
 				break;
 
 				case OP_NEGATE: {
 					// integer safe negate
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					if (e->type==T_INT) {
 						if(e->intval<=LONG_MIN){
-							stack->pushfloat( (double)e->intval * -1.0);
+							stack->pushDouble( (double)e->intval * -1.0);
 						}else{
-							stack->pushlong(e->intval * -1);
+							stack->pushLong(e->intval * -1);
 						}
 					} else {
-						stack->pushfloat(convert->getFloat(e) * -1.0);
+						stack->pushDouble(convert->getFloat(e) * -1.0);
 					}
+					delete e;
 				}
 				break;
 
 				case OP_EQUAL:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans==0);
+					stack->pushBool(ans==0);
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_NEQUAL:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans!=0);
+					stack->pushBool(ans!=0);
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_GT:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans==1);
+					stack->pushBool(ans==1);
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_LTE:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans!=1);
+					stack->pushBool(ans!=1);
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_LT:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans==-1);
+					stack->pushBool(ans==-1);
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_GTE:{
-					DataElement *two = stack->popelement();
-					DataElement *one = stack->popelement();
+					DataElement *two = stack->popDE();
+					DataElement *one = stack->popDE();
 					int ans = convert->compare(one,two);
-					stack->pushbool(ans!=-1);
+					stack->pushBool(ans!=-1);
+					delete one;
+					delete two;
 				}
 				break;
 
@@ -3325,7 +3367,7 @@ Interpreter::execByteCode() {
 					// loadresource = soundload( localfile )
 					// loadresource = soundload( url )
 					
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					
 					if (e->type == T_STRING) {
 						// a single string
@@ -3342,7 +3384,7 @@ Interpreter::execByteCode() {
 							waitCond->wait(mymutex);
 							int id = sound->soundID;
 							mymutex->unlock();
-							stack->pushint(id);
+							stack->pushInt(id);
 						}else{
 							// OP_SOUNDLOAD
 							QString s = e->stringval;
@@ -3357,7 +3399,7 @@ Interpreter::execByteCode() {
 								emit(loadSoundFromArray(id, &arr));
 								waitCond->wait(mymutex);
 								mymutex->unlock();
-								stack->pushstring(id);
+								stack->pushQString(id);
 							}else if (url.isValid() && (url.scheme()=="http" || url.scheme()=="https" || url.scheme()=="ftp")){
 								downloader->download(QUrl::fromUserInput(s));
 								QByteArray arr = downloader->data();
@@ -3366,9 +3408,9 @@ Interpreter::execByteCode() {
 								emit(loadSoundFromArray(id, &arr));
 								waitCond->wait(mymutex);
 								mymutex->unlock();
-								stack->pushstring(id);
+								stack->pushQString(id);
 							}else{
-								stack->pushstring("");
+								stack->pushQString("");
 								error->q(ERROR_SOUNDFILE);
 							}
 						}
@@ -3381,27 +3423,29 @@ Interpreter::execByteCode() {
 							waitCond->wait(mymutex);
 							mymutex->unlock();
 							if(opcode==OP_SOUND) sound->wait(e->intval);
+							delete e;
 							break;
 						} else {
 							error->q(ERROR_EXPECTEDSOUND);
 						}
 					} else if (e->type==T_ARRAY) {
 						// an array
-						int columns = e->arrayydim();
+						int columns = e->arrayCols();
 						if(columns%2!=0){
 							error->q(ERROR_ARRAYEVEN);
+							delete e;
 							break;
 						}
 
 						double i;
-						int rows = e->arrayxdim();
+						int rows = e->arrayRows();
 
 						std::vector < std::vector<double> > sounddata;
 
 						for(int row = 0; row < rows; row++) {
 							std::vector < double > v;	// vector containing duration
 						   for (int col = 0; col < columns; col++) {
-								DataElement *av = e->arraygetdata(row, col);
+								DataElement *av = e->arraygetData(row, col);
 								if(col%2==0)
 									i = convert->getMusicalNote(av);
 								else
@@ -3426,48 +3470,50 @@ Interpreter::execByteCode() {
 								waitCond->wait(mymutex);
 								int id = sound->soundID;
 								mymutex->unlock();
-								stack->pushint(id);
+								stack->pushInt(id);
 							}else{
-								stack->pushstring(sound->loadSoundFromVector(sounddata));
+								stack->pushQString(sound->loadSoundFromVector(sounddata));
 							}
 						}
 					} else {
 						//error invalid SOUND syntax
 						error->q(ERROR_EXPECTEDSOUND);
-						if(opcode==OP_SOUNDPLAYER) stack->pushint(0);
-						if(opcode==OP_SOUNDLOAD) stack->pushstring("");
-						break;
+						if(opcode==OP_SOUNDPLAYER) stack->pushInt(0);
+						if(opcode==OP_SOUNDLOAD) stack->pushQString("");
 					}
+					//
+					delete e;
 				}
 				break;
 
 				case OP_SOUNDLOADRAW: {
 					std::vector<double> sounddata;
-					DataElement *d = stack->popelement();
+					DataElement *d = stack->popDE();
 					if (d->type==T_ARRAY) {
-						if(d->arrayxdim()==1){
-							sounddata.resize(d->arrayydim());
-							for(int col = 0; col < d->arrayydim(); col++) {
-								sounddata[col]=convert->getFloat(d->arraygetdata(0,col));
+						if(d->arrayRows()==1){
+							sounddata.resize(d->arrayCols());
+							for(int col = 0; col < d->arrayCols(); col++) {
+								sounddata[col]=convert->getFloat(d->arraygetData(0,col));
 							}
-							stack->pushstring(sound->loadRaw(sounddata));
+							stack->pushQString(sound->loadRaw(sounddata));
 						} else {
 							error->q(ERROR_ONEDIMENSIONAL);//error 1 dimensional!
 						}
 					} else {
 						error->q(ERROR_ARRAYEXPR);
 					}
+					delete d;
 				}
 				break;
 
 				case OP_SOUNDPAUSE: {
-					int i = stack->popint();
+					int i = stack->popInt();
 					sound->pause(i);
 				}
 				break;
 
 				case OP_SOUNDSTOP: {
-					int i = stack->popint();
+					int i = stack->popInt();
 					mymutex->lock();
 					emit(soundStop(i));
 					waitCond->wait(mymutex);
@@ -3476,7 +3522,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SOUNDPLAYEROFF: {
-					int i = stack->popint();
+					int i = stack->popInt();
 					mymutex->lock();
 					emit(soundPlayerOff(i));
 					waitCond->wait(mymutex);
@@ -3485,7 +3531,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SOUNDSYSTEM: {
-					int i = stack->popint();
+					int i = stack->popInt();
 					mymutex->lock();
 					emit(soundSystem(i));
 					waitCond->wait(mymutex);
@@ -3494,12 +3540,12 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SOUNDSAMPLERATE: {
-					stack->pushint(sound->samplerate());
+					stack->pushInt(sound->samplerate());
 				}
 				break;
 
 				case OP_SOUNDWAIT: {
-					int i = stack->popint();
+					int i = stack->popInt();
 					sound->wait(i);
 				}
 				break;
@@ -3510,31 +3556,32 @@ Interpreter::execByteCode() {
 				break;
 				
 				case OP_SOUNDHARMONICS: {
-					DataElement *de = stack->popelement();
+					DataElement *de = stack->popDE();
 					if (de->type == T_ARRAY) {
-						if ((de->arrayxdim()==1&&de->arrayydim()%2==0) || (de->arrayydim()==2)) {
-							if (de->arrayxdim()==1) {
+						if ((de->arrayRows()==1&&de->arrayCols()%2==0) || (de->arrayCols()==2)) {
+							if (de->arrayRows()==1) {
 								// data in a single row
-								for(int col = 0; col < de->arrayydim(); col+=2) {
-									sound->harmonics(convert->getInt(de->arraygetdata(0,col)), convert->getFloat(de->arraygetdata(0,col+1)));
+								for(int col = 0; col < de->arrayCols(); col+=2) {
+									sound->harmonics(convert->getInt(de->arraygetData(0,col)), convert->getFloat(de->arraygetData(0,col+1)));
 								}
 							} else {
 								// data in mutiple columns
-								for(int row = 0; row < de->arrayxdim(); row+=2) {
-									sound->harmonics(convert->getInt(de->arraygetdata(row,0)), convert->getFloat(de->arraygetdata(row,1)));
+								for(int row = 0; row < de->arrayRows(); row+=2) {
+									sound->harmonics(convert->getInt(de->arraygetData(row,0)), convert->getFloat(de->arraygetData(row,1)));
 								}
 							}
 						} else {
 							error->q(ERROR_HARMONICLIST);
 						}
 					} else {
-						int h = stack->popint();
+						int h = stack->popInt();
 						if(h<1){
 							error->q(ERROR_HARMONICNUMBER);
 						}else{
 							sound->harmonics(h, convert->getFloat(de));
 						}
 					}
+					delete de;
 				}
 				break;
 
@@ -3545,14 +3592,14 @@ Interpreter::execByteCode() {
 
 				case OP_SOUNDENVELOPE: {
 					std::vector<double> envelope;
-					DataElement *de = stack->popelement();
+					DataElement *de = stack->popDE();
 					if (de->type == T_ARRAY) {
 						// get array of envelope data
-						if(de->arrayxdim()==1) {
-							if(de->arrayydim()%2==1 && de->arrayydim()>4){
-								envelope.resize(de->arrayydim());
-								for(int col =0; col < de->arrayydim(); col++) {
-									envelope[col]=convert->getFloat(de->arraygetdata(0,col));
+						if(de->arrayRows()==1) {
+							if(de->arrayCols()%2==1 && de->arrayCols()>4){
+								envelope.resize(de->arrayCols());
+								for(int col =0; col < de->arrayCols(); col++) {
+									envelope[col]=convert->getFloat(de->arraygetData(0,col));
 								}
 							} else {
 								error->q(ERROR_ENVELOPEODD);
@@ -3564,9 +3611,9 @@ Interpreter::execByteCode() {
 						// get the 4 values and build own
 						std::vector<double> envelope;
 						double r = convert->getFloat(de); //release
-						double s = stack->popfloat(); //sustain
-						double d = stack->popfloat(); //decrease
-						double a = stack->popfloat(); //attack
+						double s = stack->popDouble(); //sustain
+						double d = stack->popDouble(); //decrease
+						double a = stack->popDouble(); //attack
 						envelope.resize(6);
 						envelope[0] = 0.0;
 						envelope[1] = a;
@@ -3576,50 +3623,51 @@ Interpreter::execByteCode() {
 						envelope[5] = r;
 					}
 					if(!error->pending()) sound->envelope(envelope);
+					delete de;
 				}
 				break;
 
 				case OP_SOUNDWAVEFORM: {
-					bool logic = stack->popbool(); //if data is logical, not raw
-					DataElement *e = stack->popelement();
+					bool logic = stack->popBool(); //if data is logical, not raw
+					DataElement *e = stack->popDE();
 					if (e->type==T_ARRAY){
-						int columns = e->arrayydim();
-						int rows = e->arrayxdim();
+						int columns = e->arrayCols();
+						int rows = e->arrayRows();
 						std::vector<double> wave;
 
 						if(rows!=1){
 							//clear stack from the rest of data
 							stack->drop(columns);
-							for(int i=1;i<rows;i++) stack->drop(stack->popint());
+							for(int i=1;i<rows;i++) stack->drop(stack->popInt());
 							error->q(ERROR_ONEDIMENSIONAL); //Creating custom waveform request one dimensional array data
 							break;
 						}else{
 							wave.resize(columns,0);
 							while(columns>0){
 								columns--;
-								DataElement *av = e->arraygetdata(0, columns);
+								DataElement *av = e->arraygetData(0, columns);
 								wave[columns]=convert->getInt(av);
 							}
 							if(!error->pending())
 								sound->customWaveform(wave, logic);
 						}
-
 					}else{
 						sound->waveform(convert->getInt(e));
 					}
+					delete e;
 				}
 				break;
 
 				case OP_SOUNDSEEK: {
-					double p = stack->popfloat();
-					int i = stack->popint();
+					double p = stack->popDouble();
+					int i = stack->popInt();
 					sound->seek(i, p);
 				}
 				break;
 
 				case OP_SOUNDVOLUME: {
-					double v = stack->popfloat();
-					DataElement *e = stack->popelement();
+					double v = stack->popDouble();
+					DataElement *e = stack->popDE();
 					if (e->type == T_STRING) {
 						//because it do not stop any timer, it is safe to do it from current thread
 						sound->volume(e->stringval, v);
@@ -3629,36 +3677,38 @@ Interpreter::execByteCode() {
 						waitCond->wait(mymutex);
 						mymutex->unlock();
 					}
+					delete e;
 				}
 				break;
 
 				case OP_SOUNDLOOP: {
-					int l = stack->popint();
-					DataElement *e = stack->popelement();
+					int l = stack->popInt();
+					DataElement *e = stack->popDE();
 					if (e->type == T_STRING) {
 						sound->loop(e->stringval, l);
 					}else{
 						sound->loop(convert->getInt(e), l);
 					}
+					delete e;
 				}
 				break;
 
 				case OP_SOUNDID: {
-					stack->pushint(sound->soundID);
+					stack->pushInt(sound->soundID);
 				}
 				break;
 
 				case OP_SOUNDPOSITION: {
-					int i = stack->popint();
-					stack->pushfloat(sound->position(i));
+					int i = stack->popInt();
+					stack->pushDouble(sound->position(i));
 				}
 				break;
 
 				case OP_SOUNDFADE: {
-					double delay = stack->popfloat();
-					double ms = stack->popfloat();
-					double v = stack->popfloat();
-					DataElement *e = stack->popelement();
+					double delay = stack->popDouble();
+					double ms = stack->popDouble();
+					double v = stack->popDouble();
+					DataElement *e = stack->popDE();
 					if (e->type == T_STRING) {
 						//because it do not stop any timer, it is safe to do it from current thread
 						sound->fade(e->stringval, v, int(ms*1000), int(delay*1000));
@@ -3667,39 +3717,40 @@ Interpreter::execByteCode() {
 					emit(soundFade(convert->getInt(e), v, int(ms*1000), int(delay*1000)));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
+					delete e;
 					}
 				}
 				break;
 
 				case OP_SOUNDLENGTH: {
-					int i = stack->popint();
-					stack->pushfloat(sound->length(i));
+					int i = stack->popInt();
+					stack->pushDouble(sound->length(i));
 				}
 				break;
 
 				case OP_SOUNDSTATE: {
-					int i = stack->popint();
-					stack->pushint(sound->state(i));
+					int i = stack->popInt();
+					stack->pushInt(sound->state(i));
 				}
 				break;
 
 				case OP_VOLUME: {
 					// set the wave output height (volume 0-10)
-					double volume = stack->popfloat();
+					double volume = stack->popDouble();
 					sound->setMasterVolume(volume);
 				}
 				break;
 
 				case OP_SAY: {
 					mymutex->lock();
-					emit(speakWords(stack->popstring()));
+					emit(speakWords(stack->popQString()));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
 				}
 				break;
 
 				case OP_SYSTEM: {
-					QString temp = stack->popstring();
+					QString temp = stack->popQString();
 					int doit = settingsAllowSystem;
 					if(doit==SETTINGSALLOWASK){
 						mymutex->lock();
@@ -3726,7 +3777,7 @@ Interpreter::execByteCode() {
 
 				case OP_WAVPLAY: {
 				//obsolete
-					QString file = stack->popstring();
+					QString file = stack->popQString();
 					if(file.compare("")!=0) {
 						//warning
 						error->q(WARNING_WAVOBSOLETE);
@@ -3760,8 +3811,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SETCOLOR: {
-					const unsigned long brushval = stack->poplong();
-					const unsigned long penval = stack->poplong();
+					const unsigned long brushval = stack->popLong();
+					const unsigned long penval = stack->popLong();
 
 					if(penval!=painter_pen_color){
 						drawingpen.setColor(QColor::fromRgba((QRgb) penval));
@@ -3791,45 +3842,45 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_RGB: {
-					int aval = stack->popint();
-					int bval = stack->popint();
-					int gval = stack->popint();
-					int rval = stack->popint();
+					int aval = stack->popInt();
+					int bval = stack->popInt();
+					int gval = stack->popInt();
+					int rval = stack->popInt();
 					if (((rval | gval | bval | aval)&(~0xff))!=0) {
 					//if (rval < 0 || rval > 255 || gval < 0 || gval > 255 || bval < 0 || bval > 255 || aval < 0 || aval > 255) {
 						error->q(ERROR_RGB);
-						stack->pushlong(0);
+						stack->pushLong(0);
 					} else {
-						stack->pushlong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
+						stack->pushLong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
 					}
 				}
 				break;
 
 				case OP_PIXEL: {
-					int y = stack->popint();
-					int x = stack->popint();
+					int y = stack->popInt();
+					int x = stack->popInt();
 					if(drawingOnScreen || drawto.isEmpty()){
 						QRgb rgb = graphwin->image->pixel(x,y);
-						stack->pushlong((unsigned long) rgb);
+						stack->pushLong((unsigned long) rgb);
 					}else{
 						QRgb rgb = images[drawto]->pixel(x,y);
-						stack->pushlong((unsigned long) rgb);
+						stack->pushLong((unsigned long) rgb);
 					}
 				}
 				break;
 
 				case OP_GETCOLOR: {
-					stack->pushlong((unsigned long) drawingpen.color().rgba());
+					stack->pushLong((unsigned long) drawingpen.color().rgba());
 				}
 				break;
 
 				case OP_GETSLICE: {
 					// slice format was a hex stringnow it is a 2d array list on the stack
-					int layer = stack->popint();
-					int h = stack->popint();
-					int w = stack->popint();
-					int y = stack->popint();
-					int x = stack->popint();
+					int layer = stack->popInt();
+					int h = stack->popInt();
+					int w = stack->popInt();
+					int y = stack->popInt();
+					int x = stack->popInt();
 					QImage *layerimage;
 					DataElement *d = new DataElement();
 					switch(layer) {
@@ -3850,7 +3901,7 @@ Interpreter::execByteCode() {
 					if (w<=0 || h<=0) {
 						error->q(ERROR_SLICESIZE);
 					} else {
-						d->arraydim(w, h, false);
+						d->arrayDim(w, h, false);
 						QImage tmp = QImage(layerimage->copy(x, y, w, h).convertToFormat(QImage::Format_ARGB32));
 						const uchar* p = tmp.constBits();
 						QRgb *r = (QRgb *) p;
@@ -3858,25 +3909,25 @@ Interpreter::execByteCode() {
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								d->arraysetdata(tw,th,new DataElement((long) r[counter]));
+								d->arraysetData(tw,th,new DataElement((long) r[counter]));
 								counter++;
 							}
 						}
 					}
-					stack->pushdataelement(d);
+					stack->pushDE(d);
 				}
 				break;
 
 				case OP_PUTSLICE: {
 					// get image from array
 					int tw,th;
-					DataElement *d = stack->popelement();
-					int y = stack->popint();
-					int x = stack->popint();
+					DataElement *d = stack->popDE();
+					int y = stack->popInt();
+					int x = stack->popInt();
 					
 					if (d->type==T_ARRAY) {
-						int w = d->arrayxdim();
-						int h = d->arrayydim();
+						int w = d->arrayRows();
+						int h = d->arrayCols();
 
 						// get image data from array
 						QImage tmp = QImage(w, h, QImage::Format_ARGB32);
@@ -3885,7 +3936,7 @@ Interpreter::execByteCode() {
 						int counter = 0;
 						for (th=0;th<h;th++) {
 							for (tw=0; tw<w; tw++) {
-							r[counter++] = (QRgb) convert->getInt(d->arraygetdata(tw,th));
+							r[counter++] = (QRgb) convert->getInt(d->arraygetData(tw,th));
 							}
 						}
 						//update painter only if needed (faster)
@@ -3899,14 +3950,15 @@ Interpreter::execByteCode() {
 					} else {
 						error->q(ERROR_ARRAYEXPR);
 					}
+					delete d;
 				}
 				break;
 
 				case OP_LINE: {
-					int y1val = stack->popint();
-					int x1val = stack->popint();
-					int y0val = stack->popint();
-					int x0val = stack->popint();
+					int y1val = stack->popInt();
+					int x1val = stack->popInt();
+					int y0val = stack->popInt();
+					int x0val = stack->popInt();
 
 					//update painter's attributes only if needed (only pen)
 					if(painter_pen_need_update){
@@ -3930,12 +3982,12 @@ Interpreter::execByteCode() {
 
 
 				case OP_ROUNDEDRECT:{
-					double y_rad = stack->popfloat();
-					double x_rad = stack->popfloat();
-					int y1val = stack->popint();
-					int x1val = stack->popint();
-					int y0val = stack->popint();
-					int x0val = stack->popint();
+					double y_rad = stack->popDouble();
+					double x_rad = stack->popDouble();
+					int y1val = stack->popInt();
+					int x1val = stack->popInt();
+					int y0val = stack->popInt();
+					int x0val = stack->popInt();
 
 					if(x1val<0) {
 						x0val+=x1val+1;
@@ -3982,10 +4034,10 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_RECT: {
-					int y1val = stack->popint();
-					int x1val = stack->popint();
-					int y0val = stack->popint();
-					int x0val = stack->popint();
+					int y1val = stack->popInt();
+					int x1val = stack->popInt();
+					int y0val = stack->popInt();
+					int x0val = stack->popInt();
 
 					if(x1val<0) {
 						x0val+=x1val+1;
@@ -4035,7 +4087,7 @@ Interpreter::execByteCode() {
 				case OP_POLY: {
 					// doing a polygon from an array's data
 					// either as an even numbered 1d array or as rows of points
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					QPolygonF *poly = convert->getPolygonF(e);
 					if (poly) {
 						//update painter's attributes only if needed (pen and brush)
@@ -4059,6 +4111,7 @@ Interpreter::execByteCode() {
 						painter->drawPolygon(*poly);
 
 						if (!fastgraphics && drawingOnScreen) waitForGraphics();
+						delete e;
 					}
 				}
 				break;
@@ -4069,12 +4122,12 @@ Interpreter::execByteCode() {
 					double tx, ty, savetx;		// used in scaling and rotating
 					QPointF point;
 					
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					QPolygonF *poly = convert->getPolygonF(e);
-					double rotate = stack->popfloat();
-					double scale = stack->popfloat();
-					int y = stack->popint();
-					int x = stack->popint();
+					double rotate = stack->popDouble();
+					double scale = stack->popDouble();
+					int y = stack->popInt();
+					int x = stack->popInt();
 					
 					if (poly) {
 						// scale, rotate, and position the points
@@ -4112,15 +4165,16 @@ Interpreter::execByteCode() {
 
 						painter->drawPolygon(*poly);
 						if (!fastgraphics && drawingOnScreen) waitForGraphics();
+						delete e;
 					}
 				}
 				break;
 
 
 				case OP_CIRCLE: {
-					int rval = stack->popint();
-					int yval = stack->popint();
-					int xval = stack->popint();
+					int rval = stack->popInt();
+					int yval = stack->popInt();
+					int xval = stack->popInt();
 
 					//update painter's attributes only if needed (pen and brush)
 					if(painter_pen_need_update){
@@ -4147,10 +4201,10 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_ELLIPSE: {
-					int hval = stack->popint();
-					int wval = stack->popint();
-					int yval = stack->popint();
-					int xval = stack->popint();
+					int hval = stack->popInt();
+					int wval = stack->popInt();
+					int yval = stack->popInt();
+					int xval = stack->popInt();
 
 					//update painter's attributes only if needed (pen and brush)
 					if(painter_pen_need_update){
@@ -4180,12 +4234,12 @@ Interpreter::execByteCode() {
 					// Image Load - with scale and rotate
 
 					// pop the filename to uncover the location and scale
-					QString file = stack->popstring();
+					QString file = stack->popQString();
 
-					double rotate = stack->popfloat();
-					double scale = stack->popfloat();
-					double y = stack->popint();
-					double x = stack->popint();
+					double rotate = stack->popDouble();
+					double scale = stack->popDouble();
+					double y = stack->popInt();
+					double x = stack->popInt();
 
 					QImage i;
 					if(QFileInfo(file).exists()){
@@ -4221,9 +4275,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_TEXT: {
-					QString txt = stack->popstring();
-					int y0val = stack->popint();
-					int x0val = stack->popint();
+					QString txt = stack->popQString();
+					int y0val = stack->popInt();
+					int x0val = stack->popInt();
 
 					//update painter's attributes only if needed (only pen)
 					if(painter_pen_need_update){
@@ -4251,12 +4305,12 @@ Interpreter::execByteCode() {
 
 
 				case OP_TEXTBOX: {
-					int flags = stack->popint();
-					QString txt = stack->popstring();
-					int h = stack->popint();
-					int w = stack->popint();
-					int y = stack->popint();
-					int x = stack->popint();
+					int flags = stack->popInt();
+					QString txt = stack->popQString();
+					int h = stack->popInt();
+					int w = stack->popInt();
+					int y = stack->popInt();
+					int x = stack->popInt();
 
 					if(h<0){
 						y+=h;
@@ -4293,8 +4347,8 @@ Interpreter::execByteCode() {
 
 				case OP_TEXTBOXHEIGHT:
 				case OP_TEXTBOXWIDTH: {
-					int w = stack->popint();
-					QString txt = stack->popstring();
+					int w = stack->popInt();
+					QString txt = stack->popQString();
 
 					if(w<0) w=-w;
 
@@ -4312,18 +4366,18 @@ Interpreter::execByteCode() {
 					QRect boundingRect;
 					painter->drawText(-1, -1, w, 0, Qt::TextWordWrap, txt, &boundingRect);
 					if(opcode==OP_TEXTBOXHEIGHT){
-						stack->pushint(boundingRect.height());
+						stack->pushInt(boundingRect.height());
 					}else{
-						stack->pushint(boundingRect.width());
+						stack->pushInt(boundingRect.width());
 					}
 				}
 				break;
 
 				case OP_FONT: {
-					bool italic = stack->popbool();
-					int weight = stack->popint();
-					int size = stack->popint();
-					QString family = stack->popstring().trimmed();
+					bool italic = stack->popBool();
+					int weight = stack->popInt();
+					int size = stack->popInt();
+					QString family = stack->popQString().trimmed();
 					if(family.isEmpty())
 						font = QFont(defaultfontfamily, size, weight, italic);
 					else
@@ -4347,7 +4401,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_CLG: {
-					unsigned long clearcolor = stack->poplong();
+					unsigned long clearcolor = stack->popLong();
 					QColor c = QColor::fromRgba((QRgb) clearcolor);
 
 					if (drawingOnScreen){
@@ -4376,8 +4430,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PLOT: {
-					int oneval = stack->popint();
-					int twoval = stack->popint();
+					int oneval = stack->popInt();
+					int twoval = stack->popInt();
 
 					//update painter's attributes only if needed (only pen)
 					if(painter_pen_need_update){
@@ -4406,9 +4460,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_GRAPHSIZE: {
-					qreal scale = stack->popfloat();
-					int height = stack->popint();
-					int width = stack->popint();
+					qreal scale = stack->popDouble();
+					int height = stack->popInt();
+					int width = stack->popInt();
 
 					if (height<=0 || width<=0){
 						height = GSIZE_INITIAL_HEIGHT;
@@ -4445,7 +4499,7 @@ Interpreter::execByteCode() {
 					}else{
 						w = images[drawto]->width();
 					}
-					stack->pushint(w);
+					stack->pushInt(w);
 				}
 				break;
 
@@ -4458,7 +4512,7 @@ Interpreter::execByteCode() {
 					}else{
 						h = images[drawto]->height();
 					}
-					stack->pushint(h);
+					stack->pushInt(h);
 				}
 				break;
 
@@ -4468,9 +4522,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_INPUT: {
-					inputType = stack->popint();
+					inputType = stack->popInt();
 					inputString.clear();
-					QString prompt = stack->popstring();
+					QString prompt = stack->popQString();
 					if (prompt.length()>0) {
 						mymutex->lock();
 						emit(outputReady(prompt));
@@ -4494,7 +4548,7 @@ Interpreter::execByteCode() {
 					mymutex->unlock();
 					waitForGraphics();
 					//
-					stack->pushvariant(returnString, intType);
+					stack->pushVariant(returnString, intType);
 #else
 					// use the input status of interperter and get
 					// input from BasicOutput
@@ -4507,7 +4561,7 @@ Interpreter::execByteCode() {
 					//we got input from user or program is going to stop
 					if (status==R_INPUT) {//program is not stopped by user in the mean time
 						status = R_RUNNING;
-						stack->pushvariant(inputString, inputType);
+						stack->pushVariant(inputString, inputType);
 					}
 
 #endif
@@ -4517,10 +4571,10 @@ Interpreter::execByteCode() {
 				case OP_KEY: {
 #ifdef ANDROID
 					error->q(ERROR_NOTIMPLEMENTED);
-					stack->pushint(0);
+					stack->pushInt(0);
 #else
 					mymutex->lock();
-					stack->pushint(basicKeyboard->getLastKey());
+					stack->pushInt(basicKeyboard->getLastKey());
 					mymutex->unlock();
 #endif
 				}
@@ -4529,17 +4583,17 @@ Interpreter::execByteCode() {
 				case OP_KEYPRESSED: {
 #ifdef ANDROID
 					error->q(ERROR_NOTIMPLEMENTED);
-					stack->pushint(0);
+					stack->pushInt(0);
 #else
 					mymutex->lock();
-					int keyCode = stack->popint();
+					int keyCode = stack->popInt();
 					if (keyCode==0) {
-						stack->pushint(basicKeyboard->count());
+						stack->pushInt(basicKeyboard->count());
 					} else {
 						if (basicKeyboard->isPressed(keyCode)) {
-							stack->pushint(1);
+							stack->pushInt(1);
 						} else {
-							stack->pushint(0);
+							stack->pushInt(0);
 						}
 					}
 					mymutex->unlock();
@@ -4550,11 +4604,11 @@ Interpreter::execByteCode() {
 				case OP_PRINT:
 				{
 					// arguments are in reverse order off the stack
-					bool nl = stack->popbool();
-					int n = stack->popint();
+					bool nl = stack->popBool();
+					int n = stack->popInt();
 					QString p = "";
 					for (int i =0; i<n; i++) {
-						QString s = stack->popstring();
+						QString s = stack->popQString();
 						if (i>0) {
 							// add blanks to 14 character tab stop
 							while(s.length()%14!=0) {
@@ -4588,39 +4642,39 @@ Interpreter::execByteCode() {
 
 					switch (opcode) {
 						case OP_YEAR:
-							stack->pushint(timeinfo->tm_year + 1900);
+							stack->pushInt(timeinfo->tm_year + 1900);
 							break;
 						case OP_MONTH:
-							stack->pushint(timeinfo->tm_mon);
+							stack->pushInt(timeinfo->tm_mon);
 							break;
 						case OP_DAY:
-							stack->pushint(timeinfo->tm_mday);
+							stack->pushInt(timeinfo->tm_mday);
 							break;
 						case OP_HOUR:
-							stack->pushint(timeinfo->tm_hour);
+							stack->pushInt(timeinfo->tm_hour);
 							break;
 						case OP_MINUTE:
-							stack->pushint(timeinfo->tm_min);
+							stack->pushInt(timeinfo->tm_min);
 							break;
 						case OP_SECOND:
-							stack->pushint(timeinfo->tm_sec);
+							stack->pushInt(timeinfo->tm_sec);
 							break;
 					}
 				}
 				break;
 
 				case OP_MOUSEX: {
-					stack->pushint((int) graphwin->mouseX);
+					stack->pushInt((int) graphwin->mouseX);
 				}
 				break;
 
 				case OP_MOUSEY: {
-					stack->pushint((int) graphwin->mouseY);
+					stack->pushInt((int) graphwin->mouseY);
 				}
 				break;
 
 				case OP_MOUSEB: {
-					stack->pushint((int) graphwin->mouseB);
+					stack->pushInt((int) graphwin->mouseB);
 				}
 				break;
 
@@ -4632,17 +4686,17 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_CLICKX: {
-					stack->pushint((int) graphwin->clickX);
+					stack->pushInt((int) graphwin->clickX);
 				}
 				break;
 
 				case OP_CLICKY: {
-					stack->pushint((int) graphwin->clickY);
+					stack->pushInt((int) graphwin->clickY);
 				}
 				break;
 
 				case OP_CLICKB: {
-					stack->pushint((int) graphwin->clickB);
+					stack->pushInt((int) graphwin->clickB);
 				}
 				break;
 
@@ -4672,7 +4726,7 @@ Interpreter::execByteCode() {
 				case OP_SPRITEPOLY: {
 					// create a sprite from a polygon
 					
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					QPolygonF *poly = convert->getPolygonF(e);
 					if (poly) {
 						// now move points to the top left (if they are not there)
@@ -4688,7 +4742,7 @@ Interpreter::execByteCode() {
 						}
 						//
 						// now build sprite
-						int n = stack->popint(); // sprite number
+						int n = stack->popInt(); // sprite number
 						if(n >= 0 && n < nsprites) {
 							// free old, draw, and capture sprite
 							sprite_prepare_for_new_content(n);
@@ -4709,11 +4763,12 @@ Interpreter::execByteCode() {
 							error->q(ERROR_SPRITENUMBER);
 						}
 					}
+					delete e;
 				}
 				break;
 
 				case OP_SPRITEDIM: {
-					int n = stack->popint();
+					int n = stack->popInt();
 					// deallocate existing sprites
 					clearsprites();
 					// create new ones that are not visible, active, and are at origin
@@ -4740,8 +4795,8 @@ Interpreter::execByteCode() {
 
 				case OP_SPRITELOAD: {
 
-					QString file = stack->popstring();
-					int n = stack->popint();
+					QString file = stack->popQString();
+					int n = stack->popInt();
 
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
@@ -4775,11 +4830,11 @@ Interpreter::execByteCode() {
 
 				case OP_SPRITESLICE: {
 
-					int h = stack->popint();
-					int w = stack->popint();
-					int y = stack->popint();
-					int x = stack->popint();
-					int n = stack->popint();
+					int h = stack->popInt();
+					int w = stack->popInt();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					int n = stack->popInt();
 
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
@@ -4804,19 +4859,19 @@ Interpreter::execByteCode() {
 				case OP_SPRITEMOVE:
 				case OP_SPRITEPLACE: {
 					double o=0, r=0, s=0, y=0, x=0;
-					int nr = stack->popint(); // number of arguments (3-6)
+					int nr = stack->popInt(); // number of arguments (3-6)
 					switch(nr){
 						case 6  :
-						   o = stack->popfloat();
+						   o = stack->popDouble();
 						case 5  :
-						   r = stack->popfloat();
+						   r = stack->popDouble();
 						case 4  :
-						   s = stack->popfloat();
+						   s = stack->popDouble();
 						default :
-						   y = stack->popfloat();
-						   x = stack->popfloat();
+						   y = stack->popDouble();
+						   x = stack->popDouble();
 					}
-					int n = stack->popint();
+					int n = stack->popInt();
 
 					double img_w, img_h;
 
@@ -4892,7 +4947,7 @@ Interpreter::execByteCode() {
 				case OP_SPRITEHIDE:
 				case OP_SPRITESHOW: {
 
-					int n = stack->popint();
+					int n = stack->popInt();
 					bool vis = opcode==OP_SPRITESHOW;
 
 					if(n < 0 || n >=nsprites) {
@@ -4909,9 +4964,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SPRITECOLLIDE: {
-					int val = stack->popbool();
-					int n1 = stack->popint();
-					int n2 = stack->popint();
+					int val = stack->popBool();
+					int n1 = stack->popInt();
+					int n2 = stack->popInt();
 
 					if(n1 < 0 || n1 >=nsprites || n2 < 0 || n2 >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
@@ -4919,7 +4974,7 @@ Interpreter::execByteCode() {
 						if(!sprites[n1].image || !sprites[n2].image) {
 							error->q(ERROR_SPRITENA);
 						} else {
-							stack->pushint(sprite_collide(n1, n2, val!=0));
+							stack->pushInt(sprite_collide(n1, n2, val!=0));
 						}
 					}
 				}
@@ -4934,26 +4989,26 @@ Interpreter::execByteCode() {
 				case OP_SPRITES:
 				case OP_SPRITEO: {
 
-					int n = stack->popint();
+					int n = stack->popInt();
 
 					if(n < 0 || n >=nsprites) {
 						error->q(ERROR_SPRITENUMBER);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
-						if (opcode==OP_SPRITEX) stack->pushfloat(sprites[n].x);
-						if (opcode==OP_SPRITEY) stack->pushfloat(sprites[n].y);
-						if (opcode==OP_SPRITEH) stack->pushint(sprites[n].image?sprites[n].image->height():0);
-						if (opcode==OP_SPRITEW) stack->pushint(sprites[n].image?sprites[n].image->width():0);
-						if (opcode==OP_SPRITEV) stack->pushint(sprites[n].visible?1:0);
-						if (opcode==OP_SPRITER) stack->pushfloat(sprites[n].r);
-						if (opcode==OP_SPRITES) stack->pushfloat(sprites[n].s);
-						if (opcode==OP_SPRITEO) stack->pushfloat(sprites[n].o);
+						if (opcode==OP_SPRITEX) stack->pushDouble(sprites[n].x);
+						if (opcode==OP_SPRITEY) stack->pushDouble(sprites[n].y);
+						if (opcode==OP_SPRITEH) stack->pushInt(sprites[n].image?sprites[n].image->height():0);
+						if (opcode==OP_SPRITEW) stack->pushInt(sprites[n].image?sprites[n].image->width():0);
+						if (opcode==OP_SPRITEV) stack->pushInt(sprites[n].visible?1:0);
+						if (opcode==OP_SPRITER) stack->pushDouble(sprites[n].r);
+						if (opcode==OP_SPRITES) stack->pushDouble(sprites[n].s);
+						if (opcode==OP_SPRITEO) stack->pushDouble(sprites[n].o);
 					}
 				}
 				break;
 
 				case OP_CHANGEDIR: {
-					QString file = stack->popstring();
+					QString file = stack->popQString();
 					if(!QDir::setCurrent(file)) {
 						error->q(ERROR_FOLDER);
 					}
@@ -4961,7 +5016,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_CURRENTDIR: {
-					stack->pushstring(QDir::currentPath());
+					stack->pushQString(QDir::currentPath());
 				}
 				break;
 
@@ -4973,8 +5028,8 @@ Interpreter::execByteCode() {
 
 				case OP_DBOPEN: {
 					// open database connection
-					QString file = stack->popstring();
-					int n = stack->popint();
+					QString file = stack->popQString();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -4992,7 +5047,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_DBCLOSE: {
-					int n = stack->popint();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5003,8 +5058,8 @@ Interpreter::execByteCode() {
 
 				case OP_DBEXECUTE: {
 					// execute a statement on the database
-					QString stmt = stack->popstring();
-					int n = stack->popint();
+					QString stmt = stack->popQString();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5026,9 +5081,9 @@ Interpreter::execByteCode() {
 
 				case OP_DBOPENSET: {
 					// open recordset
-					QString stmt = stack->popstring();
-					int set = stack->popint();
-					int n = stack->popint();
+					QString stmt = stack->popQString();
+					int set = stack->popInt();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5057,8 +5112,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_DBCLOSESET: {
-					int set = stack->popint();
-					int n = stack->popint();
+					int set = stack->popInt();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5078,8 +5133,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_DBROW: {
-					int set = stack->popint();
-					int n = stack->popint();
+					int set = stack->popInt();
+					int n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5088,7 +5143,7 @@ Interpreter::execByteCode() {
 						} else {
 							if (dbSet[n][set]) {
 								// return true if we move to a new row else false
-								stack->pushint(dbSet[n][set]->next());
+								stack->pushInt(dbSet[n][set]->next());
 							} else {
 								error->q(ERROR_DBNOTSET);
 							}
@@ -5107,13 +5162,13 @@ Interpreter::execByteCode() {
 					bool usename;
 					if (stack->peekType()==T_STRING) {
 						usename = true;
-						colname = stack->popstring();
+						colname = stack->popQString();
 					} else {
 						usename = false;
-						col = stack->popint();
+						col = stack->popInt();
 					}
-					set = stack->popint();
-					n = stack->popint();
+					set = stack->popInt();
+					n = stack->popInt();
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
 					} else {
@@ -5134,28 +5189,28 @@ Interpreter::execByteCode() {
 									} else if (!error->pending()){
 										switch(opcode) {
 											case OP_DBINT:
-												stack->pushint(dbSet[n][set]->record().value(col).toInt());
+												stack->pushInt(dbSet[n][set]->record().value(col).toInt());
 												break;
 											case OP_DBFLOAT:
 												// potential issue with locale and database
 												// it seems like locale->toDouble does not support a QVariant
-												stack->pushfloat(dbSet[n][set]->record().value(col).toDouble());
+												stack->pushDouble(dbSet[n][set]->record().value(col).toDouble());
 												break;
 											case OP_DBNULL:
-												stack->pushint(dbSet[n][set]->record().value(col).isNull());
+												stack->pushInt(dbSet[n][set]->record().value(col).isNull());
 												break;
 											case OP_DBSTRING:
 												// potential issue with locale and database
 												// it seems like locale->toString does not support a QVariant
-												stack->pushstring(dbSet[n][set]->record().value(col).toString());
+												stack->pushQString(dbSet[n][set]->record().value(col).toString());
 												break;
 										}
 									}else{
 										//in case of an error
 										if(opcode==OP_DBSTRING)
-											stack->pushstring("");
+											stack->pushQString("");
 										else
-											stack->pushint(0);
+											stack->pushInt(0);
 									}
 								}
 							}
@@ -5165,22 +5220,22 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_LASTERROR: {
-					stack->pushint(error->e);
+					stack->pushInt(error->e);
 				}
 				break;
 
 				case OP_LASTERRORLINE: {
-					stack->pushint(error->line);
+					stack->pushInt(error->line);
 				}
 				break;
 
 				case OP_LASTERROREXTRA: {
-					stack->pushstring(error->extra);
+					stack->pushQString(error->extra);
 				}
 				break;
 
 				case OP_LASTERRORMESSAGE: {
-					stack->pushstring(error->getErrorMessage(symtable));
+					stack->pushQString(error->getErrorMessage(symtable));
 				}
 				break;
 
@@ -5194,8 +5249,8 @@ Interpreter::execByteCode() {
 					struct sockaddr_in serv_addr, cli_addr;
 					socklen_t clilen;
 
-					int port = stack->popint();
-					int fn = stack->popint();
+					int port = stack->popInt();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
 					} else {
@@ -5240,9 +5295,9 @@ Interpreter::execByteCode() {
 					struct sockaddr_in serv_addr;
 					struct hostent *server;
 
-					int port = stack->popint();
-					QString address = stack->popstring();
-					int fn = stack->popint();
+					int port = stack->popInt();
+					QString address = stack->popQString();
+					int fn = stack->popInt();
 
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
@@ -5281,22 +5336,22 @@ Interpreter::execByteCode() {
 					int n;
 					char * strarray = (char *) malloc(MAXSIZE);
 
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
-						stack->pushstring("");
+						stack->pushQString("");
 					} else {
 						if (netsockfd[fn] < 0) {
 							error->q(ERROR_NETNONE);
-							stack->pushstring("");
+							stack->pushQString("");
 						} else {
 							memset(strarray, 0, MAXSIZE);
 							n = recv(netsockfd[fn],strarray,MAXSIZE-1,0);
 							if (n < 0) {
 								error->q(ERROR_NETREAD, strerror(errno));
-								stack->pushstring("");
+								stack->pushQString("");
 							} else {
-								stack->pushstring(QString::fromUtf8(strarray));
+								stack->pushQString(QString::fromUtf8(strarray));
 							}
 						}
 					}
@@ -5305,8 +5360,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_NETWRITE: {
-					QString data = stack->popstring();
-					int fn = stack->popint();
+					QString data = stack->popQString();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
 					} else {
@@ -5323,7 +5378,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_NETCLOSE: {
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMSOCKETS) {
 						error->q(ERROR_NETSOCKNUMBER);
 					} else {
@@ -5339,20 +5394,20 @@ Interpreter::execByteCode() {
 				case OP_NETDATA: {
 					// push 1 if there is data to read on network connection
 					// wait 1 ms for each poll
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					if (fn<0||fn>=NUMSOCKETS) {
-						stack->pushint(0);
+						stack->pushInt(0);
 						error->q(ERROR_NETSOCKNUMBER);
 					} else {
 #ifdef WIN32
 						unsigned long n;
 						if (ioctlsocket(netsockfd[fn], FIONREAD, &n)!=0) {
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
 							if (n==0L) {
-								stack->pushint(0);
+								stack->pushInt(0);
 							} else {
-								stack->pushint(1);
+								stack->pushInt(1);
 							}
 						}
 #else
@@ -5360,12 +5415,12 @@ Interpreter::execByteCode() {
 						p[0].fd = netsockfd[fn];
 						p[0].events = POLLIN | POLLPRI;
 						if(poll(p, 1, 1)<0) {
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
 							if (p[0].revents & POLLIN || p[0].revents & POLLPRI) {
-								stack->pushint(1);
+								stack->pushInt(1);
 							} else {
-								stack->pushint(0);
+								stack->pushInt(0);
 							}
 						}
 #endif
@@ -5383,12 +5438,12 @@ Interpreter::execByteCode() {
 					gethostname( szHostname, sizeof( szHostname ));
 					pHostEnt = gethostbyname( szHostname );
 					memcpy ( &sAddr.sin_addr.s_addr, pHostEnt->h_addr_list[nAdapter], pHostEnt->h_length);
-					stack->pushstring(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
+					stack->pushQString(QString::fromUtf8(inet_ntoa(sAddr.sin_addr)));
 #else
 #ifdef ANDROID
 					error->q(ERROR_NOTIMPLEMENTED);
 					// on error give local loopback
-					stack->pushstring(QString("127.0.0.1"));
+					stack->pushQString(QString("127.0.0.1"));
 #else
 					bool good = false;
 					struct ifaddrs *myaddrs, *ifa;
@@ -5404,7 +5459,7 @@ Interpreter::execByteCode() {
 								struct sockaddr_in *s4 = (struct sockaddr_in *)ifa->ifa_addr;
 								in_addr = &s4->sin_addr;
 								if (inet_ntop(ifa->ifa_addr->sa_family, in_addr, buf, sizeof(buf))) {
-									stack->pushstring(QString::fromUtf8(buf));
+									stack->pushQString(QString::fromUtf8(buf));
 									good = true;
 								}
 							}
@@ -5413,7 +5468,7 @@ Interpreter::execByteCode() {
 					}
 					if (!good) {
 						// on error give local loopback
-						stack->pushstring(QString("127.0.0.1"));
+						stack->pushQString(QString("127.0.0.1"));
 					}
 #endif
 #endif
@@ -5421,7 +5476,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_KILL: {
-					QString name = stack->popstring();
+					QString name = stack->popQString();
 					if(!QFile::remove(name)) {
 						error->q(ERROR_FILEOPEN);
 					}
@@ -5429,15 +5484,15 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_MD5: {
-					QString stuff = stack->popstring();
-					stack->pushstring(MD5(stuff.toUtf8().data()).hexdigest());
+					QString stuff = stack->popQString();
+					stack->pushQString(MD5(stuff.toUtf8().data()).hexdigest());
 				}
 				break;
 
 				case OP_SETSETTING: {
-					QString stuff = stack->popstring();
-					QString key = stack->popstring().trimmed();
-					QString app = stack->popstring().trimmed();
+					QString stuff = stack->popQString();
+					QString key = stack->popQString().trimmed();
+					QString app = stack->popQString().trimmed();
 
 					if(app.isEmpty() || app.contains(QChar('\\')) || app.contains(QChar('/')) || app.size()>255 || QString::compare(app, "SYSTEM", Qt::CaseInsensitive)==0){
 						error->q(ERROR_INVALIDPROGNAME);
@@ -5497,35 +5552,35 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_GETSETTING: {
-					QString key = stack->popstring().trimmed();
-					QString app = stack->popstring().trimmed();
+					QString key = stack->popQString().trimmed();
+					QString app = stack->popQString().trimmed();
 					if(QString::compare(app, "SYSTEM", Qt::CaseInsensitive)==0) {
 						SETTINGS;
 						QString v = settings.value(key, "").toString();
 						if(v.length()!=32){
 							//not MD5, not the password
-							stack->pushstring(v);
+							stack->pushQString(v);
 						}else{
 							//check if user try to get the password
 							//user can use different keys to get the password such "////Pref//Password/" or "PREF/password"
 							//the safest way is to compare the value with saved password to avoid user roundabouts
 							QString p = settings.value(SETTINGSPREFPASSWORD, "").toString();
 							if(QString::compare(v,p)==0){
-								stack->pushstring("****");
+								stack->pushQString("****");
 							}else{
-								stack->pushstring(v);
+								stack->pushQString(v);
 							}
 						}
 						break;
 					}
 					if(app.isEmpty() || app.contains(QChar('\\')) || app.contains(QChar('/')) || app.size()>255){
 						error->q(ERROR_INVALIDPROGNAME);
-						stack->pushstring("");
+						stack->pushQString("");
 						break;
 					}
 					if(key.isEmpty() || key.contains(QChar('\\')) || key.contains(QChar('/')) || key.size()>255){
 						error->q(ERROR_INVALIDKEYNAME);
-						stack->pushstring("");
+						stack->pushQString("");
 						break;
 					}
 
@@ -5534,7 +5589,7 @@ Interpreter::execByteCode() {
 							programName=app;
 						}else if(programName!=app){
 							error->q(ERROR_SETTINGSGETACCESS);
-							stack->pushstring("");
+							stack->pushQString("");
 							break;
 						}
 					}
@@ -5543,7 +5598,7 @@ Interpreter::execByteCode() {
 						SETTINGS;
 						settings.beginGroup(SETTINGSGROUPUSER);
 						settings.beginGroup(app);
-						stack->pushstring(settings.value(key, "").toString());
+						stack->pushQString(settings.value(key, "").toString());
 						settings.endGroup();
 						settings.endGroup();
 					} else {
@@ -5551,15 +5606,15 @@ Interpreter::execByteCode() {
 						if(fakeSettings.contains(app)){
 							if(fakeSettings[app].contains(key)) s=fakeSettings[app][key];
 						}
-						stack->pushstring(s);
+						stack->pushQString(s);
 					}
 				}
 				break;
 
 
 				case OP_PORTOUT: {
-					int data = stack->popint();
-					int port = stack->popint();
+					int data = stack->popInt();
+					int port = stack->popInt();
 #ifdef WIN32
 					int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
@@ -5586,7 +5641,7 @@ Interpreter::execByteCode() {
 
 				case OP_PORTIN: {
 					int data=0;
-					int port = stack->popint();
+					int port = stack->popInt();
 #ifdef WIN32
 					int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
@@ -5609,7 +5664,7 @@ Interpreter::execByteCode() {
 #else
 						error->q(ERROR_NOTIMPLEMENTED);
 #endif
-					stack->pushint(data);
+					stack->pushInt(data);
 				}
 				break;
 
@@ -5617,22 +5672,22 @@ Interpreter::execByteCode() {
 				// safe bit left shift
 				// The standard says: "If the value of the right operand is negative or is greater than
 				// or equal to the width of the promoted left operand, the behavior is undefined."
-					int n = stack->popint();
-					unsigned long a = stack->poplong();
+					int n = stack->popInt();
+					unsigned long a = stack->popLong();
 					if(n>=0){
 						if(n>=((int)sizeof(a))*8){
-							stack->pushint(0);
+							stack->pushInt(0);
 						}else{
 							a = a << n;
-							stack->pushlong(a);
+							stack->pushLong(a);
 						}
 					}else{
 						// if right operand is negative, shift in the opposite direction
 						if(n<=-((int)sizeof(a))*8){
-							stack->pushint(0);
+							stack->pushInt(0);
 						}else{
 							a = a >> (n*-1);
-							stack->pushlong(a);
+							stack->pushLong(a);
 						}
 					}
 				}
@@ -5642,45 +5697,45 @@ Interpreter::execByteCode() {
 				// safe bit right shift
 				// The standard says: "If the value of the right operand is negative or is greater than
 				// or equal to the width of the promoted left operand, the behavior is undefined."
-					int n = stack->popint();
-					unsigned long a = stack->poplong();
+					int n = stack->popInt();
+					unsigned long a = stack->popLong();
 					if(n>=0){
 						if(n>=((int)sizeof(a))*8){
-							stack->pushint(0);
+							stack->pushInt(0);
 						}else{
 							a = a >> n;
-							stack->pushlong(a);
+							stack->pushLong(a);
 						}
 					}else{
 						// if right operand is negative, shift in the opposite direction
 						if(n<=-((int)sizeof(a))*8){
-							stack->pushint(0);
+							stack->pushInt(0);
 						}else{
 							a = a << (n*-1);
-							stack->pushlong(a);
+							stack->pushLong(a);
 						}
 					}
 				}
 				break;
 
 				case OP_BINARYOR: {
-					unsigned long a = stack->poplong();
-					unsigned long b = stack->poplong();
+					unsigned long a = stack->popLong();
+					unsigned long b = stack->popLong();
 					a = a | b;
-					stack->pushlong(a);
+					stack->pushLong(a);
 				}
 				break;
 
 				case OP_BINARYAND: {
-					DataElement *one = stack->popelement();
-					DataElement *two = stack->popelement();
+					DataElement *one = stack->popDE();
+					DataElement *two = stack->popDE();
 					// if both are numbers then convert to long and bitwise and
 					// otherwise concatenate (string & number or strings)
 					if ((one->type==T_INT || one->type==T_FLOAT) && (two->type==T_INT || two->type==T_FLOAT)) {
 						unsigned long a = convert->getLong(one);
 						unsigned long b = convert->getLong(two);
 						a = a&b;
-						stack->pushlong(a);
+						stack->pushLong(a);
 					} else {
 						// concatenate (if one or both at not numbers or cant be converted to numbers)
 						QString sone = convert->getString(one);
@@ -5690,22 +5745,24 @@ Interpreter::execByteCode() {
 							final.truncate(STRINGMAXLEN);
 							error->q(ERROR_STRINGMAXLEN);
 						}
-						stack->pushstring(stwo + sone);
+						stack->pushQString(stwo + sone);
 					}
+					delete one;
+					delete two;
 				}
 				break;
 
 				case OP_BINARYNOT: {
-					unsigned long a = stack->poplong();
+					unsigned long a = stack->popLong();
 					a = ~a;
-					stack->pushlong(a);
+					stack->pushLong(a);
 				}
 				break;
 
 				case OP_IMGSAVE: {
 					// Image Save - Save image
-					QString type = stack->popstring();
-					QString file = stack->popstring();
+					QString type = stack->popQString();
+					QString file = stack->popQString();
 					QStringList validtypes;
 					validtypes << IMAGETYPE_BMP << IMAGETYPE_JPG << IMAGETYPE_JPEG << IMAGETYPE_PNG ;
 					if (validtypes.contains(type, Qt::CaseInsensitive)) {
@@ -5723,7 +5780,7 @@ Interpreter::execByteCode() {
 				case OP_DIR: {
 					// Get next directory entry - id path send start a new folder else get next file name
 					// return "" if we have no names on list - skippimg . and ..
-					QString folder = stack->popstring();
+					QString folder = stack->popQString();
 					if (folder.length()>0) {
 						if(directorypointer != NULL) {
 							closedir(directorypointer);
@@ -5736,15 +5793,15 @@ Interpreter::execByteCode() {
 						dirp = readdir(directorypointer);
 						while(dirp != NULL && dirp->d_name[0]=='.') dirp = readdir(directorypointer);
 						if (dirp) {
-							stack->pushstring(QString::fromUtf8(dirp->d_name));
+							stack->pushQString(QString::fromUtf8(dirp->d_name));
 						} else {
-							stack->pushstring(QString(""));
+							stack->pushQString(QString(""));
 							closedir(directorypointer);
 							directorypointer = NULL;
 						}
 					} else {
 						error->q(ERROR_FOLDER);
-						stack->pushstring(QString(""));
+						stack->pushQString(QString(""));
 					}
 				}
 				break;
@@ -5753,25 +5810,25 @@ Interpreter::execByteCode() {
 					// unicode safe replace function
 
 				   // 0 sensitive (default) - opposite of QT
-					Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+					Qt::CaseSensitivity casesens = (stack->popInt()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 
-					QString qto = stack->popstring();
-					QString qfrom = stack->popstring();
-					QString qhaystack = stack->popstring();
+					QString qto = stack->popQString();
+					QString qfrom = stack->popQString();
+					QString qhaystack = stack->popQString();
 
-					stack->pushstring(qhaystack.replace(qfrom, qto, casesens));
+					stack->pushQString(qhaystack.replace(qfrom, qto, casesens));
 				}
 				break;
 
 				case OP_REPLACEX: {
 					// regex replace function
 
-					QString qto = stack->popstring();
-					QRegExp expr = QRegExp(stack->popstring());
+					QString qto = stack->popQString();
+					QRegExp expr = QRegExp(stack->popQString());
 					expr.setMinimal(regexMinimal);
-					QString qhaystack = stack->popstring();
+					QString qhaystack = stack->popQString();
 
-					stack->pushstring(qhaystack.replace(expr, qto));
+					stack->pushQString(qhaystack.replace(expr, qto));
 				}
 				break;
 
@@ -5779,23 +5836,23 @@ Interpreter::execByteCode() {
 					// unicode safe count function
 
 					// 0 sensitive (default) - opposite of QT
-					Qt::CaseSensitivity casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+					Qt::CaseSensitivity casesens = (stack->popInt()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 
-					QString qneedle = stack->popstring();
-					QString qhaystack = stack->popstring();
+					QString qneedle = stack->popQString();
+					QString qhaystack = stack->popQString();
 
-					stack->pushint((int) (qhaystack.count(qneedle, casesens)));
+					stack->pushInt((int) (qhaystack.count(qneedle, casesens)));
 				}
 				break;
 
 				case OP_COUNTX: {
 					// regex count function
 
-					QRegExp expr = QRegExp(stack->popstring());
+					QRegExp expr = QRegExp(stack->popQString());
 					expr.setMinimal(regexMinimal);
-					QString qhaystack = stack->popstring();
+					QString qhaystack = stack->popQString();
 
-					stack->pushint((int) (qhaystack.count(expr)));
+					stack->pushInt((int) (qhaystack.count(expr)));
 				}
 				break;
 
@@ -5814,20 +5871,20 @@ Interpreter::execByteCode() {
 #ifdef ANDROID
 					os = OSTYPE_ANDROID;
 #endif
-					stack->pushint(os);
+					stack->pushInt(os);
 				}
 				break;
 
 				case OP_MSEC: {
 					// Return number of milliseconds the BASIC256 program has been running
-					stack->pushint((int) (runtimer.elapsed()));
+					stack->pushInt((int) (runtimer.elapsed()));
 				}
 				break;
 
 				case OP_EDITVISIBLE:
 				case OP_GRAPHVISIBLE:
 				case OP_OUTPUTVISIBLE: {
-					int show = stack->popint();
+					int show = stack->popInt();
 					if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
 					if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
 					if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
@@ -5836,7 +5893,7 @@ Interpreter::execByteCode() {
 
 				case OP_REGEXMINIMAL: {
 					// set the regular expression minimal flag (true = not greedy)
-					regexMinimal = stack->popint()!=0;
+					regexMinimal = stack->popInt()!=0;
 				}
 				break;
 
@@ -5846,19 +5903,19 @@ Interpreter::execByteCode() {
 						painter->setFont(font);
 						painter_font_need_update=false;
 					}
-					stack->pushint((int) (QFontMetrics(painter->font()).height()));
+					stack->pushInt((int) (QFontMetrics(painter->font()).height()));
 				}
 				break;
 
 				case OP_TEXTWIDTH: {
 					// return the number of pixels the font requires for diaplay
 					// a string is required for width but not for height
-					QString txt = stack->popstring();
+					QString txt = stack->popQString();
 					if(painter_font_need_update){
 						painter->setFont(font);
 						painter_font_need_update=false;
 					}
-					stack->pushint((int) (QFontMetrics(painter->font()).width(txt)));
+					stack->pushInt((int) (QFontMetrics(painter->font()).width(txt)));
 				}
 				break;
 
@@ -5870,9 +5927,9 @@ Interpreter::execByteCode() {
 					}
 					if (f==-1) {
 						error->q(ERROR_FREEFILE);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
-						stack->pushint(f);
+						stack->pushInt(f);
 					}
 				}
 				break;
@@ -5885,9 +5942,9 @@ Interpreter::execByteCode() {
 					}
 					if (f==-1) {
 						error->q(ERROR_FREENET);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
-						stack->pushint(f);
+						stack->pushInt(f);
 					}
 				}
 				break;
@@ -5902,29 +5959,29 @@ Interpreter::execByteCode() {
 					}
 					if (f==-1) {
 						error->q(ERROR_FREEDB);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
-						stack->pushint(f);
+						stack->pushInt(f);
 					}
 				}
 				break;
 
 				case OP_FREEDBSET: {
 					// return the next free set for a database - throw error if none free
-					int n = stack->popint();
+					int n = stack->popInt();
 					int f=-1;
 					if (n<0||n>=NUMDBCONN) {
 						error->q(ERROR_DBCONNNUMBER);
-						stack->pushint(0);
+						stack->pushInt(0);
 					} else {
 						for (int t=0; (t<NUMDBSET)&&(f==-1); t++) {
 							if (!dbSet[n][t]) f = t;
 						}
 						if (f==-1) {
 							error->q(ERROR_FREEDBSET);
-							stack->pushint(0);
+							stack->pushInt(0);
 						} else {
-							stack->pushint(f);
+							stack->pushInt(f);
 						}
 					}
 				}
@@ -5934,21 +5991,21 @@ Interpreter::execByteCode() {
 				case OP_CHORD:
 				case OP_PIE: {
 					int yval, xval, hval, wval;
-					int arg = stack->popint(); // number of arguments
-					double angwval = stack->popfloat();
-					double startval = stack->popfloat();
+					int arg = stack->popInt(); // number of arguments
+					double angwval = stack->popDouble();
+					double startval = stack->popDouble();
 
 					if(arg==5){
-						int rval = stack->popint();
-						yval = stack->popint() - rval;
-						xval = stack->popint() - rval;
+						int rval = stack->popInt();
+						yval = stack->popInt() - rval;
+						xval = stack->popInt() - rval;
 						hval = rval * 2;
 						wval = rval * 2;
 					}else{
-						hval = stack->popint();
-						wval = stack->popint();
-						yval = stack->popint();
-						xval = stack->popint();
+						hval = stack->popInt();
+						wval = stack->popInt();
+						yval = stack->popInt();
+						xval = stack->popInt();
 					}
 
 					// degrees * 16
@@ -6007,7 +6064,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_PENWIDTH: {
-					double a = stack->popint();
+					double a = stack->popInt();
 					if (a<0) {
 						error->q(ERROR_PENWIDTH);
 					} else {
@@ -6023,17 +6080,17 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_GETPENWIDTH: {
-					stack->pushint((double) (drawingpen.width()));
+					stack->pushInt((double) (drawingpen.width()));
 				}
 				break;
 
 				case OP_GETBRUSHCOLOR: {
-					stack->pushlong((unsigned long) drawingbrush.color().rgba());
+					stack->pushLong((unsigned long) drawingbrush.color().rgba());
 				}
 				break;
 
 				case OP_ALERT: {
-					QString temp = stack->popstring();
+					QString temp = stack->popQString();
 					mymutex->lock();
 					emit(dialogAlert(temp));
 					waitCond->wait(mymutex);
@@ -6042,57 +6099,57 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_CONFIRM: {
-					int dflt = stack->popint();
-					QString temp = stack->popstring();
+					int dflt = stack->popInt();
+					QString temp = stack->popQString();
 					mymutex->lock();
 					emit(dialogConfirm(temp,dflt));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushint(returnInt);
+					stack->pushInt(returnInt);
 				}
 				break;
 
 				case OP_PROMPT: {
-					QString dflt = stack->popstring();
-					QString msg = stack->popstring();
+					QString dflt = stack->popQString();
+					QString msg = stack->popQString();
 					mymutex->lock();
 					emit(dialogPrompt(msg,dflt));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushstring(returnString);
+					stack->pushQString(returnString);
 				}
 				break;
 
 				case OP_FROMRADIX: {
 					bool ok;
 					unsigned long dec;
-					int base = stack->popint();
-					QString n = stack->popstring();
+					int base = stack->popInt();
+					QString n = stack->popQString();
 					if (base>=2 && base <=36) {
 						dec = n.toULong(&ok, base);
 						if (ok) {
-							stack->pushlong(dec);
+							stack->pushLong(dec);
 						} else {
 							error->q(ERROR_RADIXSTRING);
-							stack->pushlong(0);
+							stack->pushLong(0);
 						}
 					} else {
 						error->q(ERROR_RADIX);
-						stack->pushlong(0);
+						stack->pushLong(0);
 					}
 				}
 				break;
 
 				case OP_TORADIX: {
-					int base = stack->popint();
-					unsigned long n = stack->poplong();
+					int base = stack->popInt();
+					unsigned long n = stack->popLong();
 					if (base>=2 && base <=36) {
 						QString out;
 						out.setNum(n, base);
-						stack->pushstring(out);
+						stack->pushQString(out);
 					} else {
 						error->q(ERROR_RADIX);
-						stack->pushstring(QString("0"));
+						stack->pushQString(QString("0"));
 					}
 				}
 				break;
@@ -6173,7 +6230,7 @@ Interpreter::execByteCode() {
 					// get info about BASIC256 runtime and return as a string
 					// put totally undocumented stuff HERE
 					// NOT FOR HUMANS TO USE
-					int what = stack->popint();
+					int what = stack->popInt();
 					switch (what) {
 						case 1:
 							// stack height and content
@@ -6181,11 +6238,11 @@ Interpreter::execByteCode() {
 							emit(outputReady(stack->debug()));
 							waitCond->wait(mymutex);
 							mymutex->unlock();
-							stack->pushint(stack->height());
+							stack->pushInt(stack->height());
 							break;
 						case 2:
 							// type of top stack element
-							stack->pushint(stack->peekType());
+							stack->pushInt(stack->peekType());
 							break;
 						case 3:
 							// number of symbols - display them to output area
@@ -6196,7 +6253,7 @@ Interpreter::execByteCode() {
 									waitCond->wait(mymutex);
 									mymutex->unlock();
 								}
-								stack->pushint(numsyms);
+								stack->pushInt(numsyms);
 							}
 							break;
 						case 4:
@@ -6236,7 +6293,7 @@ Interpreter::execByteCode() {
 									mymutex->unlock();
 								}
 							}
-							stack->pushint(0);
+							stack->pushInt(0);
 							break;
 						case 5:
 							// dump the variables
@@ -6246,23 +6303,23 @@ Interpreter::execByteCode() {
 								waitCond->wait(mymutex);
 								mymutex->unlock();
 							}
-							stack->pushint(0);
+							stack->pushInt(0);
 							break;
 						case 6:
 							// size of int
-							stack->pushint(sizeof(int));
+							stack->pushInt(sizeof(int));
 							break;
 						case 7:
 							// size of long
-							stack->pushint(sizeof(long));
+							stack->pushInt(sizeof(long));
 							break;
 						case 8:
 							// size of long long
-							stack->pushint(sizeof(long long));
+							stack->pushInt(sizeof(long long));
 							break;
 
 						default:
-							stack->pushstring("");
+							stack->pushQString("");
 					}
 				}
 				break;
@@ -6302,14 +6359,14 @@ Interpreter::execByteCode() {
 
 				case OP_THROWERROR: {
 					// Throw a user defined error number
-					int fn = stack->popint();
+					int fn = stack->popInt();
 					error->q(fn);
 				}
 				break;
 
 				case OP_WAVLENGTH: {
 				//obsolete
-					stack->pushfloat(sound->length(mediaplayer_id_legacy));
+					stack->pushDouble(sound->length(mediaplayer_id_legacy));
 				}
 				break;
 
@@ -6321,96 +6378,99 @@ Interpreter::execByteCode() {
 
 				case OP_WAVPOS: {
 				//obsolete
-					stack->pushfloat(sound->position(mediaplayer_id_legacy));
+					stack->pushDouble(sound->position(mediaplayer_id_legacy));
 				}
 				break;
 
 				case OP_WAVSEEK: {
 				//obsolete
-					double pos = stack->popfloat();
+					double pos = stack->popDouble();
 					sound->seek(mediaplayer_id_legacy, pos);
 				}
 				break;
 
 				case OP_WAVSTATE: {
 				//obsolete
-					stack->pushint(sound->state(mediaplayer_id_legacy));
+					stack->pushInt(sound->state(mediaplayer_id_legacy));
 				}
 				break;
 
 				 case OP_TYPEOF: {
 					// return type of expression (top of the stack)
-					DataElement *e = stack->popelement();
-					stack->pushint(e->type);
+					DataElement *e = stack->popDE();
+					stack->pushInt(e->type);
+					delete e;
 				}
 				break;
 
 				case OP_ISNUMERIC: {
 					// return if data element is numeric
-					DataElement *e = stack->popelement();
-					stack->pushint(convert->isNumeric(e));
+					DataElement *e = stack->popDE();
+					stack->pushInt(convert->isNumeric(e));
+					delete e;
 				}
 				break;
 
 				case OP_LTRIM: {
-					QString s = stack->popstring();
+					QString s = stack->popQString();
 					int l = s.length();
 					int p = 0;
 					while(p<l && s.at(p).isSpace()) {
 						p++;
 					}
-					stack->pushstring(s.mid(p));
+					stack->pushQString(s.mid(p));
 				}
 				break;
 
 				case OP_RTRIM: {
-					QString s = stack->popstring();
+					QString s = stack->popQString();
 					int l = s.length();
 					int p = l;
 					while(p>0 && s.at(p-1).isSpace()) {
 						p--;
 					}
-					stack->pushstring(s.mid(0,p));
+					stack->pushQString(s.mid(0,p));
 				}
 				break;
 
 				case OP_TRIM: {
-					QString s = stack->popstring();
-					stack->pushstring(s.trimmed());
+					QString s = stack->popQString();
+					stack->pushQString(s.trimmed());
 				}
 				break;
 
 				case OP_IMPLODE: {
-					QString coldelim = stack->popstring();
-					QString rowdelim = stack->popstring();
+					QString coldelim = stack->popQString();
+					QString rowdelim = stack->popQString();
 					QString stuff = "";
-					DataElement *d = stack->popelement();
-					int rows = d->arrayxdim();
-					int cols = d->arrayydim();
+					DataElement *d = stack->popDE();
+					int rows = d->arrayRows();
+					int cols = d->arrayCols();
 					for (int row=0; row<rows; row++) {
 						if (row!=0) stuff.append(rowdelim);
 						for (int col=0; col<cols; col++) {
 								if (col!=0) stuff.append(coldelim);
-								stuff.append(convert->getString(d->arraygetdata(row,col)));
+								stuff.append(convert->getString(d->arraygetData(row,col)));
 						}
 					}
-					stack->pushstring(stuff);
+					stack->pushQString(stuff);
+					delete d;
 				}
 				break;
 
 				case OP_SERIALIZE: {
 					// rows,columns,typedata
-					DataElement *e = stack->popelement();
+					DataElement *e = stack->popDE();
 					DataElement *temp;
 					if (e->type==T_ARRAY) {
 						QString stuff = "";
-						int rows = e->arrayxdim();
-						int cols = e->arrayydim();
+						int rows = e->arrayRows();
+						int cols = e->arrayCols();
 						for (int row=0; row<rows; row++) {
 							if (row!=0) stuff.append(SERALIZE_DELIMITER);
 							for (int col=0; col<cols; col++) {
 									if (col!=0) stuff.append(SERALIZE_DELIMITER);
-									temp = e->arraygetdata(row,col);
+									temp = e->arraygetData(row,col);
 									switch (temp->type) {
 										case T_STRING:
 											stuff.append(SERALIZE_STRING + QString::fromUtf8(temp->stringval.toUtf8().toHex()) );
@@ -6427,10 +6487,11 @@ Interpreter::execByteCode() {
 									}
 							}
 						}
-						stack->pushstring(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
+						stack->pushQString(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
 					} else {
 						error->q(ERROR_ARRAYEXPR);
 					}
+					delete e;
 				}
 				break;
 
@@ -6445,10 +6506,10 @@ Interpreter::execByteCode() {
 
 					if (opcode!=OP_EXPLODEX) {
 						// 0 sensitive (default) - opposite of QT
-						casesens = (stack->popint()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
+						casesens = (stack->popInt()==0?Qt::CaseSensitive:Qt::CaseInsensitive);
 					}
-					QString qneedle = stack->popstring();
-					QString qhaystack = stack->popstring();
+					QString qneedle = stack->popQString();
+					QString qhaystack = stack->popQString();
 
 					QStringList list;
 					if(opcode==OP_EXPLODE) {
@@ -6467,12 +6528,12 @@ Interpreter::execByteCode() {
 					}
 					
 					// put list elements into array
-					d->arraydim(1, list.size(), false);
+					d->arrayDim(1, list.size(), false);
 					for(int y=0; y<list.size(); y++) {
 						// fill the string array
-						d->arraysetdata(0,y,new DataElement(list.at(y)));
+						d->arraysetData(0,y,new DataElement(list.at(y)));
 					}
-					stack->pushdataelement(d);
+					stack->pushDE(d);
 				}
 				break;
 
@@ -6481,13 +6542,13 @@ Interpreter::execByteCode() {
 					DataElement *d = new DataElement();
 					DataElement *dat;
 
-					QString data = stack->popstring();
+					QString data = stack->popQString();
 					QStringList list = data.split(SERALIZE_DELIMITER);
 					if (list.count()>=3) {
 						int rows = list[0].toInt(&goodrows);
 						int cols = list[1].toInt(&goodcols);
 						if (goodrows&&goodcols) {
-							d->arraydim(rows, cols, false);
+							d->arrayDim(rows, cols, false);
 							if (list.count()==rows*cols+2) {
 								for (int row=0; row<rows; row++) {
 									for (int col=0; col<cols; col++) {
@@ -6510,9 +6571,9 @@ Interpreter::execByteCode() {
 												dat = new DataElement();
 												error->q(ERROR_UNSERIALIZEFORMAT);
 										}
-										d->arraysetdata(row,col,dat);
+										d->arraysetData(row,col,dat);
 									}
-									stack->pushdataelement(d);
+									stack->pushDE(d);
 								}
 							} else {
 								error->q(ERROR_UNSERIALIZEFORMAT);
@@ -6527,7 +6588,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGELOAD: {
-					QString s = stack->popstring();
+					QString s = stack->popQString();
 					lastImageId++;
 					QString id = QString("image:") + QString::number(lastImageId) + QStringLiteral(":") + s;
 					if(QFileInfo(s).exists()){
@@ -6539,7 +6600,7 @@ Interpreter::execByteCode() {
 						images[id] = new QImage(temp->convertToFormat(QImage::Format_ARGB32));
 						delete temp;
 					}
-					stack->pushstring(id);
+					stack->pushQString(id);
 					if(images[id]->isNull())
 						error->q(ERROR_IMAGEFILE);
 				}
@@ -6547,20 +6608,20 @@ Interpreter::execByteCode() {
 
 
 				case OP_IMAGENEW: {
-					unsigned long c = stack->poplong();
-					int h = stack->popint();
-					int w = stack->popint();
+					unsigned long c = stack->popLong();
+					int h = stack->popInt();
+					int w = stack->popInt();
 					lastImageId++;
 					QString id = QString("image:") + QString::number(lastImageId);
 					images[id] = new QImage(w, h, QImage::Format_ARGB32);
 					images[id]->fill(QColor::fromRgba((QRgb) c));
-					stack->pushstring(id);
+					stack->pushQString(id);
 				}
 				break;
 
 
 				case OP_IMAGECOPY: {
-					int nr = stack->popint();
+					int nr = stack->popInt();
 					lastImageId++;
 					QString id = QString("image:") + QString::number(lastImageId);
 					switch (nr){
@@ -6573,10 +6634,10 @@ Interpreter::execByteCode() {
 						break;
 					}
 					case 4:{
-						int h = stack->popint();
-						int w = stack->popint();
-						int y = stack->popint();
-						int x = stack->popint();
+						int h = stack->popInt();
+						int w = stack->popInt();
+						int y = stack->popInt();
+						int x = stack->popInt();
 						if(drawingOnScreen || drawto.isEmpty()){
 							images[id] = new QImage(graphwin->image->copy(x, y, w, h));
 						}else{
@@ -6585,7 +6646,7 @@ Interpreter::execByteCode() {
 						break;
 					}
 					case 1:{
-						QString id2 = stack->popstring();
+						QString id2 = stack->popQString();
 						if (images.contains(id2)){
 							images[id] = new QImage(*images[id2]);
 						}else{
@@ -6594,11 +6655,11 @@ Interpreter::execByteCode() {
 						break;
 					}
 					case 5:{
-						int h = stack->popint();
-						int w = stack->popint();
-						int y = stack->popint();
-						int x = stack->popint();
-						QString id2 = stack->popstring();
+						int h = stack->popInt();
+						int w = stack->popInt();
+						int y = stack->popInt();
+						int x = stack->popInt();
+						QString id2 = stack->popQString();
 						if (images.contains(id2)){
 							images[id] = new QImage(images[id2]->copy(x, y, w, h));
 						}else{
@@ -6607,16 +6668,16 @@ Interpreter::execByteCode() {
 						break;
 					}
 					}
-					stack->pushstring(id);
+					stack->pushQString(id);
 				}
 				break;
 
 				case OP_IMAGECROP: {
-					int h = stack->popint();
-					int w = stack->popint();
-					int y = stack->popint();
-					int x = stack->popint();
-					QString id = stack->popstring();
+					int h = stack->popInt();
+					int w = stack->popInt();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						QImage tmp = QImage(images[id]->copy(x, y, w, h));
 						if(id==drawto){
@@ -6635,9 +6696,9 @@ Interpreter::execByteCode() {
 				case OP_IMAGEAUTOCROP: {
 					int x,y,w,h,y1,y2,x1=0,x2=0;
 					unsigned long c=0;
-					int nr = stack->popint();
-					if(nr==2) c = stack->poplong();
-					QString id = stack->popstring();
+					int nr = stack->popInt();
+					if(nr==2) c = stack->popLong();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						w=images[id]->width();
 						h=images[id]->height();
@@ -6729,14 +6790,14 @@ Interpreter::execByteCode() {
 				case OP_IMAGERESIZE: {
 					int h, w, nr;
 					double s;
-					nr = stack->popint();
+					nr = stack->popInt();
 					if(nr==3){
-						h = stack->popint();
-						w = stack->popint();
+						h = stack->popInt();
+						w = stack->popInt();
 					}else{
-						s = stack->popfloat();
+						s = stack->popDouble();
 					}
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						QImage tmp;
 						if(nr==3){
@@ -6759,10 +6820,10 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGESETPIXEL: {
-					unsigned long c = stack->poplong();
-					int y = stack->popint();
-					int x = stack->popint();
-					QString id = stack->popstring();
+					unsigned long c = stack->popLong();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						images[id]->setPixel(x,y,c);
 					}else{
@@ -6772,9 +6833,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGEWIDTH: {
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					if (images.contains(id)){
-						stack->pushint(images[id]->width());
+						stack->pushInt(images[id]->width());
 					}else{
 						error->q(ERROR_IMAGERESOURCE);
 					}
@@ -6782,9 +6843,9 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGEHEIGHT: {
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					if (images.contains(id)){
-						stack->pushint(images[id]->height());
+						stack->pushInt(images[id]->height());
 					}else{
 						error->q(ERROR_IMAGERESOURCE);
 					}
@@ -6792,22 +6853,22 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGEPIXEL: {
-					int y = stack->popint();
-					int x = stack->popint();
-					QString id = stack->popstring();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						unsigned long c = images[id]->pixel(x,y);
-						stack->pushlong(c);
+						stack->pushLong(c);
 					}else{
 						error->q(ERROR_IMAGERESOURCE);
-						stack->pushint(0);
+						stack->pushInt(0);
 					}
 				}
 				break;
 
 
 				case OP_IMAGEDRAW: {
-					int nr = stack->popint();
+					int nr = stack->popInt();
 					double o = 1;
 					int x, y, h, w;
 					QString id;
@@ -6816,11 +6877,11 @@ Interpreter::execByteCode() {
 
 					switch (nr){
 					case 4:
-						o = stack->popfloat();
+						o = stack->popDouble();
 					case 3:
-						y = stack->popint();
-						x = stack->popint();
-						id = stack->popstring();
+						y = stack->popInt();
+						x = stack->popInt();
+						id = stack->popQString();
 						if (images.contains(id)){
 							if(o!=1.0) painter->setOpacity(o);
 							painter->drawImage(x, y, *images[id]);
@@ -6830,13 +6891,13 @@ Interpreter::execByteCode() {
 						}
 						break;
 					case 6:
-						o = stack->popfloat();
+						o = stack->popDouble();
 					case 5:
-						h = stack->popint();
-						w = stack->popint();
-						y = stack->popint();
-						x = stack->popint();
-						id = stack->popstring();
+						h = stack->popInt();
+						w = stack->popInt();
+						y = stack->popInt();
+						x = stack->popInt();
+						id = stack->popQString();
 						if (images.contains(id)){
 							bool r=false;
 							r = painter->testRenderHint(QPainter::SmoothPixmapTransform);
@@ -6861,9 +6922,9 @@ Interpreter::execByteCode() {
 
 
 				case OP_IMAGEFLIP: {
-					bool h = stack->popbool();
-					bool w = stack->popbool();
-					QString id = stack->popstring();
+					bool h = stack->popBool();
+					bool w = stack->popBool();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						QImage tmp = QImage(images[id]->mirrored(w, h));
 						if(id==drawto){
@@ -6880,8 +6941,8 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGEROTATE: {
-					double d = stack->popfloat();
-					QString id = stack->popstring();
+					double d = stack->popDouble();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						QTransform rot;
 						rot.rotateRadians(d);
@@ -6900,26 +6961,26 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGESMOOTH: {
-					bool v = stack->popbool();
+					bool v = stack->popBool();
 					imageSmooth = v;
 				}
 				break;
 
 				case OP_IMAGECENTERED: {
 					double o=1, r=0, s=1, y=0, x=0;
-					int nr = stack->popint(); // number of arguments (3-6)
+					int nr = stack->popInt(); // number of arguments (3-6)
 					switch(nr){
 						case 6  :
-						   o = stack->popfloat();
+						   o = stack->popDouble();
 						case 5  :
-						   r = stack->popfloat();
+						   r = stack->popDouble();
 						case 4  :
-						   s = stack->popfloat();
+						   s = stack->popDouble();
 						case 3 :
-						   y = stack->popfloat();
-						   x = stack->popfloat();
+						   y = stack->popDouble();
+						   x = stack->popDouble();
 					}
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					if (images.contains(id)){
 						QTransform transform = QTransform().translate(images[id]->width()/2, images[id]->height()/2).rotateRadians(r).scale(s,s);
 						QImage *tmp = new QImage(images[id]->transformed(transform, imageSmooth?Qt::SmoothTransformation:Qt::FastTransformation));
@@ -6937,7 +6998,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_UNLOAD: {
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					if(id.startsWith("image:")){
 						if (images.contains(id)){
 							if(drawto==id) setGraph("");
@@ -6957,16 +7018,16 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_IMAGETRANSFORMED: {
-					double o = stack->popfloat();
-					int y4 = stack->popint();
-					int x4 = stack->popint();
-					int y3 = stack->popint();
-					int x3 = stack->popint();
-					int y2 = stack->popint();
-					int x2 = stack->popint();
-					int y1 = stack->popint();
-					int x1 = stack->popint();
-					QString id = stack->popstring();
+					double o = stack->popDouble();
+					int y4 = stack->popInt();
+					int x4 = stack->popInt();
+					int y3 = stack->popInt();
+					int x3 = stack->popInt();
+					int y2 = stack->popInt();
+					int x2 = stack->popInt();
+					int y1 = stack->popInt();
+					int x1 = stack->popInt();
+					QString id = stack->popQString();
 
 					if (images.contains(id)){
 						double w = images[id]->width();
@@ -6999,7 +7060,7 @@ Interpreter::execByteCode() {
 				break;
 
 				case OP_SETGRAPH: {
-					QString id = stack->popstring();
+					QString id = stack->popQString();
 					setGraph(id);
 				}
 				break;
@@ -7010,56 +7071,59 @@ Interpreter::execByteCode() {
 					// remember this is not associated with variable
 					// will make a full square array but will leave unassigned elements where they were
 					// not included in the list
-					const int ydim = stack->popint();
-					const int xdim = stack->popint();
+					const int ydim = stack->popInt();
+					const int xdim = stack->popInt();
 					
 					DataElement *edest = new DataElement();
-					edest->arraydim(xdim, ydim, false);
+					edest->arrayDim(xdim, ydim, false);
 
 					for(int row = xdim-1; row>=0; row--) {
-						int thisy=stack->popint();
+						int thisy=stack->popInt();
 						for(int col= thisy-1; col >= 0; col--) {
-							DataElement *e = stack->popelement();
-							edest->arraysetdata(row,col, e);
+							DataElement *e = stack->popDE();
+							edest->arraysetData(row,col, e);
+							delete e;
 						}
 					}
-					stack->pushdataelement(edest);
+					stack->pushDE(edest);
 				}
 				break;
 
 				case OP_STACKSAVE: {
 					// pop an element from the current stack and push to the "savestack"
-					DataElement *de = stack->popelement();
-					savestack->pushdataelement(de);
+					DataElement *de = stack->popDE();
+					savestack->pushDE(de);
+					delete de;
 				}
 				break;
 				
 				case OP_STACKUNSAVE: {
 					// pop an element from the "savestack" and push to the program's main stack
-					DataElement *de = savestack->popelement();
-					stack->pushdataelement(de);
+					DataElement *de = savestack->popDE();
+					stack->pushDE(de);
+					delete de;
 				}
 				break;
 				
 				case OP_LJUST: {
-					QString fill = stack->popstring();
-					int k = stack->popint();
-					stack->pushstring(stack->popstring().leftJustified(k, fill.at(0)));
+					QString fill = stack->popQString();
+					int k = stack->popInt();
+					stack->pushQString(stack->popQString().leftJustified(k, fill.at(0)));
 				}
 				break;
 				
 				case OP_RJUST: {
-					QString fill = stack->popstring();
-					int k = stack->popint();
-					stack->pushstring(stack->popstring().rightJustified(k, fill.at(0)));
+					QString fill = stack->popQString();
+					int k = stack->popInt();
+					stack->pushQString(stack->popQString().rightJustified(k, fill.at(0)));
 				}
 				break;
 				
 				case OP_ROUND: {
-					int places = stack->popint();
-					double v = stack->popfloat();
+					int places = stack->popInt();
+					double v = stack->popDouble();
 					double offset=pow(10,places);
-					stack->pushfloat(round(v*offset)/offset);
+					stack->pushDouble(round(v*offset)/offset);
 				}
 				break;
 				

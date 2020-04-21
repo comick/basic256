@@ -1005,7 +1005,9 @@ listoflists:
 	'{' listinlist '}'{
 		addIntOp(OP_PUSHINT, numberoflists);		// number of lists (y dim)
 		addIntOp(OP_PUSHINT, listlenmax);			// maximum number of expressions (x dim)
-		fprintf(stderr, "listlenmax %d\n", listlenmax);
+#ifdef DEBUG
+	fprintf(stderr, "listlenmax %d\n", listlenmax);
+#endif
 		numberoflists = 0;
 		listlenmax=0;
 	}

@@ -15,7 +15,7 @@ int Variables::e = ERROR_NONE;
 // ************************************************************
 
 Variable::Variable() {
-	data = new DataElement;
+	data = new DataElement();
 }
 
 Variable::~Variable() {
@@ -82,8 +82,9 @@ void Variables::allocateRecurseLevel() {
         varmap[recurselevel] = new Variable*[numsyms];
         int i=numsyms;
         while(i-- > 0) {
-            varmap[recurselevel][i] = new Variable();
+            varmap[recurselevel][i] = NULL;
         }
+        
         maxrecurselevel=recurselevel;
     }
 }
@@ -91,10 +92,10 @@ void Variables::allocateRecurseLevel() {
 void Variables::clearRecurseLevel() {
 	// clear a recurse level
 	//it can be reused faster than create/delete all variables
-	const int level = recurselevel;
 	int i=numsyms;
 	while(i-- > 0) {
-		varmap[level][i]->data->clear();
+		delete varmap[recurselevel][i];
+		varmap[recurselevel][i] = NULL;
     }
 }
 
@@ -123,14 +124,11 @@ void Variables::decreaserecurse() {
 }
 
 
-Variable* Variables::get(const int varnum, int level) {
+Variable* Variables::get(int varnum, int level) {
 	// get v from map or follow REF to recurse level if needed
 	Variable *v;
 	//printf("variables::get - varnum %d level %d\n", varnum, level);
-	if(isglobal[varnum]) level=0;
-	v = varmap[level][varnum];
-	real_varnum = varnum;
-	real_level = level;
+	v = getAt(varnum, level);
 	if(v->data->type==T_REF) {
 		// reference to other level - recurse down the rabitty hole
 		return get(v->data->intval, v->data->level);
@@ -139,36 +137,36 @@ Variable* Variables::get(const int varnum, int level) {
 	}
 }
 
-Variable* Variables::get(const int varnum) {
+Variable* Variables::get(int varnum) {
     return get(varnum, recurselevel);
 }
 
-Variable* Variables::getAt(const int varnum, const int level) {
+Variable* Variables::getAt(int varnum, int level) {
 	// get variable from map without follow REF
 	// need for variable window too
-	real_varnum = varnum;
-	if(isglobal[varnum]){
-		real_level = 0;
-		return(varmap[0][varnum]);
-	}else{
-		real_level = level;
-		return(varmap[level][varnum]);
+	Variable *v;
+	if(isglobal[varnum]) level = 0;
+	v = varmap[level][varnum];
+	if (not v) {
+		v = new Variable();
+		varmap[level][varnum] = v;
 	}
+	return v;
 }
 
-Variable* Variables::getAt(const int varnum) {
+Variable* Variables::getAt(int varnum) {
 	// get variable without recurse from this level
 	return getAt(varnum, recurselevel);
 }
 
-DataElement* Variables::getdata(const int varnum) {
+DataElement* Variables::getData(int varnum) {
 	// get data from variable - return varnum's data
 	Variable *v = get(varnum);
 	return v->data;
 }
 
 
-void Variables::setdata(const int varnum, DataElement* d) {
+void Variables::setData(int varnum, DataElement* d) {
     // recieves a DataElement pointed pulled from the stack
     // e is a pointer in the stack vector AND MUST NOT BE DELETED
 	Variable *v;
@@ -182,31 +180,31 @@ void Variables::setdata(const int varnum, DataElement* d) {
 	v->data->copy(d);
 }
 
-void Variables::setdata(int varnum, long l) {
+void Variables::setData(int varnum, long l) {
     Variable *v = get(varnum);
     v->data->type = T_INT;
     v->data->intval = l;
 }
 
-void Variables::setdata(int varnum, double f) {
+void Variables::setData(int varnum, double f) {
     Variable *v = get(varnum);
     v->data->type = T_FLOAT;
     v->data->floatval = f;
 }
 
-void Variables::setdata(int varnum, QString s) {
+void Variables::setData(int varnum, QString s) {
     Variable *v = get(varnum);
     v->data->type = T_STRING;
     v->data->stringval = s;
 }
 
-void Variables::unassign(const int varnum) {
+void Variables::unassign(int varnum) {
     //unassign true variable, not the reference (unlink)
     Variable *v = varmap[(recurselevel==0||isglobal[varnum])?0:recurselevel][varnum];
     v->data->clear();
 }
 
-void Variables::makeglobal(const int varnum) {
+void Variables::makeglobal(int varnum) {
     // make a variable global - if there is a value in a run level greater than 0 then
     // that value will be lost to the program
     isglobal[varnum] = true;

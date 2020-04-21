@@ -55,12 +55,12 @@ class DataElement
 		
 		void clear();
 		
-		void arraydim(const int, const int, const bool);
-		DataElement* arraygetdata(const int, const int);
-		void arraysetdata(const int, const int, DataElement *);
-		void arrayunassign(const int, const int);
-		int arrayxdim();
-		int arrayydim();
+		void arrayDim(const int, const int, const bool);
+		DataElement* arraygetData(const int, const int);
+		void arraysetData(const int, const int, DataElement *);
+		void arrayUnassign(const int, const int);
+		int arrayRows();
+		int arrayCols();
 
 		
 		static int getError() {

@@ -85,12 +85,12 @@ void VariableWin::setTypeAndValue(QTreeWidgetItem *r, DataElement *d) {
 			 case T_ARRAY:{
 				r->setText(COLUMNTYPE, QStringLiteral("A"));
 				r->setData(COLUMNTYPE, Qt::ToolTipRole, tr_arrayType);
-				if (d->arrayxdim()==1) {
+				if (d->arrayRows()==1) {
 					// 1d array
-					var = QStringLiteral("[") + QString::number(d->arrayydim()) + QStringLiteral("]");
+					var = QStringLiteral("[") + QString::number(d->arrayCols()) + QStringLiteral("]");
 				} else {
 					// 2d array
-					var = QStringLiteral("[") + QString::number(d->arrayxdim()) + QStringLiteral(",") + QString::number(d->arrayydim()) + QStringLiteral("]");
+					var = QStringLiteral("[") + QString::number(d->arrayRows()) + QStringLiteral(",") + QString::number(d->arrayCols()) + QStringLiteral("]");
 				}
 				r->setText(COLUMNVALUE, var);
 				r->setData(COLUMNVALUE, Qt::UserRole + 1, var); //to do:00level+var
@@ -130,7 +130,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int
 		if (list.size() > 0) {
 			parentItem = (TreeWidgetItem *)list[0];
 			// now find child or add
-			if (v->data->arrayxdim()==1) {
+			if (v->data->arrayRows()==1) {
 				childname = parentname + QStringLiteral("[") + QString::number(y) + QStringLiteral("]");
 			} else {
 				childname = parentname + QStringLiteral("[") + QString::number(x) + QStringLiteral(",") + QString::number(y) + QStringLiteral("]");
@@ -146,7 +146,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int
 				childItem->setData(COLUMNNAME, Qt::UserRole + 1, childname);
 				parentItem->addChild(childItem);
 			}
-			setTypeAndValue(childItem, v->data->arraygetdata(x,y));
+			setTypeAndValue(childItem, v->data->arraygetData(x,y));
 		}
 	}
 }
@@ -180,7 +180,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
 		if (v->data->type==T_ARRAY) {
 			for(int x = 0; x<v->data->arr->xdim;x++) {
 				for(int y = 0; y<v->data->arr->ydim;y++) {
-					DataElement *q = v->data->arraygetdata(x,y);
+					DataElement *q = v->data->arraygetData(x,y);
 					DataElement::getError(true);
 					if (q->type!=T_UNASSIGNED) {
 						varWinAssign(variables, varnum, level, x, y);

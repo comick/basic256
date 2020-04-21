@@ -3,11 +3,51 @@
 # Modification History
 # date		programmer	description
 # 20160510	j.m.reneau	original coding
-# 20160527      j.m.reneau      added keypress fancy logic
+# 20160527  j.m.reneau  added keypress fancy logic
+# 20200421  j.m.reneau  moved input test from type
 
 # this include tests input, prompt, key, and ketpressed
 
-## input tested in other places
+#
+input "Enter '1234' >",a
+call n("input '1234' type", typeof(a), TYPE_INT)
+call n("input '1234' value", a, 1234)
+
+input "Enter '1234.56' >",a
+call n("input '1234.56' type", typeof(a), TYPE_FLOAT)
+call n("input '1234.56' value", a, 1234.56)
+
+input "Enter '-12e+7' >",a
+call n("input '-12e+7' type", typeof(a), TYPE_FLOAT)
+call n("input '-12e+7' value", a, -12e7)
+
+input "Enter '99aa' >",a
+call n("input '99aa' type", typeof(a), TYPE_STRING)
+call n("input '99aa' value", a, "99aa")
+
+input integer "Enter '1234' >",a
+call n("input integer '1234' type", typeof(a), TYPE_INT)
+call n("input integer '1234' value", a, 1234)
+
+input integer "Enter '1234.56' >",a
+call n("input integer '1234.56' type", typeof(a), TYPE_INT)
+call n("input integer '1234.56' value", a, 0)
+
+input float "Enter '1234' >",a
+call n("input float '1234' type", typeof(a), TYPE_FLOAT)
+call n("input float '1234' value", a, 1234)
+
+input float "Enter '1234.56' >",a
+call n("input float '1234.56' type", typeof(a), TYPE_FLOAT)
+call n("input float '1234.56' value", a, 1234.56)
+
+input string "Enter '1234' >",a
+call n("input string '1234' type", typeof(a), TYPE_string)
+call n("input string '1234' value", a, "1234")
+
+input string "Enter '1234.56' >",a
+call n("input string '1234.56' type", typeof(a), TYPE_string)
+call n("input string '1234.56' value", a, "1234.56")
 
 ## key
 if ostype() <> 3 then

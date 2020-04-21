@@ -108,6 +108,13 @@ for t = 0 to le-1
 next t
 
 
+print "****************************************************************"
+print "lines for ExitSyntaxHighliter.cpp"
+print "****************************************************************"
+for t = 0 to le-1
+	? tab;tab;tab;'<<"'; e[t]; '"'
+next t
+          
 
 
 
