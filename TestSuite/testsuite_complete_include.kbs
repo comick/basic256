@@ -4,7 +4,7 @@
 # date		programmer	description
 # 20140529	j.m.reneau	original coding
 
-# macos and android do not have 3 button mouses
+currentsuite = "complete"
 
 # This section of the testsuite searches all of the programs
 # in the TestSuite folder using regular expressions to

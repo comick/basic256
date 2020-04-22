@@ -6,6 +6,8 @@
 # 20160527  j.m.reneau  added keypress fancy logic
 # 20200421  j.m.reneau  moved input test from type
 
+currentsuite = "inputkey"
+
 # this include tests input, prompt, key, and ketpressed
 
 #

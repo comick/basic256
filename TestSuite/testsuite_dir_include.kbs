@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20140529	j.m.reneau	original coding
 
+currentsuite = "dir"
+
 # test file system functions
 
 # change directories and see if all is well

@@ -124,6 +124,8 @@
 #define ERROR_ARRAYEXPR					120
 #define ERROR_NUMBEREXPR				121
 #define ERROR_STRINGEXPR				122
+#define ERROR_ZEROORONE					123
+
 
 
 

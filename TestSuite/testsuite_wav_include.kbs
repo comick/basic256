@@ -5,6 +5,8 @@
 # 20140415	j.m.reneau	original coding
 # 2014-08-04	j.m.reneau	rewrote using spoken number sound file
 
+currentsuite = "wav"
+
 file$ = "jim_saying_numbers.mp3"
 notes = 5
 len = 6

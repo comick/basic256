@@ -7,6 +7,7 @@
 # 20161101  j.m.reneau  added [] to all array passing to functions
 # 20200403  j.m.reneau  added all of the various ways to copy an array to an array
 
+currentsuite = "array"
 
 ###################################################
 call section("1D Array")

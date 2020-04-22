@@ -5,6 +5,8 @@
 # 20140530	j.m.reneau	original Coding
 # 20151206	j.m.reneau	moved question to do to main testsuite
 
+currentsuite = "network"
+
 call sne("my ip address",netaddress,"")
 
 call q("Open another instance of basic256, load and run the program TestSuite/testsuite_network_helper.kbs then click yes.")

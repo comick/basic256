@@ -49,6 +49,10 @@
 # 20170513  j.m.reneau      changed allow/system test to not 0
 # 20200403  j.m.reneau      added slice suite
 # 20200421  j.m.reneau      added print suite
+# 20200421  j.m.reneau      added arraybase suite
+
+global currentsuite
+currentsuite = ""
 
 include "testsuite_common_include.kbs"
 
@@ -317,6 +321,12 @@ call section("Variable and Stack Types Tests")
 ###################################################
 include "testsuite_types_include.kbs"
 
+
+arrat_base:
+###################################################
+call section("Array index base (arraybase 0/1)")
+###################################################
+include "testsuite_arraybase_include.kbs"
 
 
 

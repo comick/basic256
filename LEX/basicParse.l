@@ -113,6 +113,7 @@ alert [Aa][Ll][Ee][Rr][Tt]
 and [Aa][Nn][Dd]
 arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
+arraybase [Aa][Rr][Rr][Aa][Yy][ \t]*[Bb][Aa][Ss][Ee]
 asin [Aa][Ss][Ii][Nn]
 atan [Aa][Tt][Aa][Nn]
 badinclude [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
@@ -625,6 +626,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {acos}						{ count(); return B256ACOS; }
 {arc}						{ count(); return B256ARC; }
 {asc}						{ count(); return B256ASC; }
+{arraybase}					{ count(); return B256ARRAYBASE; }
 {asin}						{ count(); return B256ASIN; }
 {atan}						{ count(); return B256ATAN; }
 {black}						{ count(); return B256BLACK; }

@@ -7,6 +7,9 @@
 # test the various syntax issues of the remark statements
 # actually does little to test - but must compile
 
+currentsuite = "remark"
+
+
 a = 0
 
 rem a = 99

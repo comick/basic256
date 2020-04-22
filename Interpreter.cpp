@@ -185,8 +185,6 @@ QString Interpreter::opname(int op) {
 	case OP_ABS : return QString("OP_ABS");
 	case OP_ACOS : return QString("OP_ACOS");
 	case OP_ADD : return QString("OP_ADD");
-	case OP_ADD1ARRAY : return QString("OP_ADD1ARRAY");
-	case OP_ADD1VAR : return QString("OP_ADD1VAR");
 	case OP_ALEN : return QString("OP_ALEN");
 	case OP_ALENCOLS : return QString("OP_ALENCOLS");
 	case OP_ALENROWS : return QString("OP_ALENROWS");
@@ -194,12 +192,12 @@ QString Interpreter::opname(int op) {
 	case OP_AND : return QString("OP_AND");
 	case OP_ARC : return QString("OP_ARC");
 	case OP_ARRAY2STACK : return QString("OP_ARRAY2STACK");
-	case OP_ARRAYASSIGN : return QString("OP_ARRAYASSIGN");
+	case OP_ARR_SET : return QString("OP_ARR_SET");
 	case OP_ARRAYFILL : return QString("OP_ARRAYFILL");
 	case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
 	case OP_ASC : return QString("OP_ASC");
 	case OP_ASIN : return QString("OP_ASIN");
-	case OP_ASSIGN : return QString("OP_ASSIGN");
+	case OP_VAR_SET : return QString("OP_VAR_SET");
 	case OP_ATAN : return QString("OP_ATAN");
 	case OP_BINARYAND : return QString("OP_BINARYAND");
 	case OP_BINARYNOT : return QString("OP_BINARYNOT");
@@ -243,7 +241,7 @@ QString Interpreter::opname(int op) {
 	case OP_DEBUGINFO : return QString("OP_DEBUGINFO");
 	case OP_DECREASERECURSE : return QString("OP_DECREASERECURSE");
 	case OP_DEGREES : return QString("OP_DEGREES");
-	case OP_DEREF : return QString("OP_DEREF");
+	case OP_ARR_GET : return QString("OP_ARR_GET");
 	case OP_DIM : return QString("OP_DIM");
 	case OP_DIR : return QString("OP_DIR");
 	case OP_DIV : return QString("OP_DIV");
@@ -378,8 +376,8 @@ QString Interpreter::opname(int op) {
 	case OP_PUSHINT : return QString("OP_PUSHINT");
 	case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
 	case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
-	case OP_PUSHVAR : return QString("OP_PUSHVAR");
-	case OP_PUSHVARREF : return QString("OP_PUSHVARREF");
+	case OP_VAR_GET : return QString("OP_VAR_GET");
+	case OP_VAR_REF : return QString("OP_VAR_REF");
 	case OP_PUTSLICE : return QString("OP_PUTSLICE");
 	case OP_RADIANS : return QString("OP_RADIANS");
 	case OP_RAND : return QString("OP_RAND");
@@ -460,8 +458,6 @@ QString Interpreter::opname(int op) {
 	case OP_STAMP : return QString("OP_STAMP");
 	case OP_STRING : return QString("OP_STRING");
 	case OP_SUB : return QString("OP_SUB");
-	case OP_SUB1ARRAY : return QString("OP_SUB1ARRAY");
-	case OP_SUB1VAR : return QString("OP_SUB1VAR");
 	case OP_SYSTEM : return QString("OP_SYSTEM");
 	case OP_TAN : return QString("OP_TAN");
 	case OP_TEXT : return QString("OP_TEXT");
@@ -473,8 +469,8 @@ QString Interpreter::opname(int op) {
 	case OP_TORADIX : return QString("OP_TORADIX");
 	case OP_TRIM : return QString("OP_TRIM");
 	case OP_TYPEOF : return QString("OP_TYPEOF");
-	case OP_UNASSIGN : return QString("OP_UNASSIGN");
-	case OP_UNASSIGNA : return QString("OP_UNASSIGNA");
+	case OP_VAR_UN : return QString("OP_VAR_UN");
+	case OP_ARR_UN : return QString("OP_ARR_UN");
 	case OP_UNLOAD : return QString("OP_UNLOAD");
 	case OP_UNSERIALIZE : return QString("OP_UNSERIALIZE");
 	case OP_UPPER : return QString("OP_UPPER");
@@ -857,9 +853,9 @@ Interpreter::initialize() {
 	stack = new Stack(convert, locale);
 	savestack = new Stack(convert, locale);		// secondary stack to hold stuff (OP_STACKSAVE, OP_STACKUNSAVE)
 	
-
-	// now create the variable storage
+	// now create the variable storage and set arraybase
 	variables = new Variables(numsyms);
+	arraybase = 0;
 
 	// initialize the sockets to nothing
 	listensockfd = -1;
@@ -1651,32 +1647,35 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_ARRAYASSIGN: {
+				case OP_ARR_SET: {
 					// assign a value to an array element
-					// assumes that arrays are always two dimensional (if 1d then x=1 (rows) )
+					// assumes that arrays are always two dimensional (if 1d then one row [0,i]) )
 					DataElement *e = stack->popDE();
-					int y = stack->popInt();
-					int x = stack->popInt();
-					variables->getData(i)->arraysetData(x, y, e);
-					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
-					watchvariable(debugMode, i, x, y);
+					int col = stack->popInt()-arraybase;
+					int row = stack->popInt()-arraybase;
+					if (col<0) col=0;
+					if (row<0) row=0;
+					variables->getData(i)->arraysetData(row, col, e);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i,row,col);}
+					watchvariable(debugMode, i, row, col);
 					delete e;
 				}
 				break;
 
 
-				case OP_DEREF: {
+				case OP_ARR_GET: {
 					// get a value from an array and push it to the stack
-					// assumes that arrays are always two dimensional (if 1d then y=0)
-					int y = stack->popInt();
-					int x = stack->popInt();
-					DataElement *e = variables->getData(i)->arraygetData(x, y);
-					if (DataElement::getError()) {error->q(DataElement::getError(true),i,x,y);}
+					int col = stack->popInt()-arraybase;
+					int row = stack->popInt()-arraybase;
+					if (col<0) col=0;
+					if (row<0) row=0;
+					DataElement *e = variables->getData(i)->arraygetData(row, col);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i,row+arraybase,col+arraybase);}
 					stack->pushDE(e);
 				}
 				break;
 
-				case OP_PUSHVAR: {
+				case OP_VAR_GET: {
 					DataElement *e = variables->getData(i);
 					if (e->type==T_UNASSIGNED) {
 						error->q(ERROR_VARNOTASSIGNED,i);
@@ -1685,12 +1684,12 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_PUSHVARREF: {
+				case OP_VAR_REF: {
 					stack->pushRef(i, variables->getrecurse());
 				}
 				break;
 
-				case OP_ASSIGN: {
+				case OP_VAR_SET: {
 					// assign a value to a variable
 					DataElement *e = stack->popDE();
 					variables->setData(i,e);
@@ -1795,105 +1794,25 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_UNASSIGN: {
+				case OP_VAR_UN: {
 					variables->unassign(i);
 					watchvariable(debugMode, i);
 				}
 				break;
 
-				case OP_UNASSIGNA: {
+				case OP_ARR_UN: {
 					// clear a variable and release resources
-					int yindex = stack->popInt();
-					int xindex = stack->popInt();
-					variables->getData(i)->arrayUnassign(xindex, yindex);
-					watchvariable(debugMode, i, xindex, yindex);
+					int col = stack->popInt()-arraybase;
+					int row = stack->popInt()-arraybase;
+					if (col<0) col=0;
+					if (row<0) row=0;
+					variables->getData(i)->arrayUnassign(row, col);
+					watchvariable(debugMode, i, row, col);
 				}
 				break;
 
 				case OP_VARIABLEWATCH: {
 					watchvariable(true, i);
-				}
-				break;
-
-				case OP_ADD1VAR:
-				case OP_ADD1ARRAY: {
-					//safe increment of variable
-					DataElement *e;
-					if (opcode==OP_ADD1VAR) {
-						e = variables->getData(i);
-					} else {
-						int yindex = stack->popInt();
-						int xindex = stack->popInt();
-						e = variables->getData(i)->arraygetData(xindex, yindex);
-					}
-					if (e->type==T_INT){
-						if(e->intval==LONG_MAX){
-							e->type=T_FLOAT;
-							e->floatval=(double)e->intval + 1.0;
-						}else{
-							e->intval++;
-						}
-						watchvariable(debugMode, i);
-						break;
-					}else if(e->type==T_FLOAT){
-						e->floatval += 1.0;
-						if (std::isinf(e->floatval)) {
-							error->q(ERROR_INFINITY);
-							e->floatval=0.0;
-						}
-						watchvariable(debugMode, i);
-						break;
-					}
-					double f = convert->getFloat(e);
-					f += 1.0;
-					if (std::isinf(f)) {
-						error->q(ERROR_INFINITY);
-					}else{
-						e->type=T_FLOAT;
-						e->floatval=f;
-					}
-					watchvariable(debugMode, i);
-				}
-				break;
-
-				case OP_SUB1VAR:
-				case OP_SUB1ARRAY: {
-					//safe decrement of variable
-					DataElement *e;
-					if (opcode==OP_ADD1VAR) {
-						e = variables->getData(i);
-					} else {
-						int yindex = stack->popInt();
-						int xindex = stack->popInt();
-						e = variables->getData(i)->arraygetData(xindex, yindex);
-					}
-					if (e->type==T_INT){
-						if(e->intval==LONG_MIN){
-							e->type=T_FLOAT;
-							e->floatval=(double)e->intval - 1.0;
-						}else{
-							e->intval--;
-						}
-						watchvariable(debugMode, i);
-						break;
-					}else if(e->type==T_FLOAT){
-						e->floatval -= 1.0;
-						if (std::isinf(e->floatval)) {
-							error->q(ERROR_INFINITY);
-							e->floatval=0.0;
-						}
-						watchvariable(debugMode, i);
-						break;
-					}
-					double f = convert->getFloat(e);
-					f -= 1.0;
-					if (std::isinf(f)) {
-						error->q(ERROR_INFINITY);
-					}else{
-						e->type=T_FLOAT;
-						e->floatval=f;
-					}
-					watchvariable(debugMode, i);
 				}
 				break;
 
@@ -3140,14 +3059,16 @@ Interpreter::execByteCode() {
 						if (one->type==T_INT && two->type==T_INT) {
 							if(two->intval==0||one->intval==0) {
 								stack->pushLong(0);
-								break;
+							} else {
+								if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
+									long a = two->intval * one->intval;
+									// integer multiply - without overflow
+									stack->pushLong(a);
+								}
 							}
-							if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
-								long a = two->intval * one->intval;
-								// integer multiply - without overflow
-								stack->pushLong(a);
-								break;
-							}
+						} else if (one->type==T_INT && two->type==T_STRING) {
+							// string repeat like python
+							stack->pushQString(two->stringval.repeated(one->intval));
 						} else {
 							// float multiply
 							double fone = convert->getFloat(one);
@@ -7127,7 +7048,15 @@ Interpreter::execByteCode() {
 				}
 				break;
 				
-				
+				case OP_ARRAYBASE: {
+					int base = stack->popInt();
+					if (base==0||base==1) {
+						arraybase = base;
+					} else {
+						error->q(ERROR_ZEROORONE);
+					}
+				}
+				break;				
 
 
 

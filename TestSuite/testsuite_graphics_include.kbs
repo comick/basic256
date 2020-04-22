@@ -8,6 +8,8 @@
 # 20161101  j.m.reneau  added [] to all array passing to functions
 # 20170514 j.m.reneau   removed penwidth 0 before text output
 
+currentsuite = "graphics"
+
 # test the basic graphics statements
 
 clg

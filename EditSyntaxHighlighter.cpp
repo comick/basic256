@@ -62,6 +62,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "alert"								//alert
 			<< "and"								//and
 			<< "arc"								//arc
+			<< "array[ \t]*base"
 			<< "asc"								//asc
 			<< "asin"								//asin
 			<< "atan"								//atan

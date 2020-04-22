@@ -453,7 +453,9 @@ QString Error::getErrorMessage(char **symtable) {
         case ERROR_STRINGEXPR:
             errormessage = tr("String Expression Expected.");
             break;
-
+        case ERROR_ZEROORONE:
+            errormessage = tr("Zero or one expected.");
+            break;
 
 
 

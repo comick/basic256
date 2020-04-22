@@ -6,6 +6,8 @@
 # 20160330	j.m.reneau	modulo works only with int - per the documentation
 # 20160807	j.m.reneau	added floor
 
+currentsuite = "math"
+
 
 # Numeric Assignment
 a = 1 : call n("a=1",a,1)

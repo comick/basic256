@@ -1,3 +1,11 @@
+# testsuite_function_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 2017????	j.m.reneau	split from main testsuite
+
+currentsuite = "function"
+
 function funone(a, b, c$, d$)
    # old way of returning (prev to 0.9.9.21)
    a *= 2

@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20200403	j.m.reneau	created
 
+currentsuite = "slice"
+
 
 graphsize 150,150
 clg

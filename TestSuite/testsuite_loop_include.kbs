@@ -9,6 +9,8 @@
 #						the FOR behaviour of most other BASICs 1.99.99.40
 # 20200420  j.m.reneu   added foreach tests (2.0.0.0)
 
+currentsuite = "loop"
+
 #test for
 total = 0
 for t = 1 to 100

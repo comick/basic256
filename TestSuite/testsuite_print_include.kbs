@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20200421	j.m.reneau	original coding
 
+currentsuite = "print"
+
 # test console print statements
 
 print "---";

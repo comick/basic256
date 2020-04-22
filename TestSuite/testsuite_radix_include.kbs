@@ -15,6 +15,8 @@
 # 20140813      j.m.reneau      fix to parsing of integers outside of integer range
 # 20160330 	j.m.reneau	updated to signed long integer
 
+currentsuite = "radix"
+
 call s("255 -> 11111111 bin", tobinary(255), "11111111")
 call n("11111111 bin -> 255", frombinary("11111111"), 255)
 call s("255 -> ff hex", tohex(255), "ff")

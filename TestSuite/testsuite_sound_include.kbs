@@ -8,6 +8,8 @@
 # 20161101  j.m.reneau  added [] to all array passing to functions
 # 20170515  j.m.reneau  added back polyohonic sounds and added duration testing
 
+currentsuite = "sound"
+
 l = msec
 say "hello."
 l = msec - l

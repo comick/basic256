@@ -13,7 +13,10 @@
 ###################################################
 
 global unattended
+global currentsuite
+
 unattended = false
+currentsuite = ''
 
 subroutine section(sec)
 	print "###########"
@@ -22,7 +25,7 @@ subroutine section(sec)
 end subroutine
 
 subroutine boolean(message, tf)
-	print message + " " + tf + " ";
+	print '(';currentsuite;') ';message + " " + tf + " ";
 	if tf then
 		print "pass"
 	else
@@ -34,7 +37,7 @@ end subroutine
 
 subroutine q(message$)
 	# ask user to press y if test worked or n if it failed
-	if yn(message$) then
+	if yn('(';currentsuite;') ';message$) then
 		print "pass"
 	else
 		print "fail"
@@ -45,7 +48,7 @@ end subroutine
 function yn(message$)
 	# ask user to press y to continue or n to fail
 	# return true for yes / false for no
-	print "question " + message$ + " ";
+	print '(';currentsuite;') ';"question " + message$ + " ";
 	if not unattended then
 		return confirm(message$, true)
 	else
@@ -55,7 +58,7 @@ end function
 
 subroutine same(message$,a,b)
 	# test that a and b are the same numerically or string (EXACTLY)
-	print "testing " + message$ + " (" + a + " = " + b + ") ";
+	print '(';currentsuite;') ';"testing " + message$ + " (" + a + " = " + b + ") ";
 	if a = b then
 		print "pass"
 	else
@@ -74,7 +77,7 @@ end subroutine
 
 subroutine different(message$,a,b)
 	# test that a and b$ are not the same string
-	print "testing " + message$ + " ('" + a + "' <> '" + b + "') ";
+	print '(';currentsuite;') ';"testing " + message$ + " ('" + a + "' <> '" + b + "') ";
 	if a <> b then
 		print "pass"
 	else
@@ -89,7 +92,7 @@ end subroutine
 
 subroutine npercent(message$,a,b,p)
 	# test that b-b*p <= a <= b+b*p (percent variance)
-	print "testing " + message$ + " (" + a + " = " + b + " within " + p*100 + "%) ";
+	print '(';currentsuite;') ';"testing " + message$ + " (" + a + " = " + b + " within " + p*100 + "%) ";
 	if b-b*p <= a AND a <= b+b*p then
 		print "pass"
 	else
@@ -100,7 +103,7 @@ end subroutine
 
 subroutine nclose(message$,a,b)
 	# test that a and b are the same numerically ALMOST
-	print "testing " + message$ + " (" + a + " ~ " + b + ") ";
+	print '(';currentsuite;') ';"testing " + message$ + " (" + a + " ~ " + b + ") ";
 	if abs(a - b) < .0001 then
 		print "pass"
 	else

@@ -263,6 +263,7 @@ class Interpreter : public QThread
         sprite *sprites;
         int nsprites;
         void closeDatabase(int);
+        int arraybase;			// 0 for 0..n-1, 1 for 1 to n array indexing
         // watch... functions trigger the variablewatch window to display
         void watchvariable(bool, int);
         void watchvariable(bool, int, int, int);

@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20140103	j.m.reneau	split from main testsuite
 
+currentsuite = "fileio"
+
 # regular file io
 
 b$ = "testsuite_file.txt"

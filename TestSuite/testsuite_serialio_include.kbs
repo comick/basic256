@@ -5,6 +5,8 @@
 # 20141025	j.m.reneau	split from main testsuite
 # 20151206	j.m.reneau	moved do test question to main testsuite
 
+currentsuite = "serialio"
+
 # Serial Port IO
 
 call q("Check to make sure that a loopback plug has been placed in the serial port on your computer.  Click Yes.")

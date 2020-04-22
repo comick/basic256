@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20140103	j.m.reneau	split from main testsuite
 
+currentsuite = "database"
+
 dbopen "testsuite.db"
 dbexecute "drop table if exists t;"
 dbexecute "create table t (i integer primary key, d text);"

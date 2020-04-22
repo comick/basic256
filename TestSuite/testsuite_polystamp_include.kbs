@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20200408	j.m.reneau  split from main testsuite
 
+currentsuite = "polystamp"
+
 refresh
 graphsize 300,300
 clg

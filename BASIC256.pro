@@ -34,7 +34,7 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_it.ts
 
 #### uncomment to display fprintf debugging messages
-####DEFINES += DEBUG
+DEFINES += DEBUG
 
 win32 {
         DEFINES 				+=	WIN32

@@ -7,6 +7,8 @@
 # 20160908	j.m.reneau	added doubleclick
 # 20200331  J.M.RENEAU  added escape for non 3 bottom mouses
 
+currentsuite = "mouse"
+
 # macos and android do not have 3 button mouses
 
 rightbutton = ostype=ostype_windows or ostype=ostype_linux

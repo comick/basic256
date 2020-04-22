@@ -3,8 +3,10 @@
 # Modification History
 # date		programmer	description
 # 20140204	j.m.reneau	split from testsuite
-# 20160523      j.m.reneau      1.99.99.32 added logic to enforce that subroutines are called
-#                               using the "CALL" statement - onerror uses lables and had to fix
+# 20160523  j.m.reneau  1.99.99.32 added logic to enforce that subroutines are called
+#                       using the "CALL" statement - onerror uses lables and had to fix
+
+currentsuite = "error"
 
 goto skiperrortrap
 

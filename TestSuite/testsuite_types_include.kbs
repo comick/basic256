@@ -11,6 +11,7 @@
 # 20160807	j.m.reneau	removed typeof check on an array
 # 20200421  j.m.reneau  moved input testing to inputkey
 
+currentsuite = "types"
 
 # variable types and data types from the stack
 

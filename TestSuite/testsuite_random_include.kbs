@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20140813	j.m.reneau	split from testsuite
 
+currentsuite = "random"
+
 clg
 fastgraphics
 min = rand

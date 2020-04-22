@@ -4,6 +4,8 @@
 # date		programmer	description
 # 20160327	j.m.reneau	original coding
 
+currentsuite = "binaryop"
+
 # this include tests binary operations on integers
 # and type conversions
 #

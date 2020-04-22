@@ -6,6 +6,9 @@
 # 20140806  j.m.reneau      added midx and regexminimal
 # 20160328	j.m.reneau	Added ltrim, rtrim, trim
 # 20161101  j.m.reneau  added [] to all array passing to functions
+# 20200421  j.m.reneau  added string repeat with *
+
+currentsuite = "string"
 
 # String Assignment
 b$ = "string" : call s('b$ = "string"', b$, "string")
@@ -84,4 +87,10 @@ a$ = "	 test  string to trim 	  "
 call s("ltrim '"+a$+"'",ltrim(a$),"test  string to trim 	  ")
 call s("rtrim '"+a$+"'",rtrim(a$),"	 test  string to trim")
 call s("trim '"+a$+"'",trim(a$),"test  string to trim")
+
+# string repeat (using *)
+call s("repeat 10 times","A"*10, "AAAAAAAAAA")
+call s("repeat 0 times","A"*0, "")
+call s("repeat -10 times","A"*-10, "")
+
 

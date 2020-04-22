@@ -356,6 +356,7 @@
 %token B256AMPEQUAL
 %token B256AND
 %token B256ARC
+%token B256ARRAYBASE
 %token B256ASC
 %token B256ASIN
 %token B256ATAN
@@ -1051,7 +1052,7 @@ callexprlist:
 /* USED ONLY IN CALLING Functions and subroutines */
 callexpr:
 	expr
-	| B256REF '(' variable ')' { addIntOp(OP_PUSHVARREF, varnumber[--nvarnumber]); }
+	| B256REF '(' variable ')' { addIntOp(OP_VAR_REF, varnumber[--nvarnumber]); }
 	;
 	
 
@@ -1139,11 +1140,14 @@ expr:
 	| expr_string
 	| expr_dataelement
 	| array_element {
-		addIntOp(OP_DEREF, varnumber[--nvarnumber]);
+		addIntOp(OP_ARR_GET, varnumber[--nvarnumber]);
 	}
 	;
 
 
+/* ###########################################
+   ### expressions of many types           ###
+   ########################################### */
 expr_multi:
 	'(' expr ')'
 	| expr '+' expr {
@@ -1155,7 +1159,9 @@ expr_multi:
 	| expr B256AMP expr {
 		addOp(OP_BINARYAND);
 	}
-	;
+	| expr '*' expr {
+		addOp(OP_MUL);
+	}	;
 
 /* ###########################################
    ### Function expressions                ###
@@ -1647,9 +1653,6 @@ expr_numeric:
 	| expr '-' expr {
 		addOp(OP_SUB);
 	}
-	| expr '*' expr {
-		addOp(OP_MUL);
-	}
 	| expr B256MOD expr {
 		addOp(OP_MOD);
 	}
@@ -1687,46 +1690,80 @@ expr_numeric:
 	| expr B256GTE expr { addOp(OP_GTE); }
 	| expr B256LTE expr { addOp(OP_LTE); }
 	| array_element B256ADD1 {
-		// a[b,c]++
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-		addOp(OP_STACKTOPTO2);
-						addIntOp(OP_ADD1ARRAY, varnumber[nvarnumber]);
+		// a[b,c]++ - pushing value before to stack
+		int v = varnumber[--nvarnumber];
+		addOp(OP_STACKDUP2);			// save indexes
+		addIntOp(OP_ARR_GET, v);		// get current value
+		addOp(OP_STACKDUP);				// duplicate (1 to save and 1 to increment)
+		addOp(OP_STACKSAVE);			// save original
+		addIntOp(OP_PUSHINT,1);			// add 1
+		addOp(OP_ADD);
+		addIntOp(OP_ARR_SET, v);		// assign new value
+		addOp(OP_STACKUNSAVE);			// put original value on the stack
 	}
 	| array_element B256SUB1 {
-		// a[b,c]--
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_DEREF, varnumber[--nvarnumber]);
-		addOp(OP_STACKTOPTO2);
-						addIntOp(OP_SUB1ARRAY, varnumber[nvarnumber]);
+		// a[b,c]-- - pushing value before to stack
+		int v = varnumber[--nvarnumber];
+		addOp(OP_STACKDUP2);			// save indexes
+		addIntOp(OP_ARR_GET, v);		// get current value
+		addOp(OP_STACKDUP);				// duplicate (1 to save and 1 to increment)
+		addOp(OP_STACKSAVE);			// save original
+		addIntOp(OP_PUSHINT,-1);		// subtract 1
+		addOp(OP_ADD);
+		addIntOp(OP_ARR_SET, v);		// assign new value
+		addOp(OP_STACKUNSAVE);			// put original value on the stack
 	}
 	| B256ADD1 array_element {
-		// ++a[b,c]
-		addOp(OP_STACKDUP2);
-						addIntOp(OP_ADD1ARRAY, varnumber[--nvarnumber]);
-		addIntOp(OP_DEREF, varnumber[nvarnumber]);
+		// ++a[b,c] - pushing value after to stack
+		int v = varnumber[--nvarnumber];
+		addOp(OP_STACKDUP2);			// save indexes
+		addIntOp(OP_ARR_GET, v);		// get current value
+		addIntOp(OP_PUSHINT,1);			// add 1
+		addOp(OP_ADD);
+		addOp(OP_STACKDUP);				// duplicate (1 to set 1 to stack)
+		addOp(OP_STACKSAVE);			// save 1 to stack
+		addIntOp(OP_ARR_SET, v);		// assign new value
+		addOp(OP_STACKUNSAVE);			// put new value on the stack
 	}
 	| B256SUB1 array_element {
-		// --a[b,c]
-		addOp(OP_STACKDUP2);
-		addIntOp(OP_SUB1ARRAY, varnumber[--nvarnumber]);
-		addIntOp(OP_DEREF, varnumber[nvarnumber]);
+		// --a[b,c] - pushing value after to stack
+		int v = varnumber[--nvarnumber];
+		addOp(OP_STACKDUP2);			// save indexes
+		addIntOp(OP_ARR_GET, v);		// get current value
+		addIntOp(OP_PUSHINT,-1);		// subtract 1
+		addOp(OP_ADD);
+		addOp(OP_STACKDUP);				// duplicate (1 to set 1 to stack)
+		addOp(OP_STACKSAVE);			// save 1 to stack
+		addIntOp(OP_ARR_SET, v);		// assign new value
+		addOp(OP_STACKUNSAVE);			// put new value on the stack
 	}
 	| variable B256ADD1 {
-		addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-		addIntOp(OP_ADD1VAR,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[nvarnumber]);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
 	}
 	| variable B256SUB1 {
-		addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
-		addIntOp(OP_SUB1VAR,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[nvarnumber]);
+		addIntOp(OP_PUSHINT,-1);
+		addOp(OP_ADD);
+		addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
 	}
 	| B256ADD1 variable {
-		addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
-		addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+		addIntOp(OP_PUSHINT,1);
+		addOp(OP_ADD);
+		addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[nvarnumber]);
 	}
 	| B256SUB1 variable {
-		addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
-		addIntOp(OP_PUSHVAR,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+		addIntOp(OP_PUSHINT,-1);
+		addOp(OP_ADD);
+		addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
+		addIntOp(OP_VAR_GET,varnumber[nvarnumber]);
 	}
 	| B256TOINT '(' expr ')' { addOp(OP_INT); }
 	| B256TOFLOAT '(' expr ')' { addOp(OP_FLOAT); }
@@ -2175,7 +2212,7 @@ expr_string:
 
 expr_dataelement:
 	variable_a {
-		addIntOp(OP_PUSHVAR, varnumber[--nvarnumber]);
+		addIntOp(OP_VAR_GET, varnumber[--nvarnumber]);
 	}
 	| listoflists {
 		addOp(OP_LIST2EXPRESSION);
@@ -2212,6 +2249,7 @@ expr_dataelement:
 statement:
 	alertstmt
 	| arcstmt
+	| arraybasestmt
 	| begincasestmt
 	| callstmt
 	| casestmt
@@ -2708,7 +2746,7 @@ dimstmt: 	B256DIM array_element {
 				addIntOp(OP_ARRAYFILL, varnumber[nvarnumber]);
 			}
 			| B256DIM variable_a '=' expr {
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256DIM variable_a B256FILL expr {
 				addIntOp(OP_PUSHINT, 1);
@@ -2808,77 +2846,89 @@ endstmt: 	B256END args_none {
 /* assign an expression to a single array element */
 arrayelementassign:
 			array_element '=' expr {
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| array_element B256ADD1 {
-				addIntOp(OP_ADD1ARRAY,varnumber[--nvarnumber]);
+				// a[r,c]++ - NO PUSH as this is a statement
+				int v = varnumber[--nvarnumber];
+				addOp(OP_STACKDUP2);			// save indexes
+				addIntOp(OP_ARR_GET, v);		// get current value
+				addIntOp(OP_PUSHINT,1);			// add 1
+				addOp(OP_ADD);
+				addIntOp(OP_ARR_SET, v);		// assign new value
 			}
 			| array_element B256SUB1 {
-				addIntOp(OP_SUB1ARRAY,varnumber[--nvarnumber]);
+				// a[r,c]-- - NO PUSH as this is a statement
+				int v = varnumber[--nvarnumber];
+				addOp(OP_STACKDUP2);			// save indexes
+				addIntOp(OP_ARR_GET, v);		// get current value
+				addIntOp(OP_PUSHINT,-1);		// subtract 1
+				addOp(OP_ADD);
+				addIntOp(OP_ARR_SET, v);		// assign new value
 			}
 			| array_element B256ADDEQUAL expr {
 				// a[b,c] += n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_ADD);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			| array_element B256SUBEQUAL expr {
 				// a[b,c] -= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_SUB);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			| array_element B256MULEQUAL expr {
 				// a[b,c] *= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_MUL);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			| array_element B256DIVEQUAL expr {
 				// a[b,c] /= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_DIV);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			| array_element B256AMPEQUAL expr {
 				// a[b,c] &= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_BINARYAND);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			| array_element B256SEMICOLONEQUAL expr {
 				// a[b,c] /= n
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKDUP2);
-				addIntOp(OP_DEREF,varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKTOPTO2);
 				addOp(OP_STACKSWAP2);
 				addOp(OP_STACKSWAP);
 				addOp(OP_CONCATENATE);
-				addIntOp(OP_ARRAYASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[nvarnumber]);
 			}
 			;
 			
@@ -2893,48 +2943,54 @@ arrayassign:
 /* assign an expression to a normal variable */
 assign:
 			variable_a '=' expr {
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| variable B256ADD1 {
-				addIntOp(OP_ADD1VAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT,1);
+				addOp(OP_ADD);
+				addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
 			}
 			| variable B256SUB1 {
-				addIntOp(OP_SUB1VAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
+				addIntOp(OP_PUSHINT,-1);
+				addOp(OP_ADD);
+				addIntOp(OP_VAR_SET,varnumber[nvarnumber]);
 			}
 			| variable B256ADDEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_ADD);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			| variable B256SUBEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_SUB);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			| variable B256MULEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_MUL);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			| variable B256DIVEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_DIV);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			| variable B256AMPEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_BINARYAND);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			| variable B256SEMICOLONEQUAL expr {
-				addIntOp(OP_PUSHVAR,varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_GET,varnumber[--nvarnumber]);
 				addOp(OP_STACKSWAP);
 				addOp(OP_CONCATENATE);
-				addIntOp(OP_ASSIGN, varnumber[nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[nvarnumber]);
 			}
 			;
 
@@ -3047,7 +3103,7 @@ onerrorstmt:
 returnstmt:	B256RETURN args_none {
 				if (functionDefSymbol!=-1) {
 					// if we are defining a function return pushes a variable value
-					addIntOp(OP_PUSHVAR, functionDefSymbol);
+					addIntOp(OP_VAR_GET, functionDefSymbol);
 					addOp(OP_DECREASERECURSE);
 				}
 				if (subroutineDefSymbol!=-1) {
@@ -3498,94 +3554,94 @@ seekstmt:	B256SEEK expr {
 inputstmt:	B256INPUT args_ev {
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUT variable  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUT args_ea {
 				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_UNASSIGNED);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTSTRING args_ev {
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTSTRING variable  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTSTRING args_ea {
 				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTSTRING array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_STRING);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTINT args_ev {
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTINT variable  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTINT args_ea {
 				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTINT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_INT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTFLOAT args_ev {
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTFLOAT variable  {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_VAR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTFLOAT args_ea {
 				addOp(OP_STACKTOPTO2); addOp(OP_STACKTOPTO2);		// bring prompt to top
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			| B256INPUTFLOAT array_element {
 				addStringOp(OP_PUSHSTRING, "");
 				addIntOp(OP_PUSHINT,T_FLOAT);
 				addOp(OP_INPUT);
-				addIntOp(OP_ARRAYASSIGN, varnumber[--nvarnumber]);
+				addIntOp(OP_ARR_SET, varnumber[--nvarnumber]);
 			}
 			;
 
@@ -4114,13 +4170,13 @@ functionstmt:
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						addIntOp(OP_ASSIGN, args[t]);
+						addIntOp(OP_VAR_SET, args[t]);
 					}
 				}
 				//
 				// initialize return variable
 				addIntOp(OP_PUSHINT, 0);
-				addIntOp(OP_ASSIGN, functionDefSymbol);
+				addIntOp(OP_VAR_SET, functionDefSymbol);
 				//
 				numargs=0;	// clear the list for next function
 			}
@@ -4158,7 +4214,7 @@ subroutinestmt:
 				addOp(OP_INCREASERECURSE);
 				{ 	int t;
 					for(t=numargs-1;t>=0;t--) {
-						addIntOp(OP_ASSIGN, args[t]);
+						addIntOp(OP_VAR_SET, args[t]);
 					}
 				}
 				numargs=0;	// clear the list for next function
@@ -4171,7 +4227,7 @@ endfunctionstmt:
 				if (iftabletype[numifs-1]==IFTABLETYPEFUNCTION) {
 					//
 					// add return if there is not one
-					addIntOp(OP_PUSHVAR, functionDefSymbol);
+					addIntOp(OP_VAR_GET, functionDefSymbol);
 					addOp(OP_DECREASERECURSE);
 					addOp(OP_RETURN);
 					//
@@ -4225,10 +4281,10 @@ regexminimalstmt:
 
 unassignstmt:
 	B256UNASSIGN variable_a {
-		addIntOp(OP_UNASSIGN, varnumber[--nvarnumber]);
+		addIntOp(OP_VAR_UN, varnumber[--nvarnumber]);
 	}
 	| B256UNASSIGN array_element {
-		addIntOp(OP_UNASSIGNA, varnumber[--nvarnumber]);
+		addIntOp(OP_ARR_UN, varnumber[--nvarnumber]);
 	}
 	;
 
@@ -4365,6 +4421,11 @@ setgraphstmt:
 	}
 	;
 
+arraybasestmt:
+	B256ARRAYBASE expr {
+		addOp(OP_ARRAYBASE);
+	}
+	;
 
 
 

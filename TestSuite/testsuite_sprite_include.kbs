@@ -11,6 +11,8 @@
 # 20160908	j.m.reneau		changes getslice to return an array - added serialize
 # 20161101  j.m.reneau  added [] to all array passing to functions
 
+currentsuite = "sprite"
+
 
 graphsize 150,150
 
