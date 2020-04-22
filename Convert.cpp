@@ -300,11 +300,11 @@ QPolygonF *Convert::getPolygonF(DataElement *d) {
 			if (d->arrayRows()*d->arrayCols()>=6) {
 				if (d->arrayRows()==1) {
 					for(int col = 0; col < d->arrayCols(); col+=2){
-						poly->append(QPointF(getFloat(d->arraygetData(0,col)), getFloat(d->arraygetData(0,col+1))));
+						poly->append(QPointF(getFloat(d->arrayGetData(0,col)), getFloat(d->arrayGetData(0,col+1))));
 					}
 				} else {
 					for(int row = 0; row < d->arrayRows(); row++){
-						poly->append(QPointF(getFloat(d->arraygetData(row,0)), getFloat(d->arraygetData(row,1))));
+						poly->append(QPointF(getFloat(d->arrayGetData(row,0)), getFloat(d->arrayGetData(row,1))));
 					}
 				}
 			} else {

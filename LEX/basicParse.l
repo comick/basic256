@@ -372,6 +372,7 @@ log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
 ltrim [Ll][Tt][Rr][Ii][Mm]
+map [Mm][Aa][Pp]
 md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
 midx [Mm][Ii][Dd][Xx]
@@ -1035,6 +1036,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {kill}						{ count(); return B256KILL; }
 {let}						{ count(); return B256LET; }
 {line}						{ count(); return B256LINE; }
+{map}						{ count(); return B256MAP; }
 {netclose}					{ count(); return B256NETCLOSE; }
 {netclose}":"				{ count(); unputcolon(); return B256NETCLOSE; }
 {netconnect}				{ count(); return B256NETCONNECT; }

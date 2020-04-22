@@ -325,6 +325,7 @@ QString Interpreter::opname(int op) {
 	case OP_LT : return QString("OP_LT");
 	case OP_LTE : return QString("OP_LTE");
 	case OP_LTRIM : return QString("OP_LTRIM");
+	case OP_MAP_DIM : return QString("OP_MAP_DIM");
 	case OP_MD5 : return QString("OP_MD5");
 	case OP_MID : return QString("OP_MID");
 	case OP_MIDX : return QString("OP_MIDX");
@@ -1481,7 +1482,7 @@ Interpreter::execByteCode() {
 								temp->intStart = 0;				// current index into array
 								temp->arrayData = adata;
 								// set variable to first element
-								variables->setData(i, temp->arrayData->arraygetData(0, temp->intStart));
+								variables->setData(i, temp->arrayData->arrayGetData(0, temp->intStart));
 								watchvariable(debugMode, i);
 								// add new forframe to the forframe stack
 								temp->next = forstack;
@@ -1579,7 +1580,7 @@ Interpreter::execByteCode() {
 										temp->intStart++;
 										if (temp->intStart < temp->arrayData->arrayCols()) {
 											// set variable to this element
-											variables->setData(i, temp->arrayData->arraygetData(0, temp->intStart));
+											variables->setData(i, temp->arrayData->arrayGetData(0, temp->intStart));
 											watchvariable(debugMode, i);
 											// loop again
 											op = temp->forAddr;
@@ -1615,6 +1616,15 @@ Interpreter::execByteCode() {
 					watchvariable(debugMode, i);
 				}
 				break;
+				
+				case OP_MAP_DIM:
+				{
+					variables->getData(i)->mapDim();
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+					watchvariable(debugMode, i);
+				}
+				break;
+				
 
 				case OP_ALEN:
 				case OP_ALENROWS:
@@ -1624,11 +1634,17 @@ Interpreter::execByteCode() {
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
 					switch(opcode) {
 						case OP_ALEN:
-							if (e->arrayRows()==1) {
-								stack->pushInt(e->arrayCols());
+							if (e->type==T_ARRAY) {
+								if (e->arrayRows()==1) {
+									stack->pushInt(e->arrayCols());
+								} else {
+									error->q(ERROR_ARRAYLENGTH2D);
+								}
+							} else if (e->type==T_MAP) {
+								stack->pushInt(e->mapLength());
 							} else {
+								error->q(ERROR_ARRAYORMAPEXPR);
 								stack->pushInt(0);
-								error->q(ERROR_ARRAYLENGTH2D);
 							}
 							break;
 						case OP_ALENROWS:
@@ -1651,26 +1667,51 @@ Interpreter::execByteCode() {
 					// assign a value to an array element
 					// assumes that arrays are always two dimensional (if 1d then one row [0,i]) )
 					DataElement *e = stack->popDE();
-					int col = stack->popInt()-arraybase;
-					int row = stack->popInt()-arraybase;
-					if (col<0) col=0;
-					if (row<0) row=0;
-					variables->getData(i)->arraysetData(row, col, e);
-					if (DataElement::getError()) {error->q(DataElement::getError(true),i,row,col);}
-					watchvariable(debugMode, i, row, col);
+					DataElement *col = stack->popDE();
+					DataElement *row = stack->popDE();
+					DataElement *vdata = variables->getData(i);
+					if (vdata->type==T_ARRAY) {
+						int c = convert->getInt(col) - arraybase;
+						int r = convert->getInt(row) - arraybase;
+						if (c<0) c=0;
+						if (r<0) r=0;
+						vdata->arraySetData(r, c, e);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r,c);}
+						watchvariable(debugMode, i, r, c);
+					} else if (vdata->type==T_MAP) {
+						QString key = convert->getString(col);
+						vdata->mapSetData(key, e);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+						watchvariable(debugMode, i);
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
+					}
 					delete e;
+					delete col;
+					delete row;
 				}
 				break;
 
 
 				case OP_ARR_GET: {
 					// get a value from an array and push it to the stack
-					int col = stack->popInt()-arraybase;
-					int row = stack->popInt()-arraybase;
-					if (col<0) col=0;
-					if (row<0) row=0;
-					DataElement *e = variables->getData(i)->arraygetData(row, col);
-					if (DataElement::getError()) {error->q(DataElement::getError(true),i,row+arraybase,col+arraybase);}
+					DataElement *e;
+					DataElement *col = stack->popDE();
+					DataElement *row = stack->popDE();
+					DataElement *vdata = variables->getData(i);
+					if (vdata->type==T_ARRAY) {
+						int c = convert->getInt(col) - arraybase;
+						int r = convert->getInt(row) - arraybase;
+						e = vdata->arrayGetData(r, c);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r+arraybase,c+arraybase);}
+					} else if (vdata->type==T_MAP) {
+						QString key = convert->getString(col);
+						e = vdata->mapGetData(key);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
+						e = new DataElement();
+					}
 					stack->pushDE(e);
 				}
 				break;
@@ -1710,7 +1751,7 @@ Interpreter::execByteCode() {
 					if(!error->pending()){
 						for(int row = 0; row<rows; row++) {
 							for (int col = 0; col<columns; col++) {
-								DataElement *d = e->arraygetData(row, col);
+								DataElement *d = e->arrayGetData(row, col);
 								if (d->type==T_UNASSIGNED) {
 									error->q(ERROR_VARNOTASSIGNED, i, row, col);
 								}
@@ -1743,8 +1784,8 @@ Interpreter::execByteCode() {
 							if (!error->pending() && edest->type==T_ARRAY) {
 								for(int row = 0; row<rows; row++) {
 									for (int col = 0; col<columns; col++) {
-										if (mode||edest->arraygetData(row, col)->type==T_UNASSIGNED) {
-											edest->arraysetData(row, col, e);
+										if (mode||edest->arrayGetData(row, col)->type==T_UNASSIGNED) {
+											edest->arraySetData(row, col, e);
 										}
 									}
 									stack->pushInt(columns);
@@ -1786,7 +1827,7 @@ Interpreter::execByteCode() {
 						}
 						for(int col= columns-1; col >= 0; col--) {
 							DataElement *e = stack->popDE(); //continue to pull from stack even if error occured
-							edest->arraysetData(row, col, e);
+							edest->arraySetData(row, col, e);
 							delete e;
 						}
 					}
@@ -3366,7 +3407,7 @@ Interpreter::execByteCode() {
 						for(int row = 0; row < rows; row++) {
 							std::vector < double > v;	// vector containing duration
 						   for (int col = 0; col < columns; col++) {
-								DataElement *av = e->arraygetData(row, col);
+								DataElement *av = e->arrayGetData(row, col);
 								if(col%2==0)
 									i = convert->getMusicalNote(av);
 								else
@@ -3414,7 +3455,7 @@ Interpreter::execByteCode() {
 						if(d->arrayRows()==1){
 							sounddata.resize(d->arrayCols());
 							for(int col = 0; col < d->arrayCols(); col++) {
-								sounddata[col]=convert->getFloat(d->arraygetData(0,col));
+								sounddata[col]=convert->getFloat(d->arrayGetData(0,col));
 							}
 							stack->pushQString(sound->loadRaw(sounddata));
 						} else {
@@ -3483,12 +3524,12 @@ Interpreter::execByteCode() {
 							if (de->arrayRows()==1) {
 								// data in a single row
 								for(int col = 0; col < de->arrayCols(); col+=2) {
-									sound->harmonics(convert->getInt(de->arraygetData(0,col)), convert->getFloat(de->arraygetData(0,col+1)));
+									sound->harmonics(convert->getInt(de->arrayGetData(0,col)), convert->getFloat(de->arrayGetData(0,col+1)));
 								}
 							} else {
 								// data in mutiple columns
 								for(int row = 0; row < de->arrayRows(); row+=2) {
-									sound->harmonics(convert->getInt(de->arraygetData(row,0)), convert->getFloat(de->arraygetData(row,1)));
+									sound->harmonics(convert->getInt(de->arrayGetData(row,0)), convert->getFloat(de->arrayGetData(row,1)));
 								}
 							}
 						} else {
@@ -3520,7 +3561,7 @@ Interpreter::execByteCode() {
 							if(de->arrayCols()%2==1 && de->arrayCols()>4){
 								envelope.resize(de->arrayCols());
 								for(int col =0; col < de->arrayCols(); col++) {
-									envelope[col]=convert->getFloat(de->arraygetData(0,col));
+									envelope[col]=convert->getFloat(de->arrayGetData(0,col));
 								}
 							} else {
 								error->q(ERROR_ENVELOPEODD);
@@ -3566,7 +3607,7 @@ Interpreter::execByteCode() {
 							wave.resize(columns,0);
 							while(columns>0){
 								columns--;
-								DataElement *av = e->arraygetData(0, columns);
+								DataElement *av = e->arrayGetData(0, columns);
 								wave[columns]=convert->getInt(av);
 							}
 							if(!error->pending())
@@ -3830,7 +3871,7 @@ Interpreter::execByteCode() {
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								d->arraysetData(tw,th,new DataElement((long) r[counter]));
+								d->arraySetData(tw,th,new DataElement((long) r[counter]));
 								counter++;
 							}
 						}
@@ -3857,7 +3898,7 @@ Interpreter::execByteCode() {
 						int counter = 0;
 						for (th=0;th<h;th++) {
 							for (tw=0; tw<w; tw++) {
-							r[counter++] = (QRgb) convert->getInt(d->arraygetData(tw,th));
+							r[counter++] = (QRgb) convert->getInt(d->arrayGetData(tw,th));
 							}
 						}
 						//update painter only if needed (faster)
@@ -6371,7 +6412,7 @@ Interpreter::execByteCode() {
 						if (row!=0) stuff.append(rowdelim);
 						for (int col=0; col<cols; col++) {
 								if (col!=0) stuff.append(coldelim);
-								stuff.append(convert->getString(d->arraygetData(row,col)));
+								stuff.append(convert->getString(d->arrayGetData(row,col)));
 						}
 					}
 					stack->pushQString(stuff);
@@ -6391,7 +6432,7 @@ Interpreter::execByteCode() {
 							if (row!=0) stuff.append(SERALIZE_DELIMITER);
 							for (int col=0; col<cols; col++) {
 									if (col!=0) stuff.append(SERALIZE_DELIMITER);
-									temp = e->arraygetData(row,col);
+									temp = e->arrayGetData(row,col);
 									switch (temp->type) {
 										case T_STRING:
 											stuff.append(SERALIZE_STRING + QString::fromUtf8(temp->stringval.toUtf8().toHex()) );
@@ -6452,7 +6493,7 @@ Interpreter::execByteCode() {
 					d->arrayDim(1, list.size(), false);
 					for(int y=0; y<list.size(); y++) {
 						// fill the string array
-						d->arraysetData(0,y,new DataElement(list.at(y)));
+						d->arraySetData(0,y,new DataElement(list.at(y)));
 					}
 					stack->pushDE(d);
 				}
@@ -6492,7 +6533,7 @@ Interpreter::execByteCode() {
 												dat = new DataElement();
 												error->q(ERROR_UNSERIALIZEFORMAT);
 										}
-										d->arraysetData(row,col,dat);
+										d->arraySetData(row,col,dat);
 									}
 									stack->pushDE(d);
 								}
@@ -7002,7 +7043,7 @@ Interpreter::execByteCode() {
 						int thisy=stack->popInt();
 						for(int col= thisy-1; col >= 0; col--) {
 							DataElement *e = stack->popDE();
-							edest->arraysetData(row,col, e);
+							edest->arraySetData(row,col, e);
 							delete e;
 						}
 					}

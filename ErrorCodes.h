@@ -125,7 +125,9 @@
 #define ERROR_NUMBEREXPR				121
 #define ERROR_STRINGEXPR				122
 #define ERROR_ZEROORONE					123
-
+#define ERROR_NOTMAP					124
+#define ERROR_ARRAYORMAPEXPR			125
+#define ERROR_MAPKEY					126
 
 
 

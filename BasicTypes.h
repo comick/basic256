@@ -11,4 +11,5 @@
 #define T_STRING		3
 #define T_ARRAY			4
 #define T_REF			5
+#define T_MAP			6
 

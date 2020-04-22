@@ -629,6 +629,7 @@
 %token B256LOWER
 %token B256LTE
 %token B256LTRIM
+%token B256MAP
 %token B256MD5
 %token B256MID
 %token B256MIDX
@@ -2314,6 +2315,7 @@ statement:
 	| killstmt
 	| letstmt
 	| linestmt
+	| mapstmt
 	| netclosestmt
 	| netconnectstmt
 	| netlistenstmt
@@ -2713,6 +2715,10 @@ letstmt:	B256LET assign
 			| arrayassign
 			| arrayelementassign
 			;
+
+mapstmt: 	B256MAP variable_a {
+				addIntOp(OP_MAP_DIM, varnumber[--nvarnumber]);
+			}
 
 dimstmt: 	B256DIM array_element {
 				addIntOp(OP_DIM, varnumber[--nvarnumber]);

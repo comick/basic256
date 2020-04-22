@@ -28,7 +28,14 @@ class DataElementArray
     public:
         int xdim;
         int ydim;
-        std::vector<DataElement> datavector;
+        std::vector<DataElement> data;
+};
+
+
+class DataElementMap
+{
+    public:
+        std::map<std::string, DataElement> data;
 };
 
 class DataElement
@@ -39,7 +46,8 @@ class DataElement
 		double floatval;
 		long intval;
 		int level;
-        DataElementArray *arr;
+		DataElementArray *arr;
+		DataElementMap *map;
         
 
 		DataElement();
@@ -56,12 +64,17 @@ class DataElement
 		void clear();
 		
 		void arrayDim(const int, const int, const bool);
-		DataElement* arraygetData(const int, const int);
-		void arraysetData(const int, const int, DataElement *);
+		DataElement* arrayGetData(const int, const int);
+		void arraySetData(const int, const int, DataElement *);
 		void arrayUnassign(const int, const int);
 		int arrayRows();
 		int arrayCols();
 
+		void mapDim();
+		DataElement* mapGetData(QString);
+		void mapSetData(QString, DataElement *);
+		void mapUnassignData(QString);
+		int mapLength();
 		
 		static int getError() {
 			return getError(false);
@@ -76,6 +89,7 @@ class DataElement
 	private:
 		static int e;		// error number thrown - will be 0 if no error
 		Error *error;
+		void init();
 };
 
 

@@ -146,7 +146,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level, int
 				childItem->setData(COLUMNNAME, Qt::UserRole + 1, childname);
 				parentItem->addChild(childItem);
 			}
-			setTypeAndValue(childItem, v->data->arraygetData(x,y));
+			setTypeAndValue(childItem, v->data->arrayGetData(x,y));
 		}
 	}
 }
@@ -180,7 +180,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
 		if (v->data->type==T_ARRAY) {
 			for(int x = 0; x<v->data->arr->xdim;x++) {
 				for(int y = 0; y<v->data->arr->ydim;y++) {
-					DataElement *q = v->data->arraygetData(x,y);
+					DataElement *q = v->data->arrayGetData(x,y);
 					DataElement::getError(true);
 					if (q->type!=T_UNASSIGNED) {
 						varWinAssign(variables, varnum, level, x, y);

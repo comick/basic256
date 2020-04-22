@@ -5,39 +5,41 @@
 
 int DataElement::e = ERROR_NONE;
 
-DataElement::DataElement() {
-	// create an empty dataelement
-	type = T_UNASSIGNED;
+void DataElement::init() {
+	// initialize dataelement common stuff
 	e=0;
 	arr = NULL;
+	map = NULL;
+}
+
+DataElement::DataElement() {
+	// create an empty dataelement
+	init();
+	type = T_UNASSIGNED;
 }
 
 DataElement::DataElement(QString s) {
+	init();
 	type = T_STRING;
 	stringval = s;
-	e=0;
-	arr = NULL;
 }
 
 DataElement::DataElement(int i) {
+	init();
     type = T_INT;
     intval = i;
-	e=0;
-	arr = NULL;
 }
 
 DataElement::DataElement(long l) {
+	init();
 	type = T_INT;
 	intval = l;
-	e=0;
-	arr = NULL;
 }
 
 DataElement::DataElement(double d) {
+	init();
 	type = T_FLOAT;
 	floatval = d;
-	e=0;
-	arr = NULL;
 }
 
 DataElement::~DataElement() {
@@ -74,11 +76,14 @@ void DataElement::copy(DataElement *source) {
 				int i = source->arr->xdim * source->arr->ydim;
 				arr->xdim = source->arr->xdim;
 				arr->ydim = source->arr->ydim;
-				arr->datavector.resize(i);
+				arr->data.resize(i);
 				while(i-- > 0) {
-					arr->datavector[i].copy(&source->arr->datavector[i]);
+					arr->data[i].copy(&source->arr->data[i]);
 				}
 			}
+			break;
+		case T_MAP:
+			// need logic here
 			break;
 		case T_REF:
 			intval = source->intval;
@@ -96,7 +101,11 @@ void DataElement::clear() {
 	level = 0;
 	if (arr){
 		delete(arr);
-		arr=NULL;
+		arr = NULL;
+	}
+	if (map) {
+		delete(map);
+		map = NULL;
 	}
 }
 
@@ -108,6 +117,7 @@ QString DataElement::debug() {
 	if(type==T_FLOAT) return("float(" + QString::number(floatval) + ") ");
 	if(type==T_STRING) return("string(" + stringval + ") ");
 	if(type==T_ARRAY) return("array(" + QString::number(intval) + ")");
+	if(type==T_MAP) return("MAP()");
 	if(type==T_UNASSIGNED) return("unused ");
 	return("badtype ");
 }
@@ -122,20 +132,20 @@ void DataElement::arrayDim(const int xdim, const int ydim, const bool redim) {
 				if (!arr){
 					arr = new DataElementArray;
 				}else{
-					arr->datavector.clear();
+					arr->data.clear();
 				}
-				arr->datavector.resize(size);
+				arr->data.resize(size);
 				//int i = size;
 				//while(i-- > 0) {
-				//	arr->datavector[i].intval = 0;
+				//	arr->data[i].intval = 0;
 				//}
 				type = T_ARRAY;
 			}else{
 				// redim - resize the vector
 				//const int oldsize = arr->xdim * arr->ydim;
-				arr->datavector.resize(size);
+				arr->data.resize(size);
 				//for(int i=oldsize;i<size;i++) {
-				//	arr->datavector[i].intval = 0;
+				//	arr->data[i].intval = 0;
 				//}
 			}
 
@@ -173,13 +183,13 @@ int DataElement::arrayCols() {
 	return(0);
 }
 
-DataElement* DataElement::arraygetData(const int x, const int y) {
+DataElement* DataElement::arrayGetData(const int x, const int y) {
 	// get data from array elements from map (using x, y)
 	// if there is an error return an unassigned value
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
-			DataElement *d = &arr->datavector[i];
+			DataElement *d = &arr->data[i];
 			//the correct behaviour is to check for unassigned content
 			//when program try to use it not when it try to convert to int, string and so...
 			if (d->type==T_UNASSIGNED){
@@ -195,13 +205,13 @@ DataElement* DataElement::arraygetData(const int x, const int y) {
 	return this;
 }
 
-void DataElement::arraysetData(const int x, const int y, DataElement *d) {
+void DataElement::arraySetData(const int x, const int y, DataElement *d) {
 	// DataElement's data is copied and it should be deleted
 	// by whomever created it
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
-			arr->datavector[i].copy(d);
+			arr->data[i].copy(d);
 		} else {
 			e = ERROR_ARRAYINDEX;
 		}
@@ -214,7 +224,7 @@ void DataElement::arrayUnassign(const int x, const int y) {
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
-			arr->datavector[i].type = T_UNASSIGNED;
+			arr->data[i].type = T_UNASSIGNED;
 		} else {
 			e = ERROR_ARRAYINDEX;
 		}
@@ -224,3 +234,61 @@ void DataElement::arrayUnassign(const int x, const int y) {
 }
 
 
+
+void DataElement::mapDim(){
+	if (type==T_MAP) {
+		map->data.clear();
+	} else {
+		clear();
+		map = new DataElementMap();
+		type=T_MAP;
+	}
+}
+
+DataElement* DataElement::mapGetData(QString key){
+	DataElement *d;
+	std::string ckey = key.toStdString();
+	if (type==T_MAP) {
+		if (map->data.count(ckey)) {
+			d = &map->data[ckey];
+		} else {
+			e = ERROR_MAPKEY;
+			d = new DataElement();
+		}
+	} else {
+		e = ERROR_NOTMAP;
+		d = new DataElement();
+	}
+	return d;
+}
+
+void DataElement::mapSetData(QString key, DataElement *d){
+	if (type==T_MAP) {
+		map->data[key.toStdString()] = *d;
+	} else {
+		e = ERROR_NOTMAP;
+	}
+}
+
+void DataElement::mapUnassignData(QString key){
+	std::string ckey = key.toStdString();
+	if (type==T_MAP) {
+		if (map->data.count(ckey)) {
+			map->data.erase(ckey);
+		} else {
+			e = ERROR_MAPKEY;
+		}
+	} else {
+		e = ERROR_NOTMAP;
+	}
+}
+
+int DataElement::mapLength(){
+	int l = 0;
+	if (type!=T_MAP) {
+		l = map->data.size();
+	} else {
+		e = ERROR_NOTMAP;
+	}
+	return l;
+}

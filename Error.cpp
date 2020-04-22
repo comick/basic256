@@ -141,13 +141,13 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_NOSUCHLABEL:
 			errormessage = tr("No such label %VARNAME%");
 			break;
-        case ERROR_NOSUCHSUBROUTINE:
-            errormessage = tr("No such SUBROUTINE %VARNAME%");
-            break;
-        case ERROR_NOSUCHFUNCTION:
-            errormessage = tr("No such FUNCTION %VARNAME%");
-            break;
-        case ERROR_NEXTNOFOR:
+		case ERROR_NOSUCHSUBROUTINE:
+			errormessage = tr("No such SUBROUTINE %VARNAME%");
+			break;
+		case ERROR_NOSUCHFUNCTION:
+			errormessage = tr("No such FUNCTION %VARNAME%");
+			break;
+		case ERROR_NEXTNOFOR:
 			errormessage = tr("Next without FOR");
 			break;
 		case ERROR_FILENUMBER:
@@ -270,8 +270,8 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_DIVZERO:
 			errormessage = tr("Division by zero");
 			break;
-        case ERROR_EXPECTEDARRAY:
-            errormessage = tr("Expected array");
+		case ERROR_EXPECTEDARRAY:
+			errormessage = tr("Expected array");
 			break;
 		case ERROR_FREEFILE:
 			errormessage = tr("There are no free file numbers to allocate");
@@ -310,7 +310,7 @@ QString Error::getErrorMessage(char **symtable) {
 			errormessage = tr("Radix conversion base muse be between 2 and 36");
 			break;
 		case ERROR_LOGRANGE:
-            errormessage = tr("Unable to calculate the logarithm of a number less than or equal to 0");
+			errormessage = tr("Unable to calculate the logarithm of a number less than or equal to 0");
 			break;
 		case ERROR_STRINGMAXLEN:
 			errormessage = tr("String exceeds maximum length of 16,777,216 characters");
@@ -351,8 +351,8 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
 			break;
-        case ERROR_UNSERIALIZEFORMAT:
-            errormessage = tr("Unable to UnSerialize string");
+		case ERROR_UNSERIALIZEFORMAT:
+			errormessage = tr("Unable to UnSerialize string");
 			break;
 		case ERROR_SLICESIZE:
 			errormessage = tr("Invalid Slice dimensions");
@@ -360,102 +360,111 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_ARRAYLENGTH2D:
 			errormessage = tr("Can not get a single length of a two dimensional array");
 			break;
-        case ERROR_VARNULL:
-            errormessage = tr("Variable %VARNAME% refers to a non-existent variable");
-            break;
-        case ERROR_VARCIRCULAR:
-            errormessage = tr("Circular reference in variable %VARNAME%");
-            break;
-        case ERROR_IMAGERESOURCE:
-            errormessage = tr("Specified image resource not found");
-            break;
-        case ERROR_SOUNDRESOURCE:
-            errormessage = tr("Specified sound resource not found");
-            break;
-        case ERROR_INVALIDRESOURCE:
-            errormessage = tr("Specified resource not found");
-            break;
-        case ERROR_SOUNDFILE:
-            errormessage = tr("Unable to load sound file");
-            break;
-        case ERROR_DOWNLOAD:
-            errormessage = tr("Error downloading file");
-            break;
-        case ERROR_EXPECTEDSOUND:
-            errormessage = tr("Expected sound");
-            break;
-        case ERROR_TOOMANYSOUNDS:
-            errormessage = tr("Too many sound instances");
-            break;
-        case ERROR_ENVELOPEODD:
-            errormessage = tr("Envelope data must contain at least 4 elements and an odd number of elements");
-            break;
-        case ERROR_ENVELOPEMAX:
-            errormessage = tr("It was exceeded the maximum length of an envelope, which is 20 seconds");
-            break;
-        case ERROR_HARMONICNUMBER:
-            errormessage = tr("Harmonic number must be an integer greater than zero");
-            break;
-        case ERROR_HARMONICLIST:
-            errormessage = tr("Harmonics list must be one dimensional array with an even number of elements or two dimemsional array with two elements in each row");
-            break;
-        case ERROR_ONEDIMENSIONAL:
-            errormessage = tr("Expects one dimensional array or one dimensional list of elements");
-            break;
-        case ERROR_WAVEFORMLOGICAL:
-            errormessage = tr("Creating custom waveform using logical coordinates it request at least 3 elements");
-            break;
-        case ERROR_STRING2NOTE:
-            errormessage = tr("Unable to convert string to musical note");
-            break;
-        case ERROR_ARRAYELEMENT:
-            errormessage = tr("Element of array %VARNAME% has not been assigned a value");
-            break;
-        case ERROR_SETTINGSGETACCESS:
-            errormessage = tr("The program does not have permission to read settings from other program. Check access level from 'Preferences' panel");
-            break;
-        case ERROR_SETTINGSSETACCESS:
-            errormessage = tr("The program does not have permission to write settings for other program. Check access level from 'Preferences' panel");
-            break;
-        case ERROR_INVALIDPROGNAME:
-            errormessage = tr("Invalid program name");
-            break;
-        case ERROR_INVALIDKEYNAME:
-            errormessage = tr("Invalid key name");
-            break;
-        case ERROR_SETTINGMAXLEN:
-            errormessage = tr("Setting string exceeds maximum length of 16,383 characters");
-            break;
-        case ERROR_SETTINGMAXKEYS:
-            errormessage = tr("The maximum number of keys for this program has been exceeded");
-            break;
-        case ERROR_REFNOTASSIGNED:
-            errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
-            break;
-        case ERROR_UNEXPECTEDRETURN:
-            errormessage = tr("Unexpected RETURN");
-            break;
-        case ERROR_ONERRORSUB:
-            errormessage = tr("SUBROUTINE %VARNAME% expects arguments and therefore can not be used by ONERROR statement");
-            break;
-        case ERROR_SQRRANGE:
-            errormessage = tr("Unable to calculate the root of a negative number");
-            break;
-        case ERROR_ASINACOSRANGE:
-            errormessage = tr("Unable to calculate the arc-sine or arc-cosine of a value outside the interval [-1.0, +1.0]");
-            break;
-        case ERROR_ARRAYEXPR:
-            errormessage = tr("Array Expression Expected.");
-            break;
-        case ERROR_NUMBEREXPR:
-            errormessage = tr("Numeric Expression Expected.");
-            break;
-        case ERROR_STRINGEXPR:
-            errormessage = tr("String Expression Expected.");
-            break;
-        case ERROR_ZEROORONE:
-            errormessage = tr("Zero or one expected.");
-            break;
+		case ERROR_VARNULL:
+			errormessage = tr("Variable %VARNAME% refers to a non-existent variable");
+			break;
+		case ERROR_VARCIRCULAR:
+			errormessage = tr("Circular reference in variable %VARNAME%");
+			break;
+		case ERROR_IMAGERESOURCE:
+			errormessage = tr("Specified image resource not found");
+			break;
+		case ERROR_SOUNDRESOURCE:
+			errormessage = tr("Specified sound resource not found");
+			break;
+		case ERROR_INVALIDRESOURCE:
+			errormessage = tr("Specified resource not found");
+			break;
+		case ERROR_SOUNDFILE:
+			errormessage = tr("Unable to load sound file");
+			break;
+		case ERROR_DOWNLOAD:
+			errormessage = tr("Error downloading file");
+			break;
+		case ERROR_EXPECTEDSOUND:
+			errormessage = tr("Expected sound");
+			break;
+		case ERROR_TOOMANYSOUNDS:
+			errormessage = tr("Too many sound instances");
+			break;
+		case ERROR_ENVELOPEODD:
+			errormessage = tr("Envelope data must contain at least 4 elements and an odd number of elements");
+			break;
+		case ERROR_ENVELOPEMAX:
+			errormessage = tr("It was exceeded the maximum length of an envelope, which is 20 seconds");
+			break;
+		case ERROR_HARMONICNUMBER:
+			errormessage = tr("Harmonic number must be an integer greater than zero");
+			break;
+		case ERROR_HARMONICLIST:
+			errormessage = tr("Harmonics list must be one dimensional array with an even number of elements or two dimemsional array with two elements in each row");
+			break;
+		case ERROR_ONEDIMENSIONAL:
+			errormessage = tr("Expects one dimensional array or one dimensional list of elements");
+			break;
+		case ERROR_WAVEFORMLOGICAL:
+			errormessage = tr("Creating custom waveform using logical coordinates it request at least 3 elements");
+			break;
+		case ERROR_STRING2NOTE:
+			errormessage = tr("Unable to convert string to musical note");
+			break;
+		case ERROR_ARRAYELEMENT:
+			errormessage = tr("Element of array %VARNAME% has not been assigned a value");
+			break;
+		case ERROR_SETTINGSGETACCESS:
+			errormessage = tr("The program does not have permission to read settings from other program. Check access level from 'Preferences' panel");
+			break;
+		case ERROR_SETTINGSSETACCESS:
+			errormessage = tr("The program does not have permission to write settings for other program. Check access level from 'Preferences' panel");
+			break;
+		case ERROR_INVALIDPROGNAME:
+			errormessage = tr("Invalid program name");
+			break;
+		case ERROR_INVALIDKEYNAME:
+			errormessage = tr("Invalid key name");
+			break;
+		case ERROR_SETTINGMAXLEN:
+			errormessage = tr("Setting string exceeds maximum length of 16,383 characters");
+			break;
+		case ERROR_SETTINGMAXKEYS:
+			errormessage = tr("The maximum number of keys for this program has been exceeded");
+			break;
+		case ERROR_REFNOTASSIGNED:
+			errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
+			break;
+		case ERROR_UNEXPECTEDRETURN:
+			errormessage = tr("Unexpected RETURN");
+			break;
+		case ERROR_ONERRORSUB:
+			errormessage = tr("SUBROUTINE %VARNAME% expects arguments and therefore can not be used by ONERROR statement");
+			break;
+		case ERROR_SQRRANGE:
+			errormessage = tr("Unable to calculate the root of a negative number");
+			break;
+		case ERROR_ASINACOSRANGE:
+			errormessage = tr("Unable to calculate the arc-sine or arc-cosine of a value outside the interval [-1.0, +1.0]");
+			break;
+		case ERROR_ARRAYEXPR:
+			errormessage = tr("Array Expression Expected.");
+			break;
+		case ERROR_NUMBEREXPR:
+			errormessage = tr("Numeric Expression Expected.");
+			break;
+		case ERROR_STRINGEXPR:
+			errormessage = tr("String Expression Expected.");
+			break;
+		case ERROR_ZEROORONE:
+			errormessage = tr("Zero or one expected.");
+			break;
+		case ERROR_NOTMAP:
+			errormessage = tr("Variable %VARNAME% is not a map");
+			break;
+		case ERROR_ARRAYORMAPEXPR:
+			errormessage = tr("Array or Map Expression Expected.");
+			break;
+		case ERROR_MAPKEY:
+			errormessage = tr("Map key does not exist");
+			break;
 
 
 
@@ -488,27 +497,27 @@ QString Error::getErrorMessage(char **symtable) {
 		case WARNING_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr("), zero used");
 			break;
-        case WARNING_SOUNDNOTSEEKABLE:
-            errormessage = tr("Media file is not seekable");
-            break;
-        case WARNING_SOUNDLENGTH:
-            errormessage = tr("Duration is not available for media file");
-            break;
-        case WARNING_WAVOBSOLETE:
-            errormessage = tr("WAVPLAY suite is obsolete. Use SOUND/SOUNDPLAY/SOUNDPLAYER instead");
-            break;
-        case WARNING_SOUNDFILEFORMAT:
-            errormessage = tr("Unable to play the selected file");
-            break;
-        case WARNING_SOUNDERROR:
-            errormessage = tr("Unable to play the sound");
-            break;
-        case WARNING_ARRAYELEMENT:
-            errormessage = tr("Element of array %VARNAME% has not been assigned a value");
-            break;
-        case WARNING_REFNOTASSIGNED:
-            errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
-            break;
+		case WARNING_SOUNDNOTSEEKABLE:
+			errormessage = tr("Media file is not seekable");
+			break;
+		case WARNING_SOUNDLENGTH:
+			errormessage = tr("Duration is not available for media file");
+			break;
+		case WARNING_WAVOBSOLETE:
+			errormessage = tr("WAVPLAY suite is obsolete. Use SOUND/SOUNDPLAY/SOUNDPLAYER instead");
+			break;
+		case WARNING_SOUNDFILEFORMAT:
+			errormessage = tr("Unable to play the selected file");
+			break;
+		case WARNING_SOUNDERROR:
+			errormessage = tr("Unable to play the sound");
+			break;
+		case WARNING_ARRAYELEMENT:
+			errormessage = tr("Element of array %VARNAME% has not been assigned a value");
+			break;
+		case WARNING_REFNOTASSIGNED:
+			errormessage = tr("Variable %VARNAME% refers to an unassigned variable");
+			break;
 
 
 
