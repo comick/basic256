@@ -86,10 +86,9 @@ class DataElement
 			return olde;
 		}
 
-	private:
-		static int e;		// error number thrown - will be 0 if no error
-		Error *error;
-		void init();
+		private:
+			static int e;		// error number thrown - will be 0 if no error
+			void init();
 };
 
 

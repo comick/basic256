@@ -58,7 +58,6 @@ void DataElement::copy(DataElement *source) {
 	// it is as fast as it can be
 	// unused values of strings can be found as garbage but this is the cost of speed
 	// source->stringval.clear() is too expensive to be used for each assignment/copy
-	type = source->type;
 	switch (source->type){
 		case T_UNASSIGNED:
 			break;
@@ -83,7 +82,14 @@ void DataElement::copy(DataElement *source) {
 			}
 			break;
 		case T_MAP:
-			// need logic here
+			{
+#ifdef DEBUG
+fprintf(stderr,"de copy map source len %d\n",source->map->data.size());
+#endif
+				if (!map)
+					map = new DataElementMap;
+				map->data.insert(source->map->data.begin(), source->map->data.end());
+			}
 			break;
 		case T_REF:
 			intval = source->intval;
@@ -92,6 +98,7 @@ void DataElement::copy(DataElement *source) {
 		case T_INT:
 			intval = source->intval;
 	}
+	type = source->type;
 }
 
 void DataElement::clear() {
@@ -285,7 +292,7 @@ void DataElement::mapUnassignData(QString key){
 
 int DataElement::mapLength(){
 	int l = 0;
-	if (type!=T_MAP) {
+	if (type==T_MAP) {
 		l = map->data.size();
 	} else {
 		e = ERROR_NOTMAP;

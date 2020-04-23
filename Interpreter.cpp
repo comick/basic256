@@ -1449,7 +1449,7 @@ Interpreter::execByteCode() {
 
 				case OP_FOREACH: {
 					int *nextAddr = wordCode + stack->popInt();
-					DataElement *adata = stack->popDE();
+					DataElement *d = stack->popDE();
 
 					// search for previous FOR in stack
 					// this is done because of anti-spaghetti code
@@ -1474,38 +1474,52 @@ Interpreter::execByteCode() {
 						temp = new forframe;
 					}
 
-					if (adata->type == T_ARRAY) {
-						if (adata->arrayRows()==1) {
-							if(adata->arrayCols()>=1) {
-								// create forframe
-								temp->type = FORFRAMETYPE_FOREACH;
-								temp->intStart = 0;				// current index into array
-								temp->arrayData = adata;
-								// set variable to first element
-								variables->setData(i, temp->arrayData->arrayGetData(0, temp->intStart));
-								watchvariable(debugMode, i);
-								// add new forframe to the forframe stack
-								temp->next = forstack;
-								temp->forAddr = op;		// first op after FOR statement to loop back to
-								temp->nextAddr = nextAddr;
-								forstack = temp;
-#ifdef DEBUG
-	fprintf(stderr,"foreach_create de type=%d\n", temp->arrayData->type);
-#endif
-							} else {
-								// no data in array - jump to next
-								delete temp;
-								delete adata;
-								op = nextAddr;
-							}
+					if (d->type == T_ARRAY) {
+						if(d->arrayCols()>=1) {
+							// create forframe
+							temp->type = FORFRAMETYPE_FOREACH_ARRAY;
+							temp->arrayIter = d->arr->data.begin();
+							temp->arrayIterEnd = d->arr->data.end();
+							// set variable to first element
+							variables->setData(i, (DataElement*) &(*temp->arrayIter));
+							watchvariable(debugMode, i);
+							// add new forframe to the forframe stack
+							temp->next = forstack;
+							temp->forAddr = op;		// first op after FOR statement to loop back to
+							temp->nextAddr = nextAddr;
+							forstack = temp;
 						} else {
-							error->q(ERROR_ONEDIMENSIONAL);
-							delete adata;
+							// no data in array - jump to next
+							delete temp;
+							op = nextAddr;
+						}
+					} else if (d->type == T_MAP) {
+#ifdef DEBUG
+fprintf(stderr,"in foreach map %d\n", d->map->data.size());
+#endif
+						if(d->map->data.size()>=1) {
+							// create forframe
+							temp->type = FORFRAMETYPE_FOREACH_MAP;
+							temp->mapIter = d->map->data.begin();
+							temp->mapIterEnd = d->map->data.end();
+							// set variable to first key
+							variables->setData(i, QString::fromUtf8(temp->mapIter->first.c_str()));
+							watchvariable(debugMode, i);
+							// add new forframe to the forframe stack
+							temp->next = forstack;
+							temp->forAddr = op;		// first op after FOR statement to loop back to
+							temp->nextAddr = nextAddr;
+							forstack = temp;
+						} else {
+							// no data in array - jump to next
+							delete temp;
+							op = nextAddr;
 						}
 					} else {
-						error->q(ERROR_ARRAYEXPR);
-						delete adata;
+						error->q(ERROR_ARRAYORMAPEXPR);
+
 					}
+					delete d;
 				}
 				break;
 
@@ -1570,35 +1584,44 @@ Interpreter::execByteCode() {
 								}
 							}
 							break;
-							case FORFRAMETYPE_FOREACH:
+							case FORFRAMETYPE_FOREACH_ARRAY:
 							{
-#ifdef DEBUG
-	fprintf(stderr,"foreach_next de type=%d intStart=%ld\n", temp->arrayData->type, temp->intStart);
-#endif
-								if(temp->arrayData->type==T_ARRAY) {
-									if (temp->arrayData->arrayRows()==1) {
-										temp->intStart++;
-										if (temp->intStart < temp->arrayData->arrayCols()) {
-											// set variable to this element
-											variables->setData(i, temp->arrayData->arrayGetData(0, temp->intStart));
-											watchvariable(debugMode, i);
-											// loop again
-											op = temp->forAddr;
-										} else {
-											// done with loop
-											if(prev){
-												prev->next=temp->next;
-											}else{
-												forstack = temp->next;
-											}
-											delete temp;
-										}
-									} else {
-										error->q(ERROR_ONEDIMENSIONAL);
-									}
+								temp->arrayIter++;
+								if (temp->arrayIter != temp->arrayIterEnd) {
+									// set variable to this element
+									variables->setData(i, (DataElement*) &(*temp->arrayIter));
+									watchvariable(debugMode, i);
+									// loop again
+									op = temp->forAddr;
 								} else {
-									error->q(ERROR_ARRAYEXPR);
-								}
+									// done with loop
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp;
+									}
+							}
+							break;
+							case FORFRAMETYPE_FOREACH_MAP:
+							{
+								temp->mapIter++;
+								if (temp->mapIter != temp->mapIterEnd) {
+									// set variable to the next key
+									variables->setData(i, QString::fromUtf8(temp->mapIter->first.c_str()));
+									watchvariable(debugMode, i);
+									// loop again
+									op = temp->forAddr;
+								} else {
+									// done with loop
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp;
+									}
 							}
 							break;
 						}

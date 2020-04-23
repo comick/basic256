@@ -139,10 +139,13 @@ struct forframe {
     double floatStart;
     double floatEnd;
     double floatStep;
-    long intStart;	// foreach intstart is current index in array
+    long intStart;
     long intEnd;
     long intStep;
-    DataElement *arrayData;		// used for foreach - must be one dimensional array data
+    std::vector<DataElement>::iterator arrayIter;
+    std::vector<DataElement>::iterator arrayIterEnd;
+    std::map<std::string, DataElement>::iterator mapIter;
+    std::map<std::string, DataElement>::iterator mapIterEnd;
 };
 
 typedef struct {
