@@ -10,6 +10,7 @@
 # 20160208  j.m.reneau  added input and prompt for new "Variant" input action
 # 20160807	j.m.reneau	removed typeof check on an array
 # 20200421  j.m.reneau  moved input testing to inputkey
+# 20200423  j.m.reneau  added map type and assigned (as it is rerlated to type)
 
 currentsuite = "types"
 
@@ -19,8 +20,10 @@ currentsuite = "types"
 
 ## check vartype and typeof for a simple variable
 call n("typeof unassigned newvar ", typeof(newvar), TYPE_UNASSIGNED)
+call boolean("assigned unassigned newvar ", not assigned(newvar))
 newvar = 983749823
 call n("typeof int newvar ", typeof(newvar), TYPE_INT)
+call boolean("assigned newvar ", assigned(newvar))
 newvar = 983749823/2
 call n("typeof float newvar ", typeof(newvar), TYPE_FLOAT)
 newvar = "9988"
@@ -31,10 +34,35 @@ dim newvar(5)
 newvar[1] = 213123
 newvar[2] = newvar[1] / 11
 newvar[3] = "dsdf"
+call n("typeof array newvar ", typeof(newvar), TYPE_ARRAY)
 call n("typeof unassigned newvar[0] ", typeof(newvar[0]), TYPE_UNASSIGNED)
+call boolean("not assigned newvar[0] ", not assigned(newvar[0]))
 call n("typeof int newvar[1] ", typeof(newvar[1]), TYPE_INT)
+call boolean("assigned newvar[1] ", assigned(newvar[1]))
 call n("typeof float newvar[2] ", typeof(newvar[2]), TYPE_FLOAT)
 call n("typeof string newvar[3] ", typeof(newvar[3]), TYPE_STRING)
+
+unassign newvar[1]
+call boolean("not assigned newvar[1] after unassign", not assigned(newvar[1]))
+
+map newvar
+newvar['foo'] = 'bar'
+newvar['you'] = 11
+newvar['who'] = 6.8
+
+call n("typeof map newvar ", typeof(newvar), TYPE_MAP)
+call n("typeof unassigned newvar['can'] ", typeof(newvar['can']), TYPE_UNASSIGNED)
+call boolean("not assigned newvar['can'] ", not assigned(newvar['can']))
+call n("typeof int newvar['you'] ", typeof(newvar['you']), TYPE_INT)
+call boolean("assigned newvar['you'] ", assigned(newvar['you']))
+call n("typeof float newvar['who'] ", typeof(newvar['who']), TYPE_FLOAT)
+call n("typeof string newvar['foo'] ", typeof(newvar['foo']), TYPE_STRING)
+
+unassign newvar['you']
+call boolean("not assigned newvar['you'] after unassign", not assigned(newvar['you']))
+
+unassign newvar
+call boolean("not assigned newvar after unassign", not assigned(newvar))
 
 # check typeof for various mathematical operations and values one more time
 ## add (integer safe) and concat

@@ -192,12 +192,14 @@ QString Interpreter::opname(int op) {
 	case OP_AND : return QString("OP_AND");
 	case OP_ARC : return QString("OP_ARC");
 	case OP_ARRAY2STACK : return QString("OP_ARRAY2STACK");
-	case OP_ARR_SET : return QString("OP_ARR_SET");
 	case OP_ARRAYFILL : return QString("OP_ARRAYFILL");
 	case OP_ARRAYLISTASSIGN : return QString("OP_ARRAYLISTASSIGN");
+	case OP_ARR_ASSIGNED : return QString("OP_ARR_ASSIGNED");
+	case OP_ARR_GET : return QString("OP_ARR_GET");
+	case OP_ARR_SET : return QString("OP_ARR_SET");
+	case OP_ARR_UN : return QString("OP_ARR_UN");
 	case OP_ASC : return QString("OP_ASC");
 	case OP_ASIN : return QString("OP_ASIN");
-	case OP_VAR_SET : return QString("OP_VAR_SET");
 	case OP_ATAN : return QString("OP_ATAN");
 	case OP_BINARYAND : return QString("OP_BINARYAND");
 	case OP_BINARYNOT : return QString("OP_BINARYNOT");
@@ -241,7 +243,6 @@ QString Interpreter::opname(int op) {
 	case OP_DEBUGINFO : return QString("OP_DEBUGINFO");
 	case OP_DECREASERECURSE : return QString("OP_DECREASERECURSE");
 	case OP_DEGREES : return QString("OP_DEGREES");
-	case OP_ARR_GET : return QString("OP_ARR_GET");
 	case OP_DIM : return QString("OP_DIM");
 	case OP_DIR : return QString("OP_DIR");
 	case OP_DIV : return QString("OP_DIV");
@@ -377,8 +378,6 @@ QString Interpreter::opname(int op) {
 	case OP_PUSHINT : return QString("OP_PUSHINT");
 	case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
 	case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
-	case OP_VAR_GET : return QString("OP_VAR_GET");
-	case OP_VAR_REF : return QString("OP_VAR_REF");
 	case OP_PUTSLICE : return QString("OP_PUTSLICE");
 	case OP_RADIANS : return QString("OP_RADIANS");
 	case OP_RAND : return QString("OP_RAND");
@@ -470,13 +469,16 @@ QString Interpreter::opname(int op) {
 	case OP_TORADIX : return QString("OP_TORADIX");
 	case OP_TRIM : return QString("OP_TRIM");
 	case OP_TYPEOF : return QString("OP_TYPEOF");
-	case OP_VAR_UN : return QString("OP_VAR_UN");
-	case OP_ARR_UN : return QString("OP_ARR_UN");
 	case OP_UNLOAD : return QString("OP_UNLOAD");
 	case OP_UNSERIALIZE : return QString("OP_UNSERIALIZE");
 	case OP_UPPER : return QString("OP_UPPER");
 	case OP_VARIABLECOPY : return QString("OP_VARIABLECOPY");
 	case OP_VARIABLEWATCH : return QString("OP_VARIABLEWATCH");
+	case OP_VAR_ASSIGNED : return QString("OP_VAR_ASSIGNED");
+	case OP_VAR_GET : return QString("OP_VAR_GET");
+	case OP_VAR_REF : return QString("OP_VAR_REF");
+	case OP_VAR_SET : return QString("OP_VAR_SET");
+	case OP_VAR_UN : return QString("OP_VAR_UN");
 	case OP_VOLUME : return QString("OP_VOLUME");
 	case OP_WAVLENGTH : return QString("OP_WAVLENGTH");
 	case OP_WAVPAUSE : return QString("OP_WAVPAUSE");
@@ -1862,6 +1864,38 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						}
 					}
 					watchvariable(debugMode, i);
+				}
+				break;
+
+				case OP_VAR_ASSIGNED: {
+					DataElement *e = variables->getData(i);
+					stack->pushBool(e->type!=T_UNASSIGNED);
+				}
+				break;
+
+				case OP_ARR_ASSIGNED: {
+					// clear a variable and release resources
+					DataElement *col = stack->popDE();
+					DataElement *row = stack->popDE();
+					DataElement *vdata = variables->getData(i);
+					DataElement *e;
+					if (vdata->type==T_ARRAY) {
+						int c = convert->getInt(col) - arraybase;
+						int r = convert->getInt(row) - arraybase;
+						e = vdata->arrayGetData(r, c);
+						stack->pushBool(e->type!=T_UNASSIGNED);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r+arraybase,c+arraybase);}
+					} else if (vdata->type==T_MAP) {
+						QString key = convert->getString(col);
+						e = vdata->mapGetData(key);
+						stack->pushBool(e->type!=T_UNASSIGNED);
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
+						e = new DataElement();
+					}
+					delete col;
+					delete row;
 				}
 				break;
 

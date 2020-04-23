@@ -197,11 +197,6 @@ DataElement* DataElement::arrayGetData(const int x, const int y) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
 			DataElement *d = &arr->data[i];
-			//the correct behaviour is to check for unassigned content
-			//when program try to use it not when it try to convert to int, string and so...
-			if (d->type==T_UNASSIGNED){
-				e = ERROR_ARRAYELEMENT;
-			}
 			return d;
 		} else {
 			e = ERROR_ARRAYINDEX;

@@ -359,6 +359,7 @@
 %token B256ARRAYBASE
 %token B256ASC
 %token B256ASIN
+%token B256ASSIGNED
 %token B256ATAN
 %token B256BEGINCASE
 %token B256BINARYNOT
@@ -788,6 +789,7 @@
 %token B256TYPE_ARRAY
 %token B256TYPE_FLOAT
 %token B256TYPE_INT
+%token B256TYPE_MAP
 %token B256TYPE_REF
 %token B256TYPE_STRING
 %token B256TYPE_UNASSIGNED
@@ -1189,45 +1191,46 @@ expr_function:
    ### Constants                           ###
    ########################################### */
 expr_constants:
-	B256CLEAR args_none { addIntOp(OP_PUSHINT, 0x00); }
-	| B256BLACK args_none { addIntOp(OP_PUSHINT, 0xff000000); }
-	| B256WHITE args_none { addIntOp(OP_PUSHINT, 0xffffffff); }
-	| B256RED args_none { addIntOp(OP_PUSHINT, 0xffff0000); }
-	| B256DARKRED args_none { addIntOp(OP_PUSHINT, 0xff800000); }
-	| B256GREEN args_none { addIntOp(OP_PUSHINT, 0xff00ff00); }
-	| B256DARKGREEN args_none { addIntOp(OP_PUSHINT, 0xff008000); }
+	B256BLACK args_none { addIntOp(OP_PUSHINT, 0xff000000); }
 	| B256BLUE args_none { addIntOp(OP_PUSHINT, 0xff0000ff); }
-	| B256DARKBLUE args_none { addIntOp(OP_PUSHINT, 0xff000080); }
-	| B256CYAN args_none { addIntOp(OP_PUSHINT, 0xff00ffff); }
-	| B256DARKCYAN args_none { addIntOp(OP_PUSHINT, 0xff008080); }
-	| B256PURPLE args_none { addIntOp(OP_PUSHINT, 0xffff00ff); }
-	| B256DARKPURPLE args_none { addIntOp(OP_PUSHINT, 0xff800080); }
-	| B256YELLOW args_none { addIntOp(OP_PUSHINT, 0xffffff00); }
-	| B256DARKYELLOW args_none { addIntOp(OP_PUSHINT, 0xff808000); }
-	| B256ORANGE args_none { addIntOp(OP_PUSHINT, 0xffff6600); }
-	| B256DARKORANGE args_none { addIntOp(OP_PUSHINT, 0xffb03d00); }
-	| B256GREY args_none { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
-	| B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
-	| B256BOOLTRUE args_none { addIntOp(OP_PUSHINT, 1); }
 	| B256BOOLFALSE args_none { addIntOp(OP_PUSHINT, 0); }
-	| B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
-	| B256TYPE_INT args_none { addIntOp(OP_PUSHINT, T_INT); }
-	| B256TYPE_FLOAT args_none { addIntOp(OP_PUSHINT, T_FLOAT); }
-	| B256TYPE_STRING args_none { addIntOp(OP_PUSHINT, T_STRING); }
-	| B256TYPE_ARRAY args_none { addIntOp(OP_PUSHINT, T_ARRAY); }
-	| B256TYPE_REF args_none { addIntOp(OP_PUSHINT, T_REF); }
+	| B256BOOLTRUE args_none { addIntOp(OP_PUSHINT, 1); }
+	| B256CLEAR args_none { addIntOp(OP_PUSHINT, 0x00); }
+	| B256CYAN args_none { addIntOp(OP_PUSHINT, 0xff00ffff); }
+	| B256DARKBLUE args_none { addIntOp(OP_PUSHINT, 0xff000080); }
+	| B256DARKCYAN args_none { addIntOp(OP_PUSHINT, 0xff008080); }
+	| B256DARKGREEN args_none { addIntOp(OP_PUSHINT, 0xff008000); }
+	| B256DARKGREY args_none { addIntOp(OP_PUSHINT, 0xff808080); }
+	| B256DARKORANGE args_none { addIntOp(OP_PUSHINT, 0xffb03d00); }
+	| B256DARKPURPLE args_none { addIntOp(OP_PUSHINT, 0xff800080); }
+	| B256DARKRED args_none { addIntOp(OP_PUSHINT, 0xff800000); }
+	| B256DARKYELLOW args_none { addIntOp(OP_PUSHINT, 0xff808000); }
+	| B256GREEN args_none { addIntOp(OP_PUSHINT, 0xff00ff00); }
+	| B256GREY args_none { addIntOp(OP_PUSHINT, 0xffa4a4a4); }
 	| B256MOUSEBUTTON_CENTER args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_CENTER); }
+	| B256MOUSEBUTTON_DOUBLECLICK args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_DOUBLECLICK); }
 	| B256MOUSEBUTTON_LEFT args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_LEFT); }
 	| B256MOUSEBUTTON_NONE args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_NONE); }
 	| B256MOUSEBUTTON_RIGHT args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_RIGHT); }
-	| B256MOUSEBUTTON_DOUBLECLICK args_none { addIntOp(OP_PUSHINT, MOUSEBUTTON_DOUBLECLICK); }
+	| B256ORANGE args_none { addIntOp(OP_PUSHINT, 0xffff6600); }
 	| B256OSTYPE_ANDROID args_none { addIntOp(OP_PUSHINT, OSTYPE_ANDROID); }
 	| B256OSTYPE_LINUX args_none { addIntOp(OP_PUSHINT, OSTYPE_LINUX); }
 	| B256OSTYPE_MACINTOSH args_none { addIntOp(OP_PUSHINT, OSTYPE_MACINTOSH); }
 	| B256OSTYPE_WINDOWS args_none { addIntOp(OP_PUSHINT, OSTYPE_WINDOWS); }
+	| B256PURPLE args_none { addIntOp(OP_PUSHINT, 0xffff00ff); }
+	| B256RED args_none { addIntOp(OP_PUSHINT, 0xffff0000); }
 	| B256SLICE_ALL args_none { addIntOp(OP_PUSHINT, SLICE_ALL); }
 	| B256SLICE_PAINT args_none { addIntOp(OP_PUSHINT, SLICE_PAINT); }
 	| B256SLICE_SPRITE args_none { addIntOp(OP_PUSHINT, SLICE_SPRITE); }
+	| B256TYPE_ARRAY args_none { addIntOp(OP_PUSHINT, T_ARRAY); }
+	| B256TYPE_FLOAT args_none { addIntOp(OP_PUSHINT, T_FLOAT); }
+	| B256TYPE_INT args_none { addIntOp(OP_PUSHINT, T_INT); }
+	| B256TYPE_MAP args_none { addIntOp(OP_PUSHINT, T_MAP); }
+	| B256TYPE_REF args_none { addIntOp(OP_PUSHINT, T_REF); }
+	| B256TYPE_STRING args_none { addIntOp(OP_PUSHINT, T_STRING); }
+	| B256TYPE_UNASSIGNED args_none { addIntOp(OP_PUSHINT, T_UNASSIGNED); }
+	| B256WHITE args_none { addIntOp(OP_PUSHINT, 0xffffffff); }
+	| B256YELLOW args_none { addIntOp(OP_PUSHINT, 0xffffff00); }
 	
 	
 	
@@ -2043,6 +2046,12 @@ expr_numeric:
 	| B256ROUND '(' args_ee ')' {
 		addOp(OP_ROUND);
 	}
+	| B256ASSIGNED '(' variable_a ')' {
+		addIntOp(OP_VAR_ASSIGNED, varnumber[--nvarnumber]);
+	}
+	| B256ASSIGNED '(' array_element ')' {
+		addIntOp(OP_ARR_ASSIGNED, varnumber[--nvarnumber]);
+	}
 	| variable array_size {
 		addIntOp(OP_ALEN, varnumber[--nvarnumber]);
 	}
@@ -2717,8 +2726,11 @@ letstmt:	B256LET assign
 			| arrayelementassign
 			;
 
-mapstmt: 	B256MAP variable_a {
-				addIntOp(OP_MAP_DIM, varnumber[--nvarnumber]);
+mapstmt: 	B256MAP functionvariables {
+				for(int t=numargs-1;t>=0;t--) {
+					addIntOp(OP_MAP_DIM, args[t]);
+				}
+				numargs=0;	// clear the list for next function
 			}
 
 dimstmt: 	B256DIM array_element {

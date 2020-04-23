@@ -115,6 +115,7 @@ arc [Aa][Rr][Cc]
 asc [Aa][Ss][Cc]
 arraybase [Aa][Rr][Rr][Aa][Yy][ \t]*[Bb][Aa][Ss][Ee]
 asin [Aa][Ss][Ii][Nn]
+assigned [Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
 atan [Aa][Tt][Aa][Nn]
 badinclude [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
 begincase [Bb][Ee][Gg][Ii][Nn][ \t]*[Cc][Aa][Ss][Ee]
@@ -525,6 +526,7 @@ try [Tt][Rr][Yy]
 type_array [Tt][Yy][Pp][Ee][_][Aa][Rr][Rr][Aa][Yy]
 type_float [Tt][Yy][Pp][Ee][_][Ff][Ll][Oo][Aa][Tt]
 type_int [Tt][Yy][Pp][Ee][_][Ii][Nn][Tt]([Ee][Gg][Ee][Rr])*
+type_map [Tt][Yy][Pp][Ee][_][Mm][Aa][Pp]
 type_ref [Tt][Yy][Pp][Ee][_][Rr][Ee][Ff]
 type_string [Tt][Yy][Pp][Ee][_][Ss][Tt][Rr][Ii][Nn][Gg]
 type_unassigned [Tt][Yy][Pp][Ee][_][Uu][Nn][Aa][Ss][Ss][Ii][Gg][Nn][Ee][Dd]
@@ -626,8 +628,9 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {abs}						{ count(); return B256ABS; }
 {acos}						{ count(); return B256ACOS; }
 {arc}						{ count(); return B256ARC; }
-{asc}						{ count(); return B256ASC; }
 {arraybase}					{ count(); return B256ARRAYBASE; }
+{asc}						{ count(); return B256ASC; }
+{assigned}					{ count(); return B256ASSIGNED; }
 {asin}						{ count(); return B256ASIN; }
 {atan}						{ count(); return B256ATAN; }
 {black}						{ count(); return B256BLACK; }
@@ -666,8 +669,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_arrayelement}			{ count(); return B256ERROR_ARRAYELEMENT; }
 {error_arrayeven}			{ count(); return B256ERROR_ARRAYEVEN; }
 {error_arrayexpr}			{ count(); return B256ERROR_ARRAYEXPR; }
-{error_arrayindex}			{ count(); return B256ERROR_ARRAYINDEX; }
 {error_arrayindexmissing}			{ count(); return B256ERROR_ARRAYINDEXMISSING; }
+{error_arrayindex}			{ count(); return B256ERROR_ARRAYINDEX; }
 {error_arraylength2d}			{ count(); return B256ERROR_ARRAYLENGTH2D; }
 {error_arraynitems}			{ count(); return B256ERROR_ARRAYNITEMS; }
 {error_arraysizelarge}			{ count(); return B256ERROR_ARRAYSIZELARGE; }
@@ -677,8 +680,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_dbcolno}			{ count(); return B256ERROR_DBCOLNO; }
 {error_dbconnnumber}			{ count(); return B256ERROR_DBCONNNUMBER; }
 {error_dbnotopen}			{ count(); return B256ERROR_DBNOTOPEN; }
-{error_dbnotset}			{ count(); return B256ERROR_DBNOTSET; }
 {error_dbnotsetrow}			{ count(); return B256ERROR_DBNOTSETROW; }
+{error_dbnotset}			{ count(); return B256ERROR_DBNOTSET; }
 {error_dbopen}			{ count(); return B256ERROR_DBOPEN; }
 {error_dbquery}			{ count(); return B256ERROR_DBQUERY; }
 {error_dbsetnumber}			{ count(); return B256ERROR_DBSETNUMBER; }
@@ -695,8 +698,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_filereset}			{ count(); return B256ERROR_FILERESET; }
 {error_filewrite}			{ count(); return B256ERROR_FILEWRITE; }
 {error_folder}			{ count(); return B256ERROR_FOLDER; }
-{error_freedb}			{ count(); return B256ERROR_FREEDB; }
 {error_freedbset}			{ count(); return B256ERROR_FREEDBSET; }
+{error_freedb}			{ count(); return B256ERROR_FREEDB; }
 {error_freefile}			{ count(); return B256ERROR_FREEFILE; }
 {error_freenet}			{ count(); return B256ERROR_FREENET; }
 {error_harmoniclist}			{ count(); return B256ERROR_HARMONICLIST; }
@@ -719,9 +722,9 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_nethost}			{ count(); return B256ERROR_NETHOST; }
 {error_netnone}			{ count(); return B256ERROR_NETNONE; }
 {error_netread}			{ count(); return B256ERROR_NETREAD; }
-{error_netsock}			{ count(); return B256ERROR_NETSOCK; }
 {error_netsocknumber}			{ count(); return B256ERROR_NETSOCKNUMBER; }
 {error_netsockopt}			{ count(); return B256ERROR_NETSOCKOPT; }
+{error_netsock}			{ count(); return B256ERROR_NETSOCK; }
 {error_netwrite}			{ count(); return B256ERROR_NETWRITE; }
 {error_nextnofor}			{ count(); return B256ERROR_NEXTNOFOR; }
 {error_none}			{ count(); return B256ERROR_NONE; }
@@ -740,8 +743,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_printernotoff}			{ count(); return B256ERROR_PRINTERNOTOFF; }
 {error_printernoton}			{ count(); return B256ERROR_PRINTERNOTON; }
 {error_printeropen}			{ count(); return B256ERROR_PRINTEROPEN; }
-{error_radix}			{ count(); return B256ERROR_RADIX; }
 {error_radixstring}			{ count(); return B256ERROR_RADIXSTRING; }
+{error_radix}			{ count(); return B256ERROR_RADIX; }
 {error_refnotassigned}			{ count(); return B256ERROR_REFNOTASSIGNED; }
 {error_rgb}			{ count(); return B256ERROR_RGB; }
 {error_serialparameter}			{ count(); return B256ERROR_SERIALPARAMETER; }
@@ -751,8 +754,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {error_settingssetaccess}			{ count(); return B256ERROR_SETTINGSSETACCESS; }
 {error_slicesize}			{ count(); return B256ERROR_SLICESIZE; }
 {error_sounderror}			{ count(); return B256ERROR_SOUNDERROR; }
-{error_soundfile}			{ count(); return B256ERROR_SOUNDFILE; }
 {error_soundfileformat}			{ count(); return B256ERROR_SOUNDFILEFORMAT; }
+{error_soundfile}			{ count(); return B256ERROR_SOUNDFILE; }
 {error_soundlength}			{ count(); return B256ERROR_SOUNDLENGTH; }
 {error_soundnotseekable}			{ count(); return B256ERROR_SOUNDNOTSEEKABLE; }
 {error_soundresource}			{ count(); return B256ERROR_SOUNDRESOURCE; }
@@ -906,6 +909,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {type_array}				{ count(); return B256TYPE_ARRAY; }
 {type_float}				{ count(); return B256TYPE_FLOAT; }
 {type_int}					{ count(); return B256TYPE_INT; }
+{type_map}					{ count(); return B256TYPE_MAP; }
 {type_ref}					{ count(); return B256TYPE_REF; }
 {type_string}				{ count(); return B256TYPE_STRING; }
 {type_unassigned}			{ count(); return B256TYPE_UNASSIGNED; }

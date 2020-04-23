@@ -37,6 +37,10 @@ call n("map should have six items - length", length(q), 6)
 
 call boolean("key x - not exist ? ", typeof(q['x'])=TYPE_UNASSIGNED)
 call boolean("key a - exist ? ", typeof(q['a'])<>TYPE_UNASSIGNED)
+call boolean("key x - not assigned ", not assigned(q['x']))
+call boolean("key a - assigned ", assigned(q['a']))
+
+
 
 unassign q['a']
 total = ""
@@ -48,3 +52,4 @@ call s("in alpha order after delete ", total, "BB9999QQ198")
 
 call n("after unassign - map should have 5 items - length", length(q), 5)
 call boolean("key a - not exist ? ", typeof(q['a'])=TYPE_UNASSIGNED)
+call boolean("key a - not assigned ", not assigned(q['a']))

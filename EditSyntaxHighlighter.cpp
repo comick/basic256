@@ -64,6 +64,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "arc"								//arc
 			<< "array[ \t]*base"
 			<< "asc"								//asc
+			<< "assigned"
 			<< "asin"								//asin
 			<< "atan"								//atan
 			<< "begin[ \t]*case"					//begincase or begin case
@@ -202,6 +203,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "lower"								//lower
 			<< "ltrim"								//ltrim
 			<< "ltrim"								//ltrim
+			<< "map"
 			<< "md5"								//md5
 			<< "mid"								//mid
 			<< "midx"								//midx
@@ -515,6 +517,7 @@ void EditSyntaxHighlighter::initConstants() {
             << "TYPE_ARRAY"
 			<< "TYPE_FLOAT"
 			<< "TYPE_INT"
+			<< "TYPE_MAP"
 			<< "TYPE_STRING"
 			<< "TYPE_UNASSIGNED"
 			<< "MOUSEBUTTON_CENTER"
