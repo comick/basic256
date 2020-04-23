@@ -1478,6 +1478,7 @@ Interpreter::execByteCode() {
 						if(d->arrayCols()>=1) {
 							// create forframe
 							temp->type = FORFRAMETYPE_FOREACH_ARRAY;
+							temp->iter_d = d;
 							temp->arrayIter = d->arr->data.begin();
 							temp->arrayIterEnd = d->arr->data.end();
 							// set variable to first element
@@ -1490,6 +1491,7 @@ Interpreter::execByteCode() {
 							forstack = temp;
 						} else {
 							// no data in array - jump to next
+							delete d;
 							delete temp;
 							op = nextAddr;
 						}
@@ -1500,6 +1502,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						if(d->map->data.size()>=1) {
 							// create forframe
 							temp->type = FORFRAMETYPE_FOREACH_MAP;
+							temp->iter_d = d;
 							temp->mapIter = d->map->data.begin();
 							temp->mapIterEnd = d->map->data.end();
 							// set variable to first key
@@ -1512,6 +1515,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							forstack = temp;
 						} else {
 							// no data in array - jump to next
+							delete d;
 							delete temp;
 							op = nextAddr;
 						}
@@ -1519,7 +1523,6 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						error->q(ERROR_ARRAYORMAPEXPR);
 
 					}
-					delete d;
 				}
 				break;
 
@@ -1600,8 +1603,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 									}else{
 										forstack = temp->next;
 									}
+									delete temp->iter_d;
 									delete temp;
-									}
+								}
 							}
 							break;
 							case FORFRAMETYPE_FOREACH_MAP:
@@ -1620,8 +1624,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 									}else{
 										forstack = temp->next;
 									}
+									delete temp->iter_d;
 									delete temp;
-									}
+								}
 							}
 							break;
 						}
@@ -1736,6 +1741,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						e = new DataElement();
 					}
 					stack->pushDE(e);
+					delete col;
+					delete row;
 				}
 				break;
 
@@ -1866,12 +1873,22 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				case OP_ARR_UN: {
 					// clear a variable and release resources
-					int col = stack->popInt()-arraybase;
-					int row = stack->popInt()-arraybase;
-					if (col<0) col=0;
-					if (row<0) row=0;
-					variables->getData(i)->arrayUnassign(row, col);
-					watchvariable(debugMode, i, row, col);
+					DataElement *col = stack->popDE();
+					DataElement *row = stack->popDE();
+					DataElement *vdata = variables->getData(i);
+					if (vdata->type==T_ARRAY) {
+						int c = convert->getInt(col) - arraybase;
+						int r = convert->getInt(row) - arraybase;
+						vdata->arrayUnassign(r, c);
+						watchvariable(debugMode, i, r, c);
+					} else if (vdata->type==T_MAP) {
+						QString key = convert->getString(col);
+						vdata->mapUnassign(key);
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
+					}
+					delete col;
+					delete row;
 				}
 				break;
 
@@ -2668,11 +2685,19 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_LENGTH: {
-					// unicode length
-					stack->pushInt(stack->popQString().length());
+					// array, map, or string
+					DataElement *d = stack->popDE();
+					if (d->type==T_ARRAY) {
+						// returns total number of elements - not dimensions
+						stack->pushInt(d->arrayRows()*d->arrayCols());
+					} else if (d->type==T_MAP) {
+						stack->pushInt(d->mapLength());
+					} else {
+						stack->pushInt(convert->getString(d).length());
+					}
+					delete(d);
 				}
 				break;
-
 
 				case OP_MID: {
 				// unicode safe mid string

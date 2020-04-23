@@ -142,6 +142,7 @@ struct forframe {
     long intStart;
     long intEnd;
     long intStep;
+    DataElement *iter_d;		// hold array or map pointer - delete on end of loop
     std::vector<DataElement>::iterator arrayIter;
     std::vector<DataElement>::iterator arrayIterEnd;
     std::map<std::string, DataElement>::iterator mapIter;

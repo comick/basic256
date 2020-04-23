@@ -849,11 +849,11 @@
 
 
 %right ','
+%left B256SEMICOLON
 %left B256XOR B256OR
 %left B256AND
 %nonassoc B256NOT B256ADD1 B256SUB1
 %left '<' B256LTE '>' B256GTE '=' B256NE
-%left B256SEMICOLON
 %left B256BINARYOR B256AMP
 %left B256BITSHIFTL B256BITSHIFTR
 %left '-' '+'
@@ -1690,6 +1690,7 @@ expr_numeric:
 	| expr '>' expr { addOp(OP_GT); }
 	| expr B256GTE expr { addOp(OP_GTE); }
 	| expr B256LTE expr { addOp(OP_LTE); }
+	
 	| array_element B256ADD1 {
 		// a[b,c]++ - pushing value before to stack
 		int v = varnumber[--nvarnumber];

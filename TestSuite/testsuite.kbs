@@ -50,6 +50,7 @@
 # 20200403  j.m.reneau      added slice suite
 # 20200421  j.m.reneau      added print suite
 # 20200421  j.m.reneau      added arraybase suite
+# 20200423  j.m.reneau      added map suite
 
 global currentsuite
 currentsuite = ""
@@ -321,12 +322,17 @@ call section("Variable and Stack Types Tests")
 ###################################################
 include "testsuite_types_include.kbs"
 
-
-arrat_base:
+array_base:
 ###################################################
 call section("Array index base (arraybase 0/1)")
 ###################################################
 include "testsuite_arraybase_include.kbs"
+
+map_base:
+###################################################
+call section("Map")
+###################################################
+include "testsuite_map_include.kbs"
 
 
 

@@ -14,7 +14,7 @@ Stack::Stack(Convert *c, QLocale *applocale) {
 }
 
 Stack::~Stack() {
-	for(unsigned int i = 0; i< stackpointer; i++) {
+	for(int i = 0; i< stackpointer; i++) {
 		if (stackdata[i]) {
 			delete(stackdata[i]);
 			stackdata[i] = NULL;

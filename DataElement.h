@@ -73,8 +73,9 @@ class DataElement
 		void mapDim();
 		DataElement* mapGetData(QString);
 		void mapSetData(QString, DataElement *);
-		void mapUnassignData(QString);
+		void mapUnassign(QString);
 		int mapLength();
+		bool mapKey(QString);
 		
 		static int getError() {
 			return getError(false);
@@ -86,9 +87,9 @@ class DataElement
 			return olde;
 		}
 
-		private:
-			static int e;		// error number thrown - will be 0 if no error
-			void init();
+	private:
+		static int e;		// error number thrown - will be 0 if no error
+		void init();
 };
 
 

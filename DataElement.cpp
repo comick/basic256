@@ -277,7 +277,7 @@ void DataElement::mapSetData(QString key, DataElement *d){
 	}
 }
 
-void DataElement::mapUnassignData(QString key){
+void DataElement::mapUnassign(QString key){
 	std::string ckey = key.toStdString();
 	if (type==T_MAP) {
 		if (map->data.count(ckey)) {
@@ -298,4 +298,19 @@ int DataElement::mapLength(){
 		e = ERROR_NOTMAP;
 	}
 	return l;
+}
+
+bool DataElement::mapKey(QString key){
+	// is the key in the map
+	std::string ckey = key.toStdString();
+	if (type==T_MAP) {
+		if (map->data.count(ckey)) {
+			return true;
+		} else {
+			e = ERROR_MAPKEY;
+		}
+	} else {
+		e = ERROR_NOTMAP;
+	}
+	return false;
 }

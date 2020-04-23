@@ -159,7 +159,7 @@ Variable* Variables::getAt(int varnum) {
 	return getAt(varnum, recurselevel);
 }
 
-std::shared_ptr<DataElement> Variables::getData(int varnum) {
+DataElement* Variables::getData(int varnum) {
 	// get data from variable - return varnum's data
 	Variable *v = get(varnum);
 	return v->data;
