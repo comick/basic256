@@ -34,7 +34,9 @@ TRANSLATIONS				=	Translations/basic256_en.ts \
 								Translations/basic256_it.ts
 
 #### uncomment to display fprintf debugging messages
-#### DEFINES += DEBUG
+#### shows each pcode statement at the stack - really slow but really good
+#### debugging the interpreter
+###DEFINES += DEBUG
 
 win32 {
         DEFINES 				+=	WIN32

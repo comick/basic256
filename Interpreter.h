@@ -136,6 +136,8 @@ struct forframe {
     int *forAddr;   //FOR address
     int *nextAddr;  //NEXT address
     int type;		//0=integer, 1=float, 2=foreache if -
+    int for_varnum;
+    int for_val_varnum;		// -1 if not used (used to get map value in for each)
     double floatStart;
     double floatEnd;
     double floatStep;
@@ -145,8 +147,8 @@ struct forframe {
     DataElement *iter_d;		// hold array or map pointer - delete on end of loop
     std::vector<DataElement>::iterator arrayIter;
     std::vector<DataElement>::iterator arrayIterEnd;
-    std::map<std::string, DataElement>::iterator mapIter;
-    std::map<std::string, DataElement>::iterator mapIterEnd;
+    std::map<QString, DataElement>::iterator mapIter;
+    std::map<QString, DataElement>::iterator mapIterEnd;
 };
 
 typedef struct {

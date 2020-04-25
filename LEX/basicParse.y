@@ -159,6 +159,12 @@
                 addData(data);
 	}
 
+	void addIntIntOp(int op, int data, int data2) {
+		addOp(op);
+		addData(data);
+		addData(data2);
+	}
+
 	void addFloatOp(int op, double data) {
 		addOp(op);
 		unsigned int wlen = bytesToFullWords(sizeof(double));
@@ -1044,7 +1050,23 @@ listitems:
 	| expr ',' listitems {listlen++;}
 	;
 
+// a comma separated list of expressions with mustaches
+// a one dimensional array
+listofmapitems:
+	'{' mapitems '}' {
+		addIntOp(OP_PUSHINT, listlen);
+		if (listlen>listlenmax) listlenmax=listlen;
+		listlen = 0;
+	}
+	;
 
+// a comma sepetated list of expressions
+mapitems:
+	expr '-' '>' expr { listlen = 1; }
+	| expr '-' '>' expr ',' mapitems {listlen++;}
+	;
+	
+	
 /* USED ONLY IN CALLING Functions and subroutines */
 callexprlist:
 	callexpr { listlen = 1; }
@@ -2000,7 +2022,7 @@ expr_numeric:
 	| B256SOUNDPLAYER '(' args_ee ')' {
 		addIntOp(OP_PUSHINT, 2);	// 2 columns
 		addIntOp(OP_PUSHINT, 1);	// 1 row
-		addOp(OP_LIST2EXPRESSION);
+		addOp(OP_LIST2ARRAY);
 		addOp(OP_SOUNDPLAYER);
 	}
 	| B256SOUNDID args_none {
@@ -2161,7 +2183,7 @@ expr_string:
 	| B256SOUNDLOAD '(' args_ee ')' {
 		addIntOp(OP_PUSHINT, 2);	// 2 columns
 		addIntOp(OP_PUSHINT, 1);	// 1 row
-		addOp(OP_LIST2EXPRESSION);
+		addOp(OP_LIST2ARRAY);
 		addOp(OP_SOUNDLOAD);
 	}
 	| B256SOUNDLOADRAW '(' expr ')' {
@@ -2226,7 +2248,10 @@ expr_dataelement:
 		addIntOp(OP_VAR_GET, varnumber[--nvarnumber]);
 	}
 	| listoflists {
-		addOp(OP_LIST2EXPRESSION);
+		addOp(OP_LIST2ARRAY);
+	}
+	| listofmapitems {
+		addOp(OP_LIST2MAP);
 	}
 	| B256UNSERIALIZE '(' expr ')'{
 		addOp(OP_UNSERIALIZE);
@@ -3018,30 +3043,43 @@ forstmt: 	B256FOR variable '=' expr B256TO expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
-				newIf(linenumber, IFTABLETYPEFOR, varnumber[nvarnumber-1]);
+				int var =  varnumber[--nvarnumber];
+				newIf(linenumber, IFTABLETYPEFOR, var);
 				// push default step 1 and exit address
 				addIntOp(OP_PUSHINT, 1); //step
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
-				addIntOp(OP_FOR, varnumber[--nvarnumber]);
+				addIntOp(OP_FOR, var);
 			}
 			| B256FOR variable '=' expr B256TO expr B256STEP expr {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
-				newIf(linenumber, IFTABLETYPEFOR, varnumber[nvarnumber-1]);
+				int var =  varnumber[--nvarnumber];
+				newIf(linenumber, IFTABLETYPEFOR, var);
 				// push exit address
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
-				addIntOp(OP_FOR, varnumber[--nvarnumber]);
+				addIntOp(OP_FOR, var);
 			}
 			;
 			
-foreachstmt: 	B256FOREACH variable B256IN expr_dataelement {
+foreachstmt:	B256FOREACH variable B256IN expr_dataelement {
 				// add to iftable to make sure it is not broken with an if
 				// do, while, else, and to report if it is
 				// next ed before end of program
-				newIf(linenumber, IFTABLETYPEFOR, varnumber[nvarnumber-1]);
+				int var =  varnumber[--nvarnumber];
+				newIf(linenumber, IFTABLETYPEFOR, var);
 				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
-				addIntOp(OP_FOREACH, varnumber[--nvarnumber]);
+				addIntIntOp(OP_FOREACH, var, -1 );
+			}
+			| B256FOREACH variable '-' '>' variable B256IN expr_dataelement {
+				// add to iftable to make sure it is not broken with an if
+				// do, while, else, and to report if it is
+				// next ed before end of program
+				int value_var =  varnumber[--nvarnumber];
+				int key_var =  varnumber[--nvarnumber];
+				newIf(linenumber, IFTABLETYPEFOR, key_var);
+				addIntOp(OP_PUSHLABEL, getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT));
+				addIntIntOp(OP_FOREACH, key_var, value_var);
 			}
 			;
 
@@ -3050,13 +3088,31 @@ nextstmt:	B256NEXT variable {
 					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
 						if (iftablevariable[numifs-1]==varnumber[nvarnumber-1]) {
 							symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
-							addIntOp(OP_NEXT, varnumber[--nvarnumber]);
+							addOp(OP_NEXT);
 							symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
 							numifs--;
 						} else {
 							errorcode = COMPERR_NEXTWRONGFOR;
 							return -1;
 						}
+					} else {
+						errorcode = testIfOnTableError(numincludes);
+						linenumber = testIfOnTable(numincludes);
+						return -1;
+					}
+				} else {
+					errorcode = COMPERR_NEXT;
+					return -1;
+				}
+			}
+			| B256NEXT {
+				// allow relaxed next without the variable name
+				if (numifs>0) {
+					if (iftabletype[numifs-1]==IFTABLETYPEFOR) {
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLCONTINUE)] = wordOffset;
+						addOp(OP_NEXT);
+						symtableaddress[getInternalSymbol(iftableid[numifs-1],INTERNALSYMBOLEXIT)] = wordOffset;
+						numifs--;
 					} else {
 						errorcode = testIfOnTableError(numincludes);
 						linenumber = testIfOnTable(numincludes);
@@ -3163,7 +3219,7 @@ soundstmt:	B256SOUND args_ee {
 				addIntOp(OP_PUSHINT, 2);	// 2 columns (this)
 				addIntOp(OP_PUSHINT, 1);	// 1 row
 				addIntOp(OP_PUSHINT, 2);	// 2 columns (max)
-				addOp(OP_LIST2EXPRESSION);
+				addOp(OP_LIST2ARRAY);
 				addOp(OP_SOUND);
 			}
 			| B256SOUND expr {
@@ -3178,7 +3234,7 @@ soundplaystmt:	B256SOUNDPLAY args_none {
 	| B256SOUNDPLAY args_ee {
 		addIntOp(OP_PUSHINT, 2);	// 2 columns
 		addIntOp(OP_PUSHINT, 1);	// 1 row
-		addOp(OP_LIST2EXPRESSION);
+		addOp(OP_LIST2ARRAY);
 		addOp(OP_SOUNDPLAY);
 	}
 	| B256SOUNDPLAY expr {

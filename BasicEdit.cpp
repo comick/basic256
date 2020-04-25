@@ -288,10 +288,13 @@ void BasicEdit::beautifyProgram() {
         } else if (line.contains(QRegExp("^\\S+[:]"))) {
 			// label - one line no indent
 			indentThisLine = false;
-		} else if (line.contains(QRegExp("^for\\s", Qt::CaseInsensitive))) {
+		} else if (line.contains(QRegExp("^(for)|(foreach)\\s", Qt::CaseInsensitive))) {
 			// for - indent next (block of code)
 			increaseIndent = true;
-		} else if (line.contains(QRegExp("^next\\s", Qt::CaseInsensitive))) {
+		} else if (line.contains(QRegExp("^next(\\s)", Qt::CaseInsensitive))) {
+			// next var - come out of block - reduce indent
+			decreaseIndent = true;
+		} else if (line.contains(QRegExp("^next$", Qt::CaseInsensitive))) {
 			// next - come out of block - reduce indent
 			decreaseIndent = true;
 		} else if (line.contains(QRegExp("^if\\s.+\\sthen\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {

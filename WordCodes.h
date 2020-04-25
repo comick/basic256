@@ -25,6 +25,7 @@
 #define OPTYPE_STRING			0x03000000		// null terminated string following
 #define OPTYPE_LABEL			0x04000000		// label number (int) - converted to address at runtime
 #define OPTYPE_VARIABLE			0x05000000		// variable number (int)
+#define OPTYPE_VAR_VAR			0x06000000		// two variable numbers (int*2)
 #define	OPTYPE_MASK				0xff000000		// and mask to strip optype out of opcode
 
 
@@ -300,14 +301,15 @@
 #define OP_ROUNDEDRECT  		OPTYPE_NONE + 0x000122
 #define OP_BITSHIFTL            OPTYPE_NONE + 0x000123
 #define OP_BITSHIFTR            OPTYPE_NONE + 0x000124
-#define OP_LIST2EXPRESSION		OPTYPE_NONE + 0x000125
+#define OP_LIST2ARRAY			OPTYPE_NONE + 0x000125
 #define OP_STACKSAVE			OPTYPE_NONE + 0x000126
 #define OP_STACKUNSAVE			OPTYPE_NONE + 0x000127
 #define OP_LJUST				OPTYPE_NONE + 0x000128
 #define OP_RJUST				OPTYPE_NONE + 0x000129
 #define OP_ROUND				OPTYPE_NONE + 0x00012a
 #define OP_ARRAYBASE			OPTYPE_NONE + 0x00012b
-
+#define OP_LIST2MAP				OPTYPE_NONE + 0x00012c
+#define OP_NEXT 				OPTYPE_NONE + 0x00012d
 
 #define OP_GOTO 				OPTYPE_LABEL + 0x000000
 #define OP_GOSUB 				OPTYPE_LABEL + 0x000001
@@ -331,8 +333,6 @@
 #define OP_ARR_GET 				OPTYPE_VARIABLE + 0x000005
 #define OP_ARR_UN				OPTYPE_VARIABLE + 0x000006
 #define OP_FOR 					OPTYPE_VARIABLE + 0x000007
-#define OP_FOREACH				OPTYPE_VARIABLE + 0x000008
-#define OP_NEXT 				OPTYPE_VARIABLE + 0x000009
 #define OP_DIM 					OPTYPE_VARIABLE + 0x00000a
 #define OP_REDIM 				OPTYPE_VARIABLE + 0x00000b
 #define OP_ALEN 				OPTYPE_VARIABLE + 0x00000c
@@ -348,7 +348,7 @@
 #define OP_VAR_ASSIGNED			OPTYPE_VARIABLE + 0x000016
 #define OP_ARR_ASSIGNED			OPTYPE_VARIABLE + 0x000017
 
-
+#define OP_FOREACH				OPTYPE_VAR_VAR + 0x000000
 
 #define OP_PUSHINT 				OPTYPE_INT + 0x000000
 #define OP_CURRLINE 			OPTYPE_INT + 0x000001

@@ -53,3 +53,48 @@ call s("in alpha order after delete ", total, "BB9999QQ198")
 call n("after unassign - map should have 5 items - length", length(q), 5)
 call boolean("key a - not exist ? ", typeof(q['a'])=TYPE_UNASSIGNED)
 call boolean("key a - not assigned ", not assigned(q['a']))
+
+sq = serialize(q)
+? sq
+
+qq = unserialize(sq)
+call n("unserialize - length",length(q), length(qq))
+for each i in qq
+	print i, q[i], qq[i]
+	call s("unserialize key ";i;" same",q[i],qq[i])
+	call n("unserialize key ";i;" type same",typeof(q[i]),typeof(qq[i]))
+next i
+
+unassign q
+unassign qq	
+
+
+a = {'a'->'alpha','b'->"bravo",'c'->"charlie",'d'->'delta'}
+total = ''
+foreach k in a
+	total = total ; k
+	? k
+next 
+call s("brace build variable", total, "abcd")
+
+total = ''
+foreach k->v in a
+	total = total ; k; v
+	? k,v
+next 
+call s("foreach key and value", total, "aalphabbravoccharlieddelta")
+
+total = ''
+foreach k in {1->'x','x'->1,2->'y','y'->2}
+	total = total ; k
+	? k
+next 
+call s("brace build for each", total, "12xy")
+
+total = ''
+foreach k->v in  {1->'x','x'->1,2->'y','y'->2}
+	total = total ; k; v
+	? k,v
+next 
+call s("brace build foreach key and value", total, "1x2yx1y2")
+

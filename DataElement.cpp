@@ -249,10 +249,9 @@ void DataElement::mapDim(){
 
 DataElement* DataElement::mapGetData(QString key){
 	DataElement *d;
-	std::string ckey = key.toStdString();
 	if (type==T_MAP) {
-		if (map->data.count(ckey)) {
-			d = &map->data[ckey];
+		if (map->data.count(key)) {
+			d = &map->data[key];
 		} else {
 			e = ERROR_MAPKEY;
 			d = new DataElement();
@@ -266,17 +265,16 @@ DataElement* DataElement::mapGetData(QString key){
 
 void DataElement::mapSetData(QString key, DataElement *d){
 	if (type==T_MAP) {
-		map->data[key.toStdString()] = *d;
+		map->data[key] = *d;
 	} else {
 		e = ERROR_NOTMAP;
 	}
 }
 
 void DataElement::mapUnassign(QString key){
-	std::string ckey = key.toStdString();
 	if (type==T_MAP) {
-		if (map->data.count(ckey)) {
-			map->data.erase(ckey);
+		if (map->data.count(key)) {
+			map->data.erase(key);
 		} else {
 			e = ERROR_MAPKEY;
 		}
@@ -297,9 +295,8 @@ int DataElement::mapLength(){
 
 bool DataElement::mapKey(QString key){
 	// is the key in the map
-	std::string ckey = key.toStdString();
 	if (type==T_MAP) {
-		if (map->data.count(ckey)) {
+		if (map->data.count(key)) {
 			return true;
 		} else {
 			e = ERROR_MAPKEY;

@@ -52,9 +52,6 @@
 # 20200421  j.m.reneau      added arraybase suite
 # 20200423  j.m.reneau      added map suite
 
-global currentsuite
-currentsuite = ""
-
 include "testsuite_common_include.kbs"
 
 ###################################################

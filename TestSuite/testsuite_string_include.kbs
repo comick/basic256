@@ -7,6 +7,7 @@
 # 20160328	j.m.reneau	Added ltrim, rtrim, trim
 # 20161101  j.m.reneau  added [] to all array passing to functions
 # 20200421  j.m.reneau  added string repeat with *
+# 20200424  j.m.reneau  added ljust rjust and zfill
 
 currentsuite = "string"
 
@@ -93,4 +94,10 @@ call s("repeat 10 times","A"*10, "AAAAAAAAAA")
 call s("repeat 0 times","A"*0, "")
 call s("repeat -10 times","A"*-10, "")
 
+# fill and justify
+call s("ljust 5",ljust(99,5),"99   ")
+call s("ljust 5 X",ljust(99,5,"X"),"99XXX")
+call s("rjust 5",rjust(99,5),"   99")
+call s("rjust 5 X",rjust(99,5,"X"),"XXX99")
+call s("zfill 5 ",zfill(99,5),"00099")
 

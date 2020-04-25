@@ -35,7 +35,7 @@ class DataElementArray
 class DataElementMap
 {
     public:
-        std::map<std::string, DataElement> data;
+        std::map<QString, DataElement> data;
 };
 
 class DataElement

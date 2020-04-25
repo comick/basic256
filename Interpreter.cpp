@@ -319,7 +319,8 @@ QString Interpreter::opname(int op) {
 	case OP_LEFT : return QString("OP_LEFT");
 	case OP_LENGTH : return QString("OP_LENGTH");
 	case OP_LINE : return QString("OP_LINE");
-	case OP_LIST2EXPRESSION : return QString("OP_LIST2EXPRESSION");
+	case OP_LIST2ARRAY : return QString("OP_LIST2ARRAY");
+	case OP_LIST2MAP : return QString("OP_LIST2MAP");
 	case OP_LOG : return QString("OP_LOG");
 	case OP_LOGTEN : return QString("OP_LOGTEN");
 	case OP_LOWER : return QString("OP_LOWER");
@@ -1354,11 +1355,30 @@ Interpreter::execByteCode() {
 	// displays the opcode - its argument and the stack (Before) execution
 	fprintf(stderr,"stackbefore - %s\n",stack->debug().toUtf8().data());
 	fprintf(stderr,"%08x %s ",(unsigned int) (op-wordCode), opname(*op).toUtf8().data());
-	if(optype(*op)==OPTYPE_INT) fprintf(stderr, "%ld", (long) *(op+1));
+	if(optype(*op)==OPTYPE_INT) {
+		if ((*op)==OP_CURRLINE) {
+			int includeFileNumber = (long) *(op+1) >> 24;
+			int currentLine = (long) *(op+1) & 0xffffff;
+			fprintf(stderr, "%d %d", includeFileNumber, currentLine);
+		} else {
+			fprintf(stderr, "%ld", (long) *(op+1));
+		}
+	}
 	if(optype(*op)==OPTYPE_FLOAT) fprintf(stderr, "%f", (float) *(op+1));
 	if(optype(*op)==OPTYPE_STRING) fprintf(stderr, "'%s'", (char *) (op+1));
-	if(optype(*op)==OPTYPE_LABEL) fprintf(stderr, "lbl %s", symtable[*(op+1)]);
-	if(optype(*op)==OPTYPE_VARIABLE) fprintf(stderr, "%s", symtable[*(op+1)]);
+	if(optype(*op)==OPTYPE_LABEL){
+		int v = *(op+1);
+		fprintf(stderr, "lbl %s", ((v>=0&&v<numsyms)?symtable[v]:"__unknown__") );
+	}
+	if(optype(*op)==OPTYPE_VARIABLE) {
+		int v = *(op+1);
+		fprintf(stderr, "%s", ((v>=0&&v<numsyms)?symtable[v]:"__unknown__"));
+	}
+	if(optype(*op)==OPTYPE_VAR_VAR) {
+		int v = *(op+1);
+		int v2 = *(op+2);
+		fprintf(stderr, "%s %s", ((v>=0&&v<numsyms)?symtable[v]:"__unknown__"), ((v2>=0&&v2<numsyms)?symtable[v2]:"__none__"));
+	}
 	fprintf(stderr, "\n");
 }
 #endif
@@ -1367,6 +1387,117 @@ Interpreter::execByteCode() {
 	op++;
 
 	switch (optype(opcode)) {
+		case OPTYPE_VAR_VAR: {
+			//
+			// OPCODES with two variable numbers following in the wordCcode go in this switch
+			// int i is the symbol/variable number
+			// int i2 is the second symbol/variable number
+			//
+			int i = *op;
+			op++;
+			int i2 = *op;
+			op++;
+
+			switch(opcode) {
+
+				case OP_FOREACH: {
+					int *nextAddr = wordCode + stack->popInt();
+					DataElement *d = stack->popDE();
+					
+					// two variables
+					// - i is the variable for the value in an array and the key for a map
+					// - i2 is the variable for the value in a map
+					
+
+					// search for previous FOR in stack
+					// this is done because of anti-spaghetti code
+
+					forframe *temp = forstack;
+					forframe *prev = NULL;
+					while(temp && nextAddr!=temp->nextAddr){
+						prev=temp;
+						temp=temp->next;
+					}
+					if(temp){
+						//if there is a previous FOR in stack pull it to use the allocated memory
+						if(prev){
+							//node is in the middle of stack
+							prev->next=temp->next;
+						}else{
+							//node is last
+							forstack=temp->next;
+						}
+					}else{
+						//or create a new node
+						temp = new forframe;
+					}
+
+					if (d->type == T_ARRAY) {
+						if(d->arrayCols()>=1) {
+							// create forframe
+							temp->for_varnum = i;
+							temp->for_val_varnum = i2;
+							temp->type = FORFRAMETYPE_FOREACH_ARRAY;
+							temp->iter_d = d;
+							temp->arrayIter = d->arr->data.begin();
+							temp->arrayIterEnd = d->arr->data.end();
+							// set variable to first element
+							variables->setData(temp->for_varnum, (DataElement*) &(*temp->arrayIter));
+							watchvariable(debugMode, temp->for_varnum);
+							// add new forframe to the forframe stack
+							temp->next = forstack;
+							temp->forAddr = op;		// first op after FOR statement to loop back to
+							temp->nextAddr = nextAddr;
+							forstack = temp;
+						} else {
+							// no data in array - jump to next
+							delete d;
+							delete temp;
+							op = nextAddr;
+						}
+					} else if (d->type == T_MAP) {
+#ifdef DEBUG
+fprintf(stderr,"in foreach map %d\n", d->map->data.size());
+#endif
+						if(d->map->data.size()>=1) {
+							// create forframe
+							temp->for_varnum = i;
+							temp->for_val_varnum = i2;
+							temp->type = FORFRAMETYPE_FOREACH_MAP;
+							temp->iter_d = d;
+							temp->mapIter = d->map->data.begin();
+							temp->mapIterEnd = d->map->data.end();
+							// set variable1 to first key
+							variables->setData(temp->for_varnum, temp->mapIter->first);
+							watchvariable(debugMode, temp->for_varnum);
+							// set variable2 to first value
+							if (temp->for_val_varnum !=-1) {
+								variables->setData(temp->for_val_varnum, (DataElement*) &(temp->mapIter->second));
+								watchvariable(debugMode, temp->for_val_varnum);
+							}
+							// add new forframe to the forframe stack
+							temp->next = forstack;
+							temp->forAddr = op;		// first op after FOR statement to loop back to
+							temp->nextAddr = nextAddr;
+							forstack = temp;
+						} else {
+							// no data in array - jump to next
+							delete d;
+							delete temp;
+							op = nextAddr;
+						}
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
+
+					}
+				}
+				break;
+
+				// add additional optype var_var here
+
+			}
+			break;
+		}	
 
 		case OPTYPE_VARIABLE: {
 			//
@@ -1415,6 +1546,8 @@ Interpreter::execByteCode() {
 					if (startE->type==T_INT && stepE->type==T_INT) {
 						// an integer start and step (do an integer loop)
 						temp->type = FORFRAMETYPE_INT;
+						temp->for_varnum = i;
+						temp->for_val_varnum = -1;
 						temp->intStart = startE->intval;
 						temp->intEnd = convert->getLong(endE);	// could b float but cant ever be
 						temp->intStep = stepE->intval;
@@ -1424,6 +1557,8 @@ Interpreter::execByteCode() {
 					} else {
 						// start or step not integer - it is a float loop
 						temp->type = FORFRAMETYPE_FLOAT;
+						temp->for_varnum = i;
+						temp->for_val_varnum = -1;
 						temp->floatStart = convert->getFloat(startE);
 						temp->floatEnd = convert->getFloat(endE);
 						temp->floatStep = convert->getFloat(stepE);
@@ -1449,192 +1584,6 @@ Interpreter::execByteCode() {
 				}
 				break;
 
-				case OP_FOREACH: {
-					int *nextAddr = wordCode + stack->popInt();
-					DataElement *d = stack->popDE();
-
-					// search for previous FOR in stack
-					// this is done because of anti-spaghetti code
-
-					forframe *temp = forstack;
-					forframe *prev = NULL;
-					while(temp && nextAddr!=temp->nextAddr){
-						prev=temp;
-						temp=temp->next;
-					}
-					if(temp){
-						//if there is a previous FOR in stack pull it to use the allocated memory
-						if(prev){
-							//node is in the middle of stack
-							prev->next=temp->next;
-						}else{
-							//node is last
-							forstack=temp->next;
-						}
-					}else{
-						//or create a new node
-						temp = new forframe;
-					}
-
-					if (d->type == T_ARRAY) {
-						if(d->arrayCols()>=1) {
-							// create forframe
-							temp->type = FORFRAMETYPE_FOREACH_ARRAY;
-							temp->iter_d = d;
-							temp->arrayIter = d->arr->data.begin();
-							temp->arrayIterEnd = d->arr->data.end();
-							// set variable to first element
-							variables->setData(i, (DataElement*) &(*temp->arrayIter));
-							watchvariable(debugMode, i);
-							// add new forframe to the forframe stack
-							temp->next = forstack;
-							temp->forAddr = op;		// first op after FOR statement to loop back to
-							temp->nextAddr = nextAddr;
-							forstack = temp;
-						} else {
-							// no data in array - jump to next
-							delete d;
-							delete temp;
-							op = nextAddr;
-						}
-					} else if (d->type == T_MAP) {
-#ifdef DEBUG
-fprintf(stderr,"in foreach map %d\n", d->map->data.size());
-#endif
-						if(d->map->data.size()>=1) {
-							// create forframe
-							temp->type = FORFRAMETYPE_FOREACH_MAP;
-							temp->iter_d = d;
-							temp->mapIter = d->map->data.begin();
-							temp->mapIterEnd = d->map->data.end();
-							// set variable to first key
-							variables->setData(i, QString::fromUtf8(temp->mapIter->first.c_str()));
-							watchvariable(debugMode, i);
-							// add new forframe to the forframe stack
-							temp->next = forstack;
-							temp->forAddr = op;		// first op after FOR statement to loop back to
-							temp->nextAddr = nextAddr;
-							forstack = temp;
-						} else {
-							// no data in array - jump to next
-							delete d;
-							delete temp;
-							op = nextAddr;
-						}
-					} else {
-						error->q(ERROR_ARRAYORMAPEXPR);
-
-					}
-				}
-				break;
-
-
-				case OP_NEXT: {
-					forframe *temp = forstack;
-					forframe *prev = NULL;
-
-					// search for FOR in stack
-					// this is done because of anti-spaghetti code
-					while(temp && op!=temp->nextAddr){
-						prev=temp;
-						temp=temp->next;
-					}
-
-					if (!temp) {
-						error->q(ERROR_NEXTNOFOR);
-					} else {
-						switch (temp->type) {
-							case FORFRAMETYPE_INT:
-							{
-								const long val = convert->getLong(variables->getData(i))+temp->intStep;
-								variables->setData(i, val);
-								watchvariable(debugMode, i);
-								if ((temp->intStep > 0 && val <= temp->intEnd) ||
-									(temp->intStep < 0 && val >= temp->intEnd) ||
-									(temp->intStep==0 && temp->intStart < temp->intEnd && val <= temp->intEnd) ||
-									(temp->intStep==0 && temp->intStart > temp->intEnd && val >= temp->intEnd) ||
-									(temp->intStep==0 && temp->intStart == temp->intEnd && val == temp->intEnd)
-									){
-									op = temp->forAddr;
-								} else {
-									if(prev){
-										prev->next=temp->next;
-									}else{
-										forstack = temp->next;
-									}
-									delete temp;
-								}
-							}
-							break;
-							case FORFRAMETYPE_FLOAT:
-							{
-						
-								const double val = convert->getFloat(variables->getData(i))+temp->floatStep;
-								variables->setData(i, val);
-								watchvariable(debugMode, i);
-								if ((temp->floatStep > 0.0 && convert->compareFloats(val, temp->floatEnd)!=1) || 
-									(temp->floatStep < 0.0 && convert->compareFloats(val, temp->floatEnd)!=-1) ||
-									(temp->floatStep==0 && temp->floatStart < temp->floatEnd && val <= temp->floatEnd) ||
-									(temp->floatStep==0 && temp->floatStart > temp->floatEnd && val >= temp->floatEnd) ||
-									(temp->floatStep==0 && temp->floatStart == temp->floatEnd && val == temp->floatEnd)
-									){
-									op = temp->forAddr;
-								} else {
-									if(prev){
-										prev->next=temp->next;
-									}else{
-										forstack = temp->next;
-									}
-									delete temp;
-								}
-							}
-							break;
-							case FORFRAMETYPE_FOREACH_ARRAY:
-							{
-								temp->arrayIter++;
-								if (temp->arrayIter != temp->arrayIterEnd) {
-									// set variable to this element
-									variables->setData(i, (DataElement*) &(*temp->arrayIter));
-									watchvariable(debugMode, i);
-									// loop again
-									op = temp->forAddr;
-								} else {
-									// done with loop
-									if(prev){
-										prev->next=temp->next;
-									}else{
-										forstack = temp->next;
-									}
-									delete temp->iter_d;
-									delete temp;
-								}
-							}
-							break;
-							case FORFRAMETYPE_FOREACH_MAP:
-							{
-								temp->mapIter++;
-								if (temp->mapIter != temp->mapIterEnd) {
-									// set variable to the next key
-									variables->setData(i, QString::fromUtf8(temp->mapIter->first.c_str()));
-									watchvariable(debugMode, i);
-									// loop again
-									op = temp->forAddr;
-								} else {
-									// done with loop
-									if(prev){
-										prev->next=temp->next;
-									}else{
-										forstack = temp->next;
-									}
-									delete temp->iter_d;
-									delete temp;
-								}
-							}
-							break;
-						}
-					}
-				}
-				break;
 
 				case OP_DIM:
 				case OP_REDIM: {
@@ -1656,34 +1605,40 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 				
 
-				case OP_ALEN:
-				case OP_ALENROWS:
-				case OP_ALENCOLS: {
-					// return array lengths
+				case OP_ALEN: {
+					long l = 0;
 					DataElement *e = variables->getData(i);
 					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
-					switch(opcode) {
-						case OP_ALEN:
-							if (e->type==T_ARRAY) {
-								if (e->arrayRows()==1) {
-									stack->pushInt(e->arrayCols());
-								} else {
-									error->q(ERROR_ARRAYLENGTH2D);
-								}
-							} else if (e->type==T_MAP) {
-								stack->pushInt(e->mapLength());
-							} else {
-								error->q(ERROR_ARRAYORMAPEXPR);
-								stack->pushInt(0);
-							}
-							break;
-						case OP_ALENROWS:
-							stack->pushInt(e->arrayRows());
-							break;
-						case OP_ALENCOLS:
-							stack->pushInt(e->arrayCols());
-							break;
+					if (e->type==T_ARRAY) {
+						if (e->arrayRows()==1) {
+							l = e->arrayCols();
+						} else {
+							error->q(ERROR_ARRAYLENGTH2D);
+						}
+					} else if (e->type==T_MAP) {
+						l = e->mapLength();
+					} else {
+						error->q(ERROR_ARRAYORMAPEXPR);
 					}
+					stack->pushInt(l);
+				}
+				break;
+
+				case OP_ALENROWS: {
+					long l = 0;
+					DataElement *e = variables->getData(i);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+					l = e->arrayRows();
+					stack->pushInt(l);
+				}
+				break;
+
+				case OP_ALENCOLS: {
+					long l = 0;
+					DataElement *e = variables->getData(i);
+					if (DataElement::getError()) {error->q(DataElement::getError(true),i);}
+					l = e->arrayCols();
+					stack->pushInt(l);
 				}
 				break;
 
@@ -1706,7 +1661,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						if (c<0) c=0;
 						if (r<0) r=0;
 						vdata->arraySetData(r, c, e);
-						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r,c);}
+						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r+arraybase,c+arraybase);}
 						watchvariable(debugMode, i, r, c);
 					} else if (vdata->type==T_MAP) {
 						QString key = convert->getString(col);
@@ -1732,6 +1687,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					if (vdata->type==T_ARRAY) {
 						int c = convert->getInt(col) - arraybase;
 						int r = convert->getInt(row) - arraybase;
+						if (c<0) c=0;
+						if (r<0) r=0;
 						e = vdata->arrayGetData(r, c);
 						if (DataElement::getError()) {error->q(DataElement::getError(true),i,r+arraybase,c+arraybase);}
 					} else if (vdata->type==T_MAP) {
@@ -3156,19 +3113,20 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							if((two->intval<=0||one->intval>0||a>=0)&&(two->intval>=0||one->intval<0||a<=0)) {
 								// integer subtract - without overflow
 								stack->pushLong(a);
+								delete one;
+								delete two;
 								break;
 							}
+						}
+						// if we have a float or an overflow then fall through to float subtract
+						double fone = convert->getFloat(one);
+						double ftwo = convert->getFloat(two);
+						double ans = ftwo - fone;
+						if (std::isinf(ans)) {
+							error->q(ERROR_INFINITY);
+							stack->pushDouble(0.0);
 						} else {
-							// float subtract
-							double fone = convert->getFloat(one);
-							double ftwo = convert->getFloat(two);
-							double ans = ftwo - fone;
-							if (std::isinf(ans)) {
-								error->q(ERROR_INFINITY);
-								stack->pushDouble(0.0);
-							} else {
-								stack->pushDouble(ans);
-							}
+							stack->pushDouble(ans);
 						}
 						delete one;
 						delete two;
@@ -3182,27 +3140,35 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						if (one->type==T_INT && two->type==T_INT) {
 							if(two->intval==0||one->intval==0) {
 								stack->pushLong(0);
+								delete one;
+								delete two;
+								break;
 							} else {
 								if (labs(one->intval)<=LONG_MAX/labs(two->intval)) {
 									long a = two->intval * one->intval;
 									// integer multiply - without overflow
 									stack->pushLong(a);
+									delete one;
+									delete two;
+									break;
 								}
 							}
 						} else if (one->type==T_INT && two->type==T_STRING) {
 							// string repeat like python
 							stack->pushQString(two->stringval.repeated(one->intval));
+							delete one;
+							delete two;
+							break;
+						}
+						// if we have a float or we overflow - fall through to float multiply
+						double fone = convert->getFloat(one);
+						double ftwo = convert->getFloat(two);
+						double ans = ftwo * fone;
+						if (std::isinf(ans)) {
+							error->q(ERROR_INFINITY);
+							stack->pushDouble(0.0);
 						} else {
-							// float multiply
-							double fone = convert->getFloat(one);
-							double ftwo = convert->getFloat(two);
-							double ans = ftwo * fone;
-							if (std::isinf(ans)) {
-								error->q(ERROR_INFINITY);
-								stack->pushDouble(0.0);
-							} else {
-								stack->pushDouble(ans);
-							}
+							stack->pushDouble(ans);
 						}
 						delete one;
 						delete two;
@@ -3214,7 +3180,6 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					DataElement *one = stack->popDE();
 					if (one->type==T_INT) {
 						stack->pushLong(labs(one->intval));
-
 					} else {
 						stack->pushDouble(fabs(convert->getFloat(one)));
 					}
@@ -6319,6 +6284,10 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 										//op has one Int arg
 										emit(outputReady(QString("%1 %2 (%3) %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o).arg(symtable[(int) *o])));
 										o++;
+									} else if (optype(currentop) == OPTYPE_VAR_VAR) {
+										//op has one wto int (var)
+										emit(outputReady(QString("%1 %2 (%3) %4 (%5) %6\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((int) *o).arg(symtable[(int) *o]).arg((int) *(o+1)).arg(*(o+1)>0?symtable[(int) *(o+1)]:"__none__")));
+										o+=2;
 									} else if (optype(currentop) == OPTYPE_LABEL) {
 										//op has one Int arg (label - lookup the address from the symtableaddress
 										emit(outputReady(QString("%1 %2 (%3) %4\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg(symtableaddress[(int) *o],8,16,QChar('0')).arg(symtable[(int) *o])));
@@ -6532,8 +6501,33 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							}
 						}
 						stack->pushQString(QString::number(rows) + SERALIZE_DELIMITER + QString::number(cols) + SERALIZE_DELIMITER + stuff);
+					} else if (e->type==T_MAP) {
+						QString stuff = "M";
+						stuff.append(SERALIZE_DELIMITER);
+						stuff.append(QString::number(e->mapLength()));
+						for (std::map<QString, DataElement>::iterator it = e->map->data.begin(); it != e->map->data.end(); it++ )
+						{
+							stuff.append(SERALIZE_DELIMITER);
+							stuff.append(SERALIZE_STRING + QString::fromUtf8(it->first.toUtf8().toHex()) );
+							stuff.append(SERALIZE_DELIMITER);
+							switch (it->second.type) {
+								case T_STRING:
+									stuff.append(SERALIZE_STRING + QString::fromUtf8(it->second.stringval.toUtf8().toHex()) );
+									break;
+								case T_FLOAT:
+									stuff.append(SERALIZE_FLOAT + QString::number(it->second.floatval));
+									break;
+								case T_INT:
+									stuff.append(SERALIZE_INT + QString::number(it->second.intval));
+									break;
+								default:
+									stuff.append(SERALIZE_UNASSIGNED);
+									break;
+							};
+						}
+						stack->pushQString(stuff);
 					} else {
-						error->q(ERROR_ARRAYEXPR);
+						error->q(ERROR_ARRAYORMAPEXPR);
 					}
 					delete e;
 				}
@@ -6582,23 +6576,49 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_UNSERIALIZE: {
-					bool goodrows, goodcols;
+					bool good;
 					DataElement *d = new DataElement();
 					DataElement *dat;
 
 					QString data = stack->popQString();
 					QStringList list = data.split(SERALIZE_DELIMITER);
+					
 					if (list.count()>=3) {
-						int rows = list[0].toInt(&goodrows);
-						int cols = list[1].toInt(&goodcols);
-						if (goodrows&&goodcols) {
+						if(list[0].at(0).toLatin1()=='M') {
+							d->mapDim();
+							int pairs = list[1].toInt(&good);
+							for (int i=0; i<pairs; i++) {
+								QString key = QString::fromUtf8(QByteArray::fromHex(list[i*2+2].mid(1).toUtf8()).data());
+								switch (list[i*2+3].at(0).toLatin1()) {
+									case SERALIZE_STRING:
+										dat = new DataElement(QString::fromUtf8(QByteArray::fromHex(list[i*2+3].mid(1).toUtf8()).data()));
+										break;
+									case SERALIZE_FLOAT:
+										dat = new DataElement(list[i*2+3].mid(1).toDouble());
+										break;
+									case SERALIZE_INT:
+										dat = new DataElement(list[i*2+3].mid(1).toLong());
+										break;
+									case SERALIZE_UNASSIGNED:
+										dat = new DataElement();
+										break;
+									default:
+										dat = new DataElement();
+										error->q(ERROR_UNSERIALIZEFORMAT);
+								}
+								d->mapSetData(key,dat);
+							}
+							stack->pushDE(d);
+						} else {
+							// array
+							int rows = list[0].toInt(&good);
+							int cols = list[1].toInt(&good);
 							d->arrayDim(rows, cols, false);
 							if (list.count()==rows*cols+2) {
 								for (int row=0; row<rows; row++) {
 									for (int col=0; col<cols; col++) {
 										int i = row * cols + col + 2;
 										switch (list[i].at(0).toLatin1()) {
-											
 											case SERALIZE_STRING:
 												dat = new DataElement(QString::fromUtf8(QByteArray::fromHex(list[i].mid(1).toUtf8()).data()));
 												break;
@@ -6617,13 +6637,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 										}
 										d->arraySetData(row,col,dat);
 									}
-									stack->pushDE(d);
 								}
-							} else {
-								error->q(ERROR_UNSERIALIZEFORMAT);
 							}
-						} else {
-							error->q(ERROR_UNSERIALIZEFORMAT);
+							stack->pushDE(d);
 						}
 					} else {
 						error->q(ERROR_UNSERIALIZEFORMAT);
@@ -7109,7 +7125,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
-				case OP_LIST2EXPRESSION: {
+				case OP_LIST2ARRAY: {
 					// pop a list of values off of stack and push
 					// it back on as a single DataElement with the data as array
 					// remember this is not associated with variable
@@ -7133,6 +7149,26 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
+
+				case OP_LIST2MAP: {
+					// pop a list of values off of stack and push
+					// it back on as a single DataElement with the data as a map
+					// remember this is not associated with variable
+					const int n = stack->popInt();
+					
+					DataElement *edest = new DataElement();
+					edest->mapDim();
+
+					for(int i = 0; i<n; i++) {
+						DataElement *e = stack->popDE();
+						QString key = stack->popQString();
+						edest->mapSetData(key, e);
+						delete e;
+					}
+					stack->pushDE(edest);
+				}
+				break;
+				
 				case OP_STACKSAVE: {
 					// pop an element from the current stack and push to the "savestack"
 					DataElement *de = stack->popDE();
@@ -7181,6 +7217,117 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;				
 
+				case OP_NEXT: {
+					forframe *temp = forstack;
+					forframe *prev = NULL;
+
+					// search for FOR in stack
+					// this is done because of anti-spaghetti code
+					while(temp && op!=temp->nextAddr){
+						prev=temp;
+						temp=temp->next;
+					}
+
+					if (!temp) {
+						error->q(ERROR_NEXTNOFOR);
+					} else {
+						switch (temp->type) {
+							case FORFRAMETYPE_INT:
+							{
+								const long val = convert->getLong(variables->getData(temp->for_varnum))+temp->intStep;
+								variables->setData(temp->for_varnum, val);
+								watchvariable(debugMode, temp->for_varnum);
+								if ((temp->intStep > 0 && val <= temp->intEnd) ||
+									(temp->intStep < 0 && val >= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart < temp->intEnd && val <= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart > temp->intEnd && val >= temp->intEnd) ||
+									(temp->intStep==0 && temp->intStart == temp->intEnd && val == temp->intEnd)
+									){
+									op = temp->forAddr;
+								} else {
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp;
+								}
+							}
+							break;
+							case FORFRAMETYPE_FLOAT:
+							{
+						
+								const double val = convert->getFloat(variables->getData(temp->for_varnum))+temp->floatStep;
+								variables->setData(temp->for_varnum, val);
+								watchvariable(debugMode, temp->for_varnum);
+								if ((temp->floatStep > 0.0 && convert->compareFloats(val, temp->floatEnd)!=1) || 
+									(temp->floatStep < 0.0 && convert->compareFloats(val, temp->floatEnd)!=-1) ||
+									(temp->floatStep==0 && temp->floatStart < temp->floatEnd && val <= temp->floatEnd) ||
+									(temp->floatStep==0 && temp->floatStart > temp->floatEnd && val >= temp->floatEnd) ||
+									(temp->floatStep==0 && temp->floatStart == temp->floatEnd && val == temp->floatEnd)
+									){
+									op = temp->forAddr;
+								} else {
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp;
+								}
+							}
+							break;
+							case FORFRAMETYPE_FOREACH_ARRAY:
+							{
+								temp->arrayIter++;
+								if (temp->arrayIter != temp->arrayIterEnd) {
+									// set variable to this element
+									variables->setData(temp->for_varnum, (DataElement*) &(*temp->arrayIter));
+									watchvariable(debugMode, temp->for_varnum);
+									// loop again
+									op = temp->forAddr;
+								} else {
+									// done with loop
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp->iter_d;
+									delete temp;
+								}
+							}
+							break;
+							case FORFRAMETYPE_FOREACH_MAP:
+							{
+								temp->mapIter++;
+								if (temp->mapIter != temp->mapIterEnd) {
+									// set variable1 to the next key
+									variables->setData(temp->for_varnum, temp->mapIter->first);
+									watchvariable(debugMode, temp->for_varnum);
+									// set variable2 to value
+									if (temp->for_val_varnum !=-1) {
+										variables->setData(temp->for_val_varnum, (DataElement*) &(temp->mapIter->second));
+										watchvariable(debugMode, temp->for_val_varnum);
+									}
+									// loop again
+									op = temp->forAddr;
+								} else {
+									// done with loop
+									if(prev){
+										prev->next=temp->next;
+									}else{
+										forstack = temp->next;
+									}
+									delete temp->iter_d;
+									delete temp;
+								}
+							}
+							break;
+						}
+					}
+				}
+				break;
 
 
 
