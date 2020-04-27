@@ -30,11 +30,13 @@
 typedef int socklen_t;
 
 // for parallel port operations
-HINSTANCE inpout32dll = NULL;
-typedef unsigned char (CALLBACK* InpOut32InpType)(short int);
-typedef void (CALLBACK* InpOut32OutType)(short int, unsigned char);
-InpOut32InpType Inp32 = NULL;
-InpOut32OutType Out32 = NULL;
+#ifdef WIN32PORTIO
+	HINSTANCE inpout32dll = NULL;
+	typedef unsigned char (CALLBACK* InpOut32InpType)(short int);
+	typedef void (CALLBACK* InpOut32OutType)(short int, unsigned char);
+	InpOut32InpType Inp32 = NULL;
+	InpOut32OutType Out32 = NULL;
+#endif
 #else
 // unix, mac, android
 #include <sys/types.h>
@@ -143,6 +145,7 @@ Interpreter::Interpreter(QLocale *applocale) {
 		emit(outputReady(tr("ERROR - Unable to initialize Winsock library.\n")));
 	}
 	//
+#ifdef WIN32PORTIO
 	// initialize the inpout32 dll
 	inpout32dll  = LoadLibrary(L"inpout32.dll");
 	if (inpout32dll==NULL) {
@@ -157,6 +160,7 @@ Interpreter::Interpreter(QLocale *applocale) {
 			emit(outputError(tr("ERROR - Unable to find Out32 in inpout32.dll - direct port I/O disabled.\n")));
 		}
 	}
+#endif
 #endif
 }
 
@@ -1160,7 +1164,7 @@ bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
 	//check collision comparing only alpha channel
 	const uchar* scanbits = scan->bits();
 	bool flag=false;
-	const int max = scan->byteCount();
+	const int max = scan->sizeInBytes();
 	for(int f=3;f<max;f+=4){
 		if(scanbits[f]){
 			flag=true;
@@ -2841,7 +2845,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					temp[1] = (QChar) 0;
 					QString qs = QString(temp,1);
 					stack->pushQString(qs);
-					qs = QString::null;
+					qs = QString();
 				}
 				break;
 
@@ -5624,7 +5628,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				case OP_PORTOUT: {
 					int data = stack->popInt();
 					int port = stack->popInt();
-#ifdef WIN32
+#ifdef WIN32PORTIO
 					int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
 						mymutex->lock();
@@ -5651,7 +5655,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				case OP_PORTIN: {
 					int data=0;
 					int port = stack->popInt();
-#ifdef WIN32
+#ifdef WIN32PORTIO
 					int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
 						mymutex->lock();
@@ -5924,7 +5928,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						painter->setFont(font);
 						painter_font_need_update=false;
 					}
-					stack->pushInt((int) (QFontMetrics(painter->font()).width(txt)));
+					stack->pushInt((int) (QFontMetrics(painter->font()).horizontalAdvance(txt)));
 				}
 				break;
 

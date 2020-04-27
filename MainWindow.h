@@ -48,7 +48,6 @@
 #include "BasicEdit.h"
 #include "BasicGraph.h"
 #include "VariableWin.h"
-#include "DocumentationWin.h"
 #include "PreferencesWin.h"
 #include "RunController.h"
 #include "EditSyntaxHighlighter.h"

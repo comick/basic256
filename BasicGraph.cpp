@@ -159,8 +159,8 @@ void BasicGraph::setTrasformationMaps() {
 void BasicGraph::resizeWindowToFitContent() {
 // NOT android - Android - FULL screen
 #ifndef ANDROID
-    int winw = fabs((qreal)gwidth * gscale * gzoom);
-    int winh = fabs((qreal)gheight * gscale * gzoom);
+    int winw = labs((qreal)gwidth * gscale * gzoom);
+    int winh = labs((qreal)gheight * gscale * gzoom);
     setFixedSize(winw, winh);
 
     //force resize

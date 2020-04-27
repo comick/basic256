@@ -24,7 +24,8 @@
 #include <QString>
 #include <QMutex>
 #include <QWaitCondition>
-
+#include <QDesktopServices> 
+ 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMenuBar>
@@ -89,9 +90,9 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     config.setProtocol(QSsl::SecureProtocols);
     request.setSslConfiguration(config);
 #ifdef WIN32PORTABLE
-    request.setUrl(QUrl("https://sourceforge.net/projects/basic256prtbl/best_release.json"));
+    request.setUrl(QUrl("http://sourceforge.net/projects/basic256prtbl/best_release.json"));
 #else
-    request.setUrl(QUrl("https://sourceforge.net/projects/kidbasic/best_release.json"));
+    request.setUrl(QUrl("http://sourceforge.net/projects/kidbasic/best_release.json"));
 #endif
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
@@ -334,22 +335,11 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 
     // Help menu
     QMenu *helpmenu = menuBar()->addMenu(QObject::tr("&Help"));
-#if defined(WIN32PORTABLE) || defined(ANDROID)
-    // in portable or android make doc online and context help online
     onlinehact = helpmenu->addAction(basicIcons->webIcon, QObject::tr("&Online help..."));
     onlinehact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
     helpthis = new QAction (this);
     helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
     addAction (helpthis);
-#else
-    // in installed mode make doc offline and online and context help offline
-    docact = helpmenu->addAction(basicIcons->helpIcon, QObject::tr("&Help..."));
-    docact->setShortcuts(QKeySequence::keyBindings(QKeySequence::HelpContents));
-    helpthis = new QAction (this);
-    helpthis->setShortcuts(QKeySequence::keyBindings(QKeySequence::WhatsThis));
-    addAction (helpthis);
-    onlinehact = helpmenu->addAction(basicIcons->webIcon, QObject::tr("&Online help..."));
-#endif
 #ifndef ANDROID
     helpmenu->addSeparator();
     checkupdate = helpmenu->addAction(QObject::tr("&Check for update..."));
@@ -456,12 +446,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 #ifndef ANDROID
     QObject::connect(checkupdate, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
 #endif
-#if defined(WIN32PORTABLE) || defined(ANDROID)
-    QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showOnlineContextDocumentation()));
-#else
-    QObject::connect(docact, SIGNAL(triggered()), rc, SLOT(showDocumentation()));    
-    QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showContextDocumentation()));
-#endif
+QObject::connect(helpthis, SIGNAL(triggered()), rc, SLOT(showOnlineContextDocumentation()));
+
 
 #ifndef ANDROID
     //check for update as soon as the event loop is idle (avoid GUI freezing)
@@ -585,7 +571,7 @@ void MainWindow::about() {
     message = QObject::tr("BASIC-256") + QObject::tr(" Android") + "\n" +
               QObject::tr("version ") +  VERSION + QObject::tr(" - built with QT ") + QT_VERSION_STR + "\n" +
             QObject::tr("Locale Name: ") + locale->name() + QObject::tr("Decimal Point: ")+  "'" + (usefloatlocale?locale->decimalPoint():'.') + "'\n" +
-              QObject::tr("Copyright &copy; 2006-2017, The BASIC-256 Team") + "\n" +
+              QObject::tr("Copyright &copy; 2006-2020, The BASIC-256 Team") + "\n" +
               QObject::tr("Please visit our web site at http://www.basic256.org for tutorials and documentation.") + "\n" +
               QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.") + "\n" +
               QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.");
@@ -601,7 +587,7 @@ void MainWindow::about() {
 
 	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
             "<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + (usefloatlocale?locale->decimalPoint():'.') + "'</b>" +
-            "<p>" + QObject::tr("Copyright &copy; 2006-2017, The BASIC-256 Team") + "</p>" +
+            "<p>" + QObject::tr("Copyright &copy; 2006-2020, The BASIC-256 Team") + "</p>" +
 			"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
 			"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
 			"<p><i>" + QObject::tr("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.")  + "</i></p>";

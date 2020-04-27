@@ -1,6 +1,7 @@
 # 15puzzle_new.kbs - slide the tiles to get them back in order
 # this is a conversion from the old gosub to the new function/subroutines
 # 2016-11-02 j.m.reneau
+# 2020-04-27 j.m.reneau rrays pass by value not ref unless specified in 2.0
 
 fastgraphics
 
@@ -19,9 +20,9 @@ yw = (graphheight - ((ny+1)*bw)) / ny
 print "slide puzzle"
 print "click on tile to slide.  try to get all tiles in order."
 
-call initialboard(board[])
+call initialboard(ref(board))
 call drawboard(board[])
-call shuffle(board[])
+call shuffle(ref(board))
 call drawboard(board[])
 
 clickclear
@@ -40,7 +41,7 @@ do
    clickclear
    # if a real click then make move
    if (zx = cx) or (zy = cy) then
-      call makemove(board[], cx, cy)
+      call makemove(ref(board), cx, cy)
       moves = moves + 1
       call drawboard(board[])
    end if

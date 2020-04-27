@@ -30,7 +30,6 @@
 #include "BasicEdit.h"
 #include "BasicOutput.h"
 #include "BasicGraph.h"
-#include "DocumentationWin.h"
 #include "Interpreter.h"
 #include "ReplaceWin.h"
 
@@ -41,8 +40,7 @@ class RunController : public QObject
   RunController();
   ~RunController();
   ReplaceWin *replacewin;
-  DocumentationWin *docwin;
-
+  
  signals:
   void runHalted();
  
@@ -62,8 +60,6 @@ class RunController : public QObject
   void stopRunFinalized(bool ok);		// called when interperter finally finished stoprun and pass if there was an error or not
   void stepThrough();
   void stepBreakPoint();
-  void showDocumentation();
-  void showContextDocumentation();
   void showOnlineDocumentation();
   void showOnlineContextDocumentation();
   void showPreferences();

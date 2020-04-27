@@ -34,7 +34,7 @@ class BasicWidget : public QWidget
 {
     Q_OBJECT
 public:
-    BasicWidget(const QString & title = QString::null, const QString & name = QString::null, QWidget * viewWidget = 0, QScrollArea * scrollArea = 0);
+    BasicWidget(const QString & title = QString(), const QString & name = QString(), QWidget * viewWidget = 0, QScrollArea * scrollArea = 0);
     ~BasicWidget();
 	
 	bool setViewWidget(QWidget * view);

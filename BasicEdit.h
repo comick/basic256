@@ -37,7 +37,7 @@ class BasicEdit : public QPlainTextEdit, public ViewWidgetIFace
 	Q_OBJECT
 
 	public:
-        BasicEdit(const QString &defaulttitle = QString::null);
+        BasicEdit(const QString &defaulttitle = QString());
 		~BasicEdit();
 
         void saveFile(bool);
