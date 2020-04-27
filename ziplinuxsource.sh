@@ -20,6 +20,8 @@ rm ../basic256-$VERSION/*.sqlite3
 rm ../basic256-$VERSION/*.kbs
 rm ../basic256-$VERSION/*.bin
 rm ../basic256-$VERSION/*.pdf
+rm ../basic256-$VERSION/*.exe
+rm ../basic256-$VERSION/*.bat
 rm ../basic256-$VERSION/object_script.*
 find ../basic256-$VERSION -type f -name "*~" -exec rm -f {} \;
 
@@ -41,3 +43,6 @@ rm -R ../basic256-$VERSION/wikihelp/wiki
 # tar and zip
 tar -cvf ../basic256_$VERSION.orig.tar ../basic256-$VERSION
 gzip ../basic256_$VERSION.orig.tar
+
+# cleanup
+rm -Rf ../basic256-$VERSION
