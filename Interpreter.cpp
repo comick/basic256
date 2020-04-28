@@ -5936,9 +5936,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 #if QT_VERSION >= 0x051100
 					width = (int) (QFontMetrics(painter->font()).horizontalAdvance(txt));
 #else
-					width = (int) (QFontMetrics(painter->font()).width(txt))
+					width = (int) (QFontMetrics(painter->font()).width(txt));
 #endif
-					stack->pushInt();
+					stack->pushInt(width);
 				}
 				break;
 
