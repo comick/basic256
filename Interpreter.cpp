@@ -1165,9 +1165,9 @@ bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
 	const uchar* scanbits = scan->bits();
 	bool flag=false;
 #if QT_VERSION >= 0x051000
-	const int max = scan->byteCount();
-#else
 	const int max = scan->sizeInBytes();
+#else
+	const int max = scan->byteCount();
 #endif
 	for(int f=3;f<max;f+=4){
 		if(scanbits[f]){
