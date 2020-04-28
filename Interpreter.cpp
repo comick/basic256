@@ -3828,8 +3828,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_SETCOLOR: {
-					const unsigned long brushval = stack->popLong();
-					const unsigned long penval = stack->popLong();
+					int brushval = stack->popInt();
+					int penval = stack->popInt();
 
 					if(penval!=painter_pen_color){
 						drawingpen.setColor(QColor::fromRgba((QRgb) penval));
@@ -3868,7 +3868,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						error->q(ERROR_RGB);
 						stack->pushLong(0);
 					} else {
-						stack->pushLong( (unsigned long) QColor(rval,gval,bval,aval).rgba());
+						stack->pushInt( (int) QColor(rval,gval,bval,aval).rgba());
 					}
 				}
 				break;
@@ -3878,16 +3878,16 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					int x = stack->popInt();
 					if(drawingOnScreen || drawto.isEmpty()){
 						QRgb rgb = graphwin->image->pixel(x,y);
-						stack->pushLong((unsigned long) rgb);
+						stack->pushInt((int) rgb);
 					}else{
 						QRgb rgb = images[drawto]->pixel(x,y);
-						stack->pushLong((unsigned long) rgb);
+						stack->pushInt((int) rgb);
 					}
 				}
 				break;
 
 				case OP_GETCOLOR: {
-					stack->pushLong((unsigned long) drawingpen.color().rgba());
+					stack->pushInt((int) drawingpen.color().rgba());
 				}
 				break;
 
@@ -3926,7 +3926,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								d->arraySetData(tw,th,new DataElement((long) r[counter]));
+								d->arraySetData(tw,th,new DataElement((int) r[counter]));
 								counter++;
 							}
 						}
@@ -4418,7 +4418,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_CLG: {
-					unsigned long clearcolor = stack->popLong();
+					int clearcolor = stack->popInt();
 					QColor c = QColor::fromRgba((QRgb) clearcolor);
 
 					if (drawingOnScreen){
@@ -6108,7 +6108,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_GETBRUSHCOLOR: {
-					stack->pushLong((unsigned long) drawingbrush.color().rgba());
+					stack->pushInt((int) drawingbrush.color().rgba());
 				}
 				break;
 
@@ -6682,7 +6682,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 
 				case OP_IMAGENEW: {
-					unsigned long c = stack->popLong();
+					int c = stack->popInt();
 					int h = stack->popInt();
 					int w = stack->popInt();
 					lastImageId++;
@@ -6769,9 +6769,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				case OP_IMAGEAUTOCROP: {
 					int x,y,w,h,y1,y2,x1=0,x2=0;
-					unsigned long c=0;
+					int c=0;
 					int nr = stack->popInt();
-					if(nr==2) c = stack->popLong();
+					if(nr==2) c = stack->popInt();
 					QString id = stack->popQString();
 					if (images.contains(id)){
 						w=images[id]->width();
@@ -6894,7 +6894,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_IMAGESETPIXEL: {
-					unsigned long c = stack->popLong();
+					int c = stack->popInt();
 					int y = stack->popInt();
 					int x = stack->popInt();
 					QString id = stack->popQString();
@@ -6931,8 +6931,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					int x = stack->popInt();
 					QString id = stack->popQString();
 					if (images.contains(id)){
-						unsigned long c = images[id]->pixel(x,y);
-						stack->pushLong(c);
+						int c = images[id]->pixel(x,y);
+						stack->pushInt(c);
 					}else{
 						error->q(ERROR_IMAGERESOURCE);
 						stack->pushInt(0);
