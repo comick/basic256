@@ -1,5 +1,4 @@
 Compiling Instructions and Dependencies
-2016-10-31 VERSION 1.99.99.72+
 
 
 ###########################################################
@@ -17,18 +16,27 @@ Dependencies:
 * espeak (if using the LINUX_ESPEAK_EXECUTE option in BASIC256.pro)
   - use this option and install if the library use of portaudio conflicts with other sound systems installed
 
-###########################################################
-Raspberry Pi - Jessie
-###########################################################
 
-Packages to install with "sudo apt-get install XXX"
- qt5-default
- subversion
- bison
- flex
- libespeak-dev
- qtmultimedia5-dev
- libqt5serialport-dev
+
+###########################################################
+Raspberry PI - Debian Buster
+###########################################################
+Instructions 2020-03-31
+
+sudo apt-get update
+sudo apt-get install subversion qt5-default bison flex libespeak-dev qtmultimedia5-dev libqt5serialport5-dev libqt5multimedia5-plugins pulseaudio
+
+in your home folder
+svn checkout https://svn.code.sf.net/p/kidbasic/code/trunk basic256
+
+cd basic256
+qmake BASIC256.pro -config release
+make clean
+make
+sudo make install
+
+Audio configuration can be tricky.
+https://www.raspberrypi.org/documentation/configuration/audio-config.md
 
 
 ###########################################################
