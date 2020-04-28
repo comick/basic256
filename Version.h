@@ -19,8 +19,8 @@
 #ifndef __VERSION
 #define __VERSION
 
-#define VERSION "2.0.0.0 (2020-04-12)"
-#define VERSIONSIGNATURE  2000000
-#define VERSIONPRODUCT 2,0,0,0
+#define VERSION "2.0.0.1 (2020-04-28)"
+#define VERSIONSIGNATURE  2000001
+#define VERSIONPRODUCT 2,0,0,1
 
 #endif
