@@ -1164,7 +1164,7 @@ bool Interpreter::sprite_collide(int n1, int n2, bool deep) {
 	//check collision comparing only alpha channel
 	const uchar* scanbits = scan->bits();
 	bool flag=false;
-#if QT_VERSION < 0x051000
+#if QT_VERSION >= 0x051000
 	const int max = scan->byteCount();
 #else
 	const int max = scan->sizeInBytes();
@@ -5928,11 +5928,17 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					// return the number of pixels the font requires for diaplay
 					// a string is required for width but not for height
 					QString txt = stack->popQString();
+					int width=0;
 					if(painter_font_need_update){
 						painter->setFont(font);
 						painter_font_need_update=false;
 					}
-					stack->pushInt((int) (QFontMetrics(painter->font()).horizontalAdvance(txt)));
+#if QT_VERSION >= 0x051100
+					width = (int) (QFontMetrics(painter->font()).horizontalAdvance(txt));
+#else
+					width = (int) (QFontMetrics(painter->font()).width(txt))
+#endif
+					stack->pushInt();
 				}
 				break;
 
