@@ -10,13 +10,20 @@ REM # 2014-06-01 j.m.reneau    1.1.2.4      changed paths to qt 5.3
 REM # 2014-10-26 j.m.reneau    1.1.4.0      added serialport
 REM # 2016-01-01 j.m.reneau    1.99.99.08	moved to 5.5
 REM # 2016-10-31 j.m.reneau    1.99.99.72	moved to qt 5.7
+REM # 2020-04-28 j.m.reneau    2.0.0.1		moved to QT 5.14.2
 
-set SDK_BIN=C:\Qt\5.7\mingw53_32\bin
-set SDK_LIB=C:\Qt\5.7\mingw53_32\lib
-set SDK_PLUGINS=C:\Qt\5.7\mingw53_32\plugins
+REM # Iterate through development and propduction folders
+FOR %%F IN (BASIC256Portable BASIC256PortableDebug) DO (call :foldercreate %%F)
+goto :eof
 
-# folder where app will live and support files need to be
-set INSTDIR=BASIC256Portable\App\BASIC256
+REM # ACTUALLY Create and Fill
+:foldercreate
+set SDK_BIN=C:\Qt\5.14.2\mingw73_32\bin
+set SDK_LIB=C:\Qt\5.14.2\mingw73_32\lib
+set SDK_PLUGINS=C:\Qt\5.14.2\mingw73_32\plugins
+
+set INSTDIR=%1\App\BASIC256
+echo %INSTDIR%
 
 rmdir /s /q %INSTDIR%
 mkdir %INSTDIR%
@@ -34,7 +41,6 @@ mkdir %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qgif.dll %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qico.dll %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qjpeg.dll %INSTDIR%\imageformats
-xcopy %SDK_PLUGINS%\imageformats\qmng.dll %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qsvg.dll %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qtga.dll %INSTDIR%\imageformats
 xcopy %SDK_PLUGINS%\imageformats\qtiff.dll %INSTDIR%\imageformats
@@ -60,9 +66,6 @@ xcopy ChangeLog %INSTDIR%
 xcopy CONTRIBUTORS %INSTDIR%
 xcopy license.txt %INSTDIR%
 
-xcopy %SDK_BIN%\icudt54.dll %INSTDIR%
-xcopy %SDK_BIN%\icuin54.dll %INSTDIR%
-xcopy %SDK_BIN%\icuuc54.dll %INSTDIR%
 xcopy %SDK_BIN%\libgcc_s_dw2-1.dll %INSTDIR%
 xcopy %SDK_BIN%\libstdc++-6.dll %INSTDIR%
 xcopy %SDK_BIN%\libwinpthread-1.dll %INSTDIR%
@@ -82,3 +85,4 @@ xcopy %SDK_LIB%\libespeak.dll %INSTDIR%
 xcopy %SDK_LIB%\libportaudio-2.dll %INSTDIR%
 xcopy %SDK_LIB%\libpthread-2.dll %INSTDIR%
 
+goto :eof
