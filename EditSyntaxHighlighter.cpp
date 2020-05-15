@@ -143,6 +143,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "fromoctal"							//fromoctal
 			<< "fromradix"							//fromradix
 			<< "function"							//function
+			<< "getarraybase"
 			<< "getbrushcolor"						//getbrushcolor
 			<< "getcolor"							//getcolor
 			<< "getpenwidth"						//getpenwidth

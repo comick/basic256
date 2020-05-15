@@ -25,9 +25,9 @@
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <string.h>
-        #include <math.h>
-        #include <errno.h>
-        #include "../BasicTypes.h"
+	#include <math.h>
+	#include <errno.h>
+	#include "../BasicTypes.h"
 	#include "../Constants.h"
 	#include "../WordCodes.h"
 	#include "../CompileErrors.h"
@@ -47,9 +47,9 @@
 	extern int linenumber;
 	extern char *lexingfilename;
 	extern int numincludes;
-        extern int filenumber;
-        extern char* include_filenames[];
-        extern int include_filenames_counter;
+	extern int filenumber;
+	extern char* include_filenames[];
+	extern int include_filenames_counter;
 
 	int *wordCode = NULL;
 	unsigned int maxwordoffset = 0;		// size of the current wordCode array
@@ -262,20 +262,20 @@
 				return i;
 		}
 
-                //allocate memory if there is no more room for new symbol
-                if(numsyms>=maxsymtable-1){
-                    maxsymtable += 1024;
-                    symtable = realloc(symtable, maxsymtable * sizeof(char*));
-                    symtableaddress = realloc(symtableaddress, maxsymtable * sizeof(int));
-                    symtableaddresstype = realloc(symtableaddresstype, maxsymtable * sizeof(int));
-                    symtableaddressargs = realloc(symtableaddressargs, maxsymtable * sizeof(int));
-                }
+		//allocate memory if there is no more room for new symbol
+		if(numsyms>=maxsymtable-1){
+			maxsymtable += 1024;
+			symtable = realloc(symtable, maxsymtable * sizeof(char*));
+			symtableaddress = realloc(symtableaddress, maxsymtable * sizeof(int));
+			symtableaddresstype = realloc(symtableaddresstype, maxsymtable * sizeof(int));
+			symtableaddressargs = realloc(symtableaddressargs, maxsymtable * sizeof(int));
+		}
 
 		symtable[numsyms] = strdup(name);
 		symtableaddress[numsyms] = -1;
-                symtableaddresstype[numsyms] = -1;
-                symtableaddressargs[numsyms] = -1;
-                numsyms++;
+		symtableaddresstype[numsyms] = -1;
+		symtableaddressargs[numsyms] = -1;
+		numsyms++;
 		return numsyms - 1;
 	}
 
@@ -285,62 +285,62 @@
 
 	int getInternalSymbol(int id, int type) {
 		// an internal symbol used to jump an if
-                int i;
+		int i;
 		char name[32];
-                sprintf(name,"___%d_%d", id, type);
-                i = getSymbol(name);
-                symtableaddresstype[i]=ADDRESSTYPE_SYSTEMCALL;
-                return i;
+		sprintf(name,"___%d_%d", id, type);
+		i = getSymbol(name);
+		symtableaddresstype[i]=ADDRESSTYPE_SYSTEMCALL;
+		return i;
 	}
 
 	void freeBasicParse() {
 		// free all dynamically allocated stuff
-                while(numsyms>0) free(symtable[--numsyms]);
-                free(wordCode);
-                wordCode=NULL;
-                free(symtable);
-                symtable=NULL;
-                free(symtableaddress);
-                symtableaddress=NULL;
-                free(symtableaddresstype);
-                symtableaddresstype=NULL;
-                free(symtableaddressargs);
-                symtableaddressargs=NULL;
-                maxsymtable = 0;
-                maxwordoffset = 0;
+		while(numsyms>0) free(symtable[--numsyms]);
+		free(wordCode);
+		wordCode=NULL;
+		free(symtable);
+		symtable=NULL;
+		free(symtableaddress);
+		symtableaddress=NULL;
+		free(symtableaddresstype);
+		symtableaddresstype=NULL;
+		free(symtableaddressargs);
+		symtableaddressargs=NULL;
+		maxsymtable = 0;
+		maxwordoffset = 0;
 
-                while(include_filenames_counter>0){
-                    include_filenames_counter--;
-                    free(include_filenames[include_filenames_counter]);
-                }
+		while(include_filenames_counter>0){
+			include_filenames_counter--;
+			free(include_filenames[include_filenames_counter]);
+		}
 	}
 
-        int initializeBasicParse() {
-                int f;
-                maxsymtable = 2048;
-                symtable = malloc(maxsymtable * sizeof(char*));
-                if(symtable)
-                    for(f=0;f<maxsymtable;f++) symtable[f]=NULL;
-                symtableaddress = malloc(maxsymtable * sizeof(int));
-                symtableaddresstype = malloc(maxsymtable * sizeof(int));
-                symtableaddressargs = malloc(maxsymtable * sizeof(int));
+	int initializeBasicParse() {
+		int f;
+		maxsymtable = 2048;
+		symtable = malloc(maxsymtable * sizeof(char*));
+		if(symtable)
+			for(f=0;f<maxsymtable;f++) symtable[f]=NULL;
+		symtableaddress = malloc(maxsymtable * sizeof(int));
+		symtableaddresstype = malloc(maxsymtable * sizeof(int));
+		symtableaddressargs = malloc(maxsymtable * sizeof(int));
 
-                maxwordoffset = 2048;
-                wordCode = malloc(maxwordoffset * sizeof(int));
+		maxwordoffset = 2048;
+		wordCode = malloc(maxwordoffset * sizeof(int));
 
-                //no memory
-                if(!wordCode || !symtable || !symtableaddress || !symtableaddresstype || !symtableaddressargs){
-                    freeBasicParse();
-                    return -1;
-                }
+		//no memory
+		if(!wordCode || !symtable || !symtableaddress || !symtableaddresstype || !symtableaddressargs){
+			freeBasicParse();
+			return -1;
+		}
 
-                unsigned int t=maxwordoffset;
-                while(t>0) wordCode[--t] = 0;
-                wordOffset = 0;
-                linenumber = 1;
-                addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
-                return 0; 	// success in creating and filling
-        }
+		unsigned int t=maxwordoffset;
+		while(t>0) wordCode[--t] = 0;
+		wordOffset = 0;
+		linenumber = 1;
+		addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
+		return 0; 	// success in creating and filling
+	}
 
 
 	#ifdef __cplusplus
@@ -571,6 +571,7 @@
 %token B256FROMOCTAL
 %token B256FROMRADIX
 %token B256FUNCTION
+%token B256GETARRAYBASE
 %token B256GETBRUSHCOLOR
 %token B256GETCOLOR
 %token B256GETPENWIDTH
@@ -2083,6 +2084,7 @@ expr_numeric:
 	| variable array_size_cols {
 		addIntOp(OP_ALENCOLS, varnumber[--nvarnumber]);
 	}
+	| B256GETARRAYBASE args_none { addOp(OP_GETARRAYBASE); }
 	;
 	
 /* ###########################################

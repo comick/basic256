@@ -97,6 +97,7 @@ extern "C" {
 //extern int yydebug;
 	extern int basicParse(char *);
 	extern char* include_filenames[];   // filenames being LEXd
+	extern char* include_exec_path;		//path to executable
 	extern int linenumber;			  // linenumber being LEXd
 	extern int column;				  // column on line being LEXd
 	extern char* lexingfilename;		// current included file name being LEXd
@@ -272,6 +273,7 @@ QString Interpreter::opname(int op) {
 	case OP_FREEFILE : return QString("OP_FREEFILE");
 	case OP_FREENET : return QString("OP_FREENET");
 	case OP_FROMRADIX : return QString("OP_FROMRADIX");
+	case OP_GETARRAYBASE : return QString("OP_GETARRAYBASE");
 	case OP_GETBRUSHCOLOR : return QString("OP_GETBRUSHCOLOR");
 	case OP_GETCOLOR : return QString("OP_GETCOLOR");
 	case OP_GETPENWIDTH : return QString("OP_GETPENWIDTH");
@@ -619,8 +621,8 @@ int Interpreter::compileProgram(char *code) {
 		emit(outputError(tr("COMPILE ERROR") + QStringLiteral(": ") + tr("Out of memory") + QStringLiteral(".\n")));
 		return -1;
 	}
-
-	int result = basicParse(code);
+	include_exec_path = QCoreApplication::applicationDirPath().toUtf8().data();
+		int result = basicParse(code);
 	//
 	// display warnings from compile and free the lexing file name string
 		bool gotowarning = (debugMode==0);
@@ -4879,14 +4881,17 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					int nr = stack->popInt(); // number of arguments (3-6)
 					switch(nr){
 						case 6  :
-						   o = stack->popDouble();
+							o = stack->popDouble();
+							[[fallthrough]];
 						case 5  :
-						   r = stack->popDouble();
+							r = stack->popDouble();
+							[[fallthrough]];
 						case 4  :
-						   s = stack->popDouble();
+							s = stack->popDouble();
+							[[fallthrough]];
 						default :
-						   y = stack->popDouble();
-						   x = stack->popDouble();
+							y = stack->popDouble();
+							x = stack->popDouble();
 					}
 					int n = stack->popInt();
 
@@ -7229,7 +7234,12 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						error->q(ERROR_ZEROORONE);
 					}
 				}
-				break;				
+				break;
+
+				case OP_GETARRAYBASE: {
+					stack->pushInt(arraybase);
+				}
+				break;
 
 				case OP_NEXT: {
 					forframe *temp = forstack;

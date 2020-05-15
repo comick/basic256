@@ -31,6 +31,9 @@ mkdir %INSTDIR%
 mkdir %INSTDIR%\Translations
 xcopy Translations\*.qm %INSTDIR%\Translations
 
+mkdir %INSTDIR%\Modules
+xcopy Modules\* %INSTDIR%\Modules
+
 mkdir %INSTDIR%\espeak-data
 xcopy /e release\espeak-data %INSTDIR%\espeak-data
 
