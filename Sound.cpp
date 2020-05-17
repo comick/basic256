@@ -625,7 +625,9 @@ SoundSystem::SoundSystem() :
 	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
 	if (!info.isFormatSupported(format)) {
 		format = info.nearestFormat(format);
+#ifdef DEBUG
 		fprintf(stderr,"Switching to nearest audio format.\n");
+#endif
 	}
 
 	int i;
