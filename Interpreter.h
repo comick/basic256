@@ -218,6 +218,8 @@ class Interpreter : public QThread
         void dialogAlert(QString);
         void dialogConfirm(QString, int);
         void dialogPrompt(QString, QString);
+        void dialogOpenFileDialog(QString, QString, QString);
+        void dialogSaveFileDialog(QString, QString, QString);
         void dialogAllowPortInOut(QString);
         void dialogAllowSystem(QString);
         void playSound(QString, bool);

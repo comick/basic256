@@ -322,6 +322,7 @@ goto [Gg][Oo][Tt][Oo]
 graphheight [Gg][Rr][Aa][Pp][Hh][Hh][Ee][Ii][Gg][Hh][Tt]
 graphsize [Gg][Rr][Aa][Pp][Hh][Ss][Ii][Zz][Ee]
 graphvisible [Gg][Rr][Aa][Pp][Hh][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+graphtoolbarvisible [Gg][Rr][Aa][Pp][Hh][Tt][Oo][Oo][Ll][Bb][Aa][Rr][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 graphwidth [Gg][Rr][Aa][Pp][Hh][Ww][Ii][Dd][Tt][Hh]
 gray [Gg][Rr][AaEe][Yy]
 green [Gg][Rr][Ee][Ee][Nn]
@@ -375,6 +376,7 @@ log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
 ltrim [Ll][Tt][Rr][Ii][Mm]
+maintoolbarvisible [Mm][Aa][Ii][Nn][Tt][Oo][Oo][Ll][Bb][Aa][Rr][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 map [Mm][Aa][Pp]
 md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
@@ -405,6 +407,7 @@ onerror [Oo][Nn][Ee][Rr][Rr][Oo][Rr]
 open [Oo][Pp][Ee][Nn]
 openb [Oo][Pp][Ee][Nn][Bb]
 openserial [Oo][Pp][Ee][Nn][Ss][Ee][Rr][Ii][Aa][Ll]
+openfiledialog [Oo][Pp][Ee][Nn][Ff][Ii][Ll][Ee][Dd][Ii][Aa][Ll][Oo][Gg]
 or [Oo][Rr]
 orange [Oo][Rr][Aa][Nn][Gg][Ee]
 ostype [Oo][Ss][Tt][Yy][Pp][Ee]
@@ -413,6 +416,7 @@ ostype_linux [Oo][Ss][Tt][Yy][Pp][Ee][_][Ll][Ii][Nn][Uu][Xx]
 ostype_macintosh [Oo][Ss][Tt][Yy][Pp][Ee][_][Mm][Aa][Cc][Ii][Nn][Tt][Oo][Ss][Hh]
 ostype_windows [Oo][Ss][Tt][Yy][Pp][Ee][_][Ww][Ii][Nn][Dd][Oo][Ww][Ss]
 outputvisible [Oo][Uu][Tt][Pp][Uu][Tt][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
+outputtoolbarvisible [Oo][Uu][Tt][Pp][Uu][Tt][Tt][Oo][Oo][Ll][Bb][Aa][Rr][Vv][Ii][Ss][Ii][Bb][Ll][Ee]
 pause [Pp][Aa][Uu][Ss][Ee]
 penwidth [Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 pi [Pp][Ii]
@@ -452,6 +456,7 @@ right [Rr][Ii][Gg][Hh][Tt]
 rjust [Rr][Jj][Uu][Ss][Tt]
 round [Rr][Oo][Uu][Nn][Dd]
 rtrim [Rr][Tt][Rr][Ii][Mm]
+savefiledialog [Ss][Aa][Vv][Ee][Ff][Ii][Ll][Ee][Dd][Ii][Aa][Ll][Oo][Gg]
 say [Ss][Aa][Yy]
 second [Ss][Ee][Cc][Oo][Nn][Dd]
 seed [Ss][Ee][Ee][Dd]
@@ -847,6 +852,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {netaddress}				{ count(); return B256NETADDRESS; }
 {netdata}					{ count(); return B256NETDATA; }
 {netread}					{ count(); return B256NETREAD; }
+{openfiledialog}			{ count(); return B256OPENFILEDIALOG; }
 {orange}					{ count(); return B256ORANGE; }
 {ostype_android}			{ count(); return B256OSTYPE_ANDROID; }
 {ostype_linux}				{ count(); return B256OSTYPE_LINUX; }
@@ -871,6 +877,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {rjust}						{ count(); return B256RJUST; }
 {round}						{ count(); return B256ROUND; }
 {rtrim}						{ count(); return B256RTRIM; }
+{savefiledialog}			{ count(); return B256SAVEFILEDIALOG; }
 {second}					{ count(); return B256SECOND; }
 {serialize}					{ count(); return B256SERIALIZE; }
 {sin}						{ count(); return B256SIN; }
@@ -1022,6 +1029,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {goto}						{ count(); return B256GOTO; }
 {graphsize}					{ count(); return B256GRAPHSIZE; }
 {graphvisible}				{ count(); return B256GRAPHVISIBLE; }
+{graphtoolbarvisible}		{ count(); return B256GRAPHTOOLBARVISIBLE; }
 {if}						{ count(); return B256IF; }
 {in}						{ count(); return B256IN; }
 {imageautocrop}					{ count(); return B256IMAGEAUTOCROP; }
@@ -1043,6 +1051,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {kill}						{ count(); return B256KILL; }
 {let}						{ count(); return B256LET; }
 {line}						{ count(); return B256LINE; }
+{maintoolbarvisible}		{ count(); return B256MAINTOOLBARVISIBLE; }
 {map}						{ count(); return B256MAP; }
 {netclose}					{ count(); return B256NETCLOSE; }
 {netclose}":"				{ count(); unputcolon(); return B256NETCLOSE; }
@@ -1057,6 +1066,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {openserial}				{ count(); return B256OPENSERIAL; }
 {open}						{ count(); return B256OPEN; }
 {outputvisible}				{ count(); return B256OUTPUTVISIBLE; }
+{outputtoolbarvisible}		{ count(); return B256OUTPUTTOOLBARVISIBLE; }
 {pause}						{ count(); return B256PAUSE; }
 {penwidth}					{ count(); return B256PENWIDTH; }
 {pie}						{ count(); return B256PIE; }

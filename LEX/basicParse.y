@@ -583,6 +583,7 @@
 %token B256GRAPHHEIGHT
 %token B256GRAPHSIZE
 %token B256GRAPHVISIBLE
+%token B256GRAPHTOOLBARVISIBLE
 %token B256GRAPHWIDTH
 %token B256GREEN
 %token B256GREY
@@ -637,6 +638,7 @@
 %token B256LOWER
 %token B256LTE
 %token B256LTRIM
+%token B256MAINTOOLBARVISIBLE
 %token B256MAP
 %token B256MD5
 %token B256MID
@@ -668,6 +670,7 @@
 %token B256ONERROR
 %token B256OPEN
 %token B256OPENB
+%token B256OPENFILEDIALOG
 %token B256OPENSERIAL
 %token B256OR
 %token B256ORANGE
@@ -677,6 +680,7 @@
 %token B256OSTYPE_MACINTOSH
 %token B256OSTYPE_WINDOWS
 %token B256OUTPUTVISIBLE
+%token B256OUTPUTTOOLBARVISIBLE
 %token B256PAUSE
 %token B256PENWIDTH
 %token B256PI
@@ -708,6 +712,7 @@
 %token B256REM
 %token B256REPLACE
 %token B256REPLACEX
+%token B256SAVEFILEDIALOG
 %token B256RESET
 %token B256RETURN
 %token B256RGB
@@ -2235,6 +2240,12 @@ expr_string:
 		addStringOp(OP_PUSHSTRING, "0");
 		addOp(OP_RJUST);
 	}
+	| B256OPENFILEDIALOG '(' args_eee ')' {
+		addOp(OP_OPENFILEDIALOG);
+	}
+	| B256SAVEFILEDIALOG '(' args_eee ')' {
+		addOp(OP_SAVEFILEDIALOG);
+	}
 	;
 
 
@@ -2333,6 +2344,7 @@ statement:
 	| gotostmt
 	| graphsizestmt
 	| graphvisiblestmt
+	| graphtoolbarvisiblestmt
 	| ifstmt
 	| ifthenstmt
 	| ifthenelsestmt
@@ -2352,6 +2364,7 @@ statement:
 	| killstmt
 	| letstmt
 	| linestmt
+	| maintoolbarvisiblestmt
 	| mapstmt
 	| netclosestmt
 	| netconnectstmt
@@ -2362,6 +2375,7 @@ statement:
 	| onerrorstmt
 	| openstmt
 	| outputvisiblestmt
+	| outputtoolbarvisiblestmt
 	| pausestmt
 	| penwidthstmt
 	| piestmt
@@ -4068,6 +4082,24 @@ outputvisiblestmt:
 			}
 			;
 
+maintoolbarvisiblestmt:
+			B256MAINTOOLBARVISIBLE expr {
+				addOp(OP_MAINTOOLBARVISIBLE);
+			}
+			;
+
+graphtoolbarvisiblestmt:
+			B256GRAPHTOOLBARVISIBLE expr {
+				addOp(OP_GRAPHTOOLBARVISIBLE);
+			}
+			;
+
+outputtoolbarvisiblestmt:
+			B256OUTPUTTOOLBARVISIBLE expr {
+				addOp(OP_OUTPUTTOOLBARVISIBLE);
+			}
+			;
+			
 globalstmt:
 			B256GLOBAL functionvariables {
 				// create ops to make all of the variables listed globals

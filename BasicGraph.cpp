@@ -238,6 +238,12 @@ void BasicGraph::focusOutEvent(QFocusEvent* ){
     basicKeyboard->reset();
 }
 
+void BasicGraph::leaveEvent(QEvent *) {
+	// reset mouse to off widget when we leave
+	mouseX = -1;
+	mouseY = -1;
+	mouseB = 0;
+}
 
 void BasicGraph::mouseMoveEvent(QMouseEvent *e) {
 	static int c = Qt::ArrowCursor;

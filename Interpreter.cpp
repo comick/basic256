@@ -65,6 +65,7 @@ typedef int socklen_t;
 #include <QCoreApplication>
 
 
+
 #include <QtWidgets/QMessageBox>
 
 
@@ -285,6 +286,7 @@ QString Interpreter::opname(int op) {
 	case OP_GRAPHHEIGHT : return QString("OP_GRAPHHEIGHT");
 	case OP_GRAPHSIZE : return QString("OP_GRAPHSIZE");
 	case OP_GRAPHVISIBLE : return QString("OP_GRAPHVISIBLE");
+	case OP_GRAPHTOOLBARVISIBLE : return QString("OP_GRAPHTOOLBARVISIBLE");
 	case OP_GRAPHWIDTH : return QString("OP_GRAPHWIDTH");
 	case OP_GT : return QString("OP_GT");
 	case OP_GTE : return QString("OP_GTE");
@@ -333,6 +335,7 @@ QString Interpreter::opname(int op) {
 	case OP_LT : return QString("OP_LT");
 	case OP_LTE : return QString("OP_LTE");
 	case OP_LTRIM : return QString("OP_LTRIM");
+	case OP_MAINTOOLBARVISIBLE : return QString("OP_MAINTOOLBARVISIBLE");
 	case OP_MAP_DIM : return QString("OP_MAP_DIM");
 	case OP_MD5 : return QString("OP_MD5");
 	case OP_MID : return QString("OP_MID");
@@ -363,10 +366,12 @@ QString Interpreter::opname(int op) {
 	case OP_ONERRORCATCH : return QString("OP_ONERRORCATCH");
 	case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
 	case OP_OPEN : return QString("OP_OPEN");
+	case OP_OPENFILEDIALOG : return QString("OP_OPENFILEDIALOG");
 	case OP_OPENSERIAL : return QString("OP_OPENSERIAL");
 	case OP_OR : return QString("OP_OR");
 	case OP_OSTYPE : return QString("OP_OSTYPE");
 	case OP_OUTPUTVISIBLE : return QString("OP_OUTPUTVISIBLE");
+	case OP_OUTPUTTOOLBARVISIBLE : return QString("OP_OUTPUTTOOLBARVISIBLE");
 	case OP_PAUSE : return QString("OP_PAUSE");
 	case OP_PENWIDTH : return QString("OP_PENWIDTH");
 	case OP_PIE : return QString("OP_PIE");
@@ -403,6 +408,7 @@ QString Interpreter::opname(int op) {
 	case OP_RIGHT : return QString("OP_RIGHT");
 	case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
 	case OP_RTRIM : return QString("OP_RTRIM");
+	case OP_SAVEFILEDIALOG : return QString("OP_SAVEFILEDIALOG");
 	case OP_SAY : return QString("OP_SAY");
 	case OP_SECOND : return QString("OP_SECOND");
 	case OP_SEED : return QString("OP_SEED");
@@ -2238,6 +2244,30 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
+				case OP_OPENFILEDIALOG: {
+					QString filter = stack->popQString();
+					QString path = stack->popQString();
+					QString prompt = stack->popQString();
+					mymutex->lock();
+					emit(dialogOpenFileDialog(prompt, path, filter));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+					stack->pushQString(returnString);
+				}
+				break;
+				
+				case OP_SAVEFILEDIALOG: {
+					QString filter = stack->popQString();
+					QString path = stack->popQString();
+					QString prompt = stack->popQString();
+					mymutex->lock();
+					emit(dialogSaveFileDialog(prompt, path, filter));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+					stack->pushQString(returnString);
+				}
+				break;
+				
 			   case OP_OPENSERIAL: {
 					int flow = stack->popInt();
 					int parity = stack->popInt();
@@ -5904,12 +5934,44 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_EDITVISIBLE:
-				case OP_GRAPHVISIBLE:
-				case OP_OUTPUTVISIBLE: {
+				{
 					int show = stack->popInt();
-					if (opcode==OP_EDITVISIBLE) emit(mainWindowsVisible(0,show!=0));
-					if (opcode==OP_GRAPHVISIBLE) emit(mainWindowsVisible(1,show!=0));
-					if (opcode==OP_OUTPUTVISIBLE) emit(mainWindowsVisible(2,show!=0));
+					emit(mainWindowsVisible(0,show!=0));
+				}
+				break;
+
+				case OP_GRAPHVISIBLE:
+				{
+					int show = stack->popInt();
+					emit(mainWindowsVisible(1,show!=0));
+				}
+				break;
+
+				case OP_OUTPUTVISIBLE:
+				{
+					int show = stack->popInt();
+					emit(mainWindowsVisible(2,show!=0));
+				}
+				break;
+
+				case OP_MAINTOOLBARVISIBLE:
+				{
+					int show = stack->popInt();
+					emit(mainWindowsVisible(3,show!=0));
+				}
+				break;
+
+				case OP_GRAPHTOOLBARVISIBLE:
+				{
+					int show = stack->popInt();
+					emit(mainWindowsVisible(4,show!=0));
+				}
+				break;
+
+				case OP_OUTPUTTOOLBARVISIBLE:
+				{
+					int show = stack->popInt();
+					emit(mainWindowsVisible(5,show!=0));
 				}
 				break;
 

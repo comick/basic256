@@ -73,6 +73,7 @@ class BasicGraph : public QWidget, public ViewWidgetIFace
   void paintEvent(QPaintEvent *);
   void keyPressEvent(QKeyEvent *);
   void keyReleaseEvent(QKeyEvent *);
+  void leaveEvent(QEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);

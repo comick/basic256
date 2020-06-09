@@ -154,6 +154,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "goto"								//goto
 			<< "graphheight"						//graphheignt
 			<< "graphsize"							//graphsize
+			<< "graphtoolbarvisible"
 			<< "graphvisible"						//graphvisible
 			<< "graphwidth"							//graphwidth
 			<< "hour"								//hour
@@ -204,6 +205,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "lower"								//lower
 			<< "ltrim"								//ltrim
 			<< "ltrim"								//ltrim
+			<< "maintoolbarvisible"
 			<< "map"
 			<< "md5"								//md5
 			<< "mid"								//mid
@@ -228,9 +230,11 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "onerror"							//onerror
 			<< "open"								//open
 			<< "openb"								//openb
+			<< "openfiledialog"
 			<< "openserial"							//openserial
 			<< "or"									//or
 			<< "ostype"								//ostype
+			<< "outputtoolbarvisible"
 			<< "outputvisible"						//outputvisible
 			<< "pause"								//pause
 			<< "penwidth"							//penwidth
@@ -265,6 +269,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "right"								//right
 			<< "rjust"
 			<< "round"
+			<< "savefiledialog"
 			<< "say"								//say
 			<< "second"								//second
 			<< "seed"								//seed
