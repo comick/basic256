@@ -863,6 +863,7 @@
 
 
 %right ','
+%left B256IN
 %left B256SEMICOLON
 %left B256XOR B256OR
 %left B256AND
@@ -1721,6 +1722,9 @@ expr_numeric:
 	| expr '>' expr { addOp(OP_GT); }
 	| expr B256GTE expr { addOp(OP_GTE); }
 	| expr B256LTE expr { addOp(OP_LTE); }
+	| expr B256IN expr {
+		addOp(OP_IN);
+	}
 	
 	| array_element B256ADD1 {
 		// a[b,c]++ - pushing value before to stack

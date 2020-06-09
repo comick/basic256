@@ -310,6 +310,7 @@ QString Interpreter::opname(int op) {
 	case OP_IMGLOAD : return QString("OP_IMGLOAD");
 	case OP_IMGSAVE : return QString("OP_IMGSAVE");
 	case OP_IMPLODE : return QString("OP_IMPLODE");
+	case OP_IN : return QString("OP_IN");
 	case OP_INCREASERECURSE : return QString("OP_INCREASERECURSE");
 	case OP_INPUT : return QString("OP_INPUT");
 	case OP_INSTR : return QString("OP_INSTR");
@@ -3384,6 +3385,14 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					stack->pushBool(ans!=-1);
 					delete one;
 					delete two;
+				}
+				break;
+
+				case OP_IN:{
+					DataElement *map = stack->popDE();
+					QString key = stack->popQString();
+					stack->pushBool(map->mapKey(key));
+					delete map;
 				}
 				break;
 
