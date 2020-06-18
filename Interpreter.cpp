@@ -507,6 +507,10 @@ QString Interpreter::opname(int op) {
 	case OP_WRITELINE : return QString("OP_WRITELINE");
 	case OP_XOR : return QString("OP_XOR");
 	case OP_YEAR : return QString("OP_YEAR");
+	case OP_SETCLIPBOARDIMAGE : return QString("OP_SETCLIPBOARDIMAGE");
+	case OP_SETCLIPBOARDSTRING : return QString("OP_SETCLIPBOARDSTRING");
+	case OP_GETCLIPBOARDIMAGE : return QString("OP_GETCLIPBOARDIMAGE");
+	case OP_GETCLIPBOARDSTRING : return QString("OP_GETCLIPBOARDSTRING");
 
 	default: return QString("OP_UNKNOWN");
 	}
@@ -7421,6 +7425,54 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							break;
 						}
 					}
+				}
+				break;
+
+
+
+
+				case OP_GETCLIPBOARDIMAGE: {
+					mymutex->lock();
+					emit(getClipboardImage());
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+					//
+					lastImageId++;
+					QString id = QString("image:") + QString::number(lastImageId) + QStringLiteral(":clipboard");
+					images[id] = new QImage(returnImage.convertToFormat(QImage::Format_ARGB32));
+					stack->pushQString(id);
+				}
+				break;
+
+				case OP_GETCLIPBOARDSTRING: {
+					mymutex->lock();
+					emit(getClipboardString());
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+					stack->pushQString(returnString);
+				}
+				break;
+
+				case OP_SETCLIPBOARDIMAGE: {
+					QString id = stack->popQString();
+					if (images.contains(id)){
+						mymutex->lock();
+						emit(setClipboardImage(*images[id]));
+						waitCond->wait(mymutex);
+						mymutex->unlock();
+					} else {
+						error->q(ERROR_IMAGERESOURCE);
+					}
+				}
+				break;
+
+
+				case OP_SETCLIPBOARDSTRING: {
+					QString s = stack->popQString();
+					mymutex->lock();
+					emit(setClipboardString(s));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 				}
 				break;
 

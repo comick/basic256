@@ -312,6 +312,8 @@ fromradix [Ff][Rr][Oo][Mm][Rr][Aa][Dd][Ii][Xx]
 function [Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 getarraybase [Gg][Ee][Tt][Aa][Rr][Rr][Aa][Yy][Bb][Aa][Ss][Ee]
 getbrushcolor [Gg][Ee][Tt][Bb][Rr][Uu][Ss][Hh][Cc][Oo][Ll][Oo][Rr]
+getclipboardimage [Gg][Ee][Tt][Cc][Ll][Ii][Pp][Bb][Oo][Aa][Rr][Dd][Ii][Mm][Aa][Gg][Ee]
+getclipboardstring [Gg][Ee][Tt][Cc][Ll][Ii][Pp][Bb][Oo][Aa][Rr][Dd][Ss][Tt][Rr][Ii][Nn][Gg]
 getcolor [Gg][Ee][Tt][Cc][Oo][Ll][Oo][Rr]
 getpenwidth [Gg][Ee][Tt][Pp][Ee][Nn][Ww][Ii][Dd][Tt][Hh]
 getsetting [Gg][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
@@ -462,6 +464,8 @@ second [Ss][Ee][Cc][Oo][Nn][Dd]
 seed [Ss][Ee][Ee][Dd]
 seek [Ss][Ee][Ee][Kk]
 serialize [Ss][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]
+setclipboardimage [Ss][Ee][Tt][Cc][Ll][Ii][Pp][Bb][Oo][Aa][Rr][Dd][Ii][Mm][Aa][Gg][Ee]
+setclipboardstring [Ss][Ee][Tt][Cc][Ll][Ii][Pp][Bb][Oo][Aa][Rr][Dd][Ss][Tt][Rr][Ii][Nn][Gg]
 setgraph [Ss][Ee][Tt][Gg][Rr][Aa][Pp][Hh]
 setsetting [Ss][Ee][Tt][Ss][Ee][Tt][Tt][Ii][Nn][Gg]
 sin [Ss][Ii][Nn]
@@ -800,6 +804,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {fromradix}					{ count(); return B256FROMRADIX; }
 {getarraybase}				{ count(); return B256GETARRAYBASE; }
 {getbrushcolor}				{ count(); return B256GETBRUSHCOLOR; }
+{getclipboardimage}			{ count(); return B256GETCLIPBOARDIMAGE; }
+{getclipboardstring}		{ count(); return B256GETCLIPBOARDSTRING; }
 {getcolor}					{ count(); return B256GETCOLOR; }
 {getpenwidth}				{ count(); return B256GETPENWIDTH; }
 {getsetting}				{ count(); return B256GETSETTING; }
@@ -1099,6 +1105,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {say}						{ count(); return B256SAY; }
 {seed}						{ count(); return B256SEED; }
 {seek}						{ count(); return B256SEEK; }
+{setclipboardimage}			{ count(); return B256SETCLIPBOARDIMAGE; }
+{setclipboardstring}		{ count(); return B256SETCLIPBOARDSTRING; }
 {setgraph}						{ count(); return B256SETGRAPH; }
 {setgraph}":"					{ count(); unputcolon(); return B256SETGRAPH; }
 {setsetting}				{ count(); return B256SETSETTING; }

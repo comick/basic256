@@ -29,6 +29,7 @@
 #include <QtWidgets/QInputDialog>
 #include <QtWidgets/QApplication>
 #include <QFileDialog>
+#include <QClipboard>
 
 
 #include "RunController.h"
@@ -123,6 +124,10 @@ RunController::RunController() {
 	QObject::connect(i, SIGNAL(soundPlayerOff(int)), this, SLOT(soundPlayerOff(int)));
 	QObject::connect(i, SIGNAL(soundSystem(int)), this, SLOT(soundSystem(int)));
 
+	QObject::connect(i, SIGNAL(getClipboardImage()), this, SLOT(getClipboardImage()));
+	QObject::connect(i, SIGNAL(getClipboardString()), this, SLOT(getClipboardString()));
+	QObject::connect(i, SIGNAL(setClipboardImage(QImage)), this, SLOT(setClipboardImage(QImage)));
+	QObject::connect(i, SIGNAL(setClipboardString(QString)), this, SLOT(setClipboardString(QString)));
 
 	QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
 
@@ -760,6 +765,38 @@ void RunController::dialogAllowSystem(QString msg) {
 	} else {
 		i->returnInt = SETTINGSALLOWNO;
 	}
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
+void RunController::getClipboardImage(){
+	mymutex->lock();
+	QClipboard *clipboard = QGuiApplication::clipboard();
+	i->returnImage = clipboard->image();
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
+void RunController::getClipboardString(){
+	mymutex->lock();
+	QClipboard *clipboard = QGuiApplication::clipboard();
+	i->returnString = clipboard->text();
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
+void RunController::setClipboardImage(QImage img){
+	mymutex->lock();
+	QClipboard *clipboard = QGuiApplication::clipboard();
+	clipboard->setImage(img);
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
+void RunController::setClipboardString(QString s){
+	mymutex->lock();
+	QClipboard *clipboard = QGuiApplication::clipboard();
+	clipboard->setText(s);
 	waitCond->wakeAll();
 	mymutex->unlock();
 }

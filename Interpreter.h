@@ -182,10 +182,11 @@ class Interpreter : public QThread
         void setInputString(QString);
         void cleanup();
         void run();
-        int debugMode;			// 0=normal run, 1=step execution, 2=run to breakpoint
+        int debugMode;					// 0=normal run, 1=step execution, 2=run to breakpoint
         QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
-        QString returnString;		// return value from runcontroller emit
-        int returnInt;			// return value from runcontroller emit
+        QString returnString;			// return value from runcontroller emit
+        int returnInt;					// return value from runcontroller emit
+        QImage returnImage;				// return value from runcontroller emit
         int settingsAllowPort;
         int settingsAllowSystem;
 
@@ -232,6 +233,11 @@ class Interpreter : public QThread
         //void soundExit();
         void soundPlayerOff(int);
         void soundSystem(int);
+        void getClipboardImage();
+        void getClipboardString();
+        void setClipboardImage(QImage);
+        void setClipboardString(QString);
+        
 
     private:
         QLocale *locale;

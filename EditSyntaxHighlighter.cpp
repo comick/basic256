@@ -145,6 +145,8 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "function"							//function
 			<< "getarraybase"
 			<< "getbrushcolor"						//getbrushcolor
+			<< "getclipboardimage"
+			<< "getclipboardstring"
 			<< "getcolor"							//getcolor
 			<< "getpenwidth"						//getpenwidth
 			<< "getsetting"							//getsetting
@@ -275,6 +277,8 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "seed"								//seed
 			<< "seek"								//seek
 			<< "serialize"							//serialize
+			<< "setclipboardimage"
+			<< "setclipboardstring"
 			<< "setgraph"                           //setgraph
 			<< "setsetting"							//setsetting
 			<< "sin"								//sin

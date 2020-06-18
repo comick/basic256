@@ -84,6 +84,11 @@ class RunController : public QObject
   //void soundExit();
   void soundPlayerOff(int);
   void soundSystem(int);
+  void getClipboardImage();
+  void getClipboardString();
+  void setClipboardImage(QImage);
+  void setClipboardString(QString);
+  
 
  private:
   Interpreter *i;

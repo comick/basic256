@@ -573,6 +573,8 @@
 %token B256FUNCTION
 %token B256GETARRAYBASE
 %token B256GETBRUSHCOLOR
+%token B256GETCLIPBOARDIMAGE
+%token B256GETCLIPBOARDSTRING
 %token B256GETCOLOR
 %token B256GETPENWIDTH
 %token B256GETSETTING
@@ -727,6 +729,8 @@
 %token B256SEMICOLON
 %token B256SEMICOLONEQUAL
 %token B256SERIALIZE
+%token B256SETCLIPBOARDIMAGE
+%token B256SETCLIPBOARDSTRING
 %token B256SETCOLOR
 %token B256SETGRAPH
 %token B256SETSETTING
@@ -2134,6 +2138,8 @@ expr_string:
 	| B256NETREAD '(' expr ')' { addOp(OP_NETREAD); }
 	| B256NETADDRESS args_none { addOp(OP_NETADDRESS); }
 	| B256MD5 '(' expr ')' { addOp(OP_MD5); }
+	| B256GETCLIPBOARDIMAGE args_none { addOp(OP_GETCLIPBOARDIMAGE); }
+	| B256GETCLIPBOARDSTRING args_none { addOp(OP_GETCLIPBOARDSTRING); }
 	| B256GETSETTING '(' expr ',' expr ')' { addOp(OP_GETSETTING); }
 	| B256DIR '(' expr ')' { addOp(OP_DIR); }
 	| B256DIR args_none { addStringOp(OP_PUSHSTRING, ""); addOp(OP_DIR); }
@@ -2401,6 +2407,8 @@ statement:
 	| saystmt
 	| seedstmt
 	| seekstmt
+	| setclipboardimagestmt
+	| setclipboardstringstmt
 	| setsettingstmt
 	| soundstmt
 	| soundpausestmt
@@ -4043,6 +4051,18 @@ netclosestmt:
 
 killstmt: 	B256KILL expr {
 				addOp(OP_KILL);
+			}
+			;
+
+setclipboardimagestmt:
+			B256SETCLIPBOARDIMAGE expr {
+				addOp(OP_SETCLIPBOARDIMAGE);
+			}
+			;
+
+setclipboardstringstmt:
+			B256SETCLIPBOARDSTRING expr {
+				addOp(OP_SETCLIPBOARDSTRING);
 			}
 			;
 
