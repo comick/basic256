@@ -221,7 +221,7 @@
 				if (iftabletype[numifs-1]==IFTABLETYPECATCH) return COMPERR_CATCHNOEND;
 				if (iftabletype[numifs-1]==IFTABLETYPEBEGINCASE) return COMPERR_BEGINCASENOEND;
 				if (iftabletype[numifs-1]==IFTABLETYPECASE) return COMPERR_CASENOEND;
-                                if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) return COMPERR_SUBROUTINENOEND;
+				if (iftabletype[numifs-1]==IFTABLETYPESUBROUTINE) return COMPERR_SUBROUTINENOEND;
 			}
 		}
 		return 0;
@@ -338,6 +338,11 @@
 		while(t>0) wordCode[--t] = 0;
 		wordOffset = 0;
 		linenumber = 1;
+
+		listlen = 0;
+		listlenmax = 0;
+		numberoflists = 0;
+
 		addIntOp(OP_CURRLINE, filenumber * 0x1000000 + linenumber);
 		return 0; 	// success in creating and filling
 	}
@@ -1068,6 +1073,8 @@ listofmapitems:
 		addIntOp(OP_PUSHINT, listlen);
 		if (listlen>listlenmax) listlenmax=listlen;
 		listlen = 0;
+		numberoflists = 0;
+		listlenmax=0;
 	}
 	;
 

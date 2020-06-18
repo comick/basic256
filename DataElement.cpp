@@ -86,7 +86,11 @@ void DataElement::copy(DataElement *source) {
 #ifdef DEBUG
 fprintf(stderr,"de copy map source len %d\n",source->map->data.size());
 #endif
-				map = new DataElementMap;
+				if (type==T_MAP) {
+					map->data.clear();
+				} else {
+					map = new DataElementMap;
+				}
 				map->data.insert(source->map->data.begin(), source->map->data.end());
 			}
 			break;
