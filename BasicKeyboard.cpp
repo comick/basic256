@@ -38,6 +38,7 @@ void BasicKeyboard::keyPressed(QKeyEvent *e){
 #endif
     //qDebug() << "+key:" << e->key() << "=" << e->text() <<", code:" << code <<", isAutoRepeat:" << e->isAutoRepeat() <<", modifiers" << e->modifiers() << QGuiApplication::queryKeyboardModifiers();
     lastKey = e->key();
+    lastText = e->text();
     if(!e->isAutoRepeat()){
         // Note that if the event is a multiple-key compressed event that is partly due to auto-repeat,
         // isAutoRepeat() function could return either true or false indeterminately.
@@ -85,6 +86,7 @@ void BasicKeyboard::reset(){
     // used when program starts or when widget lose focus to avoid
     // releasing keys outside and to be detectes=d as pressed
     lastKey = 0;
+    lastText = QString();
     lastModifiers = 0;
     pressedKeysMap.clear();
 }
@@ -104,12 +106,22 @@ int BasicKeyboard::count(){
     return pressedKeysMap.size();
 }
 
-int BasicKeyboard::getLastKey(){
+int BasicKeyboard::getLastKey(int getUNICODE){
     // return the last pressed key and reset the value
     // used by BASIC-256 KEY() function
-    int k = lastKey;
-    lastKey = 0;
-    return k;
+    int k;
+    if (getUNICODE) {
+		if (!lastText.isEmpty()) {
+			k = (int) lastText[0].unicode();
+		} else {
+			k = 0;
+		}
+	} else {
+		k = lastKey;
+	}
+	lastKey = 0;
+    lastText = QString();
+	return k;
 }
 
 void BasicKeyboard::setModifiers(Qt::KeyboardModifiers modifiers){

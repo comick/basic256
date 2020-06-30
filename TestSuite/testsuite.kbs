@@ -57,7 +57,7 @@ include "testsuite_common_include.kbs"
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(2000000)
+call versiontest(2000011)
 function versiontestgood(needed)
    return version >= needed
 end function

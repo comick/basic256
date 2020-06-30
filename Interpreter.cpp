@@ -2394,38 +2394,31 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							int maxsize = 256;
 							char * strarray = (char *) malloc(maxsize);
 							memset(strarray, 0, maxsize);
+							int offset = 0;
+							bool readmore = true;
 							// get the first char - Remove leading whitespace
 							do {
 								filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
-								if (!filehandle[fn]->getChar(&c)) {
-									stack->pushQString(QString::fromUtf8(strarray));
-									free(strarray);
-									return 0;
-								}
-							} while (c == ' ' || c == '\t' || c == '\n');
+								readmore = filehandle[fn]->getChar(&c);
+							} while (c == ' ' || c == '\t' || c == '\n' || !readmore);
 							// read token - we already have the first char
-							int offset = 0;
 							// get next letter until we crap-out or get white space
-							do {
-								strarray[offset] = c;
-								offset++;
-								// grow the buffer if we need to
-								if (offset+2 >= maxsize) {
-									maxsize *= 2;
-									strarray = (char *) realloc(strarray, maxsize);
-									memset(strarray + offset, 0, maxsize - offset);
-								}
-								// get next char
-								filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
-								if (!filehandle[fn]->getChar(&c)) {
-									// no more to get - finish the string and push to stack
-									strarray[offset] = 0;
-									stack->pushQString(QString::fromUtf8(strarray));
-									free(strarray);
-									return 0;  //nextop
-								}
-							} while (c != ' ' && c != '\t' && c != '\n');
-							// found a delimiter - finish the string and push to stack
+							if (readmore) {
+								do {
+									strarray[offset] = c;
+									offset++;
+									// grow the buffer if we need to
+									if (offset+2 >= maxsize) {
+										maxsize *= 2;
+										strarray = (char *) realloc(strarray, maxsize);
+										memset(strarray + offset, 0, maxsize - offset);
+									}
+									// get next char
+									filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
+									readmore = filehandle[fn]->getChar(&c);
+								} while (c != ' ' && c != '\t' && c != '\n' && readmore);
+							}
+							// finish the string, decode and push to stack
 							strarray[offset] = 0;
 							stack->pushQString(QString::fromUtf8(strarray));
 							free(strarray);
@@ -2449,7 +2442,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						} else {
 							//read entire line
 							filehandle[fn]->waitForReadyRead(FILEREADTIMEOUT);
-							stack->pushQString(filehandle[fn]->readLine());
+							stack->pushQString(QString::fromUtf8(filehandle[fn]->readLine()));
 						}
 					}
 				}
@@ -4631,12 +4624,13 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_KEY: {
+					int getUNICODE = stack->popInt();
 #ifdef ANDROID
 					error->q(ERROR_NOTIMPLEMENTED);
 					stack->pushInt(0);
 #else
 					mymutex->lock();
-					stack->pushInt(basicKeyboard->getLastKey());
+					stack->pushInt(basicKeyboard->getLastKey(getUNICODE));
 					mymutex->unlock();
 #endif
 				}

@@ -5,6 +5,7 @@
 # 20160510	j.m.reneau	original coding
 # 20160527  j.m.reneau  added keypress fancy logic
 # 20200421  j.m.reneau  moved input test from type
+# 20200629  j.m.reneau  added unicode key option 
 
 currentsuite = "inputkey"
 
@@ -63,6 +64,7 @@ if ostype() <> 3 then
       a = key
    until a <> 0
    call n("key space",a,32)
+   #
    print "Press the shift key."
    # debounce
    do
@@ -73,6 +75,28 @@ if ostype() <> 3 then
       a = key
    until a <> 0
    call n("key shift",a,16777248)
+   #
+   print "Press a lowrcase 'a'."
+      # debounce
+   do
+      a = key
+   until a = 0
+   # get unicode
+   do
+      a = key(true)
+   until a <> 0
+   call n("key shift",a,asc('a'))
+   #
+   print "Press a control-x."
+      # debounce
+   do
+      a = key
+   until a = 0
+   # get unicode
+   do
+      a = key(true)
+   until a <> 0
+   call n("key shift",a,24)
 end if
 
 # graphical input - prompt

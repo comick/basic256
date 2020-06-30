@@ -34,10 +34,11 @@ public:
     void reset();
     bool isPressed(int);
     int count();
-    int getLastKey();
+    int getLastKey(int);
 
 private:
     int lastKey;
+    QString lastText;
     Qt::KeyboardModifiers lastModifiers;
     void setModifiers(Qt::KeyboardModifiers);
     void addKey(int);

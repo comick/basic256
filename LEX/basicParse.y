@@ -1873,7 +1873,13 @@ expr_numeric:
 		addOp(OP_KEYPRESSED);
 	}
 	| B256KEYPRESSED '(' expr ')' { addOp(OP_KEYPRESSED); }
-	| B256KEY args_none     { addOp(OP_KEY); }
+	| B256KEY args_none     {
+		addIntOp(OP_PUSHINT, 0x00);
+		addOp(OP_KEY);
+	}
+	| B256KEY '(' expr ')'     {
+		addOp(OP_KEY);
+	}
 	| B256MOUSEX args_none { addOp(OP_MOUSEX); }
 	| B256MOUSEY args_none { addOp(OP_MOUSEY); }
 	| B256MOUSEB args_none { addOp(OP_MOUSEB); }
