@@ -63,6 +63,7 @@ typedef int socklen_t;
 #include <QMutex>
 #include <QWaitCondition>
 #include <QCoreApplication>
+#include <QDir>
 
 
 
@@ -342,6 +343,7 @@ QString Interpreter::opname(int op) {
 	case OP_MID : return QString("OP_MID");
 	case OP_MIDX : return QString("OP_MIDX");
 	case OP_MINUTE : return QString("OP_MINUTE");
+	case OP_MKDIR : return QString("OP_MKDIR");
 	case OP_MOD : return QString("OP_MOD");
 	case OP_MONTH : return QString("OP_MONTH");
 	case OP_MOUSEB : return QString("OP_MOUSEB");
@@ -407,6 +409,7 @@ QString Interpreter::opname(int op) {
 	case OP_RETURN : return QString("OP_RETURN");
 	case OP_RGB : return QString("OP_RGB");
 	case OP_RIGHT : return QString("OP_RIGHT");
+	case OP_RMDIR : return QString("OP_RMDIR");
 	case OP_ROUNDEDRECT : return QString("OP_ROUNDEDRECT");
 	case OP_RTRIM : return QString("OP_RTRIM");
 	case OP_SAVEFILEDIALOG : return QString("OP_SAVEFILEDIALOG");
@@ -2634,7 +2637,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					// push a 1 if file exists else zero
 
 					QString filename = stack->popQString();
-					if (QFile::exists(filename)) {
+					QDir dir = QDir::current();
+					if (dir.exists(filename)) {
 						stack->pushInt(1);
 					} else {
 						stack->pushInt(0);
@@ -7470,6 +7474,28 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
+				case OP_MKDIR: {
+					QString name = stack->popQString();
+					//fprintf(stderr,"mkdir %s\n",name.toUtf8().data());
+					QDir dir = QDir::current();
+					if (!dir.exists(name)) {
+						if(!dir.mkdir(name)) {
+							error->q(ERROR_MKDIR);
+						}
+					}
+				}
+				break;
+
+				case OP_RMDIR: {
+					QString name = stack->popQString();
+					QDir dir = QDir::current();
+					if (dir.exists(name)) {
+						if(!dir.rmdir(name)) {
+							error->q(ERROR_RMDIR);
+						}
+					}
+				}
+				break;
 
 
 				// insert additional OPTYPE_NONE operations here

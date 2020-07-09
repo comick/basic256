@@ -213,6 +213,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "mid"								//mid
 			<< "midx"								//midx
 			<< "minute"								//minute
+			<< "mkdir"
 			<< "mod"
 			<< "month"								//month
 			<< "mouseb"								//mouseb
@@ -270,6 +271,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "rgb"								//rgb
 			<< "right"								//right
 			<< "rjust"
+			<< "rmdir"
 			<< "round"
 			<< "savefiledialog"
 			<< "say"								//say

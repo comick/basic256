@@ -3,6 +3,7 @@
 # Modification History
 # date		programmer	description
 # 20140529	j.m.reneau	original coding
+# 20200709  j.m.reneau  added mkdir and rmdir testing 
 
 currentsuite = "dir"
 
@@ -43,4 +44,34 @@ call n("DIR dummyfile exists (dir)", a, true)
 # kill it and make sure it is gone
 kill("dirtemp.txt")
 call n("DIR dummyfile second not exists", exists("dirtemp.txt"), false)
+
+# RMDIR and MKDIR test
+
+# create a new folder
+mkdir "dir_test_folder"
+call n("DIR Folder dir_test_folder exists", exists("dir_test_folder"), true)
+
+# create file in new folder
+changedir("dir_test_folder")
+open "dirtemp.txt"
+close
+call n("DIR File dir_test_folder/dirtemp.txt exists", exists("dirtemp.txt"), true)
+
+# go up and try to delete
+changedir ".."
+try
+	rmdir "dir_test_folder"
+	print "dir_test_folder removed"
+catch
+	print 'unable to remove'
+end try
+call n("DIR Folder dir_test_folder exists after failed remove", exists("dir_test_folder"), true)
+
+# kill file in folder and remove
+kill "dir_test_folder/dirtemp.txt"
+rmdir "dir_test_folder"
+call n("DIR Folder dir_test_folder remove", exists("dir_test_folder"), false)
+
+
+
 

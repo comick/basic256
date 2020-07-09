@@ -128,6 +128,9 @@
 #define ERROR_NOTMAP					124
 #define ERROR_ARRAYORMAPEXPR			125
 #define ERROR_MAPKEY					126
+#define ERROR_RMDIR						127
+#define ERROR_MKDIR						128
+
 
 
 

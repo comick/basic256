@@ -652,6 +652,7 @@
 %token B256MIDX
 %token B256MINUTE
 %token B256MOD
+%token B256MKDIR
 %token B256MONTH
 %token B256MOUSEB
 %token B256MOUSEBUTTON_CENTER
@@ -725,6 +726,7 @@
 %token B256RGB
 %token B256RIGHT
 %token B256RJUST
+%token B256RMDIR
 %token B256ROUND
 %token B256RTRIM
 %token B256SAY
@@ -2389,6 +2391,9 @@ statement:
 	| linestmt
 	| maintoolbarvisiblestmt
 	| mapstmt
+	| B256MKDIR expr {
+		addOp(OP_MKDIR);
+	}
 	| netclosestmt
 	| netconnectstmt
 	| netlistenstmt
@@ -2417,6 +2422,9 @@ statement:
 	| regexminimalstmt
 	| resetstmt
 	| returnstmt
+	| B256RMDIR expr {
+		addOp(OP_RMDIR);
+	}
 	| saystmt
 	| seedstmt
 	| seekstmt

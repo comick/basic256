@@ -384,6 +384,7 @@ md5 [Mm][Dd][5]
 mid [Mm][Ii][Dd]
 midx [Mm][Ii][Dd][Xx]
 minute [Mm][Ii][Nn][Uu][Tt][Ee]
+mkdir [Mm][Kk][Dd][Ii][Rr]
 mod ([Mm][Oo][Dd])
 month [Mm][Oo][Nn][Tt][Hh]
 mouseb [Mm][Oo][Uu][Ss][Ee][Bb]
@@ -456,6 +457,7 @@ return [Rr][Ee][Tt][Uu][Rr][Nn]
 rgb [Rr][Gg][Bb]
 right [Rr][Ii][Gg][Hh][Tt]
 rjust [Rr][Jj][Uu][Ss][Tt]
+rmdir [Rr][Mm][Dd][Ii][Rr]
 round [Rr][Oo][Uu][Nn][Dd]
 rtrim [Rr][Tt][Rr][Ii][Mm]
 savefiledialog [Ss][Aa][Vv][Ee][Ff][Ii][Ll][Ee][Dd][Ii][Aa][Ll][Oo][Gg]
@@ -1059,6 +1061,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {line}						{ count(); return B256LINE; }
 {maintoolbarvisible}		{ count(); return B256MAINTOOLBARVISIBLE; }
 {map}						{ count(); return B256MAP; }
+{mkdir}						{ count(); return B256MKDIR; }
 {netclose}					{ count(); return B256NETCLOSE; }
 {netclose}":"				{ count(); unputcolon(); return B256NETCLOSE; }
 {netconnect}				{ count(); return B256NETCONNECT; }
@@ -1102,6 +1105,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {reset}":"					{ count(); unputcolon(); return B256RESET; }
 {return}					{ count(); return B256RETURN; }
 {return}":"					{ count(); unputcolon(); return B256RETURN; }
+{rmdir}						{ count(); return B256RMDIR; }
 {say}						{ count(); return B256SAY; }
 {seed}						{ count(); return B256SEED; }
 {seek}						{ count(); return B256SEEK; }

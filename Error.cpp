@@ -465,6 +465,12 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_MAPKEY:
 			errormessage = tr("Map key does not exist");
 			break;
+		case ERROR_RMDIR:
+			errormessage = tr("Unable to remove folder (it must be empty)");
+			break;
+		case ERROR_MKDIR:
+			errormessage = tr("Unable to create new folder");
+			break;
 
 
 
