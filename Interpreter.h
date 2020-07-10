@@ -168,181 +168,180 @@ typedef struct {
 
 class Interpreter : public QThread
 {
-  Q_OBJECT;
-    public:
-        Interpreter(QLocale*);
-        ~Interpreter();
-        int compileProgram(char *);
-        void initialize();
-        bool isRunning();
-        bool isStopped();
-        bool isStopping();
-        void setStatus(run_status);
-        bool isAwaitingInput();
-        void setInputString(QString);
-        void cleanup();
-        void run();
-        int debugMode;					// 0=normal run, 1=step execution, 2=run to breakpoint
-        QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
-        QString returnString;			// return value from runcontroller emit
-        int returnInt;					// return value from runcontroller emit
-        QImage returnImage;				// return value from runcontroller emit
-        int settingsAllowPort;
-        int settingsAllowSystem;
+	Q_OBJECT;
+	public:
+		Interpreter(QLocale*);
+		~Interpreter();
+		int compileProgram(char *);
+		void initialize();
+		bool isRunning();
+		bool isStopped();
+		bool isStopping();
+		void setStatus(run_status);
+		bool isAwaitingInput();
+		void setInputString(QString);
+		void cleanup();
+		void run();
+		int debugMode;					// 0=normal run, 1=step execution, 2=run to breakpoint
+		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
+		QString returnString;			// return value from runcontroller emit
+		int returnInt;					// return value from runcontroller emit
+		QImage returnImage;				// return value from runcontroller emit
+		int settingsAllowPort;
+		int settingsAllowSystem;
 
-    public slots:
-        int execByteCode();
-        void runHalted();
+	public slots:
+		int execByteCode();
+		void runHalted();
 
-    signals:
-        void debugNextStep();
-        void fastGraphics();
-        //void stopRun();
-        void stopRunFinalized(bool);
-        void goutputReady();
-        void outputReady(QString);
-        void outputError(QString);
-        void getInput();
-        void outputClear();
-        void getKey();
-        void playSounds(int, int*);
-        void setVolume(int);
-        void speakWords(QString);
-        void goToLine(int);
-        void seekLine(int);
-        void varWinAssign(Variables**, int, int);
-        void varWinAssign(Variables**, int, int, int, int);
-        void varWinDropLevel(int);
-        void varWinDimArray(Variables**, int, int, int);
-        void resizeGraphWindow(int, int, qreal);
-        void mainWindowsVisible(int, bool);
-        void dialogAlert(QString);
-        void dialogConfirm(QString, int);
-        void dialogPrompt(QString, QString);
-        void dialogOpenFileDialog(QString, QString, QString);
-        void dialogSaveFileDialog(QString, QString, QString);
-        void dialogAllowPortInOut(QString);
-        void dialogAllowSystem(QString);
-        void playSound(QString, bool);
-        void playSound(std::vector<std::vector<double>>, bool);
-        void loadSoundFromArray(QString, QByteArray*);
-        void soundStop(int);
-        void soundPlay(int);
-        void soundFade(int, double, int, int);
-        void soundVolume(int, double);
-        //void soundExit();
-        void soundPlayerOff(int);
-        void soundSystem(int);
-        void getClipboardImage();
-        void getClipboardString();
-        void setClipboardImage(QImage);
-        void setClipboardString(QString);
-        
+	signals:
+		void debugNextStep();
+		void fastGraphics();
+		//void stopRun();
+		void stopRunFinalized(bool);
+		void goutputReady();
+		void outputReady(QString);
+		void outputError(QString);
+		void getInput();
+		void outputClear();
+		void getKey();
+		void playSounds(int, int*);
+		void setVolume(int);
+		void speakWords(QString);
+		void goToLine(int);
+		void seekLine(int);
+		void varWinAssign(Variables**, int, int);
+		void varWinAssign(Variables**, int, int, int, int);
+		void varWinDropLevel(int);
+		void varWinDimArray(Variables**, int, int, int);
+		void resizeGraphWindow(int, int, qreal);
+		void mainWindowsVisible(int, bool);
+		void dialogAlert(QString);
+		void dialogConfirm(QString, int);
+		void dialogPrompt(QString, QString);
+		void dialogOpenFileDialog(QString, QString, QString);
+		void dialogSaveFileDialog(QString, QString, QString);
+		void dialogAllowPortInOut(QString);
+		void dialogAllowSystem(QString);
+		void playSound(QString, bool);
+		void playSound(std::vector<std::vector<double>>, bool);
+		void loadSoundFromArray(QString, QByteArray*);
+		void soundStop(int);
+		void soundPlay(int);
+		void soundFade(int, double, int, int);
+		void soundVolume(int, double);
+		//void soundExit();
+		void soundPlayerOff(int);
+		void soundSystem(int);
+		void getClipboardImage();
+		void getClipboardString();
+		void setClipboardImage(QImage);
+		void setClipboardString(QString);
+		
 
-    private:
-        QLocale *locale;
-        Sleeper *sleeper;
-        BasicDownloader *downloader;
-        //int optype(int op);
-        QString opname(int);
-        void waitForGraphics();
-        void printError();
-        int netSockClose(int);
-        void netSockCloseAll();
-        Variables *variables;
-        Stack *stack;
-        Stack *savestack;
-        bool isError; //flag set if program stops because of an error
-        Convert *convert;
-        QIODevice **filehandle;
-        int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
-        int *op;
-        addrStack *callstack;
-        addrStack *onerrorstack;
-        trycatchframe *trycatchstack; // used to track nested try/catch definitions
-        void decreaserecurse();
-        forframe *forstack;                     // stack FOR/NEXT for current recurse level
-        std::vector <forframe*> forstacklevel;  // stack FOR/NEXT for each recurse level
-        int forstacklevelsize;                  // size for forstacklevel stack
-        run_status status;
-        bool fastgraphics;
-        QString inputString;        // input string from user
-        int inputType;				// data type to convert the input into
-        double double_random_max;
-        int currentLine;
-        void clearsprites();
-        void update_sprite_screen();
-        void sprite_prepare_for_new_content(int);
-        void force_redraw_all_sprites_next_time();
-        bool sprite_collide(int, int, bool);
-        sprite *sprites;
-        int nsprites;
-        void closeDatabase(int);
-        int arraybase;			// 0 for 0..n-1, 1 for 1 to n array indexing
-        // watch... functions trigger the variablewatch window to display
-        void watchvariable(bool, int);
-        void watchvariable(bool, int, int, int);
-        void watchdecurse(bool);
+	private:
+		QLocale *locale;
+		Sleeper *sleeper;
+		BasicDownloader *downloader;
+		//int optype(int op);
+		QString opname(int);
+		void waitForGraphics();
+		void printError();
+		int netSockClose(int);
+		void netSockCloseAll();
+		Variables *variables;
+		Stack *stack;
+		Stack *savestack;
+		bool isError; //flag set if program stops because of an error
+		Convert *convert;
+		QIODevice **filehandle;
+		int *filehandletype;		// 0=QFile (normal), 1=QFile (binary), 2=QSerialPort
+		int *op;
+		addrStack *callstack;
+		addrStack *onerrorstack;
+		trycatchframe *trycatchstack; // used to track nested try/catch definitions
+		void decreaserecurse();
+		forframe *forstack;                     // stack FOR/NEXT for current recurse level
+		std::vector <forframe*> forstacklevel;  // stack FOR/NEXT for each recurse level
+		int forstacklevelsize;                  // size for forstacklevel stack
+		run_status status;
+		bool fastgraphics;
+		QString inputString;        // input string from user
+		int inputType;				// data type to convert the input into
+		double double_random_max;
+		int currentLine;
+		void clearsprites();
+		void update_sprite_screen();
+		void sprite_prepare_for_new_content(int);
+		void force_redraw_all_sprites_next_time();
+		bool sprite_collide(int, int, bool);
+		sprite *sprites;
+		int nsprites;
+		void closeDatabase(int);
+		int arraybase;			// 0 for 0..n-1, 1 for 1 to n array indexing
+		// watch... functions trigger the variablewatch window to display
+		void watchvariable(bool, int);
+		void watchvariable(bool, int, int, int);
+		void watchdecurse(bool);
 
-        int listensockfd;				// temp socket used in netlisten
-        int netsockfd[NUMSOCKETS];
+		int listensockfd;				// temp socket used in netlisten
+		int netsockfd[NUMSOCKETS];
 
-        DIR *directorypointer;		// used by DIR function
-        QTime runtimer;				// used by MSEC function
-        //SoundSystem *sound;
-        int includeFileNumber;
-        bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
+		DIR *directorypointer;		// used by DIR function
+		QTime runtimer;				// used by MSEC function
+		//SoundSystem *sound;
+		int includeFileNumber;
+		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
 
-        bool printing;
-        QPrinter *printdocument;
+		bool printing;
+		QPrinter *printdocument;
 
-        QPainter *painter;
-        bool painter_pen_need_update;
-        bool painter_brush_need_update;
-        bool painter_last_compositionModeClear;
-        unsigned long painter_brush_color; //last color value for comparison
-        unsigned long painter_pen_color; //last color value for comparison
-        void setGraph(QString id);
-        QString drawto;
-        bool setPainterTo(QPaintDevice *destination);
-        QPen drawingpen;
-        QBrush drawingbrush;
-        int CompositionModeClear;
-        int PenColorIsClear;
-        bool drawingOnScreen;
+		QPainter *painter;
+		bool painter_pen_need_update;
+		bool painter_brush_need_update;
+		bool painter_last_compositionModeClear;
+		unsigned long painter_brush_color; //last color value for comparison
+		unsigned long painter_pen_color; //last color value for comparison
+		void setGraph(QString id);
+		QString drawto;
+		bool setPainterTo(QPaintDevice *destination);
+		QPen drawingpen;
+		QBrush drawingbrush;
+		int CompositionModeClear;
+		int PenColorIsClear;
+		bool drawingOnScreen;
 
-        QFont font;
-        QString defaultfontfamily;
-        int defaultfontpointsize;
-        int defaultfontweight;
-        bool defaultfontitalic;
+		QFont font;
+		QString defaultfontfamily;
+		int defaultfontpointsize;
+		int defaultfontweight;
+		bool defaultfontitalic;
 
-        bool painter_font_need_update;
-        bool painter_custom_font_flag;
+		bool painter_font_need_update;
+		bool painter_custom_font_flag;
 
+		QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
 
+		int mediaplayer_id_legacy;
 
-        QSqlQuery *dbSet[NUMDBCONN][NUMDBSET];		// allow NUMDBSET number of sets on a database connection
+		QMap <QString, QImage*> images;
+		int lastImageId;
+		bool imageSmooth;
 
-        int mediaplayer_id_legacy;
+		int settingsDebugSpeed;
+		bool settingsAllowSetting;
+		int settingsSettingsAccess;
+		int settingsSettingsMax;
+		QString programName;
+		int settingsPrinterResolution;
+		int settingsPrinterPrinter;
+		int settingsPrinterPaper;
+		QString settingsPrinterPdfFile;
+		int settingsPrinterOrient;
+		QMap<QString, QMap<QString, QString>> fakeSettings;
+		QProcess *sys;
 
-        QMap <QString, QImage*> images;
-        int lastImageId;
-        bool imageSmooth;
-
-        int settingsDebugSpeed;
-        bool settingsAllowSetting;
-        int settingsSettingsAccess;
-        int settingsSettingsMax;
-        QString programName;
-        int settingsPrinterResolution;
-        int settingsPrinterPrinter;
-        int settingsPrinterPaper;
-        QString settingsPrinterPdfFile;
-        int settingsPrinterOrient;
-        QMap<QString, QMap<QString, QString>> fakeSettings;
-        QProcess *sys;
-
+		QString originalPath;				// used to restore IDE path afrer it may be changed at run time
 };
 
 

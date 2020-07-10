@@ -899,6 +899,9 @@ Interpreter::initialize() {
 		filehandle[t] = NULL;
 		filehandletype[t] = 0;
 	}
+	
+	// save IDE path so that it can be restored after program terminates
+	originalPath = QDir::currentPath();
 }
 
 
@@ -993,6 +996,8 @@ Interpreter::cleanup() {
 	}
 	images.clear();
 
+	// restore IDE path
+	QDir::setCurrent(originalPath);
 }
 
 void Interpreter::closeDatabase(int t) {
