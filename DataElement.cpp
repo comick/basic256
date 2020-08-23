@@ -57,6 +57,7 @@ void DataElement::copy(DataElement *source) {
 	// it is as fast as it can be
 	// unused values of strings can be found as garbage but this is the cost of speed
 	// source->stringval.clear() is too expensive to be used for each assignment/copy
+	clear();
 	if (source) {
 		type = source->type;
 		switch (source->type){
@@ -101,33 +102,59 @@ fprintf(stderr,"de copy map source len %d\n",source->map->data.size());
 			case T_INT:
 				intval = source->intval;
 		}
-	} else {
-		clear();
 	}
 }
 
 void DataElement::clear() {
 	//fprintf(stderr, "DataElement clear %s\n", debug().toStdString().c_str());
-	intval = 0;
-	level = 0;
-	stringval.clear();
-	if (arr) {
-		int i = arr->xdim * arr->ydim;
-		while(i-- > 0) {
-			if (arr->data[i]) delete arr->data[i];
-		}
-		arr = NULL;
-	}
-	if (map) {
-		for (std::map<std::string, DataElement*>::iterator it = map->data.begin(); it != map->data.end(); it++ ) {
-			if (it->second) delete it->second;
-		}
-		delete(map);
-		map = NULL;
+	switch (type){
+		//case T_STRING:
+		//	stringval.clear();
+		//	break;
+		case T_ARRAY:
+			if (arr) {
+				int i = arr->xdim * arr->ydim;
+				while(i-- > 0) {
+					if (arr->data[i]) delete arr->data[i];
+					arr->data[i] = NULL;
+				}
+				arr->data.clear();
+				delete(arr);
+				arr = NULL;
+			}
+			break;
+		case T_MAP:
+			if (map) {
+				for (std::map<std::string, DataElement*>::iterator it = map->data.begin(); it != map->data.end(); it++ ) {
+					if (it->second) delete it->second;
+					it->second = NULL;
+				}
+				map->data.clear();
+				delete(map);
+				map = NULL;
+			}
+			break;
 	}
 	type = T_UNASSIGNED;
 }
 
+int DataElement::getType(DataElement* e) {
+	if (e) {
+		return e->type;
+	} else {
+		return T_UNASSIGNED;
+	}
+}
+
+int DataElement::getError() {
+	return getError(false);
+}
+
+int DataElement::getError(int clear) {
+	int olde = e;
+	if (clear) e = ERROR_NONE;
+	return olde;
+}
 
 QString DataElement::debug() {
 	// return a string representing the DataElement contents
@@ -194,12 +221,13 @@ int DataElement::arrayCols() {
 DataElement* DataElement::arrayGetData(const int x, const int y) {
 	// get data from array elements from map (using x, y)
 	// if there is an error return an unassigned value
+	// DO NOT DELETE ****** COPY OF THE DATAELEMENT INTERNAL STORAGE
+	DataElement *d;
 	if (type == T_ARRAY) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
 			if (arr->data[i]) {
-				DataElement *d = arr->data[i];
-				return d;
+				return arr->data[i];
 			} else {
 				e = ERROR_VARNOTASSIGNED;
 			}
@@ -209,7 +237,7 @@ DataElement* DataElement::arrayGetData(const int x, const int y) {
 	} else {
 		e = ERROR_NOTARRAY;
 	}
-	return this;
+	return NULL;
 }
 
 void DataElement::arraySetData(const int x, const int y, DataElement *d) {
@@ -233,7 +261,7 @@ void DataElement::arrayUnassign(const int x, const int y) {
 		if (x >=0 && x < arr->xdim && y >=0 && y < arr->ydim) {
 			const int i = x * arr->ydim + y;
 			if (arr->data[i])  {
-				arr->data[i]->type = T_UNASSIGNED;
+				arr->data[i]->clear();
 			}
 		} else {
 			e = ERROR_ARRAYINDEX;
@@ -252,23 +280,21 @@ void DataElement::mapDim(){
 }
 
 DataElement* DataElement::mapGetData(QString qkey){
+	// DO NOT DELETE ****** COPY OF THE DATAELEMENT INTERNAL STORAGE
 	DataElement *d;
 	if (type==T_MAP) {
 		std::string key = qkey.toUtf8().constData();
-		fprintf(stdout, "mapGetData key = %s\n", key.c_str());
+		//fprintf(stdout, "mapGetData key = %s\n", key.c_str());
 		if (map->data.count(key)) {
-			d = map->data[key];
+			return map->data[key];
 		} else {
 			e = ERROR_MAPKEY;
-			d = new DataElement();
 		}
 	} else {
 		e = ERROR_NOTMAP;
-		d = new DataElement();
 	}
-	return d;
+	return NULL;
 }
-
 
 void DataElement::mapSetData(QString qkey, DataElement *d){
 	mapSetData(qkey.toStdString(), d);

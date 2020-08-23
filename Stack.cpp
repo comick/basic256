@@ -56,6 +56,10 @@ int Stack::height() {
 void Stack::pushDE(DataElement *source) {
 	if (stackpointer >= stacksize)  stackGrow();
 	// push to stack a copy of he dataelement
+	
+	// IF YOU CREATED A DE TO PUSH - BE SURE TO DELETE
+	// AFTER pushDE
+	
 	stackdata[stackpointer] = new DataElement();
 	if (source) {
 		stackdata[stackpointer]->copy(source);
@@ -96,6 +100,10 @@ void Stack::pushBool(bool i) {
 	stackdata[stackpointer++] = new DataElement(i?1L:0L);
 }
 
+void Stack::pushUnassigned() {
+	if (stackpointer >= stacksize)  stackGrow();
+	stackdata[stackpointer++] = new DataElement();
+}
 
 //
 // Pushes derived from RAW pushes
@@ -178,7 +186,7 @@ DataElement *Stack::popDE() {
 	// pop an element - a POINTER to the data on the stack
 	// WILL CHANGE ON NEXT PUSH!!!!
 	
-	// MUST delete THIS AFTER YOU ARE DOME WITH IT!!!!!!!!
+	// MUST delete THIS AFTER YOU ARE DONE WITH IT!!!!!!!!
 	
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;

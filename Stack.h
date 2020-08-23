@@ -37,6 +37,7 @@ class Stack
 		void pushLong(long);
 		void pushRef(int, int);
 		void pushDouble(double);
+		void pushUnassigned();
 		void swap();
 		void swap2();
 		void topto2();

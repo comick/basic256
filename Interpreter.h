@@ -135,9 +135,9 @@ struct forframe {
     forframe *next;
     int *forAddr;   //FOR address
     int *nextAddr;  //NEXT address
-    int type;		//0=integer, 1=float, 2=foreache if -
-    int for_varnum;
-    int for_val_varnum;		// -1 if not used (used to get map value in for each)
+    int forFrameType;		//0=integer, 1=float, 2=foreache if -
+    int forVarnum;
+    int forVarnumValue;		// -1 if not used (used to get map value in for each)
     double floatStart;
     double floatEnd;
     double floatStep;
@@ -212,6 +212,7 @@ class Interpreter : public QThread
 		void seekLine(int);
 		void varWinAssign(Variables**, int, int);
 		void varWinAssign(Variables**, int, int, int, int);
+		void varWinAssign(Variables**, int, int, QString);
 		void varWinDropLevel(int);
 		void varWinDimArray(Variables**, int, int, int);
 		void resizeGraphWindow(int, int, qreal);
@@ -282,6 +283,7 @@ class Interpreter : public QThread
 		// watch... functions trigger the variablewatch window to display
 		void watchvariable(bool, int);
 		void watchvariable(bool, int, int, int);
+		void watchvariable(bool, int, QString);
 		void watchdecurse(bool);
 
 		int listensockfd;				// temp socket used in netlisten

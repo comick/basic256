@@ -79,15 +79,9 @@ class DataElement
 		int mapLength();
 		bool mapKey(QString);
 		
-		static int getError() {
-			return getError(false);
-		}
-
-		static int getError(int clear) {
-			int olde = e;
-			if (clear) e = ERROR_NONE;
-			return olde;
-		}
+		static int getError();
+		static int getError(int);
+		static int getType(DataElement*);
 
 	private:
 		static int e;		// error number thrown - will be 0 if no error
