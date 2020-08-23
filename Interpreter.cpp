@@ -460,6 +460,7 @@ QString Interpreter::opname(int op) {
 	case OP_SPRITES : return QString("OP_SPRITES");
 	case OP_SPRITESHOW : return QString("OP_SPRITESHOW");
 	case OP_SPRITESLICE : return QString("OP_SPRITESLICE");
+	case OP_SPRITETEXT : return QString("OP_SPRITETEXT");
 	case OP_SPRITEV : return QString("OP_SPRITEV");
 	case OP_SPRITEW : return QString("OP_SPRITEW");
 	case OP_SPRITEX : return QString("OP_SPRITEX");
@@ -929,7 +930,6 @@ Interpreter::cleanup() {
 		if(level>0) forstack=forstacklevel[level];
 	}
 
-	variables->deleteLater();
 	delete(convert);
 	// Clean up sprites
 	clearsprites();
@@ -995,6 +995,10 @@ Interpreter::cleanup() {
 		++it;
 	}
 	images.clear();
+	
+	// clear variables, maps, and arrays
+	//fprintf(stderr,"interperter b4 delete variables\n");
+	delete variables;
 
 	// restore IDE path
 	QDir::setCurrent(originalPath);
@@ -1467,11 +1471,11 @@ Interpreter::execByteCode() {
 							temp->for_varnum = i;
 							temp->for_val_varnum = i2;
 							temp->type = FORFRAMETYPE_FOREACH_ARRAY;
-							temp->iter_d = d;
+							temp->foreach_de = d;
 							temp->arrayIter = d->arr->data.begin();
 							temp->arrayIterEnd = d->arr->data.end();
 							// set variable to first element
-							variables->setData(temp->for_varnum, (DataElement*) &(*temp->arrayIter));
+							variables->setData(temp->for_varnum, *temp->arrayIter);
 							watchvariable(debugMode, temp->for_varnum);
 							// add new forframe to the forframe stack
 							temp->next = forstack;
@@ -1481,6 +1485,7 @@ Interpreter::execByteCode() {
 						} else {
 							// no data in array - jump to next
 							delete d;
+							delete temp->foreach_de;
 							delete temp;
 							op = nextAddr;
 						}
@@ -1493,15 +1498,15 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							temp->for_varnum = i;
 							temp->for_val_varnum = i2;
 							temp->type = FORFRAMETYPE_FOREACH_MAP;
-							temp->iter_d = d;
+							temp->foreach_de = d;
 							temp->mapIter = d->map->data.begin();
 							temp->mapIterEnd = d->map->data.end();
 							// set variable1 to first key
-							variables->setData(temp->for_varnum, temp->mapIter->first);
+							variables->setData(temp->for_varnum, QString::fromStdString((std::string) (temp->mapIter->first)));
 							watchvariable(debugMode, temp->for_varnum);
 							// set variable2 to first value
 							if (temp->for_val_varnum !=-1) {
-								variables->setData(temp->for_val_varnum, (DataElement*) &(temp->mapIter->second));
+								variables->setData(temp->for_val_varnum, temp->mapIter->second);
 								watchvariable(debugMode, temp->for_val_varnum);
 							}
 							// add new forframe to the forframe stack
@@ -1512,6 +1517,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						} else {
 							// no data in array - jump to next
 							delete d;
+							delete temp->foreach_de;
 							delete temp;
 							op = nextAddr;
 						}
@@ -2175,6 +2181,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						error->q(ERROR_NEXTNOFOR);
 					} else {
 						forstack = temp->next;
+						if (temp->type==FORFRAMETYPE_FOREACH_ARRAY || temp->type==FORFRAMETYPE_FOREACH_MAP) {
+							delete temp->foreach_de;
+						}
 						delete temp;
 						op = wordCode + i;
 					}
@@ -4612,7 +4621,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					mymutex->unlock();
 					waitForGraphics();
 					//
-					stack->pushVariant(returnString, intType);
+					stack->pushVariant(returnString, inputType);
 #else
 					// use the input status of interperter and get
 					// input from BasicOutput
@@ -4829,6 +4838,45 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						}
 					}
 					delete e;
+				}
+				break;
+				
+				case OP_SPRITETEXT: {
+					int background = stack->popInt();
+					QString txt = stack->popQString();
+					int n = stack->popInt(); // sprite number
+					if(n >= 0 && n < nsprites) {
+						// calculate size
+						int h, w;
+						if(painter_font_need_update){
+							painter->setFont(font);
+							painter_font_need_update=false;
+						}
+						h = QFontMetrics(painter->font()).height();
+#if QT_VERSION >= 0x051100
+						w = (int) (QFontMetrics(painter->font()).horizontalAdvance(txt));
+#else
+						w = (int) (QFontMetrics(painter->font()).width(txt));
+#endif
+						//build sprite
+						sprite_prepare_for_new_content(n);
+						sprites[n].image = new QImage(w,h,QImage::Format_ARGB32_Premultiplied);
+						if (background) 
+							sprites[n].image->fill(background);
+						else
+							sprites[n].image->fill(Qt::transparent);
+						if(!sprites[n].image->isNull()){
+							QPainter *p = new QPainter(sprites[n].image);
+							p->setFont(font);
+							p->setPen(drawingpen);
+							p->drawText(0, QFontMetrics(p->font()).ascent(), txt);
+							p->end();
+							delete p;
+							sprites[n].position.setRect(-(w/2),-(h/2),w,h);
+						}
+					} else {
+						error->q(ERROR_SPRITENUMBER);
+					}
 				}
 				break;
 
@@ -6602,25 +6650,28 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						QString stuff = "M";
 						stuff.append(SERALIZE_DELIMITER);
 						stuff.append(QString::number(e->mapLength()));
-						for (std::map<QString, DataElement>::iterator it = e->map->data.begin(); it != e->map->data.end(); it++ )
 						{
-							stuff.append(SERALIZE_DELIMITER);
-							stuff.append(SERALIZE_STRING + QString::fromUtf8(it->first.toUtf8().toHex()) );
-							stuff.append(SERALIZE_DELIMITER);
-							switch (it->second.type) {
-								case T_STRING:
-									stuff.append(SERALIZE_STRING + QString::fromUtf8(it->second.stringval.toUtf8().toHex()) );
-									break;
-								case T_FLOAT:
-									stuff.append(SERALIZE_FLOAT + QString::number(it->second.floatval));
-									break;
-								case T_INT:
-									stuff.append(SERALIZE_INT + QString::number(it->second.intval));
-									break;
-								default:
-									stuff.append(SERALIZE_UNASSIGNED);
-									break;
-							};
+							std::map<std::string, DataElement*>::iterator it;
+							for (it = e->map->data.begin(); it != e->map->data.end(); it++ )
+							{
+								stuff.append(SERALIZE_DELIMITER);
+								stuff.append(SERALIZE_STRING + QString::fromStdString(it->first).toUtf8().toHex() );
+								stuff.append(SERALIZE_DELIMITER);
+								switch (it->second->type) {
+									case T_STRING:
+										stuff.append(SERALIZE_STRING + QString::fromUtf8(it->second->stringval.toUtf8().toHex()) );
+										break;
+									case T_FLOAT:
+										stuff.append(SERALIZE_FLOAT + QString::number(it->second->floatval));
+										break;
+									case T_INT:
+										stuff.append(SERALIZE_INT + QString::number(it->second->intval));
+										break;
+									default:
+										stuff.append(SERALIZE_UNASSIGNED);
+										break;
+								};
+							}
 						}
 						stack->pushQString(stuff);
 					} else {
@@ -7384,7 +7435,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 								temp->arrayIter++;
 								if (temp->arrayIter != temp->arrayIterEnd) {
 									// set variable to this element
-									variables->setData(temp->for_varnum, (DataElement*) &(*temp->arrayIter));
+									variables->setData(temp->for_varnum, *temp->arrayIter);
 									watchvariable(debugMode, temp->for_varnum);
 									// loop again
 									op = temp->forAddr;
@@ -7395,7 +7446,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 									}else{
 										forstack = temp->next;
 									}
-									delete temp->iter_d;
+									delete temp->foreach_de;
 									delete temp;
 								}
 							}
@@ -7405,11 +7456,11 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 								temp->mapIter++;
 								if (temp->mapIter != temp->mapIterEnd) {
 									// set variable1 to the next key
-									variables->setData(temp->for_varnum, temp->mapIter->first);
+									variables->setData(temp->for_varnum, QString::fromStdString((std::string) (temp->mapIter->first)));
 									watchvariable(debugMode, temp->for_varnum);
 									// set variable2 to value
 									if (temp->for_val_varnum !=-1) {
-										variables->setData(temp->for_val_varnum, (DataElement*) &(temp->mapIter->second));
+										variables->setData(temp->for_val_varnum, temp->mapIter->second);
 										watchvariable(debugMode, temp->for_val_varnum);
 									}
 									// loop again
@@ -7421,7 +7472,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 									}else{
 										forstack = temp->next;
 									}
-									delete temp->iter_d;
+									delete temp->foreach_de;
 									delete temp;
 								}
 							}

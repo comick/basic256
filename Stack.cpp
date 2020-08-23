@@ -59,8 +59,6 @@ void Stack::pushDE(DataElement *source) {
 	stackdata[stackpointer] = new DataElement();
 	if (source) {
 		stackdata[stackpointer]->copy(source);
-	} else {
-		stackdata[stackpointer]->type = T_UNASSIGNED;
 	}
 	stackpointer++;
 }

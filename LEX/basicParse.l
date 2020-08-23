@@ -510,6 +510,7 @@ spriter [Ss][Pp][Rr][Ii][Tt][Ee][Rr]
 sprites [Ss][Pp][Rr][Ii][Tt][Ee][Ss]
 spriteshow [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Hh][Oo][Ww]
 spriteslice [Ss][Pp][Rr][Ii][Tt][Ee][Ss][Ll][Ii][Cc][Ee]
+spritetext [Ss][Pp][Rr][Ii][Tt][Ee][Tt][Ee][Xx][Tt]
 spritev [Ss][Pp][Rr][Ii][Tt][Ee][Vv]
 spritew [Ss][Pp][Rr][Ii][Tt][Ee][Ww]
 spritex [Ss][Pp][Rr][Ii][Tt][Ee][Xx]
@@ -1141,6 +1142,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {spritepoly}				{ count(); return B256SPRITEPOLY; }
 {spriteshow}				{ count(); return B256SPRITESHOW; }
 {spriteslice}				{ count(); return B256SPRITESLICE; }
+{spritetext}				{ count(); return B256SPRITETEXT; }
 {stamp}						{ count(); return B256STAMP; }
 {step}						{ count(); return B256STEP; }
 {subroutine}				{ count(); return B256SUBROUTINE; }

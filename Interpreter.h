@@ -144,11 +144,11 @@ struct forframe {
     long intStart;
     long intEnd;
     long intStep;
-    DataElement *iter_d;		// hold array or map pointer - delete on end of loop
-    std::vector<DataElement>::iterator arrayIter;
-    std::vector<DataElement>::iterator arrayIterEnd;
-    std::map<QString, DataElement>::iterator mapIter;
-    std::map<QString, DataElement>::iterator mapIterEnd;
+    DataElement* foreach_de;		// copy of data used for the foreach
+    std::vector<DataElement*>::iterator arrayIter;
+    std::vector<DataElement*>::iterator arrayIterEnd;
+    std::map<std::string, DataElement*>::iterator mapIter;
+    std::map<std::string, DataElement*>::iterator mapIterEnd;
 };
 
 typedef struct {

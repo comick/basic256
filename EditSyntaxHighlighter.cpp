@@ -320,6 +320,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "sprites"							//sprites
 			<< "spriteshow"							//spriteshow
 			<< "spriteslice"						//spriteslice
+			<< "spritetext"
 			<< "spritev"							//spritev
 			<< "spritew"							//spritew
 			<< "spritex"							//spritex

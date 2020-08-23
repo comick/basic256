@@ -193,9 +193,15 @@ void Variables::setData(int varnum, double f) {
 }
 
 void Variables::setData(int varnum, QString s) {
+	//fprintf(stderr,"s");
     Variable *v = get(varnum);
     v->data->type = T_STRING;
     v->data->stringval = s;
+}
+
+void Variables::setData(int varnum, std::string s) {
+	// used in foreach for maps
+	setData(varnum, QString::fromStdString(s));
 }
 
 void Variables::unassign(int varnum) {

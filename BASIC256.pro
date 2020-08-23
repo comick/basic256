@@ -51,8 +51,8 @@ win32 {
 									-lws2_32 \
 									-lwinmm
 
-###CONFIG += console  ## enable for printf debugging in windows
-###QMAKE_CXXFLAGS				+=-DYYDEBUG=1
+##CONFIG 						+= console  ## enable for printf debugging in windows
+##QMAKE_CXXFLAGS				+=-D DEBUG=1
 	QMAKE_CXXFLAGS				+=	-mstackrealign
 	QMAKE_CXXFLAGS_RELEASE		+=	-mstackrealign
 

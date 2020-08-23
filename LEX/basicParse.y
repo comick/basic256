@@ -781,6 +781,7 @@
 %token B256SPRITES
 %token B256SPRITESHOW
 %token B256SPRITESLICE
+%token B256SPRITETEXT
 %token B256SPRITEV
 %token B256SPRITEW
 %token B256SPRITEX
@@ -2453,6 +2454,7 @@ statement:
 	| spritepolystmt
 	| spriteshowstmt
 	| spriteslicestmt
+	| spritetextstmt
 	| stampstmt
 	| subroutinestmt
 	| systemstmt
@@ -3892,6 +3894,16 @@ spriteslicestmt:
 spritepolystmt:
 			B256SPRITEPOLY args_ee {
 				addOp(OP_SPRITEPOLY);
+			}
+			;
+			
+spritetextstmt:
+			B256SPRITETEXT args_ee {
+				addIntOp(OP_PUSHINT, 0x00);	// clear
+				addOp(OP_SPRITETEXT);
+			}
+			| B256SPRITETEXT args_eee {
+				addOp(OP_SPRITETEXT);
 			}
 			;
 

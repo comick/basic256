@@ -44,6 +44,7 @@ class Variables: public QObject
 		void setData(int, long);
 		void setData(int, double);
 		void setData(int, QString);
+		void setData(int, std::string);
 		void unassign(int);
 		//
 		void makeglobal(int);
