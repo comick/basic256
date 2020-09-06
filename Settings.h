@@ -136,14 +136,6 @@
     #define SETTINGSSOUNDSAMPLERATEDEFAULT 22050
 
 	
-	// espeak - library
-	#define SETTINGSESPEAKVOICE "eSpeak/Voice"
-	#define SETTINGSESPEAKVOICEDEFAULT "default"
-	
-	// espeak - statement
-	#define SETTINGSESPEAKSTATEMENT "eSpeak/Statement"
-	#define SETTINGSESPEAKSTATEMENTDEFAULT "espeak \"WORD\""
-	
 	// printersettings
 	#define SETTINGSPRINTERPRINTER "Printer/Printer"
 	#define SETTINGSPRINTERPDFFILE "Printer/PDFFile"

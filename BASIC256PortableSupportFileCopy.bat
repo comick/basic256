@@ -11,6 +11,7 @@ REM # 2014-10-26 j.m.reneau    1.1.4.0      added serialport
 REM # 2016-01-01 j.m.reneau    1.99.99.08	moved to 5.5
 REM # 2016-10-31 j.m.reneau    1.99.99.72	moved to qt 5.7
 REM # 2020-04-28 j.m.reneau    2.0.0.1		moved to QT 5.14.2
+REM # 2020-09-05 j.m.reneau    2.0.1.0		changed TTS to use QQ Library and updated to qt 5.15.0
 
 REM # Iterate through development and propduction folders
 FOR %%F IN (BASIC256Portable BASIC256PortableDebug) DO (call :foldercreate %%F)
@@ -18,9 +19,9 @@ goto :eof
 
 REM # ACTUALLY Create and Fill
 :foldercreate
-set SDK_BIN=C:\Qt\5.14.2\mingw73_32\bin
-set SDK_LIB=C:\Qt\5.14.2\mingw73_32\lib
-set SDK_PLUGINS=C:\Qt\5.14.2\mingw73_32\plugins
+set SDK_BIN=C:\Qt\5.15.0\mingw81_32\bin
+set SDK_LIB=C:\Qt\5.15.0\mingw81_32\lib
+set SDK_PLUGINS=C:\Qt\5.15.0\mingw81_32\plugins
 
 set INSTDIR=%1\App\BASIC256
 echo %INSTDIR%
@@ -33,9 +34,6 @@ xcopy Translations\*.qm %INSTDIR%\Translations
 
 mkdir %INSTDIR%\Modules
 xcopy Modules\* %INSTDIR%\Modules
-
-mkdir %INSTDIR%\espeak-data
-xcopy /e release\espeak-data %INSTDIR%\espeak-data
 
 mkdir %INSTDIR%\audio
 xcopy %SDK_PLUGINS%\audio\qtaudio_windows.dll %INSTDIR%\audio
@@ -65,6 +63,9 @@ xcopy %SDK_PLUGINS%\mediaservice\qtmedia_audioengine.dll %INSTDIR%\mediaservice
 mkdir %INSTDIR%\playlistformats
 xcopy %SDK_PLUGINS%\playlistformats\qtmultimedia_m3u.dll %INSTDIR%\playlistformats
 
+mkdir %INSTDIR%\texttospeech
+xcopy %SDK_PLUGINS%\texttospeech\qtexttospeech_sapi.dll %INSTDIR%\texttospeech
+
 xcopy ChangeLog %INSTDIR%
 xcopy CONTRIBUTORS %INSTDIR%
 xcopy license.txt %INSTDIR%
@@ -81,11 +82,8 @@ xcopy %SDK_BIN%\Qt5OpenGL.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5PrintSupport.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5SerialPort.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Sql.dll %INSTDIR%
+xcopy %SDK_BIN%\Qt5TextToSpeech.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5WebKit.dll %INSTDIR%
 xcopy %SDK_BIN%\Qt5Widgets.dll %INSTDIR%
-
-xcopy %SDK_LIB%\libespeak.dll %INSTDIR%
-xcopy %SDK_LIB%\libportaudio-2.dll %INSTDIR%
-xcopy %SDK_LIB%\libpthread-2.dll %INSTDIR%
 
 goto :eof

@@ -84,10 +84,10 @@ typedef int socklen_t;
 
 
 extern SoundSystem *sound;
-extern QMutex *mymutex;
-extern QMutex *mydebugmutex;
-extern QWaitCondition *waitCond;
-extern QWaitCondition *waitDebugCond;
+extern QMutex* mymutex;
+extern QMutex* mydebugmutex;
+extern QWaitCondition* waitCond;
+extern QWaitCondition* waitDebugCond;
 
 extern BasicGraph * graphwin;
 extern BasicEdit * editwin;
@@ -559,10 +559,6 @@ void Interpreter::netSockCloseAll() {
 	for (int t=0; t<NUMSOCKETS; t++) {
 		netsockfd[t] = netSockClose(netsockfd[t]);
 	}
-}
-
-bool Interpreter::isAwaitingInput() {
-	return (status == R_INPUT);
 }
 
 void Interpreter::setInputString(QString s) {
@@ -3887,8 +3883,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_SAY: {
+					QString text = stack->popQString();
 					mymutex->lock();
-					emit(speakWords(stack->popQString()));
+					emit(speakWords(text));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
 				}
@@ -4699,19 +4696,14 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					//
 					stack->pushVariant(returnString, inputType);
 #else
-					// use the input status of interperter and get
-					// input from BasicOutput
-					// input is pushed by the emit back to the interperter
-					status = R_INPUT;
+					// 1) Signal the outwin to start input
+					// 2) when return is pressed  outwin signals runcontroller with the string
+					// 3) runcontroller puts it in the variable inputString and releases the wait condition
 					mymutex->lock();
 					emit(getInput());
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					//we got input from user or program is going to stop
-					if (status==R_INPUT) {//program is not stopped by user in the mean time
-						status = R_RUNNING;
-						stack->pushVariant(inputString, inputType);
-					}
+					stack->pushVariant(inputString, inputType);
 
 #endif
 				}

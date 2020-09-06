@@ -57,16 +57,9 @@ win32 {
 	QMAKE_CXXFLAGS_RELEASE		+=	-mstackrealign
 
 	########
-	# TTS control - How Say statement works
+	# TTS
 	########
-	# uncomment one of the options
-
-	## TTS Option 1 - ececute 'espak' command to speak
-	#DEFINES					+=	ESPEAK_EXECUTE
-
-	## TTS Option 2 - use the espeak library
-	DEFINES						+=	ESPEAK
-	LIBS						+=	-lespeak
+	QT							+= texttospeech
 
 	########
 	# Sound class - How Sound statement works

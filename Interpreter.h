@@ -56,7 +56,7 @@
     #include <QSerialPort>
 #endif
 
-enum run_status {R_STOPPED, R_RUNNING, R_INPUT, R_STOPING};
+enum run_status {R_STOPPED, R_RUNNING, R_STOPING};
 
 #define NUMFILES 8
 #define NUMSOCKETS 8
@@ -178,7 +178,6 @@ class Interpreter : public QThread
 		bool isStopped();
 		bool isStopping();
 		void setStatus(run_status);
-		bool isAwaitingInput();
 		void setInputString(QString);
 		void cleanup();
 		void run();

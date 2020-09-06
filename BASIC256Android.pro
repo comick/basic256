@@ -1,6 +1,6 @@
 ###
 ### qmake for android
-### requires QT 5.2.
+### requires QT 5.15
 ###
 
 ### KNOWN ISSUES:  2013-01-04 j.m.reneau
@@ -70,9 +70,13 @@ TRANSLATIONS                                    =	Translations/basic256_en.ts \
 
 	########
 	# TTS control - How Say statement works
-        # in Android the ANDROID define handles this setting
 	########
-
+	
+	## TTS Option 3 - QT QTextToSpeech
+	DEFINES						+= QT_TTS
+	QT							+= texttospeech
+	
+	
 	########
 	# Sound class - How Sound statement works
 	########
@@ -95,13 +99,11 @@ exists( ./LEX/Makefile ) {
 
 # Input
 HEADERS 					+=	LEX/basicParse.tab.h 
-HEADERS						+=	android/AndroidTTS.h
 
 HEADERS 					+= *.h
 
 SOURCES 					+=	LEX/lex.yy.c 
 SOURCES 					+=	LEX/basicParse.tab.c 
-SOURCES 					+=	android/AndroidTTS.cpp
 
 SOURCES 					+= *.cpp
 

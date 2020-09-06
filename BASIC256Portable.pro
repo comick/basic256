@@ -58,11 +58,9 @@ win32 {
 	QMAKE_CXXFLAGS_RELEASE		+=	-mstackrealign
 
 	########
-	# TTS control - How Say statement works
+	# TTS
 	########
-
-	DEFINES						+=	ESPEAK
-	LIBS						+=	-lespeak
+	QT							+= texttospeech
 
 	########
 	# Depencencies and setup for Sound and BasicMediaPlayer classes

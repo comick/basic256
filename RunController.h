@@ -24,7 +24,9 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-
+#include <QTextToSpeech>
+#include <QVoice>
+#include <QThread>
 #include <QLocale>
 
 #include "BasicEdit.h"
@@ -97,6 +99,7 @@ class RunController : public QObject
   QString bytefilename;
   QLocale *locale;
   BasicEdit *currentEditor;
+  QTextToSpeech *speech;
 };
 
 

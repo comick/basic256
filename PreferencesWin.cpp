@@ -24,10 +24,6 @@
 #include "MainWindow.h"
 #include "md5.h"
 
-#ifdef ESPEAK
-	#include <speak_lib.h>
-#endif
-
 PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	:QDialog(parent) {
 
@@ -382,55 +378,7 @@ PreferencesWin::PreferencesWin (QWidget * parent, bool showAdvanced)
 	soundvolumerestorevalue->setText(soundvolumerestorevalue->text() + "        "); //ensure space for label to grow without resizing wind
 
 
-#ifdef ESPEAK
-	r++;
-	{
-#ifdef WIN32
-		// use program install folder
-		espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,(char *) QFileInfo(QCoreApplication::applicationFilePath()).absolutePath().toUtf8().data(),0);
-#else
-		// use default path for espeak-data
-		espeak_Initialize(AUDIO_OUTPUT_SYNCH_PLAYBACK,0,NULL,0);
-#endif
-
-		QString setvoice;
-		voicelabel = new QLabel(tr("SAY Voice:"),this);
-		soundtablayout->addWidget(voicelabel,r,1,1,1);
-		voicecombo = new QComboBox(this);
-
-		const espeak_VOICE **voices;
-		voices = espeak_ListVoices(NULL);
-
-		voicecombo->addItem(QString("default"),	QString("default"));
-		for(int i=0; voices[i] != NULL; i++) {
-			QString name = voices[i]->name;
-			QString lang = (voices[i]->languages + 1);
-			voicecombo->addItem( lang + " (" + name + ")",	name);
-		}
-
-		// set setting and select
-		setvoice = settings.value(SETTINGSESPEAKVOICE, SETTINGSESPEAKVOICEDEFAULT).toString();
-		int index = voicecombo->findData(setvoice);
-		if ( index != -1 ) { // -1 for not found
-			voicecombo->setCurrentIndex(index);
-		}
-		// add to layout
-		soundtablayout->addWidget(voicecombo,r,2,1,2);
-	}
-#endif
-
-#ifdef ESPEAK_EXECUTE
-	r++;
-	{
-		// set statement to speak words
-		speakstmtlabel = new QLabel(tr("PDF File Name:"),this);
-		speakstmtinput = new QLineEdit(QString(),this);
-		speakstmtinput->setText(settings.value(SETTINGSESPEAKSTATEMENT, SETTINGSESPEAKSTATEMENTDEFAULT).toString());
-		speakstmtinput->setMaxLength(96);
-		soundtablayout->addWidget(speakstmtlabel,r,1,1,1);
-		soundtablayout->addWidget(speakstmtinput,r,2,1,2);
-	}
-#endif
+// TTS Settings added here some day
 
 	// *******************************************************************************************
 	// build the printer tab
@@ -645,16 +593,7 @@ void PreferencesWin::clickSaveButton() {
 		if (soundsampleratecombo->currentIndex()!=-1) {
 			settings.setValue(SETTINGSSOUNDSAMPLERATE, soundsampleratecombo->itemData(soundsampleratecombo->currentIndex()));
 		}
-#ifdef ESPEAK
-		//
-		if (voicecombo->currentIndex()!=-1) {
-			settings.setValue(SETTINGSESPEAKVOICE, voicecombo->itemData(voicecombo->currentIndex()));
-		}
-#endif
-#ifdef ESPEAK_EXECUTE
-		//
-		settings.setValue(SETTINGSESPEAKSTATEMENT, speakstmtinput->text());
-#endif
+
 
 		// *******************************************************************************************
 		// printer settings
