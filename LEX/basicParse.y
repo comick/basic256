@@ -676,6 +676,7 @@
 %token B256NOT
 %token B256OFFERROR
 %token B256ONERROR
+%token B256ONSTOP
 %token B256OPEN
 %token B256OPENB
 %token B256OPENFILEDIALOG
@@ -2401,6 +2402,7 @@ statement:
 	| netwritestmt
 	| nextstmt
 	| offerrorstmt
+	| onstopstmt
 	| onerrorstmt
 	| openstmt
 	| outputvisiblestmt
@@ -3223,6 +3225,12 @@ onerrorstmt:
 			| B256ONERROR variable '(' callexprlist ')' {
 				errorcode = COMPERR_ONERRORCALL;
 				return -1;
+			}
+			;
+
+onstopstmt:
+			B256ONSTOP variable '(' ')' {
+				addIntOp(OP_ONSTOPCALL, varnumber[--nvarnumber]);
 			}
 			;
 

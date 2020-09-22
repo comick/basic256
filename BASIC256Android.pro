@@ -165,3 +165,5 @@ OTHER_FILES += \
     android/src/org/qtproject/qt5/android/bindings/QtActivity.java \
     android/src/org/qtproject/qt5/android/bindings/QtApplication.java
 
+ANDROID_ABIS = armeabi-v7a
+

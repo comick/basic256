@@ -4,13 +4,11 @@
 
 int Stack::e = ERROR_NONE;
 
-Stack::Stack(Convert *c, QLocale *applocale) {
+Stack::Stack(Convert *c) {
 	convert = c;
 	stackpointer = 0;	// height of stack
 	stacksize = 0;       //max size of stack to avoid calling stackdata.size()
 	stackGrow();
-	locale = applocale;
-
 }
 
 Stack::~Stack() {
@@ -104,65 +102,6 @@ void Stack::pushUnassigned() {
 	if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer++] = new DataElement();
 }
-
-//
-// Pushes derived from RAW pushes
-//
-
-void Stack::pushVariant(QString string, int type) {
-	// try to convert a string to an int or float and push that type
-	// if unable then push a string
-	switch (type) {
-		case T_UNASSIGNED:
-			{
-				bool ok;
-				long i;
-				i = string.toLong(&ok);
-				if (ok) {
-					pushLong(i);
-				} else {
-					double d;
-					d = locale->toDouble(string,&ok);
-					if (ok) {
-						pushDouble(d);
-					} else {
-						// not an integer or double - push string
-						pushQString(string);
-					}
-				}
-			}
-			break;
-		case T_INT:
-			{
-				bool ok;
-				long i=0;
-				i = string.toLong(&ok);
-				if (!ok) {
-					e = ERROR_NUMBERCONV;
-				}
-				pushLong(i);
-			}
-			break;
-		case T_FLOAT:
-			{
-				bool ok;
-				double d=0.0;
-				d = locale->toDouble(string,&ok);
-				if (!ok) {
-					e = ERROR_NUMBERCONV;
-				}
-				pushDouble(d);
-			}
-			break;
-		case T_STRING:
-			{
-				pushQString(string);
-			}
-			break;
-	}
-}
-	
-
 
 //
 // Peek Operations - look but dont touch

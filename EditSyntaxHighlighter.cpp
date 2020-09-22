@@ -231,6 +231,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "not"								//not
 			<< "offerror"							//offerror
 			<< "onerror"							//onerror
+			<< "onstop"
 			<< "open"								//open
 			<< "openb"								//openb
 			<< "openfiledialog"

@@ -56,7 +56,7 @@
     #include <QSerialPort>
 #endif
 
-enum run_status {R_STOPPED, R_RUNNING, R_STOPING};
+enum run_status {R_STOPPED, R_RUNNING, R_STOPING, R_PRESTOPING};
 
 #define NUMFILES 8
 #define NUMSOCKETS 8
@@ -89,7 +89,7 @@ public:
     addrStack(){
         size=0;
         pointer=0;
-        stack.reserve(512);
+        stack.reserve(16);
     };
     ~addrStack(){};
     void push(int* address){
@@ -117,7 +117,7 @@ private:
     int pointer;
     std::vector<int*> stack;
     void grow(){
-        size=size+50;
+        size=size+8;
         stack.resize(size);
     };
 };
@@ -178,12 +178,11 @@ class Interpreter : public QThread
 		bool isStopped();
 		bool isStopping();
 		void setStatus(run_status);
-		void setInputString(QString);
+		void setInputString(QString);	// used to return string vlues from runcontroller (into inputString)
 		void cleanup();
 		void run();
 		int debugMode;					// 0=normal run, 1=step execution, 2=run to breakpoint
 		QList<int> *debugBreakPoints;	// map of line numbers where break points ( pointer to breakpoint list in basicedit)
-		QString returnString;			// return value from runcontroller emit
 		int returnInt;					// return value from runcontroller emit
 		QImage returnImage;				// return value from runcontroller emit
 		int settingsAllowPort;
@@ -259,6 +258,7 @@ class Interpreter : public QThread
 		int *op;
 		addrStack *callstack;
 		addrStack *onerrorstack;
+		int* onstopaddr;
 		trycatchframe *trycatchstack; // used to track nested try/catch definitions
 		void decreaserecurse();
 		forframe *forstack;                     // stack FOR/NEXT for current recurse level
@@ -284,6 +284,8 @@ class Interpreter : public QThread
 		void watchvariable(bool, int, int, int);
 		void watchvariable(bool, int, QString);
 		void watchdecurse(bool);
+		
+		void runLoop();
 
 		int listensockfd;				// temp socket used in netlisten
 		int netsockfd[NUMSOCKETS];

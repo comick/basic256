@@ -7,6 +7,7 @@
 # 2013-09-18	j.m.reneau	split to seperate include
 # 2014-04-16	j.m.reneau	added npercent test
 # 2014-05-29	j.m.reneau	added unattended global - set to true for no stopping
+# 2020-09-06    j.m.reneau  added range
 
 ###################################################
 ## TEST SYSTEM FUNCTIONS
@@ -105,6 +106,17 @@ subroutine nclose(message$,a,b)
 	# test that a and b are the same numerically ALMOST
 	print '(';currentsuite;') ';"testing " + message$ + " (" + a + " ~ " + b + ") ";
 	if abs(a - b) < .0001 then
+		print "pass"
+	else
+		print "fail"
+		end
+	end if
+end subroutine
+
+subroutine range(message$,a,lo,hi)
+	# test that a <= hi and a >= lo
+	print '(';currentsuite;') ';"testing " + message$ + " (" + a + " >= " + lo + " and "  + a + " >= " + hi +  ") ";
+	if a >= lo AND a <= hi then
 		print "pass"
 	else
 		print "fail"

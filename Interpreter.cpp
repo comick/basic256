@@ -368,6 +368,7 @@ QString Interpreter::opname(int op) {
 	case OP_ONERRORCALL : return QString("OP_ONERRORCALL");
 	case OP_ONERRORCATCH : return QString("OP_ONERRORCATCH");
 	case OP_ONERRORGOSUB : return QString("OP_ONERRORGOSUB");
+	case OP_ONSTOPCALL : return QString("OP_ONSTOPCALL");
 	case OP_OPEN : return QString("OP_OPEN");
 	case OP_OPENFILEDIALOG : return QString("OP_OPENFILEDIALOG");
 	case OP_OPENSERIAL : return QString("OP_OPENSERIAL");
@@ -839,6 +840,7 @@ Interpreter::initialize() {
 	op = wordCode;
 	callstack = new addrStack();
 	onerrorstack = new addrStack();
+	onstopaddr = NULL;
 	trycatchstack = NULL;
 	forstack = NULL;
 	forstacklevelsize = 0;
@@ -877,8 +879,8 @@ Interpreter::initialize() {
 	convert = new Convert(locale);
 
 	// now build the new stack object
-	stack = new Stack(convert, locale);
-	savestack = new Stack(convert, locale);		// secondary stack to hold stuff (OP_STACKSAVE, OP_STACKUNSAVE)
+	stack = new Stack(convert);
+	savestack = new Stack(convert);		// secondary stack to hold stuff (OP_STACKSAVE, OP_STACKUNSAVE)
 	
 	// now create the variable storage and set arraybase
 	variables = new Variables(numsyms);
@@ -915,9 +917,25 @@ Interpreter::cleanup() {
 	//
 	// Clean up run time objects
 
+	if(sys) sys->kill();
+
+	// stop timers
+	sleeper->wake();
+
+	// stop downloading
+	if(downloader!=NULL) downloader->stop();
 	delete (downloader);
 	downloader = NULL;
+	
+	// stop playing any sound
+	if(sound!=NULL) sound->exit();
+
+	// close network connections
+	netSockCloseAll();
+
+	// delete the stack
 	delete(stack);
+	delete(savestack);
 
 	//delete stack used by nested for statements
 	int level = variables->getrecurse();
@@ -935,8 +953,10 @@ Interpreter::cleanup() {
 	delete(convert);
 	// Clean up sprites
 	clearsprites();
+	
 	// Clean up, for frames, etc.
 	freeBasicParse();
+	
 	// close open files (set to NULL if closed)
 	for (int t=0; t<NUMFILES; t++) {
 		if (filehandle[t]) {
@@ -1028,20 +1048,6 @@ void
 Interpreter::runHalted() {
 	// event fires from runcoltroller to tell program to signal user stop
 	// force the interperter ops that block to go ahead and quit
-
-	if(sys) sys->kill();
-
-	// stop timers
-	sleeper->wake();
-
-	// stop downloading
-	if(downloader!=NULL) downloader->stop();
-
-	// stop playing any sound
-	if(sound!=NULL) sound->exit();
-
-	// close network connections
-	netSockCloseAll();
 }
 
 
@@ -1071,11 +1077,25 @@ Interpreter::run() {
 	sound->error = &error;
 	srand(time(NULL)+QTime::currentTime().msec()*911L); rand(); rand(); 	// initialize the random number generator for this thread
 	runtimer.start(); // used by MSEC function
-	while (status != R_STOPING && execByteCode() >= 0) {} //continue
+	runLoop();			// run the opcodes
 	debugMode = 0;
-	//fprintf(stderr,"run - before cleanup()\n");
+	//qDebug() << "run - before cleanup()";
 	cleanup(); // cleanup the variables, databases, files, stack and everything
 	emit(stopRunFinalized(!isError));
+}
+
+void Interpreter::runLoop() {
+	int rv = 0;
+	while (status != R_STOPING && rv==0) {rv = execByteCode();} //continue
+	if (status == R_STOPING && onstopaddr && rv >=0 ) {
+		// is there an onstop handler for user event stop
+		// and we are not at a programatic "end"
+		//qDebug() << "onstop" << op;
+		callstack->push(op);
+		op = onstopaddr;
+		status = R_RUNNING;
+		runLoop();
+	}
 }
 
 void Interpreter::clearsprites() {
@@ -2249,6 +2269,18 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				}
 				break;
+				
+				
+				case OP_ONSTOPCALL: {
+					if(symtableaddresstype[l]!=ADDRESSTYPE_SUBROUTINE){
+						error->q(ERROR_NOSUCHSUBROUTINE, l);
+					}else if(symtableaddressargs[l]!=0){
+						error->q(ERROR_ONERRORSUB, l);
+					}else{
+						onstopaddr = (wordCode + i);
+					}
+				}
+				break;
 
 				case OP_PUSHLABEL: {
 					// get a label fom the wordcode and push the offset address
@@ -2333,7 +2365,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					emit(dialogOpenFileDialog(prompt, path, filter));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushQString(returnString);
+					stack->pushQString(inputString);
 				}
 				break;
 				
@@ -2345,7 +2377,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					emit(dialogSaveFileDialog(prompt, path, filter));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushQString(returnString);
+					stack->pushQString(inputString);
 				}
 				break;
 				
@@ -4689,12 +4721,10 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					mymutex->unlock();
 					//
 					mymutex->lock();
-					emit(outputReady(returnString+"\n"));
+					emit(outputReady(inputString+"\n"));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
 					waitForGraphics();
-					//
-					stack->pushVariant(returnString, inputType);
 #else
 					// 1) Signal the outwin to start input
 					// 2) when return is pressed  outwin signals runcontroller with the string
@@ -4703,9 +4733,36 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					emit(getInput());
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushVariant(inputString, inputType);
 
 #endif
+					// now push value to stack
+					switch (inputType) {
+						case T_STRING:
+							stack->pushQString(inputString);
+							break;
+						case T_INT:
+							{
+								bool ok;
+								long i=0;
+								i = inputString.toLong(&ok);
+								if (!ok) {
+									error->q(ERROR_NUMBERCONV);
+								}
+								stack->pushLong(i);
+							}
+							break;
+						case T_FLOAT:
+							{
+								bool ok;
+								double d=0.0;
+								d = locale->toDouble(inputString,&ok);
+								if (!ok) {
+									error->q(ERROR_NUMBERCONV);
+								}
+								stack->pushDouble(d);
+							}
+							break;
+					}
 				}
 				break;
 
@@ -6338,7 +6395,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					emit(dialogPrompt(msg,dflt));
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushQString(returnString);
+					stack->pushQString(inputString);
 				}
 				break;
 
@@ -7591,7 +7648,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					emit(getClipboardString());
 					waitCond->wait(mymutex);
 					mymutex->unlock();
-					stack->pushQString(returnString);
+					stack->pushQString(inputString);
 				}
 				break;
 

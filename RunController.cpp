@@ -193,7 +193,6 @@ RunController::speakWords(QString text) {
 			QEventLoop *loop = new QEventLoop();
 			QObject::connect(speech, SIGNAL(stateChanged(QTextToSpeech::State)), loop, SLOT(quit()));
 			while(i && !i->isStopping() && !i->isStopped() && speech && speech->state() == QTextToSpeech::Speaking){
-				qDebug() << "ping 3 - 4" << i->isStopping() << " " << i->isStopped() << speech->state();
 				loop->processEvents(QEventLoop::AllEvents, 500);
 			}
 			delete (loop);
@@ -253,7 +252,6 @@ RunController::startDebug() {
 		i->initialize();
 		currentEditor->updateBreakPointsList();
 		i->debugBreakPoints = currentEditor->breakPoints;
-		mainwin->statusBar()->showMessage(tr("Running"));
 		//set focus to graphiscs window
 		graphwin->setFocus();
 		//if graphiscs window is floating
@@ -299,14 +297,12 @@ RunController::startRun() {
 		SETTINGS;
 		if(settings.value(SETTINGSIDESAVEONRUN, SETTINGSIDESAVEONRUNDEFAULT).toBool()) {
 			currentEditor->saveFile(true);
-			mainwin->statusBar()->showMessage(tr("Saved"));
 		}
 		//
 		// now setup and start the run
 		sound = new SoundSystem();
 		speech = new QTextToSpeech();
 		i->initialize();
-		mainwin->statusBar()->showMessage(tr("Running"));
 		//set focus to graphiscs window
 		graphwin->setFocus();
 		//if graphiscs window is floating
@@ -384,13 +380,11 @@ RunController::stepBreakPoint() {
 	mydebugmutex->unlock();
 }
 
-void RunController::stopRun() {
-	qDebug() << "stopRun";
-	
+void RunController::stopRun() {	
+	//qDebug() << "in RunController::stopRun()";
 	if(!i->isStopping()){
 		// event when the user clicks on the stop button
-		mainwin->statusBar()->showMessage(tr("Stopping."));
-		mainwin->setRunState(RUNSTATESTOPING);
+		//mainwin->setRunState(RUNSTATESTOPING);
 
 		i->setStatus(R_STOPING);//no more ops
 		
@@ -412,12 +406,13 @@ void RunController::stopRun() {
 		waitDebugCond->wakeAll();
 		mydebugmutex->unlock();
 
-		emit(runHalted());
-}
+		//emit(runHalted());
+	}
 }
 
 void RunController::stopRunFinalized(bool ok) {
 	// event when the interperter actually finishes the run
+	//qDebug() << "in RunController::stopRunFinalized(" << ok << ")";
 	if(sound){
 		delete sound;
 		sound = NULL;
@@ -425,7 +420,6 @@ void RunController::stopRunFinalized(bool ok) {
 	QObject::disconnect(i, SIGNAL(goToLine(int)), 0, 0);
 	QObject::disconnect(i, SIGNAL(seekLine(int)), 0, 0);
 
-	mainwin->statusBar()->showMessage(tr("Ready."));
 	mainwin->setRunState(RUNSTATESTOP);
 	mainwin->ifGuiStateClose(ok);
 	i->setStatus(R_STOPPED);
@@ -591,7 +585,7 @@ void
 RunController::dialogOpenFileDialog(QString prompt, QString path, QString filter) {
 	mymutex->lock();
 	QString filename = QFileDialog::getOpenFileName(mainwin, prompt, path, filter);
-	i->returnString = filename;
+	i->setInputString(filename);
 	waitCond->wakeAll();
 	mymutex->unlock();
 }
@@ -600,7 +594,7 @@ void
 RunController::dialogSaveFileDialog(QString prompt, QString path, QString filter) {
 	mymutex->lock();
 	QString filename = QFileDialog::getSaveFileName(mainwin, prompt, path, filter);
-	i->returnString = filename;
+	i->setInputString(filename);
 	waitCond->wakeAll();
 	mymutex->unlock();
 }
@@ -613,9 +607,9 @@ RunController::dialogPrompt(QString prompt, QString dflt) {
 	// actualy show prompt (take exclusive control)
 	mymutex->lock();
 	if (in.exec()==QDialog::Accepted) {
-		i->returnString = in.textValue();
+		i->setInputString(in.textValue());
 	} else {
-		i->returnString = dflt;
+		i->setInputString(dflt);
 	}
 	waitCond->wakeAll();
 	mymutex->unlock();
@@ -769,7 +763,7 @@ void RunController::getClipboardImage(){
 void RunController::getClipboardString(){
 	mymutex->lock();
 	QClipboard *clipboard = QGuiApplication::clipboard();
-	i->returnString = clipboard->text();
+	i->setInputString(clipboard->text());
 	waitCond->wakeAll();
 	mymutex->unlock();
 }

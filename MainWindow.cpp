@@ -672,26 +672,34 @@ void MainWindow::ifGuiStateClose(bool ok) {
 
 
 void MainWindow::closeEvent(QCloseEvent *e) {
-    // quit the application but ask if there are unsaved changes
-    bool doquit = closeAllPrograms();
-    if (doquit) {
-        // save current screen posision, visibility and floating
-        saveCustomizations();
-        // actually quitting
-        e->accept();
-        QTimer::singleShot(0, qApp, SLOT(quit()));
-        // close app as soon as the event loop is idle instead of using qApp->quit() to allow dispach of other events
-        // This prevent app to not closing properly in rare situations like:
-        // Interpreter emit() a blocking function in Controller (using QWaitCondition or BlockingQueuedConnection).
-        // User request to close app while function is runnig in main loop. So, closeEvent is put in queue.
-        // Function ends and return control to Interpreter. Interpreter request to run another code in main loop using emit().
-        // Instead of running this code, the previous closeEvent() from queue is run.
-        // Using qApp->quit() this will block forever Interpreter (never return), so, i->wait() will never return.
-        // This is an old issue. It takes me a lot to manage it. (Florin)
-    } else {
-        // not quitting
-        e->ignore();
-    }
+	//qDebug() << "MainWindow::CloseEvent runState" << runState;
+	if(runState == RUNSTATERUN) {
+		// cause interpreter to do a controlled stop and wait for stop to finish
+		rc->stopRun();
+		e->ignore();
+	} else {
+		//
+		// quit the application but ask if there are unsaved changes
+		bool doquit = closeAllPrograms();
+		if (doquit) {
+			// save current screen posision, visibility and floating
+			saveCustomizations();
+			// actually quitting
+			e->accept();
+			QTimer::singleShot(0, qApp, SLOT(quit()));
+			// close app as soon as the event loop is idle instead of using qApp->quit() to allow dispach of other events
+			// This prevent app to not closing properly in rare situations like:
+			// Interpreter emit() a blocking function in Controller (using QWaitCondition or BlockingQueuedConnection).
+			// User request to close app while function is runnig in main loop. So, closeEvent is put in queue.
+			// Function ends and return control to Interpreter. Interpreter request to run another code in main loop using emit().
+			// Instead of running this code, the previous closeEvent() from queue is run.
+			// Using qApp->quit() this will block forever Interpreter (never return), so, i->wait() will never return.
+			// This is an old issue. It takes me a lot to manage it. (Florin)
+		} else {
+			// not quitting
+			e->ignore();
+		}
+	}
 }
 
 //Buttons section
@@ -782,6 +790,14 @@ void MainWindow::setRunState(int state) {
     // Clear command for toolbars
     outwin->clearAct->setEnabled(userCanInteractWithGUI && !outwin->toPlainText().isEmpty());
     graphwin->clearAct->setEnabled(userCanInteractWithGUI);
+    
+    // Change display of word state
+	if (runState==RUNSTATESTOP) statusBar()->showMessage(tr("Ready"));
+	if (runState==RUNSTATERUN) statusBar()->showMessage(tr("Running"));
+	if (runState==RUNSTATEDEBUG) statusBar()->showMessage(tr("Debug"));
+	if (runState==RUNSTATESTOPING) statusBar()->showMessage(tr("Stoping"));
+	if (runState==RUNSTATERUNDEBUG) statusBar()->showMessage(tr("Running in Debug"));
+	
 
     updateRecent();
 }

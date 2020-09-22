@@ -11,16 +11,17 @@
 currentsuite = "sound"
 
 l = msec
-say "hello."
+t = "hello."
+say t
 l = msec - l
-call boolean("say at least 500MS and no more than 2500MS", l >= 500 and l <= 2500)
+call range("say "; t, l, 500, 2500)
 call q("did the computer say 'hello'")
 
 l = msec
-say 3 + 7
+t =  3 + 7
+say t
 l = msec - l
-call boolean("say at least 500MS and no more than 2500MS", l >= 500 and l <= 2500)
-call boolean("say at least 500 MS", l >= 500)
+call range("say "; t, l, 500, 2500)
 call q("did the computer say 'ten'")
 
 l = msec

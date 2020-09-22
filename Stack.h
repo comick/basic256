@@ -25,14 +25,13 @@
 class Stack
 {
 	public:
-		Stack(Convert *, QLocale *);
+		Stack(Convert *);
 		~Stack();
 
 		Convert *convert;
 		void pushDE(DataElement*);
 		void pushBool(bool);
 		void pushQString(QString);
-		void pushVariant(QString, int);
 		void pushInt(int);
 		void pushLong(long);
 		void pushRef(int, int);
@@ -72,7 +71,6 @@ class Stack
 		int stackpointer; //faster than unsigned int and is quite enough as size
 		int stacksize;
 		void stackGrow();
-		QLocale *locale;
 		
 		static int e;		// error number thrown - will be 0 if no error
 };

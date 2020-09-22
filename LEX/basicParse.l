@@ -407,6 +407,7 @@ next [Nn][Ee][Xx][Tt]
 not [Nn][Oo][Tt]
 offerror [Oo][Ff][Ff][Ee][Rr][Rr][Oo][Rr]
 onerror [Oo][Nn][Ee][Rr][Rr][Oo][Rr]
+onstop [Oo][Nn][Ss][Tt][Oo][Pp]
 open [Oo][Pp][Ee][Nn]
 openb [Oo][Pp][Ee][Nn][Bb]
 openserial [Oo][Pp][Ee][Nn][Ss][Ee][Rr][Ii][Aa][Ll]
@@ -1072,6 +1073,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {offerror}					{ count(); return B256OFFERROR; }
 {offerror}":"				{ count(); unputcolon(); return B256OFFERROR; }
 {onerror}					{ count(); return B256ONERROR; }
+{onstop}					{ count(); return B256ONSTOP; }
 {openb}						{ count(); return B256OPENB; }
 {openserial}				{ count(); return B256OPENSERIAL; }
 {open}						{ count(); return B256OPEN; }
