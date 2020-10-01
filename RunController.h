@@ -24,8 +24,8 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-#include <QTextToSpeech>
-#include <QVoice>
+#include <QtTextToSpeech/QTextToSpeech>
+#include <QtTextToSpeech/QVoice>
 #include <QThread>
 #include <QLocale>
 

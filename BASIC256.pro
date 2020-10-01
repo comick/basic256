@@ -59,7 +59,7 @@ win32 {
 	########
 	# TTS
 	########
-	QT							+= texttospeech
+	QT							+=	texttospeech
 
 	########
 	# Sound class - How Sound statement works
@@ -79,18 +79,9 @@ unix:!macx {
 	QMAKE_CXXFLAGS				+=	-std=c++11
 
 	########
-	# TTS control - How Say statement works
+	# TTS
 	########
-	# uncomment one of the options
-
-	## TTS Option 1 - ececute 'espak' command to speak
-	#DEFINES					+=	ESPEAK_EXECUTE
-
-	## TTS Option 2 - use the espeak library
-	DEFINES						+=	ESPEAK
-	INCLUDEPATH					+=	/usr/include/espeak
-	LIBS						+=	-lespeak
-	LIBS						+=	-lm
+	QT							+=	texttospeech
 
 	########
 	# Sound class - How Sound statement works
@@ -98,6 +89,8 @@ unix:!macx {
 	QT							+=	multimedia
 	INCLUDEPATH					+=	QtMultimediaKit
 	INCLUDEPATH					+=	QtMobility
+	CONFIG						+=	mobility
+	MOBILITY					+=	multimedia
 
 
 	########
