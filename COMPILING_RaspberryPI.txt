@@ -1,8 +1,9 @@
-Instructions 2020-10-04
+Instructions 2020-10-04b
 Debian buster in Raspberry Pi
 
 sudo apt-get update
 sudo apt-get install subversion qt5-default bison flex qtmultimedia5-dev libqt5serialport5-dev libqt5multimedia5-plugins libqt5texttospeech5-dev qtspeech5-flite-plugin pulseaudio
+pulseudio --start
  
 in your home folder
 svn checkout https://svn.code.sf.net/p/kidbasic/code/trunk basic256
