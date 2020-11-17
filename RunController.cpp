@@ -697,7 +697,7 @@ void RunController::dialogAllowPortInOut(QString msg) {
 //  message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
 	message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 	message.setDefaultButton(QMessageBox::No);
-	QCheckBox *check=new QCheckBox ("Do not ask me again");
+	QCheckBox *check=new QCheckBox (tr("Do not ask me again"));
 	message.setCheckBox(check);
 	int ret = message.exec();
 	if (ret==QMessageBox::Yes) {
@@ -733,7 +733,7 @@ void RunController::dialogAllowSystem(QString msg) {
 //  message.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Ignore);
 	message.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 	message.setDefaultButton(QMessageBox::No);
-	QCheckBox *check=new QCheckBox ("Do not ask me again");
+	QCheckBox *check=new QCheckBox (tr("Do not ask me again"));
 	message.setCheckBox(check);
 	int ret = message.exec();
 	if (ret==QMessageBox::Yes) {

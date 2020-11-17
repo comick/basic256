@@ -4737,9 +4737,6 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 #endif
 					// now push value to stack
 					switch (inputType) {
-						case T_STRING:
-							stack->pushQString(inputString);
-							break;
 						case T_INT:
 							{
 								bool ok;
@@ -4762,6 +4759,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 								stack->pushDouble(d);
 							}
 							break;
+						default:
+							stack->pushQString(inputString);
 					}
 				}
 				break;

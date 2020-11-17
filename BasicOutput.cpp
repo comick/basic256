@@ -54,17 +54,17 @@ BasicOutput::~BasicOutput( ) {
 }
 
 void BasicOutput::getInput() {
-    // move cursor to the end of the existing text and start input
-    inputText.clear();
-    gettingInput = true;
+	// move cursor to the end of the existing text and start input
+	inputText.clear();
+	gettingInput = true;
+	setFocus();
 	emit(mainWindowsVisible(2,true));
 	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::End);
 	setTextCursor(t);
 	startPos = t.position();
 	setReadOnly(false);
-	setFocus();
-    updatePasteButton();
+	updatePasteButton();
 }
 
 void BasicOutput::stopInput() {
