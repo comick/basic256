@@ -1,0 +1,25 @@
+# sound testing
+# play the first two seconds of a sound
+say "from main"
+soundplay "bounce.mp3"
+pause 5
+
+a = 99
+if a <100 then
+say "from if"
+soundplay "bounce.mp3"
+pause 5
+endif
+
+
+gosub stuff
+
+print "done"
+end
+
+
+stuff:
+say "from gosub"
+soundplay "bounce.mp3"
+pause 5
+return

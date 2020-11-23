@@ -1,0 +1,21 @@
+clg
+color rgb(128,128,128)
+rect 0,0,graphwidth, graphheight
+
+penwidth 5
+color green,red
+circle 100,100,50
+
+penwidth 1
+color rgb(255,160,160)
+circle 100,100,25
+
+penwidth 5
+color "firebrick","#fab856"
+rect 150,150,100,100
+
+color "papayawhip", "clear"
+rect 175,175,100,100
+
+
+imgsave "color2.png"
