@@ -3985,32 +3985,29 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_SETCOLOR: {
-					int brushval = stack->popInt();
-					int penval = stack->popInt();
-
-					if(penval!=painter_pen_color){
-						drawingpen.setColor(QColor::fromRgba((QRgb) penval));
+					QColor brushcolor = stack->popQColor();
+					QColor pencolor = stack->popQColor();
+					if(pencolor!=painter_pen_color) {
+						drawingpen.setColor(pencolor);
 						painter_pen_need_update=true;
-						painter_pen_color=penval;
-
+						painter_pen_color=pencolor;
 						//set PenColorIsClear and CompositionModeClear flags here for speed
-						if (penval == COLOR_CLEAR){
+						if (pencolor == Qt::transparent){
 							PenColorIsClear = true;
-							if (brushval == COLOR_CLEAR){
+							if (brushcolor == Qt::transparent){
 								CompositionModeClear = true;
-							}else{
+							} else {
 								CompositionModeClear = false;
 							}
-						}else{
+						} else {
 							PenColorIsClear = false;
 							CompositionModeClear = false;
 						}
 					}
-
-					if(brushval!=painter_brush_color){
-						drawingbrush.setColor(QColor::fromRgba((QRgb) brushval));
+					if(brushcolor!=painter_brush_color) {
+						drawingbrush.setColor(brushcolor);
 						painter_brush_need_update=true;
-						painter_brush_color=brushval;
+						painter_brush_color=brushcolor;
 					}
 				}
 				break;
@@ -4759,8 +4756,29 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 								stack->pushDouble(d);
 							}
 							break;
+						case T_STRING:
+							{
+								stack->pushQString(inputString);
+							}
+							break;
 						default:
-							stack->pushQString(inputString);
+							{
+								// standard input should try to convert string to a number if it can.
+								bool ok;
+								long i;
+								i = inputString.toLong(&ok);
+								if (ok) {
+									stack->pushLong(i);
+								} else {
+									double d;
+									d = locale->toDouble(inputString,&ok);
+									if (ok) {
+										stack->pushDouble(d);
+									} else {
+										stack->pushQString(inputString);
+									}
+								}
+							}
 					}
 				}
 				break;

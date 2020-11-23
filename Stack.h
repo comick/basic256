@@ -14,6 +14,7 @@
 
 #include <QString>
 #include <QLocale>
+#include <QColor>
 
 #include "Error.h"
 #include "Convert.h"
@@ -47,6 +48,7 @@ class Stack
 		DataElement *popDE();
 		int popInt();
 		int popBool();
+		QColor popQColor();
 		long popLong();
 		double popDouble();
 		double popMusicalNote();

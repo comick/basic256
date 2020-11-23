@@ -7,6 +7,7 @@
 # 20160805	j.m.reneau	added tests to make more complete
 # 20161101  j.m.reneau  added [] to all array passing to functions
 # 20170514 j.m.reneau   removed penwidth 0 before text output
+# 20201122 j.m.reneau   added named colors
 
 currentsuite = "graphics"
 
@@ -21,7 +22,7 @@ call n("pen and brush blue",getcolor(), getbrushcolor())
 
 #
 clg
-color red
+color "red"
 call n("is current color red",getcolor, red)
 circle 30,30,10
 call q("red circle")
@@ -52,7 +53,8 @@ call q("morie pattern odd size")
 graphsize 300,300
 #
 clg
-color black
+color "black"
+call n("is current color black",getcolor, black)
 for x = 0 to 10 step .1
    y = (100- x^2)^.5
    plot 150-x, 150-y
@@ -127,3 +129,22 @@ call n("getpenwidth - did it set to 10", getpenwidth(), 10)
 penwidth 1
 call q("chord,pie - yellow eyed monster with chevron for mouth")
 call n("getpenwidth - did it set BACK to 1", getpenwidth(), 1)
+
+clg
+color "deeppink"
+rect 50,50,100,100
+color "darkslateblue","clear"
+penwidth 10
+rect 100,100,100,100
+color "#a0ffffff"
+rect 150,150,100,100
+call q("deep pink filled with slate blue unfilled with translucent white rectangle over top?")
+penwidth 1
+
+color "clear"
+call n("getcolor - string clear same as clear constant", getcolor(), clear)
+color "blue"
+call n("getcolor - string blue same as blue constant", getcolor(), blue)
+
+
+

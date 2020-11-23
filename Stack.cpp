@@ -200,6 +200,19 @@ QString Stack::popQString() {
 	return s;
 }
 
+QColor Stack::popQColor() {
+	if (peekType() == T_STRING) {
+		QString s = popQString();
+		if (QString::compare(s, "CLEAR", Qt::CaseInsensitive)) {
+			return QColor(s);
+		} else {
+			return Qt::transparent;
+		}
+	} else {
+		return QColor::fromRgba((QRgb) popInt());
+	}
+}
+
 //
 // SWAP and DUP opeations to the stack
 

@@ -303,8 +303,8 @@ class Interpreter : public QThread
 		bool painter_pen_need_update;
 		bool painter_brush_need_update;
 		bool painter_last_compositionModeClear;
-		unsigned long painter_brush_color; //last color value for comparison
-		unsigned long painter_pen_color; //last color value for comparison
+		QColor painter_brush_color; //last color value for comparison
+		QColor painter_pen_color; //last color value for comparison
 		void setGraph(QString id);
 		QString drawto;
 		bool setPainterTo(QPaintDevice *destination);
