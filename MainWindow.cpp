@@ -294,7 +294,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     edit_whitespace_act = viewmenu->addAction(QObject::tr("Show &Whitespace Characters"));
     edit_whitespace_act->setCheckable(true);
     edit_whitespace_act->setChecked(SETTINGSEDITWHITESPACEDEFAULT);
-
+    edit_wrap_act = viewmenu->addAction(QObject::tr("W&rap Long Lines"));
+    edit_wrap_act->setCheckable(true);
+    edit_wrap_act->setChecked(SETTINGSEDITWRAPDEFAULT);
+    
     // Toolbars
     viewmenu->addSeparator();
     QMenu *viewtbars = viewmenu->addMenu(QObject::tr("&Toolbars"));
@@ -490,9 +493,11 @@ void MainWindow::loadCustomizations() {
     v = settings.value(SETTINGSTOOLBARVISIBLE + QString::number(guiState), SETTINGSTOOLBARVISIBLEDEFAULT).toBool();
     main_toolbar_visible_act->setChecked(v);
 
-    // edit whitespace
+    // edit whitespace and wrap
     v = settings.value(SETTINGSEDITWHITESPACE + QString::number(guiState), SETTINGSEDITWHITESPACEDEFAULT).toBool();
     edit_whitespace_act->setChecked(v);
+    v = settings.value(SETTINGSEDITWRAP + QString::number(guiState), SETTINGSEDITWRAPDEFAULT).toBool();
+    edit_wrap_act->setChecked(v);
 
     // graph toolbar and grid
     v = settings.value(SETTINGSGRAPHGRIDLINES + QString::number(guiState), SETTINGSGRAPHGRIDLINESDEFAUT).toBool();
@@ -528,6 +533,7 @@ void MainWindow::saveCustomizations() {
     // edit
 	settings.setValue(SETTINGSEDITVISIBLE + QString::number(guiState), editwin_visible_act->isChecked());
 	settings.setValue(SETTINGSEDITWHITESPACE + QString::number(guiState), edit_whitespace_act->isChecked());
+	settings.setValue(SETTINGSEDITWRAP + QString::number(guiState), edit_wrap_act->isChecked());
 
     // graph
 	settings.setValue(SETTINGSGRAPHVISIBLE + QString::number(guiState), graphwin_visible_act->isChecked());
@@ -620,6 +626,7 @@ void MainWindow::configureGuiState() {
 		stepact->setVisible(false);
 		bpact->setVisible(false);
 		edit_whitespace_act->setVisible(false);
+		edit_wrap_act->setVisible(false);
 		clearbreakpointsact->setVisible(false);
         windowmenu->menuAction()->setVisible(false);
 
@@ -1138,9 +1145,13 @@ BasicEdit* MainWindow::newEditor(QString title){
     if(guiState!=GUISTATEAPP){
         editor->setFont(editorFont);
         editor->slotWhitespace(edit_whitespace_act->isChecked());
+        editor->slotWrap(edit_wrap_act->isChecked());
+        outwin->slotWrap(edit_wrap_act->isChecked());
         editsyntax = new EditSyntaxHighlighter(editor->document());
         // connect the signals
         QObject::connect(edit_whitespace_act, SIGNAL(toggled(bool)), editor, SLOT(slotWhitespace(bool)));
+        QObject::connect(edit_wrap_act, SIGNAL(toggled(bool)), editor, SLOT(slotWrap(bool)));
+        QObject::connect(edit_wrap_act, SIGNAL(toggled(bool)), outwin, SLOT(slotWrap(bool)));
         QObject::connect(editor, SIGNAL(changeStatusBar(QString)), this, SLOT(updateStatusBar(QString)));
         QObject::connect(editor, SIGNAL(updateWindowTitle(BasicEdit*)), this, SLOT(updateWindowTitle(BasicEdit*)));
         QObject::connect(this, SIGNAL(setEditorRunState(int)), editor, SLOT(setEditorRunState(int)));

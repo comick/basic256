@@ -236,3 +236,10 @@ void BasicOutput::slotClear(){
      clear();
 }
 
+void BasicOutput::slotWrap(bool checked) {
+	if (checked) {
+		setLineWrapMode(QTextEdit::WidgetWidth);
+	} else {
+		setLineWrapMode(QTextEdit::NoWrap);
+	}
+}

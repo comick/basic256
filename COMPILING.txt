@@ -11,10 +11,7 @@ Dependencies:
 * flex
 * bison
 * libsdl-mixer??-dev
-* libespeak-dev (if using the LINUX_ESPEAK option in BASIC256.pro)
-  - this option gives an integrated library approach to the say statement
-* espeak (if using the LINUX_ESPEAK_EXECUTE option in BASIC256.pro)
-  - use this option and install if the library use of portaudio conflicts with other sound systems installed
+* libqt5texttospeech5-dev
 
 
 

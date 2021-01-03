@@ -49,6 +49,8 @@
     #define SETTINGSEDITVISIBLEDEFAULT true
     #define SETTINGSEDITWHITESPACE "Edit/Whitespace/"
     #define SETTINGSEDITWHITESPACEDEFAULT false
+    #define SETTINGSEDITWRAP "Edit/Wrap/"
+    #define SETTINGSEDITWRAPDEFAULT true
 
     #define SETTINGSOUTVISIBLE "Out/Visible/"
     #define SETTINGSOUTVISIBLEDEFAULT true

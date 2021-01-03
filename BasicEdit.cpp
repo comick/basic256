@@ -143,6 +143,14 @@ void BasicEdit::slotWhitespace(bool checked) {
 	document()->setDefaultTextOption(option);
 }
 
+void BasicEdit::slotWrap(bool checked) {
+	if (checked) {
+		setLineWrapMode(QPlainTextEdit::WidgetWidth);
+	} else {
+		setLineWrapMode(QPlainTextEdit::NoWrap);
+	}
+}
+
 void
 BasicEdit::goToLine(int newLine) {
     seekLine(newLine);
