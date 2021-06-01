@@ -374,6 +374,7 @@ length [Ll][Ee][Nn][Gg][Tt][Hh]
 let [Ll][Ee][Tt]
 line [Ll][Ii][Nn][Ee]
 ljust [Ll][Jj][Uu][Ss][Tt]
+locate [Ll][Oo][Cc][Aa][Tt][Ee]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
@@ -841,6 +842,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {left}						{ count(); return B256LEFT; }
 {length}					{ count(); return B256LENGTH; }
 {ljust}						{ count(); return B256LJUST; }
+{locate}					{ count(); return B256LOCATE; }
 {logten}					{ count(); return B256LOGTEN; }
 {log}						{ count(); return B256LOG; }
 {lower}						{ count(); return B256LOWER; }

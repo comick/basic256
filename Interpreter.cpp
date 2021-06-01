@@ -331,6 +331,7 @@ QString Interpreter::opname(int op) {
 	case OP_LINE : return QString("OP_LINE");
 	case OP_LIST2ARRAY : return QString("OP_LIST2ARRAY");
 	case OP_LIST2MAP : return QString("OP_LIST2MAP");
+	case OP_LOCATE : return QString("OP_LOCATE");
 	case OP_LOG : return QString("OP_LOG");
 	case OP_LOGTEN : return QString("OP_LOGTEN");
 	case OP_LOWER : return QString("OP_LOWER");
@@ -7715,6 +7716,16 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
+
+				case OP_LOCATE: {
+					int col = stack->popInt();
+					int row = stack->popInt();
+					//mymutex->lock();
+					//emit(setClipboardString(s));
+					//waitCond->wait(mymutex);
+					//mymutex->unlock();
+				}
+				break;
 
 				// insert additional OPTYPE_NONE operations here
 

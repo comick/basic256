@@ -336,21 +336,17 @@ RunController::outputClear() {
 void RunController::outputReady(QString text) {
 	mymutex->lock();
 	mainWindowsVisible(2,true);
-	QTextCursor t(outwin->textCursor());
-	if(!t.atEnd() || t.hasSelection()){
-		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-		outwin->setTextCursor(t);
-	}
-	outwin->insertPlainText(text);
-	outwin->ensureCursorVisible();
+	outwin->outputText(text);
 	waitCond->wakeAll();
 	mymutex->unlock();
 }
 
 void RunController::outputError(QString text) {
-	outwin->setTextColor(Qt::red); //color red
-	outputReady(text);
-	outwin->setTextColor(Qt::black); //back to black color
+	mymutex->lock();
+	mainWindowsVisible(2,true);
+	outwin->outputText(text, Qt::red);
+	waitCond->wakeAll();
+	mymutex->unlock();
 }
 
 void

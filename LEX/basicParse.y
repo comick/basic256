@@ -640,6 +640,7 @@
 %token B256LET
 %token B256LINE
 %token B256LJUST
+%token B256LOCATE
 %token B256LOG
 %token B256LOGTEN
 %token B256LOWER
@@ -4598,6 +4599,13 @@ setgraphstmt:
 arraybasestmt:
 	B256ARRAYBASE expr {
 		addOp(OP_ARRAYBASE);
+	}
+	;
+
+
+locatestmt:
+	B256locate args_ee {
+		addOp(OP_LOCATE);
 	}
 	;
 

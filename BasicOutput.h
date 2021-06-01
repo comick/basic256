@@ -38,6 +38,8 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		char *inputString;
 		int currentKey;			// store the last key pressed for key function
 		void inputStart();
+		void outputText(QString);
+		void outputText(QString, QColor);
 		QAction *copyAct;
 		QAction *pasteAct;
 		QAction *printAct;
@@ -48,8 +50,8 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 	public slots:
 		void getInput();
 		void stopInput();
-		void slotPrint();
-		void cursorChanged();
+		void slotPrint();					// sent output to printer
+		void paintEvent(QPaintEvent*);		// display cursor on redraw
 		void updatePasteButton();
 		void slotClear();
 		void slotWrap(bool);
@@ -67,10 +69,19 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		void focusOutEvent(QFocusEvent* );
 
 	private:
-		int startPos;
+		// cursor Management
+		int lastPosition;
+		int getCurrentPosition();
+		void saveLastPosition();
+		void restoreLastPosition();
+		void moveToPosition(int pos);
+		void moveToPosition(int row, int col);
+
+		int inputPosition;
 		bool gettingInput;
-		void changeFontSize(unsigned int);
 		QString inputText;
+
+		void changeFontSize(unsigned int);
 };
 
 
