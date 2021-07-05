@@ -7720,10 +7720,10 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				case OP_LOCATE: {
 					int col = stack->popInt();
 					int row = stack->popInt();
-					//mymutex->lock();
-					//emit(setClipboardString(s));
-					//waitCond->wait(mymutex);
-					//mymutex->unlock();
+					mymutex->lock();
+					emit(outputMoveToPosition(row, col));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
 				}
 				break;
 

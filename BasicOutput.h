@@ -55,6 +55,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		void updatePasteButton();
 		void slotClear();
 		void slotWrap(bool);
+		void moveToPosition(int, int);
 			
 	signals:
 		void inputEntered(QString);
@@ -74,8 +75,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		int getCurrentPosition();
 		void saveLastPosition();
 		void restoreLastPosition();
-		void moveToPosition(int pos);
-		void moveToPosition(int row, int col);
+		void moveToPosition(int);
 
 		int inputPosition;
 		bool gettingInput;

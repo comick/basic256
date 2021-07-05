@@ -45,8 +45,6 @@ BasicOutput::BasicOutput( ) : QTextEdit () {
 	setAcceptRichText(false);
 	setUndoRedoEnabled(false);
 	gettingInput = false;
-	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorChanged()));
-	connect(this, SIGNAL(selectionChanged()), this, SLOT(cursorChanged()));
 	saveLastPosition();
 
 }
@@ -265,18 +263,42 @@ void BasicOutput::restoreLastPosition() {
 }
 
 void BasicOutput::moveToPosition(int pos) {
-	QTextCursor t(this->textCursor());
+	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
 	t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
-	this->setTextCursor(t);
+	setTextCursor(t);
 }
 
 void BasicOutput::moveToPosition(int row, int col) {
-	QTextCursor t(this->textCursor());
-	t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-// need row col logic ere
-	this->setTextCursor(t);
+	fprintf(stderr, "moveToPosition = %i %i\n", row, col);
+
+	int lines = toPlainText().count("\n");
+	QTextCursor t(textCursor());
+	for (int i=lines; lines <= row; lines++) {
+		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+		insertPlainText("\n");
+	}
 	
+
+	t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	if (lines) t.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, lines);
+
+	t.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+	int lineStart = t.position();
+	t.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+	int lineEnd = t.position();
+	fprintf(stderr, "moveToPosition = ls %i le %i\n", lineStart, lineEnd);
+
+	if (col <= lineEnd-lineStart) {
+	t.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+		t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, col);
+	} else {
+		for (int i=lineEnd-lineStart; i<=col; i++) {
+			insertPlainText(" ");
+		}
+	}
+	this->setTextCursor(t);
+	saveLastPosition();
 }
 
 

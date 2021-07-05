@@ -2392,6 +2392,7 @@ statement:
 	| killstmt
 	| letstmt
 	| linestmt
+	| locatestmt
 	| maintoolbarvisiblestmt
 	| mapstmt
 	| B256MKDIR expr {
@@ -4604,7 +4605,7 @@ arraybasestmt:
 
 
 locatestmt:
-	B256locate args_ee {
+	B256LOCATE args_ee {
 		addOp(OP_LOCATE);
 	}
 	;

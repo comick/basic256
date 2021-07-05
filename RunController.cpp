@@ -83,7 +83,6 @@ RunController::RunController() {
 
 	//signals for the Interperter (i)
 	QObject::connect(i, SIGNAL(debugNextStep()), this, SLOT(debugNextStep()));
-	QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
 	QObject::connect(i, SIGNAL(dialogAlert(QString)), this, SLOT(dialogAlert(QString)));
 	QObject::connect(i, SIGNAL(dialogConfirm(QString, int)), this, SLOT(dialogConfirm(QString, int)));
 	QObject::connect(i, SIGNAL(dialogPrompt(QString, QString)), this, SLOT(dialogPrompt(QString, QString)));
@@ -118,7 +117,9 @@ RunController::RunController() {
 	QObject::connect(i, SIGNAL(setClipboardImage(QImage)), this, SLOT(setClipboardImage(QImage)));
 	QObject::connect(i, SIGNAL(setClipboardString(QString)), this, SLOT(setClipboardString(QString)));
 
+	QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
 	QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
+	QObject::connect(i, SIGNAL(outputMoveToPosition(int, int)), this, SLOT(outputMoveToPosition(int, int)));
 
 	// for debugging and controlling the variable watch window
 	QObject::connect(i, SIGNAL(varWinAssign(Variables**, int, int)), varwin,
@@ -779,3 +780,11 @@ void RunController::setClipboardString(QString s){
 	waitCond->wakeAll();
 	mymutex->unlock();
 }
+
+void RunController::outputMoveToPosition(int r, int c){
+	mymutex->lock();
+	outwin->moveToPosition(r,c);
+	waitCond->wakeAll();
+	mymutex->unlock();
+}
+
