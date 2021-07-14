@@ -1,0 +1,49 @@
+# blockyclocky.kbs - using printat
+# j.m.reneau 2021-07-13
+
+global h,w,cx,cy
+
+w = 35
+h = 20
+
+cx = w/2
+cy = h/2
+
+
+subroutine draw(a, pct, char)
+	# draw a hand at angle for percent of radius
+	for r = 0 to pct step .1
+		x = cx + r * cx * cos(a-pi/2)
+		y = cy + r * cy * sin(a-pi/2)
+		printat x,y,char
+	next r
+end subroutine
+
+oldhour = 0
+oldminute = 0
+oldsecond = 0
+
+for a = 0 to 2 * pi step .05
+	x = cx + cx * cos(a)
+	y = cy + cy * sin(a)
+	printat x,y,"#"
+next a
+
+while true
+	newhour = (hour+minute/60)/12*2*pi
+	newminute = minute/60*2*pi
+	newsecond = second/60*2*pi
+
+	if oldhour <> newhour then call draw(oldhour, .55, " ")
+	if oldminute <> newminute then call draw(oldminute, .70, " ")
+	if oldsecond <> newsecond then call draw(oldsecond, .85, " ")
+
+	call draw(newhour, .55, "*")
+	call draw(newminute, .70, "%")
+	call draw(newsecond, .85, ".")
+
+	oldhour = newhour
+	oldminute = newminute
+	oldsecond = newsecond
+	pause 1
+end while

@@ -331,7 +331,6 @@ QString Interpreter::opname(int op) {
 	case OP_LINE : return QString("OP_LINE");
 	case OP_LIST2ARRAY : return QString("OP_LIST2ARRAY");
 	case OP_LIST2MAP : return QString("OP_LIST2MAP");
-	case OP_LOCATE : return QString("OP_LOCATE");
 	case OP_LOG : return QString("OP_LOG");
 	case OP_LOGTEN : return QString("OP_LOGTEN");
 	case OP_LOWER : return QString("OP_LOWER");
@@ -386,6 +385,7 @@ QString Interpreter::opname(int op) {
 	case OP_PORTIN : return QString("OP_PORTIN");
 	case OP_PORTOUT : return QString("OP_PORTOUT");
 	case OP_PRINT : return QString("OP_PRINT");
+	case OP_PRINTAT : return QString("OP_PRINTAT");
 	case OP_PRINTERCANCEL : return QString("OP_PRINTERCANCEL");
 	case OP_PRINTEROFF : return QString("OP_PRINTEROFF");
 	case OP_PRINTERON : return QString("OP_PRINTERON");
@@ -4845,6 +4845,18 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 
+				case OP_PRINTAT: {
+					QString s = stack->popQString();
+					int y = stack->popInt();
+					int x = stack->popInt();
+					mymutex->lock();
+					emit(outputTextAt(x, y, s));
+					waitCond->wait(mymutex);
+					mymutex->unlock();
+				}
+				break;
+
+
 				case OP_YEAR:
 				case OP_MONTH:
 				case OP_DAY:
@@ -7716,16 +7728,6 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
-
-				case OP_LOCATE: {
-					int col = stack->popInt();
-					int row = stack->popInt();
-					mymutex->lock();
-					emit(outputMoveToPosition(row, col));
-					waitCond->wait(mymutex);
-					mymutex->unlock();
-				}
-				break;
 
 				// insert additional OPTYPE_NONE operations here
 

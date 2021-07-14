@@ -200,7 +200,7 @@ class Interpreter : public QThread
 		void goutputReady();
 		void outputReady(QString);
 		void outputError(QString);
-		void outputMoveToPosition(int, int);
+		void outputTextAt(int, int, QString);
 		void getInput();
 		void outputClear();
 		void getKey();

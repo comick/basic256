@@ -1,0 +1,27 @@
+# testsuite_printat_include section for BASIC256
+
+# Modification History
+# date		programmer	description
+# 20210713	j.m.reneau	original coding
+
+currentsuite = "printat"
+
+# test console printat statements
+
+cls
+cx = 10
+cy = 5
+for a = 0 to pi*2 step .1
+	printat cx + cx * cos(a), cy + cy * sin(a) , "@"
+next a
+
+printat 0, cy*2
+call q("Did the program print a circle of '@' signs?")
+
+printat cx,cy-1,'+'
+printat cx-1,cy,"+++"
+printat cx,cy+1,'+'
+
+printat 0, cy*2+2
+call q("Did the program print a + in the middle of the circle?")
+

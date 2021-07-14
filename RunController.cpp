@@ -100,6 +100,7 @@ RunController::RunController() {
 	//QObject::connect(i, SIGNAL(stopRun()), this, SLOT(stopRun()));
 	QObject::connect(i, SIGNAL(stopRunFinalized(bool)), this, SLOT(stopRunFinalized(bool)));
 	QObject::connect(i, SIGNAL(speakWords(QString)), this, SLOT(speakWords(QString)));
+	QObject::connect(i, SIGNAL(outputTextAt(int, int, QString)), this, SLOT(outputTextAt(int, int, QString)));
 
 	QObject::connect(i, SIGNAL(playSound(QString, bool)), this, SLOT(playSound(QString, bool)));
 	QObject::connect(i, SIGNAL(playSound(std::vector<std::vector<double>>, bool)), this, SLOT(playSound(std::vector<std::vector<double>>, bool)));
@@ -119,7 +120,6 @@ RunController::RunController() {
 
 	QObject::connect(i, SIGNAL(outputClear()), this, SLOT(outputClear()));
 	QObject::connect(i, SIGNAL(getInput()), outwin, SLOT(getInput()));
-	QObject::connect(i, SIGNAL(outputMoveToPosition(int, int)), this, SLOT(outputMoveToPosition(int, int)));
 
 	// for debugging and controlling the variable watch window
 	QObject::connect(i, SIGNAL(varWinAssign(Variables**, int, int)), varwin,
@@ -781,9 +781,9 @@ void RunController::setClipboardString(QString s){
 	mymutex->unlock();
 }
 
-void RunController::outputMoveToPosition(int r, int c){
+void RunController::outputTextAt(int c, int r, QString s){
 	mymutex->lock();
-	outwin->moveToPosition(r,c);
+	outwin->outputTextAt(c, r, s);
 	waitCond->wakeAll();
 	mymutex->unlock();
 }

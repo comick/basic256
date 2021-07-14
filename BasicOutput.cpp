@@ -263,42 +263,87 @@ void BasicOutput::restoreLastPosition() {
 }
 
 void BasicOutput::moveToPosition(int pos) {
+	// move to an absolute character number (position) in the document
 	QTextCursor t(textCursor());
 	t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
 	t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos);
 	setTextCursor(t);
 }
 
-void BasicOutput::moveToPosition(int row, int col) {
-	fprintf(stderr, "moveToPosition = %i %i\n", row, col);
+void BasicOutput::outputTextAt(int col, int row, QString s) {
+	//fprintf(stderr, "moveToPosition = col %i row %i\n", col, row);
 
-	int lines = toPlainText().count("\n");
 	QTextCursor t(textCursor());
-	for (int i=lines; lines <= row; lines++) {
-		t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-		insertPlainText("\n");
-	}
-	
-
 	t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-	if (lines) t.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, lines);
 
+	//fprintf(stderr, "moveToPosition start=%i\n", t.position());
+
+	// move to the begining of the sprecified line or append lines
+	int lines = toPlainText().count("\n");
+	//fprintf(stderr, "moveToPosition lines=%i\n", lines);
+	if (row>lines) {
+		// go to end and append
+		for (; lines < row; lines++) {
+			t.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+			this->setTextCursor(t);
+			insertPlainText("\n");
+			//fprintf(stderr, "moveToPosition add line\n", lines);
+		}
+	} else {
+		// go down to the row
+		for (int i=0; i < row; i++) {
+			t.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor);
+			//fprintf(stderr, "moveToPosition down line\n", lines);
+		}
+		this->setTextCursor(t);
+	}
+	//fprintf(stderr, "moveToPosition after position=%i\n", t.position());
+
+	// move to the specified character on the current line or append
 	t.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
 	int lineStart = t.position();
 	t.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
 	int lineEnd = t.position();
-	fprintf(stderr, "moveToPosition = ls %i le %i\n", lineStart, lineEnd);
+	//fprintf(stderr, "moveToPosition = ls %i le %i\n", lineStart, lineEnd);
+
 
 	if (col <= lineEnd-lineStart) {
-	t.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+		// line is long enough to start - replace mode
+		t.movePosition(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
 		t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, col);
+		this->setTextCursor(t);
+		
+		// replace text at cursor
+		int startText = t.position();
+		t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, s.length());
+		int endLength = t.position();
+		t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, startText);
+		t.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+		int endLine = t.position();
+
+		int replaceLen= (endLine<endLength?endLine:endLength) - startText;
+		//fprintf(stderr, "moveToPosition = replace s %i len %i line %i replaceLen %i\n", startText, endLength, endLine, replaceLen);
+		
+		t.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+		t.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, startText);
+		t.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, replaceLen);
+		this->setTextCursor(t);
+		this->insertPlainText(s);
+		
 	} else {
-		for (int i=lineEnd-lineStart; i<=col; i++) {
+		// line is not long enough - insert spaces and insert
+		t.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+		this->setTextCursor(t);
+		for (int i=lineEnd-lineStart; i<col; i++) {
 			insertPlainText(" ");
 		}
+		this->insertPlainText(s);
 	}
-	this->setTextCursor(t);
-	saveLastPosition();
+
+	saveLastPosition();	
+	//fprintf(stderr, "moveToPosition = -----------------------------------\n");
+
 }
 
 

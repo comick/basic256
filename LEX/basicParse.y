@@ -640,7 +640,6 @@
 %token B256LET
 %token B256LINE
 %token B256LJUST
-%token B256LOCATE
 %token B256LOG
 %token B256LOGTEN
 %token B256LOWER
@@ -701,6 +700,7 @@
 %token B256PORTIN
 %token B256PORTOUT
 %token B256PRINT
+%token B256PRINTAT
 %token B256PRINTERCANCEL
 %token B256PRINTEROFF
 %token B256PRINTERON
@@ -2392,7 +2392,6 @@ statement:
 	| killstmt
 	| letstmt
 	| linestmt
-	| locatestmt
 	| maintoolbarvisiblestmt
 	| mapstmt
 	| B256MKDIR expr {
@@ -2420,6 +2419,7 @@ statement:
 	| printeronstmt
 	| printerpagestmt
 	| printstmt
+	| printatstmt
 	| putslicestmt
 	| rectstmt
 	| redimstmt
@@ -3823,6 +3823,17 @@ printstmt:
 				addOp(OP_PRINT);
 			}			;
 
+printatstmt:
+			B256PRINTAT args_ee {
+				addStringOp(OP_PUSHSTRING, "");
+				addOp(OP_PRINTAT);
+			}
+			| B256PRINTAT args_eee {
+				addOp(OP_PRINTAT);
+			}
+			;
+
+
 wavpausestmt:
 			B256WAVPAUSE args_none {
 				addOp(OP_WAVPAUSE);
@@ -4600,13 +4611,6 @@ setgraphstmt:
 arraybasestmt:
 	B256ARRAYBASE expr {
 		addOp(OP_ARRAYBASE);
-	}
-	;
-
-
-locatestmt:
-	B256LOCATE args_ee {
-		addOp(OP_LOCATE);
 	}
 	;
 

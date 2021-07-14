@@ -53,7 +53,7 @@ class RunController : public QObject
   void outputReady(QString text);
   void outputError(QString text);
   void outputClear();
-  void outputMoveToPosition(int, int);
+  void outputTextAt(int, int, QString);
   void goutputReady();
   void resizeGraphWindow(int, int, qreal);
   void startDebug();

@@ -249,6 +249,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "portin"								//portin
 			<< "portout"							//portout
 			<< "print"								//print
+			<< "printat"							//printat
 			<< "printer[ \t]*cancel"				//printercancel or printer cancel
 			<< "printer[ \t]*off"					//printeroff or printer off
 			<< "printer[ \t]*on"					//printeron or printer on

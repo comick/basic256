@@ -374,7 +374,6 @@ length [Ll][Ee][Nn][Gg][Tt][Hh]
 let [Ll][Ee][Tt]
 line [Ll][Ii][Nn][Ee]
 ljust [Ll][Jj][Uu][Ss][Tt]
-locate [Ll][Oo][Cc][Aa][Tt][Ee]
 log [Ll][Oo][Gg]
 logten [Ll][Oo][Gg][1][0]
 lower [Ll][Oo][Ww][Ee][Rr]
@@ -432,6 +431,7 @@ poly [Pp][Oo][Ll][Yy]
 portin [Pp][Oo][Rr][Tt][Ii][Nn]
 portout [Pp][Oo][Rr][Tt][Oo][Uu][Tt]
 print ([Pp][Rr][Ii][Nn][Tt])
+printat ([Pp][Rr][Ii][Nn][Tt][Aa][Tt])
 printercancel [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Cc][Aa][Nn][Cc][Ee][Ll]
 printeroff [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Ff][Ff]
 printeron [Pp][Rr][Ii][Nn][Tt][Ee][Rr][ \t]*[Oo][Nn]
@@ -842,7 +842,6 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {left}						{ count(); return B256LEFT; }
 {length}					{ count(); return B256LENGTH; }
 {ljust}						{ count(); return B256LJUST; }
-{locate}					{ count(); return B256LOCATE; }
 {logten}					{ count(); return B256LOGTEN; }
 {log}						{ count(); return B256LOG; }
 {lower}						{ count(); return B256LOWER; }
@@ -1097,6 +1096,8 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 {printerpage}":"			{ count(); unputcolon(); return B256PRINTERPAGE; }
 {print}						{ count(); return B256PRINT; }
 {print}":"					{ count(); unputcolon(); return B256PRINT; }
+{printat}					{ count(); return B256PRINTAT; }
+{printat}":"				{ count(); unputcolon(); return B256PRINTAT; }
 {prompt}					{ count(); return B256PROMPT; }
 {putslice}					{ count(); return B256PUTSLICE; }
 {rect}						{ count(); return B256RECT; }

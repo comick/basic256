@@ -51,13 +51,14 @@
 # 20200421  j.m.reneau      added print suite
 # 20200421  j.m.reneau      added arraybase suite
 # 20200423  j.m.reneau      added map suite
+# 20210713  j.m.reneau      added printat statement and test
 
 include "testsuite_common_include.kbs"
 
 ###################################################
 call section("Runtime Version")
 ###################################################
-call versiontest(2000011)
+call versiontest(2009907)
 function versiontestgood(needed)
    return version >= needed
 end function
@@ -204,7 +205,11 @@ call section("Console Printing")
 ###################################################
 include "testsuite_print_include.kbs"
 
-
+section_printat:
+###################################################
+call section("Console Printing At")
+###################################################
+include "testsuite_printat_include.kbs"
 
 
 

@@ -40,6 +40,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		void inputStart();
 		void outputText(QString);
 		void outputText(QString, QColor);
+		void outputTextAt(int, int, QString);
 		QAction *copyAct;
 		QAction *pasteAct;
 		QAction *printAct;
@@ -55,7 +56,7 @@ class BasicOutput : public QTextEdit, public ViewWidgetIFace
 		void updatePasteButton();
 		void slotClear();
 		void slotWrap(bool);
-		void moveToPosition(int, int);
+
 			
 	signals:
 		void inputEntered(QString);
