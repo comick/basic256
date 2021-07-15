@@ -1,0 +1,92 @@
+# sudo snap install --devmode basic256_2.0.99.7_amd64.snap
+# snap remove basic256
+
+name: basic256
+version: '2.0.99.7'
+summary: BASIC for Learning
+description: See http://www.basic256.org for more.
+
+base: core18 # the base snap is the execution environment for this snap
+
+grade:basic256
+
+ devel # devel|stable
+confinement: devmode # devmode|strict
+
+#grade: stable # devel|stable
+#confinement: strict # devmode|strict
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
+  - build-on: arm64
+    run-on: arm64
+    
+parts:
+  basic256:
+    build-snaps:
+      - kde-frameworks-5-core18-sdk
+      - kde-frameworks-5-core18
+
+    build-packages:
+      - g++
+      - make
+      - bison
+      - flex
+      - qtmultimedia5-dev
+      - libqt5serialport5-dev
+      - libqt5multimedia5-plugins
+      - libqt5texttospeech5-dev
+      - qtspeech5-flite-plugin 
+      - pulseaudio
+      
+    stage-packages:
+      - libasyncns0
+      - libdouble-conversion1
+      - libflac8
+      - libfreetype6
+      - libgl1
+      - libglvnd0
+      - libglx0
+      - libgraphite2-3
+      - libharfbuzz0b
+      - libicu60
+      - libogg0
+      - libpng16-16
+      - libpulse0
+      - libqt5gui5
+      - libqt5multimedia5
+      - libqt5network5
+      - libqt5printsupport5
+      - libqt5serialport5
+      - libqt5sql5
+      - libqt5texttospeech5
+      - libqt5widgets5
+      - libsndfile1
+      - libvorbis0a
+      - libvorbisenc2
+      - libx11-6
+      - libxau6
+      - libxcb1
+      - libxdmcp6
+      - qtspeech5-flite-plugin
+      - speech-dispatcher
+      - flite
+      - libqt5multimedia5-plugins
+
+    source-type: svn
+    source: https://svn.code.sf.net/p/kidbasic/code/trunk
+
+    plugin: qmake
+    project-files:
+      - BASIC256.pro
+
+apps:
+  basic256:
+    command: usr/bin/basic256
+    extensions:
+      - kde-neon
+    plugs:
+      - pulseaudio
+      - network
+      - network-bind
