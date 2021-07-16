@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=BASIC2556
+Comment=BASIC language for Education and Fun
+Exec=basic256
+Icon=${SNAP}/meta/gui/basic256.png
+Terminal=false
