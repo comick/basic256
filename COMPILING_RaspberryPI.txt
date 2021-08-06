@@ -16,3 +16,20 @@ sudo make install
 
 RaspberryPi - AUdio
 https://www.raspberrypi.org/documentation/configuration/audio-config.md
+
+SNAP:
+based on : https://jonathansblog.co.uk/snapcraft-building-arm-snaps-on-raspberry-pi
+
+setup:
+sudo apt update && sudo apt upgrade
+sudo apt install snapd
+sudo snap install core
+sudo snap install snapcraft --classic
+sudo snap install lxd
+sudo usermod -a -G lxd ${USER}
+lxd init (answer the questions with their defaults)
+reboot (this is important)
+
+making:
+snapcraft --use-lxd
+
