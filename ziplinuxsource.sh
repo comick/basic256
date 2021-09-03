@@ -14,6 +14,7 @@ rm -Rf ../basic256-$VERSION
 mkdir ../basic256-$VERSION
 rm ../basic256_$VERSION.orig.tar
 rm ../basic256_$VERSION.orig.tar.gz
+rm ../basic256_$VERSION.orig.tar.xz
 
 # copy the entire "trunk"
 cp -r * ../basic256-$VERSION
@@ -41,10 +42,10 @@ rm -R ../basic256-$VERSION/BASIC256
 rm -R ../basic256-$VERSION/BASIC256Portable
 rm -R ../basic256-$VERSION/BASIC256PortableDebug
 rm -R ../basic256-$VERSION/android
-rm -R ../basic256-$VERSION/basic256
-rm -R ../basic256-$VERSION/debian
+rm -R ../basic256-$VERSION/basic256:
 rm -R ../basic256-$VERSION/debug
 rm -R ../basic256-$VERSION/release
+rm -R ../basic256-$VERSION/snap_build_env
 rm -R ../basic256-$VERSION/tmp
 rm -R ../basic256-$VERSION/tmp_portable_debug
 rm -R ../basic256-$VERSION/tmp_portable_release
@@ -56,4 +57,4 @@ tar -cvf ../basic256_$VERSION.orig.tar ../basic256-$VERSION
 gzip ../basic256_$VERSION.orig.tar
 
 # cleanup
-rm -Rf ../basic256-$VERSION
+###rm -Rf ../basic256-$VERSION
