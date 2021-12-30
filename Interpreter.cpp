@@ -267,6 +267,7 @@ QString Interpreter::opname(int op) {
 	case OP_FASTGRAPHICS : return QString("OP_FASTGRAPHICS");
 	case OP_FLOAT : return QString("OP_FLOAT");
 	case OP_FLOOR : return QString("OP_FLOOR");
+        case OP_FMOD: return QString("OP_FMOD");
 	case OP_FONT : return QString("OP_FONT");
 	case OP_FOR : return QString("OP_FOR");
 	case OP_FOREACH : return QString("OP_FOREACH");
@@ -3458,6 +3459,18 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					}
 				}
 				break;
+                                
+                                case OP_FMOD: {
+                                        float oneval = stack->popDouble();
+                                        float twoval = stack->popDouble();
+                                        if (oneval == 0) {
+                                                error->q(ERROR_DIVZERO);
+                                                stack->pushDouble(0);
+                                        } else {
+                                                stack->pushDouble(fmod(twoval, oneval));
+                                        }
+                                }
+                                break;
 
 				case OP_AND: {
 					int one = stack->popBool();

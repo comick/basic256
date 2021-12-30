@@ -571,6 +571,7 @@
 %token B256FASTGRAPHICS
 %token B256FILL
 %token B256FLOOR
+%token B256FMOD
 %token B256FONT
 %token B256FOR
 %token B256FOREACH
@@ -894,7 +895,7 @@
 %left B256BINARYOR B256AMP
 %left B256BITSHIFTL B256BITSHIFTR
 %left '-' '+'
-%left '*' '/' B256MOD B256INTDIV
+%left '*' '/' B256MOD B256FMOD B256INTDIV
 %nonassoc B256UNARY B256BINARYNOT
 %left '^'
 %left '[' ']'
@@ -1719,6 +1720,9 @@ expr_numeric:
 	}
 	| expr '%' expr %prec B256MOD {
 		addOp(OP_MOD);
+	}
+        | expr B256FMOD expr {
+		addOp(OP_FMOD);
 	}
 	| expr '%' %prec B256UNARY {
 		/* expression% is actually a percentage */

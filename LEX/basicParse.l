@@ -298,6 +298,7 @@ explodex [Ee][Xx][Pp][Ll][Oo][Dd][Ee][Xx]
 fastgraphics [Ff][Aa][Ss][Tt][Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]
 fill [Ff][Ii][Ll][Ll]
 floor [Ff][Ll][Oo][Oo][Rr]
+fmod ([Ff][Mm][Oo][Dd])
 font [Ff][Oo][Nn][Tt]
 for [Ff][Oo][Rr]
 foreach [Ff][Oo][Rr][ \t]*[Ee][Aa][Cc][Hh]
@@ -1207,6 +1208,7 @@ zfill [Zz][Ff][Ii][Ll][Ll]
 "*="						{ count(); return B256MULEQUAL; }
 "\\"						{ count(); return B256INTDIV; }
 mod							{ count(); return B256MOD; }
+fmod							{ count(); return B256FMOD; }
 "|"							{ count(); return B256BINARYOR; }
 "&"							{ count(); return B256AMP; }
 "&="						{ count(); return B256AMPEQUAL; }

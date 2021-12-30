@@ -133,6 +133,7 @@ void EditSyntaxHighlighter::initKeywords() {
 			<< "fill"								//fill
 			<< "float"								//float
 			<< "floor"								//floor
+                        << "fmod"                                                               //fmod
 			<< "font"								//font
 			<< "for"								//for
 			<< "for[ \t]*each"

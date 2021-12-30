@@ -1,0 +1,45 @@
+pi8 = pi / 8
+pi2 = pi * 2
+speed = 0.01
+
+xmax = graphwidth - 1
+ymax = graphheight - 1
+
+fastgraphics
+
+t = msec
+
+while true
+	clg black
+
+	# lines
+	for i = t % 8 to xmax step 8
+		color blue
+		line i, 0, 0, ymax - i
+		color red
+		line i, xmax, xmax, ymax - i
+		t = msec * speed
+
+	next i
+
+	#--prism
+	k = 0
+	for i = t / 16 fmod pi8 to pi2 step pi8
+		x = xmax / 2 + (xmax / 4) * cos(i)
+		y = ymax / 2 + (ymax / 4) * cos(i)
+		color white
+		line xmax, 0, x, y
+		line 0, ymax, x, y
+	next i
+
+	#--Border
+	color blue
+	line 0, 0, xmax, 0
+	line 0, 0, 0 , ymax
+	color red
+	line xmax, 0, xmax, ymax
+	line 0, ymax, xmax, ymax
+
+	refresh
+
+end while
