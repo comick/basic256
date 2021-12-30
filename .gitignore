@@ -1,0 +1,10 @@
+.qmake.stash
+*.output
+*.tab.c
+*.tab.h
+*.yy.c
+Makefile*
+nbproject
+basic256
+release
+tmp
