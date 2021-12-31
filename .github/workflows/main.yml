@@ -1,0 +1,36 @@
+name: Basic 256 CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+        
+    - uses: actions/checkout@v2
+        
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install bison flex qt5-default qtbase5-dev qt5-qmake qtmultimedia5-dev libqt5sql5-sqlite libqt5multimedia5-plugins libqt5serialport5-dev libqt5texttospeech5-dev qtspeech5-flite-plugin pulseaudio
+        
+    - name: Prepare build
+      run: |
+        qmake BASIC256.pro -config release
+    
+    - name: Build
+      run: |
+        make
+
+    - name: Upload Graphs
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ubuntu 20.04 binary
+        path: 'basic256'
+
