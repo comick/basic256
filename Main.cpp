@@ -153,13 +153,10 @@ int main(int argc, char *argv[]) {
     qapp.installTranslator(&qtTranslator);
 
     QTranslator kbTranslator;
-#ifdef WIN32
-    kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
-#else
     bool ok;
     ok = kbTranslator.load("basic256_" + localecode, "/usr/share/basic256/");
     if (!ok) ok = kbTranslator.load("basic256_" + localecode, "/usr/local/share/basic256/");  // alternative location
-#endif
+    if (!ok) ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
     qapp.installTranslator(&kbTranslator);
 
     MainWindow mainwin(0, Qt::Widget, localecode, guimode);

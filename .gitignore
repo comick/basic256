@@ -8,3 +8,5 @@ nbproject
 basic256
 release
 tmp
+*.pro.user
+*.qm
