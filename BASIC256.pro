@@ -39,6 +39,7 @@ TRANSLATIONS					=	Translations/basic256_en.ts \
 									Translations/basic256_nl.ts \
 									Translations/basic256_it.ts
 
+CONFIG += lrelease embed_translations
 #### uncomment to display fprintf debugging messages
 #### shows each pcode statement at the stack - really slow but really good
 #### debugging the interpreter

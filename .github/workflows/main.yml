@@ -18,7 +18,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install bison flex qt5-default qtbase5-dev qt5-qmake qtmultimedia5-dev libqt5sql5-sqlite libqt5multimedia5-plugins libqt5serialport5-dev libqt5texttospeech5-dev qtspeech5-flite-plugin pulseaudio
+        sudo apt-get install bison flex qt5-default qtbase5-dev qt5-qmake qtmultimedia5-dev libqt5sql5-sqlite libqt5multimedia5-plugins libqt5serialport5-dev libqt5texttospeech5-dev qtspeech5-flite-plugin pulseaudio qttools5-dev-tools
         
     - name: Prepare build
       run: |

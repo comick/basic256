@@ -154,9 +154,7 @@ int main(int argc, char *argv[]) {
 
     QTranslator kbTranslator;
     bool ok;
-    ok = kbTranslator.load("basic256_" + localecode, "/usr/share/basic256/");
-    if (!ok) ok = kbTranslator.load("basic256_" + localecode, "/usr/local/share/basic256/");  // alternative location
-    if (!ok) ok = kbTranslator.load("basic256_" + localecode, qApp->applicationDirPath() + "/Translations/");
+    ok = kbTranslator.load("basic256_"+ localecode, ":/i18n/");
     qapp.installTranslator(&kbTranslator);
 
     MainWindow mainwin(0, Qt::Widget, localecode, guimode);
