@@ -282,12 +282,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="173"/>
         <source>Array %VARNAME% dimension too large</source>
-        <translation type="unfinished">Dimensione troppo grande per l&apos;array %VARNAME%</translation>
+        <translation>Dimensione troppo grande per il vettore %VARNAME%</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="176"/>
         <source>Array %VARNAME% dimension too small</source>
-        <translation type="unfinished">Dimensione troppo piccola per l&apos;array %VARNAME%</translation>
+        <translation>Dimensione troppo piccola per il vettore %VARNAME%</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="179"/>
@@ -1313,12 +1313,12 @@ Controllare le impostazione della stampante.</translation>
         <location filename="../Interpreter.cpp" line="654"/>
         <location filename="../Interpreter.cpp" line="684"/>
         <source> in included file &apos;</source>
-        <translation type="unfinished"></translation>
+        <translation> nel file incluso &apos;</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="641"/>
         <source>Out of memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Memoria esaurita</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="668"/>
@@ -1438,22 +1438,22 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="797"/>
         <source>Labels, functions and subroutines must have a unique name</source>
-        <translation type="unfinished"></translation>
+        <translation>Etichette, funzioni e procedure devono avere un nome univoco</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="800"/>
         <source>Variable in NEXT does not match FOR</source>
-        <translation type="unfinished"></translation>
+        <translation>La variabile in NEXT non corrisponde a quella in FOR</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="803"/>
         <source>Maximum number of INCLUDE files</source>
-        <translation type="unfinished"></translation>
+        <translation>Raggiunto massimo numero di files inclusi con INCLUDE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="806"/>
         <source>INCLUDE must be placed in a separate line</source>
-        <translation type="unfinished"></translation>
+        <translation>INCLUDE deve avere una riga dedicata</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="809"/>
@@ -2225,7 +2225,7 @@ Controllare le impostazione della stampante.</translation>
         <location filename="../BasicGraph.cpp" line="306"/>
         <location filename="../BasicOutput.cpp" line="143"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Pulisci</translation>
     </message>
     <message>
         <location filename="../BasicGraph.cpp" line="341"/>
@@ -2253,32 +2253,32 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Main.cpp" line="108"/>
         <source>BASIC-256 is an easy to use version of BASIC designed to teach anybody (especially middle and high-school students) the basics of computer programming.</source>
-        <translation type="unfinished"></translation>
+        <translation>BASIC-256 è una versione di BASIC facile da usare, progettate per insegnare a chiunque (in particolare studenti di scuole medie e superiori) i fondamenti della programmazione degli elaboratori elettronici.</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="111"/>
         <source>BASIC file in format &lt;name.kbs&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivio BASIC nel formato &lt;nome.kbs&gt;</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="113"/>
         <source>Run specified file</source>
-        <translation type="unfinished"></translation>
+        <translation>Esegui l&apos;archivio specificato</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="116"/>
         <source>Run specified file as an application</source>
-        <translation type="unfinished"></translation>
+        <translation>Esecui l&apos;archivio specificato come applicazione</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="119"/>
         <source>Set language to &lt;language&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta la lingua a &lt;lingua&gt;.</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="119"/>
         <source>language</source>
-        <translation type="unfinished"></translation>
+        <translation>lingua</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="163"/>
@@ -2429,72 +2429,72 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="161"/>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Apri...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="165"/>
         <source>Open &amp;Recent</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri &amp;Recenti</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="172"/>
         <source>&amp;Clear list</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Pulisci lista</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="178"/>
         <source>Save &amp;As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva &amp;Come...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="180"/>
         <source>Save All</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva Tutto</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="182"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiudi</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="184"/>
         <source>Close All</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiudi Tutto</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="186"/>
         <source>&amp;Print...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Stampa...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="214"/>
         <source>&amp;Find...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Trova...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="216"/>
         <source>Find &amp;Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Trova &amp;Prossimo</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="218"/>
         <source>&amp;Replace...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sostituisci...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="223"/>
         <source>Preferences...</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferenze...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="260"/>
         <source>Graphics Window &amp;Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ingrandimento finestra grafica</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="263"/>
         <source>1:4 (quarter)</source>
-        <translation type="unfinished"></translation>
+        <translation>1:4 (un quarto)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="267"/>
