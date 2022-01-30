@@ -2244,6 +2244,10 @@ Check uw printer instelling.</translation>
         <source>Do you really want to discard your changes?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>W&amp;rap Long Lines</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReplaceWin</name>
