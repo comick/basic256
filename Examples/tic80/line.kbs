@@ -22,7 +22,7 @@ while true
 
 	next i
 
-	#--prism
+	# prism
 	k = 0
 	for i = t / 16 fmod pi8 to pi2 step pi8
 		x = xmax / 2 + (xmax / 4) * cos(i)
@@ -32,7 +32,7 @@ while true
 		line 0, ymax, x, y
 	next i
 
-	#--Border
+	# border
 	color blue
 	line 0, 0, xmax, 0
 	line 0, 0, 0 , ymax
@@ -43,3 +43,7 @@ while true
 	refresh
 
 end while
+
+
+
+
