@@ -115,37 +115,37 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../BasicEdit.cpp" line="1041"/>
         <source>File has been removed.</source>
-        <translation>L&apos;archivio è stato rimosso.</translation>
+        <translation>Il file è stato rimosso.</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1042"/>
         <source>It seems that file %1 was removed from disk. Don&apos;t forget to save your work.</source>
-        <translation>L&apos;archivio %1 è stato rimosso dal disco. Ricorda sempre di salvare il tuo lavoro.</translation>
+        <translation>Il file %1 è stato rimosso dal disco. Ricorda sempre di salvare il tuo lavoro.</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1044"/>
         <source>File changed</source>
-        <translation>Archivio modificato</translation>
+        <translation>file modificato</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1045"/>
         <source>The file %1 has changed outside BASIC256 editor. Do you want to reload it?</source>
-        <translation>L&apos;archivio %1 è stato modificato fuori da BASIC256, vuoi ricaricarlo?</translation>
+        <translation>Il file %1 è stato modificato fuori da BASIC256, vuoi ricaricarlo?</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1062"/>
         <source>Load File</source>
-        <translation>Carica archivio</translation>
+        <translation>Carica file</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1062"/>
         <source>Unable to open program file</source>
-        <translation>Impossibile aprire l&apos;archivio del programma</translation>
+        <translation>Impossibile aprire Il file del programma</translation>
     </message>
     <message>
         <location filename="../BasicEdit.cpp" line="1062"/>
         <source>File permissions problem or file open by another process.</source>
-        <translation>Problemi di permesso o archivio in uso da un&apos;altro processo.</translation>
+        <translation>Problemi di permesso o file in uso da un&apos;altro processo.</translation>
     </message>
     <message>
         <source> - BASIC-256</source>
@@ -242,12 +242,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="149"/>
         <source>No such SUBROUTINE %VARNAME%</source>
-        <translation>Nessun sotto-programma %VARNAME%</translation>
+        <translation>Il sotto programma %VARNAME% non esiste</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="152"/>
         <source>No such FUNCTION %VARNAME%</source>
-        <translation>Nessuna funzione %VARNAME%</translation>
+        <translation>La funzione %VARNAME% non esiste</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="155"/>
@@ -262,22 +262,22 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="161"/>
         <source>Unable to open file</source>
-        <translation>Impossibile aprire il file</translation>
+        <translation>Impossibile aprire Il file</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="164"/>
         <source>File not open</source>
-        <translation>File non aperto</translation>
+        <translation>Il file non è aperto</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="167"/>
         <source>Unable to write to file</source>
-        <translation>Impossibile scrivere sul file</translation>
+        <translation>Impossibile scrivere sulIl file</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="170"/>
         <source>Unable to reset file</source>
-        <translation>Impossibile resettare il file</translation>
+        <translation>Impossibile azzerare Il file</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="173"/>
@@ -292,57 +292,57 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="179"/>
         <source>Array data must be one dimensional with an even number of elements or two dimemsional with two elements in each row</source>
-        <translation type="unfinished"></translation>
+        <translation>I dati nel vettore devono essere mono-dimensionali con un numero pari di element o bi-dimensionali con due elementi in ogni riga</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="182"/>
         <source>Variable %VARNAME% is not an array</source>
-        <translation type="unfinished">La variabile %VARNAME% non è un array</translation>
+        <translation>La variabile %VARNAME% non è un vertore</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="185"/>
         <source>Array %VARNAME% index out of bounds</source>
-        <translation type="unfinished">Array %VARNAME%: indice oltre il limite</translation>
+        <translation>Indice fuori dai limiti del vettore %VARNAME%</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="188"/>
         <source>Array %VARNAME% rows must have the same number of items</source>
-        <translation type="unfinished"></translation>
+        <translation>Le righe del vettore %VARNAME% devono avere lo stesso numero di elementi</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="191"/>
         <source>Starting position less than zero</source>
-        <translation type="unfinished">Posizione iniziale minore di zero</translation>
+        <translation>Posizione iniziale minore di zero</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="194"/>
         <source>RGB Color values must be in the range of 0 to 255</source>
-        <translation type="unfinished">I valori di colore RGB devono essere compresi tra 0 e 255</translation>
+        <translation>I valori di colore RGB devono essere compresi tra 0 e 255</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="197"/>
         <source>Not enough points in array for poly()/stamp()</source>
-        <translation type="unfinished">Non abbastanza punti in array per poly()/stamp()</translation>
+        <translation>Il vettore non ha abbastanza punti per invocare POLY/STAMP</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="200"/>
         <source>Unable to load image file</source>
-        <translation type="unfinished">Impossibile caricare file immagine</translation>
+        <translation>Impossibile caricare file immagine</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="203"/>
         <source>Sprite number out of range</source>
-        <translation type="unfinished">Numero sprite oltre il limite</translation>
+        <translation>Numero sprite oltre il limite</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="206"/>
         <source>Sprite has not been assigned</source>
-        <translation type="unfinished">Sprite non assegnato</translation>
+        <translation>Sprite non assegnato</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="209"/>
         <source>Unable to slice image</source>
-        <translation type="unfinished">Impossibile ritagliare immagine</translation>
+        <translation>Impossibile ritagliare immagine</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="212"/>
@@ -1458,7 +1458,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="809"/>
         <source>No file specified for INCLUDE</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun file specificato per il comando INCLUDE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="812"/>
@@ -1468,7 +1468,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="815"/>
         <source>Number too large</source>
-        <translation type="unfinished"></translation>
+        <translation>Numero troppo grande</translation>
     </message>
     <message>
         <source>RETURN value type is not the same as FUNCTION</source>
@@ -1831,137 +1831,137 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="94"/>
         <source>Get any settings / set only owned settings</source>
-        <translation type="unfinished">Leggi qualsiasi impostazione/scrivi solo impostazioni proprie</translation>
+        <translation>Leggi qualsiasi impostazione / scrivi solo impostazioni proprie</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="95"/>
         <source>Full access (get/set) to settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Accesso completo (get/set) alle configurazioni</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="102"/>
         <source>Allow programs to use persistent settings (SETSETTING statement)</source>
-        <translation type="unfinished"></translation>
+        <translation>Permetti ai programmi l&apos;uso delle configurazioni persistenti (comando SETSETTING)</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="107"/>
         <source>Browse persistent settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Sfoglia le configurazioni persistenti</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="110"/>
         <source>Clear all persistent settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripulissi tutte le configurazioni persistenti</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="115"/>
         <source>Max number of settings for each program:</source>
-        <translation type="unfinished"></translation>
+        <translation>Massimo numero di configurazioni per ogni programma:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="118"/>
         <source>No limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun limite</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="119"/>
         <source>50 keys</source>
-        <translation type="unfinished"></translation>
+        <translation>50 identificatori</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="120"/>
         <source>100 keys</source>
-        <translation type="unfinished"></translation>
+        <translation>100 identificatori</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="121"/>
         <source>200 keys</source>
-        <translation type="unfinished"></translation>
+        <translation>200 identificatori</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="138"/>
         <source>Startup</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvio</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="140"/>
         <source>Restore last windows position on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Mantieni posizione finestre dall&apos;ultimo utilizzo</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="144"/>
         <source>Check for an update on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Controlla aggiornamenti all&apos;avvio</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="170"/>
         <source>Runtime handling of unassigned variables:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gestione variabili non assegnate durante l&apos;esecuzione:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="187"/>
         <source>Automatically save program when it is successfully run</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva automaticamente il programma quando parte senza errori</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="193"/>
         <source>Number of digits to print numbers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Numero cifre dopo la virgola quando si stampano i numeri:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="220"/>
         <source>Use localized decimal point on floating point numbers</source>
-        <translation type="unfinished"></translation>
+        <translation>Usa separatore punti decimali localizzato</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="224"/>
         <source>Always show decimal point on floating point numbers</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra sempre separatore decimali sui numeri con la virgola</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="268"/>
         <source>Volume:</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="299"/>
         <source>Sound sample rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenza di campionamento:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="302"/>
         <source>44100 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="303"/>
         <source>32000 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="304"/>
         <source>22050 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="305"/>
         <source>16000 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="306"/>
         <source>11025 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="307"/>
         <source>8000 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="308"/>
         <source>4400 Hz</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="323"/>
@@ -1976,107 +1976,107 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="419"/>
         <source>A0 (841 x 1189 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="420"/>
         <source>A1 (594 x 841 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="421"/>
         <source>A2 (420 x 594 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="422"/>
         <source>A3 (297 x 420 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="423"/>
         <source>A4 (210 x 297 mm, 8.26 x 11.69 inches)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="424"/>
         <source>A5 (148 x 210 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="425"/>
         <source>A6 (105 x 148 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="426"/>
         <source>A7 (74 x 105 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="427"/>
         <source>A9 (52 x 74 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="428"/>
         <source>A9 (37 x 52 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="429"/>
         <source>B0 (1000 x 1414 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="430"/>
         <source>B1 (707 x 1000 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="431"/>
         <source>B2 (500 x 707 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="432"/>
         <source>B3 (353 x 500 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="433"/>
         <source>B4 (250 x 353 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="434"/>
         <source>B5 (176 x 250 mm, 6.93 x 9.84 inches)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="435"/>
         <source>B6 (125 x 176 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="436"/>
         <source>B7 (88 x 125 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="437"/>
         <source>B8 (62 x 88 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="438"/>
         <source>B9 (33 x 62 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="439"/>
         <source>B10 (31 x 44 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="440"/>
@@ -2091,7 +2091,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="442"/>
         <source>DLE (110 x 220 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="443"/>
@@ -2156,29 +2156,29 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="634"/>
         <source>digits</source>
-        <translation type="unfinished"></translation>
+        <translation>cifre</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="641"/>
         <source>pause</source>
-        <translation type="unfinished"></translation>
+        <translation>pausa</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="641"/>
         <location filename="../PreferencesWin.cpp" line="655"/>
         <location filename="../PreferencesWin.cpp" line="662"/>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>millisecondi</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="669"/>
         <source>Delete persistent settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancella configurazioni persistenti</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="669"/>
         <source>Do you really want to delete persistent settings for all programs?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vuoi davvero eliminare le configurazioni persistenti per tutti i programmi?</translation>
     </message>
 </context>
 <context>
@@ -2258,17 +2258,17 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Main.cpp" line="111"/>
         <source>BASIC file in format &lt;name.kbs&gt;</source>
-        <translation>Archivio BASIC nel formato &lt;nome.kbs&gt;</translation>
+        <translation>file BASIC nel formato &lt;nome.kbs&gt;</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="113"/>
         <source>Run specified file</source>
-        <translation>Esegui l&apos;archivio specificato</translation>
+        <translation>Esegui Il file specificato</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="116"/>
         <source>Run specified file as an application</source>
-        <translation>Esecui l&apos;archivio specificato come applicazione</translation>
+        <translation>Esecui Il file specificato come applicazione</translation>
     </message>
     <message>
         <location filename="../Main.cpp" line="119"/>
@@ -2499,37 +2499,37 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="267"/>
         <source>1:2 (half)</source>
-        <translation type="unfinished"></translation>
+        <translation>1:2 (metà)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="271"/>
         <source>1:1 (original)</source>
-        <translation type="unfinished"></translation>
+        <translation>1:1 (dimensione originale)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="275"/>
         <source>2:1 (double)</source>
-        <translation type="unfinished"></translation>
+        <translation>2:1 (doppio)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="279"/>
         <source>3:1 (triple)</source>
-        <translation type="unfinished"></translation>
+        <translation>3:1 (triplo)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="283"/>
         <source>4:1 (quadruple)</source>
-        <translation type="unfinished"></translation>
+        <translation>4:1 (quadruplo)</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="293"/>
         <source>&amp;Font...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Carattere...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="297"/>
         <source>W&amp;rap Long Lines</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Manda a capo automaticamente le linee troppo lunghe</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="303"/>
@@ -2580,12 +2580,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="331"/>
         <source>&amp;Clear all breakpoints</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ripulisci tutti i punti di interruzione</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="334"/>
         <source>&amp;Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Finestra</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="340"/>
@@ -2595,60 +2595,60 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="341"/>
         <source>&amp;Online help...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Aiuto in linea...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="348"/>
         <source>&amp;Check for update...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Controlla aggiornamenti...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="351"/>
         <source>&amp;About BASIC-256...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Informazioni su BASIC-256...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="579"/>
         <location filename="../MainWindow.cpp" line="595"/>
         <source>Locale Name: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nome localizzazione: </translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="579"/>
         <location filename="../MainWindow.cpp" line="595"/>
         <source>Decimal Point: </source>
-        <translation type="unfinished"></translation>
+        <translation>Separatore parte decimale: </translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="580"/>
         <location filename="../MainWindow.cpp" line="596"/>
         <source>Copyright &amp;copy; 2006-2020, The BASIC-256 Team</source>
-        <translation type="unfinished">Copyright &amp;copy; 2006-2014, il Team di BASIC-256 {2006-2020,?} {256 ?}</translation>
+        <translation>Copyright &amp;copy; 2006-2020, La squadra di BASIC-256</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1066"/>
         <source> - BASIC-256</source>
-        <translation type="unfinished"> - BASIC-256</translation>
+        <translation> - BASIC-256</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1170"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>Senza titolo</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1180"/>
         <source>Open a file</source>
-        <translation type="unfinished">Apri un file</translation>
+        <translation>Apri un file</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1180"/>
         <source>BASIC-256 file </source>
-        <translation type="unfinished">File BASIC-256 </translation>
+        <translation>file BASIC-256 </translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1180"/>
         <source>Any File </source>
-        <translation type="unfinished">Tutti i file </translation>
+        <translation>Qualsiasi tipo di file </translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1209"/>
@@ -2656,78 +2656,78 @@ Controllare le impostazione della stampante.</translation>
         <location filename="../MainWindow.cpp" line="1262"/>
         <location filename="../MainWindow.cpp" line="1267"/>
         <source>Load File</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica file</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1210"/>
         <source>It does not seem to be a text file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Non sembra essere un file di testo.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1210"/>
         <location filename="../MainWindow.cpp" line="1215"/>
         <source>Load it anyway?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vuoi caricarlo comunque?</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1215"/>
         <source>You&apos;re about to load a file that does not end with the .kbs extension.</source>
-        <translation type="unfinished"></translation>
+        <translation>Stai per caricare un file il cui nome non finisce con l&apos;estensione .kbs.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1238"/>
         <source>Loading file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carico file...</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1263"/>
         <source>Unable to open program file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile aprire file di programma</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1263"/>
         <source>File permissions problem or file open by another process.</source>
-        <translation type="unfinished"></translation>
+        <translation>Problemi con i permessi sulIl file o file in uso da parte di un altro processo.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1268"/>
         <source>Program file does not exist.</source>
-        <translation type="unfinished">Il programma non esiste.</translation>
+        <translation>Il file di programma non esiste.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1268"/>
         <source>&quot;.</source>
-        <translation type="unfinished">&quot;.</translation>
+        <translation>&quot;.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1315"/>
         <source>Save changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvare le modifiche?</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1317"/>
         <source>The following file have unsaved changes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Il file seguente ha modifiche non salvate:</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1319"/>
         <source>The following files have unsaved changes:</source>
-        <translation type="unfinished"></translation>
+        <translation>I files seguenti hanno modifiche non salvate:</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1343"/>
         <source>Unsaved files</source>
-        <translation type="unfinished"></translation>
+        <translation>Files non salvati</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1344"/>
         <source>There are unsaved files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ci sono Files non salvati.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="1344"/>
         <source>Do you really want to discard your changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vuoi davvero perdere le modifiche fatte?</translation>
     </message>
     <message>
         <source>&amp;Online help</source>
@@ -2777,7 +2777,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="581"/>
         <source>Please visit our web site at http://www.basic256.org for tutorials and documentation.</source>
-        <translation>Visitate il nostro sito web http://www.basic256.org per tutorial e documentazione.</translation>
+        <translation>Visitate il nostro sito web http://www.basic256.org per guide passo-passo e documentazione.</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="582"/>
@@ -2804,7 +2804,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../MainWindow.cpp" line="597"/>
         <source>Please visit our web site at &lt;a href=&quot;http://www.basic256.org&quot;&gt;http://www.basic256.org&lt;/a&gt; for tutorials and documentation.</source>
-        <translation>Visitate il nostro sito web &lt;a href=&quot;http://www.basic256.org&quot;&gt;http://www.basic256.org&lt;/a&gt; per tutorial e documentazione.</translation>
+        <translation>Visitate il nostro sito web &lt;a href=&quot;http://www.basic256.org&quot;&gt;http://www.basic256.org&lt;/a&gt; per guide passo-passo e documentazione.</translation>
     </message>
 </context>
 <context>
