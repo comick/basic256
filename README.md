@@ -8,9 +8,14 @@ I keep this current with upstream, including original SVN history via GIT SVN.
 
 ## New features
 
-[x] `fmod` floating point modulo command
-[x] embedded translations no matter what
-[ ] complete italian translation for the win
+- [x] `fmod` floating point modulo command
+- [x] embedded translations no matter what
+- [ ] complete italian translation for the win
+
+## Feature ideas
+
+- locally available inline command help
+- real IDE-less execution of program
 
 ## Resources
 
