@@ -6,6 +6,12 @@ This is my fork on BASIC-256 as I struggled getting in touch with original autho
 
 I keep this current with upstream, including original SVN history via GIT SVN.
 
+## New features
+
+[x] `fmod` floating point modulo command
+[x] embedded translations no matter what
+[ ] complete italian translation for the win
+
 ## Resources
 
 Original project website at http://www.basic256.org
