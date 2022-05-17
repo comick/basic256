@@ -492,32 +492,32 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="299"/>
         <source>You must advance the data set using DBROW before you can read data from it</source>
-        <translation type="unfinished">Occorre avanzare il data-set usando DBROW prima di leggerlo</translation>
+        <translation>Occorre avanzare all&apos;interno della raccolta di dati usando DBROW prima di poterlo leggere</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="302"/>
         <source>Drawing pen width must be a non-negative number</source>
-        <translation type="unfinished">La larghezza della penna di disegno deve essere un numero non negativo</translation>
+        <translation>Lo spessore della penna deve essere un numero non negativo</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="305"/>
         <source>Array variable %VARNAME% has no value without an index</source>
-        <translation type="unfinished">La variabile array %VARNAME% non ha un valore senza indice</translation>
+        <translation>La variabile array %VARNAME% non ha un valore senza indice</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="308"/>
         <source>Image scale must be greater than or equal to zero</source>
-        <translation type="unfinished">La scala dell&apos;immagine deve essere maggiore o uguale a zero</translation>
+        <translation>La scala dell&apos;immagine deve essere maggiore o uguale a zero</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="311"/>
         <source>Unable to convert radix string back to a decimal number</source>
-        <translation type="unfinished">Impossibile convertire la stringa radice ad un numero decimale</translation>
+        <translation>Impossibile convertire la stringa numerica ad un numero decimale</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="314"/>
         <source>Radix conversion base muse be between 2 and 36</source>
-        <translation type="unfinished">La radice della conversione deve essere compresa tra 2 e 36</translation>
+        <translation>La base di coversione deve essere compresa tra 2 e 36</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="317"/>
@@ -527,27 +527,27 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="320"/>
         <source>String exceeds maximum length of 16,777,216 characters</source>
-        <translation type="unfinished">La lunghezza della stringa supera il limite massimo di 16.777.216 caratteri</translation>
+        <translation>La lunghezza della stringa supera il limite massimo di 16.777.216 caratteri</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="323"/>
         <source>Stack Underflow Error</source>
-        <translation type="unfinished">Errore di stack underflow</translation>
+        <translation>Errore di stack underflow</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="326"/>
         <source>Printer is not on</source>
-        <translation type="unfinished">La stampante non è attiva</translation>
+        <translation>La stampante non è attiva</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="329"/>
         <source>Printing is already on</source>
-        <translation type="unfinished">La stampante è già attiva</translation>
+        <translation>La stampante è già attiva</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="332"/>
         <source>Unable to open printer</source>
-        <translation type="unfinished">Impossibile aprire la stampante</translation>
+        <translation>Impossibile collegarsi alla stampante</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="335"/>
@@ -811,12 +811,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="489"/>
         <source>Feature not implemented in this environment</source>
-        <translation type="unfinished">Funzione non implementata in questo ambiente</translation>
+        <translation>Funzionalità non implementata in questo ambiente</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="493"/>
         <source>Unable to convert string to number, zero used</source>
-        <translation type="unfinished">Impossibile convertire la stringa in numero, utilizzato valore zero</translation>
+        <translation>Impossibile convertire la stringa in numero, utilizzato valore zero</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="496"/>
@@ -837,12 +837,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="511"/>
         <source>Media file is not seekable</source>
-        <translation type="unfinished">Il file multimediale non supporta il seeking</translation>
+        <translation>Il file multimediale non supporta la ricerca</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="514"/>
         <source>Duration is not available for media file</source>
-        <translation type="unfinished">Durata non disponibile per il file multimediale</translation>
+        <translation>Durata non disponibile per il file multimediale</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="517"/>
@@ -867,7 +867,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="538"/>
         <source>User thrown error number</source>
-        <translation type="unfinished">Numero errore definito dall&apos;utente</translation>
+        <translation>Nuero errore sollevato dall&apos;utente</translation>
     </message>
 </context>
 <context>
@@ -1323,27 +1323,27 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="668"/>
         <source>You should use REF() when passing arguments, not in the SUBROUTINE/FUNCTION definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Dovresti usare REF() per passare argomenti, non la definizione di SUBROUTINE/FUNCTION</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="701"/>
         <source>END FUNCTION without matching FUNCTION</source>
-        <translation type="unfinished"></translation>
+        <translation>END FUNCTION senza corrispondente FUNCTION</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="704"/>
         <source>END SUBROUTINE without matching SUBROUTINE</source>
-        <translation type="unfinished"></translation>
+        <translation>END SUBROUTINE senza corrispondente SUBROUTINE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="707"/>
         <source>FUNCTION without matching END FUNCTION statement</source>
-        <translation type="unfinished"></translation>
+        <translation>FUNCTION senza corrispondente comando END FUNCTION</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="710"/>
         <source>SUBROUTINE without matching END SUBROUTINE statement</source>
-        <translation type="unfinished"></translation>
+        <translation>SUBROUTINE senza corrispondente comando END SUBROUTINE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="713"/>
@@ -1403,37 +1403,37 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="773"/>
         <source>CATCH without matching TRY statement</source>
-        <translation type="unfinished"></translation>
+        <translation>CATCH senza corrispondente TRY</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="776"/>
         <source>CATCH without matching ENDTRY statement</source>
-        <translation type="unfinished"></translation>
+        <translation>CATCH senza cordispondente ENDTRY</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="779"/>
         <source>ENDTRY without matching CATCH statement</source>
-        <translation type="unfinished"></translation>
+        <translation>ENDTRY senza corrispondente CATCH</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="782"/>
         <source>CASE without matching BEGIN CASE statement</source>
-        <translation type="unfinished"></translation>
+        <translation>CASE senza corrispondente BEGIN CASE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="788"/>
         <source>END CASE without matching CASE statement</source>
-        <translation type="unfinished"></translation>
+        <translation>END CASE senza corrispondente comando CASE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="791"/>
         <source>BEGIN CASE without matching END CASE statement</source>
-        <translation type="unfinished"></translation>
+        <translation>BEGIN CASE senza corrispondente comando END CASE</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="794"/>
         <source>CASE without next CASE or matching END CASE statement</source>
-        <translation type="unfinished"></translation>
+        <translation>CASE senza ulteriore comando CASE o END CASE corrispondente</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="797"/>
@@ -1463,7 +1463,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Interpreter.cpp" line="812"/>
         <source>Cannot pass arguments to a SUBROUTINE used by ONERROR statement</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è possibile passare argomenti ad una SUBROUTINE usare dal comando ONERROR</translation>
     </message>
     <message>
         <location filename="../Interpreter.cpp" line="815"/>
@@ -1966,12 +1966,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="323"/>
         <source>Min. period to normalize louder sounds:</source>
-        <translation type="unfinished"></translation>
+        <translation>Periodo minimi per normalizzare suoni alti:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="355"/>
         <source>Period to restore volume after louder sound:</source>
-        <translation type="unfinished"></translation>
+        <translation>Periodo per ripristinare il volume dopo suono alto:</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="419"/>
@@ -2081,12 +2081,12 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../PreferencesWin.cpp" line="440"/>
         <source>#5 Envelope (163 x 229 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>#5 Busta lettere (163 x 229 mm)</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="441"/>
         <source>#10 Envelope (105 x 241 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>#10 Busta lettere (105 x 241 mm)</translation>
     </message>
     <message>
         <location filename="../PreferencesWin.cpp" line="442"/>
