@@ -352,142 +352,142 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="215"/>
         <source>Operation returned infinity</source>
-        <translation type="unfinished">Il risultato dell&apos;operazione è infinito</translation>
+        <translation>L&apos;operazione ha calcolato il valore infinito</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="218"/>
         <source>Unable to open SQLITE database</source>
-        <translation type="unfinished">Impossibile aprire database SQLITE</translation>
+        <translation>Impossibile aprire il database SQLITE</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="221"/>
         <source>Database query error (message follows)</source>
-        <translation type="unfinished">Database: errore query (segue messaggio)</translation>
+        <translation>Database: errore query (segue messaggio)</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="224"/>
         <source>Database must be opened first</source>
-        <translation type="unfinished">Il database deve prima essere aperto</translation>
+        <translation>Il database deve prima essere aperto</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="227"/>
         <source>Column number out of range or column name not in data set</source>
-        <translation type="unfinished">Numero colonna fuori dal limite o nome colonna non in data-set</translation>
+        <translation>Numero colonna fuori dal limite o nome colonna non presente</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="230"/>
         <source>Record set must be opened first</source>
-        <translation type="unfinished">Il record-set deve prima essere aperto</translation>
+        <translation>Il record-set deve prima essere aperto</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="233"/>
         <source>Error opening network socket</source>
-        <translation type="unfinished">Errore apertura socket di rete</translation>
+        <translation>Errore apertura socket di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="236"/>
         <source>Error finding network host</source>
-        <translation type="unfinished">Errore ricerca host di rete</translation>
+        <translation>Errore ricerca host di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="239"/>
         <source>Unable to connect to network host</source>
-        <translation type="unfinished">Impossibile connettersi all&apos;host di rete</translation>
+        <translation>Impossibile connettersi all&apos;host di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="242"/>
         <source>Unable to read from network connection</source>
-        <translation type="unfinished">Impossibile ricevere da connessione di rete</translation>
+        <translation>Impossibile ricevere da connessione di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="245"/>
         <source>Network connection has not been opened</source>
-        <translation type="unfinished">La connessione di rete non è stata aperta</translation>
+        <translation>La connessione di rete non è stata aperta</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="248"/>
         <source>Unable to write to network connection</source>
-        <translation type="unfinished">Impossibile trasmettere su connessione di rete</translation>
+        <translation>Impossibile trasmettere su connessione di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="251"/>
         <source>Unable to set network socket options</source>
-        <translation type="unfinished">Impossibile impostare opzioni socket di rete</translation>
+        <translation>Impossibile impostare opzioni socket di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="254"/>
         <source>Unable to bind network socket</source>
-        <translation type="unfinished">Impossibile associare socket di rete</translation>
+        <translation>Impossibile associare socket di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="257"/>
         <source>Unable to accept network connection</source>
-        <translation type="unfinished">Impossibile accettare connessione di rete</translation>
+        <translation>Impossibile accettare connessione di rete</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="260"/>
         <source>Invalid Socket Number</source>
-        <translation type="unfinished">Numero socket non valido</translation>
+        <translation>Numero socket non valido</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="263"/>
         <source>You do not have permission to use this statement/function</source>
-        <translation type="unfinished">Non si hanno i permessi per eseguire questa istruzione/funzione</translation>
+        <translation>Non si hanno i permessi per eseguire questa comando/funzione</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="266"/>
         <source>Invalid image save type</source>
-        <translation type="unfinished">Tipo salvataggio immagine non valido</translation>
+        <translation>Formato immagine non valido</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="269"/>
         <source>Number of arguments passed does not match FUNCTION/SUBROUTINE definition</source>
-        <translation type="unfinished">Il numero di argomenti passati non corrisponde alla definizione di FUNCTION/SUBROUTINE</translation>
+        <translation>Il numero di argomenti passati non corrisponde alla definizione della FUNCTION/SUBROUTINE</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="272"/>
         <source>Maximum levels of recursion exceeded</source>
-        <translation type="unfinished">Numero massimo di ricorsioni superato</translation>
+        <translation>Numero massimo di ricorsioni superato</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="275"/>
         <source>Division by zero</source>
-        <translation type="unfinished">Divisione per zero</translation>
+        <translation>Divisione per zero</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="278"/>
         <source>Expected array</source>
-        <translation type="unfinished"></translation>
+        <translation>Array atteso</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="281"/>
         <source>There are no free file numbers to allocate</source>
-        <translation type="unfinished">Non ci sono numeri di file liberi da allocare</translation>
+        <translation>Non ci sono identificatori numerici liberi da allocare al file</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="284"/>
         <source>There are no free network connections to allocate</source>
-        <translation type="unfinished">Non ci sono connessioni di rete libere da allocare</translation>
+        <translation>Non ci sono connessioni di rete libere da allocare</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="287"/>
         <source>There are no free database connections to allocate</source>
-        <translation type="unfinished">Non ci sono connessioni a database libere da allocare</translation>
+        <translation>Non ci sono connessioni al database libere da allocare</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="290"/>
         <source>Invalid Database Connection Number</source>
-        <translation type="unfinished">Numero connessione a database non valido</translation>
+        <translation>Numero connessione a database non valido</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="293"/>
         <source>There are no free data sets to allocate for that database connection</source>
-        <translation type="unfinished">Non ci sono data-set liberi da allocare per questa connessione a database</translation>
+        <translation>Non ci sono data-set liberi da allocare per questa connessione a database</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="296"/>
         <source>Invalid data set number</source>
-        <translation type="unfinished">Numero di data-set non valido</translation>
+        <translation>Numero di data-set non valido</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="299"/>
@@ -522,7 +522,7 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="317"/>
         <source>Unable to calculate the logarithm of a number less than or equal to 0</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile calcolare il logaritmo di un numero inferiore o uguale a 0</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="320"/>
@@ -552,39 +552,39 @@ Controllare le impostazione della stampante.</translation>
     <message>
         <location filename="../Error.cpp" line="335"/>
         <source>Unable to convert to number</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile convertire il numero</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="338"/>
         <source>Unable to convert to a string</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile convertire la stringa</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="341"/>
         <source>Unable to convert to a Boolean</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile convertire il booleano</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="344"/>
         <source>Can not perform that operation on a Serial Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile effetuare l&apos;operazione sulla porta seriale</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="347"/>
         <source>Invalid serial port parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Parametro porta seriale non valido</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="350"/>
         <location filename="../Error.cpp" line="502"/>
         <source>Variable %VARNAME% has not been assigned a value</source>
-        <translation type="unfinished"></translation>
+        <translation>La variabile %VARNAME% non ha un valore assegnato</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="353"/>
         <location filename="../Error.cpp" line="505"/>
         <source>Number exceeds long integer range (</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero eccede l&apos;intervallo disponibile per un intero long (</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="353"/>
@@ -592,44 +592,44 @@ Controllare le impostazione della stampante.</translation>
         <location filename="../Error.cpp" line="505"/>
         <location filename="../Error.cpp" line="508"/>
         <source> to </source>
-        <translation type="unfinished"></translation>
+        <translation> a </translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="353"/>
         <location filename="../Error.cpp" line="356"/>
         <source>)</source>
-        <translation type="unfinished"></translation>
+        <translation>)</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="356"/>
         <location filename="../Error.cpp" line="508"/>
         <source>Number exceeds integer range (</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero eccede l&apos;intervallo ammesso per gli interi (</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="359"/>
         <source>Unable to UnSerialize string</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile desrializzare la stringa</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="362"/>
         <source>Invalid Slice dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensione per SLICE non valide</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="365"/>
         <source>Can not get a single length of a two dimensional array</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è possibile ricevere una singola lunghezza su un array bidimensionale</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="368"/>
         <source>Variable %VARNAME% refers to a non-existent variable</source>
-        <translation type="unfinished"></translation>
+        <translation>La variabile %VARNAME% non esiste</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="371"/>
         <source>Circular reference in variable %VARNAME%</source>
-        <translation type="unfinished"></translation>
+        <translation>Riferimento circolare nella variabile %VARNAME%</translation>
     </message>
     <message>
         <location filename="../Error.cpp" line="374"/>
