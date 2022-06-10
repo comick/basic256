@@ -124,6 +124,11 @@ macx {
 	LIBS						+=	-L/opt/local/lib
 	INCLUDEPATH					+=	/opt/local/include
 
+	########
+	# TTS
+	########
+	QT							+=	texttospeech
+
 	# Sound - QT Mobility Multimedia AudioOut
 	QT							+=	multimedia
 	INCLUDEPATH					+=	QtMultimediaKit
