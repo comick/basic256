@@ -5953,10 +5953,10 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 
-				case OP_PORTOUT: {
-					int data = stack->popInt();
-					int port = stack->popInt();
+                case OP_PORTOUT: {
 #ifdef WIN32PORTIO
+                    int data = stack->popInt();
+                    int port = stack->popInt();
 					int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
 						mymutex->lock();
@@ -5982,11 +5982,11 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				}
 				break;
 
-				case OP_PORTIN: {
-					int data=0;
-					int port = stack->popInt();
+                case OP_PORTIN: {
+                    int data=0;
 #ifdef WIN32PORTIO
-					int doit = settingsAllowPort;
+                    int port = stack->popInt();
+                    int doit = settingsAllowPort;
 					if(doit==SETTINGSALLOWASK){
 						mymutex->lock();
 						emit(dialogAllowPortInOut(QString("PORTIN ") + QString::number(port)));
@@ -7153,7 +7153,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				case OP_IMAGEAUTOCROP: {
 					int x,y,w,h,y1,y2,x1=0,x2=0;
-					int c=0;
+                    QRgb c=0;
 					int nr = stack->popInt();
 					if(nr==2) c = stack->popInt();
 					QString id = stack->popQString();

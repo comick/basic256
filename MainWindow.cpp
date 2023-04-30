@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     varwin_dock->setWindowTitle(QObject::tr("Variable Watch"));
 
     setCentralWidget(editwintabs);
-    addDockWidget(Qt::RightDockWidgetArea, outwin_dock);
+    addDockWidget(Qt::BottomDockWidgetArea, outwin_dock);
     addDockWidget(Qt::RightDockWidgetArea, graphwin_dock);
     addDockWidget(Qt::LeftDockWidgetArea, varwin_dock);
     setContextMenuPolicy(Qt::NoContextMenu);
