@@ -5826,7 +5826,9 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				case OP_MD5: {
 					QString stuff = stack->popQString();
-					stack->pushQString(MD5(stuff.toUtf8().data()).hexdigest());
+                    QCryptographicHash hash(QCryptographicHash::Md5);
+                    hash.addData(stuff.toUtf8());
+                    stack->pushQString(hash.result().toHex());
 				}
 				break;
 

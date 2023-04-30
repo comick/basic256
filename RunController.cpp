@@ -438,13 +438,12 @@ RunController::showPreferences() {
 	bool advanced = true;
 	SETTINGS;
 	QString prefpass = settings.value(SETTINGSPREFPASSWORD,"").toString();
-	if (prefpass.length()!=0) {
-		char * digest;
+    if (prefpass.length()!=0) {
 		QString text = QInputDialog::getText(mainwin, tr("BASIC-256 Advanced Preferences and Settings"),
 			 tr("Password:"), QLineEdit::Password, QString());
-		digest = MD5(text.toUtf8().data()).hexdigest();
-		advanced = (QString::compare(digest, prefpass)==0);
-		free(digest);
+        QCryptographicHash hash(QCryptographicHash::Md5);
+        hash.addData(text.toUtf8());
+        advanced = (QString::compare(hash.result().toHex(), prefpass)==0);
 	}
 	PreferencesWin *w = new PreferencesWin(mainwin, advanced);
 	w->exec();
