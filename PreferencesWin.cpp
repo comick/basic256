@@ -551,7 +551,9 @@ void PreferencesWin::clickSaveButton() {
 			if(QString::compare(currentpw,passwordinput->text())!=0) {
 				QString pw("");
 				if(passwordinput->text().length()!=0) {
-					pw = MD5(passwordinput->text().toUtf8().data()).hexdigest();
+                    QCryptographicHash hash(QCryptographicHash::Md5);
+                    hash.addData(passwordinput->text().toUtf8());
+                    pw = hash.result().toHex();
 				}
 				settings.setValue(SETTINGSPREFPASSWORD, pw);
 			}
