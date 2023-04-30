@@ -98,7 +98,7 @@ void BasicOutput::keyPressEvent(QKeyEvent *e) {
             t.movePosition(QTextCursor::PreviousCharacter);
             if (t.position() >= inputPosition)
                 QTextEdit::keyPressEvent(e);
-                saveLastPosition();
+            saveLastPosition();
         } else {
             QTextEdit::keyPressEvent(e);
         }
