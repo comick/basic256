@@ -218,7 +218,7 @@ void VariableWin::varWinAssign(Variables **variables, int varnum, int level) {
 				for(int y = 0; y<v->data->arr->ydim;y++) {
 					DataElement *q = v->data->arrayGetData(x,y);
 					DataElement::getError(true);
-					if (q->type!=T_UNASSIGNED) {
+					if (q && q->type!=T_UNASSIGNED) {
 						varWinAssign(variables, varnum, level, x, y);
 					}
 				}  
