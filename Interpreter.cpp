@@ -588,19 +588,46 @@ void Interpreter::setStatus(run_status s) {
 void Interpreter::watchvariable(bool doit, int i) {
 	// send an event to the variable watch window to display a variable/array content
 	if (doit) {
-		emit(varWinAssign(&variables, i, variables->getrecurse()));
+		int level = variables->getrecurse();
+		int varnum = i;
+		Variable* v = variables->getAt(i, level);
+		while (DataElement::getType(v->data) == T_REF) {
+			emit(varWinAssign(&variables, varnum, level));
+			varnum = v->data->intval;
+			level = v->data->level;
+			v = variables->getAt(i, level);
+		}
+		emit(varWinAssign(&variables, varnum, level));
 	}
 }
 void Interpreter::watchvariable(bool doit, int i, int x, int y) {
 	// send an event to the variable watch window to display aan array element's value
 	if (doit) {
-		emit(varWinAssign(&variables, i, variables->getrecurse(), x ,y));
+		int level = variables->getrecurse();
+		int varnum = i;
+		Variable* v = variables->getAt(i, level);
+		while (DataElement::getType(v->data) == T_REF) {
+			emit(varWinAssign(&variables, varnum, level));
+			varnum = v->data->intval;
+			level = v->data->level;
+			v = variables->getAt(i, level);
+		}
+		emit(varWinAssign(&variables, varnum, level, x ,y));
 	}
 }
 void Interpreter::watchvariable(bool doit, int i, QString k) {
 	// send an event to the variable watch window to display a map element's value
 	if (doit) {
-		emit(varWinAssign(&variables, i, variables->getrecurse(), k));
+		int level = variables->getrecurse();
+		int varnum = i;
+		Variable* v = variables->getAt(i, level);
+		while (DataElement::getType(v->data) == T_REF) {
+			emit(varWinAssign(&variables, varnum, level));
+			varnum = v->data->intval;
+			level = v->data->level;
+			v = variables->getAt(i, level);
+		}
+		emit(varWinAssign(&variables, varnum, level, k));
 	}
 }
 
