@@ -394,6 +394,7 @@ QString Interpreter::opname(int op) {
 	case OP_PUSHFLOAT : return QString("OP_PUSHFLOAT");
 	case OP_PUSHINT : return QString("OP_PUSHINT");
 	case OP_PUSHLABEL : return QString("OP_PUSHLABEL");
+	case OP_PUSHLONG : return QString("OP_PUSHLONG");
 	case OP_PUSHSTRING : return QString("OP_PUSHSTRING");
 	case OP_PUTSLICE : return QString("OP_PUTSLICE");
 	case OP_RADIANS : return QString("OP_RADIANS");
@@ -837,10 +838,13 @@ int Interpreter::compileProgram(char *code) {
 			case COMPERR_ONERRORCALL:
 				msg += tr("Cannot pass arguments to a SUBROUTINE used by ONERROR statement");
 				break;
-			case COMPERR_NUMBERTOOLARGE:
-				msg += tr("Number too large");
+			case COMPERR_INTEGERTOOLARGE:
+				msg += tr("Integer number too large");
 				break;
-
+			case COMPERR_FLOATTOOLARGE:
+				msg += tr("Floating point number too large");
+				break;
+				
 			default:
 				if(column==0) {
 					msg += tr("Syntax error around beginning line");
@@ -1441,15 +1445,16 @@ Interpreter::execByteCode() {
 	fprintf(stderr,"%08x %s ",(unsigned int) (op-wordCode), opname(*op).toUtf8().data());
 	if(optype(*op)==OPTYPE_INT) {
 		if ((*op)==OP_CURRLINE) {
-			int includeFileNumber = (long) *(op+1) >> 24;
-			int currentLine = (long) *(op+1) & 0xffffff;
-			fprintf(stderr, "%d %d", includeFileNumber, currentLine);
+			int includeFileNumber = (unsigned int) *(op+1) >> 24;
+			int currentLine = (unsigned int) *(op+1) & 0xffffff;
+			fprintf(stderr, "%u u", includeFileNumber, currentLine);
 		} else {
-			fprintf(stderr, "%ld", (long) *(op+1));
+			fprintf(stderr, "%d", (int) *(op+1));
 		}
 	}
 	if(optype(*op)==OPTYPE_FLOAT) fprintf(stderr, "%f", (float) *(op+1));
 	if(optype(*op)==OPTYPE_STRING) fprintf(stderr, "'%s'", (char *) (op+1));
+	if(optype(*op)==OPTYPE_LONG) fprintf(stderr, "'%ld'", (long) *(op+1));
 	if(optype(*op)==OPTYPE_LABEL){
 		int v = *(op+1);
 		fprintf(stderr, "lbl %s", ((v>=0&&v<numsyms)?symtable[v]:"__unknown__") );
@@ -2107,6 +2112,24 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 		}
 		break;
 
+		case OPTYPE_LONG: {
+			//
+			// OPCODES with an long integer following in the wordCcode go in this switch
+			// double d is the number extracted from the wordCode
+			//
+			long *l = (long *) op;
+			op += bytesToFullWords(sizeof(long));
+			switch(opcode) {
+
+				case OP_PUSHLONG: {
+					stack->pushLong(*l);
+				}
+				break;
+
+			}
+		}
+		break;
+		
 		case OPTYPE_STRING: {
 			//
 			// OPCODES with a string in the wordCcode go in this switch
@@ -4050,7 +4073,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						error->q(ERROR_RGB);
 						stack->pushLong(0);
 					} else {
-						stack->pushInt( (int) QColor(rval,gval,bval,aval).rgba());
+						stack->pushUInt( (unsigned int) QColor(rval,gval,bval,aval).rgba());
 					}
 				}
 				break;
@@ -4060,16 +4083,16 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					int x = stack->popInt();
 					if(drawingOnScreen || drawto.isEmpty()){
 						QRgb rgb = graphwin->image->pixel(x,y);
-						stack->pushInt((int) rgb);
+						stack->pushUInt((unsigned int) rgb);
 					}else{
 						QRgb rgb = images[drawto]->pixel(x,y);
-						stack->pushInt((int) rgb);
+						stack->pushUInt((unsigned int) rgb);
 					}
 				}
 				break;
 
 				case OP_GETCOLOR: {
-					stack->pushInt((int) drawingpen.color().rgba());
+					stack->pushUInt((unsigned int) drawingpen.color().rgba());
 				}
 				break;
 
@@ -4108,7 +4131,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						int tw, th;
 						for(th=0; th<h; th++) {
 							for(tw=0; tw<w; tw++) {
-								DataElement* temp = new DataElement((int) r[counter]);
+								DataElement* temp = new DataElement((unsigned int) r[counter]);
 								d->arraySetData(tw,th,temp);
 								delete temp;
 								counter++;
@@ -4138,7 +4161,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						int counter = 0;
 						for (th=0;th<h;th++) {
 							for (tw=0; tw<w; tw++) {
-							r[counter++] = (QRgb) convert->getInt(d->arrayGetData(tw,th));			// DONT RELEASE
+							r[counter++] = (QRgb) convert->getUInt(d->arrayGetData(tw,th));			// DONT RELEASE
 							}
 						}
 						//update painter only if needed (faster)
@@ -4604,9 +4627,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_CLG: {
-					int clearcolor = stack->popInt();
-					QColor c = QColor::fromRgba((QRgb) clearcolor);
-
+					QColor c = stack->popQColor();
+					
 					if (drawingOnScreen){
 						graphwin->image->fill(c);
 						if (!fastgraphics) waitForGraphics();
@@ -6421,7 +6443,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				break;
 
 				case OP_GETBRUSHCOLOR: {
-					stack->pushInt((int) drawingbrush.color().rgba());
+					stack->pushUInt((unsigned int) drawingbrush.color().rgba());
 				}
 				break;
 
@@ -6628,6 +6650,10 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 										emit(outputReady(QString("%1 %2 \"%3\"\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((char*) o)));
 										int len = bytesToFullWords(strlen((char*) o) + 1);
 										o += len;
+									} else if (optype(currentop) == OPTYPE_LONG) {
+										// op has a single long integer arg
+										emit(outputReady(QString("%1 %2 %3\n").arg(offset,8,16,QChar('0')).arg(opname(currentop),-20).arg((long) *o)));
+										o += bytesToFullWords(sizeof(long));
 									}
 									waitCond->wait(mymutex);
 									mymutex->unlock();
@@ -7016,13 +7042,13 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 
 				case OP_IMAGENEW: {
-					int c = stack->popInt();
+					QColor c = stack->popQColor();
 					int h = stack->popInt();
 					int w = stack->popInt();
 					lastImageId++;
 					QString id = QString("image:") + QString::number(lastImageId);
 					images[id] = new QImage(w, h, QImage::Format_ARGB32);
-					images[id]->fill(QColor::fromRgba((QRgb) c));
+					images[id]->fill(c);
 					stack->pushQString(id);
 				}
 				break;

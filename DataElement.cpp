@@ -25,6 +25,15 @@ DataElement::DataElement(QString s) {
 }
 
 DataElement::DataElement(int i) {
+	// 32 bit integer stored on stack as a 64 bit long
+	init();
+    type = T_INT;
+    intval = i;
+}
+
+
+DataElement::DataElement(unsigned int i) {
+	// 32 bit integer stored on stack as a 64 bit long
 	init();
     type = T_INT;
     intval = i;

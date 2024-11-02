@@ -93,6 +93,11 @@ void Stack::pushInt(int i) {
 	stackdata[stackpointer++] = new DataElement((long)i);
 }
 
+void Stack::pushUInt(unsigned int i) {
+	if (stackpointer >= stacksize)  stackGrow();
+	stackdata[stackpointer++] = new DataElement((long)i);
+}
+
 void Stack::pushBool(bool i) {
 	if (stackpointer >= stacksize)  stackGrow();
 	stackdata[stackpointer++] = new DataElement(i?1L:0L);
@@ -150,6 +155,16 @@ int Stack::popBool() {
 	return b;
 }
 
+unsigned int Stack::popUInt() {
+	if (stackpointer==0) {
+		e = ERROR_STACKUNDERFLOW;
+		return 0;
+	}
+	unsigned int i = convert->getUInt(stackdata[--stackpointer]);
+	delete stackdata[stackpointer];
+	return i;
+}
+
 int Stack::popInt() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
@@ -159,7 +174,6 @@ int Stack::popInt() {
 	delete stackdata[stackpointer];
 	return i;
 }
-
 long Stack::popLong() {
 	if (stackpointer==0) {
 		e = ERROR_STACKUNDERFLOW;
@@ -209,7 +223,7 @@ QColor Stack::popQColor() {
 			return Qt::transparent;
 		}
 	} else {
-		return QColor::fromRgba((QRgb) popInt());
+		return QColor::fromRgba((QRgb) popUInt());
 	}
 }
 

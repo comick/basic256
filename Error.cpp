@@ -94,6 +94,10 @@ void Error::q(int errornumber, int variablenumber, int arrayx, int arrayy, QStri
         if (typeconverror==SETTINGSERRORNONE) return;
         if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_INTEGERRANGE;
     }
+    if (errornumber==ERROR_UNSIGNEDINTEGERRANGE) {
+        if (typeconverror==SETTINGSERRORNONE) return;
+        if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_UNSIGNEDINTEGERRANGE;
+    }
     if (errornumber==ERROR_STRING2NOTE) {
         if (typeconverror==SETTINGSERRORNONE) return;
         if (typeconverror==SETTINGSERRORWARN) errornumber = WARNING_STRING2NOTE;
@@ -355,6 +359,9 @@ QString Error::getErrorMessage(char **symtable) {
 		case ERROR_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr(")");
 			break;
+		case ERROR_UNSIGNEDINTEGERRANGE:
+			errormessage = tr("Number exceeds unsigned integer range (") + QString::number(0) + tr(" to ") + QString::number(UINT_MAX) + tr(")");
+			break;
 		case ERROR_UNSERIALIZEFORMAT:
 			errormessage = tr("Unable to UnSerialize string");
 			break;
@@ -506,6 +513,9 @@ QString Error::getErrorMessage(char **symtable) {
 			break;
 		case WARNING_INTEGERRANGE:
 			errormessage = tr("Number exceeds integer range (") + QString::number(INT_MIN) + tr(" to ") + QString::number(INT_MAX) + tr("), zero used");
+			break;
+		case WARNING_UNSIGNEDINTEGERRANGE:
+			errormessage = tr("Number exceeds unsigned integer range (") + QString::number(0) + tr(" to ") + QString::number(UINT_MAX) + tr("), zero used");
 			break;
 		case WARNING_SOUNDNOTSEEKABLE:
 			errormessage = tr("Media file is not seekable");

@@ -62,7 +62,8 @@
 #define COMPERR_INCLUDENOTALONE         45
 #define COMPERR_INCLUDENOFILE           46
 #define COMPERR_ONERRORCALL             47
-#define COMPERR_NUMBERTOOLARGE          48
+#define COMPERR_INTEGERTOOLARGE         48
+#define COMPERR_FLOATTOOLARGE           49
 
 
 

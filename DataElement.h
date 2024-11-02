@@ -56,6 +56,7 @@ class DataElement
 		DataElement(QString);
 		DataElement(double);
 		DataElement(long);
+		DataElement(unsigned int);
 		DataElement(int);
 		DataElement(DataElement *);
 		

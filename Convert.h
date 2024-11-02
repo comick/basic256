@@ -35,6 +35,7 @@ class Convert
 		bool isNumeric(DataElement*);
 
 		int getInt(DataElement*);
+		unsigned int getUInt(DataElement*);
 		long getLong(DataElement*);
 		double getFloat(DataElement*);
 		QString getString(DataElement*);

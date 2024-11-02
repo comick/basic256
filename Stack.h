@@ -34,6 +34,7 @@ class Stack
 		void pushBool(bool);
 		void pushQString(QString);
 		void pushInt(int);
+		void pushUInt(unsigned int);
 		void pushLong(long);
 		void pushRef(int, int);
 		void pushDouble(double);
@@ -47,6 +48,7 @@ class Stack
 		int peekType(int);
 		DataElement *popDE();
 		int popInt();
+		unsigned int popUInt();
 		int popBool();
 		QColor popQColor();
 		long popLong();

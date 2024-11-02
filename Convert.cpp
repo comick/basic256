@@ -80,6 +80,15 @@ int Convert::getInt(DataElement *d) {
 	return (int) l;
 }
 
+unsigned int Convert::getUInt(DataElement *d) {
+	long l=getLong(d);
+	if (l<0||l>UINT_MAX) {
+		e = ERROR_UNSIGNEDINTEGERRANGE;
+		l = 0;
+	}
+	return (unsigned int) l;
+}
+
 long Convert::getLong(DataElement *d) {
 	long i=0;
 	if (d) {
