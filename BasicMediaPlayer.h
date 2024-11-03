@@ -48,7 +48,7 @@ public slots:
 private:
 	Sleeper *mediasleeper;
     void waitForSeekable(int);
-    void waitForState(QMediaPlayer::PlaybackState, int);
+    void waitForState(QMediaPlayer::State, int);
 
 };
 

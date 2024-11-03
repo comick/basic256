@@ -130,7 +130,7 @@ public slots:
 
 private slots:
         void handleAudioStateChanged(QAudio::State);
-        void handleMediaStateChanged(QMediaPlayer::PlaybackState);
+        void handleMediaStateChanged(QMediaPlayer::State);
         void handleMediaDurationChanged(qint64);
         void handleMediaStatusChanged(QMediaPlayer::MediaStatus);
         void handleMediaError(QMediaPlayer::Error);
@@ -200,7 +200,7 @@ private:
         std::unordered_map<int, Sound*> soundsmap;
         QMap <QString, LoadedSound> loadedsounds;
         QByteArray* generateSound(std::vector<std::vector<double>>);
-        QAudioFormat* format;
+        QAudioFormat format;
         double masterVolume;
         int sound_samplerate;
         int sound_normalize_ms;

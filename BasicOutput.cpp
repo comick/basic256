@@ -198,11 +198,11 @@ void BasicOutput::dragEnterEvent(QDragEnterEvent *e){
 }
 
 void BasicOutput::dragMoveEvent (QDragMoveEvent *event){
-    QTextCursor t = cursorForPosition(event->position().toPoint());
+    QTextCursor t = cursorForPosition(event->pos());
     if (t.position() >= inputPosition){
         event->acceptProposedAction();
-        QDragMoveEvent move(event->position().toPoint(),event->dropAction(), event->mimeData(), event->buttons(),
-            event->modifiers(), event->type());
+        QDragMoveEvent move(event->pos(), event->dropAction(), event->mimeData(), event->mouseButtons(),
+            event->keyboardModifiers(), event->type());
         QTextEdit::dragMoveEvent(&move); // Call the parent function (show cursor and keep selection)
     } else {
         event->ignore();

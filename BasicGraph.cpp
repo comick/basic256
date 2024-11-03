@@ -284,7 +284,7 @@ void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mousePressEvent(QMouseEvent *e) {
-    if (e->position().x() >= 0 && e->position().x() < gwidth && e->position().y() >= 0 && e->position().y() < gheight) {
+    if (e->localPos().x() >= 0 && e->localPos().x() < gwidth && e->localPos().y() >= 0 && e->localPos().y() < gheight) {
         QPoint p = gtransforminverted.map(e->pos());
         clickX = mouseX = p.x();
         clickY = mouseY = p.y();
@@ -401,9 +401,9 @@ void BasicGraph::updateScreenImage(){
 }
 
 void BasicGraph::mouseDoubleClickEvent(QMouseEvent * e){
-    if (e->position().x() >= 0 && e->position().x() < gwidth && e->position().y() >= 0 && e->position().y() < gheight) {
-        clickX = mouseX = e->position().x();
-        clickY = mouseY = e->position().y();
+    if (e->localPos().x() >= 0 && e->localPos().x() < gwidth && e->localPos().y() >= 0 && e->localPos().y() < gheight) {
+        clickX = mouseX = e->localPos().x();
+        clickY = mouseY = e->localPos().y();
         clickB = e->button() | MOUSEBUTTON_DOUBLECLICK; //set doubleclick flag
         mouseB = e->buttons();
     }
