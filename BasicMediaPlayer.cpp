@@ -24,9 +24,9 @@ BasicMediaPlayer::BasicMediaPlayer() {
 
 void BasicMediaPlayer::loadFile(QString file) {
     if(QFileInfo(file).exists()){
-        setMedia(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
+        setSource(QUrl::fromLocalFile(QFileInfo(file).absoluteFilePath()));
     }else{
-        setMedia(QUrl::fromUserInput(file));
+        setSource(QUrl::fromUserInput(file));
     }
     waitForSeekable(2000);
 }
@@ -45,13 +45,13 @@ void BasicMediaPlayer::waitForSeekable(int ms) {
 	}
 }
 
-void BasicMediaPlayer::waitForState(QMediaPlayer::State newstate, int ms) {
+void BasicMediaPlayer::waitForState(QMediaPlayer::PlaybackState newstate, int ms) {
 	// if player state is not newstate then wait up to ms
 	if(state()!=newstate) {
 		// thanks http://qt-project.org/forums/viewthread/19869
 		QTimer *timer = new QTimer(this);
 		timer->start (ms);
-		connect (timer, SIGNAL (timeout()), this, SIGNAL (QMediaPlayer::stateChanged()));
+		connect (timer, SIGNAL (timeout()), this, SIGNAL (QMediaPlayer::playbackStateChanged()));
 	}
 }
 
@@ -66,7 +66,7 @@ int BasicMediaPlayer::state() {
 	
 	int s;
 	qint64 starttime, endtime;
-	s = QMediaPlayer::state();
+	s = QMediaPlayer::playbackState();
 	if (s==QMediaPlayer::PlayingState) {
         starttime = QMediaPlayer::position();
 		mediasleeper->sleepRQM(30);

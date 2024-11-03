@@ -40,8 +40,8 @@
 extern int guiState;
 
 BasicEdit::BasicEdit(const QString & defaulttitle) {
-	currentLine = 1;
-	runState = RUNSTATESTOP;
+    currentLine = 1;
+    runState = RUNSTATESTOP;
     rightClickBlockNumber = -1;
     breakPoints = new QList<int>;
     title = defaulttitle;
@@ -85,36 +85,36 @@ BasicEdit::~BasicEdit() {
         breakPoints = NULL;
     }
     if (lineNumberArea) {
-		delete lineNumberArea;
-		lineNumberArea = NULL;
-	}
+        delete lineNumberArea;
+        lineNumberArea = NULL;
+    }
 }
 
 void BasicEdit::setFont(QFont f) {
-	// set the font and the tab stop at EDITOR_TAB_WIDTH spaces
-	QPlainTextEdit::setFont(f);
-	QFontMetrics metrics(f);
-	setTabStopWidth(metrics.width(" ")*EDITOR_TAB_WIDTH);
+    // set the font and the tab stop at EDITOR_TAB_WIDTH spaces
+    QPlainTextEdit::setFont(f);
+    QFontMetrics metrics(f);
+    setTabStopDistance(metrics.boundingRect(" ").width()*EDITOR_TAB_WIDTH);
     updateLineNumberAreaWidth(blockCount());
 }
 
 
 void
 BasicEdit::cursorMove() {
-	QTextCursor t(textCursor());
-	emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
-		+ tr(" Character: ") + QString::number(t.positionInBlock())));
+    QTextCursor t(textCursor());
+    emit(changeStatusBar(tr("Line: ") + QString::number(t.blockNumber()+1)
+        + tr(" Character: ") + QString::number(t.positionInBlock())));
 }
 
 void
 BasicEdit::seekLine(int newLine) {
     // go to a line number and set
-	// the text cursor
-	//
-	// code should be proximal in that it should be closest to look at the curent
+    // the text cursor
+    //
+    // code should be proximal in that it should be closest to look at the curent
     // position than to go and search the entire program from the top
     QTextCursor t = textCursor();
-    int line = t.blockNumber()+1;	// current line number for the block
+    int line = t.blockNumber()+1;    // current line number for the block
     // go back or forward to the line from the current position
     if (line<newLine) {
         // advance forward
@@ -127,28 +127,28 @@ BasicEdit::seekLine(int newLine) {
             line--;
         }
     }
-	setTextCursor(t);
+    setTextCursor(t);
 }
 
 void BasicEdit::slotWhitespace(bool checked) {
-	// toggle the display of whitespace characters
-	// http://www.qtcentre.org/threads/27245-Printing-white-spaces-in-QPlainTextEdit-the-QtCreator-way
-	QTextOption option = document()->defaultTextOption();
-	if (checked) {
-		option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
-	} else {
-		option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
-	}
-	option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
-	document()->setDefaultTextOption(option);
+    // toggle the display of whitespace characters
+    // http://www.qtcentre.org/threads/27245-Printing-white-spaces-in-QPlainTextEdit-the-QtCreator-way
+    QTextOption option = document()->defaultTextOption();
+    if (checked) {
+        option.setFlags(option.flags() | QTextOption::ShowTabsAndSpaces);
+    } else {
+        option.setFlags(option.flags() & ~QTextOption::ShowTabsAndSpaces);
+    }
+    option.setFlags(option.flags() | QTextOption::AddSpaceForLineAndParagraphSeparators);
+    document()->setDefaultTextOption(option);
 }
 
 void BasicEdit::slotWrap(bool checked) {
-	if (checked) {
-		setLineWrapMode(QPlainTextEdit::WidgetWidth);
-	} else {
-		setLineWrapMode(QPlainTextEdit::NoWrap);
-	}
+    if (checked) {
+        setLineWrapMode(QPlainTextEdit::WidgetWidth);
+    } else {
+        setLineWrapMode(QPlainTextEdit::NoWrap);
+    }
 }
 
 void
@@ -160,61 +160,63 @@ BasicEdit::goToLine(int newLine) {
 
 void
 BasicEdit::keyPressEvent(QKeyEvent *e) {
-	e->accept();
+    e->accept();
     //Autoindent new line as previous one
-	if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
-		QPlainTextEdit::keyPressEvent(e);
-		QTextCursor cur = textCursor();
-		cur.movePosition(QTextCursor::PreviousBlock);
-		cur.movePosition(QTextCursor::StartOfBlock);
-		cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-		QString str = cur.selectedText();
-		QRegExp rx("^([\\t ]+)");
-		if(str.indexOf(rx) >= 0)
-			textCursor().insertText(rx.cap(1));
-	}else if(e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoModifier){
-		if(!indentSelection())
-			QPlainTextEdit::keyPressEvent(e);
-	}else if((e->key() == Qt::Key_Tab && e->modifiers() & Qt::ShiftModifier) || e->key() == Qt::Key_Backtab){
-		unindentSelection();
-	}else{
-		QPlainTextEdit::keyPressEvent(e);
-	}
+    if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
+        QPlainTextEdit::keyPressEvent(e);
+        QTextCursor cur = textCursor();
+        cur.movePosition(QTextCursor::PreviousBlock);
+        cur.movePosition(QTextCursor::StartOfBlock);
+        cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        QString str = cur.selectedText();
+        QRegularExpression rx("^([\\t ]+)");
+        QRegularExpressionMatch rxm = rx.match(str);
+        if(rxm.hasMatch())
+            textCursor().insertText(rxm.captured(1));
+    }else if(e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoModifier){
+        if(!indentSelection())
+            QPlainTextEdit::keyPressEvent(e);
+    }else if((e->key() == Qt::Key_Tab && e->modifiers() & Qt::ShiftModifier) || e->key() == Qt::Key_Backtab){
+        unindentSelection();
+    }else{
+        QPlainTextEdit::keyPressEvent(e);
+    }
 }
 
 
 void BasicEdit::saveFile(bool overwrite) {
-	// BE SURE TO SET filename PROPERTY FIRST
-	// or set it to '' to prompt for a new file name
-	if (filename == "") {
+    // BE SURE TO SET filename PROPERTY FIRST
+    // or set it to '' to prompt for a new file name
+    if (filename == "") {
         emit(setCurrentEditorTab(this)); //activate editor window
         filename = QFileDialog::getSaveFileName(this, tr("Save file as"), title+".kbs", tr("BASIC-256 File ") + "(*.kbs);;" + tr("Any File ")  + "(*.*)");
-	}
+    }
 
-	if (filename != "") {
-		QRegExp rx("\\.[^\\/]*$");
-		if (rx.indexIn(filename) == -1) {
-			filename += ".kbs";
-		}
-		QFile f(filename);
-		bool dooverwrite = true;
-		if (!overwrite && f.exists()) {
-			dooverwrite = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Save File"),
-				tr("The file ") + filename + tr(" already exists.")+ "\n" +tr("Do you want to overwrite?"),
-				QMessageBox::Yes | QMessageBox::No,
-				QMessageBox::No));
-		}
-		if (dooverwrite) {
-			f.open(QIODevice::WriteOnly | QIODevice::Truncate);
-			f.write(this->document()->toPlainText().toUtf8());
-			f.close();
-			QFileInfo fi(f);
+    if (filename != "") {
+        QRegularExpression rx("\\.[^\\/]*$");
+        QRegularExpressionMatch rxm = rx.match(filename);
+        if (!rxm.hasMatch()) {
+            filename += ".kbs";
+        }
+        QFile f(filename);
+        bool dooverwrite = true;
+        if (!overwrite && f.exists()) {
+            dooverwrite = ( QMessageBox::Yes == QMessageBox::warning(this, tr("Save File"),
+                tr("The file ") + filename + tr(" already exists.")+ "\n" +tr("Do you want to overwrite?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No));
+        }
+        if (dooverwrite) {
+            f.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            f.write(this->document()->toPlainText().toUtf8());
+            f.close();
+            QFileInfo fi(f);
             document()->setModified(false);
             setTitle(fi.fileName());
-			QDir::setCurrent(fi.absolutePath());
+            QDir::setCurrent(fi.absolutePath());
             emit(addFileToRecentList(filename));
-		}
-	}
+        }
+    }
 }
 
 void BasicEdit::saveAllStep(int s) {
@@ -276,139 +278,139 @@ void BasicEdit::slotPrint() {
 
 
 void BasicEdit::beautifyProgram() {
-	QString program;
-	QStringList lines;
-	int indent = 0;
-	bool indentThisLine = true;
-	bool increaseIndent = false;
-	bool decreaseIndent = false;
-	bool increaseIndentDouble = false;
-	bool decreaseIndentDouble = false;
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	program = this->document()->toPlainText();
-	lines = program.split(QRegExp("\\n"));
-	for (int i = 0; i < lines.size(); i++) {
-		QString line = lines.at(i);
-		line = line.trimmed();
+    QString program;
+    QStringList lines;
+    int indent = 0;
+    bool indentThisLine = true;
+    bool increaseIndent = false;
+    bool decreaseIndent = false;
+    bool increaseIndentDouble = false;
+    bool decreaseIndentDouble = false;
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    program = this->document()->toPlainText();
+    lines = program.split(QRegularExpression("\\n"));
+    for (int i = 0; i < lines.size(); i++) {
+        QString line = lines.at(i);
+        line = line.trimmed();
         if(line.isEmpty()){
             // label - empty line no indent
             indentThisLine = false;
-        } else if (line.contains(QRegExp("^\\S+[:]"))) {
-			// label - one line no indent
-			indentThisLine = false;
-		} else if (line.contains(QRegExp("^(for)|(foreach)\\s", Qt::CaseInsensitive))) {
-			// for - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^next(\\s)", Qt::CaseInsensitive))) {
-			// next var - come out of block - reduce indent
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^next$", Qt::CaseInsensitive))) {
-			// next - come out of block - reduce indent
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^if\\s.+\\sthen\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// if/then (NOTHING FOLLOWING) - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^else\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// else - come out of block and start new block
-			decreaseIndent = true;
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^end\\s*if\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// end if - come out of block - reduce indent
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^while\\s", Qt::CaseInsensitive))) {
-			// while - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^end\\s*while\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// endwhile - come out of block
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^function\\s", Qt::CaseInsensitive))) {
-			// function - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^end\\s*function\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// endfunction - come out of block
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^subroutine\\s", Qt::CaseInsensitive))) {
-			// function - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^end\\s*subroutine\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// endfunction - come out of block
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^do\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// do - indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^until\\s", Qt::CaseInsensitive))) {
-			// until - come out of block
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^try\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// try indent next (block of code)
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^catch\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// catch - come out of block and start new block
-			decreaseIndent = true;
-			increaseIndent = true;
-		} else if (line.contains(QRegExp("^end\\s*try\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// end try - come out of block - reduce indent
-			decreaseIndent = true;
-		} else if (line.contains(QRegExp("^begin\\s*case\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// begin case double indent next (block of code)
-			increaseIndentDouble = true;
-		} else if (line.contains(QRegExp("^end\\s*case\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// end case double reduce
-			decreaseIndentDouble = true;
-		} else if (line.contains(QRegExp("^case\\s.+\\s*((#|(rem\\s)).*)?$", Qt::CaseInsensitive))) {
-			// case expression - indent one line
-			decreaseIndent = true;
-			increaseIndent = true;
-		}
-		//
-		if (decreaseIndent) {
-			indent--;
-			if (indent<0) indent=0;
-			decreaseIndent = false;
-		}
-		if (decreaseIndentDouble) {
-			indent-=2;
-			if (indent<0) indent=0;
-			decreaseIndentDouble = false;
-		}
-		if (indentThisLine) {
-			line = QString(indent, QChar('\t')) + line;
-		} else {
-			indentThisLine = true;
-		}
-		if (increaseIndent) {
-			indent++;
-			increaseIndent = false;
-		}
-		if (increaseIndentDouble) {
-			indent+=2;
-			increaseIndentDouble = false;
-		}
-		//
-		lines.replace(i, line);
-	}
+        } else if (line.contains(QRegularExpression("^\\S+[:]"))) {
+            // label - one line no indent
+            indentThisLine = false;
+        } else if (line.contains(QRegularExpression("^(for)|(foreach)\\s", QRegularExpression::CaseInsensitiveOption))) {
+            // for - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^next(\\s)", QRegularExpression::CaseInsensitiveOption))) {
+            // next var - come out of block - reduce indent
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^next$", QRegularExpression::CaseInsensitiveOption))) {
+            // next - come out of block - reduce indent
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^if\\s.+\\sthen\\s*((#|(rem\\s)).*)?$", QRegularExpression::CaseInsensitiveOption))) {
+            // if/then (NOTHING FOLLOWING) - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^else\\s*((#|(rem\\s)).*)?$", QRegularExpression::CaseInsensitiveOption))) {
+            // else - come out of block and start new block
+            decreaseIndent = true;
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^end\\s*if\\s*((#|(rem\\s)).*)?$", QRegularExpression::CaseInsensitiveOption))) {
+            // end if - come out of block - reduce indent
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^while\\s",  QRegularExpression::CaseInsensitiveOption))) {
+            // while - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^end\\s*while\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // endwhile - come out of block
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^function\\s",  QRegularExpression::CaseInsensitiveOption))) {
+            // function - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^end\\s*function\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // endfunction - come out of block
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^subroutine\\s",  QRegularExpression::CaseInsensitiveOption))) {
+            // function - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^end\\s*subroutine\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // endfunction - come out of block
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^do\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // do - indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^until\\s",  QRegularExpression::CaseInsensitiveOption))) {
+            // until - come out of block
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^try\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // try indent next (block of code)
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^catch\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // catch - come out of block and start new block
+            decreaseIndent = true;
+            increaseIndent = true;
+        } else if (line.contains(QRegularExpression("^end\\s*try\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // end try - come out of block - reduce indent
+            decreaseIndent = true;
+        } else if (line.contains(QRegularExpression("^begin\\s*case\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // begin case double indent next (block of code)
+            increaseIndentDouble = true;
+        } else if (line.contains(QRegularExpression("^end\\s*case\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // end case double reduce
+            decreaseIndentDouble = true;
+        } else if (line.contains(QRegularExpression("^case\\s.+\\s*((#|(rem\\s)).*)?$",  QRegularExpression::CaseInsensitiveOption))) {
+            // case expression - indent one line
+            decreaseIndent = true;
+            increaseIndent = true;
+        }
+        //
+        if (decreaseIndent) {
+            indent--;
+            if (indent<0) indent=0;
+            decreaseIndent = false;
+        }
+        if (decreaseIndentDouble) {
+            indent-=2;
+            if (indent<0) indent=0;
+            decreaseIndentDouble = false;
+        }
+        if (indentThisLine) {
+            line = QString(indent, QChar('\t')) + line;
+        } else {
+            indentThisLine = true;
+        }
+        if (increaseIndent) {
+            indent++;
+            increaseIndent = false;
+        }
+        if (increaseIndentDouble) {
+            indent+=2;
+            increaseIndentDouble = false;
+        }
+        //
+        lines.replace(i, line);
+    }
     //this->setPlainText(lines.join("\n"));
     QTextCursor cursor = this->textCursor();
     cursor.select(QTextCursor::Document);
     cursor.insertText(lines.join("\n"));
-	QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 }
 
 void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 {
-	if(s.length()==0) return;
-	QTextDocument::FindFlags flag;
-	if (reverse) flag |= QTextDocument::FindBackward;
-	if (casesens) flag |= QTextDocument::FindCaseSensitively;
-	if (words) flag |= QTextDocument::FindWholeWords;
+    if(s.length()==0) return;
+    QTextDocument::FindFlags flag;
+    if (reverse) flag |= QTextDocument::FindBackward;
+    if (casesens) flag |= QTextDocument::FindCaseSensitively;
+    if (words) flag |= QTextDocument::FindWholeWords;
 
-	QTextCursor cursor = this->textCursor();
-	// here we save the cursor position and the verticalScrollBar value
+    QTextCursor cursor = this->textCursor();
+    // here we save the cursor position and the verticalScrollBar value
     QTextCursor cursorSaved = cursor;
     int scroll = verticalScrollBar()->value();
 
     if (!find(s, flag))
-	{
+    {
         //nothing is found | jump to start/end
         setUpdatesEnabled(false);
         cursor.movePosition(reverse?QTextCursor::End:QTextCursor::Start);
@@ -417,7 +419,7 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
         if (!find(s, flag))
         {
             // word not found : we set the cursor back to its initial position and restore verticalScrollBar value
-			setTextCursor(cursorSaved);
+            setTextCursor(cursorSaved);
             verticalScrollBar()->setValue(scroll);
             setUpdatesEnabled(true);
             QMessageBox::information(this, tr("Find"),
@@ -439,54 +441,54 @@ void BasicEdit::findString(QString s, bool reverse, bool casesens, bool words)
 }
 
 void BasicEdit::replaceString(QString from, QString to, bool reverse, bool casesens, bool words, bool doall) {
-	if(from.length()==0) return;
+    if(from.length()==0) return;
 
-	// Replace one time.
-	if(!doall){
-		//Replace if text is selected - use the cursor from the last find not the copy
+    // Replace one time.
+    if(!doall){
+        //Replace if text is selected - use the cursor from the last find not the copy
         QTextCursor cursor = this->textCursor();
         if (from.compare(cursor.selectedText(),(casesens ? Qt::CaseSensitive : Qt::CaseInsensitive))==0){
-			cursor.insertText(to);
-		}
+            cursor.insertText(to);
+        }
 
-		//Make a search
+        //Make a search
         findString(from, reverse, casesens, words);
 
     //Replace all
     }else{
-		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-		setUpdatesEnabled(false);
-		QTextCursor cursorSaved = textCursor();
-		int scroll = verticalScrollBar()->value();
-		QTextCursor cursor = textCursor();
-		cursor.beginEditBlock();
-		int n = 0;
-		cursor.movePosition(QTextCursor::Start);
-		setTextCursor(cursor);
-		QTextDocument::FindFlags flag;
-		if (casesens) flag |= QTextDocument::FindCaseSensitively;
-		if (words) flag |= QTextDocument::FindWholeWords;
-		while (find(from, flag)){
-			if (textCursor().hasSelection()){
-				textCursor().insertText(to);
-				n++;
-			}
-		}
-		cursor.endEditBlock();
-		setUpdatesEnabled(true);
-		QApplication::restoreOverrideCursor();
-		// set the cursor back to its initial position and restore verticalScrollBar value
-		setTextCursor(cursorSaved);
-		verticalScrollBar()->setValue(scroll);
-		if(n==0)
-			QMessageBox::information(this, tr("Replace"),
-				tr("String not found."),
-				QMessageBox::Ok, QMessageBox::Ok);
-		else
-			QMessageBox::information(this, tr("Replace"),
-				tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."),
-				QMessageBox::Ok, QMessageBox::Ok);
-	}
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        setUpdatesEnabled(false);
+        QTextCursor cursorSaved = textCursor();
+        int scroll = verticalScrollBar()->value();
+        QTextCursor cursor = textCursor();
+        cursor.beginEditBlock();
+        int n = 0;
+        cursor.movePosition(QTextCursor::Start);
+        setTextCursor(cursor);
+        QTextDocument::FindFlags flag;
+        if (casesens) flag |= QTextDocument::FindCaseSensitively;
+        if (words) flag |= QTextDocument::FindWholeWords;
+        while (find(from, flag)){
+            if (textCursor().hasSelection()){
+                textCursor().insertText(to);
+                n++;
+            }
+        }
+        cursor.endEditBlock();
+        setUpdatesEnabled(true);
+        QApplication::restoreOverrideCursor();
+        // set the cursor back to its initial position and restore verticalScrollBar value
+        setTextCursor(cursorSaved);
+        verticalScrollBar()->setValue(scroll);
+        if(n==0)
+            QMessageBox::information(this, tr("Replace"),
+                tr("String not found."),
+                QMessageBox::Ok, QMessageBox::Ok);
+        else
+            QMessageBox::information(this, tr("Replace"),
+                tr("Replace completed.") + "\n" + QString::number(n) + " " + tr("occurrence(s) were replaced."),
+                QMessageBox::Ok, QMessageBox::Ok);
+    }
 }
 
 QString BasicEdit::getCurrentWord() {
@@ -496,8 +498,8 @@ QString BasicEdit::getCurrentWord() {
     QTextCursor t(textCursor());
     QTextBlock b(t.block());
     w = b.text();
-    w = w.left(w.indexOf(QRegExp("[^a-zA-Z0-9]"),t.positionInBlock()));
-    w = w.mid(w.lastIndexOf(QRegExp("[^a-zA-Z0-9]"))+1);
+    w = w.left(w.indexOf(QRegularExpression("[^a-zA-Z0-9]"),t.positionInBlock()));
+    w = w.mid(w.lastIndexOf(QRegularExpression("[^a-zA-Z0-9]"))+1);
     return w;
 }
 
@@ -508,7 +510,7 @@ int BasicEdit::lineNumberAreaWidth() {
         max /= 10;
         ++digits;
     }
-    int space = 10 + fontMetrics().width(QLatin1Char('9')) * digits;
+    int space = 10 + fontMetrics().boundingRect(QLatin1Char('9')).width() * digits;
     return space;
 }
 
@@ -569,7 +571,7 @@ void BasicEdit::highlightCurrentLine() {
 
 
     //mark brackets if we are editing
-	if (runState==RUNSTATESTOP && !isReadOnly()) {
+    if (runState==RUNSTATESTOP && !isReadOnly()) {
         QTextCursor cur = textCursor();
         int pos = cur.position();
         cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
@@ -747,7 +749,7 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
                     painter.setPen(Qt::red);
                     int w = lineNumberArea->width();
                     int bh = blockBoundingRect(block).height();
-                    int fh = fontMetrics().height();
+                    int fh = fontMetrics().boundingRect(" ").height();
                     painter.drawEllipse((w-(fh-6))/2, top+(bh-(fh-6))/2, fh-6, fh-6);
             }
             // draw text
@@ -756,7 +758,7 @@ void BasicEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
             } else {
                 painter.setPen(Qt::black);
             }
-            painter.drawText(0, top, lineNumberArea->width()-5, fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, lineNumberArea->width()-5, fontMetrics().boundingRect(" ").height(), Qt::AlignRight, number);
         }
 
         block = block.next();
@@ -779,14 +781,14 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
     if (runState == RUNSTATERUN)
         return;
     // based on mouse click - set the breakpoint in the map/block and highlight the line
-	int line;
-	QTextBlock block = firstVisibleBlock();
+    int line;
+    QTextBlock block = firstVisibleBlock();
     int bottom = (int) blockBoundingGeometry(block).translated(contentOffset()).top(); //bottom from previous block
     line = block.blockNumber();
-	// line 0 ... (n-1) of what was clicked
-	while(block.isValid()) {
-		bottom += blockBoundingRect(block).height();
-		if (event->y() < bottom) {
+    // line 0 ... (n-1) of what was clicked
+    while(block.isValid()) {
+        bottom += blockBoundingRect(block).height();
+        if (event->position().y()  < bottom) {
             if(event->button() == Qt::LeftButton){
                 //keep breakPoints list update for debug running mode
                 if(block.userState()==STATEBREAKPOINT){
@@ -807,16 +809,16 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
                     contextMenu.addAction ( tr("Set breakpoint at line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
                 QAction *act = contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
                 act->setEnabled(isBreakPoint());
-                contextMenu.exec (event->globalPos());
+                contextMenu.exec (event->globalPosition().toPoint());
             }
             return;
         }
-		block = block.next();
-		line++;
-	}
+        block = block.next();
+        line++;
+    }
     QMenu contextMenu(this);
     contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
-    contextMenu.exec (event->globalPos());
+    contextMenu.exec (event->globalPosition().toPoint());
 }
 
 void BasicEdit::toggleBreakPoint(){
@@ -884,72 +886,72 @@ void BasicEdit::updateBreakPointsList() {
 
 
 int BasicEdit::indentSelection() {
-	QTextCursor cur = textCursor();
-	if(!cur.hasSelection())
-			return false;
-	int a = cur.anchor();
-	int p = cur.position();
-	int start = (a<=p?a:p);
-	int end = (a>p?a:p);
+    QTextCursor cur = textCursor();
+    if(!cur.hasSelection())
+            return false;
+    int a = cur.anchor();
+    int p = cur.position();
+    int start = (a<=p?a:p);
+    int end = (a>p?a:p);
 
-	cur.beginEditBlock();
-	cur.setPosition(end);
-	int eblock = cur.block().blockNumber();
-	cur.setPosition(start);
-	int sblock = cur.block().blockNumber();
+    cur.beginEditBlock();
+    cur.setPosition(end);
+    int eblock = cur.block().blockNumber();
+    cur.setPosition(start);
+    int sblock = cur.block().blockNumber();
 
-	for(int i = sblock; i <= eblock; i++)
-	{
-		cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-		cur.insertText("\t");
-		cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
-	}
-	cur.endEditBlock();
+    for(int i = sblock; i <= eblock; i++)
+    {
+        cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+        cur.insertText("\t");
+        cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+    }
+    cur.endEditBlock();
 return true;
 }
 
 
 void BasicEdit::unindentSelection() {
-	QTextCursor cur = textCursor();
-	int a = cur.anchor();
-	int p = cur.position();
-	int start = (a<=p?a:p);
-	int end = (a>p?a:p);
+    QTextCursor cur = textCursor();
+    int a = cur.anchor();
+    int p = cur.position();
+    int start = (a<=p?a:p);
+    int end = (a>p?a:p);
 
-	cur.beginEditBlock();
-	cur.setPosition(end);
-	int eblock = cur.block().blockNumber();
-	cur.setPosition(start);
-	int sblock = cur.block().blockNumber();
-	QString s;
+    cur.beginEditBlock();
+    cur.setPosition(end);
+    int eblock = cur.block().blockNumber();
+    cur.setPosition(start);
+    int sblock = cur.block().blockNumber();
+    QString s;
 
-	for(int i = sblock; i <= eblock; i++)
-	{
-		cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
-		cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
-		s = cur.selectedText();
-		if(!s.isEmpty()){
-			if(s.startsWith("    ") || s.startsWith("   \t")){
-				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 4);
-				cur.removeSelectedText();
-			}else if(s.startsWith("   ") || s.startsWith("  \t")){
-				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 3);
-				cur.removeSelectedText();
-			}else if(s.startsWith("  ") || s.startsWith(" \t")){
-				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 2);
-				cur.removeSelectedText();
-			}else if(s.startsWith(" ") || s.startsWith("\t")){
-				cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-				cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 1);
-				cur.removeSelectedText();
-			}
-		}
-		cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
-	}
-	cur.endEditBlock();
+    for(int i = sblock; i <= eblock; i++)
+    {
+        cur.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
+        cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+        s = cur.selectedText();
+        if(!s.isEmpty()){
+            if(s.startsWith("    ") || s.startsWith("   \t")){
+                cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 4);
+                cur.removeSelectedText();
+            }else if(s.startsWith("   ") || s.startsWith("  \t")){
+                cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 3);
+                cur.removeSelectedText();
+            }else if(s.startsWith("  ") || s.startsWith(" \t")){
+                cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 2);
+                cur.removeSelectedText();
+            }else if(s.startsWith(" ") || s.startsWith("\t")){
+                cur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                cur.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 1);
+                cur.removeSelectedText();
+            }
+        }
+        cur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+    }
+    cur.endEditBlock();
 }
 
 void BasicEdit::setTitle(QString newTitle){

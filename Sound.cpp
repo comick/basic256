@@ -183,7 +183,7 @@ void Sound::wait() {
 				loop->exec(QEventLoop::WaitForMoreEvents);
 			}
 		}else if(media){
-			QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::State)), loop, SLOT(quit()));
+			QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::PlaybackState)), loop, SLOT(quit()));
 			while(!isStopping && media && (media->state() == QMediaPlayer::PlayingState || (media->state() == QMediaPlayer::PausedState && soundStateExpected==1))){
 				loop->exec(QEventLoop::WaitForMoreEvents);
 			}
@@ -254,7 +254,7 @@ bool Sound::seek(double sec) {
 				connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
 				timer->start(2000);
 				QObject::connect(this, SIGNAL(exitWaitingLoop()), loop, SLOT(quit()));
-				QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::State)), loop, SLOT(quit()));
+				QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::PlaybackState)), loop, SLOT(quit()));
 				QObject::connect(media, SIGNAL(seekableChanged(bool)), loop, SLOT(quit()));
 				while(!isStopping && media && !media->isSeekable() && media->state() != QMediaPlayer::StoppedState && timer->isActive()){
 					loop->exec(QEventLoop::WaitForMoreEvents);
@@ -289,7 +289,7 @@ void Sound::waitLastMediaSeekTakeAction(){
 		connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
 		timer->start(2000);
 		QObject::connect(this, SIGNAL(exitWaitingLoop()), loop, SLOT(quit()));
-		QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::State)), loop, SLOT(quit()));
+		QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::PlaybackState)), loop, SLOT(quit()));
 		QObject::connect(media, SIGNAL(positionChanged(qint64)), loop, SLOT(quit()));
 		while(!isStopping && !isPositionChanged && timer->isActive()){
 			loop->exec(QEventLoop::WaitForMoreEvents);
@@ -337,7 +337,7 @@ double Sound::length() {
 			connect(timer, SIGNAL(timeout()), loop, SLOT(quit()));
 			timer->start(2000);
 			QObject::connect(this, SIGNAL(exitWaitingLoop()), loop, SLOT(quit()));
-			QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::State)), loop, SLOT(quit()));
+			QObject::connect(media, SIGNAL(stateChanged(QMediaPlayer::PlaybackState)), loop, SLOT(quit()));
 			QObject::connect(media, SIGNAL(durationChanged(qint64)), loop, SLOT(quit()));
 			while(!isStopping && timer->isActive() && media_duration<0.0){
 				loop->exec(QEventLoop::WaitForMoreEvents);
@@ -377,7 +377,7 @@ void Sound::prepareConnections() {
 		connect(audio, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleAudioStateChanged(QAudio::State)));
 	}else if(media){
 		connect(media, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(handleMediaStatusChanged(QMediaPlayer::MediaStatus)));
-		connect(media, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handleMediaStateChanged(QMediaPlayer::State)));
+		connect(media, SIGNAL(stateChanged(QMediaPlayer::PlaybackState)), this, SLOT(handleMediaStateChanged(QMediaPlayer::PlaybackState)));
 		connect(media, SIGNAL(durationChanged(qint64)), this, SLOT(handleMediaDurationChanged(qint64)));
 		connect(media, SIGNAL(error(QMediaPlayer::Error)), this, SLOT(handleMediaError(QMediaPlayer::Error)));
 		connect(media, SIGNAL(positionChanged(qint64)), this, SLOT(handlePositionChanged(qint64)));
@@ -417,7 +417,7 @@ void Sound::handleMediaError(QMediaPlayer::Error err) {
 	//qDebug() << err;
 }
 
-void Sound::handleMediaStateChanged(QMediaPlayer::State newState){
+void Sound::handleMediaStateChanged(QMediaPlayer::PlaybackState newState){
 	soundState = newState;
 	if(newState==QMediaPlayer::StoppedState){
 		soundStateExpected=0;

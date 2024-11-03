@@ -39,7 +39,9 @@ void BasicDownloader::download(QUrl url){
     inprogress = true;
     QNetworkRequest request(url);
 //compile with older Ot (for Linux users)
-#if QT_VERSION >= 0x050600
+#if QT_VERSION >= 0x060000
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+#elif QT_VERSION >= 0x050600
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 #endif
     request.setHeader(QNetworkRequest::UserAgentHeader, "App/1.0");
@@ -57,7 +59,7 @@ void BasicDownloader::fileDownloaded(QNetworkReply* ) {
     //qDebug() << "BasicDownloader fileDownloaded() attr:" << netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString() << "err:" << netreply->error();
     if(netreply->error() != QNetworkReply::NoError) {
         error->q(ERROR_DOWNLOAD, netreply->errorString());
-    }else if(netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute) >= 300) {
+    }else if(netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() >= 300) {
         error->q(ERROR_DOWNLOAD, netreply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString());
     }else{
         m_data = netreply->readAll();

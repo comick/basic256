@@ -32,8 +32,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QShortcut>
-#include <QtWidgets/QDesktopWidget>
+#include <QtGui/QShortcut>
 
 #include "MainWindow.h"
 #include "Settings.h"
@@ -77,8 +76,8 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 
 
     // create the global mymutexes and waits
-    mymutex = new QMutex(QMutex::NonRecursive);
-    mydebugmutex = new QMutex(QMutex::NonRecursive);
+    mymutex = new QMutex();
+    mydebugmutex = new QMutex();
     waitCond = new QWaitCondition();
     waitDebugCond = new QWaitCondition();
 
@@ -166,7 +165,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     for(int i=0;i<SETTINGSGROUPHISTN;i++){
         recentfiles_act[i] = filemenu_recentfiles->addAction(basicIcons->openIcon, QObject::tr(""));
         if(i<10)
-            recentfiles_act[i]->setShortcut(Qt::Key_0 + ((i+1)%SETTINGSGROUPHISTN) + Qt::CTRL);
+            recentfiles_act[i]->setShortcut(Qt::Key_0 | Qt::CTRL | ((i+1)%SETTINGSGROUPHISTN));
     }
     filemenu_recentfiles->addSeparator();
     recentfiles_empty_act = filemenu_recentfiles->addAction(basicIcons->clearIcon, QObject::tr("&Clear list"));
@@ -256,35 +255,35 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     graphwin->slotGridLines(SETTINGSGRAPHGRIDLINESDEFAUT);
 
     // Graphics Zoom
-    double z = graphwin->getZoom();
-    viewmenu_zoom = viewmenu->addMenu(basicIcons->zoomInIcon, QObject::tr("Graphics Window &Zoom"));
-    viewmenu_zoom_group = new QActionGroup(this);
-    viewmenu_zoom_group->setExclusive(true);
-    viewmenu_zoom_1_4 = viewmenu_zoom_group->addAction(QObject::tr("1:4 (quarter)"));
-    viewmenu_zoom_1_4->setCheckable(true);
-    viewmenu_zoom_1_4->setChecked(z==0.25);
-    viewmenu_zoom_1_4->setData(0.25);
-    viewmenu_zoom_1_2 = viewmenu_zoom_group->addAction(QObject::tr("1:2 (half)"));
-    viewmenu_zoom_1_2->setCheckable(true);
-    viewmenu_zoom_1_2->setChecked(z==0.5);
-    viewmenu_zoom_1_2->setData(0.5);
-    viewmenu_zoom_1_1 = viewmenu_zoom_group->addAction(QObject::tr("1:1 (original)"));
-    viewmenu_zoom_1_1->setCheckable(true);
-    viewmenu_zoom_1_1->setChecked(z==1.0);
-    viewmenu_zoom_1_1->setData(1.0);
-    viewmenu_zoom_2_1 = viewmenu_zoom_group->addAction(QObject::tr("2:1 (double)"));
-    viewmenu_zoom_2_1->setCheckable(true);
-    viewmenu_zoom_2_1->setChecked(z==2.0);
-    viewmenu_zoom_2_1->setData(2.0);
-    viewmenu_zoom_3_1 = viewmenu_zoom_group->addAction(QObject::tr("3:1 (triple)"));
-    viewmenu_zoom_3_1->setCheckable(true);
-    viewmenu_zoom_3_1->setChecked(z==3.0);
-    viewmenu_zoom_3_1->setData(3.0);
-    viewmenu_zoom_4_1 = viewmenu_zoom_group->addAction(QObject::tr("4:1 (quadruple)"));
-    viewmenu_zoom_4_1->setCheckable(true);
-    viewmenu_zoom_4_1->setChecked(z==4.0);
-    viewmenu_zoom_4_1->setData(4.0);
-    viewmenu_zoom->addActions(viewmenu_zoom_group->actions());
+    //double z = graphwin->getZoom();
+    //viewmenu_zoom = viewmenu->addMenu(basicIcons->zoomInIcon, QObject::tr("Graphics Window &Zoom"));
+    //viewmenu_zoom_group = new QActionGroup(this);
+    //viewmenu_zoom_group->setExclusive(true);
+    //viewmenu_zoom_1_4 = viewmenu_zoom_group->addAction(QObject::tr("1:4 (quarter)"));
+    //viewmenu_zoom_1_4->setCheckable(true);
+    //viewmenu_zoom_1_4->setChecked(z==0.25);
+    //viewmenu_zoom_1_4->setData(0.25);
+    //viewmenu_zoom_1_2 = viewmenu_zoom_group->addAction(QObject::tr("1:2 (half)"));
+    //viewmenu_zoom_1_2->setCheckable(true);
+    //viewmenu_zoom_1_2->setChecked(z==0.5);
+    //viewmenu_zoom_1_2->setData(0.5);
+    //viewmenu_zoom_1_1 = viewmenu_zoom_group->addAction(QObject::tr("1:1 (original)"));
+    //viewmenu_zoom_1_1->setCheckable(true);
+    //viewmenu_zoom_1_1->setChecked(z==1.0);
+    //viewmenu_zoom_1_1->setData(1.0);
+    //viewmenu_zoom_2_1 = viewmenu_zoom_group->addAction(QObject::tr("2:1 (double)"));
+    //viewmenu_zoom_2_1->setCheckable(true);
+    //viewmenu_zoom_2_1->setChecked(z==2.0);
+    //viewmenu_zoom_2_1->setData(2.0);
+    //viewmenu_zoom_3_1 = viewmenu_zoom_group->addAction(QObject::tr("3:1 (triple)"));
+    //viewmenu_zoom_3_1->setCheckable(true);
+    //viewmenu_zoom_3_1->setChecked(z==3.0);
+    //viewmenu_zoom_3_1->setData(3.0);
+    //viewmenu_zoom_4_1 = viewmenu_zoom_group->addAction(QObject::tr("4:1 (quadruple)"));
+    //viewmenu_zoom_4_1->setCheckable(true);
+    //viewmenu_zoom_4_1->setChecked(z==4.0);
+    //viewmenu_zoom_4_1->setData(4.0);
+    //viewmenu_zoom->addActions(viewmenu_zoom_group->actions());
 
 
 
@@ -317,15 +316,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
     runact->setShortcut(Qt::Key_F5);
     editmenu->addSeparator();
     debugact = runmenu->addAction(basicIcons->debugIcon, QObject::tr("&Debug"));
-    debugact->setShortcut(Qt::Key_F5 + Qt::CTRL);
+    debugact->setShortcut(Qt::Key_F5 | Qt::CTRL);
     stepact = runmenu->addAction(basicIcons->stepIcon, QObject::tr("S&tep"));
     stepact->setShortcut(Qt::Key_F11);
     stepact->setEnabled(false);
     bpact = runmenu->addAction(basicIcons->breakIcon, QObject::tr("Run &to"));
-    bpact->setShortcut(Qt::Key_F11 + Qt::CTRL);
+    bpact->setShortcut(Qt::Key_F11 | Qt::CTRL);
     bpact->setEnabled(false);
     stopact = runmenu->addAction(basicIcons->stopIcon, QObject::tr("&Stop"));
-    stopact->setShortcut(Qt::Key_F5 + Qt::SHIFT);
+    stopact->setShortcut(Qt::Key_F5 | Qt::SHIFT);
     stopact->setEnabled(false);
     runmenu->addSeparator();
     clearbreakpointsact = runmenu->addAction(basicIcons->clearIcon, QObject::tr("&Clear all breakpoints"));
@@ -423,7 +422,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f, QString localestring
 	QObject::connect(outwin_toolbar_visible_act, SIGNAL(toggled(bool)), outwin_widget, SLOT(slotShowToolBar(const bool)));
 
 	QObject::connect(varwin_visible_act, SIGNAL(triggered(bool)), varwin_dock, SLOT(setVisible(bool)));
-    QObject::connect(viewmenu_zoom_group, SIGNAL(triggered(QAction*)), this, SLOT(zoomGroupActionEvent(QAction*)));
+    //QObject::connect(viewmenu_zoom_group, SIGNAL(triggered(QAction*)), this, SLOT(zoomGroupActionEvent(QAction*)));
 
 
 
@@ -592,7 +591,8 @@ void MainWindow::about() {
 #endif	// WIN32PORTABLE
 
 	message += QObject::tr("version ") + "<b>" + VERSION + "</b>" + QObject::tr(" - built with QT ") + "<b>" + QT_VERSION_STR + "</b>" +
-            "<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+ QObject::tr("Decimal Point: ") + "<b>'" + (usefloatlocale?locale->decimalPoint():'.') + "'</b>" +
+            "<br>" + QObject::tr("Locale Name: ") + "<b>" + locale->name() + "</b> "+
+             QObject::tr("Decimal Point: ") + "<b>'" + (usefloatlocale?locale->decimalPoint():".") + "'</b>" +
             "<p>" + QObject::tr("Copyright &copy; 2006-2020, The BASIC-256 Team") + "</p>" +
 			"<p>" + QObject::tr("Please visit our web site at <a href=\"http://www.basic256.org\">http://www.basic256.org</a> for tutorials and documentation.") + "</p>" +
 			"<p>" + QObject::tr("Please see the CONTRIBUTORS file for a list of developers and translators for this project.")  + "</p>" +
@@ -832,11 +832,11 @@ void MainWindow::sourceforgeReplyFinished(QNetworkReply* reply){
         filename = jsonObject["platform_releases"].toObject()["mac"].toObject()["filename"].toString();
         url = jsonObject["platform_releases"].toObject()["mac"].toObject()["url"].toString();
 #endif
-        QRegExp rx("\\d+\\.\\d+\\.\\d+\\.\\d+");
-        rx.indexIn(filename);
-        QString siteversion = rx.cap(0);
-        rx.indexIn(VERSION);
-        QString thisversion = rx.cap(0);
+        QRegularExpression rx("\\d+\\.\\d+\\.\\d+\\.\\d+");
+        QRegularExpressionMatch match = rx.match(filename);
+        QString siteversion = match.captured(0);
+        match = rx.match(VERSION);
+        QString thisversion = match.captured(0);
         if(siteversion=="" || thisversion==""){
             //Unknown error
             if(!autoCheckForUpdate)QMessageBox::warning(this, tr("Check for an update"), tr("Unknown error."),QMessageBox::Ok, QMessageBox::Ok);
@@ -1183,93 +1183,93 @@ void MainWindow::loadProgram() {
 
 bool MainWindow::loadFile(QString s) {
     s = s.trimmed();
-    if (s != NULL) {
-        bool doload = true;
-            if (QFile::exists(s)) {
-                QFile f(s);
-                if (f.open(QIODevice::ReadOnly)) {
-                    QFileInfo fi(f);
-                    QString filename = fi.absoluteFilePath();
+    if (s.length()) {
+    bool doload = true;
+        if (QFile::exists(s)) {
+            QFile f(s);
+            if (f.open(QIODevice::ReadOnly)) {
+                QFileInfo fi(f);
+                QString filename = fi.absoluteFilePath();
 
-                    //check if file is already open
-                    for(int i=0; i<editwintabs->count(); i++){
-                        BasicEdit* e = (BasicEdit*)editwintabs->widget(i);
-                        if(e && e->filename==filename){
-                            f.close();
-                            editwintabs->setCurrentIndex(i);
-                            return true;
-                        }
-                    }
-
-                    QMimeDatabase db;
-                    QMimeType mime = db.mimeTypeForFile(fi);
-                    // Get user confirmation for non-text files
-                    //Remember that empty ".kbs" files are detected as non-text files
-                    if (!(mime.inherits("text/plain") && !(fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
-                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
-                            QObject::tr("It does not seem to be a text file.")+ "\n" + QObject::tr("Load it anyway?"),
-                            QMessageBox::Yes | QMessageBox::No,
-                            QMessageBox::No));
-                    }else if (!fi.fileName().endsWith(".kbs",Qt::CaseInsensitive)) {
-                        doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
-                            QObject::tr("You're about to load a file that does not end with the .kbs extension.")+ "\n" + QObject::tr("Load it anyway?"),
-                            QMessageBox::Yes | QMessageBox::No,
-                            QMessageBox::No));
-                    }
-                    if (doload) {
-                        //replace empty document created by default (if exists)
-                        bool replaceEmptyDoc = false;
-                        BasicEdit *neweditor;
-                        if(untitledNumber==2){
-                            BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
-                            if(e){
-                                if(e->filename.isEmpty() && !e->document()->isModified()){
-                                    neweditor=e;
-                                    replaceEmptyDoc=true;
-                                }
-                            }
-                        }
-                        if(!replaceEmptyDoc) neweditor = newEditor(fi.fileName());
-                        editwin = neweditor;
-                        neweditor->filename = filename;
-                        neweditor->path = fi.absolutePath();
-                        neweditor->title=fi.fileName();
-
-                        updateStatusBar(QObject::tr("Loading file..."));
-                        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-                        QByteArray ba = f.readAll();
+                //check if file is already open
+                for(int i=0; i<editwintabs->count(); i++){
+                    BasicEdit* e = (BasicEdit*)editwintabs->widget(i);
+                    if(e && e->filename==filename){
                         f.close();
-                        neweditor->setPlainText(QString::fromUtf8(ba.data()));
-                        neweditor->document()->setModified(false);
-                        setWindowTitle(fi.fileName());
-                        addFileToRecentList(s);
-                        QApplication::restoreOverrideCursor();
-                        updateStatusBar(QObject::tr("Ready."));
-                        if(fileSystemWatcher) fileSystemWatcher->addPath(filename);
-
-                        //add tab and make it active
-                        if(!replaceEmptyDoc){
-                            int i = editwintabs->addTab(neweditor, neweditor->title);
-                            editwintabs->setTabIcon(i, basicIcons->documentIcon);
-                            editwintabs->setCurrentIndex(i);
-                        }else{
-                            neweditor->updateTitle();
-                        }
+                        editwintabs->setCurrentIndex(i);
                         return true;
                     }
-                    f.close();
-                } else {
-                    QMessageBox::warning(this, QObject::tr("Load File"),
-                        QObject::tr("Unable to open program file")+" \""+s+"\".\n"+QObject::tr("File permissions problem or file open by another process."),
-                        QMessageBox::Ok, QMessageBox::Ok);
                 }
+
+                QMimeDatabase db;
+                QMimeType mime = db.mimeTypeForFile(fi);
+                // Get user confirmation for non-text files
+                //Remember that empty ".kbs" files are detected as non-text files
+                if (!(mime.inherits("text/plain") && !(fi.fileName().endsWith(".kbs",Qt::CaseInsensitive) && fi.size()==0))) {
+                    doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
+                        QObject::tr("It does not seem to be a text file.")+ "\n" + QObject::tr("Load it anyway?"),
+                        QMessageBox::Yes | QMessageBox::No,
+                        QMessageBox::No));
+                }else if (!fi.fileName().endsWith(".kbs",Qt::CaseInsensitive)) {
+                    doload = ( QMessageBox::Yes == QMessageBox::warning(this, QObject::tr("Load File"),
+                        QObject::tr("You're about to load a file that does not end with the .kbs extension.")+ "\n" + QObject::tr("Load it anyway?"),
+                        QMessageBox::Yes | QMessageBox::No,
+                        QMessageBox::No));
+                }
+                if (doload) {
+                    //replace empty document created by default (if exists)
+                    bool replaceEmptyDoc = false;
+                    BasicEdit *neweditor;
+                    if(untitledNumber==2){
+                        BasicEdit *e = (BasicEdit*)editwintabs->currentWidget();
+                        if(e){
+                            if(e->filename.isEmpty() && !e->document()->isModified()){
+                                neweditor=e;
+                                replaceEmptyDoc=true;
+                            }
+                        }
+                    }
+                    if(!replaceEmptyDoc) neweditor = newEditor(fi.fileName());
+                    editwin = neweditor;
+                    neweditor->filename = filename;
+                    neweditor->path = fi.absolutePath();
+                    neweditor->title=fi.fileName();
+
+                    updateStatusBar(QObject::tr("Loading file..."));
+                    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                    QByteArray ba = f.readAll();
+                    f.close();
+                    neweditor->setPlainText(QString::fromUtf8(ba.data()));
+                    neweditor->document()->setModified(false);
+                    setWindowTitle(fi.fileName());
+                    addFileToRecentList(s);
+                    QApplication::restoreOverrideCursor();
+                    updateStatusBar(QObject::tr("Ready."));
+                    if(fileSystemWatcher) fileSystemWatcher->addPath(filename);
+
+                    //add tab and make it active
+                    if(!replaceEmptyDoc){
+                        int i = editwintabs->addTab(neweditor, neweditor->title);
+                        editwintabs->setTabIcon(i, basicIcons->documentIcon);
+                        editwintabs->setCurrentIndex(i);
+                    }else{
+                        neweditor->updateTitle();
+                    }
+                    return true;
+                }
+                f.close();
             } else {
                 QMessageBox::warning(this, QObject::tr("Load File"),
-                    QObject::tr("Program file does not exist.")+" \""+s+QObject::tr("\"."),
+                    QObject::tr("Unable to open program file")+" \""+s+"\".\n"+QObject::tr("File permissions problem or file open by another process."),
                     QMessageBox::Ok, QMessageBox::Ok);
             }
+        } else {
+            QMessageBox::warning(this, QObject::tr("Load File"),
+                QObject::tr("Program file does not exist.")+" \""+s+QObject::tr("\"."),
+                QMessageBox::Ok, QMessageBox::Ok);
         }
-return false;
+    }
+    return false;
 }
 
 void MainWindow::updateWindowMenu(){

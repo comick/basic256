@@ -292,10 +292,10 @@ class Interpreter : public QThread
 		int netsockfd[NUMSOCKETS];
 
 		DIR *directorypointer;		// used by DIR function
-		QTime runtimer;				// used by MSEC function
+		QElapsedTimer runtimer;				// used by MSEC function
 		//SoundSystem *sound;
 		int includeFileNumber;
-		bool regexMinimal;			// flag to tell QRegExp to be greedy (false) or minimal (true)
+		bool regexMinimal;			// flag to tell QRegularExpression to be greedy (false) or minimal (true)
 
 		bool printing;
 		QPrinter *printdocument;

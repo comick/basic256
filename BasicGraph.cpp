@@ -23,13 +23,12 @@
 #include <QMutex>
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrinter>
-#include <QtWidgets/QAction>
+#include  <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QToolBar>
 #include <QDockWidget>
-#include <QDesktopWidget>
 
 #include "BasicWidget.h"
 #include "BasicGraph.h"
@@ -185,7 +184,7 @@ void BasicGraph::resizeWindowToFitContent() {
                 dock->setMaximumSize(QWIDGETSIZE_MAX ,QWIDGETSIZE_MAX );
 
                 // make graph window visible in screen range (ignoring taskbar area)
-                QRect screen (QApplication::desktop()->availableGeometry(this));
+                QRect screen (this->geometry());
                 QPoint win_position = dock->pos();
                 QSize win_size = dock->size();
                 int w = win_size.width()+win_position.x();
@@ -285,7 +284,7 @@ void BasicGraph::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void BasicGraph::mousePressEvent(QMouseEvent *e) {
-    if (e->x() >= 0 && e->x() < gwidth && e->y() >= 0 && e->y() < gheight) {
+    if (e->position().x() >= 0 && e->position().x() < gwidth && e->position().y() >= 0 && e->position().y() < gheight) {
         QPoint p = gtransforminverted.map(e->pos());
         clickX = mouseX = p.x();
         clickY = mouseY = p.y();
@@ -402,9 +401,9 @@ void BasicGraph::updateScreenImage(){
 }
 
 void BasicGraph::mouseDoubleClickEvent(QMouseEvent * e){
-    if (e->x() >= 0 && e->x() < gwidth && e->y() >= 0 && e->y() < gheight) {
-        clickX = mouseX = e->x();
-        clickY = mouseY = e->y();
+    if (e->position().x() >= 0 && e->position().x() < gwidth && e->position().y() >= 0 && e->position().y() < gheight) {
+        clickX = mouseX = e->position().x();
+        clickY = mouseY = e->position().y();
         clickB = e->button() | MOUSEBUTTON_DOUBLECLICK; //set doubleclick flag
         mouseB = e->buttons();
     }

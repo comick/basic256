@@ -867,7 +867,7 @@
 %token B256YELLOW
 %token B256ZFILL
 
-%union anytype {
+%union {
 	int intnum;
 	long longnum;
 	double floatnum;

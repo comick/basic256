@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QAudioFormat>
 #include <QBuffer>
 #include <QEventLoop>
 #include <QFileInfo>
@@ -129,7 +130,7 @@ public slots:
 
 private slots:
         void handleAudioStateChanged(QAudio::State);
-        void handleMediaStateChanged(QMediaPlayer::State);
+        void handleMediaStateChanged(QMediaPlayer::PlaybackState);
         void handleMediaDurationChanged(qint64);
         void handleMediaStatusChanged(QMediaPlayer::MediaStatus);
         void handleMediaError(QMediaPlayer::Error);
@@ -199,7 +200,7 @@ private:
         std::unordered_map<int, Sound*> soundsmap;
         QMap <QString, LoadedSound> loadedsounds;
         QByteArray* generateSound(std::vector<std::vector<double>>);
-        QAudioFormat format;
+        QAudioFormat* format;
         double masterVolume;
         int sound_samplerate;
         int sound_normalize_ms;

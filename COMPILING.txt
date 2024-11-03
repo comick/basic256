@@ -17,7 +17,7 @@ Dependencies:
 
 
 ###########################################################
-WINDOWS (QT5.15)
+WINDOWS (QT 6.7.0)
 ###########################################################
 
 Dependencies:
@@ -25,7 +25,8 @@ Dependencies:
 	** Available from: http://qt.io - use the online installer
 	** BE SURE to choose the mingw compiler from tools it will be the correct version
 		for the QT binary support files
-	** add paths C:\Qt\5.15\mingw81_32\bin;C:\Qt\Tools\mingw810_32\bin; to your system environment variable
+	** add paths C:\Qt\5.15\mingw1120_64\bin;C:\Qt\Tools\mingw1120_64\bin; to your system environment variable
+	** copy mingw32-make.exe to make.exe in folder C:\Qt\Tools\mingw1120_64\bin
 
 * MSYS developer tools and libraries
 	** Available from:

@@ -677,7 +677,7 @@ int Interpreter::compileProgram(char *code) {
 		// because in debugMode it already call goToLine(1) at start
 		for(int i=0; i<numparsewarnings; i++) {
 		QString msg = tr("COMPILE WARNING");
-		if (parsewarningtablelexingfilenumber!=0) {
+		if (parsewarningtablelexingfilenumber[i]!=0) {
 			msg += tr(" in included file '") + QString(include_filenames[parsewarningtablelexingfilenumber[i]]) + QStringLiteral("'");
 		} else if(gotowarning){
 			emit(goToLine(parsewarningtablelinenumber[i]));
@@ -2940,35 +2940,36 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 				case OP_MIDX: {
 				// regex section string (MID regeX)
-				//		 midx (expr, qtemp, start)
-				// start - start position. String indices begin at 1. If negative start is given,
+				//		 midx (expr, tempqstr, start)
+				// start - start position. String indices begin at 1. If negative start is given
 				//		 then position is starting from the end of the string,
 				//		 where -1 is the last character position, -2 the second character from the end... and so on
 
 					int start = stack->popInt();
-					QRegExp expr = QRegExp(stack->popQString());
-					expr.setMinimal(regexMinimal);
-					QString qtemp = stack->popQString();
+					QRegularExpression expr = QRegularExpression(stack->popQString(),
+                        regexMinimal?QRegularExpression::InvertedGreedinessOption:QRegularExpression::NoPatternOption);
+					QString tempqstr = stack->popQString();
 
 					if(start == 0) {
 						error->q(ERROR_STRSTART);
 						stack->pushQString(QString(""));
 					} else {
-						int pos;
-						if (start==1) {
-							pos = expr.indexIn(qtemp);
-						} else if (start>1){
-							pos = expr.indexIn(qtemp.mid(start-1));
-						}else{
-							pos = expr.indexIn(qtemp.mid(qtemp.length()+start));
+						// recalculate start to be zero based
+						if(start == 0) {
+							error->q(ERROR_STRSTART);
+                        } else if (start>0){
+							start = start - 1;
+						} else {
+							start = tempqstr.length()+start;
+                            if (start<0) start = 0;
 						}
-
-						if (pos==-1) {
+                        //
+                        QRegularExpressionMatch match = expr.match(tempqstr, start);
+                        if (match.hasMatch()) {
+                            stack->pushQString(match.captured(1));
+                        } else {                
 							// did not find it - return ""
 							stack->pushQString(QString(""));
-						} else {
-							QStringList stuff = expr.capturedTexts();
-							stack->pushQString(stuff[0]);
 						}
 					}
 				}
@@ -3090,22 +3091,29 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						//		 then position is starting from the end of the string,
 						//		 where -1 is the last character position, -2 the second character from the end... and so on
 						int start = stack->popInt();
-						QRegExp expr = QRegExp(stack->popQString());
-						expr.setMinimal(regexMinimal);
-						QString qtemp = stack->popQString();
+						QRegularExpression expr = QRegularExpression(stack->popQString(),
+                            regexMinimal?QRegularExpression::InvertedGreedinessOption:QRegularExpression::NoPatternOption);
+						QString tempqstr = stack->popQString();
 
-						int pos=0;
+						// recalculate start to be zero based
 						if(start == 0) {
 							error->q(ERROR_STRSTART);
-						} else if (start>0){
-							pos = expr.indexIn(qtemp,start-1)+1;
-						}else{
-							int p = qtemp.length()+start;
-							if(p<0)
-								p=0;
-							pos = expr.indexIn(qtemp, p)+1;
+                        } else if (start>0){
+							start = start - 1;
+						} else {
+							start = tempqstr.length()+start;
+                            if (start<0) start = 0;
 						}
-						stack->pushInt(pos);
+                        //
+
+						int pos=0; // not found
+
+                        QRegularExpressionMatch match = expr.match(tempqstr, start);
+                        if (match.hasMatch()) {
+                            pos = match.capturedStart() + 1;
+						}
+                        
+                        stack->pushInt(pos);
 					}
 					break;
 
@@ -4633,18 +4641,18 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 						graphwin->image->fill(c);
 						if (!fastgraphics) waitForGraphics();
 					}else if(printing){
-						if(printdocument->pageRect()==printdocument->paperRect()){
+						if(printdocument->pageRect(QPrinter::DevicePixel)==printdocument->paperRect(QPrinter::DevicePixel)){
 							//printer is in full page mode already
-							painter->fillRect(printdocument->paperRect(),c);
+							painter->fillRect(printdocument->paperRect(QPrinter::DevicePixel),c);
 						}else{
 							//a good solution is to end painter and begin after setFullPage(true)
 							//this will reset origins for painter to top-left of the page
 							//but swiching back setFullPage(false) and starting again painter (begin) to page
 							//clear the page entirely.
-							QRect r = printdocument->pageRect();
+							QRectF r = printdocument->pageRect(QPrinter::DevicePixel);
 							printdocument->setFullPage(true);
 							painter->translate(-r.left(),-r.top());
-							painter->fillRect(printdocument->paperRect(),c);
+							painter->fillRect(printdocument->paperRect(QPrinter::DevicePixel),c);
 							printdocument->setFullPage(false);
 							painter->translate(r.topLeft());
 						}
@@ -5955,6 +5963,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					}
 # else
 						error->q(ERROR_NOTIMPLEMENTED);
+                        (void) data;
+                        (void) port;
 #endif
 				}
 				break;
@@ -5983,6 +5993,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					}
 #else
 						error->q(ERROR_NOTIMPLEMENTED);
+                        (void) port;
 #endif
 					stack->pushInt(data);
 				}
@@ -6144,8 +6155,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					// regex replace function
 
 					QString qto = stack->popQString();
-					QRegExp expr = QRegExp(stack->popQString());
-					expr.setMinimal(regexMinimal);
+					QRegularExpression expr = QRegularExpression(stack->popQString(),
+                        regexMinimal?QRegularExpression::InvertedGreedinessOption:QRegularExpression::NoPatternOption);
 					QString qhaystack = stack->popQString();
 
 					stack->pushQString(qhaystack.replace(expr, qto));
@@ -6168,8 +6179,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 				case OP_COUNTX: {
 					// regex count function
 
-					QRegExp expr = QRegExp(stack->popQString());
-					expr.setMinimal(regexMinimal);
+					QRegularExpression expr = QRegularExpression(stack->popQString(),
+                        regexMinimal?QRegularExpression::InvertedGreedinessOption:QRegularExpression::NoPatternOption);
 					QString qhaystack = stack->popQString();
 
 					stack->pushInt((int) (qhaystack.count(expr)));
@@ -6544,8 +6555,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 							if(printdocument->isValid()){
 								printdocument->setCreator(QString(SETTINGSAPP));
 								printdocument->setDocName(editwin->title);
-								printdocument->setPaperSize((QPrinter::PaperSize) settingsPrinterPaper);
-								printdocument->setOrientation((QPrinter::Orientation) settingsPrinterOrient);
+								printdocument->setPageSize(QPageSize((QPageSize::PageSizeId ) settingsPrinterPaper));
+								printdocument->setPageOrientation((QPageLayout::Orientation) settingsPrinterOrient);
 								if (!setPainterTo(printdocument)) {
 									error->q(ERROR_PRINTEROPEN);
 									setGraph(drawto); //if drawing on printer fails, then fall back to graph area
@@ -6916,17 +6927,17 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 
 					QStringList list;
 					if(opcode==OP_EXPLODE) {
-						list = qhaystack.split(qneedle, QString::KeepEmptyParts , casesens);
+						list = qhaystack.split(qneedle, Qt::KeepEmptyParts , casesens);
 					} else {
-						QRegExp expr = QRegExp(qneedle);
-						expr.setMinimal(regexMinimal);
-						if (expr.captureCount()>0) {
+						QRegularExpression expr = QRegularExpression(qneedle,
+                            regexMinimal?QRegularExpression::InvertedGreedinessOption:QRegularExpression::NoPatternOption);
+ 						if (expr.captureCount()>0) {
 							// if we have captures in our regex then return them
-							expr.indexIn(qhaystack);
-							list = expr.capturedTexts();
+                            QRegularExpressionMatch match = expr.match(qhaystack);
+							list = match.capturedTexts();
 						} else {
 							// if it is a simple regex without captures then split
-							list = qhaystack.split(expr, QString::KeepEmptyParts);
+							list = qhaystack.split(expr, Qt::KeepEmptyParts);
 						}
 					}
 					

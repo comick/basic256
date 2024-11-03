@@ -64,8 +64,8 @@ private:
     bool operator<(const QTreeWidgetItem &other)const {
         const int column = treeWidget()->sortColumn();
         if(column==COLUMNTYPE)
-            return data(column,Qt::EditRole) < other.data(column,Qt::EditRole);
-        return data(column,Qt::UserRole + 1) < other.data(column,Qt::UserRole + 1);
+            return data(column,Qt::EditRole).toString() < other.data(column,Qt::EditRole).toString();
+        return data(column,Qt::UserRole + 1).toString() < other.data(column,Qt::UserRole + 1).toString();
     }
 };
 

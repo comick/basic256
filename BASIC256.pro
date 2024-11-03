@@ -14,7 +14,7 @@ TARGET							=	basic256
 DEPENDPATH						+=	.
 INCLUDEPATH						+=	.
 QMAKE_CXXFLAGS					+=	-g
-QMAKE_CXXFLAGS					+=	-std=c++11
+QMAKE_CXXFLAGS					+=	-std=c++17
 CONFIG							+=	 qt debug_and_release
 CONFIG							+=	 console
 OBJECTS_DIR						=	tmp/obj
