@@ -29,8 +29,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-
-
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QAction>

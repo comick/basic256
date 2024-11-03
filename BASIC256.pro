@@ -27,6 +27,7 @@ QT								+=	sql
 QT								+=	widgets
 QT								+=	printsupport
 QT								+=	serialport
+QT								+=	multimedia
 
 RESOURCES						+=	resources/resource.qrc
 TRANSLATIONS					=	Translations/basic256_en.ts \

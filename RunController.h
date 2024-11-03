@@ -21,11 +21,11 @@
 
 #include <qglobal.h>
 
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtTextToSpeech/QTextToSpeech>
-#include <QtTextToSpeech/QVoice>
+#include <QTextEdit>
+#include <QPushButton>
+#include <QStatusBar>
+#include <QTextToSpeech>
+#include <QVoice>
 #include <QThread>
 #include <QLocale>
 

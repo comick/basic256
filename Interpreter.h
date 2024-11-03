@@ -43,13 +43,13 @@
 #include <QProcess>
 
 
-#include <QtPrintSupport/QPrinter>
-#include <QtPrintSupport/QPrinterInfo>
+#include <QPrinter>
+#include <QPrinterInfo>
 
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlError>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlError>
 
 #ifndef ANDROID
     // includes for all ports EXCEPT android
