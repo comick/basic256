@@ -25,11 +25,11 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QPaintEvent>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QStatusBar>
-#include <QtPrintSupport/QPrinter>
-#include <QtPrintSupport/QPrintDialog>
-#include <QtWidgets/QFontDialog>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QFontDialog>
 
 #include "MainWindow.h"
 #include "BasicEdit.h"
@@ -788,7 +788,7 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
     // line 0 ... (n-1) of what was clicked
     while(block.isValid()) {
         bottom += blockBoundingRect(block).height();
-        if (event->position().y()  < bottom) {
+        if (event->localPos().y()  < bottom) {
             if(event->button() == Qt::LeftButton){
                 //keep breakPoints list update for debug running mode
                 if(block.userState()==STATEBREAKPOINT){
@@ -809,7 +809,7 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
                     contextMenu.addAction ( tr("Set breakpoint at line") + " " + QString::number(line+1), this , SLOT (toggleBreakPoint()) );
                 QAction *act = contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
                 act->setEnabled(isBreakPoint());
-                contextMenu.exec (event->globalPosition().toPoint());
+                contextMenu.exec (event->globalPos());
             }
             return;
         }
@@ -818,7 +818,7 @@ void BasicEdit::lineNumberAreaMouseClickEvent(QMouseEvent *event) {
     }
     QMenu contextMenu(this);
     contextMenu.addAction ( tr("Clear all breakpoints") , this , SLOT (clearBreakPoints()) );
-    contextMenu.exec (event->globalPosition().toPoint());
+    contextMenu.exec (event->globalPos());
 }
 
 void BasicEdit::toggleBreakPoint(){

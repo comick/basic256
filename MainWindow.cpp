@@ -26,13 +26,13 @@
 #include <QWaitCondition>
 #include <QDesktopServices> 
  
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QLabel>
-#include <QtGui/QShortcut>
+#include <QApplication>
+#include <QGridLayout>
+#include <QMenuBar>
+#include <QStatusBar>
+#include <QDialog>
+#include <QLabel>
+#include <QShortcut>
 
 #include "MainWindow.h"
 #include "Settings.h"

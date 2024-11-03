@@ -31,14 +31,14 @@
 
 
 
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QGridLayout>
-#include  <QtGui/QAction>
-#include <QtWidgets/QMessageBox>
-#include <QtGui/QShortcut>
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QFontDialog>
-#include <QtWidgets/QFileDialog>
+#include <QMainWindow>
+#include <QGridLayout>
+#include <QAction>
+#include <QMessageBox>
+#include <QShortcut>
+#include <QScrollArea>
+#include <QFontDialog>
+#include <QFileDialog>
 #include <QClipboard>
 #include <QFileSystemWatcher>
 

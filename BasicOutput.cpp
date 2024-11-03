@@ -24,12 +24,12 @@
 #include <QMimeData>
 #include <QRegularExpression>
 
-#include  <QtGui/QAction>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMessageBox>
-#include <QtPrintSupport/QPrintDialog>
-#include <QtPrintSupport/QPrinter>
+#include <QAction>
+#include <QToolBar>
+#include <QApplication>
+#include <QMessageBox>
+#include <QPrintDialog>
+#include <QPrinter>
 
 #include "Settings.h"
 #include "BasicOutput.h"

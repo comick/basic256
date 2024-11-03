@@ -21,13 +21,13 @@
 
 #include <QClipboard>
 #include <QMutex>
-#include <QtPrintSupport/QPrintDialog>
-#include <QtPrintSupport/QPrinter>
-#include  <QtGui/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QToolBar>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QAction>
+#include <QApplication>
+#include <QMessageBox>
+#include <QScrollArea>
+#include <QToolBar>
 #include <QDockWidget>
 
 #include "BasicWidget.h"
