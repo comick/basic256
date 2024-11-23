@@ -14,8 +14,11 @@ I keep this current with upstream, including original SVN history via GIT SVN.
 
 ## Feature ideas
 
+- Flatpak package on flathub
+- AppImage distribution
 - locally available inline command help
 - real IDE-less execution of program
+- auto generated reference docs
 
 ## Resources
 

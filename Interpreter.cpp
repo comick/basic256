@@ -5978,8 +5978,8 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					}
 # else
 						error->q(ERROR_NOTIMPLEMENTED);
-                        (void) data;
-                        (void) port;
+                        //(void) data;
+                        //(void) port;
 #endif
 				}
 				break;
@@ -6008,7 +6008,7 @@ fprintf(stderr,"in foreach map %d\n", d->map->data.size());
 					}
 #else
 						error->q(ERROR_NOTIMPLEMENTED);
-                        (void) port;
+                        //(void) port;
 #endif
 					stack->pushInt(data);
 				}

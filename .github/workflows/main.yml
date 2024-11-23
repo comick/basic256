@@ -9,16 +9,16 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
         
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
         
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install bison flex qt5-default qtbase5-dev qt5-qmake qtmultimedia5-dev libqt5sql5-sqlite libqt5multimedia5-plugins libqt5serialport5-dev libqt5texttospeech5-dev qtspeech5-flite-plugin pulseaudio qttools5-dev-tools
+        sudo apt-get install bison flex qt5-qmake qtbase5-dev libqt5serialport5-dev libqt5texttospeech5-dev qtmultimedia5-dev qttools5-dev-tools
         
     - name: Prepare build
       run: |
@@ -28,9 +28,9 @@ jobs:
       run: |
         make
 
-    - name: Upload Graphs
-      uses: actions/upload-artifact@v2
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
       with:
-        name: Ubuntu 20.04 binary
+        name: Ubuntu 24.04 binary
         path: 'basic256'
 
